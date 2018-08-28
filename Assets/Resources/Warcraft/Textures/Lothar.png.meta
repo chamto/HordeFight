@@ -2,11 +2,11 @@ fileFormatVersion: 2
 guid: 06bc64a0c216d4016ac38807531f5ce8
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Lothar_0_0
-    21300002: Lothar_1_0
-    21300004: Lothar_2_0
-    21300006: Lothar_3_0
-    21300008: Lothar_4_0
+    21300000: Lothar_0_0_4
+    21300002: Lothar_1_0_4
+    21300004: Lothar_2_0_4
+    21300006: Lothar_3_0_4
+    21300008: Lothar_4_0_4
     21300010: Lothar_5_0
     21300012: Lothar_6
     21300014: Lothar_7
@@ -17,11 +17,11 @@ TextureImporter:
     21300024: Lothar_12
     21300026: Lothar_13
     21300028: Lothar_14_0
-    21300030: Lothar_0_1
-    21300032: Lothar_1_1
-    21300034: Lothar_2_1
-    21300036: Lothar_3_1
-    21300038: Lothar_4_1
+    21300030: Lothar_0_1_3
+    21300032: Lothar_1_1_3
+    21300034: Lothar_2_1_3
+    21300036: Lothar_3_1_3
+    21300038: Lothar_4_1_3
     21300040: Lothar_5_1
     21300042: Lothar_21
     21300044: Lothar_22
@@ -47,21 +47,21 @@ TextureImporter:
     21300084: Lothar_42
     21300086: Lothar_43
     21300088: Lothar_44
-    21300090: Lothar_0_3
-    21300092: Lothar_1_3
-    21300094: Lothar_2_3
-    21300096: Lothar_3_3
-    21300098: Lothar_4_3
+    21300090: Lothar_0_6
+    21300092: Lothar_1_6
+    21300094: Lothar_2_6
+    21300096: Lothar_3_6
+    21300098: Lothar_4_6
     21300100: Lothar_5_3
     21300102: Lothar_51
     21300104: Lothar_52
     21300106: Lothar_53
     21300108: Lothar_9_3
-    21300110: Lothar_0_4
-    21300112: Lothar_1_4
-    21300114: Lothar_2_4
-    21300116: Lothar_3_4
-    21300118: Lothar_4_4
+    21300110: Lothar_0_5_7
+    21300112: Lothar_1_5_7
+    21300114: Lothar_2_5_7
+    21300116: Lothar_3_5_7
+    21300118: Lothar_4_5_7
     21300120: Lothar_5_4
     21300122: Lothar_61
     21300124: Lothar_62
@@ -161,7 +161,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Lothar_0_0
+      name: Lothar_0_0_4
       rect:
         serializedVersion: 2
         x: 0
@@ -181,7 +181,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_1_0
+      name: Lothar_1_0_4
       rect:
         serializedVersion: 2
         x: 48
@@ -201,13 +201,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_2_0
+      name: Lothar_2_0_4
       rect:
         serializedVersion: 2
         x: 96
-        y: 192
-        width: 48
-        height: 48
+        y: 197
+        width: 49
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,7 +221,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_3_0
+      name: Lothar_3_0_4
       rect:
         serializedVersion: 2
         x: 144
@@ -241,7 +241,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_4_0
+      name: Lothar_4_0_4
       rect:
         serializedVersion: 2
         x: 192
@@ -284,7 +284,7 @@ TextureImporter:
       name: Lothar_6
       rect:
         serializedVersion: 2
-        x: 288
+        x: 287
         y: 192
         width: 48
         height: 48
@@ -461,7 +461,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_0_1
+      name: Lothar_0_1_3
       rect:
         serializedVersion: 2
         x: 0
@@ -481,7 +481,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_1_1
+      name: Lothar_1_1_3
       rect:
         serializedVersion: 2
         x: 48
@@ -501,13 +501,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_2_1
+      name: Lothar_2_1_3
       rect:
         serializedVersion: 2
         x: 96
-        y: 144
-        width: 48
-        height: 48
+        y: 147
+        width: 49
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -521,7 +521,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_3_1
+      name: Lothar_3_1_3
       rect:
         serializedVersion: 2
         x: 144
@@ -541,10 +541,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_4_1
+      name: Lothar_4_1_3
       rect:
         serializedVersion: 2
-        x: 192
+        x: 193
         y: 144
         width: 48
         height: 48
@@ -805,9 +805,9 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 96
-        y: 96
+        y: 99
         width: 48
-        height: 48
+        height: 45
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -844,8 +844,8 @@ TextureImporter:
       name: Lothar_4_2
       rect:
         serializedVersion: 2
-        x: 192
-        y: 96
+        x: 194
+        y: 97
         width: 48
         height: 48
       alignment: 0
@@ -1061,7 +1061,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_0_3
+      name: Lothar_0_6
       rect:
         serializedVersion: 2
         x: 0
@@ -1081,7 +1081,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_1_3
+      name: Lothar_1_6
       rect:
         serializedVersion: 2
         x: 48
@@ -1101,11 +1101,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_2_3
+      name: Lothar_2_6
       rect:
         serializedVersion: 2
         x: 96
-        y: 48
+        y: 49
         width: 48
         height: 48
       alignment: 0
@@ -1121,7 +1121,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_3_3
+      name: Lothar_3_6
       rect:
         serializedVersion: 2
         x: 144
@@ -1141,7 +1141,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_4_3
+      name: Lothar_4_6
       rect:
         serializedVersion: 2
         x: 192
@@ -1261,7 +1261,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_0_4
+      name: Lothar_0_5_7
       rect:
         serializedVersion: 2
         x: 0
@@ -1281,7 +1281,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_1_4
+      name: Lothar_1_5_7
       rect:
         serializedVersion: 2
         x: 48
@@ -1301,13 +1301,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_2_4
+      name: Lothar_2_5_7
       rect:
         serializedVersion: 2
         x: 96
-        y: 0
+        y: 3
         width: 48
-        height: 48
+        height: 46
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1321,7 +1321,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_3_4
+      name: Lothar_3_5_7
       rect:
         serializedVersion: 2
         x: 144
@@ -1341,10 +1341,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Lothar_4_4
+      name: Lothar_4_5_7
       rect:
         serializedVersion: 2
-        x: 192
+        x: 193
         y: 0
         width: 48
         height: 48
