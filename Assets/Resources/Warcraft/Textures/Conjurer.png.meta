@@ -1,102 +1,72 @@
 fileFormatVersion: 2
-guid: 6ae601b87faa84222bbafd4fb13452e1
+guid: c6df2f4cdb43a4076b8a45a0238b8990
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Skeleton_0
-    21300002: Skeleton_1
-    21300004: Skeleton_2
-    21300006: Skeleton_3
-    21300008: Skeleton_4
-    21300010: Skeleton_5
-    21300012: Skeleton_6
-    21300014: Skeleton_7
-    21300016: Skeleton_8
-    21300018: Skeleton_9
-    21300020: Skeleton_10
-    21300022: Skeleton_11
-    21300024: Skeleton_12
-    21300026: Skeleton_13
-    21300028: Skeleton_14
-    21300030: Skeleton_15
-    21300032: Skeleton_16
-    21300034: Skeleton_17
-    21300036: Skeleton_18
-    21300038: Skeleton_19
-    21300040: Skeleton_20
-    21300042: Skeleton_21
-    21300044: Skeleton_22
-    21300046: Skeleton_23
-    21300048: Skeleton_24
-    21300050: Skeleton_25
-    21300052: Skeleton_26
-    21300054: Skeleton_27
-    21300056: Skeleton_28
-    21300058: Skeleton_29
-    21300060: Skeleton_30
-    21300062: Skeleton_31
-    21300064: Skeleton_32
-    21300066: Skeleton_33
-    21300068: Skeleton_34
-    21300070: Skeleton_35
-    21300072: Skeleton_36
-    21300074: Skeleton_37
-    21300076: Skeleton_38
-    21300078: Skeleton_39
-    21300080: Skeleton_40
-    21300082: Skeleton_41
-    21300084: Skeleton_42
-    21300086: Skeleton_43
-    21300088: Skeleton_44
-    21300090: Skeleton_45
-    21300092: Skeleton_46
-    21300094: Skeleton_47
-    21300096: Skeleton_48
-    21300098: Skeleton_49
-    21300100: Skeleton_50
-    21300102: Skeleton_51
-    21300104: Skeleton_52
-    21300106: Skeleton_53
-    21300108: Skeleton_54
-    21300110: Skeleton_55
-    21300112: Skeleton_56
-    21300114: Skeleton_57
-    21300116: Skeleton_58
-    21300118: Skeleton_59
-    21300120: Skeleton_60
-    21300122: Skeleton_61
-    21300124: Skeleton_62
-    21300126: Skeleton_63
-    21300128: Skeleton_64
-    21300130: Skeleton_65
-    21300132: Skeleton_66
-    21300134: Skeleton_67
-    21300136: Skeleton_68
-    21300138: Skeleton_69
-    21300140: Skeleton_70
-    21300142: Skeleton_71
-    21300144: Skeleton_72
-    21300146: Skeleton_73
-    21300148: Skeleton_74
-    21300150: Skeleton_75
-    21300152: Skeleton_76
-    21300154: Skeleton_77
-    21300156: Skeleton_78
-    21300158: Skeleton_79
-    21300160: Skeleton_80
-    21300162: Skeleton_81
-    21300164: Skeleton_82
-    21300166: Skeleton_83
-    21300168: Skeleton_84
-    21300170: Skeleton_85
-    21300172: Skeleton_86
-    21300174: Skeleton_87
-    21300176: Skeleton_88
-    21300178: Skeleton_89
-    21300180: Skeleton_90
-    21300182: Skeleton_91
-    21300184: Skeleton_92
-    21300186: Skeleton_93
-    21300188: Skeleton_94
+    21300000: Conjurer_0
+    21300002: Conjurer_1
+    21300004: Conjurer_2
+    21300006: Conjurer_3
+    21300008: Conjurer_4
+    21300010: Conjurer_5
+    21300012: Conjurer_6
+    21300014: Conjurer_7
+    21300016: Conjurer_8
+    21300018: Conjurer_9
+    21300020: Conjurer_10
+    21300022: Conjurer_11
+    21300024: Conjurer_12
+    21300026: Conjurer_13
+    21300028: Conjurer_14
+    21300030: Conjurer_15
+    21300032: Conjurer_16
+    21300034: Conjurer_17
+    21300036: Conjurer_18
+    21300038: Conjurer_19
+    21300040: Conjurer_20
+    21300042: Conjurer_21
+    21300044: Conjurer_22
+    21300046: Conjurer_23
+    21300048: Conjurer_24
+    21300050: Conjurer_25
+    21300052: Conjurer_26
+    21300054: Conjurer_27
+    21300056: Conjurer_28
+    21300058: Conjurer_29
+    21300060: Conjurer_30
+    21300062: Conjurer_31
+    21300064: Conjurer_32
+    21300066: Conjurer_33
+    21300068: Conjurer_34
+    21300070: Conjurer_35
+    21300072: Conjurer_36
+    21300074: Conjurer_37
+    21300076: Conjurer_38
+    21300078: Conjurer_39
+    21300080: Conjurer_40
+    21300082: Conjurer_41
+    21300084: Conjurer_42
+    21300086: Conjurer_43
+    21300088: Conjurer_44
+    21300090: Conjurer_45
+    21300092: Conjurer_46
+    21300094: Conjurer_47
+    21300096: Conjurer_48
+    21300098: Conjurer_49
+    21300100: Conjurer_50
+    21300102: Conjurer_51
+    21300104: Conjurer_52
+    21300106: Conjurer_53
+    21300108: Conjurer_54
+    21300110: Conjurer_55
+    21300112: Conjurer_56
+    21300114: Conjurer_57
+    21300116: Conjurer_58
+    21300118: Conjurer_59
+    21300120: Conjurer_60
+    21300122: Conjurer_61
+    21300124: Conjurer_62
+    21300126: Conjurer_63
+    21300128: Conjurer_64
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -188,11 +158,11 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Skeleton_0
+      name: Conjurer_0
       rect:
         serializedVersion: 2
         x: 2
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -202,17 +172,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 044f89d76d68842ecbd210b88ae32f51
+      spriteID: aa0e3edfbca4f45258d496316cf26494
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_1
+      name: Conjurer_1
       rect:
         serializedVersion: 2
         x: 34
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -222,17 +192,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a3f46a29af24d4d38b649a00bdb2844f
+      spriteID: 983329feb858149629e62d8f181456eb
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_2
+      name: Conjurer_2
       rect:
         serializedVersion: 2
         x: 66
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -242,17 +212,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d502f933e41694c058b7c2679bb9adf3
+      spriteID: 54644ff4badd049dc9f94404c4b12639
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_3
+      name: Conjurer_3
       rect:
         serializedVersion: 2
         x: 98
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -262,17 +232,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: dea4405e560bb4bb1968030784000e2c
+      spriteID: d05a996e436db456e914490bd66c2768
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_4
+      name: Conjurer_4
       rect:
         serializedVersion: 2
         x: 130
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -282,17 +252,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4a9ca1d4ece7f4a84ab71f9235f049c8
+      spriteID: e99c5905065c1436b9051c80a2482ac0
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_5
+      name: Conjurer_5
       rect:
         serializedVersion: 2
         x: 162
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -302,17 +272,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d2fbed0dfae6a43c7b4905ea2515be4f
+      spriteID: 064d96d969c51447ba944192f01cf67c
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_6
+      name: Conjurer_6
       rect:
         serializedVersion: 2
         x: 194
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -322,17 +292,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 524060b3c176b4a95aaebf17d54cc4e0
+      spriteID: 0f2744e40500d40f5b9af774e49ed9dc
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_7
+      name: Conjurer_7
       rect:
         serializedVersion: 2
         x: 226
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -342,17 +312,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c06491448255d44c3a29ac6977a4d64a
+      spriteID: d0fabe236281249f99ae8d2808869397
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_8
+      name: Conjurer_8
       rect:
         serializedVersion: 2
         x: 258
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -362,17 +332,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c0338bb8151f42f2b89ed8e28ebc99b
+      spriteID: 95961b2892d9c4caeaad85329634551c
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_9
+      name: Conjurer_9
       rect:
         serializedVersion: 2
         x: 290
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -382,17 +352,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a2a3403a4fe404ef7b1ffe463bb82bd2
+      spriteID: 2f8a38cb2c2394eb8867c1f881d98a90
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_10
+      name: Conjurer_10
       rect:
         serializedVersion: 2
         x: 322
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -402,17 +372,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0fc94671d9a844cf6a24af893cdc75c2
+      spriteID: de99fd6f557f14703bc33e75c3dcfb0a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_11
+      name: Conjurer_11
       rect:
         serializedVersion: 2
         x: 354
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -422,17 +392,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fe3d9205047d14834a2c3e41c09b8977
+      spriteID: 38c5d48a1e94f4f94ba45e0c7172545f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_12
+      name: Conjurer_12
       rect:
         serializedVersion: 2
         x: 386
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -442,17 +412,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e857c16315c8944ec948dddd19d5876b
+      spriteID: 2bb91d0341d2c48c5bcd7f689b78331b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_13
+      name: Conjurer_13
       rect:
         serializedVersion: 2
         x: 418
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -462,17 +432,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 627b4dd88c3a24a6b8c72537a6b31623
+      spriteID: 4fc32ba488f6f41d8a727776029c129a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_14
+      name: Conjurer_14
       rect:
         serializedVersion: 2
         x: 450
-        y: 155
+        y: 128
         width: 30
         height: 30
       alignment: 0
@@ -482,97 +452,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 58423ad598fa6453d8f13a7974e41dba
+      spriteID: 3eda1f08145e84c81ab880d85073c338
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_15
-      rect:
-        serializedVersion: 2
-        x: 482
-        y: 155
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 73340748c9665471dab4a600b982fd39
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_16
-      rect:
-        serializedVersion: 2
-        x: 514
-        y: 155
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 66a5dbf2888fe4b718b94344f7dcdf1a
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_17
-      rect:
-        serializedVersion: 2
-        x: 546
-        y: 155
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b73ae3482016b46c78bc8f47a7445416
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_18
-      rect:
-        serializedVersion: 2
-        x: 578
-        y: 155
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7af98418eb1ce4f69a756f3d0439a0a3
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_19
+      name: Conjurer_15
       rect:
         serializedVersion: 2
         x: 2
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -582,17 +472,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bef8aa14a7215491b8ec91629af6af0b
+      spriteID: 25e8c0183edd745ba9242919bf547a11
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_20
+      name: Conjurer_16
       rect:
         serializedVersion: 2
         x: 34
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -602,17 +492,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: abaa6df0c71124384a4ffd1b1961605a
+      spriteID: 982601c148b9f453f8e410c87a5c6091
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_21
+      name: Conjurer_17
       rect:
         serializedVersion: 2
         x: 66
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -622,17 +512,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4f342a768de99471e9c88e4f3cc48e69
+      spriteID: 33229b04164574267a0d84d28514ddf6
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_22
+      name: Conjurer_18
       rect:
         serializedVersion: 2
         x: 98
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -642,17 +532,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f78d2f693716d4afe805a7bf618fd993
+      spriteID: c8f783d68f3cd44378b1b784d038c5c0
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_23
+      name: Conjurer_19
       rect:
         serializedVersion: 2
         x: 130
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -662,17 +552,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c544973b9a2674274bc43576557d8e01
+      spriteID: 56f7a02c8521d46ce8077315601a8f85
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_24
+      name: Conjurer_20
       rect:
         serializedVersion: 2
         x: 162
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -682,17 +572,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 86b04fd7a478f435e86d685b7ce209c0
+      spriteID: 729d2ad0cab2a4770b45b09cfd983374
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_25
+      name: Conjurer_21
       rect:
         serializedVersion: 2
         x: 194
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -702,17 +592,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 17ba6d12268ba4b67aeb192acc7db0c2
+      spriteID: fcfffba8fdf874910943d5fd98432fc7
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_26
+      name: Conjurer_22
       rect:
         serializedVersion: 2
         x: 226
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -722,17 +612,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 984cddca6e6974f96a4dbdc4f6c74fa5
+      spriteID: 0f4dfc2226ed9451b9d2e4d0075eb280
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_27
+      name: Conjurer_23
       rect:
         serializedVersion: 2
         x: 258
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -742,17 +632,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3194fe8712d6a47988915be9dcd282f8
+      spriteID: ab017a4c937784b4e8628ca8573326a9
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_28
+      name: Conjurer_24
       rect:
         serializedVersion: 2
         x: 290
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -762,17 +652,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 796dacb39260a4b919c04f83cc66d5e7
+      spriteID: 66f9c9cfb218a45e0a15398c99a572db
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_29
+      name: Conjurer_25
       rect:
         serializedVersion: 2
         x: 322
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -782,17 +672,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6012c4beb54ca4059afca60f6e82f905
+      spriteID: e93acf358e0344d1f8fe80a754974cf3
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_30
+      name: Conjurer_26
       rect:
         serializedVersion: 2
         x: 354
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -802,17 +692,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f25685f09b026482888de59327217bd7
+      spriteID: 1d869b9cf7c0c41c5b4a6f399c121499
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_31
+      name: Conjurer_27
       rect:
         serializedVersion: 2
         x: 386
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -822,17 +712,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b1cf198696e144e93a00ec07ba803208
+      spriteID: b8e527cb7867f44c2b7da04681845687
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_32
+      name: Conjurer_28
       rect:
         serializedVersion: 2
         x: 418
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -842,17 +732,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d8d680896f1cf442ca7b5bab441d6008
+      spriteID: 09bef0fa209564bd4bf49a0f3dd9c193
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_33
+      name: Conjurer_29
       rect:
         serializedVersion: 2
         x: 450
-        y: 123
+        y: 96
         width: 30
         height: 30
       alignment: 0
@@ -862,97 +752,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: acf59714bd6f544b5b03cd857e43301d
+      spriteID: b6056c04fc7ea4773b53b4908b7bcd1e
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_34
-      rect:
-        serializedVersion: 2
-        x: 482
-        y: 123
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 731a78aea5dc24f85832643f3eb9ac29
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_35
-      rect:
-        serializedVersion: 2
-        x: 514
-        y: 123
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: dea3d890abe1b442a837fe9ae7f98fa4
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_36
-      rect:
-        serializedVersion: 2
-        x: 546
-        y: 123
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: eaf9006750e8343c1b099b6fcbdbd5aa
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_37
-      rect:
-        serializedVersion: 2
-        x: 578
-        y: 123
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3a09e2ca76e7a4d2497cd7d082bde7af
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_38
+      name: Conjurer_30
       rect:
         serializedVersion: 2
         x: 2
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -962,17 +772,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 20da5d478c3e548c9aba92247e1da79d
+      spriteID: 45abf6b99260143fa86a0854dbb84bd4
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_39
+      name: Conjurer_31
       rect:
         serializedVersion: 2
         x: 34
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -982,17 +792,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6765dcda51737470b940e31fa08c4081
+      spriteID: 7ee36a5eef5ba4003b3fa61b6b94d6f5
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_40
+      name: Conjurer_32
       rect:
         serializedVersion: 2
         x: 66
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1002,17 +812,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9b16af2f22b864fabaa247a422081ec8
+      spriteID: a139b42056c2a4cffbf97c14d7c5e41d
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_41
+      name: Conjurer_33
       rect:
         serializedVersion: 2
         x: 98
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1022,17 +832,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1955473233a404e29aba80a966a8b700
+      spriteID: 7560968e0569941558f9b1f316de5e32
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_42
+      name: Conjurer_34
       rect:
         serializedVersion: 2
         x: 130
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1042,17 +852,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2f193d4782a3b40f69516c892c7cf61c
+      spriteID: cee520348b60a41a5b4d21722ab021f9
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_43
+      name: Conjurer_35
       rect:
         serializedVersion: 2
         x: 162
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1062,17 +872,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5c336f296dd4f402e8c26796bfe71b85
+      spriteID: 716f56ff3c30441b988d5ebc781a90d7
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_44
+      name: Conjurer_36
       rect:
         serializedVersion: 2
         x: 194
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1082,17 +892,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 209c0e4fee99f433ab5dd478b9941ee4
+      spriteID: 5ff2d8a9c9676436fa6e172800939886
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_45
+      name: Conjurer_37
       rect:
         serializedVersion: 2
         x: 226
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1102,17 +912,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 750b9b5e9e2ce484e975d5fc644549e7
+      spriteID: e7b317c689fee4e26988fbc9fe5445e1
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_46
+      name: Conjurer_38
       rect:
         serializedVersion: 2
         x: 258
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1122,17 +932,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0104495e1fb00454896b6a1902d9867d
+      spriteID: 30b0b9e9d8b2445fcb0892ca40c84f0f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_47
+      name: Conjurer_39
       rect:
         serializedVersion: 2
         x: 290
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1142,17 +952,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1a2c6f65316114f718627e92c6c6af53
+      spriteID: e444a0957a1724c418873e7f0b677311
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_48
+      name: Conjurer_40
       rect:
         serializedVersion: 2
         x: 322
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1162,17 +972,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cda49af5a52b44e64bed7222b0c741b4
+      spriteID: d8dc53fd24e9c47b8b6d8e80789e953b
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_49
+      name: Conjurer_41
       rect:
         serializedVersion: 2
         x: 354
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1182,17 +992,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c2402684eafcb4f2b8024b35d8d8a11b
+      spriteID: e73948fa186604740929d74ef5db81ae
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_50
+      name: Conjurer_42
       rect:
         serializedVersion: 2
         x: 386
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1202,17 +1012,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ff496d0e03d6f4e8fafd3c590150f9cf
+      spriteID: b10aff737081d4b8fa5d803111b57da3
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_51
+      name: Conjurer_43
       rect:
         serializedVersion: 2
         x: 418
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1222,17 +1032,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e405ce054b2c94ed685f4a53ea08bfd5
+      spriteID: 1bca03600671b45b4a780b5fc729da2a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_52
+      name: Conjurer_44
       rect:
         serializedVersion: 2
         x: 450
-        y: 91
+        y: 64
         width: 30
         height: 30
       alignment: 0
@@ -1242,97 +1052,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ac58c6ea001ba4a36a2c94997961b357
+      spriteID: 55b46bd4c8f7e476eac2cc3ebcfcce67
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_53
-      rect:
-        serializedVersion: 2
-        x: 482
-        y: 91
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 46acfa908425b4906aa15ef42534d8fa
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_54
-      rect:
-        serializedVersion: 2
-        x: 514
-        y: 91
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3c86bfad7d8dd4fb58f05f185f95e569
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_55
-      rect:
-        serializedVersion: 2
-        x: 546
-        y: 91
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6a2e90d30730d40a683bc91859b534d9
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_56
-      rect:
-        serializedVersion: 2
-        x: 578
-        y: 91
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cb75888586a964eb7b3936437754d08b
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_57
+      name: Conjurer_45
       rect:
         serializedVersion: 2
         x: 2
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1342,17 +1072,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d6b7d9433901d4e6f8776fe70c789333
+      spriteID: 4f87c4e4bec5f415e9b9facbc9fe5d84
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_58
+      name: Conjurer_46
       rect:
         serializedVersion: 2
         x: 34
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1362,17 +1092,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e53fa4adbf0d649329df2c010d10efd8
+      spriteID: f457c561f16204c9b895c2ef5ec9bc06
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_59
+      name: Conjurer_47
       rect:
         serializedVersion: 2
         x: 66
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1382,17 +1112,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a5cbd755cb85a4b55906f59c93a2e096
+      spriteID: dc39025e93337425884befa6d120ee5a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_60
+      name: Conjurer_48
       rect:
         serializedVersion: 2
         x: 98
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1402,17 +1132,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: da7ec5bc7c94c4af7b90b0edb8217580
+      spriteID: 8f5a7db3b7dc94f5ead36201ebdd2792
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_61
+      name: Conjurer_49
       rect:
         serializedVersion: 2
         x: 130
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1422,17 +1152,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cc6672e2c53d24e9ca932905f77be2b0
+      spriteID: 85202ca75c4d84581a6ea529ccce747d
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_62
+      name: Conjurer_50
       rect:
         serializedVersion: 2
         x: 162
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1442,17 +1172,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd217e614326240748b814ae6974f809
+      spriteID: ed314b1b366c74912b0066a1516a10f3
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_63
+      name: Conjurer_51
       rect:
         serializedVersion: 2
         x: 194
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1462,17 +1192,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2cb8d85db96444853b5964260eb75dda
+      spriteID: 033816b7974444489a9602a28a953333
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_64
+      name: Conjurer_52
       rect:
         serializedVersion: 2
         x: 226
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1482,17 +1212,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 262db01b1cd23496f9031a085c0802f9
+      spriteID: 8ece7bafd65c24bebb5a30b14bafe238
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_65
+      name: Conjurer_53
       rect:
         serializedVersion: 2
         x: 258
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1502,17 +1232,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 001369d8dc67b435a9a7f068d40a0ee5
+      spriteID: 527a3c4c0a4934e14bed26428cbfa544
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_66
+      name: Conjurer_54
       rect:
         serializedVersion: 2
         x: 290
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1522,17 +1252,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 21be9dfa692644f7c8a54b504d2fbee7
+      spriteID: 584b7c0706dde469b88f7ae53a39e531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_67
+      name: Conjurer_55
       rect:
         serializedVersion: 2
         x: 322
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1542,17 +1272,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0b4fbbb59a2fb42df970595583923861
+      spriteID: fa98a14beeeb8491180f0971e08f5dc8
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_68
+      name: Conjurer_56
       rect:
         serializedVersion: 2
         x: 354
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1562,17 +1292,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 695a987b57a7f48f0807bc1baf66052a
+      spriteID: 09f0129b469a14b78a371b499dd3b89a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_69
+      name: Conjurer_57
       rect:
         serializedVersion: 2
         x: 386
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1582,17 +1312,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 862e8712ffcb341d4a4f4490455820b9
+      spriteID: db88f975ff02b44e39ab912c492d9a5d
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_70
+      name: Conjurer_58
       rect:
         serializedVersion: 2
         x: 418
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1602,17 +1332,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 77d2a178d7960408d9d9cc8295c03901
+      spriteID: a44d590bf93b74217a1abc2e5abaddfe
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_71
+      name: Conjurer_59
       rect:
         serializedVersion: 2
         x: 450
-        y: 59
+        y: 32
         width: 30
         height: 30
       alignment: 0
@@ -1622,97 +1352,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a0a39302d11434ef5a329383b78b95d9
+      spriteID: 22c2a8f230c0a45a6a11cbfae58ef331
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_72
-      rect:
-        serializedVersion: 2
-        x: 482
-        y: 59
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 65d0b6ce45f65408cb3d985f5174c889
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_73
-      rect:
-        serializedVersion: 2
-        x: 514
-        y: 59
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f2b01d9b6467442fe92430d82b50748d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_74
-      rect:
-        serializedVersion: 2
-        x: 546
-        y: 59
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4aafac90bb73244e8a1ee21fc8b2248f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_75
-      rect:
-        serializedVersion: 2
-        x: 578
-        y: 59
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9ccca2a44f553467ea721f97befbdb72
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_76
+      name: Conjurer_60
       rect:
         serializedVersion: 2
         x: 2
-        y: 27
+        y: 0
         width: 30
         height: 30
       alignment: 0
@@ -1722,17 +1372,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f6a7f3ad6d24e472c9c3ec65f539a125
+      spriteID: 4349133a8fb0b4456a709537ff50d44a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_77
+      name: Conjurer_61
       rect:
         serializedVersion: 2
         x: 34
-        y: 27
+        y: 0
         width: 30
         height: 30
       alignment: 0
@@ -1742,17 +1392,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bae994f538cca4b53bd5441f0c2630b8
+      spriteID: 70251687a7a4c4ec2bd00e8f5deb586f
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_78
+      name: Conjurer_62
       rect:
         serializedVersion: 2
         x: 66
-        y: 27
+        y: 0
         width: 30
         height: 30
       alignment: 0
@@ -1762,17 +1412,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f2dbecd61d66e4a21acbd3beec85c284
+      spriteID: c3999c84da480451b84cdd1c24f49c5a
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_79
+      name: Conjurer_63
       rect:
         serializedVersion: 2
         x: 98
-        y: 27
+        y: 0
         width: 30
         height: 30
       alignment: 0
@@ -1782,17 +1432,17 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 4655a2fdcfc5a4f1e85cf03065668d8c
+      spriteID: 5de01c9ea56254afd9f50f41798c9417
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_80
+      name: Conjurer_64
       rect:
         serializedVersion: 2
         x: 130
-        y: 27
+        y: 0
         width: 30
         height: 30
       alignment: 0
@@ -1802,287 +1452,7 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 90f1532d4d9804b27a62d06f2986bf71
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_81
-      rect:
-        serializedVersion: 2
-        x: 162
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8d7ef440379254c4dbb59f7e690405f3
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_82
-      rect:
-        serializedVersion: 2
-        x: 194
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fedd20b2c56db410da710bbfadae7871
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_83
-      rect:
-        serializedVersion: 2
-        x: 226
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2d7c3aead9e764d16a9136991cd75e5c
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_84
-      rect:
-        serializedVersion: 2
-        x: 258
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ef44540b6423f4cb7a2ee7351cb4c912
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_85
-      rect:
-        serializedVersion: 2
-        x: 290
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 88add3a6d16ed434f8935cd990011311
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_86
-      rect:
-        serializedVersion: 2
-        x: 322
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 495a10802d21745e49f00cb9fd205e00
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_87
-      rect:
-        serializedVersion: 2
-        x: 354
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a89cc810371664385befcdf953dfa3d7
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_88
-      rect:
-        serializedVersion: 2
-        x: 386
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c7d3e83967b1c48cd868394520ff900b
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_89
-      rect:
-        serializedVersion: 2
-        x: 418
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d8ce85a0ad5a046129074670aab32409
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_90
-      rect:
-        serializedVersion: 2
-        x: 450
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3ac12bea479cc4d2085480e9514c9b79
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_91
-      rect:
-        serializedVersion: 2
-        x: 482
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 6aaf62debe32a46ebbb19b5216f40a01
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_92
-      rect:
-        serializedVersion: 2
-        x: 514
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9f1428a1e40564874a638770e5d2512f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_93
-      rect:
-        serializedVersion: 2
-        x: 546
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2435f108e9ae84694a2a1f7ae9426873
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Skeleton_94
-      rect:
-        serializedVersion: 2
-        x: 578
-        y: 27
-        width: 30
-        height: 30
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 3cf93abb60ac941caae23c97bb802d8b
+      spriteID: 51e3b60d751d64e4891b940c0ffaff56
       vertices: []
       indices: 
       edges: []
@@ -2090,7 +1460,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 873931d7460e44df193836d837ec1633
+    spriteID: 7dde3f76aef9842f1a3d288d7ef6d8c2
     vertices: []
     indices: 
     edges: []
