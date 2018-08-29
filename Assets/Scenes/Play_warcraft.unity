@@ -952,6 +952,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1015461816}
+  - component: {fileID: 1015461817}
   m_Layer: 0
   m_Name: 0_main
   m_TagString: Untagged
@@ -974,6 +975,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1015461817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1015461815}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c311df3906c9b4cc6bcec5c2e3328046, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1247797607
 GameObject:
   m_ObjectHideFlags: 0
@@ -6543,7 +6555,7 @@ GameObject:
   - component: {fileID: 1830724621}
   - component: {fileID: 1830724623}
   m_Layer: 0
-  m_Name: 0_Grid
+  m_Name: 0_grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7185,6 +7197,7 @@ GameObject:
   - component: {fileID: 2055501279}
   - component: {fileID: 2055501280}
   - component: {fileID: 2055501281}
+  - component: {fileID: 2055501282}
   m_Layer: 0
   m_Name: Lothar
   m_TagString: Untagged
@@ -7268,3 +7281,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!58 &2055501282
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2055501278}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0.0041656494, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.0914284
