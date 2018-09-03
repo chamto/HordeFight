@@ -146,10 +146,17 @@ namespace HordeFight
     public class Character : MonoBehaviour
     {
 
+        private Animator _animator = null;
 
+        private void Start()
+        {
+            _animator = GetComponent<Animator>();
+             
+        }
 
         private void TouchBegan() 
         {
+            _animator.speed = 2f;
             DebugWide.LogBlue("asdfasdf");
         }
         private void TouchMoved() { }
