@@ -234,73 +234,88 @@ namespace HordeFight
             return (eDirection)quad;
         }
 
-        public void Switch_AniMove(eDirection dir)
+        public string Dir8ToString(eDirection dir)
         {
-            //None = 0,
-            //Right = 1,
-            //RightUp = 2,
-            //Up = 3,
-            //LeftUp = 4,
-            //Left = 5,
-            //LeftDown = 6,
-            //Down = 7,
-            //RightDown = 8,
-
-            SpriteRenderer sr = GetComponent<SpriteRenderer>();
-            sr.flipX = false;
-            string aniName = "";
-            switch(dir)
+            
+            string quarter = "";
+            switch (dir)
             {
-                
+
                 case eDirection.Right:
                     {
-                        aniName = "lothar_move_right";
+                        quarter = "right";
                     }
                     break;
                 case eDirection.RightUp:
                     {
-                        aniName = "lothar_move_rightUp";
+                        quarter = "rightUp";
                     }
                     break;
                 case eDirection.Up:
                     {
-                        aniName = "lothar_move_up";
+                        quarter = "up";
                     }
                     break;
                 case eDirection.LeftUp:
                     {
+                        
+                        quarter = "rightUp";
+                    }
+                    break;
+                case eDirection.Left:
+                    {
+                        quarter = "right";
+                    }
+                    break;
+                case eDirection.LeftDown:
+                    {
+                        quarter = "rightDown";
+                    }
+                    break;
+                case eDirection.Down:
+                    {
+                        quarter = "down";
+                    }
+                    break;
+                case eDirection.RightDown:
+                    {
+                        quarter = "rightDown";
+                    }
+                    break;
+
+            }
+
+            return quarter;
+        }
+
+        public void Switch_AniMove(string aniKind, string aniName , eDirection dir)
+        {
+            
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            sr.flipX = false;
+            aniName = aniName + Dir8ToString(dir);
+            switch(dir)
+            {
+                
+                case eDirection.LeftUp:
+                    {
                         sr.flipX = true;
-                        aniName = "lothar_move_rightUp";
                     }
                     break;
                 case eDirection.Left:
                     {
                         sr.flipX = true;
-                        aniName = "lothar_move_right";
                     }
                     break;
                 case eDirection.LeftDown:
                     {
                         sr.flipX = true;
-                        aniName = "lothar_move_rightDown";
-                    }
-                    break;
-                case eDirection.Down:
-                    {
-                        aniName = "lothar_move_down";
-                    }
-                    break;
-                case eDirection.RightDown:
-                    {
-                        aniName = "lothar_move_rightDown";
                     }
                     break;
                 
-                
-
             }
 
-            _overCtr["base_move"] = GetClip(aniName);
+            _overCtr[aniKind] = GetClip(aniName);
         }
 
 
@@ -335,7 +350,8 @@ namespace HordeFight
           
             _animator.SetInteger("state", (int)eState.Move);
 
-            Switch_AniMove(TransDirection(dir));
+            eDirection eDir = TransDirection(dir);
+            Switch_AniMove("base_move","lothar_move_",eDir);
 
         }
 
