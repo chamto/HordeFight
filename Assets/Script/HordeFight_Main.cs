@@ -76,6 +76,11 @@ namespace HordeFight
     {
 
        
+        private static System.Random _rand = new System.Random();
+        static public System.Random rand
+        {
+            get { return _rand; }
+        }
 
         public static TouchProcess touchProcess
         {
@@ -163,6 +168,8 @@ namespace HordeFight
         private Movable _move = null;
         private AnimationClip[] _aniClips = null;
 
+        private eDirection _eDir8 = eDirection.Down;
+
         public enum eState
         {
             None = 0,
@@ -197,11 +204,35 @@ namespace HordeFight
             _overCtr = (AnimatorOverrideController)_animator.runtimeAnimatorController;
 
             _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
+
+            _animator.SetInteger("state", (int)eState.Idle);
         }
 
+
+        private float __elapsedTime = 0f;
+        private float __randTime = 0f;
 		private void Update()
 		{
-			
+
+            if((int)eState.Idle == _animator.GetInteger("state"))
+            {
+                __elapsedTime += Time.deltaTime;
+
+
+                if(__randTime < __elapsedTime)
+                {
+                    _eDir8 = (eDirection)Single.rand.Next(1, 8);
+                    Switch_AniMove("base_idle", "lothar_idle_", _eDir8);
+
+                    __elapsedTime = 0f;
+
+                    //3~7초가 지났을 때 돌아감
+                    __randTime = (float)Single.rand.Next(3, 7);
+                }
+
+            }
+
+
 		}
 
         public AnimationClip GetClip(string name)
@@ -350,8 +381,10 @@ namespace HordeFight
           
             _animator.SetInteger("state", (int)eState.Move);
 
-            eDirection eDir = TransDirection(dir);
-            Switch_AniMove("base_move","lothar_move_",eDir);
+            _eDir8 = TransDirection(dir);
+            Switch_AniMove("base_move","lothar_move_",_eDir8);
+            //Switch_AniMove("base_move", "lothar_attack_", eDir);
+
 
         }
 
