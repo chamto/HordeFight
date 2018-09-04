@@ -160,15 +160,112 @@ namespace HordeFight
 
 namespace HordeFight
 {
+
+    public class ObjectManager
+    {
+        public List<Character> _characters = new List<Character>();
+
+
+        public void ClearAll()
+        {
+
+            foreach (Character t in _characters)
+            {
+                GameObject.Destroy(t.gameObject);
+            }
+
+            _characters.Clear();
+
+        }
+
+        public Character GetCharacter(int id)
+        {
+            foreach (Character c in _characters)
+            {
+                if (c.id == id)
+                {
+                    return c;
+                }
+            }
+
+            return null;
+        }
+
+        public Movable GetCharacterMove(int id)
+        {
+            foreach (Character c in _characters)
+            {
+                if (c.id == id)
+                {
+                    return c.GetComponent<Movable>();
+                }
+            }
+
+            return null;
+        }
+
+        //최대 반경이내에서 가장 가까운 객체를 반환한다
+        public Transform GetNearCharacter(Transform exceptChar, float maxRadius)
+        {
+
+            //todo : 추후구현하기
+
+            foreach (Character t in _characters)
+            {
+                if (t.transform == exceptChar) continue;
+
+                return t.transform;
+            }
+
+            return null;
+        }
+
+
+       
+
+        //____________________________________________
+        //                  객체 생성 
+        //____________________________________________
+
+        public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
+        {
+            const string root = "Prefab/";
+            GameObject obj = MonoBehaviour.Instantiate(Resources.Load(root + prefabPath)) as GameObject;
+            obj.transform.SetParent(parent, false);
+            obj.transform.name = name;
+
+
+            return obj;
+        }
+
+       
+
+        public Character Create_Character(Transform parent, int id, Vector3 pos)
+        {
+            GameObject obj = CreatePrefab("Proto/PullOut/jongdali", parent, "jongdali_" + id.ToString("00"));
+            Character cha = obj.AddComponent<Character>();
+            _characters.Add(cha);
+            cha.id = id;
+            cha.transform.localPosition = pos;
+
+            return cha;
+        }
+
+
+    }
+
     public class Character : MonoBehaviour
     {
+        
+        private Animator                    _animator = null;
+        private AnimatorOverrideController  _overCtr = null;
+        private AnimationClip[]             _aniClips = null;
 
-        private Animator _animator = null;
-        private AnimatorOverrideController _overCtr = null;
-        private Movable _move = null;
-        private AnimationClip[] _aniClips = null;
-
+        private Movable _move     = null;
         private eDirection _eDir8 = eDirection.Down;
+
+        public int id
+        { get; set; }
 
         public enum eState
         {
@@ -195,13 +292,17 @@ namespace HordeFight
 
         }
 
+        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
         private void Start()
         {
             _animator = GetComponent<Animator>();
             _move = GetComponent<Movable>();
             //Single.touchProcess.Attach_SendObject(this.gameObject);
 
-            _overCtr = (AnimatorOverrideController)_animator.runtimeAnimatorController;
+            //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
+            _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+            _animator.runtimeAnimatorController = _overCtr;
+
 
             _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
 
@@ -350,7 +451,6 @@ namespace HordeFight
         }
 
 
-        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
         private Vector2 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
@@ -379,11 +479,12 @@ namespace HordeFight
             _move.Move_Forward(dir, 1f, 1f);
 
           
-            _animator.SetInteger("state", (int)eState.Move);
+
 
             _eDir8 = TransDirection(dir);
             Switch_AniMove("base_move","lothar_move_",_eDir8);
             //Switch_AniMove("base_move", "lothar_attack_", eDir);
+            _animator.SetInteger("state", (int)eState.Move);
 
 
         }
@@ -392,6 +493,7 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
 
+            Switch_AniMove("base_idle", "lothar_idle_", _eDir8);
             _animator.SetInteger("state", (int)eState.Idle);
         }
     }
