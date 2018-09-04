@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+using Utility;
+
 namespace HordeFight
 {
     public class HordeFight_Main : MonoBehaviour
@@ -21,7 +23,10 @@ namespace HordeFight
 
             gameObject.AddComponent<TouchProcess>();
 
-            _hero_animator.gameObject.AddComponent<Character>(); //임시 코드 
+            //===================
+            //임시 코드 
+            _hero_animator.gameObject.AddComponent<Movable>();
+            _hero_animator.gameObject.AddComponent<Character>();
 
         }
 
@@ -141,26 +146,144 @@ namespace HordeFight
     }
 
 }//end namespace
+
+
+
+//========================================================
+//==================      객체 관리기      ==================
+//========================================================
+
 namespace HordeFight
 {
     public class Character : MonoBehaviour
     {
 
         private Animator _animator = null;
+        private Movable _move = null;
+
 
         private void Start()
         {
             _animator = GetComponent<Animator>();
-             
+            _move = GetComponent<Movable>();
+            //Single.touchProcess.Attach_SendObject(this.gameObject);
         }
 
+        private Vector2 _startPos = Vector3.zero;
+        //private Vector2 _prevPos = Vector3.zero;
         private void TouchBegan() 
         {
-            _animator.speed = 2f;
-            DebugWide.LogBlue("asdfasdf");
+            //_animator.speed = 2f;
+            DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
+
+            RaycastHit2D hit = Single.touchProcess.GetHit2D();
+
+            _startPos = hit.point;
         }
-        private void TouchMoved() { }
-        private void TouchEnded() { }
+
+
+        private void TouchMoved()
+        {
+            RaycastHit2D hit = Single.touchProcess.GetHit2D();
+
+            Vector3 dir = (Vector3)hit.point - this.transform.position;
+            _move.Move_Forward(dir, 1f, 1f);
+
+            //_prevPos = hit.point;
+
+            DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
+        }
+
+        private void TouchEnded() 
+        {
+            //_startPos = _prevPos;
+            DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+        }
+    }
+
+
+
+    public class Movable : MonoBehaviour
+    {
+        public enum eDirection
+        {
+            None    = 0,
+            UP      = 1<<1,
+            DOWN    = 1<<2,
+            LEFT    = 1<<3,
+            RIGHT   = 1<<4,
+        }
+
+
+
+        public void Move_Forward(Vector3 dir , float distance , float speed)
+        {
+            
+            //보간, 이동 처리
+            //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
+            this.transform.Translate(dir * Time.deltaTime * speed * distance);
+
+           
+        }
+
+        public void Move_Backward(Vector3 dir, float speed)
+        {
+            
+            this.transform.Translate(-dir * Time.deltaTime * speed); 
+        }
+
+
+        public Vector3 GetDirect(Vector3 dstPos)
+        {
+            Vector3 dir = dstPos - this.transform.position;
+            dir.Normalize();
+            return dir;
+        }
+
+        //객체의 전진 방향을 반환한다.
+        public Vector3 GetForwardDirect()
+        {
+            return Quaternion.Euler(this.transform.localEulerAngles) * Vector3.forward;
+        }
+
+
+        //내방향을 기준으로 목표위치가 어디쪽에 있는지 반환한다.  
+        //public eDirection DirectionalInspection(Vector3 targetPos)
+        //{
+
+        //    Vector3 mainDir = GetForwardDirect();
+
+        //    Vector3 targetTo = targetPos - this.transform.localPosition;
+
+        //    //mainDir.Normalize();
+        //    //targetTo.Normalize();
+
+        //    Vector3 dir = Vector3.Cross(mainDir, targetTo);
+        //    //dir.Normalize();
+        //    //DebugWide.LogBlue("mainDir:" + mainDir + "  targetTo:" + targetTo + "   cross:" + dir.y);
+
+        //    float angle = Vector3.Angle(mainDir, targetTo);
+        //    angle = Mathf.Abs(angle);
+
+        //    if (angle < 3f) return eDirection.CENTER; //사이각이 3도 보다 작다면 중앙으로 여긴다 
+
+        //    //외적의 y축값이 음수는 왼쪽방향 , 양수는 오른쪽방향 
+        //    if (dir.y < 0)
+        //        return eDirection.LEFT;
+        //    else if (dir.y > 0)
+        //        return eDirection.RIGHT;
+
+        //    return eDirection.CENTER;
+        //}
+
+
+        //회전할 각도 구하기
+        public float CalcRotationAngle(Vector3 targetDir)
+        {
+            //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
+            return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
+
+        }
     }
 }
 
@@ -269,6 +392,24 @@ namespace HordeFight
             }
 
             return false;
+        }
+
+        //충돌체가 2d 면 Physics2D 함수로만 찾아낼 수 있다.  2d객체에 3d충돌체를 넣으면 Raycast(3D) 함수로 찾아낼 수 있다. 
+        public RaycastHit2D GetHit2D()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(this.GetTouchPos());
+
+            return Physics2D.Raycast(ray.origin, ray.direction);
+        }
+
+        public RaycastHit GetHit3D()
+        {
+            Ray ray = Camera.main.ScreenPointToRay(this.GetTouchPos());
+
+            RaycastHit hit3D = default(RaycastHit);
+            Physics.Raycast(ray, out hit3D, Mathf.Infinity);
+
+            return hit3D;
         }
 
         //==========================================
@@ -461,7 +602,6 @@ namespace HordeFight
         }
 
 
-
         private GameObject SendMessage_TouchObject(string callbackMethod, Vector3 touchPos)
         {
 
@@ -469,10 +609,9 @@ namespace HordeFight
 
             //Debug.Log ("  -- currentSelectedGameObject : " + EventSystem.current.currentSelectedGameObject); //chamto test
 
-
             //2. game input event test
             RaycastHit2D hit2D = Physics2D.Raycast(ray.origin, ray.direction);
-            if (hit2D)
+            if (null != hit2D.collider)
             {
                 //DebugWide.Log(hit.transform.gameObject.name); //chamto test
                 hit2D.transform.gameObject.SendMessage(callbackMethod, 0, SendMessageOptions.DontRequireReceiver);
@@ -480,9 +619,12 @@ namespace HordeFight
                 return hit2D.transform.gameObject;
             }
 
-            RaycastHit hit3D;
+
+
+            RaycastHit hit3D = default(RaycastHit);
             if (true == Physics.Raycast(ray, out hit3D, Mathf.Infinity))
             {
+                DebugWide.LogBlue("SendMessage_TouchObject 2");
                 hit3D.transform.gameObject.SendMessage(callbackMethod, 0, SendMessageOptions.DontRequireReceiver);
 
                 return hit3D.transform.gameObject;
