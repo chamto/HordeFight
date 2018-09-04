@@ -159,45 +159,191 @@ namespace HordeFight
     {
 
         private Animator _animator = null;
+        private AnimatorOverrideController _overCtr = null;
         private Movable _move = null;
+        private AnimationClip[] _aniClips = null;
 
+        public enum eState
+        {
+            None = 0,
+            Idle = 1,
+            Move = 2,
+            Attack = 3,
+            FallDown = 4,
+        }
+
+
+        //데카르트좌표계 사분면을 기준으로 숫자 지정
+        public enum eDirection : int
+        {
+            None        = 0,
+            Right       = 1,
+            RightUp     = 2,
+            Up          = 3,
+            LeftUp      = 4,
+            Left        = 5,
+            LeftDown    = 6,
+            Down        = 7,
+            RightDown   = 8,
+
+        }
 
         private void Start()
         {
             _animator = GetComponent<Animator>();
             _move = GetComponent<Movable>();
             //Single.touchProcess.Attach_SendObject(this.gameObject);
+
+            _overCtr = (AnimatorOverrideController)_animator.runtimeAnimatorController;
+
+            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
         }
 
+		private void Update()
+		{
+			
+		}
+
+        public AnimationClip GetClip(string name)
+        {
+            foreach(AnimationClip ani in _aniClips)
+            {
+                if(ani.name.Equals(name))
+                {
+                    return ani;
+                }
+            }
+
+            return null;
+        }
+
+        public eDirection TransDirection(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.y, dir.x); 
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            //DebugWide.LogRed(deg + "   " + quad);
+
+            return (eDirection)quad;
+        }
+
+        public void Switch_AniMove(eDirection dir)
+        {
+            //None = 0,
+            //Right = 1,
+            //RightUp = 2,
+            //Up = 3,
+            //LeftUp = 4,
+            //Left = 5,
+            //LeftDown = 6,
+            //Down = 7,
+            //RightDown = 8,
+
+            SpriteRenderer sr = GetComponent<SpriteRenderer>();
+            sr.flipX = false;
+            string aniName = "";
+            switch(dir)
+            {
+                
+                case eDirection.Right:
+                    {
+                        aniName = "lothar_move_right";
+                    }
+                    break;
+                case eDirection.RightUp:
+                    {
+                        aniName = "lothar_move_rightUp";
+                    }
+                    break;
+                case eDirection.Up:
+                    {
+                        aniName = "lothar_move_up";
+                    }
+                    break;
+                case eDirection.LeftUp:
+                    {
+                        sr.flipX = true;
+                        aniName = "lothar_move_rightUp";
+                    }
+                    break;
+                case eDirection.Left:
+                    {
+                        sr.flipX = true;
+                        aniName = "lothar_move_right";
+                    }
+                    break;
+                case eDirection.LeftDown:
+                    {
+                        sr.flipX = true;
+                        aniName = "lothar_move_rightDown";
+                    }
+                    break;
+                case eDirection.Down:
+                    {
+                        aniName = "lothar_move_down";
+                    }
+                    break;
+                case eDirection.RightDown:
+                    {
+                        aniName = "lothar_move_rightDown";
+                    }
+                    break;
+                
+                
+
+            }
+
+            _overCtr["base_move"] = GetClip(aniName);
+        }
+
+
+        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
         private Vector2 _startPos = Vector3.zero;
-        //private Vector2 _prevPos = Vector3.zero;
         private void TouchBegan() 
         {
-            //_animator.speed = 2f;
-            DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
+            //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
+
+            _animator.speed = 1f;
+
 
             RaycastHit2D hit = Single.touchProcess.GetHit2D();
 
             _startPos = hit.point;
+
+            _animator.SetInteger("state", (int)eState.Move);
+
         }
 
 
         private void TouchMoved()
         {
+            //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
+
             RaycastHit2D hit = Single.touchProcess.GetHit2D();
 
             Vector3 dir = (Vector3)hit.point - this.transform.position;
+            //dir.Normalize();
             _move.Move_Forward(dir, 1f, 1f);
 
-            //_prevPos = hit.point;
+          
+            _animator.SetInteger("state", (int)eState.Move);
 
-            DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
+            Switch_AniMove(TransDirection(dir));
+
         }
 
         private void TouchEnded() 
         {
-            //_startPos = _prevPos;
-            DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+            //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+
+            _animator.SetInteger("state", (int)eState.Idle);
         }
     }
 
