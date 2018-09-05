@@ -2,11 +2,11 @@ fileFormatVersion: 2
 guid: f6b877c994b9242dbad8ff81cff7adaf
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Ogre_0
-    21300002: Ogre_1
-    21300004: Ogre_2
-    21300006: Ogre_3
-    21300008: Ogre_4
+    21300000: Ogre_0_0
+    21300002: Ogre_1_0
+    21300004: Ogre_2_0
+    21300006: Ogre_3_0
+    21300008: Ogre_4_0
     21300010: Ogre_5
     21300012: Ogre_6
     21300014: Ogre_7_0
@@ -17,11 +17,11 @@ TextureImporter:
     21300024: Ogre_12
     21300026: Ogre_13
     21300028: Ogre_14
-    21300030: Ogre_15
-    21300032: Ogre_16
-    21300034: Ogre_17
-    21300036: Ogre_18
-    21300038: Ogre_19
+    21300030: Ogre_0_1
+    21300032: Ogre_1_1
+    21300034: Ogre_2_1
+    21300036: Ogre_3_1
+    21300038: Ogre_4_1
     21300040: Ogre_20
     21300042: Ogre_21
     21300044: Ogre_7_1
@@ -32,11 +32,11 @@ TextureImporter:
     21300054: Ogre_27
     21300056: Ogre_28
     21300058: Ogre_29
-    21300060: Ogre_30
-    21300062: Ogre_31
-    21300064: Ogre_32
-    21300066: Ogre_33
-    21300068: Ogre_34
+    21300060: Ogre_0_2
+    21300062: Ogre_1_2
+    21300064: Ogre_2_2
+    21300066: Ogre_3_2
+    21300068: Ogre_4_2
     21300070: Ogre_35
     21300072: Ogre_36
     21300074: Ogre_7_2
@@ -47,11 +47,11 @@ TextureImporter:
     21300084: Ogre_42
     21300086: Ogre_43
     21300088: Ogre_44
-    21300090: Ogre_45
-    21300092: Ogre_46
-    21300094: Ogre_47
-    21300096: Ogre_48
-    21300098: Ogre_49
+    21300090: Ogre_0_3
+    21300092: Ogre_1_3
+    21300094: Ogre_2_3
+    21300096: Ogre_3_3
+    21300098: Ogre_4_3
     21300100: Ogre_50
     21300102: Ogre_51
     21300104: Ogre_7_3
@@ -62,11 +62,11 @@ TextureImporter:
     21300114: Ogre_57
     21300116: Ogre_58
     21300118: Ogre_59
-    21300120: Ogre_60
-    21300122: Ogre_61
-    21300124: Ogre_62
-    21300126: Ogre_63
-    21300128: Ogre_64
+    21300120: Ogre_0_4
+    21300122: Ogre_1_4
+    21300124: Ogre_2_4
+    21300126: Ogre_3_4
+    21300128: Ogre_4_4
     21300130: Ogre_65
     21300132: Ogre_66
     21300134: Ogre_7_4
@@ -168,7 +168,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Ogre_0
+      name: Ogre_0_0
       rect:
         serializedVersion: 2
         x: 5
@@ -188,7 +188,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_1
+      name: Ogre_1_0
       rect:
         serializedVersion: 2
         x: 53
@@ -208,7 +208,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_2
+      name: Ogre_2_0
       rect:
         serializedVersion: 2
         x: 101
@@ -228,7 +228,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_3
+      name: Ogre_3_0
       rect:
         serializedVersion: 2
         x: 149
@@ -248,7 +248,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_4
+      name: Ogre_4_0
       rect:
         serializedVersion: 2
         x: 197
@@ -468,7 +468,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_15
+      name: Ogre_0_1
       rect:
         serializedVersion: 2
         x: 5
@@ -488,7 +488,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_16
+      name: Ogre_1_1
       rect:
         serializedVersion: 2
         x: 53
@@ -508,7 +508,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_17
+      name: Ogre_2_1
       rect:
         serializedVersion: 2
         x: 101
@@ -528,7 +528,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_18
+      name: Ogre_3_1
       rect:
         serializedVersion: 2
         x: 149
@@ -548,7 +548,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_19
+      name: Ogre_4_1
       rect:
         serializedVersion: 2
         x: 197
@@ -768,7 +768,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_30
+      name: Ogre_0_2
       rect:
         serializedVersion: 2
         x: 5
@@ -788,7 +788,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_31
+      name: Ogre_1_2
       rect:
         serializedVersion: 2
         x: 53
@@ -808,7 +808,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_32
+      name: Ogre_2_2
       rect:
         serializedVersion: 2
         x: 101
@@ -828,7 +828,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_33
+      name: Ogre_3_2
       rect:
         serializedVersion: 2
         x: 149
@@ -848,7 +848,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_34
+      name: Ogre_4_2
       rect:
         serializedVersion: 2
         x: 197
@@ -1068,7 +1068,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_45
+      name: Ogre_0_3
       rect:
         serializedVersion: 2
         x: 5
@@ -1088,7 +1088,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_46
+      name: Ogre_1_3
       rect:
         serializedVersion: 2
         x: 53
@@ -1108,7 +1108,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_47
+      name: Ogre_2_3
       rect:
         serializedVersion: 2
         x: 101
@@ -1128,7 +1128,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_48
+      name: Ogre_3_3
       rect:
         serializedVersion: 2
         x: 149
@@ -1148,7 +1148,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_49
+      name: Ogre_4_3
       rect:
         serializedVersion: 2
         x: 197
@@ -1368,7 +1368,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_60
+      name: Ogre_0_4
       rect:
         serializedVersion: 2
         x: 5
@@ -1388,7 +1388,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_61
+      name: Ogre_1_4
       rect:
         serializedVersion: 2
         x: 53
@@ -1408,11 +1408,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_62
+      name: Ogre_2_4
       rect:
         serializedVersion: 2
-        x: 101
-        y: 30
+        x: 100
+        y: 31
         width: 40
         height: 40
       alignment: 0
@@ -1428,7 +1428,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_63
+      name: Ogre_3_4
       rect:
         serializedVersion: 2
         x: 149
@@ -1448,7 +1448,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_64
+      name: Ogre_4_4
       rect:
         serializedVersion: 2
         x: 197
