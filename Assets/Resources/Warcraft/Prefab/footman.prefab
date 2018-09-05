@@ -9,32 +9,32 @@ Prefab:
     m_Modifications: []
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
-  m_RootGameObject: {fileID: 1215090093300774}
+  m_RootGameObject: {fileID: 1623211153472906}
   m_IsPrefabParent: 1
---- !u!1 &1215090093300774
+--- !u!1 &1623211153472906
 GameObject:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   serializedVersion: 5
   m_Component:
-  - component: {fileID: 4135540490454310}
-  - component: {fileID: 212447532312616402}
-  - component: {fileID: 95809563866697558}
-  - component: {fileID: 58221491843902292}
+  - component: {fileID: 4446110477595196}
+  - component: {fileID: 212876398609901956}
+  - component: {fileID: 95886917730901944}
+  - component: {fileID: 58090914619057556}
   m_Layer: 0
-  m_Name: lothar
+  m_Name: footman
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4135540490454310
+--- !u!4 &4446110477595196
 Transform:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1215090093300774}
+  m_GameObject: {fileID: 1623211153472906}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -42,12 +42,12 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &58221491843902292
+--- !u!58 &58090914619057556
 CircleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1215090093300774}
+  m_GameObject: {fileID: 1623211153472906}
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
@@ -56,14 +56,14 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.1
---- !u!95 &95809563866697558
+  m_Radius: 0.09
+--- !u!95 &95886917730901944
 Animator:
   serializedVersion: 3
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1215090093300774}
+  m_GameObject: {fileID: 1623211153472906}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: e69d2650600db431bbfce441504a8e84, type: 2}
@@ -75,12 +75,12 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!212 &212447532312616402
+--- !u!212 &212876398609901956
 SpriteRenderer:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1215090093300774}
+  m_GameObject: {fileID: 1623211153472906}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -110,7 +110,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300018, guid: 06bc64a0c216d4016ac38807531f5ce8, type: 3}
+  m_Sprite: {fileID: 21300018, guid: c64873ae698c64702ad6a54b3c8a9521, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
