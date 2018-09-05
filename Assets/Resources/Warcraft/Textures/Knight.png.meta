@@ -9,12 +9,12 @@ TextureImporter:
     21300008: Knight_4_0
     21300010: Knight_5_0
     21300012: Knight_6_0
-    21300014: Knight_7
+    21300014: Knight_7_0
     21300016: Knight_8_0
-    21300018: Knight_9
-    21300020: Knight_10
+    21300018: Knight_9_0
+    21300020: Knight_10_0
     21300022: Knight_11
-    21300024: Knight_12
+    21300024: Knight_12_0
     21300026: Knight_13
     21300028: Knight_14
     21300030: Knight_0_1
@@ -25,11 +25,11 @@ TextureImporter:
     21300040: Knight_5_1
     21300042: Knight_6_1
     21300044: Knight_8_1
-    21300046: Knight_23
-    21300048: Knight_24
-    21300050: Knight_25
+    21300046: Knight_8_1
+    21300048: Knight_9_1
+    21300050: Knight_10_1
     21300052: Knight_26
-    21300054: Knight_27
+    21300054: Knight_12_1
     21300056: Knight_28
     21300058: Knight_29
     21300060: Knight_0_2
@@ -39,12 +39,12 @@ TextureImporter:
     21300068: Knight_4_2
     21300070: Knight_5_2
     21300072: Knight_8_2
-    21300074: Knight_37
-    21300076: Knight_38
-    21300078: Knight_39
-    21300080: Knight_40
+    21300074: Knight_7_2
+    21300076: Knight_8_2
+    21300078: Knight_9_2
+    21300080: Knight_10_2
     21300082: Knight_41
-    21300084: Knight_42
+    21300084: Knight_12_2
     21300086: Knight_43
     21300088: Knight_44
     21300090: Knight_0_3
@@ -55,12 +55,12 @@ TextureImporter:
     21300100: Knight_8_3
     21300102: Knight_6_3
     21300104: Knight_52
-    21300106: Knight_53
-    21300108: Knight_54
-    21300110: Knight_55
-    21300112: Knight_56
+    21300106: Knight_7_3
+    21300108: Knight_8_3
+    21300110: Knight_9_3
+    21300112: Knight_10_3
     21300114: Knight_57
-    21300116: Knight_58
+    21300116: Knight_12_3
     21300118: Knight_59
     21300120: Knight_60
     21300122: Knight_0_4
@@ -70,17 +70,17 @@ TextureImporter:
     21300130: Knight_4_4
     21300132: Knight_5_4
     21300134: Knight_6_4
-    21300136: Knight_68
-    21300138: Knight_69
-    21300140: Knight_8
-    21300142: Knight_22
+    21300136: Knight_7_4
+    21300138: Knight_8_4
+    21300140: Knight_8_0
+    21300142: Knight_7_1
     21300144: Knight_6_2
     21300146: Knight_5_3
     21300148: Knight_3_4
-    21300150: Knight_70
-    21300152: Knight_71
+    21300150: Knight_9_4
+    21300152: Knight_10_4
     21300154: Knight_72
-    21300156: Knight_73
+    21300156: Knight_12_4
     21300158: Knight_74
     21300160: Knight_75
     21300162: Knight_76
@@ -315,7 +315,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_7
+      name: Knight_7_0
       rect:
         serializedVersion: 2
         x: 225
@@ -335,7 +335,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_8
+      name: Knight_8_0
       rect:
         serializedVersion: 2
         x: 260
@@ -355,7 +355,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_9
+      name: Knight_9_0
       rect:
         serializedVersion: 2
         x: 292
@@ -375,7 +375,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_10
+      name: Knight_10_0
       rect:
         serializedVersion: 2
         x: 323
@@ -415,7 +415,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_12
+      name: Knight_12_0
       rect:
         serializedVersion: 2
         x: 387
@@ -615,7 +615,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_22
+      name: Knight_7_1
       rect:
         serializedVersion: 2
         x: 225
@@ -635,7 +635,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_23
+      name: Knight_8_1
       rect:
         serializedVersion: 2
         x: 257
@@ -655,7 +655,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_24
+      name: Knight_9_1
       rect:
         serializedVersion: 2
         x: 291
@@ -675,7 +675,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_25
+      name: Knight_10_1
       rect:
         serializedVersion: 2
         x: 325
@@ -715,7 +715,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_27
+      name: Knight_12_1
       rect:
         serializedVersion: 2
         x: 392
@@ -915,7 +915,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_37
+      name: Knight_7_2
       rect:
         serializedVersion: 2
         x: 226
@@ -935,7 +935,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_38
+      name: Knight_8_2
       rect:
         serializedVersion: 2
         x: 257
@@ -955,7 +955,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_39
+      name: Knight_9_2
       rect:
         serializedVersion: 2
         x: 290
@@ -975,7 +975,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_40
+      name: Knight_10_2
       rect:
         serializedVersion: 2
         x: 327
@@ -1015,7 +1015,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_42
+      name: Knight_12_2
       rect:
         serializedVersion: 2
         x: 390
@@ -1235,7 +1235,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_53
+      name: Knight_7_3
       rect:
         serializedVersion: 2
         x: 227
@@ -1255,7 +1255,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_54
+      name: Knight_8_3
       rect:
         serializedVersion: 2
         x: 260
@@ -1275,7 +1275,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_55
+      name: Knight_9_3
       rect:
         serializedVersion: 2
         x: 290
@@ -1295,7 +1295,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_56
+      name: Knight_10_3
       rect:
         serializedVersion: 2
         x: 326
@@ -1335,7 +1335,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_58
+      name: Knight_12_3
       rect:
         serializedVersion: 2
         x: 391
@@ -1535,7 +1535,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_68
+      name: Knight_7_4
       rect:
         serializedVersion: 2
         x: 226
@@ -1555,7 +1555,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_69
+      name: Knight_8_4
       rect:
         serializedVersion: 2
         x: 264
@@ -1575,7 +1575,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_70
+      name: Knight_9_4
       rect:
         serializedVersion: 2
         x: 292
@@ -1595,7 +1595,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_71
+      name: Knight_10_4
       rect:
         serializedVersion: 2
         x: 326
@@ -1635,7 +1635,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_73
+      name: Knight_12_4
       rect:
         serializedVersion: 2
         x: 392
