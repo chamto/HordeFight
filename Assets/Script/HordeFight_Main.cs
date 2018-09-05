@@ -11,22 +11,19 @@ namespace HordeFight
     public class HordeFight_Main : MonoBehaviour
     {
 
-        private Transform _root_grid = null;
-        private Transform _root_unit = null;
-        private Animator  _hero_animator = null;
+
 
 
         // Use this for initialization
         void Start()
         {
-            LoadComponent();
-
+           
             gameObject.AddComponent<TouchProcess>();
 
             //===================
-            //임시 코드 
-            _hero_animator.gameObject.AddComponent<Movable>();
-            _hero_animator.gameObject.AddComponent<Character>();
+
+            Single.objectManager.Create_StageInfo();
+
 
         }
 
@@ -36,33 +33,34 @@ namespace HordeFight
 
         }
 
-        private void LoadComponent()
-        {
-            const string ROOT_GRID = "0_grid";
-            const string ROOT_UNIT = "0_unit";
-            const string HERO_LOTHAR = "Lothar";
-            foreach (Transform t in this.GetComponentsInChildren<Transform>(true))
-            {
-                if (ROOT_GRID == t.name)
-                {
-                    _root_grid = t;
-                }
-                else if (ROOT_UNIT == t.name)
-                {
-                    _root_unit = t;
-                }
-                else if (HERO_LOTHAR == t.name)
-                {
-                    _hero_animator = t.GetComponent<Animator>();
-                }
-
-
-                if (null != _root_grid && null != _root_unit && null != _hero_animator)
-                    break;
-            }
-
-            //Debug.Log("dddd " + _root_unit + _root_grid + _hero_animator); //chamto test
-        }
+        //private Transform _root_grid = null;
+        //private Transform _root_unit = null;
+        //private Animator  _hero_animator = null;
+        //private void LoadComponent()
+        //{
+        //    const string ROOT_GRID = "0_grid";
+        //    const string ROOT_UNIT = "0_unit";
+        //    const string HERO_LOTHAR = "Lothar";
+        //    foreach (Transform t in this.GetComponentsInChildren<Transform>(true))
+        //    {
+        //        if (ROOT_GRID == t.name)
+        //        {
+        //            _root_grid = t;
+        //        }
+        //        else if (ROOT_UNIT == t.name)
+        //        {
+        //            _root_unit = t;
+        //        }
+        //        else if (HERO_LOTHAR == t.name)
+        //        {
+        //            _hero_animator = t.GetComponent<Animator>();
+        //        }
+        //
+        //        if (null != _root_grid && null != _root_unit && null != _hero_animator)
+        //            break;
+        //    }
+        //    //Debug.Log("dddd " + _root_unit + _root_grid + _hero_animator); //chamto test
+        //}
     }
 
 }
@@ -87,6 +85,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<TouchProcess>.Instance;
+            }
+        }
+
+        public static ObjectManager objectManager
+        {
+            get
+            {
+                return CSingleton<ObjectManager>.Instance;
             }
         }
 
@@ -147,6 +153,24 @@ namespace HordeFight
             }
         }
 
+        private static Transform _unitRoot = null;
+        public static Transform unitRoot
+        {
+            get
+            {
+                if (null == _unitRoot)
+                {
+                    GameObject obj = GameObject.Find("0_unit");
+                    if (null != obj)
+                    {
+                        _unitRoot = obj.GetComponent<Transform>();
+                    }
+
+                }
+                return _unitRoot;
+            }
+        }
+
 
     }
 
@@ -182,7 +206,7 @@ namespace HordeFight
         {
             foreach (Character c in _characters)
             {
-                if (c.id == id)
+                if (c._id == id)
                 {
                     return c;
                 }
@@ -195,7 +219,7 @@ namespace HordeFight
         {
             foreach (Character c in _characters)
             {
-                if (c.id == id)
+                if (c._id == id)
                 {
                     return c.GetComponent<Movable>();
                 }
@@ -229,7 +253,7 @@ namespace HordeFight
 
         public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
         {
-            const string root = "Prefab/";
+            const string root = "Warcraft/Prefab/";
             GameObject obj = MonoBehaviour.Instantiate(Resources.Load(root + prefabPath)) as GameObject;
             obj.transform.SetParent(parent, false);
             obj.transform.name = name;
@@ -240,17 +264,26 @@ namespace HordeFight
 
        
 
-        public Character Create_Character(Transform parent, int id, Vector3 pos)
+        public Character Create_Character(Transform parent, Character.eKind eKind,int id, Vector3 pos)
         {
-            GameObject obj = CreatePrefab("Proto/PullOut/jongdali", parent, "jongdali_" + id.ToString("00"));
+            GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
             Character cha = obj.AddComponent<Character>();
-            _characters.Add(cha);
-            cha.id = id;
+            obj.AddComponent<Movable>();
+            cha._id = id;
+            cha._eKind = eKind;
             cha.transform.localPosition = pos;
+            cha.Init_Create();
+
+            _characters.Add(cha);
 
             return cha;
         }
 
+        public void Create_StageInfo()
+        {
+            Vector3 pos = new Vector3(0.5f,0.5f,0);
+            Create_Character(Single.unitRoot, Character.eKind.lothar, 0, pos);
+        }
 
     }
 
@@ -262,10 +295,29 @@ namespace HordeFight
         private AnimationClip[]             _aniClips = null;
 
         private Movable _move     = null;
-        private eDirection _eDir8 = eDirection.Down;
+        private eDirection _eDir8 = eDirection.down;
 
-        public int id
-        { get; set; }
+        public int      _id = -1;
+        public eKind    _eKind = eKind.none;
+       
+
+        public enum eKind
+        {
+            none = 0,
+            footman,
+            lothar,
+            skeleton,
+            garona,
+            conjurer,
+            raider,
+            slime,
+            spearman,
+            grunt,
+            brigand,
+            knight,
+            ogre,
+
+        }
 
         public enum eState
         {
@@ -280,32 +332,36 @@ namespace HordeFight
         //데카르트좌표계 사분면을 기준으로 숫자 지정
         public enum eDirection : int
         {
-            None        = 0,
-            Right       = 1,
-            RightUp     = 2,
-            Up          = 3,
-            LeftUp      = 4,
-            Left        = 5,
-            LeftDown    = 6,
-            Down        = 7,
-            RightDown   = 8,
+            none        = 0,
+            right       = 1,
+            rightUp     = 2,
+            up          = 3,
+            leftUp      = 4,
+            left        = 5,
+            leftDown    = 6,
+            down        = 7,
+            rightDown   = 8,
 
         }
 
-        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
-        private void Start()
-        {
+		public void Init_Create()
+		{
             _animator = GetComponent<Animator>();
             _move = GetComponent<Movable>();
             //Single.touchProcess.Attach_SendObject(this.gameObject);
 
             //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+            _overCtr.name = "divide_character";
             _animator.runtimeAnimatorController = _overCtr;
 
 
-            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
+            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation"); //todo : 리소스관리기로 분리시키기 
+		}
 
+		//ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+		private void Start()
+        {
             _animator.SetInteger("state", (int)eState.Idle);
         }
 
@@ -323,7 +379,7 @@ namespace HordeFight
                 if(__randTime < __elapsedTime)
                 {
                     _eDir8 = (eDirection)Single.rand.Next(1, 8);
-                    Switch_AniMove("base_idle", "lothar_idle_", _eDir8);
+                    Switch_AniMove("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
                     __elapsedTime = 0f;
 
@@ -366,88 +422,44 @@ namespace HordeFight
             return (eDirection)quad;
         }
 
-        public string Dir8ToString(eDirection dir)
-        {
-            
-            string quarter = "";
-            switch (dir)
-            {
-
-                case eDirection.Right:
-                    {
-                        quarter = "right";
-                    }
-                    break;
-                case eDirection.RightUp:
-                    {
-                        quarter = "rightUp";
-                    }
-                    break;
-                case eDirection.Up:
-                    {
-                        quarter = "up";
-                    }
-                    break;
-                case eDirection.LeftUp:
-                    {
-                        
-                        quarter = "rightUp";
-                    }
-                    break;
-                case eDirection.Left:
-                    {
-                        quarter = "right";
-                    }
-                    break;
-                case eDirection.LeftDown:
-                    {
-                        quarter = "rightDown";
-                    }
-                    break;
-                case eDirection.Down:
-                    {
-                        quarter = "down";
-                    }
-                    break;
-                case eDirection.RightDown:
-                    {
-                        quarter = "rightDown";
-                    }
-                    break;
-
-            }
-
-            return quarter;
-        }
 
         public void Switch_AniMove(string aniKind, string aniName , eDirection dir)
         {
             
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
             sr.flipX = false;
-            aniName = aniName + Dir8ToString(dir);
+            string aniNameSum = "";
             switch(dir)
             {
                 
-                case eDirection.LeftUp:
+                case eDirection.leftUp:
                     {
+                        aniNameSum = aniName + eDirection.rightUp.ToString();
                         sr.flipX = true;
                     }
                     break;
-                case eDirection.Left:
+                case eDirection.left:
                     {
+                        aniNameSum = aniName + eDirection.right.ToString();
                         sr.flipX = true;
                     }
                     break;
-                case eDirection.LeftDown:
+                case eDirection.leftDown:
                     {
+                        aniNameSum = aniName + eDirection.rightDown.ToString();
                         sr.flipX = true;
+                    }
+                    break;
+                default:
+                    {
+                        aniNameSum = aniName + dir.ToString();
+                        sr.flipX = false;
                     }
                     break;
                 
             }
 
-            _overCtr[aniKind] = GetClip(aniName);
+            _overCtr[aniKind] = GetClip(aniNameSum);
         }
 
 
@@ -482,7 +494,7 @@ namespace HordeFight
 
 
             _eDir8 = TransDirection(dir);
-            Switch_AniMove("base_move","lothar_move_",_eDir8);
+            Switch_AniMove("base_move",_eKind.ToString()+"_move_",_eDir8);
             //Switch_AniMove("base_move", "lothar_attack_", eDir);
             _animator.SetInteger("state", (int)eState.Move);
 
@@ -493,7 +505,7 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
 
-            Switch_AniMove("base_idle", "lothar_idle_", _eDir8);
+            Switch_AniMove("base_idle", _eKind.ToString()+"_idle_", _eDir8);
             _animator.SetInteger("state", (int)eState.Idle);
         }
     }
