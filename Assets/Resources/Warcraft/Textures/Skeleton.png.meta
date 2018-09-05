@@ -7,16 +7,16 @@ TextureImporter:
     21300004: Skeleton_2_0
     21300006: Skeleton_3_0
     21300008: Skeleton_4_0
-    21300010: Skeleton_5
-    21300012: Skeleton_6
-    21300014: Skeleton_7
-    21300016: Skeleton_8
-    21300018: Skeleton_9
-    21300020: Skeleton_10
+    21300010: Skeleton_5_0
+    21300012: Skeleton_6_0
+    21300014: Skeleton_7_0
+    21300016: Skeleton_8_0
+    21300018: Skeleton_9_0
+    21300020: Skeleton_10_0
     21300022: Skeleton_11
     21300024: Skeleton_12
     21300026: Skeleton_13
-    21300028: Skeleton_14
+    21300028: Skeleton_14_0
     21300030: Skeleton_15
     21300032: Skeleton_16
     21300034: Skeleton_17
@@ -26,16 +26,16 @@ TextureImporter:
     21300042: Skeleton_2_1
     21300044: Skeleton_3_1
     21300046: Skeleton_4_1
-    21300048: Skeleton_24
-    21300050: Skeleton_25
-    21300052: Skeleton_26
-    21300054: Skeleton_27
-    21300056: Skeleton_28
-    21300058: Skeleton_29
+    21300048: Skeleton_5_1
+    21300050: Skeleton_6_1
+    21300052: Skeleton_7_1
+    21300054: Skeleton_8_1
+    21300056: Skeleton_9_1
+    21300058: Skeleton_10_1
     21300060: Skeleton_30
     21300062: Skeleton_31
     21300064: Skeleton_32
-    21300066: Skeleton_33
+    21300066: Skeleton_14_1
     21300068: Skeleton_34
     21300070: Skeleton_35
     21300072: Skeleton_36
@@ -45,16 +45,16 @@ TextureImporter:
     21300080: Skeleton_2_2
     21300082: Skeleton_3_2
     21300084: Skeleton_4_2
-    21300086: Skeleton_43
-    21300088: Skeleton_44
-    21300090: Skeleton_45
-    21300092: Skeleton_46
-    21300094: Skeleton_47
-    21300096: Skeleton_48
+    21300086: Skeleton_5_2
+    21300088: Skeleton_6_2
+    21300090: Skeleton_7_2
+    21300092: Skeleton_8_2
+    21300094: Skeleton_9_2
+    21300096: Skeleton_10_2
     21300098: Skeleton_49
     21300100: Skeleton_50
     21300102: Skeleton_51
-    21300104: Skeleton_52
+    21300104: Skeleton_14_2
     21300106: Skeleton_53
     21300108: Skeleton_54
     21300110: Skeleton_55
@@ -64,16 +64,16 @@ TextureImporter:
     21300118: Skeleton_2_3
     21300120: Skeleton_3_3
     21300122: Skeleton_4_3
-    21300124: Skeleton_62
-    21300126: Skeleton_63
-    21300128: Skeleton_64
-    21300130: Skeleton_65
-    21300132: Skeleton_66
-    21300134: Skeleton_67
+    21300124: Skeleton_5_3
+    21300126: Skeleton_6_3
+    21300128: Skeleton_7_3
+    21300130: Skeleton_8_3
+    21300132: Skeleton_9_3
+    21300134: Skeleton_10_3
     21300136: Skeleton_68
     21300138: Skeleton_69
     21300140: Skeleton_70
-    21300142: Skeleton_71
+    21300142: Skeleton_14_3
     21300144: Skeleton_72
     21300146: Skeleton_73
     21300148: Skeleton_74
@@ -83,16 +83,16 @@ TextureImporter:
     21300156: Skeleton_2_4
     21300158: Skeleton_3_4
     21300160: Skeleton_4_4
-    21300162: Skeleton_81
-    21300164: Skeleton_82
-    21300166: Skeleton_83
-    21300168: Skeleton_84
-    21300170: Skeleton_85
-    21300172: Skeleton_86
+    21300162: Skeleton_5_4
+    21300164: Skeleton_6_4
+    21300166: Skeleton_7_4
+    21300168: Skeleton_8_4
+    21300170: Skeleton_9_4
+    21300172: Skeleton_10_4
     21300174: Skeleton_87
     21300176: Skeleton_88
     21300178: Skeleton_89
-    21300180: Skeleton_90
+    21300180: Skeleton_14_4
     21300182: Skeleton_91
     21300184: Skeleton_92
     21300186: Skeleton_93
@@ -288,7 +288,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_5
+      name: Skeleton_5_0
       rect:
         serializedVersion: 2
         x: 162
@@ -308,7 +308,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_6
+      name: Skeleton_6_0
       rect:
         serializedVersion: 2
         x: 194
@@ -328,7 +328,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_7
+      name: Skeleton_7_0
       rect:
         serializedVersion: 2
         x: 226
@@ -348,7 +348,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_8
+      name: Skeleton_8_0
       rect:
         serializedVersion: 2
         x: 258
@@ -368,7 +368,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_9
+      name: Skeleton_9_0
       rect:
         serializedVersion: 2
         x: 290
@@ -388,7 +388,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_10
+      name: Skeleton_10_0
       rect:
         serializedVersion: 2
         x: 322
@@ -468,7 +468,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_14
+      name: Skeleton_14_0
       rect:
         serializedVersion: 2
         x: 450
@@ -668,7 +668,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_24
+      name: Skeleton_5_1
       rect:
         serializedVersion: 2
         x: 162
@@ -688,7 +688,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_25
+      name: Skeleton_6_1
       rect:
         serializedVersion: 2
         x: 194
@@ -708,7 +708,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_26
+      name: Skeleton_7_1
       rect:
         serializedVersion: 2
         x: 226
@@ -728,7 +728,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_27
+      name: Skeleton_8_1
       rect:
         serializedVersion: 2
         x: 258
@@ -748,7 +748,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_28
+      name: Skeleton_9_1
       rect:
         serializedVersion: 2
         x: 290
@@ -768,7 +768,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_29
+      name: Skeleton_10_1
       rect:
         serializedVersion: 2
         x: 322
@@ -848,7 +848,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_33
+      name: Skeleton_14_1
       rect:
         serializedVersion: 2
         x: 450
@@ -1048,7 +1048,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_43
+      name: Skeleton_5_2
       rect:
         serializedVersion: 2
         x: 162
@@ -1068,7 +1068,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_44
+      name: Skeleton_6_2
       rect:
         serializedVersion: 2
         x: 194
@@ -1088,7 +1088,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_45
+      name: Skeleton_7_2
       rect:
         serializedVersion: 2
         x: 226
@@ -1108,7 +1108,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_46
+      name: Skeleton_8_2
       rect:
         serializedVersion: 2
         x: 258
@@ -1128,7 +1128,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_47
+      name: Skeleton_9_2
       rect:
         serializedVersion: 2
         x: 290
@@ -1148,7 +1148,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_48
+      name: Skeleton_10_2
       rect:
         serializedVersion: 2
         x: 322
@@ -1228,7 +1228,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_52
+      name: Skeleton_14_2
       rect:
         serializedVersion: 2
         x: 450
@@ -1428,7 +1428,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_62
+      name: Skeleton_5_3
       rect:
         serializedVersion: 2
         x: 162
@@ -1448,7 +1448,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_63
+      name: Skeleton_6_3
       rect:
         serializedVersion: 2
         x: 194
@@ -1468,7 +1468,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_64
+      name: Skeleton_7_3
       rect:
         serializedVersion: 2
         x: 226
@@ -1488,7 +1488,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_65
+      name: Skeleton_8_3
       rect:
         serializedVersion: 2
         x: 258
@@ -1508,7 +1508,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_66
+      name: Skeleton_9_3
       rect:
         serializedVersion: 2
         x: 290
@@ -1528,7 +1528,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_67
+      name: Skeleton_10_3
       rect:
         serializedVersion: 2
         x: 322
@@ -1608,7 +1608,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_71
+      name: Skeleton_14_3
       rect:
         serializedVersion: 2
         x: 450
@@ -1808,7 +1808,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_81
+      name: Skeleton_5_4
       rect:
         serializedVersion: 2
         x: 162
@@ -1828,7 +1828,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_82
+      name: Skeleton_6_4
       rect:
         serializedVersion: 2
         x: 194
@@ -1848,7 +1848,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_83
+      name: Skeleton_7_4
       rect:
         serializedVersion: 2
         x: 226
@@ -1868,7 +1868,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_84
+      name: Skeleton_8_4
       rect:
         serializedVersion: 2
         x: 258
@@ -1888,7 +1888,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_85
+      name: Skeleton_9_4
       rect:
         serializedVersion: 2
         x: 290
@@ -1908,7 +1908,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_86
+      name: Skeleton_10_4
       rect:
         serializedVersion: 2
         x: 322
@@ -1988,7 +1988,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Skeleton_90
+      name: Skeleton_14_4
       rect:
         serializedVersion: 2
         x: 450
