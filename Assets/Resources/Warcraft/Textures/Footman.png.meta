@@ -8,65 +8,65 @@ TextureImporter:
     21300006: Footman_3_0
     21300008: Footman_4_0
     21300010: Footman_5_0
-    21300012: Footman_6
-    21300014: Footman_7
-    21300016: Footman_8
-    21300018: Footman_9
-    21300020: Footman_10
-    21300022: Footman_11
-    21300024: Footman_12
-    21300026: Footman_13
-    21300028: Footman_14
+    21300012: Footman_6_0
+    21300014: Footman_7_0
+    21300016: Footman_8_0
+    21300018: Footman_9_0
+    21300020: Footman_10_0
+    21300022: Footman_11_0
+    21300024: Footman_12_0
+    21300026: Footman_13_0
+    21300028: Footman_14_0
     21300030: Footman_0_1
     21300032: Footman_1_1
     21300034: Footman_2_1
     21300036: Footman_3_1
     21300038: Footman_4_1
     21300040: Footman_5_1
-    21300042: Footman_21
-    21300044: Footman_22
-    21300046: Footman_23
-    21300048: Footman_24
-    21300050: Footman_25
-    21300052: Footman_26
-    21300054: Footman_27
-    21300056: Footman_28
-    21300058: Footman_29
+    21300042: Footman_6_1
+    21300044: Footman_7_1
+    21300046: Footman_8_1
+    21300048: Footman_9_1
+    21300050: Footman_10_1
+    21300052: Footman_11_1
+    21300054: Footman_12_1
+    21300056: Footman_13_1
+    21300058: Footman_14_1
     21300060: Footman_0_2
     21300062: Footman_1_2
     21300064: Footman_2_2
     21300066: Footman_3_2
     21300068: Footman_4_2
     21300070: Footman_5_2
-    21300072: Footman_36
-    21300074: Footman_37
-    21300076: Footman_38
-    21300078: Footman_39
-    21300080: Footman_40
-    21300082: Footman_41
-    21300084: Footman_42
-    21300086: Footman_43
-    21300088: Footman_44
+    21300072: Footman_6_2
+    21300074: Footman_7_2
+    21300076: Footman_8_2
+    21300078: Footman_9_2
+    21300080: Footman_10_2
+    21300082: Footman_11_2
+    21300084: Footman_12_2
+    21300086: Footman_13_2
+    21300088: Footman_14_2
     21300090: Footman_0_3
     21300092: Footman_1_3
     21300094: Footman_2_3
     21300096: Footman_3_3
     21300098: Footman_4_3
     21300100: Footman_5_3
-    21300102: Footman_51
-    21300104: Footman_52
-    21300106: Footman_53
-    21300108: Footman_54
+    21300102: Footman_6_3
+    21300104: Footman_7_3
+    21300106: Footman_8_3
+    21300108: Footman_9_3
     21300110: Footman_0_4
     21300112: Footman_1_4
     21300114: Footman_2_4
     21300116: Footman_3_4
     21300118: Footman_4_4
     21300120: Footman_5_4
-    21300122: Footman_61
-    21300124: Footman_62
-    21300126: Footman_63
-    21300128: Footman_64
+    21300122: Footman_6_4
+    21300124: Footman_7_4
+    21300126: Footman_8_4
+    21300128: Footman_9_4
     21300130: Footman_65
     21300132: Footman_66
     21300134: Footman_67
@@ -164,10 +164,10 @@ TextureImporter:
       name: Footman_0_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 192
-        width: 48
-        height: 48
+        x: 2
+        y: 198
+        width: 42
+        height: 39
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -281,7 +281,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_6
+      name: Footman_6_0
       rect:
         serializedVersion: 2
         x: 288
@@ -301,7 +301,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_7
+      name: Footman_7_0
       rect:
         serializedVersion: 2
         x: 336
@@ -321,7 +321,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_8
+      name: Footman_8_0
       rect:
         serializedVersion: 2
         x: 384
@@ -341,7 +341,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_9
+      name: Footman_9_0
       rect:
         serializedVersion: 2
         x: 432
@@ -361,7 +361,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_10
+      name: Footman_10_0
       rect:
         serializedVersion: 2
         x: 480
@@ -381,7 +381,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_11
+      name: Footman_11_0
       rect:
         serializedVersion: 2
         x: 528
@@ -401,7 +401,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_12
+      name: Footman_12_0
       rect:
         serializedVersion: 2
         x: 576
@@ -421,7 +421,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_13
+      name: Footman_13_0
       rect:
         serializedVersion: 2
         x: 624
@@ -441,7 +441,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_14
+      name: Footman_14_0
       rect:
         serializedVersion: 2
         x: 672
@@ -464,10 +464,10 @@ TextureImporter:
       name: Footman_0_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 144
-        width: 48
-        height: 48
+        x: 2
+        y: 146
+        width: 45
+        height: 46
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -581,7 +581,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_21
+      name: Footman_6_1
       rect:
         serializedVersion: 2
         x: 288
@@ -601,7 +601,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_22
+      name: Footman_7_1
       rect:
         serializedVersion: 2
         x: 336
@@ -621,7 +621,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_23
+      name: Footman_8_1
       rect:
         serializedVersion: 2
         x: 384
@@ -641,7 +641,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_24
+      name: Footman_9_1
       rect:
         serializedVersion: 2
         x: 432
@@ -661,10 +661,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_25
+      name: Footman_10_1
       rect:
         serializedVersion: 2
-        x: 480
+        x: 481
         y: 144
         width: 48
         height: 48
@@ -681,11 +681,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_26
+      name: Footman_11_1
       rect:
         serializedVersion: 2
         x: 528
-        y: 144
+        y: 143
         width: 48
         height: 48
       alignment: 0
@@ -701,7 +701,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_27
+      name: Footman_12_1
       rect:
         serializedVersion: 2
         x: 576
@@ -721,7 +721,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_28
+      name: Footman_13_1
       rect:
         serializedVersion: 2
         x: 624
@@ -741,7 +741,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_29
+      name: Footman_14_1
       rect:
         serializedVersion: 2
         x: 672
@@ -764,10 +764,10 @@ TextureImporter:
       name: Footman_0_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 96
-        width: 48
-        height: 48
+        x: 3
+        y: 99
+        width: 45
+        height: 44
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -881,7 +881,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_36
+      name: Footman_6_2
       rect:
         serializedVersion: 2
         x: 288
@@ -901,7 +901,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_37
+      name: Footman_7_2
       rect:
         serializedVersion: 2
         x: 336
@@ -921,7 +921,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_38
+      name: Footman_8_2
       rect:
         serializedVersion: 2
         x: 384
@@ -941,7 +941,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_39
+      name: Footman_9_2
       rect:
         serializedVersion: 2
         x: 432
@@ -961,7 +961,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_40
+      name: Footman_10_2
       rect:
         serializedVersion: 2
         x: 480
@@ -981,7 +981,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_41
+      name: Footman_11_2
       rect:
         serializedVersion: 2
         x: 528
@@ -1001,7 +1001,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_42
+      name: Footman_12_2
       rect:
         serializedVersion: 2
         x: 576
@@ -1021,7 +1021,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_43
+      name: Footman_13_2
       rect:
         serializedVersion: 2
         x: 624
@@ -1041,7 +1041,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_44
+      name: Footman_14_2
       rect:
         serializedVersion: 2
         x: 672
@@ -1064,8 +1064,8 @@ TextureImporter:
       name: Footman_0_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 48
+        x: 1
+        y: 49
         width: 48
         height: 48
       alignment: 0
@@ -1181,7 +1181,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_51
+      name: Footman_6_3
       rect:
         serializedVersion: 2
         x: 288
@@ -1201,7 +1201,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_52
+      name: Footman_7_3
       rect:
         serializedVersion: 2
         x: 336
@@ -1221,11 +1221,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_53
+      name: Footman_8_3
       rect:
         serializedVersion: 2
         x: 384
-        y: 48
+        y: 47
         width: 48
         height: 48
       alignment: 0
@@ -1241,7 +1241,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_54
+      name: Footman_9_3
       rect:
         serializedVersion: 2
         x: 432
@@ -1264,10 +1264,10 @@ TextureImporter:
       name: Footman_0_4
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 48
-        height: 48
+        x: 2
+        y: 3
+        width: 45
+        height: 43
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1381,7 +1381,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_61
+      name: Footman_6_4
       rect:
         serializedVersion: 2
         x: 288
@@ -1401,7 +1401,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_62
+      name: Footman_7_4
       rect:
         serializedVersion: 2
         x: 336
@@ -1421,10 +1421,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_63
+      name: Footman_8_4
       rect:
         serializedVersion: 2
-        x: 384
+        x: 383
         y: 0
         width: 48
         height: 48
@@ -1441,7 +1441,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Footman_64
+      name: Footman_9_4
       rect:
         serializedVersion: 2
         x: 432

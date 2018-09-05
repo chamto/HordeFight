@@ -20,6 +20,8 @@ namespace HordeFight
            
             gameObject.AddComponent<TouchProcess>();
 
+            Single.resourceManager.Init();
+
             //===================
 
             Single.objectManager.Create_StageInfo();
@@ -93,6 +95,14 @@ namespace HordeFight
             get
             {
                 return CSingleton<ObjectManager>.Instance;
+            }
+        }
+
+        public static ResourceManager resourceManager
+        {
+            get
+            {
+                return CSingleton<ResourceManager>.Instance;
             }
         }
 
@@ -177,7 +187,57 @@ namespace HordeFight
 }//end namespace
 
 
+//========================================================
+//==================     리소스 관리기     ==================
+//========================================================
 
+namespace HordeFight
+{
+    public class ResourceManager
+    {
+
+        public AnimationClip[] _aniClips = null;
+
+        //==================== Get / Set ====================
+
+
+        //==================== <Method> ====================
+
+        //public eSPRITE_NAME StringToEnum(string name)
+        //{
+        //    //20170813 chamto fixme - value 값이 없을 때의 예외 처리가 없음 
+        //    //ref : https://stackoverflow.com/questions/2444033/get-dictionary-key-by-value
+        //    return _spriteNames.FirstOrDefault(x => x.Value == name).Key;
+        //}
+
+
+        public void ClearAll()
+        {
+
+        }
+
+        public void Init()
+        {
+            Load_Animation();
+        }
+
+
+        public void Load_Animation()
+        {
+
+            //=============================================
+            //LOAD 
+            //=============================================
+            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
+
+        }
+
+
+
+    }//end class
+
+
+}
 //========================================================
 //==================      객체 관리기      ==================
 //========================================================
@@ -281,8 +341,18 @@ namespace HordeFight
 
         public void Create_StageInfo()
         {
+            int id_sequence = 0;
             Vector3 pos = new Vector3(0.5f,0.5f,0);
-            Create_Character(Single.unitRoot, Character.eKind.lothar, 0, pos);
+            Create_Character(Single.unitRoot, Character.eKind.lothar, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.garona, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.footman, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
         }
 
     }
@@ -292,7 +362,7 @@ namespace HordeFight
         
         private Animator                    _animator = null;
         private AnimatorOverrideController  _overCtr = null;
-        private AnimationClip[]             _aniClips = null;
+        //private AnimationClip[]             _aniClips = null;
 
         private Movable _move     = null;
         private eDirection _eDir8 = eDirection.down;
@@ -344,23 +414,23 @@ namespace HordeFight
 
         }
 
-		public void Init_Create()
-		{
+        public void Init_Create()
+        {
             _animator = GetComponent<Animator>();
             _move = GetComponent<Movable>();
             //Single.touchProcess.Attach_SendObject(this.gameObject);
 
             //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-            _overCtr.name = "divide_character";
+            _overCtr.name = "divide_character_"+ _id.ToString();
             _animator.runtimeAnimatorController = _overCtr;
 
 
-            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation"); //todo : 리소스관리기로 분리시키기 
-		}
+            //_aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation"); //todo : 리소스관리기로 분리시키기 
+        }
 
-		//ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
-		private void Start()
+        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+        private void Start()
         {
             _animator.SetInteger("state", (int)eState.Idle);
         }
@@ -368,8 +438,8 @@ namespace HordeFight
 
         private float __elapsedTime = 0f;
         private float __randTime = 0f;
-		private void Update()
-		{
+        private void Update()
+        {
 
             if((int)eState.Idle == _animator.GetInteger("state"))
             {
@@ -390,11 +460,11 @@ namespace HordeFight
             }
 
 
-		}
+        }
 
         public AnimationClip GetClip(string name)
         {
-            foreach(AnimationClip ani in _aniClips)
+            foreach(AnimationClip ani in Single.resourceManager._aniClips)
             {
                 if(ani.name.Equals(name))
                 {

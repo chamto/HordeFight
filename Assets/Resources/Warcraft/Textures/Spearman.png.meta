@@ -2,66 +2,66 @@ fileFormatVersion: 2
 guid: 70b147e7fd2224f2884f66719fd5ea3c
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Spearman_0
-    21300002: Spearman_1
-    21300004: Spearman_2
-    21300006: Spearman_3
-    21300008: Spearman_4
-    21300010: Spearman_5
-    21300012: Spearman_6
-    21300014: Spearman_7
-    21300016: Spearman_8
-    21300018: Spearman_9
-    21300020: Spearman_10
+    21300000: Spearman_0_0
+    21300002: Spearman_1_0
+    21300004: Spearman_2_0
+    21300006: Spearman_3_0
+    21300008: Spearman_4_0
+    21300010: Spearman_5_0
+    21300012: Spearman_6_0
+    21300014: Spearman_7_0
+    21300016: Spearman_8_0
+    21300018: Spearman_9_0
+    21300020: Spearman_10_0
     21300022: Spearman_11
     21300024: Spearman_12
-    21300026: Spearman_13
+    21300026: Spearman_13_0
     21300028: Spearman_14
     21300030: Spearman_15
     21300032: Spearman_16
     21300034: Spearman_17
-    21300036: Spearman_18
-    21300038: Spearman_19
-    21300040: Spearman_20
-    21300042: Spearman_21
-    21300044: Spearman_22
-    21300046: Spearman_23
-    21300048: Spearman_24
-    21300050: Spearman_25
-    21300052: Spearman_26
-    21300054: Spearman_27
-    21300056: Spearman_28
+    21300036: Spearman_0_1
+    21300038: Spearman_1_1
+    21300040: Spearman_2_1
+    21300042: Spearman_3_1
+    21300044: Spearman_4_1
+    21300046: Spearman_5_1
+    21300048: Spearman_6_1
+    21300050: Spearman_7_1
+    21300052: Spearman_8_1
+    21300054: Spearman_9_1
+    21300056: Spearman_10_1
     21300058: Spearman_29
     21300060: Spearman_30
     21300062: Spearman_31
     21300064: Spearman_32
-    21300066: Spearman_33
+    21300066: Spearman_13_1
     21300068: Spearman_34
     21300070: Spearman_35
     21300072: Spearman_36
     21300074: Spearman_37
-    21300076: Spearman_38
-    21300078: Spearman_39
-    21300080: Spearman_40
-    21300082: Spearman_41
-    21300084: Spearman_42
-    21300086: Spearman_43
+    21300076: Spearman_0_2
+    21300078: Spearman_1_2
+    21300080: Spearman_2_2
+    21300082: Spearman_3_2
+    21300084: Spearman_4_2
+    21300086: Spearman_10_2
     21300088: Spearman_44
     21300090: Spearman_45
     21300092: Spearman_46
-    21300094: Spearman_47
+    21300094: Spearman_13_2
     21300096: Spearman_48
     21300098: Spearman_49
-    21300100: Spearman_50
-    21300102: Spearman_51
-    21300104: Spearman_52
-    21300106: Spearman_53
-    21300108: Spearman_54
-    21300110: Spearman_55
-    21300112: Spearman_56
-    21300114: Spearman_57
-    21300116: Spearman_58
-    21300118: Spearman_59
+    21300100: Spearman_0_3
+    21300102: Spearman_1_3
+    21300104: Spearman_2_3
+    21300106: Spearman_3_3
+    21300108: Spearman_4_3
+    21300110: Spearman_0_4
+    21300112: Spearman_1_4
+    21300114: Spearman_2_4
+    21300116: Spearman_3_4
+    21300118: Spearman_4_4
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -153,15 +153,15 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Spearman_0
+      name: Spearman_0_0
       rect:
         serializedVersion: 2
         x: 9
-        y: 137
+        y: 138
         width: 14
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -173,7 +173,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_1
+      name: Spearman_1_0
       rect:
         serializedVersion: 2
         x: 44
@@ -181,7 +181,7 @@ TextureImporter:
         width: 10
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -193,7 +193,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_2
+      name: Spearman_2_0
       rect:
         serializedVersion: 2
         x: 74
@@ -201,7 +201,7 @@ TextureImporter:
         width: 11
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -213,7 +213,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_3
+      name: Spearman_3_0
       rect:
         serializedVersion: 2
         x: 104
@@ -221,7 +221,7 @@ TextureImporter:
         width: 15
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -233,7 +233,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_4
+      name: Spearman_4_0
       rect:
         serializedVersion: 2
         x: 135
@@ -241,7 +241,7 @@ TextureImporter:
         width: 14
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -253,7 +253,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_5
+      name: Spearman_5_0
       rect:
         serializedVersion: 2
         x: 170
@@ -261,7 +261,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -273,7 +273,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_6
+      name: Spearman_6_0
       rect:
         serializedVersion: 2
         x: 203
@@ -281,7 +281,7 @@ TextureImporter:
         width: 12
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -293,7 +293,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_7
+      name: Spearman_7_0
       rect:
         serializedVersion: 2
         x: 231
@@ -301,7 +301,7 @@ TextureImporter:
         width: 19
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -313,7 +313,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_8
+      name: Spearman_8_0
       rect:
         serializedVersion: 2
         x: 258
@@ -321,7 +321,7 @@ TextureImporter:
         width: 20
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -333,7 +333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_9
+      name: Spearman_9_0
       rect:
         serializedVersion: 2
         x: 296
@@ -341,7 +341,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -353,7 +353,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_10
+      name: Spearman_10_0
       rect:
         serializedVersion: 2
         x: 329
@@ -361,7 +361,7 @@ TextureImporter:
         width: 14
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -381,7 +381,7 @@ TextureImporter:
         width: 14
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -393,35 +393,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_12
+      name: Spearman_13_0
       rect:
         serializedVersion: 2
-        x: 390
-        y: 145
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a84b052102dba44c9b3b56f349993ff0
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Spearman_13
-      rect:
-        serializedVersion: 2
-        x: 393
+        x: 388
         y: 136
-        width: 16
-        height: 15
+        width: 21
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -433,35 +413,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_14
-      rect:
-        serializedVersion: 2
-        x: 422
-        y: 145
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 70e16703c33634e85a63897587e7badc
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_15
       rect:
         serializedVersion: 2
-        x: 425
+        x: 420
         y: 136
-        width: 16
-        height: 15
+        width: 21
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -473,35 +433,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_16
-      rect:
-        serializedVersion: 2
-        x: 454
-        y: 145
-        width: 6
-        height: 11
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 38a1cc848da354306876d31a1a237121
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_17
       rect:
         serializedVersion: 2
-        x: 457
+        x: 451
         y: 136
-        width: 16
-        height: 15
+        width: 22
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -513,7 +453,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_18
+      name: Spearman_0_1
       rect:
         serializedVersion: 2
         x: 9
@@ -521,7 +461,7 @@ TextureImporter:
         width: 13
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -533,7 +473,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_19
+      name: Spearman_1_1
       rect:
         serializedVersion: 2
         x: 44
@@ -541,7 +481,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -553,7 +493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_20
+      name: Spearman_2_1
       rect:
         serializedVersion: 2
         x: 74
@@ -561,7 +501,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -573,7 +513,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_21
+      name: Spearman_3_1
       rect:
         serializedVersion: 2
         x: 103
@@ -581,7 +521,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -593,7 +533,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_22
+      name: Spearman_4_1
       rect:
         serializedVersion: 2
         x: 136
@@ -601,7 +541,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -613,7 +553,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_23
+      name: Spearman_5_1
       rect:
         serializedVersion: 2
         x: 169
@@ -621,7 +561,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -633,7 +573,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_24
+      name: Spearman_6_1
       rect:
         serializedVersion: 2
         x: 201
@@ -641,7 +581,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -653,7 +593,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_25
+      name: Spearman_7_1
       rect:
         serializedVersion: 2
         x: 234
@@ -661,7 +601,7 @@ TextureImporter:
         width: 15
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -673,7 +613,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_26
+      name: Spearman_8_1
       rect:
         serializedVersion: 2
         x: 265
@@ -681,7 +621,7 @@ TextureImporter:
         width: 10
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -693,7 +633,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_27
+      name: Spearman_9_1
       rect:
         serializedVersion: 2
         x: 297
@@ -701,7 +641,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -713,15 +653,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_28
+      name: Spearman_10_1
       rect:
         serializedVersion: 2
-        x: 329
-        y: 102
-        width: 14
-        height: 19
+        x: 325
+        y: 99
+        width: 22
+        height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -733,35 +673,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_29
-      rect:
-        serializedVersion: 2
-        x: 338
-        y: 114
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 2aa3f06b3f7284e6991c1943f9bb48d7
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_30
       rect:
         serializedVersion: 2
-        x: 361
+        x: 360
         y: 102
-        width: 14
-        height: 19
+        width: 15
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -773,55 +693,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_31
+      name: Spearman_13_1
       rect:
         serializedVersion: 2
-        x: 370
-        y: 114
-        width: 7
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d2b8f2d8b1809434ba942c6e55d4863f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Spearman_32
-      rect:
-        serializedVersion: 2
-        x: 386
-        y: 115
-        width: 6
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c40741fd66c2040f58b9734776408469
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Spearman_33
-      rect:
-        serializedVersion: 2
-        x: 393
+        x: 383
         y: 104
-        width: 14
-        height: 15
+        width: 24
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -833,35 +713,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_34
-      rect:
-        serializedVersion: 2
-        x: 418
-        y: 115
-        width: 6
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cfec5db42f8e24aa2b0de2450cc4e8c9
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_35
       rect:
         serializedVersion: 2
-        x: 425
+        x: 417
         y: 104
-        width: 14
-        height: 15
+        width: 22
+        height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -873,35 +733,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_36
-      rect:
-        serializedVersion: 2
-        x: 450
-        y: 115
-        width: 6
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 396a7f1b831a84e4aaa1ab4a4ff3d4b7
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_37
       rect:
         serializedVersion: 2
-        x: 457
+        x: 448
         y: 104
-        width: 14
-        height: 15
+        width: 23
+        height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -913,7 +753,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_38
+      name: Spearman_0_2
       rect:
         serializedVersion: 2
         x: 9
@@ -921,7 +761,7 @@ TextureImporter:
         width: 16
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -933,7 +773,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_39
+      name: Spearman_1_2
       rect:
         serializedVersion: 2
         x: 44
@@ -941,7 +781,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -953,7 +793,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_40
+      name: Spearman_2_2
       rect:
         serializedVersion: 2
         x: 73
@@ -961,7 +801,7 @@ TextureImporter:
         width: 13
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -973,7 +813,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_41
+      name: Spearman_3_2
       rect:
         serializedVersion: 2
         x: 103
@@ -981,7 +821,7 @@ TextureImporter:
         width: 16
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -993,7 +833,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_42
+      name: Spearman_4_2
       rect:
         serializedVersion: 2
         x: 136
@@ -1001,7 +841,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1013,15 +853,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_43
+      name: Spearman_10_2
       rect:
         serializedVersion: 2
         x: 326
-        y: 72
-        width: 18
-        height: 18
+        y: 66
+        width: 23
+        height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1033,35 +873,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_44
-      rect:
-        serializedVersion: 2
-        x: 341
-        y: 69
-        width: 6
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 563ea3d31a16747c6a46802cb4475732
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: Spearman_45
       rect:
         serializedVersion: 2
         x: 358
-        y: 72
-        width: 18
-        height: 18
+        y: 67
+        width: 22
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1073,35 +893,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_46
+      name: Spearman_13_2
       rect:
         serializedVersion: 2
-        x: 373
-        y: 69
-        width: 6
-        height: 9
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8ba1e5fa3e36e4774b50aa535347a498
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Spearman_47
-      rect:
-        serializedVersion: 2
-        x: 385
+        x: 383
         y: 72
-        width: 23
-        height: 18
+        width: 25
+        height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1121,7 +921,7 @@ TextureImporter:
         width: 23
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1141,7 +941,7 @@ TextureImporter:
         width: 23
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1153,7 +953,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_50
+      name: Spearman_0_3
       rect:
         serializedVersion: 2
         x: 11
@@ -1161,7 +961,7 @@ TextureImporter:
         width: 15
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1173,7 +973,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_51
+      name: Spearman_1_3
       rect:
         serializedVersion: 2
         x: 44
@@ -1181,7 +981,7 @@ TextureImporter:
         width: 10
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1193,7 +993,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_52
+      name: Spearman_2_3
       rect:
         serializedVersion: 2
         x: 74
@@ -1201,7 +1001,7 @@ TextureImporter:
         width: 11
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1213,7 +1013,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_53
+      name: Spearman_3_3
       rect:
         serializedVersion: 2
         x: 107
@@ -1221,7 +1021,7 @@ TextureImporter:
         width: 13
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1233,7 +1033,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_54
+      name: Spearman_4_3
       rect:
         serializedVersion: 2
         x: 135
@@ -1241,7 +1041,7 @@ TextureImporter:
         width: 14
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1253,7 +1053,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_55
+      name: Spearman_0_4
       rect:
         serializedVersion: 2
         x: 12
@@ -1261,7 +1061,7 @@ TextureImporter:
         width: 15
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1273,7 +1073,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_56
+      name: Spearman_1_4
       rect:
         serializedVersion: 2
         x: 42
@@ -1281,7 +1081,7 @@ TextureImporter:
         width: 14
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1293,7 +1093,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_57
+      name: Spearman_2_4
       rect:
         serializedVersion: 2
         x: 74
@@ -1301,7 +1101,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1313,7 +1113,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_58
+      name: Spearman_3_4
       rect:
         serializedVersion: 2
         x: 108
@@ -1321,7 +1121,7 @@ TextureImporter:
         width: 12
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1333,7 +1133,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spearman_59
+      name: Spearman_4_4
       rect:
         serializedVersion: 2
         x: 136
@@ -1341,7 +1141,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
