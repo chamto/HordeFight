@@ -353,6 +353,15 @@ namespace HordeFight
 
             pos.y -= 0.2f;
             Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.brigand, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos);
+
+            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
         }
 
     }

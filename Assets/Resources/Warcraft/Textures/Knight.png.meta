@@ -2,13 +2,13 @@ fileFormatVersion: 2
 guid: 7465daad97a124da3a1c17e5130f6b45
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Knight_0
-    21300002: Knight_1
-    21300004: Knight_2
-    21300006: Knight_3
-    21300008: Knight_4
-    21300010: Knight_5
-    21300012: Knight_6
+    21300000: Knight_0_0
+    21300002: Knight_1_0
+    21300004: Knight_2_0
+    21300006: Knight_3_0
+    21300008: Knight_4_0
+    21300010: Knight_5_0
+    21300012: Knight_6_0
     21300014: Knight_7
     21300016: Knight_8_0
     21300018: Knight_9
@@ -17,13 +17,13 @@ TextureImporter:
     21300024: Knight_12
     21300026: Knight_13
     21300028: Knight_14
-    21300030: Knight_15
-    21300032: Knight_16
-    21300034: Knight_17
-    21300036: Knight_18
-    21300038: Knight_19
-    21300040: Knight_20
-    21300042: Knight_21
+    21300030: Knight_0_1
+    21300032: Knight_1_1
+    21300034: Knight_2_1
+    21300036: Knight_3_1
+    21300038: Knight_4_1
+    21300040: Knight_5_1
+    21300042: Knight_6_1
     21300044: Knight_8_1
     21300046: Knight_23
     21300048: Knight_24
@@ -32,12 +32,12 @@ TextureImporter:
     21300054: Knight_27
     21300056: Knight_28
     21300058: Knight_29
-    21300060: Knight_30
-    21300062: Knight_31
-    21300064: Knight_32
-    21300066: Knight_33
-    21300068: Knight_34
-    21300070: Knight_35
+    21300060: Knight_0_2
+    21300062: Knight_1_2
+    21300064: Knight_2_2
+    21300066: Knight_3_2
+    21300068: Knight_4_2
+    21300070: Knight_5_2
     21300072: Knight_8_2
     21300074: Knight_37
     21300076: Knight_38
@@ -47,13 +47,13 @@ TextureImporter:
     21300084: Knight_42
     21300086: Knight_43
     21300088: Knight_44
-    21300090: Knight_45
-    21300092: Knight_46
-    21300094: Knight_47
-    21300096: Knight_48
-    21300098: Knight_49
+    21300090: Knight_0_3
+    21300092: Knight_1_3
+    21300094: Knight_2_3
+    21300096: Knight_3_3
+    21300098: Knight_4_3
     21300100: Knight_8_3
-    21300102: Knight_51
+    21300102: Knight_6_3
     21300104: Knight_52
     21300106: Knight_53
     21300108: Knight_54
@@ -63,20 +63,20 @@ TextureImporter:
     21300116: Knight_58
     21300118: Knight_59
     21300120: Knight_60
-    21300122: Knight_61
-    21300124: Knight_62
-    21300126: Knight_63
+    21300122: Knight_0_4
+    21300124: Knight_1_4
+    21300126: Knight_2_4
     21300128: Knight_8_4
-    21300130: Knight_65
-    21300132: Knight_66
-    21300134: Knight_67
+    21300130: Knight_4_4
+    21300132: Knight_5_4
+    21300134: Knight_6_4
     21300136: Knight_68
     21300138: Knight_69
     21300140: Knight_8
     21300142: Knight_22
-    21300144: Knight_36
-    21300146: Knight_50
-    21300148: Knight_64
+    21300144: Knight_6_2
+    21300146: Knight_5_3
+    21300148: Knight_3_4
     21300150: Knight_70
     21300152: Knight_71
     21300154: Knight_72
@@ -175,7 +175,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Knight_0
+      name: Knight_0_0
       rect:
         serializedVersion: 2
         x: 8
@@ -183,7 +183,7 @@ TextureImporter:
         width: 20
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -195,7 +195,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_1
+      name: Knight_1_0
       rect:
         serializedVersion: 2
         x: 36
@@ -203,7 +203,7 @@ TextureImporter:
         width: 24
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -215,7 +215,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_2
+      name: Knight_2_0
       rect:
         serializedVersion: 2
         x: 67
@@ -223,7 +223,7 @@ TextureImporter:
         width: 27
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -235,7 +235,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_3
+      name: Knight_3_0
       rect:
         serializedVersion: 2
         x: 99
@@ -243,7 +243,7 @@ TextureImporter:
         width: 22
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -255,7 +255,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_4
+      name: Knight_4_0
       rect:
         serializedVersion: 2
         x: 133
@@ -263,7 +263,7 @@ TextureImporter:
         width: 17
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -275,7 +275,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_5
+      name: Knight_5_0
       rect:
         serializedVersion: 2
         x: 168
@@ -283,7 +283,7 @@ TextureImporter:
         width: 18
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -295,7 +295,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_6
+      name: Knight_6_0
       rect:
         serializedVersion: 2
         x: 196
@@ -303,7 +303,7 @@ TextureImporter:
         width: 21
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -323,7 +323,7 @@ TextureImporter:
         width: 28
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -343,7 +343,7 @@ TextureImporter:
         width: 22
         height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -363,7 +363,7 @@ TextureImporter:
         width: 17
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -383,7 +383,7 @@ TextureImporter:
         width: 24
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -403,7 +403,7 @@ TextureImporter:
         width: 24
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -423,7 +423,7 @@ TextureImporter:
         width: 24
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -443,7 +443,7 @@ TextureImporter:
         width: 24
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -463,7 +463,7 @@ TextureImporter:
         width: 24
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -475,7 +475,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_15
+      name: Knight_0_1
       rect:
         serializedVersion: 2
         x: 9
@@ -483,7 +483,7 @@ TextureImporter:
         width: 21
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -495,7 +495,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_16
+      name: Knight_1_1
       rect:
         serializedVersion: 2
         x: 36
@@ -503,7 +503,7 @@ TextureImporter:
         width: 25
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -515,7 +515,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_17
+      name: Knight_2_1
       rect:
         serializedVersion: 2
         x: 68
@@ -523,7 +523,7 @@ TextureImporter:
         width: 28
         height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -535,7 +535,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_18
+      name: Knight_3_1
       rect:
         serializedVersion: 2
         x: 99
@@ -543,7 +543,7 @@ TextureImporter:
         width: 23
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -555,7 +555,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_19
+      name: Knight_4_1
       rect:
         serializedVersion: 2
         x: 133
@@ -563,7 +563,7 @@ TextureImporter:
         width: 18
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -575,7 +575,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_20
+      name: Knight_5_1
       rect:
         serializedVersion: 2
         x: 169
@@ -583,7 +583,7 @@ TextureImporter:
         width: 23
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -595,7 +595,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_21
+      name: Knight_6_1
       rect:
         serializedVersion: 2
         x: 195
@@ -603,7 +603,7 @@ TextureImporter:
         width: 22
         height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -623,7 +623,7 @@ TextureImporter:
         width: 28
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -643,7 +643,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -663,7 +663,7 @@ TextureImporter:
         width: 20
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -683,7 +683,7 @@ TextureImporter:
         width: 24
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -703,7 +703,7 @@ TextureImporter:
         width: 24
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -723,7 +723,7 @@ TextureImporter:
         width: 22
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -743,7 +743,7 @@ TextureImporter:
         width: 22
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -763,7 +763,7 @@ TextureImporter:
         width: 22
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -775,7 +775,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_30
+      name: Knight_0_2
       rect:
         serializedVersion: 2
         x: 9
@@ -783,7 +783,7 @@ TextureImporter:
         width: 23
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -795,7 +795,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_31
+      name: Knight_1_2
       rect:
         serializedVersion: 2
         x: 34
@@ -803,7 +803,7 @@ TextureImporter:
         width: 28
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -815,7 +815,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_32
+      name: Knight_2_2
       rect:
         serializedVersion: 2
         x: 66
@@ -823,7 +823,7 @@ TextureImporter:
         width: 30
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -835,7 +835,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_33
+      name: Knight_3_2
       rect:
         serializedVersion: 2
         x: 97
@@ -843,7 +843,7 @@ TextureImporter:
         width: 25
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -855,7 +855,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_34
+      name: Knight_4_2
       rect:
         serializedVersion: 2
         x: 129
@@ -863,7 +863,7 @@ TextureImporter:
         width: 22
         height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -875,7 +875,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_35
+      name: Knight_5_2
       rect:
         serializedVersion: 2
         x: 169
@@ -883,7 +883,7 @@ TextureImporter:
         width: 23
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -895,7 +895,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_36
+      name: Knight_6_2
       rect:
         serializedVersion: 2
         x: 193
@@ -903,7 +903,7 @@ TextureImporter:
         width: 31
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -923,7 +923,7 @@ TextureImporter:
         width: 27
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -943,7 +943,7 @@ TextureImporter:
         width: 23
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -963,7 +963,7 @@ TextureImporter:
         width: 22
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -983,7 +983,7 @@ TextureImporter:
         width: 23
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1003,7 +1003,7 @@ TextureImporter:
         width: 23
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1023,7 +1023,7 @@ TextureImporter:
         width: 23
         height: 29
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1043,7 +1043,7 @@ TextureImporter:
         width: 23
         height: 29
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1063,7 +1063,7 @@ TextureImporter:
         width: 23
         height: 29
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1075,7 +1075,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_45
+      name: Knight_0_3
       rect:
         serializedVersion: 2
         x: 10
@@ -1083,7 +1083,7 @@ TextureImporter:
         width: 24
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1095,7 +1095,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_46
+      name: Knight_1_3
       rect:
         serializedVersion: 2
         x: 38
@@ -1103,7 +1103,7 @@ TextureImporter:
         width: 28
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1115,7 +1115,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_47
+      name: Knight_2_3
       rect:
         serializedVersion: 2
         x: 68
@@ -1123,7 +1123,7 @@ TextureImporter:
         width: 29
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1135,7 +1135,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_48
+      name: Knight_3_3
       rect:
         serializedVersion: 2
         x: 98
@@ -1143,7 +1143,7 @@ TextureImporter:
         width: 25
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1155,7 +1155,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_49
+      name: Knight_4_3
       rect:
         serializedVersion: 2
         x: 132
@@ -1163,7 +1163,7 @@ TextureImporter:
         width: 20
         height: 26
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1175,7 +1175,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_50
+      name: Knight_5_3
       rect:
         serializedVersion: 2
         x: 170
@@ -1183,7 +1183,7 @@ TextureImporter:
         width: 22
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1195,15 +1195,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_51
+      name: Knight_6_3
       rect:
         serializedVersion: 2
         x: 195
         y: 63
-        width: 26
+        width: 31
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1223,7 +1223,7 @@ TextureImporter:
         width: 4
         height: 5
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1243,7 +1243,7 @@ TextureImporter:
         width: 31
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1263,7 +1263,7 @@ TextureImporter:
         width: 23
         height: 27
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1283,7 +1283,7 @@ TextureImporter:
         width: 22
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1303,7 +1303,7 @@ TextureImporter:
         width: 25
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1323,7 +1323,7 @@ TextureImporter:
         width: 25
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1343,7 +1343,7 @@ TextureImporter:
         width: 21
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1363,7 +1363,7 @@ TextureImporter:
         width: 21
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1383,7 +1383,7 @@ TextureImporter:
         width: 21
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1395,7 +1395,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_61
+      name: Knight_0_4
       rect:
         serializedVersion: 2
         x: 10
@@ -1403,7 +1403,7 @@ TextureImporter:
         width: 22
         height: 28
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1415,7 +1415,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_62
+      name: Knight_1_4
       rect:
         serializedVersion: 2
         x: 38
@@ -1423,7 +1423,7 @@ TextureImporter:
         width: 27
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1435,7 +1435,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_63
+      name: Knight_2_4
       rect:
         serializedVersion: 2
         x: 66
@@ -1443,7 +1443,7 @@ TextureImporter:
         width: 30
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1455,7 +1455,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_64
+      name: Knight_3_4
       rect:
         serializedVersion: 2
         x: 99
@@ -1463,7 +1463,7 @@ TextureImporter:
         width: 24
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1475,7 +1475,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_65
+      name: Knight_4_4
       rect:
         serializedVersion: 2
         x: 134
@@ -1483,7 +1483,7 @@ TextureImporter:
         width: 18
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1495,7 +1495,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_66
+      name: Knight_5_4
       rect:
         serializedVersion: 2
         x: 170
@@ -1503,7 +1503,7 @@ TextureImporter:
         width: 20
         height: 25
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1515,7 +1515,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Knight_67
+      name: Knight_6_4
       rect:
         serializedVersion: 2
         x: 196
@@ -1523,7 +1523,7 @@ TextureImporter:
         width: 27
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1543,7 +1543,7 @@ TextureImporter:
         width: 29
         height: 22
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1563,7 +1563,7 @@ TextureImporter:
         width: 20
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1583,7 +1583,7 @@ TextureImporter:
         width: 20
         height: 24
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1603,7 +1603,7 @@ TextureImporter:
         width: 22
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1623,7 +1623,7 @@ TextureImporter:
         width: 22
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1643,7 +1643,7 @@ TextureImporter:
         width: 20
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1663,7 +1663,7 @@ TextureImporter:
         width: 20
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1683,7 +1683,7 @@ TextureImporter:
         width: 20
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1703,7 +1703,7 @@ TextureImporter:
         width: 126
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
