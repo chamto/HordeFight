@@ -407,7 +407,7 @@ namespace HordeFight
 
 		private void Start()
 		{
-			
+            
 		}
 
 		private void Update()
@@ -430,7 +430,8 @@ namespace HordeFight
 
                     r_sum = _characters[i].GetCollider_Radius() + _characters[j].GetCollider_Radius();
 
-                    //두 캐릭터가 겹친상태 
+
+                    //1.두 캐릭터가 겹친상태 
                     if(sqr_dis.sqrMagnitude < Mathf.Pow(r_sum,2))
                     {
                         //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
@@ -440,11 +441,18 @@ namespace HordeFight
                         Vector3 n = sqr_dis.normalized;
                         float div_dis = 0.1f;
 
-                        //반지름 이상으로 겹쳐있는 경우
+                        //2.반지름 이상으로 겹쳐있는 경우
                         if(sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
                         {
-                            div_dis = n.magnitude / 2f;
+                            //3.완전 겹쳐있는 경우
+                            if(n == Vector3.zero)
+                            {
+                                n = RandDir(); //방향값이 없기 때문에 임의로 지정해 준다. 
+                            }
+
+                            div_dis = 0.5f;
                         }
+
                         _characters[i].GetComponent<Movable>().Move_Forward(n, div_dis, 1);
                         _characters[j].GetComponent<Movable>().Move_Forward(-n, div_dis, 1);
                     }
@@ -454,6 +462,17 @@ namespace HordeFight
             }
         }
 
+        public Vector3 RandDir()
+        {
+            const float ANGRAD = (360f / 8f) * Mathf.Deg2Rad;
+            int rand = Single.rand.Next(0, 8); //0~7
+            Vector3 dir = Vector3.zero;
+
+            dir.x = Mathf.Cos(ANGRAD * rand);
+            dir.y = Mathf.Sin(ANGRAD * rand);
+
+            return dir;
+        }
 
 		public void ClearAll()
         {
@@ -546,51 +565,24 @@ namespace HordeFight
         public void Create_StageInfo()
         {
             int id_sequence = 0;
-            Vector3 pos = new Vector3(0.5f,0.5f,0);
+            Vector3 pos = Vector3.zero;
             Create_Character(Single.unitRoot, Character.eKind.lothar, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.garona, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.footman, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.brigand, id_sequence++, pos);
-
-            //pos.x -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.ogre, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.conjurer, id_sequence++, pos);
-
-            //pos.y = 0f;
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
-
-            //pos.y -= 0.2f;
-            //Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
-
-            pos.y -= 0.2f;
+            Create_Character(Single.unitRoot, Character.eKind.garona, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.footman, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.brigand, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.ogre, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.conjurer, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos);
 
-            pos.y -= 0.2f;
+
             for (int i = 0; i < 30;i++)
             {
-                pos.x -= 0.01f;
                 Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
             }
-
-
-
-
 
         }
 
