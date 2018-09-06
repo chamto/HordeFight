@@ -513,19 +513,33 @@ namespace HordeFight
         }
 
         //최대 반경이내에서 가장 가까운 객체를 반환한다
-        public Transform GetNearCharacter(Transform exceptChar, float maxRadius)
+        public Character GetNearCharacter(Character exceptChar, float maxRadius)
         {
-
-            //todo : 추후구현하기
+            
+            float min_dis = Mathf.Pow(maxRadius+1, 2); //최대 반경보다 큰 최대값 지정
+            float sqr_dis = 0f;
+            Character target = null;
 
             foreach (Character t in _characters)
             {
-                if (t.transform == exceptChar) continue;
+                if (t == exceptChar) continue;
 
-                return t.transform;
+                sqr_dis = (exceptChar.transform.position - t.transform.position).sqrMagnitude;
+
+                //최대 반경 이내일 경우
+                if(sqr_dis < Mathf.Pow(maxRadius,2))
+                {
+                    //기존 객체보다 더 가까운 경우
+                    if (min_dis > sqr_dis)
+                    {
+                        min_dis = sqr_dis;
+                        target = t;
+                    }
+                }
+
             }
 
-            return null;
+            return target;
         }
 
 
@@ -552,6 +566,7 @@ namespace HordeFight
             GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
             Character cha = obj.AddComponent<Character>();
             obj.AddComponent<Movable>();
+            obj.AddComponent<AI>();
             cha._id = id;
             cha._eKind = eKind;
             cha.transform.localPosition = pos;
@@ -576,7 +591,8 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos);
+
+            Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos).SetAIRunning(true);
 
 
             for (int i = 0; i < 30;i++)
@@ -776,8 +792,31 @@ namespace HordeFight
             return GetComponent<CircleCollider2D>().radius;
         }
 
+        public void SetAIRunning(bool run)
+        {
+            this.GetComponent<AI>()._ai_running = run;
+        }
 
-        private Vector2 _startPos = Vector3.zero;
+
+        public void Move(Vector3 target)
+		{
+            Vector3 dir = target - this.transform.position;
+            //dir.Normalize();
+            _move.Move_Forward(dir, 1f, 1f);
+
+
+            _eDir8 = TransDirection(dir);
+            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
+            Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
+            _animator.SetInteger("state", (int)eState.Move);
+		}
+
+        public void Attack(Character target)
+        {
+            
+        }
+
+		private Vector2 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
             //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
@@ -802,17 +841,7 @@ namespace HordeFight
 
             RaycastHit2D hit = Single.touchProcess.GetHit2D();
 
-            Vector3 dir = (Vector3)hit.point - this.transform.position;
-            //dir.Normalize();
-            _move.Move_Forward(dir, 1f, 1f);
-
-          
-
-
-            _eDir8 = TransDirection(dir);
-            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
-            Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
-            _animator.SetInteger("state", (int)eState.Move);
+            Move((Vector3)hit.point);
 
 
         }
@@ -919,8 +948,10 @@ namespace HordeFight
 {
     public class AI : MonoBehaviour
     {
-        
-        private Transform _target = null;
+
+        public bool _ai_running = false;
+
+        private Character _target = null;
 
 
         public enum eState
@@ -942,7 +973,7 @@ namespace HordeFight
 
         private void FixedUpdate()
         {
-         
+            if (false == _ai_running) return;
 
             this.StateUpdate();
         }
@@ -1022,33 +1053,33 @@ namespace HordeFight
                 case eState.Roaming:
                     {
                         //일정 거리 안에 적이 있으면 탐지한다.
-                        if (false)
+                        //if (false)
+                        //{
+                        //    _state = eState.Detect;
+                        //}
+
+
+                        float MAX_DIS = 1f;
+                        if(null == _target)
                         {
-                            _state = eState.Detect;
+                            _target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(), MAX_DIS);
                         }
-
-
-
-                        _target = Single.objectManager.GetNearCharacter(this.transform, 10f);
-                        if (null != _target)
+                        else
                         {
-                            //switch (_move.DirectionalInspection(_target.localPosition))
-                            //{
-                            //    case Movable.eDirection.LEFT:
-                            //        {
-                            //            _move.Left(0f);
-                            //            //DebugWide.LogBlue("LEFT");
-                            //        }
-                            //        break;
-                            //    case Movable.eDirection.RIGHT:
-                            //        {
-                            //            _move.Right(0f);
-                            //            //DebugWide.LogBlue("RIGHT");
-                            //        }
-                            //        break;
-                            //}
+                            
+                            Vector3 dir = _target.transform.position - this.transform.position;
 
-                            //_move.Up(0f);
+                            if (dir.sqrMagnitude > Mathf.Pow(MAX_DIS, 2))
+                            {
+                                _target = null;
+                            }
+                            else
+                            {
+                                //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
+                                this.GetComponent<Character>().Move(_target.transform.position);
+                            }
+
+
                         }
 
 
