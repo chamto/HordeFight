@@ -20,6 +20,7 @@ namespace HordeFight
            
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
+            gameObject.AddComponent<ObjectManager>();
 
             Single.resourceManager.Init();
 
@@ -103,7 +104,7 @@ namespace HordeFight
         {
             get
             {
-                return CSingleton<ObjectManager>.Instance;
+                return CSingletonMono<ObjectManager>.Instance;
             }
         }
 
@@ -400,12 +401,51 @@ namespace HordeFight
 namespace HordeFight
 {
 
-    public class ObjectManager
+    public class ObjectManager : MonoBehaviour
     {
         public List<Character> _characters = new List<Character>();
 
+		private void Start()
+		{
+			
+		}
 
-        public void ClearAll()
+		private void Update()
+		{
+            UpdateCollision();
+		}
+
+        public void UpdateCollision()
+        {
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+            //한집합의 원소로 중복되지 않는 한쌍 만들기  
+            for (int i = 0; i < _characters.Count-1;i++)
+            {
+                for (int j = i+1 ; j < _characters.Count; j++)
+                {
+                    //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                    sqr_dis = _characters[i].transform.localPosition - _characters[j].transform.localPosition;
+
+                    r_sum = _characters[i].GetCollider_Radius() + _characters[j].GetCollider_Radius();
+
+                    //두 캐릭터가 겹친상태 
+                    if(sqr_dis.sqrMagnitude < Mathf.Pow(r_sum,2))
+                    {
+                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+                        sqr_dis.Normalize();
+                        _characters[i].GetComponent<Movable>().Move_Forward(sqr_dis, 0.1f, 1);
+                        _characters[j].GetComponent<Movable>().Move_Forward(-sqr_dis, 0.1f, 1);
+                    }
+
+
+                }   
+            }
+        }
+
+
+		public void ClearAll()
         {
 
             foreach (Character t in _characters)
@@ -460,7 +500,6 @@ namespace HordeFight
         }
 
 
-       
 
         //____________________________________________
         //                  객체 생성 
@@ -533,7 +572,12 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos);
 
             pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
+            for (int i = 0; i < 30;i++)
+            {
+                pos.x -= 0.01f;
+                Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
+            }
+
 
 
 
@@ -722,6 +766,12 @@ namespace HordeFight
         }
 
 
+        public float GetCollider_Radius()
+        {
+            return GetComponent<CircleCollider2D>().radius;
+        }
+
+
         private Vector2 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
@@ -777,25 +827,22 @@ namespace HordeFight
 
     public class Movable : MonoBehaviour
     {
-        public enum eDirection
+
+		private void Start()
+		{
+		}
+
+		private void Update()
+		{
+		}
+
+
+
+		public void Move_Forward(Vector3 dir , float distance , float speed)
         {
-            None    = 0,
-            UP      = 1<<1,
-            DOWN    = 1<<2,
-            LEFT    = 1<<3,
-            RIGHT   = 1<<4,
-        }
-
-
-
-        public void Move_Forward(Vector3 dir , float distance , float speed)
-        {
-            
             //보간, 이동 처리
             //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
             this.transform.Translate(dir * Time.deltaTime * speed * distance);
-
-           
         }
 
         public void Move_Backward(Vector3 dir, float speed)
@@ -805,18 +852,18 @@ namespace HordeFight
         }
 
 
-        public Vector3 GetDirect(Vector3 dstPos)
-        {
-            Vector3 dir = dstPos - this.transform.position;
-            dir.Normalize();
-            return dir;
-        }
+        //public Vector3 GetDirect(Vector3 dstPos)
+        //{
+        //    Vector3 dir = dstPos - this.transform.position;
+        //    dir.Normalize();
+        //    return dir;
+        //}
 
         //객체의 전진 방향을 반환한다.
-        public Vector3 GetForwardDirect()
-        {
-            return Quaternion.Euler(this.transform.localEulerAngles) * Vector3.forward;
-        }
+        //public Vector3 GetForwardDirect()
+        //{
+        //    return Quaternion.Euler(this.transform.localEulerAngles) * Vector3.forward;
+        //}
 
 
         //내방향을 기준으로 목표위치가 어디쪽에 있는지 반환한다.  
@@ -850,12 +897,12 @@ namespace HordeFight
 
 
         //회전할 각도 구하기
-        public float CalcRotationAngle(Vector3 targetDir)
-        {
-            //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
-            return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
+        //public float CalcRotationAngle(Vector3 targetDir)
+        //{
+        //    //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
+        //    return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
 
-        }
+        //}
     }
 }
 
