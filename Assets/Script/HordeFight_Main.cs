@@ -19,6 +19,7 @@ namespace HordeFight
         {
            
             gameObject.AddComponent<TouchProcess>();
+            gameObject.AddComponent<LineControl>();
 
             Single.resourceManager.Init();
 
@@ -87,6 +88,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<TouchProcess>.Instance;
+            }
+        }
+
+        public static LineControl lineControl
+        {
+            get
+            {
+                return CSingletonMono<LineControl>.Instance;
             }
         }
 
@@ -238,6 +247,152 @@ namespace HordeFight
 
 
 }
+
+
+//========================================================
+//==================      진영 관리기      ==================
+//========================================================
+namespace HordeFight
+{
+    //뛰어난 동물 진영
+    public class CampChamp
+    {
+        //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
+        //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
+        //* 개인행동(뗄감,채집,사냥,정찰 등) 명령을 내리면 진영에서 이탈하게 된다. 
+        //진영 리더 1순위
+        //진영 리더 2순위
+        //진영 리더 3순위
+
+        //* 진영별로 목표점을 조절하여 진영의 모양에 변화를 줄 수 있다.
+        //진영 종류 : 원형 , 종형 , 횡형
+
+        //진영에 있는 챔프목록
+        //개인행동 하는 챔프목록 
+
+    }
+}
+
+//========================================================
+//==================      라인 관리기      ==================
+//========================================================
+namespace HordeFight
+{
+    public class LineControl : MonoBehaviour
+    {
+
+        private int _sequenceId = 0;
+        private Dictionary<int, LineInfo> _list = new Dictionary<int, LineInfo>();
+
+
+        public enum eKind
+        {
+            None,
+            Line,   //hp 표현
+            Circle, //캐릭터 선택 표현
+            Square, //캐릭터 선택 표현
+            Polygon,//여러 캐릭터 선택 표현
+            Graph,  //경로 표현 
+        }
+
+        public struct LineInfo
+        {
+            public LineRenderer renderer;
+            public eKind kind;
+            public int id;
+
+            public void Init()
+            {
+                renderer = null;
+                kind = eKind.None;
+                id = -1;
+            }
+
+            public void Update_Circle()
+            {
+                if (null == renderer) return;
+
+                float deg = 360f / renderer.positionCount;
+                float radius = renderer.transform.parent.GetComponent<CircleCollider2D>().radius;
+                Vector3 pos = Vector3.right;
+                for (int i = 0; i < renderer.positionCount; i++)
+                {
+                    pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
+                    pos.y = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
+                    renderer.SetPosition(i, pos + renderer.transform.parent.position);
+                    //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
+                }
+
+            }
+        }
+
+		private void Start()
+		{
+			
+		}
+
+		private void Update()
+		{
+            //foreach(LineInfo info in _list.Values)
+            //{
+            //    if(eKind.Circle == info.kind)
+            //    {
+                    
+            //    }
+            //}
+		}
+
+        public void Create_Line(Transform dst)
+        {}
+
+        public int Create_Circle(Transform dst)
+        {
+            GameObject obj = new GameObject();
+            LineRenderer render = obj.AddComponent<LineRenderer>();
+            LineInfo info = new LineInfo();
+            info.Init();
+
+            _sequenceId++;
+
+            info.id = _sequenceId;
+            info.renderer = render;
+            info.kind = eKind.Circle;
+
+            render.name = eKind.Circle.ToString() + "_" + _sequenceId.ToString("000");
+            render.material = new Material(Shader.Find("Sprites/Default"));
+            render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
+            render.transform.parent = dst;//부모객체 지정
+            render.sortingOrder = -10; //먼저그려지게 한다.
+            render.positionCount = 20;
+            render.loop = true; //처음과 끝을 연결한다 .
+
+            render.SetWidth(0.01f, 0.01f);
+            render.SetColors(Color.green, Color.green);
+
+
+            _list.Add(_sequenceId, info); //추가
+
+            info.Update_Circle(); //값설정
+
+            return _sequenceId;
+
+        }
+
+        public void Create_Square(Transform dst)
+        { }
+
+        public void Create_Polygon(Transform dst)
+        { }
+
+        public void SetActive(int id, bool onOff)
+        {
+            //todo : 예외처리 추가하기 
+            _list[id].renderer.gameObject.SetActive(onOff);
+        }
+
+	}
+}
+
 //========================================================
 //==================      객체 관리기      ==================
 //========================================================
@@ -345,17 +500,34 @@ namespace HordeFight
             Vector3 pos = new Vector3(0.5f,0.5f,0);
             Create_Character(Single.unitRoot, Character.eKind.lothar, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.garona, id_sequence++, pos);
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.garona, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.footman, id_sequence++, pos);
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.footman, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.spearman, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.brigand, id_sequence++, pos);
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.brigand, id_sequence++, pos);
+
+            //pos.x -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.ogre, id_sequence++, pos);
+
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.conjurer, id_sequence++, pos);
+
+            //pos.y = 0f;
+
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
+
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
+
+            //pos.y -= 0.2f;
+            //Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
 
             pos.y -= 0.2f;
             Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos);
@@ -363,21 +535,9 @@ namespace HordeFight
             pos.y -= 0.2f;
             Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
 
-            pos.y = 0f;
-            pos.x -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.ogre, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.conjurer, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
 
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
-
-            pos.y -= 0.2f;
-            Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
         }
 
     }
@@ -387,13 +547,13 @@ namespace HordeFight
         
         private Animator                    _animator = null;
         private AnimatorOverrideController  _overCtr = null;
-        //private AnimationClip[]             _aniClips = null;
 
         private Movable _move     = null;
         private eDirection _eDir8 = eDirection.down;
 
         public int      _id = -1;
         public eKind    _eKind = eKind.none;
+        public int      _circle_id = -1;
        
 
         public enum eKind
@@ -450,14 +610,16 @@ namespace HordeFight
             _overCtr.name = "divide_character_"+ _id.ToString();
             _animator.runtimeAnimatorController = _overCtr;
 
-
-            //_aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation"); //todo : 리소스관리기로 분리시키기 
         }
 
         //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
         private void Start()
         {
             _animator.SetInteger("state", (int)eState.Idle);
+
+
+            _circle_id = Single.lineControl.Create_Circle(this.transform);
+            Single.lineControl.SetActive(_circle_id, false);
         }
 
 
@@ -474,7 +636,7 @@ namespace HordeFight
                 if(__randTime < __elapsedTime)
                 {
                     _eDir8 = (eDirection)Single.rand.Next(1, 8);
-                    Switch_AniMove("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
                     __elapsedTime = 0f;
 
@@ -486,6 +648,8 @@ namespace HordeFight
 
 
         }
+
+
 
         public AnimationClip GetClip(string name)
         {
@@ -518,7 +682,7 @@ namespace HordeFight
         }
 
 
-        public void Switch_AniMove(string aniKind, string aniName , eDirection dir)
+        public void Switch_Ani(string aniKind, string aniName , eDirection dir)
         {
             
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
@@ -572,6 +736,8 @@ namespace HordeFight
 
             _animator.SetInteger("state", (int)eState.Move);
 
+            Single.lineControl.SetActive(_circle_id, true);
+
         }
 
 
@@ -589,8 +755,8 @@ namespace HordeFight
 
 
             _eDir8 = TransDirection(dir);
-            Switch_AniMove("base_move",_eKind.ToString()+"_move_",_eDir8);
-            //Switch_AniMove("base_move", "lothar_attack_", eDir);
+            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
+            Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
             _animator.SetInteger("state", (int)eState.Move);
 
 
@@ -600,8 +766,10 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
 
-            Switch_AniMove("base_idle", _eKind.ToString()+"_idle_", _eDir8);
+            Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
             _animator.SetInteger("state", (int)eState.Idle);
+
+            Single.lineControl.SetActive(_circle_id, false);
         }
     }
 
@@ -690,6 +858,158 @@ namespace HordeFight
         }
     }
 }
+
+
+//========================================================
+//==================       인공 지능      ==================
+//========================================================
+namespace HordeFight
+{
+    public class AI : MonoBehaviour
+    {
+        
+        private Transform _target = null;
+
+
+        public enum eState
+        {
+            Detect, //탐지
+            Chase,  //추격
+            Attack,  //공격
+            Escape, //도망
+            Roaming, //배회하기
+        }
+        private eState _state = eState.Roaming;
+
+        private void Start()
+        {
+           
+        }
+
+
+
+        private void FixedUpdate()
+        {
+         
+
+            this.StateUpdate();
+        }
+
+
+        public bool Situation_Is_AttackTarget()
+        {
+            return false;
+        }
+
+        public bool Situation_Is_AttackRange()
+        {
+            return false;
+        }
+
+        public void StateUpdate()
+        {
+            switch (_state)
+            {
+                case eState.Detect:
+                    {
+                        //공격대상이 맞으면 추격한다.
+                        if (true == Situation_Is_AttackTarget())
+                        {
+                            _state = eState.Chase;
+                        }
+                        //공격대상이 아니면 다시 배회한다.
+                        else
+                        {
+                            _state = eState.Roaming;
+                        }
+
+                    }
+                    break;
+
+                case eState.Chase:
+                    {
+                        //공격사정거리까지 이동했으면 공격한다. 
+                        if (true == Situation_Is_AttackRange())
+                        {
+                            _state = eState.Attack;
+                        }
+                        //거리가 멀리 떨어져 있으면 다시 배회한다.
+                        {
+                            _state = eState.Roaming;
+                        }
+
+                    }
+                    break;
+                case eState.Attack:
+                    {
+                        //못이길것 같으면 도망간다.
+                        {
+                            _state = eState.Escape;
+                        }
+
+                        //적을 잡았으면 다시 배회한다.
+                        {
+                            _state = eState.Roaming;
+                        }
+
+                    }
+                    break;
+                case eState.Escape:
+                    {
+                        //일정 거리 안에 적이 있으면 탐지한다.
+                        {
+                            _state = eState.Detect;
+                        }
+
+                        //다시 배회한다.
+                        {
+                            _state = eState.Roaming;
+                        }
+                    }
+                    break;
+                case eState.Roaming:
+                    {
+                        //일정 거리 안에 적이 있으면 탐지한다.
+                        if (false)
+                        {
+                            _state = eState.Detect;
+                        }
+
+
+
+                        _target = Single.objectManager.GetNearCharacter(this.transform, 10f);
+                        if (null != _target)
+                        {
+                            //switch (_move.DirectionalInspection(_target.localPosition))
+                            //{
+                            //    case Movable.eDirection.LEFT:
+                            //        {
+                            //            _move.Left(0f);
+                            //            //DebugWide.LogBlue("LEFT");
+                            //        }
+                            //        break;
+                            //    case Movable.eDirection.RIGHT:
+                            //        {
+                            //            _move.Right(0f);
+                            //            //DebugWide.LogBlue("RIGHT");
+                            //        }
+                            //        break;
+                            //}
+
+                            //_move.Up(0f);
+                        }
+
+
+                    }
+                    break;
+            }
+        }
+
+    }
+
+
+
+}//end namespace
 
 
 //가속도계 참고할것  :  https://docs.unity3d.com/kr/530/Manual/MobileInput.html
