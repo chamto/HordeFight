@@ -434,9 +434,19 @@ namespace HordeFight
                     if(sqr_dis.sqrMagnitude < Mathf.Pow(r_sum,2))
                     {
                         //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-                        sqr_dis.Normalize();
-                        _characters[i].GetComponent<Movable>().Move_Forward(sqr_dis, 0.1f, 1);
-                        _characters[j].GetComponent<Movable>().Move_Forward(-sqr_dis, 0.1f, 1);
+
+                        //todo : 최적화 필요 
+
+                        Vector3 n = sqr_dis.normalized;
+                        float div_dis = 0.1f;
+
+                        //반지름 이상으로 겹쳐있는 경우
+                        if(sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                        {
+                            div_dis = n.magnitude / 2f;
+                        }
+                        _characters[i].GetComponent<Movable>().Move_Forward(n, div_dis, 1);
+                        _characters[j].GetComponent<Movable>().Move_Forward(-n, div_dis, 1);
                     }
 
 
