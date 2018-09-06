@@ -692,6 +692,9 @@ namespace HordeFight
 
             }
 
+            //if(eKind.slime != _eKind)
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
+            GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 100f);
 
         }
 
