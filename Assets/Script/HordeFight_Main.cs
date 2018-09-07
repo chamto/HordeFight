@@ -196,6 +196,32 @@ namespace HordeFight
 
 }//end namespace
 
+//========================================================
+//==================     보조함수묶음     ==================
+//========================================================
+
+namespace HordeFight
+{
+    public class  GlobalMethod
+    {
+        /// <summary>
+        ///  여덟 방향중 하나를 무작위로 반환한다. 
+        /// </summary>
+        /// <returns> 정규벡터 방향값 </returns>
+        static public Vector3 RandomDir8()
+        {
+            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
+            int rand = Single.rand.Next(0, 8); //0~7
+            Vector3 dir = Vector3.zero;
+
+            dir.x = Mathf.Cos(ANG_RAD * rand);
+            dir.y = Mathf.Sin(ANG_RAD * rand);
+
+            return dir;
+        }
+    }
+}
+
 
 //========================================================
 //==================     리소스 관리기     ==================
@@ -447,7 +473,8 @@ namespace HordeFight
                             //3.완전 겹쳐있는 경우
                             if(n == Vector3.zero)
                             {
-                                n = RandDir(); //방향값이 없기 때문에 임의로 지정해 준다. 
+                                //방향값이 없기 때문에 임의로 지정해 준다. 
+                                n = GlobalMethod.RandomDir8(); 
                             }
 
                             div_dis = 0.5f;
@@ -455,6 +482,8 @@ namespace HordeFight
 
                         _characters[i].GetComponent<Movable>().Move_Forward(n, div_dis, 1);
                         _characters[j].GetComponent<Movable>().Move_Forward(-n, div_dis, 1);
+                        //_characters[i].Idle_View(n, false);
+                        //_characters[j].Idle_View(-n, false);
                     }
 
 
@@ -462,17 +491,6 @@ namespace HordeFight
             }
         }
 
-        public Vector3 RandDir()
-        {
-            const float ANGRAD = (360f / 8f) * Mathf.Deg2Rad;
-            int rand = Single.rand.Next(0, 8); //0~7
-            Vector3 dir = Vector3.zero;
-
-            dir.x = Mathf.Cos(ANGRAD * rand);
-            dir.y = Mathf.Sin(ANGRAD * rand);
-
-            return dir;
-        }
 
 		public void ClearAll()
         {
@@ -499,20 +517,10 @@ namespace HordeFight
             return null;
         }
 
-        public Movable GetCharacterMove(int id)
-        {
-            foreach (Character c in _characters)
-            {
-                if (c._id == id)
-                {
-                    return c.GetComponent<Movable>();
-                }
-            }
 
-            return null;
-        }
-
-        //최대 반경이내에서 가장 가까운 객체를 반환한다
+        /// <summary>
+        /// 최대 반경이내에서 가장 가까운 객체를 반환한다
+        /// </summary>
         public Character GetNearCharacter(Character exceptChar, float maxRadius)
         {
             
@@ -604,7 +612,44 @@ namespace HordeFight
 
     }
 
-    public class Character : MonoBehaviour
+
+    public partial class Character : MonoBehaviour
+    {
+        //데카르트좌표계 사분면을 기준으로 숫자 지정
+        public enum eDirection : int
+        {
+            none = 0,
+            right = 1,
+            rightUp = 2,
+            up = 3,
+            leftUp = 4,
+            left = 5,
+            leftDown = 6,
+            down = 7,
+            rightDown = 8,
+
+        }
+
+
+        static public eDirection TransDirection8(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.y, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            //DebugWide.LogRed(deg + "   " + quad);
+
+            return (eDirection)quad;
+        }
+    }
+
+    public partial class  Character : MonoBehaviour
     {
         
         private Animator                    _animator = null;
@@ -616,6 +661,8 @@ namespace HordeFight
         public int      _id = -1;
         public eKind    _eKind = eKind.none;
         public int      _circle_id = -1;
+
+        public float    _disPerSecond = 1f; //초당 이동거리 
        
 
         public enum eKind
@@ -646,20 +693,7 @@ namespace HordeFight
         }
 
 
-        //데카르트좌표계 사분면을 기준으로 숫자 지정
-        public enum eDirection : int
-        {
-            none        = 0,
-            right       = 1,
-            rightUp     = 2,
-            up          = 3,
-            leftUp      = 4,
-            left        = 5,
-            leftDown    = 6,
-            down        = 7,
-            rightDown   = 8,
 
-        }
 
         public void Init_Create()
         {
@@ -685,28 +719,11 @@ namespace HordeFight
         }
 
 
-        private float __elapsedTime = 0f;
-        private float __randTime = 0f;
+
         private void Update()
         {
 
-            if((int)eState.Idle == _animator.GetInteger("state"))
-            {
-                __elapsedTime += Time.deltaTime;
-
-
-                if(__randTime < __elapsedTime)
-                {
-                    _eDir8 = (eDirection)Single.rand.Next(1, 8);
-                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
-
-                    __elapsedTime = 0f;
-
-                    //3~7초가 지났을 때 돌아감
-                    __randTime = (float)Single.rand.Next(3, 7);
-                }
-
-            }
+            Update_IdleState();
 
             //if(eKind.slime != _eKind)
             //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
@@ -715,7 +732,35 @@ namespace HordeFight
         }
 
 
+        //____________________________________________
+        //                  애니메이션  
+        //____________________________________________
 
+        private float __elapsedTime = 0f;
+        private float __randTime = 0f;
+        public void Update_IdleState()
+        {
+            if ((int)eState.Idle == _animator.GetInteger("state"))
+            {
+                __elapsedTime += Time.deltaTime;
+
+
+                if (__randTime < __elapsedTime)
+                {
+                    _eDir8 = (eDirection)Single.rand.Next(1, 9); //1~8
+                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+
+                    __elapsedTime = 0f;
+
+                    //3~6초가 지났을 때 돌아감
+                    __randTime = (float)Single.rand.Next(3, 7); //3~6
+                }
+
+            }
+
+        }
+
+        //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
         public AnimationClip GetClip(string name)
         {
             foreach(AnimationClip ani in Single.resourceManager._aniClips)
@@ -727,23 +772,6 @@ namespace HordeFight
             }
 
             return null;
-        }
-
-        public eDirection TransDirection(Vector3 dir)
-        {
-            float rad = Mathf.Atan2(dir.y, dir.x); 
-            float deg = Mathf.Rad2Deg * rad;
-
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
-
-            //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
-            quad++; //값의 범위를 0~7 에서 1~8로 변경 
-            //DebugWide.LogRed(deg + "   " + quad);
-
-            return (eDirection)quad;
         }
 
 
@@ -797,15 +825,29 @@ namespace HordeFight
             this.GetComponent<AI>()._ai_running = run;
         }
 
+        public void Idle_View(Vector3 dir , bool forward)
+        {
+           
+            if (false == forward)
+                dir *= -1f;
 
-        public void Move(Vector3 target)
+            _eDir8 = TransDirection8(dir);
+            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
+            Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+            _animator.SetInteger("state", (int)eState.Idle);
+        }
+
+        public void Move(Vector3 dir ,  float distance ,bool forward)
 		{
-            Vector3 dir = target - this.transform.position;
+            //Vector3 dir = target - this.transform.position;
             //dir.Normalize();
-            _move.Move_Forward(dir, 1f, 1f);
+            _move.Move_Forward(dir, distance, 1f);
 
-
-            _eDir8 = TransDirection(dir);
+            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+            if (false == forward)
+                dir *= -1f;
+            
+            _eDir8 = TransDirection8(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
             _animator.SetInteger("state", (int)eState.Move);
@@ -841,7 +883,7 @@ namespace HordeFight
 
             RaycastHit2D hit = Single.touchProcess.GetHit2D();
 
-            Move((Vector3)hit.point);
+            Move((Vector3)hit.point - this.transform.position,_disPerSecond,true);
 
 
         }
@@ -1076,7 +1118,7 @@ namespace HordeFight
                             else
                             {
                                 //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
-                                this.GetComponent<Character>().Move(_target.transform.position);
+                                this.GetComponent<Character>().Move(dir, 1f,true);
                             }
 
 
