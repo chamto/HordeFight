@@ -551,6 +551,42 @@ namespace HordeFight
         }
 
 
+        /// <summary>
+        /// 전체 캐릭터가 특정캐릭터를 쳐다보게 설정한다
+        /// </summary>
+        /// <param name="target">Target.</param>
+        public void LookAtTarget(Character target)
+        {
+            Vector3 dir = Vector3.zero;
+            foreach (Character t in _characters)
+            {
+                if (t == target) continue;
+
+
+                if((int)Character.eState.Idle <= (int)t._eState &&  (int)t._eState <= (int)Character.eState.Idle_Max)
+                {
+                    dir = target.transform.position - t.transform.position;
+                    t.Idle_View(dir, true);
+
+                    t._eState = Character.eState.Idle_LookAt;    
+                }
+
+            }
+
+        }
+
+        public void SetAll_State(Character.eState state)
+        {
+            foreach (Character t in _characters)
+            {
+                
+                t._eState = state;
+
+            }
+        }
+
+
+
 
         //____________________________________________
         //                  객체 생성 
@@ -658,8 +694,9 @@ namespace HordeFight
         private Movable _move     = null;
         private eDirection _eDir8 = eDirection.down;
 
-        public int      _id = -1;
-        public eKind    _eKind = eKind.none;
+        public int      _id     = -1;
+        public eKind    _eKind  = eKind.None;
+        public eState   _eState = eState.None;
         public int      _circle_id = -1;
 
         public float    _disPerSecond = 1f; //초당 이동거리 
@@ -667,7 +704,7 @@ namespace HordeFight
 
         public enum eKind
         {
-            none = 0,
+            None = 0,
             footman,
             lothar,
             skeleton,
@@ -685,14 +722,23 @@ namespace HordeFight
 
         public enum eState
         {
-            None = 0,
-            Idle = 1,
-            Move = 2,
-            Attack = 3,
-            FallDown = 4,
+            None        = 0,
+
+            Idle        = 10,
+            Idle_Random = 11,
+            Idle_LookAt = 12,
+            Idle_Max    = 19,
+
+            Move        = 20,
+            Move_Max    = 29,
+
+            Attack      = 30,
+            Attack_Max  = 39,
+
+            FallDown        = 40,
+            FallDown_Max    = 49,
+
         }
-
-
 
 
         public void Init_Create()
@@ -711,8 +757,8 @@ namespace HordeFight
         //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
         private void Start()
         {
-            _animator.SetInteger("state", (int)eState.Idle);
-
+            _eState = eState.Idle_Random;
+            //_animator.SetInteger("state", (int)eState.Idle);
 
             _circle_id = Single.lineControl.Create_Circle(this.transform);
             Single.lineControl.SetActive(_circle_id, false);
@@ -723,12 +769,34 @@ namespace HordeFight
         private void Update()
         {
 
-            Update_IdleState();
+            if (eState.Idle == _eState)
+            {
+                _animator.SetInteger("state", (int)eState.Idle);
+            }
+            else if (eState.Idle_Random == _eState)
+            {
+                _animator.SetInteger("state", (int)eState.Idle);
+                Idle_Random();
 
-            //if(eKind.slime != _eKind)
+            }
+            else if (eState.Move == _eState)
+            {
+                _animator.SetInteger("state", (int)eState.Move);
+            }
+            else if (eState.Attack == _eState)
+            {
+                _animator.SetInteger("state", (int)eState.Attack);
+            }
+            else if (eState.FallDown == _eState)
+            {
+                _animator.SetInteger("state", (int)eState.FallDown);
+            }
+
+
+
+
             //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
             GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 100f);
-
         }
 
 
@@ -736,29 +804,6 @@ namespace HordeFight
         //                  애니메이션  
         //____________________________________________
 
-        private float __elapsedTime = 0f;
-        private float __randTime = 0f;
-        public void Update_IdleState()
-        {
-            if ((int)eState.Idle == _animator.GetInteger("state"))
-            {
-                __elapsedTime += Time.deltaTime;
-
-
-                if (__randTime < __elapsedTime)
-                {
-                    _eDir8 = (eDirection)Single.rand.Next(1, 9); //1~8
-                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
-
-                    __elapsedTime = 0f;
-
-                    //3~6초가 지났을 때 돌아감
-                    __randTime = (float)Single.rand.Next(3, 7); //3~6
-                }
-
-            }
-
-        }
 
         //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
         public AnimationClip GetClip(string name)
@@ -825,19 +870,45 @@ namespace HordeFight
             this.GetComponent<AI>()._ai_running = run;
         }
 
-        public void Idle_View(Vector3 dir , bool forward)
+        private float __elapsedTime_1 = 0f;
+        private float __randTime = 0f;
+        public void Idle_Random()
         {
-           
+            if ((int)eState.Idle == _animator.GetInteger("state"))
+            {
+                __elapsedTime_1 += Time.deltaTime;
+
+
+                if (__randTime < __elapsedTime_1)
+                {
+                    _eDir8 = (eDirection)Single.rand.Next(1, 9); //1~8
+                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+
+                    __elapsedTime_1 = 0f;
+
+                    //3~6초가 지났을 때 돌아감
+                    __randTime = (float)Single.rand.Next(3, 7); //3~6
+                }
+
+            }
+
+        }
+
+        public void Idle_View(Vector3 dir , bool forward )//, bool setState)
+        {
+            
             if (false == forward)
                 dir *= -1f;
 
             _eDir8 = TransDirection8(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
-            _animator.SetInteger("state", (int)eState.Idle);
+
+            //if(true == setState)
+                //_animator.SetInteger("state", (int)eState.Idle);
         }
 
-        public void Move(Vector3 dir ,  float distance ,bool forward)
+        public void Move(Vector3 dir ,  float distance ,bool forward )//, bool setState)
 		{
             //Vector3 dir = target - this.transform.position;
             //dir.Normalize();
@@ -850,7 +921,9 @@ namespace HordeFight
             _eDir8 = TransDirection8(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
-            _animator.SetInteger("state", (int)eState.Move);
+
+            //if (true == setState)
+                //_animator.SetInteger("state", (int)eState.Move);
 		}
 
         public void Attack(Character target)
@@ -870,7 +943,8 @@ namespace HordeFight
 
             _startPos = hit.point;
 
-            _animator.SetInteger("state", (int)eState.Move);
+            //_animator.SetInteger("state", (int)eState.Move);
+            _eState = eState.Move;
 
             Single.lineControl.SetActive(_circle_id, true);
 
@@ -885,6 +959,8 @@ namespace HordeFight
 
             Move((Vector3)hit.point - this.transform.position,_disPerSecond,true);
 
+            Single.objectManager.LookAtTarget(this);
+
 
         }
 
@@ -893,7 +969,9 @@ namespace HordeFight
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
 
             Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
-            _animator.SetInteger("state", (int)eState.Idle);
+            //_animator.SetInteger("state", (int)eState.Idle);
+            _eState = eState.Idle_Random;
+            Single.objectManager.SetAll_State(eState.Idle_Random);
 
             Single.lineControl.SetActive(_circle_id, false);
         }
@@ -1119,6 +1197,7 @@ namespace HordeFight
                             {
                                 //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
                                 this.GetComponent<Character>().Move(dir, 1f,true);
+                                this.GetComponent<Character>()._eState = Character.eState.Move;
                             }
 
 
