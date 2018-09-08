@@ -700,6 +700,12 @@ namespace HordeFight
         public int      _circle_id = -1;
 
         public float    _disPerSecond = 1f; //초당 이동거리 
+
+        public ushort   _power = 1;
+        public ushort   _hp = 10;
+        public float    _range_min = 0.15f;
+        public float    _range_max = 0.15f;
+        public bool     _death = false;
        
 
         public enum eKind
@@ -919,16 +925,14 @@ namespace HordeFight
                 dir *= -1f;
             
             _eDir8 = TransDirection8(dir);
-            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
 
-            //if (true == setState)
-                //_animator.SetInteger("state", (int)eState.Move);
 		}
 
-        public void Attack(Character target)
+        public void Attack(Vector3 dir)
         {
-            
+            _eDir8 = TransDirection8(dir);
+            Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
 		private Vector2 _startPos = Vector3.zero;
@@ -943,8 +947,7 @@ namespace HordeFight
 
             _startPos = hit.point;
 
-            //_animator.SetInteger("state", (int)eState.Move);
-            _eState = eState.Move;
+
 
             Single.lineControl.SetActive(_circle_id, true);
 
@@ -957,7 +960,21 @@ namespace HordeFight
 
             RaycastHit2D hit = Single.touchProcess.GetHit2D();
 
-            Move((Vector3)hit.point - this.transform.position,_disPerSecond,true);
+            Vector3 dir = (Vector3)hit.point - this.transform.position;
+
+            Character target = Single.objectManager.GetNearCharacter(this, 0.3f);
+            if(null != target)
+            {
+                _eState = eState.Attack;
+                Attack(dir);
+                _move.Move_Forward(dir, 1f, 1f); //chamto test
+            }
+            else
+            {
+                _eState = eState.Move;
+                Move(dir, _disPerSecond, true);
+            }
+
 
             Single.objectManager.LookAtTarget(this);
 
