@@ -1049,6 +1049,8 @@ namespace HordeFight
 
             Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);
+            _animator.Play("idle 10");
+
             _eState = eState.Idle_Random;
             Single.objectManager.SetAll_State(eState.Idle_Random);
 
