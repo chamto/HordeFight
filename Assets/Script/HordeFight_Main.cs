@@ -675,7 +675,23 @@ namespace HordeFight
 
             _characters.Add(cha);
 
+            if(Character.eKind.spearman == eKind)
+            {
+                Create_ShotSpear(obj.transform, 0);
+                //Create_ShotSpear(obj.transform, 1);
+                //Create_ShotSpear(obj.transform, 2);
+            }
+
             return cha;
+        }
+
+        public GameObject Create_ShotSpear(Transform parent, int id)
+        {
+            GameObject obj = CreatePrefab("shot/spear", parent, id.ToString("000") + "_spear");
+            obj.transform.parent = parent;
+            obj.transform.localPosition = new Vector3(-0.15f,0.15f,0);
+
+            return obj;
         }
 
         public void Create_StageInfo()
@@ -714,15 +730,15 @@ namespace HordeFight
         //데카르트좌표계 사분면을 기준으로 숫자 지정
         public enum eDirection : int
         {
-            none = 0,
-            right = 1,
-            rightUp = 2,
-            up = 3,
-            leftUp = 4,
-            left = 5,
-            leftDown = 6,
-            down = 7,
-            rightDown = 8,
+            none        = -1,
+            right       = 0,
+            rightUp     = 1,
+            up          = 2,
+            leftUp      = 3,
+            left        = 4,
+            leftDown    = 5,
+            down        = 6,
+            rightDown   = 7,
 
         }
 
@@ -738,7 +754,7 @@ namespace HordeFight
             //360 / 45 = 8
             int quad = Mathf.RoundToInt(deg / 45f);
             quad %= 8; //8 => 0 , 8을 0으로 변경  
-            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
             //DebugWide.LogRed(deg + "   " + quad);
 
             return (eDirection)quad;
@@ -1008,6 +1024,20 @@ namespace HordeFight
             Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
+        public void Attack_Shot(Vector3 dir)
+        {
+            Attack(dir);
+
+            GameObject shot = GameObject.Find("000_spear");
+            if (null != shot)
+            {
+                Vector3 angle = new Vector3(0, 0, -120f);
+                angle.z += (float)_eDir8 * 45f;
+                shot.transform.localEulerAngles = angle;
+
+            }
+        }
+
         public void FallDown()
         {
             switch (_eDir8)
@@ -1073,6 +1103,7 @@ namespace HordeFight
             {
                 _eState = eState.Attack;
                 Attack(dir);
+
                 _move.Move_Forward(dir, 1f, 1f); //chamto test
             }
             else
@@ -1081,7 +1112,7 @@ namespace HordeFight
                 Move(dir, _disPerSecond, true);
             }
 
-
+            Attack_Shot(dir); //chamto test -[------- -[------- -[------- -[------- -[-------
             Single.objectManager.LookAtTarget(this);
 
 

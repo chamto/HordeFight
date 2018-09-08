@@ -56,22 +56,22 @@ TextureImporter:
     21300102: effect_51
     21300104: effect_52
     21300106: effect_53
-    21300108: effect_54
+    21300108: force_0
     21300110: effect_55
     21300112: effect_56
     21300114: effect_57
     21300116: effect_58
-    21300118: effect_59
+    21300118: force_1
     21300120: effect_60
     21300122: effect_61
     21300124: effect_62
     21300126: effect_63
-    21300128: effect_64
+    21300128: force_2
     21300130: effect_65
     21300132: effect_66
     21300134: effect_67
     21300136: effect_68
-    21300138: effect_69
+    21300138: force_3
     21300140: effect_70
     21300142: effect_71
     21300144: effect_72
@@ -170,8 +170,8 @@ TextureImporter:
     21300330: effect_165
     21300332: effect_166
     21300334: effect_167
-    21300336: effect_168
-    21300338: effect_169
+    21300336: force_4
+    21300338: spear_0
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -1343,7 +1343,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_54
+      name: force_0
       rect:
         serializedVersion: 2
         x: 11
@@ -1443,7 +1443,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_59
+      name: force_1
       rect:
         serializedVersion: 2
         x: 169
@@ -1543,7 +1543,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_64
+      name: force_2
       rect:
         serializedVersion: 2
         x: 329
@@ -1643,7 +1643,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_69
+      name: force_3
       rect:
         serializedVersion: 2
         x: 491
@@ -2166,7 +2166,7 @@ TextureImporter:
       name: effect_95
       rect:
         serializedVersion: 2
-        x: 570
+        x: 569
         y: 118
         width: 31
         height: 34
@@ -3623,7 +3623,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_168
+      name: force_4
       rect:
         serializedVersion: 2
         x: 649
@@ -3643,7 +3643,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_169
+      name: spear_0
       rect:
         serializedVersion: 2
         x: 345
@@ -3651,7 +3651,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
