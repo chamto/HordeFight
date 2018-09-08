@@ -324,33 +324,32 @@ namespace HordeFight
 
         public struct LineInfo
         {
-            public LineRenderer renderer;
+            public LineRenderer render;
             public eKind kind;
             public int id;
 
             public void Init()
             {
-                renderer = null;
+                render = null;
                 kind = eKind.None;
                 id = -1;
             }
 
-            public void Update_Circle()
-            {
-                if (null == renderer) return;
+            //public void Update_Circle()
+            //{
+            //    if (null == renderer) return;
 
-                float deg = 360f / renderer.positionCount;
-                float radius = renderer.transform.parent.GetComponent<CircleCollider2D>().radius;
-                Vector3 pos = Vector3.right;
-                for (int i = 0; i < renderer.positionCount; i++)
-                {
-                    pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
-                    pos.y = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
-                    renderer.SetPosition(i, pos + renderer.transform.parent.position);
-                    //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
-                }
-
-            }
+            //    float deg = 360f / renderer.positionCount;
+            //    float radius = renderer.transform.parent.GetComponent<CircleCollider2D>().radius;
+            //    Vector3 pos = Vector3.right;
+            //    for (int i = 0; i < renderer.positionCount; i++)
+            //    {
+            //        pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
+            //        pos.y = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
+            //        renderer.SetPosition(i, pos + renderer.transform.parent.position);
+            //        //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
+            //    }
+            //}
         }
 
 		private void Start()
@@ -369,8 +368,40 @@ namespace HordeFight
             //}
 		}
 
-        public void Create_Line(Transform dst)
-        {}
+        public int Create_Line_HP(Transform dst)
+        {
+            GameObject obj = new GameObject();
+            LineRenderer render = obj.AddComponent<LineRenderer>();
+            LineInfo info = new LineInfo();
+            info.Init();
+
+            _sequenceId++;
+
+            info.id = _sequenceId;
+            info.render = render;
+            info.kind = eKind.Line;
+
+            render.name = info.kind.ToString() + "_" + _sequenceId.ToString("000");
+            render.material = new Material(Shader.Find("Sprites/Default"));
+            render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
+            render.transform.parent = dst;
+            render.sortingOrder = -10; //나중에 그려지게 한다.
+            render.positionCount = 2;
+
+            render.SetWidth(0.02f, 0.02f);
+            render.SetColors(Color.red, Color.red);
+
+
+            _list.Add(_sequenceId, info); //추가
+
+            Vector3 pos = Vector3.zero;
+            pos.x = -0.05f; pos.y = -0.1f;
+            render.SetPosition(0, pos);
+            pos.x += 0.1f;
+            render.SetPosition(1, pos);
+
+            return _sequenceId;
+        }
 
         public int Create_Circle(Transform dst)
         {
@@ -382,10 +413,10 @@ namespace HordeFight
             _sequenceId++;
 
             info.id = _sequenceId;
-            info.renderer = render;
+            info.render = render;
             info.kind = eKind.Circle;
 
-            render.name = eKind.Circle.ToString() + "_" + _sequenceId.ToString("000");
+            render.name = info.kind.ToString() + "_" + _sequenceId.ToString("000");
             render.material = new Material(Shader.Find("Sprites/Default"));
             render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
             render.transform.parent = dst;//부모객체 지정
@@ -399,7 +430,18 @@ namespace HordeFight
 
             _list.Add(_sequenceId, info); //추가
 
-            info.Update_Circle(); //값설정
+            //info.Update_Circle(); //값설정
+            float deg = 360f / render.positionCount;
+            float radius = render.transform.parent.GetComponent<CircleCollider2D>().radius;
+            Vector3 pos = Vector3.right;
+            for (int i = 0; i < render.positionCount; i++)
+            {
+                pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
+                pos.y = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
+                //render.SetPosition(i, pos + render.transform.parent.position);
+                render.SetPosition(i, pos );
+                //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
+            }
 
             return _sequenceId;
 
@@ -414,7 +456,21 @@ namespace HordeFight
         public void SetActive(int id, bool onOff)
         {
             //todo : 예외처리 추가하기 
-            _list[id].renderer.gameObject.SetActive(onOff);
+            _list[id].render.gameObject.SetActive(onOff);
+        }
+
+        //rate : 0~1
+        public void SetLineHP(int id, float rate)
+        {
+            if (0 > rate) rate = 0;
+            if (1f < rate) rate = 1f;
+
+            LineRenderer render = _list[id].render;
+            Vector3 pos = Vector3.zero;
+            pos.x = -0.05f; pos.y = -0.1f;
+            render.SetPosition(0, pos);
+            pos.x += (0.1f * rate) ;
+            render.SetPosition(1, pos);
         }
 
 	}
@@ -697,12 +753,14 @@ namespace HordeFight
         public int      _id     = -1;
         public eKind    _eKind  = eKind.None;
         public eState   _eState = eState.None;
-        public int      _circle_id = -1;
+        public int      _UIID_circle = -1;
+        public int      _UIID_hp = -1;
 
         public float    _disPerSecond = 1f; //초당 이동거리 
 
         public ushort   _power = 1;
-        public ushort   _hp = 10;
+        public ushort   _hp_cur = 10;
+        public ushort   _hp_max = 10;
         public float    _range_min = 0.15f;
         public float    _range_max = 0.15f;
         public bool     _death = false;
@@ -766,8 +824,10 @@ namespace HordeFight
             _eState = eState.Idle_Random;
             //_animator.SetInteger("state", (int)eState.Idle);
 
-            _circle_id = Single.lineControl.Create_Circle(this.transform);
-            Single.lineControl.SetActive(_circle_id, false);
+            _UIID_circle = Single.lineControl.Create_Circle(this.transform);
+            Single.lineControl.SetActive(_UIID_circle, false);
+
+            _UIID_hp = Single.lineControl.Create_Line_HP(this.transform);
         }
 
 
@@ -948,8 +1008,10 @@ namespace HordeFight
             _startPos = hit.point;
 
 
+            Single.lineControl.SetActive(_UIID_circle, true);
 
-            Single.lineControl.SetActive(_circle_id, true);
+            _hp_cur--;
+            Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
 
         }
 
@@ -962,7 +1024,7 @@ namespace HordeFight
 
             Vector3 dir = (Vector3)hit.point - this.transform.position;
 
-            Character target = Single.objectManager.GetNearCharacter(this, 0.3f);
+            Character target = Single.objectManager.GetNearCharacter(this, 0.2f);
             if(null != target)
             {
                 _eState = eState.Attack;
@@ -990,7 +1052,7 @@ namespace HordeFight
             _eState = eState.Idle_Random;
             Single.objectManager.SetAll_State(eState.Idle_Random);
 
-            Single.lineControl.SetActive(_circle_id, false);
+            Single.lineControl.SetActive(_UIID_circle, false);
         }
     }
 
