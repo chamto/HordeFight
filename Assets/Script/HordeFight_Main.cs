@@ -663,6 +663,7 @@ namespace HordeFight
 
         public Character Create_Character(Transform parent, Character.eKind eKind,int id, Vector3 pos)
         {
+
             GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
             Character cha = obj.AddComponent<Character>();
             obj.AddComponent<Movable>();
@@ -679,6 +680,9 @@ namespace HordeFight
 
         public void Create_StageInfo()
         {
+
+            if (null == Single.unitRoot) return;
+
             int id_sequence = 0;
             Vector3 pos = Vector3.zero;
             Create_Character(Single.unitRoot, Character.eKind.lothar, id_sequence++, pos);
@@ -834,6 +838,16 @@ namespace HordeFight
 
         private void Update()
         {
+            if (true == _death) return;
+
+            if (9 > _hp_cur)
+            {
+                //DebugWide.LogBlue("death  " + _eState);
+                _death = true;
+                _eState = eState.FallDown;
+                FallDown();
+            }
+
 
             if (eState.Idle == _eState)
             {
@@ -857,7 +871,6 @@ namespace HordeFight
             {
                 _animator.SetInteger("state", (int)eState.FallDown);
             }
-
 
 
 
@@ -995,6 +1008,26 @@ namespace HordeFight
             Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
+        public void FallDown()
+        {
+            switch (_eDir8)
+            {
+                case eDirection.up:
+                    { }
+                    break;
+                case eDirection.down:
+                    { }
+                    break;
+                default:
+                    {
+                        _eDir8 = eDirection.up; //기본상태 지정 
+                    }
+                    break;
+            }
+
+            Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
+        }
+
 		private Vector2 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
@@ -1012,6 +1045,17 @@ namespace HordeFight
 
             _hp_cur--;
             Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
+
+
+            if(8 > _hp_cur)
+            {
+                //다시 살리기
+                _animator.Play("idle 10");
+                _death = false;
+                _hp_cur = 10;
+                _eState = eState.Idle;    
+            }
+
 
         }
 

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: ani_Z_divideTest
+  m_Controller: {fileID: 9100000, guid: e69d2650600db431bbfce441504a8e84, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: df48fad7748ae414c988cab674f50473, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 23385b4c4df1e45369d22324546656b3, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: ec4f057193aaa42ce9ae7f14f0da9d62, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 4af288e04e76e4728a0ed79581ffc60b, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 7d9f5edcb85a24778b1e1d75f254f70a, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 593fa560b13bc450e9ef7cfccfe2b481, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 3ae9a431f39634775b2abcb9664b8f46, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 2da68f6c756924c79a2ec70ebe07b440, type: 2}
