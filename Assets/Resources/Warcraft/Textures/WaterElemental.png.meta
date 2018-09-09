@@ -1,7 +1,111 @@
 fileFormatVersion: 2
 guid: 736303c5287474dafa1c36959793fe77
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: WaterElemental_0_0
+    21300002: WaterElemental_1_0
+    21300004: WaterElemental_2_0
+    21300006: WaterElemental_3_0
+    21300008: WaterElemental_4_0
+    21300010: WaterElemental_5_0
+    21300012: WaterElemental_6_0
+    21300014: WaterElemental_7_0
+    21300016: WaterElemental_8_0
+    21300018: WaterElemental_9_0
+    21300020: WaterElemental_10
+    21300022: WaterElemental_10_0
+    21300024: WaterElemental_12
+    21300026: WaterElemental_13
+    21300028: WaterElemental_14
+    21300030: WaterElemental_15
+    21300032: WaterElemental_16
+    21300034: WaterElemental_17
+    21300036: WaterElemental_18
+    21300038: WaterElemental_19
+    21300040: WaterElemental_20
+    21300042: WaterElemental_21
+    21300044: WaterElemental_22
+    21300046: WaterElemental_23
+    21300048: WaterElemental_24
+    21300050: WaterElemental_2_1
+    21300052: WaterElemental_3_1
+    21300054: WaterElemental_27
+    21300056: WaterElemental_4_1
+    21300058: WaterElemental_7_1
+    21300060: WaterElemental_8_1
+    21300062: WaterElemental_9_1
+    21300064: WaterElemental_10_1
+    21300066: WaterElemental_33
+    21300068: WaterElemental_34
+    21300070: WaterElemental_35
+    21300072: WaterElemental_36
+    21300074: WaterElemental_0_1
+    21300076: WaterElemental_1_1
+    21300078: WaterElemental_39
+    21300080: WaterElemental_5_1
+    21300082: WaterElemental_6_1
+    21300084: WaterElemental_42
+    21300086: WaterElemental_4_2
+    21300088: WaterElemental_5_2
+    21300090: WaterElemental_45
+    21300092: WaterElemental_6_2
+    21300094: WaterElemental_47
+    21300096: WaterElemental_9_2
+    21300098: WaterElemental_10_2
+    21300100: WaterElemental_50
+    21300102: WaterElemental_51
+    21300104: WaterElemental_52
+    21300106: WaterElemental_53
+    21300108: WaterElemental_0_2
+    21300110: WaterElemental_55
+    21300112: WaterElemental_1_2
+    21300114: WaterElemental_2_2
+    21300116: WaterElemental_3_2
+    21300118: WaterElemental_7_2
+    21300120: WaterElemental_60
+    21300122: WaterElemental_8_2
+    21300124: WaterElemental_62
+    21300126: WaterElemental_63
+    21300128: WaterElemental_64
+    21300130: WaterElemental_65
+    21300132: WaterElemental_66
+    21300134: WaterElemental_67
+    21300136: WaterElemental_68
+    21300138: WaterElemental_69
+    21300140: WaterElemental_70
+    21300142: WaterElemental_71
+    21300144: WaterElemental_72
+    21300146: WaterElemental_73
+    21300148: WaterElemental_74
+    21300150: WaterElemental_5_3
+    21300152: WaterElemental_6_3
+    21300154: WaterElemental_7_3
+    21300156: WaterElemental_78
+    21300158: WaterElemental_8_3
+    21300160: WaterElemental_9_3
+    21300162: WaterElemental_81
+    21300164: WaterElemental_82
+    21300166: WaterElemental_83
+    21300168: WaterElemental_84
+    21300170: WaterElemental_6_4
+    21300172: WaterElemental_86
+    21300174: WaterElemental_87
+    21300176: WaterElemental_88
+    21300178: WaterElemental_89
+    21300180: WaterElemental_9_4
+    21300182: WaterElemental_91
+    21300184: WaterElemental_5_4
+    21300186: WaterElemental_7_4
+    21300188: WaterElemental_94
+    21300190: WaterElemental_8_4
+    21300192: WaterElemental_96
+    21300194: WaterElemental_97
+    21300196: WaterElemental_98
+    21300198: WaterElemental_99
+    21300200: WaterElemental_100
+    21300202: WaterElemental_101
+    21300204: WaterElemental_102
+    21300206: WaterElemental_103
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -91,11 +195,1131 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: WaterElemental_0_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 198
+        width: 28
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1610aac89b5f4287b9814e545e3b90f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_1_0
+      rect:
+        serializedVersion: 2
+        x: 59
+        y: 201
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b385a8538c4dd4b58b8b1240774e73d2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_2_0
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 201
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 070258af8436c4df2bdab628aed7a3af
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_3_0
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 201
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b4674086c8b084770811c42e35e18b66
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_4_0
+      rect:
+        serializedVersion: 2
+        x: 202
+        y: 202
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a2f93776d03cb4cf4bb2e0b92321b144
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_5_0
+      rect:
+        serializedVersion: 2
+        x: 251
+        y: 198
+        width: 28
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6d9d67c5c629405db184bdae26d8ae3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_6_0
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 201
+        width: 28
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5ebf294014b644bd895a2f426891a52
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_7_0
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 201
+        width: 31
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3ac4b4debf8e248be97080e62ceb51d8
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_8_0
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 201
+        width: 28
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7c637530f188243b48dfbf5dc48a5ebf
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_9_0
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 202
+        width: 28
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f8170c8fe909425182fa8f2a1e29731
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_10_0
+      rect:
+        serializedVersion: 2
+        x: 489
+        y: 203
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7e8a1286f201479eaefd943e5ff432b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_13
+      rect:
+        serializedVersion: 2
+        x: 537
+        y: 203
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6a64a5ea880504104bae5c9bee099403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_15
+      rect:
+        serializedVersion: 2
+        x: 585
+        y: 203
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 720e1bc2537fb45a89a5fc5e3fa54358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_17
+      rect:
+        serializedVersion: 2
+        x: 633
+        y: 203
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b2696b87c91f54d988629e73c2ea3e28
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_19
+      rect:
+        serializedVersion: 2
+        x: 681
+        y: 203
+        width: 30
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cdc8cdf7492664363b66389b0481b78e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_2_1
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 153
+        width: 29
+        height: 29
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5f41184fa83c242b897f3b6761462bab
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_3_1
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 152
+        width: 29
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b4f4abc0c63e484f947d9126ae415ee
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_4_1
+      rect:
+        serializedVersion: 2
+        x: 201
+        y: 156
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbbdcb36f20fe44c9aa87474ae3c5992
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_7_1
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 153
+        width: 30
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b06e5a7b1c2646fab03c153f4d0f29b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_8_1
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 155
+        width: 29
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 319a2d92e5ae1415ab12019fe5389e78
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_9_1
+      rect:
+        serializedVersion: 2
+        x: 441
+        y: 156
+        width: 34
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 07411d582212d47b4aa6a0906abc21b9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_10_1
+      rect:
+        serializedVersion: 2
+        x: 496
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0f9fc2726abe4602bcc97d7d2868d62
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_33
+      rect:
+        serializedVersion: 2
+        x: 544
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f053e60b55f094f9dba16b95a36378e2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_34
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4adddb7f9b9684f6f8724474ef6fe8e2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_35
+      rect:
+        serializedVersion: 2
+        x: 640
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7fde37e8df8434dedad88301aabcc01b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_36
+      rect:
+        serializedVersion: 2
+        x: 688
+        y: 158
+        width: 20
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cd43fafb2c18e476895b6e91e4f61d5a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_0_1
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 151
+        width: 29
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 059ea0a21d6a24ff39e98b69350cf7df
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_1_1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 154
+        width: 34
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: eee07cc15ba514e02bf80c7872b46532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_5_1
+      rect:
+        serializedVersion: 2
+        x: 242
+        y: 150
+        width: 36
+        height: 30
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f7d1b9ad17d69452f96208e8dade41a0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_6_1
+      rect:
+        serializedVersion: 2
+        x: 289
+        y: 154
+        width: 39
+        height: 26
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4acaed0bf8d6e4d80abbc522c58dfb06
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_4_2
+      rect:
+        serializedVersion: 2
+        x: 199
+        y: 106
+        width: 33
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9c49955c0b979470b95aad246c28b11b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_5_2
+      rect:
+        serializedVersion: 2
+        x: 247
+        y: 103
+        width: 32
+        height: 39
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9eab67e2693fa42e3949f8e2272db49c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_6_2
+      rect:
+        serializedVersion: 2
+        x: 298
+        y: 103
+        width: 33
+        height: 39
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 71c880a21373044f2ad8bafb8b6051af
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_9_2
+      rect:
+        serializedVersion: 2
+        x: 439
+        y: 97
+        width: 32
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f200712c2e9d44cbbb23944dacb014f9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_10_2
+      rect:
+        serializedVersion: 2
+        x: 498
+        y: 113
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 48b9d7f8d5c174136b8f4b349aca86f7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_50
+      rect:
+        serializedVersion: 2
+        x: 546
+        y: 113
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6f742148122f040efa886927dc188cc6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_51
+      rect:
+        serializedVersion: 2
+        x: 594
+        y: 113
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 199832668653642da84db30312f610f3
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_52
+      rect:
+        serializedVersion: 2
+        x: 642
+        y: 113
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6f533a302ed047e8859e18df15203b8
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_53
+      rect:
+        serializedVersion: 2
+        x: 690
+        y: 113
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0eebc3bfc14484243bc5702f7871f367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_0_2
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 103
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9d1c7868ce1e4f8cbdeaf1fff64148c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_1_2
+      rect:
+        serializedVersion: 2
+        x: 58
+        y: 103
+        width: 33
+        height: 31
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6d4fb138708b94e4aacb8640d4cf16ef
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_2_2
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 104
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c064ef9493075411ba3569c071853de2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_3_2
+      rect:
+        serializedVersion: 2
+        x: 147
+        y: 102
+        width: 35
+        height: 34
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 032d80ae249924fc297fcb090879c818
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_7_2
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 104
+        width: 39
+        height: 32
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a8fd6fdfbefad46769462a849676b5da
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_8_2
+      rect:
+        serializedVersion: 2
+        x: 387
+        y: 102
+        width: 42
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0b15cc689ad74eb2a018498ef88d885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_5_3
+      rect:
+        serializedVersion: 2
+        x: 243
+        y: 54
+        width: 36
+        height: 41
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f2bf41fcd2d141998094dcc9ab79aa6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_6_3
+      rect:
+        serializedVersion: 2
+        x: 299
+        y: 57
+        width: 28
+        height: 39
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 30f9c1c47f0ff465f88ea2f463b65362
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_7_3
+      rect:
+        serializedVersion: 2
+        x: 343
+        y: 57
+        width: 41
+        height: 36
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9f309e8996c134f18aac964df66079e6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_8_3
+      rect:
+        serializedVersion: 2
+        x: 388
+        y: 52
+        width: 43
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: afc19ca7008d64841823f709b3a81178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_9_3
+      rect:
+        serializedVersion: 2
+        x: 442
+        y: 46
+        width: 35
+        height: 46
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3a47536bc1a58465d81624da4cea5e25
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_6_4
+      rect:
+        serializedVersion: 2
+        x: 296
+        y: 10
+        width: 34
+        height: 37
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5d1098e20fe2f4fb2a72429c3a3f28c1
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_9_4
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 1
+        width: 34
+        height: 42
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e9ad1c4f2579e47c8bedf41ac936582f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_5_4
+      rect:
+        serializedVersion: 2
+        x: 245
+        y: 7
+        width: 35
+        height: 37
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 31353adcb30d8431c87ca19ebc6cd2d8
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_7_4
+      rect:
+        serializedVersion: 2
+        x: 345
+        y: 9
+        width: 38
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d4eb244b4113a48bfbbf397c1f3cc6bc
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_8_4
+      rect:
+        serializedVersion: 2
+        x: 393
+        y: 8
+        width: 39
+        height: 35
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 815f406026fe24486917128f0f158234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: WaterElemental_100
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 2
+        width: 126
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 874d63bd3e01d4b7a8a6bd489136c1b5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 3a5bbe82244df4aa1b0a3b9eb15c8eec
     vertices: []
     indices: 
     edges: []

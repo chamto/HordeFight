@@ -711,7 +711,6 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Character.eKind.slime, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
-
             Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos).SetAIRunning(false);
 
 
@@ -719,6 +718,10 @@ namespace HordeFight
             {
                 Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
             }
+
+            Create_Character(Single.unitRoot, Character.eKind.daemon, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.waterElemental, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.fireElemental, id_sequence++, pos);
 
         }
 
@@ -801,6 +804,9 @@ namespace HordeFight
             brigand,
             knight,
             ogre,
+            daemon,
+            waterElemental,
+            fireElemental,
 
         }
 

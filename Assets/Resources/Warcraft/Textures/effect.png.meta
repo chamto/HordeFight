@@ -78,7 +78,7 @@ TextureImporter:
     21300146: effect_73
     21300148: effect_74
     21300150: effect_75
-    21300152: effect_76
+    21300152: explosion_0_5
     21300154: effect_77
     21300156: effect_78
     21300158: effect_79
@@ -96,9 +96,9 @@ TextureImporter:
     21300182: effect_91
     21300184: effect_92
     21300186: effect_93
-    21300188: effect_94
-    21300190: effect_95
-    21300192: effect_96
+    21300188: explosion_0_0
+    21300190: explosion_0_1
+    21300192: explosion_0_2
     21300194: effect_97
     21300196: effect_98
     21300198: effect_99
@@ -107,7 +107,7 @@ TextureImporter:
     21300204: effect_102
     21300206: effect_103
     21300208: effect_104
-    21300210: effect_105
+    21300210: explosion_0_3
     21300212: effect_106
     21300214: effect_107
     21300216: effect_108
@@ -121,7 +121,7 @@ TextureImporter:
     21300232: effect_116
     21300234: effect_117
     21300236: effect_118
-    21300238: effect_119
+    21300238: explosion_0_4
     21300240: effect_120
     21300242: effect_121
     21300244: effect_122
@@ -1743,53 +1743,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_74
-      rect:
-        serializedVersion: 2
-        x: 674
-        y: 129
-        width: 5
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 97a259b99b3a44f45896fa8137f41a6a
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_75
-      rect:
-        serializedVersion: 2
-        x: 676
-        y: 121
-        width: 8
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 020fabd2136114093b45c34724bd4e8f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_76
+      name: explosion_0_5
       rect:
         serializedVersion: 2
         x: 755
         y: 112
         width: 44
-        height: 67
+        height: 38
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1818,26 +1778,6 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: e1058faafc2684d3faf2a34c247a7abd
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_78
-      rect:
-        serializedVersion: 2
-        x: 755
-        y: 112
-        width: 44
-        height: 67
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4252de0bfa49a4efea2e5aa5909067c9
       vertices: []
       indices: 
       edges: []
@@ -2143,7 +2083,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_94
+      name: explosion_0_0
       rect:
         serializedVersion: 2
         x: 528
@@ -2163,7 +2103,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_95
+      name: explosion_0_1
       rect:
         serializedVersion: 2
         x: 569
@@ -2183,13 +2123,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_96
+      name: explosion_0_2
       rect:
         serializedVersion: 2
-        x: 640
+        x: 609
         y: 114
-        width: 6
-        height: 7
+        width: 41
+        height: 40
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2203,173 +2143,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_97
+      name: explosion_0_3
       rect:
         serializedVersion: 2
-        x: 670
-        y: 134
-        width: 9
-        height: 11
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 775a410254cdb458e8b69bc993287eeb
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_98
-      rect:
-        serializedVersion: 2
-        x: 685
-        y: 112
-        width: 14
-        height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 5af682a77be954515b83a1c55c51e82d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_99
-      rect:
-        serializedVersion: 2
-        x: 714
-        y: 139
-        width: 8
-        height: 6
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b1d898d4e8a3049ab811752fdd65a25a
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_100
-      rect:
-        serializedVersion: 2
-        x: 659
-        y: 121
-        width: 6
-        height: 10
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 68e23505c40024964802199df6103dd6
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_101
-      rect:
-        serializedVersion: 2
-        x: 660
-        y: 109
-        width: 24
-        height: 24
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 967887b3c45f34741a6af16dcff7dc5d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_102
-      rect:
-        serializedVersion: 2
-        x: 674
-        y: 129
-        width: 5
-        height: 8
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: b7bb9faaa68f84344bbfa8fd06c83588
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_103
-      rect:
-        serializedVersion: 2
-        x: 673
-        y: 124
-        width: 10
-        height: 5
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 22d1b5ba2a0154adb969116afdffaba2
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_104
-      rect:
-        serializedVersion: 2
-        x: 676
-        y: 121
-        width: 8
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: af2da0bfa562447f18d835bde0d5588f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_105
-      rect:
-        serializedVersion: 2
-        x: 685
-        y: 112
-        width: 14
-        height: 14
+        x: 654
+        y: 108
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2378,26 +2158,6 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 3f8bfd93a0e0c4543942d395aac34a14
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_106
-      rect:
-        serializedVersion: 2
-        x: 732
-        y: 123
-        width: 4
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: d82d95a8a6b59486fbf0c0cc2193a0c4
       vertices: []
       indices: 
       edges: []
@@ -2623,33 +2383,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_118
+      name: explosion_0_4
       rect:
         serializedVersion: 2
-        x: 704
-        y: 110
-        width: 14
-        height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4ae82d2fa2b614bbcbbca418879d1949
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_119
-      rect:
-        serializedVersion: 2
-        x: 719
+        x: 703
         y: 108
-        width: 28
-        height: 14
+        width: 47
+        height: 49
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
