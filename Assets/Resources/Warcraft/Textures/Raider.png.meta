@@ -7,14 +7,14 @@ TextureImporter:
     21300004: Raider_2_0
     21300006: Raider_3_0
     21300008: Raider_4_0
-    21300010: Raider_5
-    21300012: Raider_6
-    21300014: Raider_7
-    21300016: Raider_8
-    21300018: Raider_9
-    21300020: Raider_10
+    21300010: Raider_5_0
+    21300012: Raider_6_0
+    21300014: Raider_7_0
+    21300016: Raider_8_0
+    21300018: Raider_9_0
+    21300020: Raider_10_0
     21300022: Raider_11
-    21300024: Raider_12
+    21300024: Raider_12_0
     21300026: Raider_13
     21300028: Raider_14
     21300030: Raider_0_1
@@ -22,14 +22,14 @@ TextureImporter:
     21300034: Raider_2_1
     21300036: Raider_3_1
     21300038: Raider_4_1
-    21300040: Raider_20
-    21300042: Raider_21
-    21300044: Raider_22
-    21300046: Raider_23
-    21300048: Raider_24
-    21300050: Raider_25
+    21300040: Raider_5_1
+    21300042: Raider_6_1
+    21300044: Raider_7_1
+    21300046: Raider_8_1
+    21300048: Raider_9_1
+    21300050: Raider_10_1
     21300052: Raider_26
-    21300054: Raider_27
+    21300054: Raider_12_1
     21300056: Raider_28
     21300058: Raider_29
     21300060: Raider_0_2
@@ -37,14 +37,14 @@ TextureImporter:
     21300064: Raider_2_2
     21300066: Raider_3_2
     21300068: Raider_4_2
-    21300070: Raider_35
-    21300072: Raider_36
-    21300074: Raider_37
-    21300076: Raider_38
-    21300078: Raider_39
-    21300080: Raider_40
+    21300070: Raider_5_2
+    21300072: Raider_6_2
+    21300074: Raider_7_2
+    21300076: Raider_8_2
+    21300078: Raider_9_2
+    21300080: Raider_10_2
     21300082: Raider_41
-    21300084: Raider_42
+    21300084: Raider_12_2
     21300086: Raider_43
     21300088: Raider_44
     21300090: Raider_0_3
@@ -52,14 +52,14 @@ TextureImporter:
     21300094: Raider_2_3
     21300096: Raider_3_3
     21300098: Raider_4_3
-    21300100: Raider_50
-    21300102: Raider_51
-    21300104: Raider_52
-    21300106: Raider_53
-    21300108: Raider_54
-    21300110: Raider_55
+    21300100: Raider_5_3
+    21300102: Raider_6_3
+    21300104: Raider_7_3
+    21300106: Raider_8_3
+    21300108: Raider_9_3
+    21300110: Raider_10_3
     21300112: Raider_56
-    21300114: Raider_57
+    21300114: Raider_12_3
     21300116: Raider_58
     21300118: Raider_59
     21300120: Raider_0_4
@@ -67,14 +67,14 @@ TextureImporter:
     21300124: Raider_2_4
     21300126: Raider_3_4
     21300128: Raider_4_4
-    21300130: Raider_65
-    21300132: Raider_66
-    21300134: Raider_67
-    21300136: Raider_68
-    21300138: Raider_69
-    21300140: Raider_70
+    21300130: Raider_5_4
+    21300132: Raider_6_4
+    21300134: Raider_7_4
+    21300136: Raider_8_4
+    21300138: Raider_9_4
+    21300140: Raider_10_4
     21300142: Raider_71
-    21300144: Raider_72
+    21300144: Raider_12_4
     21300146: Raider_73
     21300148: Raider_74
   externalObjects: {}
@@ -268,7 +268,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_5
+      name: Raider_5_0
       rect:
         serializedVersion: 2
         x: 240
@@ -288,7 +288,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_6
+      name: Raider_6_0
       rect:
         serializedVersion: 2
         x: 288
@@ -308,7 +308,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_7
+      name: Raider_7_0
       rect:
         serializedVersion: 2
         x: 336
@@ -328,7 +328,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_8
+      name: Raider_8_0
       rect:
         serializedVersion: 2
         x: 384
@@ -348,7 +348,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_9
+      name: Raider_9_0
       rect:
         serializedVersion: 2
         x: 432
@@ -368,7 +368,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_10
+      name: Raider_10_0
       rect:
         serializedVersion: 2
         x: 480
@@ -408,7 +408,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_12
+      name: Raider_12_0
       rect:
         serializedVersion: 2
         x: 576
@@ -568,7 +568,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_20
+      name: Raider_5_1
       rect:
         serializedVersion: 2
         x: 240
@@ -588,7 +588,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_21
+      name: Raider_6_1
       rect:
         serializedVersion: 2
         x: 288
@@ -608,7 +608,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_22
+      name: Raider_7_1
       rect:
         serializedVersion: 2
         x: 336
@@ -628,7 +628,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_23
+      name: Raider_8_1
       rect:
         serializedVersion: 2
         x: 384
@@ -648,7 +648,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_24
+      name: Raider_9_1
       rect:
         serializedVersion: 2
         x: 432
@@ -668,7 +668,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_25
+      name: Raider_10_1
       rect:
         serializedVersion: 2
         x: 480
@@ -708,7 +708,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_27
+      name: Raider_12_1
       rect:
         serializedVersion: 2
         x: 576
@@ -868,7 +868,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_35
+      name: Raider_5_2
       rect:
         serializedVersion: 2
         x: 240
@@ -888,7 +888,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_36
+      name: Raider_6_2
       rect:
         serializedVersion: 2
         x: 288
@@ -908,7 +908,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_37
+      name: Raider_7_2
       rect:
         serializedVersion: 2
         x: 336
@@ -928,7 +928,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_38
+      name: Raider_8_2
       rect:
         serializedVersion: 2
         x: 384
@@ -948,7 +948,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_39
+      name: Raider_9_2
       rect:
         serializedVersion: 2
         x: 432
@@ -968,7 +968,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_40
+      name: Raider_10_2
       rect:
         serializedVersion: 2
         x: 480
@@ -1008,7 +1008,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_42
+      name: Raider_12_2
       rect:
         serializedVersion: 2
         x: 576
@@ -1168,7 +1168,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_50
+      name: Raider_5_3
       rect:
         serializedVersion: 2
         x: 240
@@ -1188,7 +1188,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_51
+      name: Raider_6_3
       rect:
         serializedVersion: 2
         x: 288
@@ -1208,7 +1208,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_52
+      name: Raider_7_3
       rect:
         serializedVersion: 2
         x: 336
@@ -1228,7 +1228,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_53
+      name: Raider_8_3
       rect:
         serializedVersion: 2
         x: 384
@@ -1248,7 +1248,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_54
+      name: Raider_9_3
       rect:
         serializedVersion: 2
         x: 432
@@ -1268,7 +1268,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_55
+      name: Raider_10_3
       rect:
         serializedVersion: 2
         x: 480
@@ -1308,7 +1308,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_57
+      name: Raider_12_3
       rect:
         serializedVersion: 2
         x: 576
@@ -1468,7 +1468,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_65
+      name: Raider_5_4
       rect:
         serializedVersion: 2
         x: 240
@@ -1488,7 +1488,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_66
+      name: Raider_6_4
       rect:
         serializedVersion: 2
         x: 288
@@ -1508,7 +1508,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_67
+      name: Raider_7_4
       rect:
         serializedVersion: 2
         x: 336
@@ -1528,7 +1528,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_68
+      name: Raider_8_4
       rect:
         serializedVersion: 2
         x: 384
@@ -1548,7 +1548,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_69
+      name: Raider_9_4
       rect:
         serializedVersion: 2
         x: 432
@@ -1568,7 +1568,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_70
+      name: Raider_10_4
       rect:
         serializedVersion: 2
         x: 480
@@ -1608,7 +1608,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Raider_72
+      name: Raider_12_4
       rect:
         serializedVersion: 2
         x: 576

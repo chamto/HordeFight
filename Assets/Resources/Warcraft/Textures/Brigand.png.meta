@@ -7,51 +7,51 @@ TextureImporter:
     21300004: Brigand_2_0
     21300006: Brigand_3_0
     21300008: Brigand_4_0
-    21300010: Brigand_5
-    21300012: Brigand_6
+    21300010: Brigand_5_0
+    21300012: Brigand_6_0
     21300014: Brigand_7
-    21300016: Brigand_8
-    21300018: Brigand_9
-    21300020: Brigand_10
+    21300016: Brigand_8_0
+    21300018: Brigand_9_0
+    21300020: Brigand_10_0
     21300022: Brigand_11
     21300024: Brigand_12
-    21300026: Brigand_13
+    21300026: Brigand_13_0
     21300028: Brigand_14
     21300030: Brigand_0_1
     21300032: Brigand_1_1
     21300034: Brigand_2_1
     21300036: Brigand_3_1
     21300038: Brigand_4_1
-    21300040: Brigand_20
-    21300042: Brigand_21
-    21300044: Brigand_22
-    21300046: Brigand_23
-    21300048: Brigand_24
-    21300050: Brigand_25
+    21300040: Brigand_5_1
+    21300042: Brigand_6_1
+    21300044: Brigand_7_1
+    21300046: Brigand_8_1
+    21300048: Brigand_9_1
+    21300050: Brigand_10_1
     21300052: Brigand_26
     21300054: Brigand_27
-    21300056: Brigand_28
+    21300056: Brigand_13_1
     21300058: Brigand_29
     21300060: Brigand_0_2
     21300062: Brigand_1_2
     21300064: Brigand_2_2
     21300066: Brigand_3_2
     21300068: Brigand_4_2
-    21300070: Brigand_35
-    21300072: Brigand_36
-    21300074: Brigand_37
-    21300076: Brigand_38
-    21300078: Brigand_39
+    21300070: Brigand_5_2
+    21300072: Brigand_6_2
+    21300074: Brigand_7_2
+    21300076: Brigand_8_2
+    21300078: Brigand_9_2
     21300080: Brigand_0_3
     21300082: Brigand_1_3
     21300084: Brigand_2_3
     21300086: Brigand_3_3
     21300088: Brigand_4_3
-    21300090: Brigand_45
-    21300092: Brigand_46
-    21300094: Brigand_47
-    21300096: Brigand_48
-    21300098: Brigand_49
+    21300090: Brigand_5_3
+    21300092: Brigand_6_3
+    21300094: Brigand_7_3
+    21300096: Brigand_8_3
+    21300098: Brigand_9_3
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -243,7 +243,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_5
+      name: Brigand_5_0
       rect:
         serializedVersion: 2
         x: 167
@@ -263,7 +263,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_6
+      name: Brigand_6_0
       rect:
         serializedVersion: 2
         x: 200
@@ -303,7 +303,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_8
+      name: Brigand_8_0
       rect:
         serializedVersion: 2
         x: 261
@@ -323,7 +323,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_9
+      name: Brigand_9_0
       rect:
         serializedVersion: 2
         x: 294
@@ -343,7 +343,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_10
+      name: Brigand_10_0
       rect:
         serializedVersion: 2
         x: 327
@@ -403,7 +403,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_13
+      name: Brigand_13_0
       rect:
         serializedVersion: 2
         x: 423
@@ -543,7 +543,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_20
+      name: Brigand_5_1
       rect:
         serializedVersion: 2
         x: 168
@@ -563,7 +563,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_21
+      name: Brigand_6_1
       rect:
         serializedVersion: 2
         x: 200
@@ -583,7 +583,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_22
+      name: Brigand_7_1
       rect:
         serializedVersion: 2
         x: 233
@@ -603,7 +603,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_23
+      name: Brigand_8_1
       rect:
         serializedVersion: 2
         x: 265
@@ -623,7 +623,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_24
+      name: Brigand_9_1
       rect:
         serializedVersion: 2
         x: 294
@@ -643,7 +643,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_25
+      name: Brigand_10_1
       rect:
         serializedVersion: 2
         x: 325
@@ -703,7 +703,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_28
+      name: Brigand_13_1
       rect:
         serializedVersion: 2
         x: 422
@@ -843,7 +843,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_35
+      name: Brigand_5_2
       rect:
         serializedVersion: 2
         x: 167
@@ -863,7 +863,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_36
+      name: Brigand_6_2
       rect:
         serializedVersion: 2
         x: 199
@@ -883,7 +883,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_37
+      name: Brigand_7_2
       rect:
         serializedVersion: 2
         x: 233
@@ -903,7 +903,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_38
+      name: Brigand_8_2
       rect:
         serializedVersion: 2
         x: 267
@@ -923,7 +923,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_39
+      name: Brigand_9_2
       rect:
         serializedVersion: 2
         x: 298
@@ -1043,7 +1043,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_45
+      name: Brigand_5_3
       rect:
         serializedVersion: 2
         x: 167
@@ -1063,7 +1063,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_46
+      name: Brigand_6_3
       rect:
         serializedVersion: 2
         x: 201
@@ -1083,7 +1083,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_47
+      name: Brigand_7_3
       rect:
         serializedVersion: 2
         x: 232
@@ -1103,7 +1103,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_48
+      name: Brigand_8_3
       rect:
         serializedVersion: 2
         x: 265
@@ -1123,7 +1123,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Brigand_49
+      name: Brigand_9_3
       rect:
         serializedVersion: 2
         x: 297

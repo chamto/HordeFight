@@ -712,7 +712,7 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Character.eKind.raider, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.grunt, id_sequence++, pos);
 
-            Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos).SetAIRunning(true);
+            Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos).SetAIRunning(false);
 
 
             for (int i = 0; i < 30;i++)

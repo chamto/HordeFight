@@ -7,14 +7,14 @@ TextureImporter:
     21300004: Grunt_2_0
     21300006: Grunt_3_0
     21300008: Grunt_4_0
-    21300010: Grunt_5
-    21300012: Grunt_6
-    21300014: Grunt_7
-    21300016: Grunt_8
-    21300018: Grunt_9
-    21300020: Grunt_10
+    21300010: Grunt_5_0
+    21300012: Grunt_6_0
+    21300014: Grunt_7_0
+    21300016: Grunt_8_0
+    21300018: Grunt_9_0
+    21300020: Grunt_10_0
     21300022: Grunt_11
-    21300024: Grunt_12
+    21300024: Grunt_12_0
     21300026: Grunt_13
     21300028: Grunt_14
     21300030: Grunt_0_1
@@ -22,14 +22,14 @@ TextureImporter:
     21300034: Grunt_2_1
     21300036: Grunt_3_1
     21300038: Grunt_4_1
-    21300040: Grunt_20
-    21300042: Grunt_21
-    21300044: Grunt_22
-    21300046: Grunt_23
-    21300048: Grunt_24
-    21300050: Grunt_25
+    21300040: Grunt_5_1
+    21300042: Grunt_6_1
+    21300044: Grunt_7_1
+    21300046: Grunt_8_1
+    21300048: Grunt_9_1
+    21300050: Grunt_10_1
     21300052: Grunt_26
-    21300054: Grunt_27
+    21300054: Grunt_12_1
     21300056: Grunt_28
     21300058: Grunt_29
     21300060: Grunt_0_3
@@ -37,14 +37,14 @@ TextureImporter:
     21300064: Grunt_2_2
     21300066: Grunt_3_2
     21300068: Grunt_4_2
-    21300070: Grunt_35
-    21300072: Grunt_36
-    21300074: Grunt_37
-    21300076: Grunt_38
-    21300078: Grunt_39
-    21300080: Grunt_40
+    21300070: Grunt_5_2
+    21300072: Grunt_6_2
+    21300074: Grunt_7_2
+    21300076: Grunt_8_2
+    21300078: Grunt_9_2
+    21300080: Grunt_10_2
     21300082: Grunt_41
-    21300084: Grunt_42
+    21300084: Grunt_12_2
     21300086: Grunt_43
     21300088: Grunt_44
     21300090: Grunt_45
@@ -52,21 +52,21 @@ TextureImporter:
     21300094: Grunt_2_3
     21300096: Grunt_3_3
     21300098: Grunt_4_3
-    21300100: Grunt_50
-    21300102: Grunt_51
-    21300104: Grunt_52
-    21300106: Grunt_53
-    21300108: Grunt_54
+    21300100: Grunt_5_3
+    21300102: Grunt_6_3
+    21300104: Grunt_7_3
+    21300106: Grunt_8_3
+    21300108: Grunt_9_3
     21300110: Grunt_0_4
     21300112: Grunt_1_4
     21300114: Grunt_2_4
     21300116: Grunt_3_4
     21300118: Grunt_4_4
-    21300120: Grunt_60
-    21300122: Grunt_61
-    21300124: Grunt_62
-    21300126: Grunt_63
-    21300128: Grunt_64
+    21300120: Grunt_5_4
+    21300122: Grunt_6_4
+    21300124: Grunt_7_4
+    21300126: Grunt_8_4
+    21300128: Grunt_9_4
     21300130: Grunt_65
     21300132: Grunt_0_2
   externalObjects: {}
@@ -260,7 +260,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_5
+      name: Grunt_5_0
       rect:
         serializedVersion: 2
         x: 167
@@ -280,7 +280,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_6
+      name: Grunt_6_0
       rect:
         serializedVersion: 2
         x: 204
@@ -300,7 +300,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_7
+      name: Grunt_7_0
       rect:
         serializedVersion: 2
         x: 237
@@ -320,7 +320,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_8
+      name: Grunt_8_0
       rect:
         serializedVersion: 2
         x: 267
@@ -340,7 +340,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_9
+      name: Grunt_9_0
       rect:
         serializedVersion: 2
         x: 297
@@ -360,7 +360,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_10
+      name: Grunt_10_0
       rect:
         serializedVersion: 2
         x: 329
@@ -400,7 +400,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_12
+      name: Grunt_12_0
       rect:
         serializedVersion: 2
         x: 394
@@ -560,7 +560,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_20
+      name: Grunt_5_1
       rect:
         serializedVersion: 2
         x: 167
@@ -580,7 +580,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_21
+      name: Grunt_6_1
       rect:
         serializedVersion: 2
         x: 202
@@ -600,7 +600,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_22
+      name: Grunt_7_1
       rect:
         serializedVersion: 2
         x: 237
@@ -620,7 +620,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_23
+      name: Grunt_8_1
       rect:
         serializedVersion: 2
         x: 268
@@ -640,7 +640,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_24
+      name: Grunt_9_1
       rect:
         serializedVersion: 2
         x: 300
@@ -660,7 +660,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_25
+      name: Grunt_10_1
       rect:
         serializedVersion: 2
         x: 328
@@ -700,7 +700,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_27
+      name: Grunt_12_1
       rect:
         serializedVersion: 2
         x: 387
@@ -860,7 +860,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_35
+      name: Grunt_5_2
       rect:
         serializedVersion: 2
         x: 167
@@ -880,7 +880,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_36
+      name: Grunt_6_2
       rect:
         serializedVersion: 2
         x: 198
@@ -900,7 +900,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_37
+      name: Grunt_7_2
       rect:
         serializedVersion: 2
         x: 235
@@ -920,7 +920,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_38
+      name: Grunt_8_2
       rect:
         serializedVersion: 2
         x: 268
@@ -940,7 +940,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_39
+      name: Grunt_9_2
       rect:
         serializedVersion: 2
         x: 300
@@ -960,7 +960,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_40
+      name: Grunt_10_2
       rect:
         serializedVersion: 2
         x: 326
@@ -1000,11 +1000,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_42
+      name: Grunt_12_2
       rect:
         serializedVersion: 2
         x: 385
-        y: 69
+        y: 70
         width: 26
         height: 19
       alignment: 0
@@ -1160,7 +1160,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_50
+      name: Grunt_5_3
       rect:
         serializedVersion: 2
         x: 170
@@ -1180,7 +1180,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_51
+      name: Grunt_6_3
       rect:
         serializedVersion: 2
         x: 205
@@ -1200,7 +1200,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_52
+      name: Grunt_7_3
       rect:
         serializedVersion: 2
         x: 238
@@ -1220,7 +1220,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_53
+      name: Grunt_8_3
       rect:
         serializedVersion: 2
         x: 270
@@ -1240,7 +1240,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_54
+      name: Grunt_9_3
       rect:
         serializedVersion: 2
         x: 300
@@ -1360,7 +1360,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_60
+      name: Grunt_5_4
       rect:
         serializedVersion: 2
         x: 171
@@ -1380,7 +1380,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_61
+      name: Grunt_6_4
       rect:
         serializedVersion: 2
         x: 206
@@ -1400,7 +1400,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_62
+      name: Grunt_7_4
       rect:
         serializedVersion: 2
         x: 238
@@ -1420,7 +1420,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_63
+      name: Grunt_8_4
       rect:
         serializedVersion: 2
         x: 269
@@ -1440,7 +1440,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Grunt_64
+      name: Grunt_9_4
       rect:
         serializedVersion: 2
         x: 299
