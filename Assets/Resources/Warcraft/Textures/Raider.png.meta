@@ -77,6 +77,7 @@ TextureImporter:
     21300144: Raider_12_4
     21300146: Raider_73
     21300148: Raider_74
+    21300150: Raider_0
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -171,12 +172,12 @@ TextureImporter:
       name: Raider_0_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 219
-        width: 48
-        height: 48
+        x: 16
+        y: 230
+        width: 23
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -191,12 +192,12 @@ TextureImporter:
       name: Raider_1_0
       rect:
         serializedVersion: 2
-        x: 48
-        y: 219
-        width: 48
-        height: 48
+        x: 59
+        y: 232
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -211,12 +212,12 @@ TextureImporter:
       name: Raider_2_0
       rect:
         serializedVersion: 2
-        x: 96
-        y: 219
-        width: 48
-        height: 48
+        x: 105
+        y: 229
+        width: 31
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,12 +232,12 @@ TextureImporter:
       name: Raider_3_0
       rect:
         serializedVersion: 2
-        x: 144
-        y: 219
-        width: 48
-        height: 48
+        x: 153
+        y: 230
+        width: 29
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -251,12 +252,12 @@ TextureImporter:
       name: Raider_4_0
       rect:
         serializedVersion: 2
-        x: 192
-        y: 219
-        width: 48
-        height: 48
+        x: 202
+        y: 228
+        width: 23
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -271,12 +272,12 @@ TextureImporter:
       name: Raider_5_0
       rect:
         serializedVersion: 2
-        x: 240
-        y: 219
-        width: 48
-        height: 48
+        x: 256
+        y: 228
+        width: 23
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -291,12 +292,12 @@ TextureImporter:
       name: Raider_6_0
       rect:
         serializedVersion: 2
-        x: 288
-        y: 219
-        width: 48
-        height: 48
+        x: 299
+        y: 232
+        width: 28
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -311,12 +312,12 @@ TextureImporter:
       name: Raider_7_0
       rect:
         serializedVersion: 2
-        x: 336
-        y: 219
-        width: 48
-        height: 48
+        x: 345
+        y: 229
+        width: 31
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -331,12 +332,12 @@ TextureImporter:
       name: Raider_8_0
       rect:
         serializedVersion: 2
-        x: 384
-        y: 219
-        width: 48
-        height: 48
+        x: 393
+        y: 230
+        width: 29
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -351,12 +352,12 @@ TextureImporter:
       name: Raider_9_0
       rect:
         serializedVersion: 2
-        x: 432
-        y: 219
-        width: 48
-        height: 48
+        x: 442
+        y: 228
+        width: 23
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -371,12 +372,12 @@ TextureImporter:
       name: Raider_10_0
       rect:
         serializedVersion: 2
-        x: 480
-        y: 219
-        width: 48
-        height: 48
+        x: 491
+        y: 231
+        width: 27
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -391,12 +392,12 @@ TextureImporter:
       name: Raider_11
       rect:
         serializedVersion: 2
-        x: 528
-        y: 219
-        width: 48
-        height: 48
+        x: 539
+        y: 231
+        width: 27
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -411,12 +412,12 @@ TextureImporter:
       name: Raider_12_0
       rect:
         serializedVersion: 2
-        x: 576
-        y: 219
-        width: 48
-        height: 48
+        x: 584
+        y: 230
+        width: 30
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -431,12 +432,12 @@ TextureImporter:
       name: Raider_13
       rect:
         serializedVersion: 2
-        x: 624
-        y: 219
-        width: 48
-        height: 48
+        x: 632
+        y: 230
+        width: 30
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -451,12 +452,12 @@ TextureImporter:
       name: Raider_14
       rect:
         serializedVersion: 2
-        x: 672
-        y: 219
-        width: 48
-        height: 48
+        x: 680
+        y: 230
+        width: 30
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -471,12 +472,12 @@ TextureImporter:
       name: Raider_0_1
       rect:
         serializedVersion: 2
-        x: 0
-        y: 171
-        width: 48
-        height: 48
+        x: 16
+        y: 180
+        width: 23
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -491,12 +492,12 @@ TextureImporter:
       name: Raider_1_1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 171
-        width: 48
-        height: 48
+        x: 59
+        y: 184
+        width: 29
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -511,12 +512,12 @@ TextureImporter:
       name: Raider_2_1
       rect:
         serializedVersion: 2
-        x: 96
-        y: 171
-        width: 48
-        height: 48
+        x: 105
+        y: 181
+        width: 31
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -531,12 +532,12 @@ TextureImporter:
       name: Raider_3_1
       rect:
         serializedVersion: 2
-        x: 144
-        y: 171
-        width: 48
-        height: 48
+        x: 153
+        y: 181
+        width: 29
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -551,12 +552,12 @@ TextureImporter:
       name: Raider_4_1
       rect:
         serializedVersion: 2
-        x: 192
-        y: 171
-        width: 48
-        height: 48
+        x: 202
+        y: 181
+        width: 23
+        height: 29
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -571,12 +572,12 @@ TextureImporter:
       name: Raider_5_1
       rect:
         serializedVersion: 2
-        x: 240
-        y: 171
-        width: 48
-        height: 48
+        x: 256
+        y: 182
+        width: 19
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -591,12 +592,12 @@ TextureImporter:
       name: Raider_6_1
       rect:
         serializedVersion: 2
-        x: 288
-        y: 171
-        width: 48
-        height: 48
+        x: 300
+        y: 181
+        width: 23
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -611,12 +612,12 @@ TextureImporter:
       name: Raider_7_1
       rect:
         serializedVersion: 2
-        x: 336
-        y: 171
-        width: 48
-        height: 48
+        x: 345
+        y: 181
+        width: 30
+        height: 29
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -631,12 +632,12 @@ TextureImporter:
       name: Raider_8_1
       rect:
         serializedVersion: 2
-        x: 384
-        y: 171
-        width: 48
-        height: 48
+        x: 394
+        y: 182
+        width: 28
+        height: 32
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -651,12 +652,12 @@ TextureImporter:
       name: Raider_9_1
       rect:
         serializedVersion: 2
-        x: 432
-        y: 171
-        width: 48
-        height: 48
+        x: 443
+        y: 180
+        width: 22
+        height: 33
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -671,12 +672,12 @@ TextureImporter:
       name: Raider_10_1
       rect:
         serializedVersion: 2
-        x: 480
-        y: 171
-        width: 48
-        height: 48
+        x: 486
+        y: 184
+        width: 33
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -691,12 +692,12 @@ TextureImporter:
       name: Raider_26
       rect:
         serializedVersion: 2
-        x: 528
-        y: 171
-        width: 48
-        height: 48
+        x: 534
+        y: 184
+        width: 33
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -711,12 +712,12 @@ TextureImporter:
       name: Raider_12_1
       rect:
         serializedVersion: 2
-        x: 576
-        y: 171
-        width: 48
-        height: 48
+        x: 583
+        y: 182
+        width: 37
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -731,12 +732,12 @@ TextureImporter:
       name: Raider_28
       rect:
         serializedVersion: 2
-        x: 624
-        y: 171
-        width: 48
-        height: 48
+        x: 631
+        y: 182
+        width: 37
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -751,12 +752,12 @@ TextureImporter:
       name: Raider_29
       rect:
         serializedVersion: 2
-        x: 672
-        y: 171
-        width: 48
-        height: 48
+        x: 679
+        y: 182
+        width: 37
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -771,12 +772,12 @@ TextureImporter:
       name: Raider_0_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 123
-        width: 48
-        height: 48
+        x: 16
+        y: 133
+        width: 23
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -791,12 +792,12 @@ TextureImporter:
       name: Raider_1_2
       rect:
         serializedVersion: 2
-        x: 48
-        y: 123
-        width: 48
-        height: 48
+        x: 59
+        y: 136
+        width: 30
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -811,12 +812,12 @@ TextureImporter:
       name: Raider_2_2
       rect:
         serializedVersion: 2
-        x: 96
-        y: 123
-        width: 48
-        height: 48
+        x: 105
+        y: 133
+        width: 31
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -831,12 +832,12 @@ TextureImporter:
       name: Raider_3_2
       rect:
         serializedVersion: 2
-        x: 144
-        y: 123
-        width: 48
-        height: 48
+        x: 153
+        y: 133
+        width: 29
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -851,12 +852,12 @@ TextureImporter:
       name: Raider_4_2
       rect:
         serializedVersion: 2
-        x: 192
-        y: 123
-        width: 48
-        height: 48
+        x: 202
+        y: 133
+        width: 23
+        height: 29
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -871,12 +872,12 @@ TextureImporter:
       name: Raider_5_2
       rect:
         serializedVersion: 2
-        x: 240
-        y: 123
-        width: 48
-        height: 48
+        x: 256
+        y: 133
+        width: 25
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -891,12 +892,12 @@ TextureImporter:
       name: Raider_6_2
       rect:
         serializedVersion: 2
-        x: 288
-        y: 123
-        width: 48
-        height: 48
+        x: 299
+        y: 131
+        width: 23
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -911,12 +912,12 @@ TextureImporter:
       name: Raider_7_2
       rect:
         serializedVersion: 2
-        x: 336
-        y: 123
-        width: 48
-        height: 48
+        x: 341
+        y: 132
+        width: 34
+        height: 29
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -931,12 +932,12 @@ TextureImporter:
       name: Raider_8_2
       rect:
         serializedVersion: 2
-        x: 384
-        y: 123
-        width: 48
-        height: 48
+        x: 389
+        y: 134
+        width: 34
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -951,12 +952,12 @@ TextureImporter:
       name: Raider_9_2
       rect:
         serializedVersion: 2
-        x: 432
-        y: 123
-        width: 48
-        height: 48
+        x: 439
+        y: 132
+        width: 26
+        height: 33
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -971,12 +972,12 @@ TextureImporter:
       name: Raider_10_2
       rect:
         serializedVersion: 2
-        x: 480
-        y: 123
-        width: 48
-        height: 48
+        x: 485
+        y: 131
+        width: 32
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -991,12 +992,12 @@ TextureImporter:
       name: Raider_41
       rect:
         serializedVersion: 2
-        x: 528
-        y: 123
-        width: 48
-        height: 48
+        x: 533
+        y: 131
+        width: 32
+        height: 38
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1011,12 +1012,12 @@ TextureImporter:
       name: Raider_12_2
       rect:
         serializedVersion: 2
-        x: 576
-        y: 123
-        width: 48
-        height: 48
+        x: 581
+        y: 132
+        width: 36
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1031,12 +1032,12 @@ TextureImporter:
       name: Raider_43
       rect:
         serializedVersion: 2
-        x: 624
-        y: 123
-        width: 48
-        height: 48
+        x: 629
+        y: 132
+        width: 36
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1051,12 +1052,12 @@ TextureImporter:
       name: Raider_44
       rect:
         serializedVersion: 2
-        x: 672
-        y: 123
-        width: 48
-        height: 48
+        x: 677
+        y: 132
+        width: 36
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1071,12 +1072,12 @@ TextureImporter:
       name: Raider_0_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 75
-        width: 48
-        height: 48
+        x: 16
+        y: 85
+        width: 23
+        height: 23
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1091,12 +1092,12 @@ TextureImporter:
       name: Raider_1_3
       rect:
         serializedVersion: 2
-        x: 48
-        y: 75
-        width: 48
-        height: 48
+        x: 60
+        y: 87
+        width: 29
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1111,12 +1112,12 @@ TextureImporter:
       name: Raider_2_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 75
-        width: 48
-        height: 48
+        x: 107
+        y: 85
+        width: 29
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1131,12 +1132,12 @@ TextureImporter:
       name: Raider_3_3
       rect:
         serializedVersion: 2
-        x: 144
-        y: 75
-        width: 48
-        height: 48
+        x: 153
+        y: 85
+        width: 29
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1151,12 +1152,12 @@ TextureImporter:
       name: Raider_4_3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 75
-        width: 48
-        height: 48
+        x: 202
+        y: 87
+        width: 23
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1171,12 +1172,12 @@ TextureImporter:
       name: Raider_5_3
       rect:
         serializedVersion: 2
-        x: 240
-        y: 75
-        width: 48
-        height: 48
+        x: 256
+        y: 83
+        width: 26
+        height: 35
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1191,12 +1192,12 @@ TextureImporter:
       name: Raider_6_3
       rect:
         serializedVersion: 2
-        x: 288
-        y: 75
-        width: 48
-        height: 48
+        x: 299
+        y: 88
+        width: 33
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1211,12 +1212,12 @@ TextureImporter:
       name: Raider_7_3
       rect:
         serializedVersion: 2
-        x: 336
-        y: 75
-        width: 48
-        height: 48
+        x: 345
+        y: 82
+        width: 34
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1231,12 +1232,12 @@ TextureImporter:
       name: Raider_8_3
       rect:
         serializedVersion: 2
-        x: 384
-        y: 75
-        width: 48
-        height: 48
+        x: 398
+        y: 81
+        width: 25
+        height: 31
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1251,12 +1252,12 @@ TextureImporter:
       name: Raider_9_3
       rect:
         serializedVersion: 2
-        x: 432
-        y: 75
-        width: 48
-        height: 48
+        x: 442
+        y: 82
+        width: 22
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1271,12 +1272,12 @@ TextureImporter:
       name: Raider_10_3
       rect:
         serializedVersion: 2
-        x: 480
-        y: 75
-        width: 48
-        height: 48
+        x: 492
+        y: 87
+        width: 25
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1291,12 +1292,12 @@ TextureImporter:
       name: Raider_56
       rect:
         serializedVersion: 2
-        x: 528
-        y: 75
-        width: 48
-        height: 48
+        x: 540
+        y: 87
+        width: 25
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1311,12 +1312,12 @@ TextureImporter:
       name: Raider_12_3
       rect:
         serializedVersion: 2
-        x: 576
-        y: 75
-        width: 48
-        height: 48
+        x: 589
+        y: 89
+        width: 21
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1331,12 +1332,12 @@ TextureImporter:
       name: Raider_58
       rect:
         serializedVersion: 2
-        x: 624
-        y: 75
-        width: 48
-        height: 48
+        x: 637
+        y: 89
+        width: 21
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1351,12 +1352,12 @@ TextureImporter:
       name: Raider_59
       rect:
         serializedVersion: 2
-        x: 672
-        y: 75
-        width: 48
-        height: 48
+        x: 685
+        y: 89
+        width: 21
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1371,12 +1372,12 @@ TextureImporter:
       name: Raider_0_4
       rect:
         serializedVersion: 2
-        x: 0
-        y: 27
-        width: 48
-        height: 48
+        x: 16
+        y: 37
+        width: 23
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1391,12 +1392,12 @@ TextureImporter:
       name: Raider_1_4
       rect:
         serializedVersion: 2
-        x: 48
-        y: 27
-        width: 48
-        height: 48
+        x: 61
+        y: 39
+        width: 27
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1411,12 +1412,12 @@ TextureImporter:
       name: Raider_2_4
       rect:
         serializedVersion: 2
-        x: 96
-        y: 27
-        width: 48
-        height: 48
+        x: 105
+        y: 37
+        width: 31
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1431,12 +1432,12 @@ TextureImporter:
       name: Raider_3_4
       rect:
         serializedVersion: 2
-        x: 144
-        y: 27
-        width: 48
-        height: 48
+        x: 153
+        y: 38
+        width: 29
+        height: 26
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1451,12 +1452,12 @@ TextureImporter:
       name: Raider_4_4
       rect:
         serializedVersion: 2
-        x: 192
-        y: 27
-        width: 48
-        height: 48
+        x: 202
+        y: 39
+        width: 23
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1471,12 +1472,12 @@ TextureImporter:
       name: Raider_5_4
       rect:
         serializedVersion: 2
-        x: 240
-        y: 27
-        width: 48
-        height: 48
+        x: 257
+        y: 35
+        width: 20
+        height: 29
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1491,12 +1492,12 @@ TextureImporter:
       name: Raider_6_4
       rect:
         serializedVersion: 2
-        x: 288
-        y: 27
-        width: 48
-        height: 48
+        x: 298
+        y: 40
+        width: 29
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1511,12 +1512,12 @@ TextureImporter:
       name: Raider_7_4
       rect:
         serializedVersion: 2
-        x: 336
-        y: 27
-        width: 48
-        height: 48
+        x: 344
+        y: 36
+        width: 33
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1531,12 +1532,12 @@ TextureImporter:
       name: Raider_8_4
       rect:
         serializedVersion: 2
-        x: 384
-        y: 27
-        width: 48
-        height: 48
+        x: 391
+        y: 36
+        width: 31
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1551,12 +1552,12 @@ TextureImporter:
       name: Raider_9_4
       rect:
         serializedVersion: 2
-        x: 432
-        y: 27
-        width: 48
-        height: 48
+        x: 439
+        y: 36
+        width: 26
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1571,12 +1572,12 @@ TextureImporter:
       name: Raider_10_4
       rect:
         serializedVersion: 2
-        x: 480
-        y: 27
-        width: 48
-        height: 48
+        x: 492
+        y: 39
+        width: 22
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1591,12 +1592,12 @@ TextureImporter:
       name: Raider_71
       rect:
         serializedVersion: 2
-        x: 528
-        y: 27
-        width: 48
-        height: 48
+        x: 540
+        y: 39
+        width: 22
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1611,12 +1612,12 @@ TextureImporter:
       name: Raider_12_4
       rect:
         serializedVersion: 2
-        x: 576
-        y: 27
-        width: 48
-        height: 48
+        x: 590
+        y: 41
+        width: 20
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1631,12 +1632,12 @@ TextureImporter:
       name: Raider_73
       rect:
         serializedVersion: 2
-        x: 624
-        y: 27
-        width: 48
-        height: 48
+        x: 638
+        y: 41
+        width: 20
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1651,18 +1652,38 @@ TextureImporter:
       name: Raider_74
       rect:
         serializedVersion: 2
-        x: 672
-        y: 27
-        width: 48
-        height: 48
+        x: 686
+        y: 41
+        width: 20
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: 91683dab6003841d2b1f452fde0b1c30
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Raider_0
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 2
+        width: 126
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 942c0d2e69fe4449196a03d6d798e531
       vertices: []
       indices: 
       edges: []

@@ -7,14 +7,14 @@ TextureImporter:
     21300004: Ogre_2_0
     21300006: Ogre_3_0
     21300008: Ogre_4_0
-    21300010: Ogre_5
-    21300012: Ogre_6
+    21300010: Ogre_5_0
+    21300012: Ogre_6_0
     21300014: Ogre_7_0
-    21300016: Ogre_8
-    21300018: Ogre_9
-    21300020: Ogre_10
+    21300016: Ogre_8_0
+    21300018: Ogre_9_0
+    21300020: Ogre_10_0
     21300022: Ogre_11
-    21300024: Ogre_12
+    21300024: Ogre_12_0
     21300026: Ogre_13
     21300028: Ogre_14
     21300030: Ogre_0_1
@@ -22,14 +22,14 @@ TextureImporter:
     21300034: Ogre_2_1
     21300036: Ogre_3_1
     21300038: Ogre_4_1
-    21300040: Ogre_20
-    21300042: Ogre_21
+    21300040: Ogre_5_1
+    21300042: Ogre_6_1
     21300044: Ogre_7_1
-    21300046: Ogre_23
-    21300048: Ogre_24
-    21300050: Ogre_25
+    21300046: Ogre_8_1
+    21300048: Ogre_9_1
+    21300050: Ogre_10_1
     21300052: Ogre_26
-    21300054: Ogre_27
+    21300054: Ogre_12_1
     21300056: Ogre_28
     21300058: Ogre_29
     21300060: Ogre_0_2
@@ -37,14 +37,14 @@ TextureImporter:
     21300064: Ogre_2_2
     21300066: Ogre_3_2
     21300068: Ogre_4_2
-    21300070: Ogre_35
-    21300072: Ogre_36
+    21300070: Ogre_5_2
+    21300072: Ogre_6_2
     21300074: Ogre_7_2
-    21300076: Ogre_38
-    21300078: Ogre_39
-    21300080: Ogre_40
+    21300076: Ogre_8_2
+    21300078: Ogre_9_2
+    21300080: Ogre_10_2
     21300082: Ogre_41
-    21300084: Ogre_42
+    21300084: Ogre_12_2
     21300086: Ogre_43
     21300088: Ogre_44
     21300090: Ogre_0_3
@@ -52,14 +52,14 @@ TextureImporter:
     21300094: Ogre_2_3
     21300096: Ogre_3_3
     21300098: Ogre_4_3
-    21300100: Ogre_50
-    21300102: Ogre_51
+    21300100: Ogre_5_3
+    21300102: Ogre_6_3
     21300104: Ogre_7_3
-    21300106: Ogre_53
-    21300108: Ogre_54
-    21300110: Ogre_55
+    21300106: Ogre_8_3
+    21300108: Ogre_9_3
+    21300110: Ogre_10_3
     21300112: Ogre_56
-    21300114: Ogre_57
+    21300114: Ogre_12_3
     21300116: Ogre_58
     21300118: Ogre_59
     21300120: Ogre_0_4
@@ -67,14 +67,14 @@ TextureImporter:
     21300124: Ogre_2_4
     21300126: Ogre_3_4
     21300128: Ogre_4_4
-    21300130: Ogre_65
-    21300132: Ogre_66
+    21300130: Ogre_5_4
+    21300132: Ogre_6_4
     21300134: Ogre_7_4
-    21300136: Ogre_68
-    21300138: Ogre_69
-    21300140: Ogre_70
+    21300136: Ogre_8_4
+    21300138: Ogre_9_4
+    21300140: Ogre_10_4
     21300142: Ogre_71
-    21300144: Ogre_72
+    21300144: Ogre_12_4
     21300146: Ogre_73
     21300148: Ogre_74
   externalObjects: {}
@@ -171,10 +171,10 @@ TextureImporter:
       name: Ogre_0_0
       rect:
         serializedVersion: 2
-        x: 5
-        y: 222
-        width: 40
-        height: 40
+        x: 15
+        y: 233
+        width: 19
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -191,10 +191,10 @@ TextureImporter:
       name: Ogre_1_0
       rect:
         serializedVersion: 2
-        x: 53
-        y: 222
-        width: 40
-        height: 40
+        x: 65
+        y: 232
+        width: 18
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -211,10 +211,10 @@ TextureImporter:
       name: Ogre_2_0
       rect:
         serializedVersion: 2
-        x: 101
-        y: 222
-        width: 40
-        height: 40
+        x: 114
+        y: 231
+        width: 15
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -231,10 +231,10 @@ TextureImporter:
       name: Ogre_3_0
       rect:
         serializedVersion: 2
-        x: 149
-        y: 222
-        width: 40
-        height: 40
+        x: 160
+        y: 229
+        width: 16
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -251,10 +251,10 @@ TextureImporter:
       name: Ogre_4_0
       rect:
         serializedVersion: 2
-        x: 197
-        y: 222
-        width: 40
-        height: 40
+        x: 207
+        y: 231
+        width: 19
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -268,13 +268,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_5
+      name: Ogre_5_0
       rect:
         serializedVersion: 2
-        x: 245
-        y: 222
-        width: 40
-        height: 40
+        x: 255
+        y: 233
+        width: 19
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -288,13 +288,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_6
+      name: Ogre_6_0
       rect:
         serializedVersion: 2
-        x: 293
-        y: 222
-        width: 40
-        height: 40
+        x: 307
+        y: 232
+        width: 14
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -311,10 +311,10 @@ TextureImporter:
       name: Ogre_7_0
       rect:
         serializedVersion: 2
-        x: 341
-        y: 222
-        width: 40
-        height: 40
+        x: 354
+        y: 231
+        width: 20
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -328,13 +328,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_8
+      name: Ogre_8_0
       rect:
         serializedVersion: 2
-        x: 389
-        y: 222
-        width: 40
-        height: 40
+        x: 401
+        y: 230
+        width: 21
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -348,13 +348,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_9
+      name: Ogre_9_0
       rect:
         serializedVersion: 2
-        x: 437
-        y: 222
-        width: 40
-        height: 40
+        x: 448
+        y: 230
+        width: 18
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -368,13 +368,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_10
+      name: Ogre_10_0
       rect:
         serializedVersion: 2
-        x: 485
-        y: 222
-        width: 40
-        height: 40
+        x: 492
+        y: 236
+        width: 23
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -408,13 +408,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_12
+      name: Ogre_12_0
       rect:
         serializedVersion: 2
-        x: 581
-        y: 222
-        width: 40
-        height: 40
+        x: 588
+        y: 234
+        width: 23
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -471,10 +471,10 @@ TextureImporter:
       name: Ogre_0_1
       rect:
         serializedVersion: 2
-        x: 5
-        y: 174
-        width: 40
-        height: 40
+        x: 14
+        y: 185
+        width: 20
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -491,10 +491,10 @@ TextureImporter:
       name: Ogre_1_1
       rect:
         serializedVersion: 2
-        x: 53
-        y: 174
-        width: 40
-        height: 40
+        x: 64
+        y: 184
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -511,10 +511,10 @@ TextureImporter:
       name: Ogre_2_1
       rect:
         serializedVersion: 2
-        x: 101
-        y: 174
-        width: 40
-        height: 40
+        x: 114
+        y: 183
+        width: 19
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -531,10 +531,10 @@ TextureImporter:
       name: Ogre_3_1
       rect:
         serializedVersion: 2
-        x: 149
-        y: 174
-        width: 40
-        height: 40
+        x: 161
+        y: 183
+        width: 16
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -551,10 +551,10 @@ TextureImporter:
       name: Ogre_4_1
       rect:
         serializedVersion: 2
-        x: 197
-        y: 174
-        width: 40
-        height: 40
+        x: 207
+        y: 183
+        width: 18
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -568,13 +568,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_20
+      name: Ogre_5_1
       rect:
         serializedVersion: 2
-        x: 245
-        y: 174
-        width: 40
-        height: 40
+        x: 256
+        y: 185
+        width: 17
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -588,13 +588,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_21
+      name: Ogre_6_1
       rect:
         serializedVersion: 2
-        x: 293
-        y: 174
-        width: 40
-        height: 40
+        x: 307
+        y: 182
+        width: 14
+        height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -611,10 +611,10 @@ TextureImporter:
       name: Ogre_7_1
       rect:
         serializedVersion: 2
-        x: 341
-        y: 174
-        width: 40
-        height: 40
+        x: 354
+        y: 181
+        width: 17
+        height: 27
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -628,13 +628,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_23
+      name: Ogre_8_1
       rect:
         serializedVersion: 2
-        x: 389
-        y: 174
-        width: 40
-        height: 40
+        x: 402
+        y: 181
+        width: 17
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -648,13 +648,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_24
+      name: Ogre_9_1
       rect:
         serializedVersion: 2
-        x: 437
-        y: 174
-        width: 40
-        height: 40
+        x: 449
+        y: 185
+        width: 17
+        height: 18
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -668,13 +668,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_25
+      name: Ogre_10_1
       rect:
         serializedVersion: 2
-        x: 485
-        y: 174
-        width: 40
-        height: 40
+        x: 492
+        y: 186
+        width: 24
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -708,13 +708,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_27
+      name: Ogre_12_1
       rect:
         serializedVersion: 2
-        x: 581
-        y: 174
-        width: 40
-        height: 40
+        x: 592
+        y: 183
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -771,10 +771,10 @@ TextureImporter:
       name: Ogre_0_2
       rect:
         serializedVersion: 2
-        x: 5
-        y: 126
-        width: 40
-        height: 40
+        x: 15
+        y: 137
+        width: 17
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -791,10 +791,10 @@ TextureImporter:
       name: Ogre_1_2
       rect:
         serializedVersion: 2
-        x: 53
-        y: 126
-        width: 40
-        height: 40
+        x: 64
+        y: 136
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -811,10 +811,10 @@ TextureImporter:
       name: Ogre_2_2
       rect:
         serializedVersion: 2
-        x: 101
-        y: 126
-        width: 40
-        height: 40
+        x: 113
+        y: 135
+        width: 21
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -831,10 +831,10 @@ TextureImporter:
       name: Ogre_3_2
       rect:
         serializedVersion: 2
-        x: 149
-        y: 126
-        width: 40
-        height: 40
+        x: 163
+        y: 137
+        width: 16
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -851,10 +851,10 @@ TextureImporter:
       name: Ogre_4_2
       rect:
         serializedVersion: 2
-        x: 197
-        y: 126
-        width: 40
-        height: 40
+        x: 209
+        y: 135
+        width: 17
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -868,13 +868,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_35
+      name: Ogre_5_2
       rect:
         serializedVersion: 2
-        x: 245
-        y: 126
-        width: 40
-        height: 40
+        x: 256
+        y: 137
+        width: 18
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -888,13 +888,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_36
+      name: Ogre_6_2
       rect:
         serializedVersion: 2
-        x: 293
-        y: 126
-        width: 40
-        height: 40
+        x: 307
+        y: 133
+        width: 14
+        height: 28
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -911,10 +911,10 @@ TextureImporter:
       name: Ogre_7_2
       rect:
         serializedVersion: 2
-        x: 341
-        y: 126
-        width: 40
-        height: 40
+        x: 354
+        y: 132
+        width: 13
+        height: 30
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -928,13 +928,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_38
+      name: Ogre_8_2
       rect:
         serializedVersion: 2
-        x: 389
-        y: 126
-        width: 40
-        height: 40
+        x: 402
+        y: 134
+        width: 16
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -948,13 +948,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_39
+      name: Ogre_9_2
       rect:
         serializedVersion: 2
-        x: 437
-        y: 126
-        width: 40
-        height: 40
+        x: 449
+        y: 137
+        width: 17
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -968,13 +968,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_40
+      name: Ogre_10_2
       rect:
         serializedVersion: 2
-        x: 485
-        y: 126
-        width: 40
-        height: 40
+        x: 492
+        y: 136
+        width: 25
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1008,13 +1008,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_42
+      name: Ogre_12_2
       rect:
         serializedVersion: 2
-        x: 581
-        y: 126
-        width: 40
-        height: 40
+        x: 590
+        y: 134
+        width: 22
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1071,10 +1071,10 @@ TextureImporter:
       name: Ogre_0_3
       rect:
         serializedVersion: 2
-        x: 5
-        y: 78
-        width: 40
-        height: 40
+        x: 16
+        y: 89
+        width: 22
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1091,10 +1091,10 @@ TextureImporter:
       name: Ogre_1_3
       rect:
         serializedVersion: 2
-        x: 53
-        y: 78
-        width: 40
-        height: 40
+        x: 65
+        y: 88
+        width: 18
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1111,10 +1111,10 @@ TextureImporter:
       name: Ogre_2_3
       rect:
         serializedVersion: 2
-        x: 101
-        y: 78
-        width: 40
-        height: 40
+        x: 111
+        y: 85
+        width: 17
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1131,10 +1131,10 @@ TextureImporter:
       name: Ogre_3_3
       rect:
         serializedVersion: 2
-        x: 149
-        y: 78
-        width: 40
-        height: 40
+        x: 158
+        y: 85
+        width: 19
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1151,10 +1151,10 @@ TextureImporter:
       name: Ogre_4_3
       rect:
         serializedVersion: 2
-        x: 197
-        y: 78
-        width: 40
-        height: 40
+        x: 205
+        y: 87
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1168,13 +1168,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_50
+      name: Ogre_5_3
       rect:
         serializedVersion: 2
-        x: 245
-        y: 78
-        width: 40
-        height: 40
+        x: 256
+        y: 87
+        width: 18
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1188,13 +1188,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_51
+      name: Ogre_6_3
       rect:
         serializedVersion: 2
-        x: 293
-        y: 78
-        width: 40
-        height: 40
+        x: 305
+        y: 85
+        width: 15
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1211,10 +1211,10 @@ TextureImporter:
       name: Ogre_7_3
       rect:
         serializedVersion: 2
-        x: 341
-        y: 78
-        width: 40
-        height: 40
+        x: 352
+        y: 82
+        width: 13
+        height: 29
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1228,13 +1228,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_53
+      name: Ogre_8_3
       rect:
         serializedVersion: 2
-        x: 389
-        y: 78
-        width: 40
-        height: 40
+        x: 400
+        y: 86
+        width: 17
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1248,13 +1248,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_54
+      name: Ogre_9_3
       rect:
         serializedVersion: 2
-        x: 437
-        y: 78
-        width: 40
-        height: 40
+        x: 449
+        y: 90
+        width: 17
+        height: 19
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1268,13 +1268,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_55
+      name: Ogre_10_3
       rect:
         serializedVersion: 2
-        x: 485
-        y: 78
-        width: 40
-        height: 40
+        x: 492
+        y: 88
+        width: 25
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1308,13 +1308,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_57
+      name: Ogre_12_3
       rect:
         serializedVersion: 2
-        x: 581
-        y: 78
-        width: 40
-        height: 40
+        x: 590
+        y: 86
+        width: 22
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1371,10 +1371,10 @@ TextureImporter:
       name: Ogre_0_4
       rect:
         serializedVersion: 2
-        x: 5
-        y: 30
-        width: 40
-        height: 40
+        x: 15
+        y: 41
+        width: 22
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1391,10 +1391,10 @@ TextureImporter:
       name: Ogre_1_4
       rect:
         serializedVersion: 2
-        x: 53
-        y: 30
-        width: 40
-        height: 40
+        x: 65
+        y: 40
+        width: 18
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1411,10 +1411,10 @@ TextureImporter:
       name: Ogre_2_4
       rect:
         serializedVersion: 2
-        x: 100
-        y: 31
-        width: 40
-        height: 40
+        x: 112
+        y: 38
+        width: 15
+        height: 23
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1431,10 +1431,10 @@ TextureImporter:
       name: Ogre_3_4
       rect:
         serializedVersion: 2
-        x: 149
-        y: 30
-        width: 40
-        height: 40
+        x: 158
+        y: 36
+        width: 19
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1451,10 +1451,10 @@ TextureImporter:
       name: Ogre_4_4
       rect:
         serializedVersion: 2
-        x: 197
-        y: 30
-        width: 40
-        height: 40
+        x: 206
+        y: 39
+        width: 20
+        height: 20
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1468,13 +1468,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_65
+      name: Ogre_5_4
       rect:
         serializedVersion: 2
-        x: 245
-        y: 30
-        width: 40
-        height: 40
+        x: 256
+        y: 44
+        width: 16
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1488,13 +1488,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_66
+      name: Ogre_6_4
       rect:
         serializedVersion: 2
-        x: 293
-        y: 30
-        width: 40
-        height: 40
+        x: 308
+        y: 41
+        width: 22
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1511,10 +1511,10 @@ TextureImporter:
       name: Ogre_7_4
       rect:
         serializedVersion: 2
-        x: 346
-        y: 30
-        width: 40
-        height: 40
+        x: 357
+        y: 39
+        width: 27
+        height: 17
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1528,13 +1528,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_68
+      name: Ogre_8_4
       rect:
         serializedVersion: 2
-        x: 389
-        y: 30
-        width: 40
-        height: 40
+        x: 403
+        y: 36
+        width: 22
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1548,13 +1548,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_69
+      name: Ogre_9_4
       rect:
         serializedVersion: 2
-        x: 437
-        y: 30
-        width: 40
-        height: 40
+        x: 450
+        y: 33
+        width: 14
+        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1568,13 +1568,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_70
+      name: Ogre_10_4
       rect:
         serializedVersion: 2
-        x: 485
-        y: 30
-        width: 40
-        height: 40
+        x: 492
+        y: 41
+        width: 25
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1608,13 +1608,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Ogre_72
+      name: Ogre_12_4
       rect:
         serializedVersion: 2
-        x: 581
-        y: 30
-        width: 40
-        height: 40
+        x: 588
+        y: 41
+        width: 25
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

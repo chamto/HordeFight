@@ -70,6 +70,14 @@ TextureImporter:
     21300130: Lothar_65
     21300132: Lothar_66
     21300134: Lothar_67
+    21300136: Lothar_0
+    21300138: Lothar_1
+    21300140: Lothar_2
+    21300142: Lothar_4
+    21300144: Lothar_6
+    21300146: Lothar_7
+    21300148: Lothar_9
+    21300150: Lothar_12
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -164,12 +172,12 @@ TextureImporter:
       name: Lothar_r0_0_4
       rect:
         serializedVersion: 2
-        x: 0
-        y: 192
-        width: 48
-        height: 48
+        x: 14
+        y: 207
+        width: 18
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -184,12 +192,12 @@ TextureImporter:
       name: Lothar_r1_0_4
       rect:
         serializedVersion: 2
-        x: 48
-        y: 192
-        width: 48
-        height: 48
+        x: 65
+        y: 205
+        width: 15
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,12 +212,12 @@ TextureImporter:
       name: Lothar_r2_0_4
       rect:
         serializedVersion: 2
-        x: 98
-        y: 194
-        width: 44
-        height: 46
+        x: 115
+        y: 207
+        width: 16
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -224,12 +232,12 @@ TextureImporter:
       name: Lothar_r3_0_4
       rect:
         serializedVersion: 2
-        x: 144
-        y: 192
-        width: 48
-        height: 48
+        x: 162
+        y: 208
+        width: 16
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -244,12 +252,12 @@ TextureImporter:
       name: Lothar_r4_0_4
       rect:
         serializedVersion: 2
-        x: 192
-        y: 193
-        width: 50
-        height: 47
+        x: 208
+        y: 204
+        width: 19
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -264,12 +272,12 @@ TextureImporter:
       name: Lothar_r5_0
       rect:
         serializedVersion: 2
-        x: 240
-        y: 192
-        width: 48
-        height: 48
+        x: 255
+        y: 208
+        width: 17
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -284,12 +292,12 @@ TextureImporter:
       name: Lothar_r6_0
       rect:
         serializedVersion: 2
-        x: 287
-        y: 192
-        width: 48
-        height: 48
+        x: 306
+        y: 206
+        width: 15
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -304,12 +312,12 @@ TextureImporter:
       name: Lothar_r7_0
       rect:
         serializedVersion: 2
-        x: 336
-        y: 192
-        width: 48
-        height: 48
+        x: 355
+        y: 207
+        width: 18
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -324,12 +332,12 @@ TextureImporter:
       name: Lothar_r8_0
       rect:
         serializedVersion: 2
-        x: 384
-        y: 192
-        width: 48
-        height: 48
+        x: 401
+        y: 206
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -344,12 +352,12 @@ TextureImporter:
       name: Lothar_r9_0
       rect:
         serializedVersion: 2
-        x: 432
-        y: 192
-        width: 48
-        height: 48
+        x: 446
+        y: 203
+        width: 19
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -364,12 +372,12 @@ TextureImporter:
       name: Lothar_r10_0
       rect:
         serializedVersion: 2
-        x: 480
-        y: 192
-        width: 48
-        height: 48
+        x: 487
+        y: 207
+        width: 29
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -384,12 +392,12 @@ TextureImporter:
       name: Lothar_r12_0
       rect:
         serializedVersion: 2
-        x: 576
-        y: 192
-        width: 48
-        height: 48
+        x: 590
+        y: 203
+        width: 21
+        height: 23
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -404,12 +412,12 @@ TextureImporter:
       name: Lothar_r0_1_3
       rect:
         serializedVersion: 2
-        x: 0
-        y: 144
-        width: 48
-        height: 48
+        x: 14
+        y: 159
+        width: 18
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -424,12 +432,12 @@ TextureImporter:
       name: Lothar_r1_1_3
       rect:
         serializedVersion: 2
-        x: 48
-        y: 144
-        width: 48
-        height: 48
+        x: 63
+        y: 158
+        width: 17
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -444,12 +452,12 @@ TextureImporter:
       name: Lothar_r2_1_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 146
-        width: 47
-        height: 45
+        x: 115
+        y: 159
+        width: 15
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -464,12 +472,12 @@ TextureImporter:
       name: Lothar_r3_1_3
       rect:
         serializedVersion: 2
-        x: 144
-        y: 144
-        width: 48
-        height: 48
+        x: 162
+        y: 160
+        width: 18
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -484,12 +492,12 @@ TextureImporter:
       name: Lothar_r4_1_3
       rect:
         serializedVersion: 2
-        x: 193
-        y: 144
-        width: 48
-        height: 48
+        x: 209
+        y: 156
+        width: 17
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -504,12 +512,12 @@ TextureImporter:
       name: Lothar_r5_1
       rect:
         serializedVersion: 2
-        x: 240
-        y: 144
-        width: 48
-        height: 48
+        x: 255
+        y: 161
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -524,12 +532,12 @@ TextureImporter:
       name: Lothar_r6_1
       rect:
         serializedVersion: 2
-        x: 288
-        y: 144
-        width: 48
-        height: 48
+        x: 307
+        y: 158
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -544,12 +552,12 @@ TextureImporter:
       name: Lothar_r7_1
       rect:
         serializedVersion: 2
-        x: 337
-        y: 144
-        width: 48
-        height: 48
+        x: 355
+        y: 157
+        width: 16
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -564,12 +572,12 @@ TextureImporter:
       name: Lothar_r8_1
       rect:
         serializedVersion: 2
-        x: 384
-        y: 144
-        width: 48
-        height: 48
+        x: 401
+        y: 155
+        width: 17
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -584,12 +592,12 @@ TextureImporter:
       name: Lothar_r9_1
       rect:
         serializedVersion: 2
-        x: 432
-        y: 144
-        width: 48
-        height: 48
+        x: 443
+        y: 156
+        width: 21
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -604,12 +612,12 @@ TextureImporter:
       name: Lothar_r10_1
       rect:
         serializedVersion: 2
-        x: 480
-        y: 144
-        width: 48
-        height: 48
+        x: 484
+        y: 159
+        width: 35
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -624,12 +632,12 @@ TextureImporter:
       name: Lothar_r12_1
       rect:
         serializedVersion: 2
-        x: 576
-        y: 144
-        width: 48
-        height: 48
+        x: 586
+        y: 158
+        width: 28
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -644,12 +652,12 @@ TextureImporter:
       name: Lothar_r0_2
       rect:
         serializedVersion: 2
-        x: 0
-        y: 96
-        width: 48
-        height: 48
+        x: 15
+        y: 111
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -664,12 +672,12 @@ TextureImporter:
       name: Lothar_r1_2
       rect:
         serializedVersion: 2
-        x: 48
-        y: 96
-        width: 48
-        height: 48
+        x: 62
+        y: 110
+        width: 17
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -684,12 +692,12 @@ TextureImporter:
       name: Lothar_r2_2
       rect:
         serializedVersion: 2
-        x: 96
-        y: 100
-        width: 47
-        height: 44
+        x: 115
+        y: 112
+        width: 15
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -704,12 +712,12 @@ TextureImporter:
       name: Lothar_r3_2
       rect:
         serializedVersion: 2
-        x: 144
-        y: 96
-        width: 48
-        height: 48
+        x: 163
+        y: 111
+        width: 18
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -724,12 +732,12 @@ TextureImporter:
       name: Lothar_r4_2
       rect:
         serializedVersion: 2
-        x: 194
-        y: 97
-        width: 48
-        height: 48
+        x: 211
+        y: 110
+        width: 15
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -744,12 +752,12 @@ TextureImporter:
       name: Lothar_r5_2
       rect:
         serializedVersion: 2
-        x: 240
-        y: 96
-        width: 48
-        height: 48
+        x: 254
+        y: 114
+        width: 18
+        height: 28
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -764,12 +772,12 @@ TextureImporter:
       name: Lothar_r6_2
       rect:
         serializedVersion: 2
-        x: 288
-        y: 96
-        width: 48
-        height: 48
+        x: 307
+        y: 111
+        width: 25
+        height: 23
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -784,12 +792,12 @@ TextureImporter:
       name: Lothar_r7_2
       rect:
         serializedVersion: 2
-        x: 336
-        y: 96
-        width: 48
-        height: 48
+        x: 356
+        y: 112
+        width: 26
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -804,12 +812,12 @@ TextureImporter:
       name: Lothar_r8_2
       rect:
         serializedVersion: 2
-        x: 384
-        y: 96
-        width: 48
-        height: 48
+        x: 403
+        y: 108
+        width: 24
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -824,12 +832,12 @@ TextureImporter:
       name: Lothar_r9_2
       rect:
         serializedVersion: 2
-        x: 432
-        y: 96
-        width: 48
-        height: 48
+        x: 449
+        y: 101
+        width: 18
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -844,12 +852,12 @@ TextureImporter:
       name: Lothar_r10_2
       rect:
         serializedVersion: 2
-        x: 480
-        y: 96
-        width: 48
-        height: 48
+        x: 484
+        y: 110
+        width: 35
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -864,12 +872,12 @@ TextureImporter:
       name: Lothar_r12_2
       rect:
         serializedVersion: 2
-        x: 576
-        y: 96
-        width: 48
-        height: 48
+        x: 587
+        y: 110
+        width: 29
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -884,12 +892,12 @@ TextureImporter:
       name: Lothar_r0_6
       rect:
         serializedVersion: 2
-        x: 0
-        y: 48
-        width: 48
-        height: 48
+        x: 14
+        y: 63
+        width: 18
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -904,12 +912,12 @@ TextureImporter:
       name: Lothar_r1_6
       rect:
         serializedVersion: 2
-        x: 48
-        y: 48
-        width: 48
-        height: 48
+        x: 67
+        y: 60
+        width: 17
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -924,12 +932,12 @@ TextureImporter:
       name: Lothar_r2_6
       rect:
         serializedVersion: 2
-        x: 98
-        y: 46
-        width: 44
-        height: 51
+        x: 115
+        y: 63
+        width: 16
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -944,12 +952,12 @@ TextureImporter:
       name: Lothar_r3_6
       rect:
         serializedVersion: 2
-        x: 144
-        y: 48
-        width: 48
-        height: 48
+        x: 160
+        y: 63
+        width: 17
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -964,12 +972,12 @@ TextureImporter:
       name: Lothar_r4_6
       rect:
         serializedVersion: 2
-        x: 192
-        y: 48
-        width: 49
-        height: 48
+        x: 209
+        y: 61
+        width: 15
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -984,12 +992,12 @@ TextureImporter:
       name: Lothar_r5_3
       rect:
         serializedVersion: 2
-        x: 240
-        y: 48
-        width: 48
-        height: 48
+        x: 255
+        y: 66
+        width: 16
+        height: 25
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1004,12 +1012,12 @@ TextureImporter:
       name: Lothar_r6_3
       rect:
         serializedVersion: 2
-        x: 288
-        y: 48
-        width: 48
-        height: 48
+        x: 305
+        y: 63
+        width: 20
+        height: 27
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1024,12 +1032,12 @@ TextureImporter:
       name: Lothar_r7_3
       rect:
         serializedVersion: 2
-        x: 336
-        y: 48
-        width: 48
-        height: 48
+        x: 357
+        y: 64
+        width: 20
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1044,12 +1052,12 @@ TextureImporter:
       name: Lothar_r8_3
       rect:
         serializedVersion: 2
-        x: 384
-        y: 48
-        width: 48
-        height: 48
+        x: 404
+        y: 61
+        width: 25
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1064,12 +1072,12 @@ TextureImporter:
       name: Lothar_r9_3
       rect:
         serializedVersion: 2
-        x: 432
-        y: 48
-        width: 48
-        height: 48
+        x: 450
+        y: 57
+        width: 18
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1084,12 +1092,12 @@ TextureImporter:
       name: Lothar_r0_5_7
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 48
-        height: 48
+        x: 14
+        y: 15
+        width: 18
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1104,12 +1112,12 @@ TextureImporter:
       name: Lothar_r1_5_7
       rect:
         serializedVersion: 2
-        x: 48
-        y: 0
-        width: 48
-        height: 48
+        x: 66
+        y: 13
+        width: 16
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1124,12 +1132,12 @@ TextureImporter:
       name: Lothar_r2_5_7
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
-        width: 49
-        height: 49
+        x: 115
+        y: 15
+        width: 18
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1144,12 +1152,12 @@ TextureImporter:
       name: Lothar_r3_5_7
       rect:
         serializedVersion: 2
-        x: 144
-        y: 0
-        width: 48
-        height: 48
+        x: 162
+        y: 15
+        width: 14
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1164,12 +1172,12 @@ TextureImporter:
       name: Lothar_r4_5_7
       rect:
         serializedVersion: 2
-        x: 193
-        y: 0
-        width: 48
-        height: 48
+        x: 208
+        y: 12
+        width: 19
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1184,12 +1192,12 @@ TextureImporter:
       name: Lothar_r5_4
       rect:
         serializedVersion: 2
-        x: 240
-        y: 0
-        width: 48
-        height: 48
+        x: 253
+        y: 19
+        width: 19
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1204,12 +1212,12 @@ TextureImporter:
       name: Lothar_r6_4
       rect:
         serializedVersion: 2
-        x: 288
-        y: 0
-        width: 48
-        height: 48
+        x: 305
+        y: 13
+        width: 16
+        height: 24
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1224,12 +1232,12 @@ TextureImporter:
       name: Lothar_r7_4
       rect:
         serializedVersion: 2
-        x: 336
-        y: 0
-        width: 48
-        height: 48
+        x: 355
+        y: 15
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1244,12 +1252,12 @@ TextureImporter:
       name: Lothar_r8_4
       rect:
         serializedVersion: 2
-        x: 384
-        y: 0
-        width: 48
-        height: 48
+        x: 402
+        y: 14
+        width: 20
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1264,18 +1272,218 @@ TextureImporter:
       name: Lothar_r9_5
       rect:
         serializedVersion: 2
-        x: 432
-        y: 0
-        width: 48
-        height: 48
+        x: 448
+        y: 12
+        width: 18
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: df4dcc41389f941a7a3a7dcfdfa5d5bf
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_0
+      rect:
+        serializedVersion: 2
+        x: 534
+        y: 207
+        width: 31
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c7dfee160478a49a68e8a978d5493ba6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_1
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 203
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e5d7588555bd34f96a401f00febe404d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_2
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 203
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 58554b1c7e753483d9823935ae58b8ec
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_4
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 159
+        width: 35
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc23d930d2ff640978843d2a7f63c996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_6
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 158
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 061c9179e4f7944ebabb09b33d170714
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_7
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 158
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: caf48072a11b846de98d5be67c630a2c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_9
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 110
+        width: 36
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6c9c516c8642e4817832419ca30c624c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_11
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 110
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 805d5c85d3bf74fb6aaa25bba762c217
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_12
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 110
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0517f4db8bfa942cfb03f72102dde87e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Lothar_13
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 2
+        width: 126
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03970ec54f0934d1ca8fbb65f928a46a
       vertices: []
       indices: 
       edges: []

@@ -164,12 +164,12 @@ TextureImporter:
       name: Footman_0_0
       rect:
         serializedVersion: 2
-        x: 2
-        y: 198
-        width: 42
-        height: 39
+        x: 15
+        y: 208
+        width: 17
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -184,12 +184,12 @@ TextureImporter:
       name: Footman_1_0
       rect:
         serializedVersion: 2
-        x: 48
-        y: 192
-        width: 48
-        height: 48
+        x: 62
+        y: 207
+        width: 18
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -204,12 +204,12 @@ TextureImporter:
       name: Footman_2_0
       rect:
         serializedVersion: 2
-        x: 96
-        y: 192
-        width: 48
-        height: 48
+        x: 114
+        y: 207
+        width: 15
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -224,12 +224,12 @@ TextureImporter:
       name: Footman_3_0
       rect:
         serializedVersion: 2
-        x: 144
-        y: 192
-        width: 48
-        height: 48
+        x: 160
+        y: 205
+        width: 15
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -244,12 +244,12 @@ TextureImporter:
       name: Footman_4_0
       rect:
         serializedVersion: 2
-        x: 192
-        y: 192
-        width: 48
-        height: 48
+        x: 208
+        y: 206
+        width: 19
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -264,12 +264,12 @@ TextureImporter:
       name: Footman_5_0
       rect:
         serializedVersion: 2
-        x: 240
-        y: 192
-        width: 48
-        height: 48
+        x: 254
+        y: 209
+        width: 20
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -284,12 +284,12 @@ TextureImporter:
       name: Footman_6_0
       rect:
         serializedVersion: 2
-        x: 288
-        y: 192
-        width: 48
-        height: 48
+        x: 299
+        y: 208
+        width: 14
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -304,12 +304,12 @@ TextureImporter:
       name: Footman_7_0
       rect:
         serializedVersion: 2
-        x: 336
-        y: 192
-        width: 48
-        height: 48
+        x: 346
+        y: 208
+        width: 18
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -324,12 +324,12 @@ TextureImporter:
       name: Footman_8_0
       rect:
         serializedVersion: 2
-        x: 384
-        y: 192
-        width: 48
-        height: 48
+        x: 395
+        y: 209
+        width: 20
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -344,12 +344,12 @@ TextureImporter:
       name: Footman_9_0
       rect:
         serializedVersion: 2
-        x: 432
-        y: 192
-        width: 48
-        height: 48
+        x: 447
+        y: 209
+        width: 18
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -364,12 +364,12 @@ TextureImporter:
       name: Footman_10_0
       rect:
         serializedVersion: 2
-        x: 480
-        y: 192
-        width: 48
-        height: 48
+        x: 495
+        y: 208
+        width: 13
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -384,12 +384,12 @@ TextureImporter:
       name: Footman_11_0
       rect:
         serializedVersion: 2
-        x: 528
-        y: 192
-        width: 48
-        height: 48
+        x: 543
+        y: 208
+        width: 13
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -404,12 +404,12 @@ TextureImporter:
       name: Footman_12_0
       rect:
         serializedVersion: 2
-        x: 576
-        y: 192
-        width: 48
-        height: 48
+        x: 586
+        y: 208
+        width: 23
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -424,12 +424,12 @@ TextureImporter:
       name: Footman_13_0
       rect:
         serializedVersion: 2
-        x: 624
-        y: 192
-        width: 48
-        height: 48
+        x: 634
+        y: 208
+        width: 23
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -444,12 +444,12 @@ TextureImporter:
       name: Footman_14_0
       rect:
         serializedVersion: 2
-        x: 672
-        y: 192
-        width: 48
-        height: 48
+        x: 682
+        y: 208
+        width: 23
+        height: 22
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -464,12 +464,12 @@ TextureImporter:
       name: Footman_0_1
       rect:
         serializedVersion: 2
-        x: 2
-        y: 146
-        width: 45
-        height: 46
+        x: 16
+        y: 160
+        width: 17
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -484,12 +484,12 @@ TextureImporter:
       name: Footman_1_1
       rect:
         serializedVersion: 2
-        x: 48
-        y: 144
-        width: 48
-        height: 48
+        x: 62
+        y: 159
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -504,12 +504,12 @@ TextureImporter:
       name: Footman_2_1
       rect:
         serializedVersion: 2
-        x: 96
-        y: 144
-        width: 48
-        height: 48
+        x: 114
+        y: 159
+        width: 18
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -524,12 +524,12 @@ TextureImporter:
       name: Footman_3_1
       rect:
         serializedVersion: 2
-        x: 144
-        y: 144
-        width: 48
-        height: 48
+        x: 163
+        y: 159
+        width: 14
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -544,12 +544,12 @@ TextureImporter:
       name: Footman_4_1
       rect:
         serializedVersion: 2
-        x: 192
-        y: 144
-        width: 48
-        height: 48
+        x: 211
+        y: 157
+        width: 16
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -564,12 +564,12 @@ TextureImporter:
       name: Footman_5_1
       rect:
         serializedVersion: 2
-        x: 240
-        y: 144
-        width: 48
-        height: 48
+        x: 257
+        y: 161
+        width: 22
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -584,12 +584,12 @@ TextureImporter:
       name: Footman_6_1
       rect:
         serializedVersion: 2
-        x: 288
-        y: 144
-        width: 48
-        height: 48
+        x: 303
+        y: 161
+        width: 15
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -604,12 +604,12 @@ TextureImporter:
       name: Footman_7_1
       rect:
         serializedVersion: 2
-        x: 336
-        y: 144
-        width: 48
-        height: 48
+        x: 352
+        y: 160
+        width: 13
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -624,12 +624,12 @@ TextureImporter:
       name: Footman_8_1
       rect:
         serializedVersion: 2
-        x: 384
-        y: 144
-        width: 48
-        height: 48
+        x: 395
+        y: 160
+        width: 22
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -644,12 +644,12 @@ TextureImporter:
       name: Footman_9_1
       rect:
         serializedVersion: 2
-        x: 432
-        y: 144
-        width: 48
-        height: 48
+        x: 446
+        y: 163
+        width: 21
+        height: 14
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -664,12 +664,12 @@ TextureImporter:
       name: Footman_10_1
       rect:
         serializedVersion: 2
-        x: 481
-        y: 144
-        width: 48
-        height: 48
+        x: 497
+        y: 159
+        width: 13
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -684,12 +684,12 @@ TextureImporter:
       name: Footman_11_1
       rect:
         serializedVersion: 2
-        x: 528
-        y: 143
-        width: 48
-        height: 48
+        x: 545
+        y: 159
+        width: 13
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -704,12 +704,12 @@ TextureImporter:
       name: Footman_12_1
       rect:
         serializedVersion: 2
-        x: 576
-        y: 144
-        width: 48
-        height: 48
+        x: 587
+        y: 161
+        width: 23
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -724,12 +724,12 @@ TextureImporter:
       name: Footman_13_1
       rect:
         serializedVersion: 2
-        x: 624
-        y: 144
-        width: 48
-        height: 48
+        x: 635
+        y: 161
+        width: 23
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -744,12 +744,12 @@ TextureImporter:
       name: Footman_14_1
       rect:
         serializedVersion: 2
-        x: 672
-        y: 144
-        width: 48
-        height: 48
+        x: 683
+        y: 161
+        width: 23
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -764,12 +764,12 @@ TextureImporter:
       name: Footman_0_2
       rect:
         serializedVersion: 2
-        x: 3
-        y: 99
-        width: 45
-        height: 44
+        x: 17
+        y: 112
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -784,12 +784,12 @@ TextureImporter:
       name: Footman_1_2
       rect:
         serializedVersion: 2
-        x: 48
-        y: 96
-        width: 48
-        height: 48
+        x: 61
+        y: 111
+        width: 14
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -804,12 +804,12 @@ TextureImporter:
       name: Footman_2_2
       rect:
         serializedVersion: 2
-        x: 96
-        y: 96
-        width: 48
-        height: 48
+        x: 111
+        y: 111
+        width: 21
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -824,12 +824,12 @@ TextureImporter:
       name: Footman_3_2
       rect:
         serializedVersion: 2
-        x: 144
-        y: 96
-        width: 48
-        height: 48
+        x: 165
+        y: 112
+        width: 15
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -844,12 +844,12 @@ TextureImporter:
       name: Footman_4_2
       rect:
         serializedVersion: 2
-        x: 192
-        y: 96
-        width: 48
-        height: 48
+        x: 213
+        y: 110
+        width: 13
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -864,12 +864,12 @@ TextureImporter:
       name: Footman_5_2
       rect:
         serializedVersion: 2
-        x: 240
-        y: 96
-        width: 48
-        height: 48
+        x: 257
+        y: 113
+        width: 16
+        height: 30
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -884,12 +884,12 @@ TextureImporter:
       name: Footman_6_2
       rect:
         serializedVersion: 2
-        x: 288
-        y: 96
-        width: 48
-        height: 48
+        x: 303
+        y: 113
+        width: 26
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -904,12 +904,12 @@ TextureImporter:
       name: Footman_7_2
       rect:
         serializedVersion: 2
-        x: 336
-        y: 96
-        width: 48
-        height: 48
+        x: 354
+        y: 112
+        width: 25
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -924,12 +924,12 @@ TextureImporter:
       name: Footman_8_2
       rect:
         serializedVersion: 2
-        x: 384
-        y: 96
-        width: 48
-        height: 48
+        x: 403
+        y: 107
+        width: 15
+        height: 21
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -944,12 +944,12 @@ TextureImporter:
       name: Footman_9_2
       rect:
         serializedVersion: 2
-        x: 432
-        y: 96
-        width: 48
-        height: 48
+        x: 451
+        y: 105
+        width: 16
+        height: 23
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -964,12 +964,12 @@ TextureImporter:
       name: Footman_10_2
       rect:
         serializedVersion: 2
-        x: 480
-        y: 96
-        width: 48
-        height: 48
+        x: 495
+        y: 111
+        width: 18
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -984,12 +984,12 @@ TextureImporter:
       name: Footman_11_2
       rect:
         serializedVersion: 2
-        x: 528
-        y: 96
-        width: 48
-        height: 48
+        x: 543
+        y: 111
+        width: 18
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1004,12 +1004,12 @@ TextureImporter:
       name: Footman_12_2
       rect:
         serializedVersion: 2
-        x: 576
-        y: 96
-        width: 48
-        height: 48
+        x: 584
+        y: 112
+        width: 26
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1024,12 +1024,12 @@ TextureImporter:
       name: Footman_13_2
       rect:
         serializedVersion: 2
-        x: 624
-        y: 96
-        width: 48
-        height: 48
+        x: 632
+        y: 112
+        width: 26
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1044,12 +1044,12 @@ TextureImporter:
       name: Footman_14_2
       rect:
         serializedVersion: 2
-        x: 672
-        y: 96
-        width: 48
-        height: 48
+        x: 680
+        y: 112
+        width: 26
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1064,12 +1064,12 @@ TextureImporter:
       name: Footman_0_3
       rect:
         serializedVersion: 2
-        x: 1
-        y: 49
-        width: 48
-        height: 48
+        x: 18
+        y: 64
+        width: 18
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1084,12 +1084,12 @@ TextureImporter:
       name: Footman_1_3
       rect:
         serializedVersion: 2
-        x: 48
-        y: 48
-        width: 48
-        height: 48
+        x: 69
+        y: 63
+        width: 15
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1104,12 +1104,12 @@ TextureImporter:
       name: Footman_2_3
       rect:
         serializedVersion: 2
-        x: 96
-        y: 48
-        width: 48
-        height: 48
+        x: 114
+        y: 63
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1124,12 +1124,12 @@ TextureImporter:
       name: Footman_3_3
       rect:
         serializedVersion: 2
-        x: 144
-        y: 48
-        width: 48
-        height: 48
+        x: 162
+        y: 63
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1144,12 +1144,12 @@ TextureImporter:
       name: Footman_4_3
       rect:
         serializedVersion: 2
-        x: 192
-        y: 48
-        width: 48
-        height: 48
+        x: 212
+        y: 63
+        width: 15
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1164,12 +1164,12 @@ TextureImporter:
       name: Footman_5_3
       rect:
         serializedVersion: 2
-        x: 240
-        y: 48
-        width: 48
-        height: 48
+        x: 255
+        y: 65
+        width: 18
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1184,12 +1184,12 @@ TextureImporter:
       name: Footman_6_3
       rect:
         serializedVersion: 2
-        x: 288
-        y: 48
-        width: 48
-        height: 48
+        x: 306
+        y: 65
+        width: 19
+        height: 19
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1204,12 +1204,12 @@ TextureImporter:
       name: Footman_7_3
       rect:
         serializedVersion: 2
-        x: 336
-        y: 48
-        width: 48
-        height: 48
+        x: 359
+        y: 64
+        width: 20
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1224,12 +1224,12 @@ TextureImporter:
       name: Footman_8_3
       rect:
         serializedVersion: 2
-        x: 384
-        y: 47
-        width: 48
-        height: 48
+        x: 408
+        y: 65
+        width: 17
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1244,12 +1244,12 @@ TextureImporter:
       name: Footman_9_3
       rect:
         serializedVersion: 2
-        x: 432
-        y: 48
-        width: 48
-        height: 48
+        x: 457
+        y: 65
+        width: 15
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1264,12 +1264,12 @@ TextureImporter:
       name: Footman_0_4
       rect:
         serializedVersion: 2
-        x: 2
-        y: 3
-        width: 45
-        height: 43
+        x: 18
+        y: 16
+        width: 16
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1284,12 +1284,12 @@ TextureImporter:
       name: Footman_1_4
       rect:
         serializedVersion: 2
-        x: 48
-        y: 0
-        width: 48
-        height: 48
+        x: 67
+        y: 15
+        width: 17
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1304,12 +1304,12 @@ TextureImporter:
       name: Footman_2_4
       rect:
         serializedVersion: 2
-        x: 96
-        y: 0
-        width: 48
-        height: 48
+        x: 114
+        y: 15
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1324,12 +1324,12 @@ TextureImporter:
       name: Footman_3_4
       rect:
         serializedVersion: 2
-        x: 144
-        y: 0
-        width: 48
-        height: 48
+        x: 162
+        y: 15
+        width: 15
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1344,12 +1344,12 @@ TextureImporter:
       name: Footman_4_4
       rect:
         serializedVersion: 2
-        x: 192
-        y: 0
-        width: 48
-        height: 48
+        x: 214
+        y: 15
+        width: 14
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1364,12 +1364,12 @@ TextureImporter:
       name: Footman_5_4
       rect:
         serializedVersion: 2
-        x: 240
-        y: 0
-        width: 48
-        height: 48
+        x: 258
+        y: 17
+        width: 15
+        height: 18
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1384,12 +1384,12 @@ TextureImporter:
       name: Footman_6_4
       rect:
         serializedVersion: 2
-        x: 288
-        y: 0
-        width: 48
-        height: 48
+        x: 304
+        y: 17
+        width: 17
+        height: 17
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1404,12 +1404,12 @@ TextureImporter:
       name: Footman_7_4
       rect:
         serializedVersion: 2
-        x: 336
-        y: 0
-        width: 48
-        height: 48
+        x: 357
+        y: 16
+        width: 18
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1424,12 +1424,12 @@ TextureImporter:
       name: Footman_8_4
       rect:
         serializedVersion: 2
-        x: 383
-        y: 0
-        width: 48
-        height: 48
+        x: 406
+        y: 17
+        width: 16
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1444,12 +1444,12 @@ TextureImporter:
       name: Footman_9_4
       rect:
         serializedVersion: 2
-        x: 432
-        y: 0
-        width: 48
-        height: 48
+        x: 453
+        y: 18
+        width: 17
+        height: 15
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1464,12 +1464,12 @@ TextureImporter:
       name: Footman_65
       rect:
         serializedVersion: 2
-        x: 576
-        y: 0
-        width: 48
-        height: 48
+        x: 592
+        y: 2
+        width: 126
+        height: 23
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
