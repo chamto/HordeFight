@@ -575,15 +575,16 @@ namespace HordeFight
 
 
         /// <summary>
-        /// 최대 반경이내에서 가장 가까운 객체를 반환한다
+        /// 최소 반경보다 크고 최대 반경보다 작은 범위 안에서 가장 가까운 객체를 반환한다
         /// </summary>
-        public Character GetNearCharacter(Character exceptChar, float maxRadius)
+        public Character GetNearCharacter(Character exceptChar, float minRadius, float maxRadius)
         {
-            
-            float min_dis = Mathf.Pow(maxRadius+1, 2); //최대 반경보다 큰 최대값 지정
+
+            float sqr_minRadius = Mathf.Pow(minRadius, 2);
+            float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
+            float min_value = sqr_maxRadius * 2f; //최대 반경보다 큰 최대값 지정
             float sqr_dis = 0f;
             Character target = null;
-
             foreach (Character t in _characters)
             {
                 if (t == exceptChar) continue;
@@ -591,18 +592,24 @@ namespace HordeFight
                 sqr_dis = (exceptChar.transform.position - t.transform.position).sqrMagnitude;
 
                 //최대 반경 이내일 경우
-                if(sqr_dis < Mathf.Pow(maxRadius,2))
+                if(sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
                 {
+
+                    //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  t.name); //chamto test
+
                     //기존 객체보다 더 가까운 경우
-                    if (min_dis > sqr_dis)
+                    if (min_value > sqr_dis)
                     {
-                        min_dis = sqr_dis;
+                        min_value = sqr_dis;
                         target = t;
                     }
                 }
 
             }
 
+            //if(null != target)
+                //DebugWide.LogBlue(min_value + "__" + sqr_dis + "__" + target.name); //chamto test
+            
             return target;
         }
 
@@ -714,13 +721,13 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Character.eKind.knight, id_sequence++, pos).SetAIRunning(false);
 
 
-            for (int i = 0; i < 30;i++)
+            //for (int i = 0; i < 30;i++)
             {
                 Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
             }
 
-            Create_Character(Single.unitRoot, Character.eKind.daemon, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Character.eKind.waterElemental, id_sequence++, pos);
+            //Create_Character(Single.unitRoot, Character.eKind.daemon, id_sequence++, pos);
+            //Create_Character(Single.unitRoot, Character.eKind.waterElemental, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.fireElemental, id_sequence++, pos);
 
         }
@@ -854,6 +861,7 @@ namespace HordeFight
             Single.lineControl.SetActive(_UIID_circle, false);
 
             _UIID_hp = Single.lineControl.Create_Line_HP(this.transform);
+
         }
 
 
@@ -869,6 +877,8 @@ namespace HordeFight
                 _eState = eState.FallDown;
                 FallDown();
             }
+
+            Update_Shot();
 
 
             if (eState.Idle == _eState)
@@ -1030,19 +1040,54 @@ namespace HordeFight
             Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
-        public void Attack_Shot(Vector3 dir)
-        {
-            Attack(dir);
 
-            GameObject shot = GameObject.Find("000_spear");
-            if (null != shot)
+        bool __launch = false;
+        GameObject __things = null;
+        Vector3 __targetPos = Vector3.zero;
+        Vector3 __launchPos = Vector3.zero;
+        public void ThrowThings(Vector3 target)
+        {
+            //Vector3 dir = target - this.transform.position;
+            //Attack(dir);
+
+            __targetPos = target;
+
+            if(null == __things)
+            {
+                __things = GameObject.Find("000_spear");
+            }
+
+
+            if (null != __things && false == __launch)
             {
                 Vector3 angle = new Vector3(0, 0, -120f);
                 angle.z += (float)_eDir8 * 45f;
-                shot.transform.localEulerAngles = angle;
+                __things.transform.localEulerAngles = angle;
+                __things.transform.localPosition = Vector3.zero;
+                __launch = true;
+                __launchPos = __things.transform.position;
+                __elapsedTime_2 = 0f;
+                __things.SetActive(true);
 
             }
         }
+        float __elapsedTime_2 = 0f;
+        public void Update_Shot()
+        {
+            if (null != __things && true == __launch)
+            {
+                __elapsedTime_2 += Time.deltaTime;
+                //Vector3 dir = __targetPos - __things.transform.position;
+                __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+                    
+                if(1f < __elapsedTime_2)
+                {
+                    __launch = false;
+                    __things.SetActive(false);
+                }
+            }
+        }
+
 
         public void FallDown()
         {
@@ -1079,7 +1124,7 @@ namespace HordeFight
 
             Single.lineControl.SetActive(_UIID_circle, true);
 
-            _hp_cur--;
+            //_hp_cur--;
             Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
 
 
@@ -1092,6 +1137,17 @@ namespace HordeFight
                 _eState = eState.Idle;    
             }
 
+            //chamto test -[------- -[------- -[------- -[------- -[-------    
+            //if (eKind.spearman == _eKind)
+            //{
+            //    Character target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
+            //    DebugWide.LogRed(target.name); //chamto test
+            //    ThrowThings(target.transform.position);
+
+            //    _eState = eState.Attack;
+            //    Vector3 dir = target.transform.position - this.transform.position;
+            //    Attack(dir);
+            //}
 
         }
 
@@ -1104,22 +1160,42 @@ namespace HordeFight
 
             Vector3 dir = (Vector3)hit.point - this.transform.position;
 
-            Character target = Single.objectManager.GetNearCharacter(this, 0.2f);
-            if(null != target)
+            if (eKind.spearman == _eKind)
             {
+                Character target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
+
+                ThrowThings(target.transform.position);
+
+                Vector3 things_dir = target.transform.position - this.transform.position;
+
                 _eState = eState.Attack;
-                Attack(dir);
+                Attack(things_dir);
 
                 _move.Move_Forward(dir, 1f, 1f); //chamto test
+                //DebugWide.LogRed(target.name); //chamto test
             }
             else
             {
-                _eState = eState.Move;
-                Move(dir, _disPerSecond, true);
-            }
+                Character target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
+                if (null != target)
+                {
+                    _eState = eState.Attack;
+                    Attack(dir);
 
-            Attack_Shot(dir); //chamto test -[------- -[------- -[------- -[------- -[-------
+                    _move.Move_Forward(dir, 1f, 1f); //chamto test
+                }
+                else
+                {
+                    _eState = eState.Move;
+                    Move(dir, _disPerSecond, true);
+                }
+            }
+                
+
+
+
             Single.objectManager.LookAtTarget(this);
+
 
 
         }
@@ -1341,10 +1417,11 @@ namespace HordeFight
                         //}
 
 
+                        float MIN_DIS = 0f;
                         float MAX_DIS = 1f;
                         if(null == _target)
                         {
-                            _target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(), MAX_DIS);
+                            _target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(),MIN_DIS, MAX_DIS);
                         }
                         else
                         {
