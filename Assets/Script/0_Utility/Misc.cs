@@ -1,0 +1,419 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+
+
+namespace Utility
+{
+    /// <summary>
+    /// 데카르트좌표계 사분면을 8방향으로 나누어 숫자 지정
+    /// </summary>
+    public enum eDirection8 : int
+    {
+        none = -1,
+        right = 0,
+        rightUp = 1,
+        up = 2,
+        leftUp = 3,
+        left = 4,
+        leftDown = 5,
+        down = 6,
+        rightDown = 7,
+
+    }
+}
+
+
+
+namespace Utility
+{
+    
+    /// <summary>
+    /// 보조 함수 묶음 
+    /// </summary>
+    public class Misc
+    {
+
+        //========================================================
+        //==================        싱글        ==================
+        //========================================================
+
+        private static System.Random _rand = new System.Random();
+        static public System.Random rand
+        {
+            get { return _rand; }
+        }
+
+        //========================================================
+        //==================      8방향 함수     ==================
+        //========================================================
+
+        /// <summary>
+        /// 방향값을 8방향 값으로 변환해 준다 
+        /// </summary>
+        /// <returns>The direction8.</returns>
+        /// <param name="dir">Dir.</param>
+        static public eDirection8 TransDirection8(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.y, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            //DebugWide.LogRed(deg + "   " + quad);
+
+            return (eDirection8)quad;
+        }
+
+        /// <summary>
+        ///  여덟 방향중 하나를 무작위로 반환한다. 
+        ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
+        /// </summary>
+        /// <returns> 정규벡터 방향값 </returns>
+        static public Vector3 RandomDir8()
+        {
+            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
+            int rand = Misc.rand.Next(0, 8); //0~7
+            Vector3 dir = Vector3.zero;
+
+            dir.x = Mathf.Cos(ANG_RAD * rand);
+            dir.y = Mathf.Sin(ANG_RAD * rand);
+
+            return dir;
+        }
+
+
+
+        //========================================================
+        //==================       기 하        ==================
+        //========================================================
+
+        /// <summary>
+        /// Arc.
+        /// </summary>
+        public struct Arc
+        {
+            public Vector3 pos;             //호의 시작점  
+            public Vector3 dir;             //정규화 되어야 한다
+            public float degree;            //각도 
+            public float radius_near;       //시작점에서 가까운 원의 반지름 
+            public float radius_far;        //시작점에서 먼 원의 반지름
+                                            //public float radius;
+
+            public const float STANDARD_COLLIDER_RADIUS = 2f;
+            public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
+
+            public float factor
+            {
+                get
+                {   //f = radius / sin
+                    return radius_collider_standard / Mathf.Sin(Mathf.Deg2Rad * degree * 0.5f);
+                }
+            }
+
+            //ratio : [-1 ~ 1]
+            //호에 원이 완전히 포함 [1]
+            //호에 원의 중점까지 포함 [0]
+            //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
+            public const float Fully_Included = 1f;
+            public const float Focus_Included = 0f;
+            public const float Boundary_Included = -1f;
+            public Vector3 GetPosition_Factor(float ratio = Focus_Included)
+            {
+                if (0 == ratio)
+                    return pos;
+
+                return pos + dir * (factor * ratio);
+            }
+
+            public Sphere sphere_near
+            {
+                get
+                {
+                    Sphere sph;
+                    sph.pos = this.pos;
+                    sph.radius = this.radius_near;
+                    return sph;
+                }
+
+            }
+
+            public Sphere sphere_far
+            {
+                get
+                {
+                    Sphere sph;
+                    sph.pos = this.pos;
+                    sph.radius = this.radius_far;
+                    return sph;
+                }
+
+            }
+
+            public string ToString()
+            {
+
+                return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
+                + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  radius_collider_standard: " + radius_collider_standard + "  factor: " + factor;
+            }
+        }
+
+        /// <summary>
+        /// Sphere.
+        /// </summary>
+        public struct Sphere
+        {
+            public Vector3 pos;
+            public float radius;
+
+            public Sphere(Vector3 p, float r)
+            {
+                pos = p;
+                radius = r;
+            }
+
+            public string ToString()
+            {
+                return "pos: " + pos + "  radius: " + radius;
+            }
+        }
+
+        //코사인의 각도값을 비교 한다.
+        //0 ~ 180도 사이만 비교 할수있다. (1,4사분면과 2,3사분면의 cos값이 같기 때문임)  
+        //cosA > cosB : 1
+        //cosA < cosB : 2
+        //cosA == cosB : 0
+        static public int Compare_CosAngle(float cos_1, float cos_2)
+        {
+            //각도가 클수록 cos값은 작아진다 (0~180도 에서만 해당)
+            if (cos_1 < cos_2)
+                return 1;
+            if (cos_1 > cos_2)
+                return 2;
+
+            return 0;
+        }
+
+
+        //호와 원의 충돌 검사 (2D 한정)
+        static public bool Collision_Arc_VS_Sphere(Misc.Arc arc, Misc.Sphere sph)
+        {
+            //DebugWide.LogBlue ("1  srcPos" + arc.sphere_far.pos + " r:" + arc.sphere_far.radius + " dstPos:" + sph.pos + " r:" + sph.radius); //chamto test
+            if (true == Misc.Collision_Sphere(arc.sphere_far, sph, eSphere_Include_Status.Focus))
+            {
+
+                if (false == Misc.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
+                {
+                    //각도를 반으로 줄여 넣는다. 1과 4분면을 구별 못하기 때문에 1사분면에서 검사하면 4사분면도 검사 결과에 포함된다. 즉 실제 검사 범위가 2배가 된다.
+                    float angle_arc = Mathf.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
+
+                    //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
+
+                    Vector3 arc_sph_dir = sph.pos - arc.GetPosition_Factor(Misc.Arc.Focus_Included);
+                    arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
+
+                    float rate_cos = Vector3.Dot(arc.dir, arc_sph_dir);
+                    if (rate_cos > angle_arc)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+
+            return false;
+        }
+
+
+        public enum eSphere_Include_Status
+        {
+            Boundary = 1,   //두원의 닿는 경계까지 포함 
+            Focus,          //작은원이 중점까지 포함
+            Fully           //작은원이 완전포함 
+        }
+        //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
+        static public bool Collision_Sphere(Misc.Sphere src, Misc.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
+        {
+
+            float min_radius, max_radius, sum_radius, sqr_standard_value;
+            if (src.radius > dst.radius)
+            {
+                min_radius = dst.radius;
+                max_radius = src.radius;
+            }
+            else
+            {
+                min_radius = src.radius;
+                max_radius = dst.radius;
+            }
+
+            //(src.r - dst.r) < src.r  < (src.r + dst.r)
+            //완전포함        < 중점포함  < 경계포함
+            //Fully           < Focus   < Boundary
+            const float Minimum_Error_Value = 1.0f; //최소오차값
+            switch (eInclude)
+            {
+                case eSphere_Include_Status.Fully:
+                    sum_radius = max_radius - min_radius;
+                    if (Minimum_Error_Value > sum_radius) //반지름 합값이 너무 작으면 판정을 못하므로 임의의 "최소오차값"을 할당해 준다.
+                        sum_radius = Minimum_Error_Value;
+                    break;
+                case eSphere_Include_Status.Focus:
+                    sum_radius = max_radius;
+                    break;
+                case eSphere_Include_Status.Boundary:
+                default:
+                    //두원의 반지름을 더한후 제곱해 준다. 
+                    sum_radius = max_radius + min_radius;
+                    break;
+            }
+
+            sqr_standard_value = (sum_radius * sum_radius) * ratio;
+
+            //두원의 중점 사이의 거리를 구한다. 피타고라스의 정리를 이용 , 제곱을 벗기지 않는다.
+            float sqr_dis_between = Vector3.SqrMagnitude(src.pos - dst.pos);
+
+            //DebugWide.LogBlue (" r+r: "+Mathf.Sqrt(sqr_standard_value) + " p-p: " + Mathf.Sqrt(sqr_dis_between));
+
+            if (sqr_standard_value > sqr_dis_between)
+            {
+                //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+                return true; //두원이 겹쳐짐 
+            }
+            if (sqr_standard_value == sqr_dis_between)
+            {
+                //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+                return true; //포함조건과 똑같음
+            }
+            if (sqr_standard_value < sqr_dis_between)
+            {
+                //              DebugWide.LogBlue ("F-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+                return false; //두원이 겹쳐 있지 않음
+            }
+
+            //          DebugWide.LogWhite ("***** unreachable !!! ******");
+            return false;
+        }
+
+        static public bool Collision_Sphere(Vector3 src_pos, float src_radius, Vector3 des_pos, float des_radius, eSphere_Include_Status eInclude)
+        {
+            Misc.Sphere src, dst;
+            src.pos = src_pos; src.radius = src_radius;
+            dst.pos = des_pos; dst.radius = des_radius;
+            return Misc.Collision_Sphere(src, dst, eInclude);
+        }
+
+        //!!test 필요
+        //value 보다 target 값이 작으면 True 를 반환한다.
+        static public bool Distance_LessThan(float Value, Vector3 target)
+        {
+            if (Mathf.Exp(Value * 0.5f) >= Vector3.SqrMagnitude(target))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        //========================================================
+        //==================       비트연산        ==================
+        //========================================================
+
+        //ref : https://stackoverflow.com/questions/27237776/convert-int-bits-to-float-bits
+        //int i = ...;
+        //float f = BitConverter.ToSingle(BitConverter.GetBytes(i), 0);
+        public static unsafe int SingleToInt32Bits(float value)
+        {
+            return *(int*)(&value);
+        }
+        public static unsafe float Int32BitsToSingle(int value)
+        {
+            return *(float*)(&value);
+        }
+
+        //========================================================
+        //==================       수   학       ==================
+        //========================================================
+
+        //ref : https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%86%8D_%EC%97%AD_%EC%A0%9C%EA%B3%B1%EA%B7%BC
+        //함수해석 : https://zariski.wordpress.com/2014/10/29/%EC%A0%9C%EA%B3%B1%EA%B7%BC-%EC%97%AD%EC%88%98%EC%99%80-%EB%A7%88%EB%B2%95%EC%9D%98-%EC%88%98-0x5f3759df/
+        //함수해석 : http://eastroot1590.tistory.com/entry/%EC%A0%9C%EA%B3%B1%EA%B7%BC%EC%9D%98-%EC%97%AD%EC%88%98-%EA%B3%84%EC%82%B0%EB%B2%95
+        //뉴턴-랩슨법  : http://darkpgmr.tistory.com/58
+        //sse 명령어 rsqrtss 보다 빠를수가 없다.
+        //[ reciprocal square root ]
+        // 제곱근의 역수이다. a 일때  역수는 1/a 이다.
+        static public unsafe float RSqrt_Quick_2(float x)
+        {
+
+            const int SQRT_MAGIC_F = 0x5f3759df;
+            const float threehalfs = 1.5F;
+            float xhalf = 0.5f * x;
+
+            float ux;
+            int ui;
+
+            ui = *(int*)&x;
+            ui = SQRT_MAGIC_F - (ui >> 1);  // gives initial guess y0
+            ux = *(float*)&ui;
+            ux = ux * (threehalfs - xhalf * ux * ux);// Newton step, repeating increases accuracy 
+
+            return ux;
+        }
+
+
+        //Algorithm: The Magic Number (Quake 3) - 유니티엔진에서 쓰는 방식 추정 
+        static public unsafe float Sqrt_Quick_2(float x)
+        {
+            const int SQRT_MAGIC_F = 0x5f3759df;
+            const float threehalfs = 1.5F;
+            float xhalf = 0.5f * x;
+
+            float ux;
+            int ui;
+
+            ui = *(int*)&x;
+            ui = SQRT_MAGIC_F - (ui >> 1);  // gives initial guess y0
+            ux = *(float*)&ui;
+            ux = x * ux * (threehalfs - xhalf * ux * ux);// Newton step, repeating increases accuracy 
+
+            return ux;
+        }
+
+        //어셈코드 다음으로 속도가 가장 빠름. 매직넘버 "0x5f3759df" 코드보다 빠르지만 정확도는 더 떨어진다
+        //ref : https://www.codeproject.com/Articles/69941/Best-Square-Root-Method-Algorithm-Function-Precisi
+        //Algorithm: Dependant on IEEE representation and only works for 32 bits 
+        static public unsafe float Sqrt_Quick_7(float x)
+        {
+
+            uint i = *(uint*)&x;
+            // adjust bias
+            i += 127 << 23;
+            // approximation of square root
+            i >>= 1;
+            return *(float*)&i;
+        }
+
+
+        static public Vector3 Norm_Quick(Vector3 v3)
+        {
+            //float r_length = Util.RSqrt_Quick_2 (v3.sqrMagnitude);
+            float r_length = 1f / Misc.Sqrt_Quick_7(v3.sqrMagnitude);
+            return v3 * r_length;
+        }
+    
+
+    }
+
+}
+

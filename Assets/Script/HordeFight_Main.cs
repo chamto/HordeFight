@@ -76,14 +76,7 @@ namespace HordeFight
 {
     public static class Single
     {
-
-       
-        private static System.Random _rand = new System.Random();
-        static public System.Random rand
-        {
-            get { return _rand; }
-        }
-
+        
         public static TouchProcess touchProcess
         {
             get
@@ -196,31 +189,6 @@ namespace HordeFight
 
 }//end namespace
 
-//========================================================
-//==================     보조함수묶음     ==================
-//========================================================
-
-namespace HordeFight
-{
-    public class  GlobalMethod
-    {
-        /// <summary>
-        ///  여덟 방향중 하나를 무작위로 반환한다. 
-        /// </summary>
-        /// <returns> 정규벡터 방향값 </returns>
-        static public Vector3 RandomDir8()
-        {
-            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
-            int rand = Single.rand.Next(0, 8); //0~7
-            Vector3 dir = Vector3.zero;
-
-            dir.x = Mathf.Cos(ANG_RAD * rand);
-            dir.y = Mathf.Sin(ANG_RAD * rand);
-
-            return dir;
-        }
-    }
-}
 
 
 //========================================================
@@ -275,30 +243,6 @@ namespace HordeFight
 
 }
 
-
-//========================================================
-//==================      진영 관리기      ==================
-//========================================================
-namespace HordeFight
-{
-    //뛰어난 동물 진영
-    public class CampChamp
-    {
-        //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
-        //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
-        //* 개인행동(뗄감,채집,사냥,정찰 등) 명령을 내리면 진영에서 이탈하게 된다. 
-        //진영 리더 1순위
-        //진영 리더 2순위
-        //진영 리더 3순위
-
-        //* 진영별로 목표점을 조절하여 진영의 모양에 변화를 줄 수 있다.
-        //진영 종류 : 원형 , 종형 , 횡형
-
-        //진영에 있는 챔프목록
-        //개인행동 하는 챔프목록 
-
-    }
-}
 
 //========================================================
 //==================      라인 관리기      ==================
@@ -530,7 +474,7 @@ namespace HordeFight
                             if(n == Vector3.zero)
                             {
                                 //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = GlobalMethod.RandomDir8(); 
+                                n = Misc.RandomDir8(); 
                             }
 
                             div_dis = 0.5f;
@@ -734,6 +678,33 @@ namespace HordeFight
 
     }
 
+
+    //========================================================
+    //==================      진영 관리기      ==================
+    //========================================================
+    namespace HordeFight
+    {
+        //뛰어난 동물 진영
+        public class CampChamp
+        {
+            //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
+            //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
+            //* 개인행동(뗄감,채집,사냥,정찰 등) 명령을 내리면 진영에서 이탈하게 된다. 
+            //진영 리더 1순위
+            //진영 리더 2순위
+            //진영 리더 3순위
+
+            //* 진영별로 목표점을 조절하여 진영의 모양에 변화를 줄 수 있다.
+            //진영 종류 : 원형 , 종형 , 횡형
+
+            //진영에 있는 챔프목록
+            //개인행동 하는 챔프목록 
+
+        }
+    }
+
+    //========================================================
+    //==================   캐릭터/구조물 정보   ==================
     //========================================================
 
     /// <summary>
@@ -791,41 +762,7 @@ namespace HordeFight
     }
     //========================================================
 
-    public partial class Character : MonoBehaviour
-    {
-        //데카르트좌표계 사분면을 기준으로 숫자 지정
-        public enum eDirection : int
-        {
-            none        = -1,
-            right       = 0,
-            rightUp     = 1,
-            up          = 2,
-            leftUp      = 3,
-            left        = 4,
-            leftDown    = 5,
-            down        = 6,
-            rightDown   = 7,
 
-        }
-
-
-        static public eDirection TransDirection8(Vector3 dir)
-        {
-            float rad = Mathf.Atan2(dir.y, dir.x);
-            float deg = Mathf.Rad2Deg * rad;
-
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
-
-            //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
-            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
-            //DebugWide.LogRed(deg + "   " + quad);
-
-            return (eDirection)quad;
-        }
-    }
 
     public partial class  Character : MonoBehaviour
     {
@@ -834,7 +771,7 @@ namespace HordeFight
         private AnimatorOverrideController  _overCtr = null;
 
         private Movable _move     = null;
-        private eDirection _eDir8 = eDirection.down;
+        private eDirection8 _eDir8 = eDirection8.down;
 
         public int      _id     = -1;
         public eKind    _eKind  = eKind.None;
@@ -987,7 +924,7 @@ namespace HordeFight
         }
 
 
-        public void Switch_Ani(string aniKind, string aniName , eDirection dir)
+        public void Switch_Ani(string aniKind, string aniName , eDirection8 dir)
         {
             
             SpriteRenderer sr = GetComponent<SpriteRenderer>();
@@ -996,21 +933,21 @@ namespace HordeFight
             switch(dir)
             {
                 
-                case eDirection.leftUp:
+                case eDirection8.leftUp:
                     {
-                        aniNameSum = aniName + eDirection.rightUp.ToString();
+                        aniNameSum = aniName + eDirection8.rightUp.ToString();
                         sr.flipX = true;
                     }
                     break;
-                case eDirection.left:
+                case eDirection8.left:
                     {
-                        aniNameSum = aniName + eDirection.right.ToString();
+                        aniNameSum = aniName + eDirection8.right.ToString();
                         sr.flipX = true;
                     }
                     break;
-                case eDirection.leftDown:
+                case eDirection8.leftDown:
                     {
-                        aniNameSum = aniName + eDirection.rightDown.ToString();
+                        aniNameSum = aniName + eDirection8.rightDown.ToString();
                         sr.flipX = true;
                     }
                     break;
@@ -1052,18 +989,18 @@ namespace HordeFight
                     //_eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
 
                     //근접 방향으로 랜덤하게 회전하게 한다 
-                    int num = Single.rand.Next(-1, 2); //-1 ~ 1
+                    int num = Misc.rand.Next(-1, 2); //-1 ~ 1
                     num += (int)_eDir8;
                     if (0 > num) num = 7;
                     if (7 < num) num = 0;
-                    _eDir8 = (eDirection)num;
+                    _eDir8 = (eDirection8)num;
 
                     Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
                     __elapsedTime_1 = 0f;
 
                     //3~6초가 지났을 때 돌아감
-                    __randTime = (float)Single.rand.Next(3, 7); //3~6
+                    __randTime = (float)Misc.rand.Next(3, 7); //3~6
                 }
 
             }
@@ -1076,7 +1013,7 @@ namespace HordeFight
             if (false == forward)
                 dir *= -1f;
 
-            _eDir8 = TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
@@ -1094,14 +1031,14 @@ namespace HordeFight
             if (false == forward)
                 dir *= -1f;
             
-            _eDir8 = TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8(dir);
             Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
 
 		}
 
         public void Attack(Vector3 dir)
         {
-            _eDir8 = TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8(dir);
             Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
@@ -1158,15 +1095,15 @@ namespace HordeFight
         {
             switch (_eDir8)
             {
-                case eDirection.up:
+                case eDirection8.up:
                     { }
                     break;
-                case eDirection.down:
+                case eDirection8.down:
                     { }
                     break;
                 default:
                     {
-                        _eDir8 = eDirection.up; //기본상태 지정 
+                        _eDir8 = eDirection8.up; //기본상태 지정 
                     }
                     break;
             }
