@@ -726,8 +726,8 @@ namespace HordeFight
                 Create_Character(Single.unitRoot, Character.eKind.skeleton, id_sequence++, pos);
             }
 
-            //Create_Character(Single.unitRoot, Character.eKind.daemon, id_sequence++, pos);
-            //Create_Character(Single.unitRoot, Character.eKind.waterElemental, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.daemon, id_sequence++, pos);
+            Create_Character(Single.unitRoot, Character.eKind.waterElemental, id_sequence++, pos);
             Create_Character(Single.unitRoot, Character.eKind.fireElemental, id_sequence++, pos);
 
         }
