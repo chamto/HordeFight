@@ -992,7 +992,7 @@ namespace HordeFight
 
                 if (__randTime < __elapsedTime_1)
                 {
-                    _eDir8 = (eDirection)Single.rand.Next(1, 9); //1~8
+                    _eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
                     Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
                     __elapsedTime_1 = 0f;
