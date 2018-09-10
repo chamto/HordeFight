@@ -734,6 +734,7 @@ namespace HordeFight
 
     }
 
+    //========================================================
 
     /// <summary>
     /// 존재
@@ -741,7 +742,7 @@ namespace HordeFight
     public class Being : MonoBehaviour
     {
         //** 결합 기능들 **
-        //      이동 , 타기가능 , 탈것가능 , 던지기 , 마법     
+        //      이동 , 타기가능 , 탈것가능 , 던지기 , 마법 , 스킬   
     }
 
     /// <summary>
@@ -760,6 +761,35 @@ namespace HordeFight
         
     }
 
+
+    public class Movable_2 : MonoBehaviour
+    {
+
+        private void Start()
+        {
+        }
+
+        private void Update()
+        {
+        }
+
+
+
+        public void Move(Vector3 dir, float distance, float speed)
+        {
+            //보간, 이동 처리
+            //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
+            this.transform.Translate(dir * Time.deltaTime * speed * distance);
+        }
+
+        public void MoveToPoint(Vector3 target, float speed)
+        {
+            //todo 
+            //Vector3 v = target - this.transform.position;
+            //Vector3.Lerp(this.transform.position)
+        }
+    }
+    //========================================================
 
     public partial class Character : MonoBehaviour
     {
@@ -1815,7 +1845,7 @@ namespace HordeFight
             RaycastHit2D hit2D = Physics2D.Raycast(ray.origin, ray.direction);
             if (null != hit2D.collider)
             {
-                //DebugWide.Log(hit.transform.gameObject.name); //chamto test
+                //DebugWide.Log(hit2D.transform.gameObject.name); //chamto test
                 hit2D.transform.gameObject.SendMessage(callbackMethod, 0, SendMessageOptions.DontRequireReceiver);
 
                 return hit2D.transform.gameObject;
