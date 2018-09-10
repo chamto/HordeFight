@@ -735,6 +735,32 @@ namespace HordeFight
     }
 
 
+    /// <summary>
+    /// 존재
+    /// </summary>
+    public class Being : MonoBehaviour
+    {
+        //** 결합 기능들 **
+        //      이동 , 타기가능 , 탈것가능 , 던지기 , 마법     
+    }
+
+    /// <summary>
+    /// 구조물 : 건물 , 배
+    /// </summary>
+    public class Structure : Being
+    {
+        
+    }
+
+    /// <summary>
+    /// 뛰어난 존재 
+    /// </summary>
+    public class Champ : Being
+    {
+        
+    }
+
+
     public partial class Character : MonoBehaviour
     {
         //데카르트좌표계 사분면을 기준으로 숫자 지정
@@ -992,7 +1018,16 @@ namespace HordeFight
 
                 if (__randTime < __elapsedTime_1)
                 {
-                    _eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
+                    
+                    //_eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
+
+                    //근접 방향으로 랜덤하게 회전하게 한다 
+                    int num = Single.rand.Next(-1, 2); //-1 ~ 1
+                    num += (int)_eDir8;
+                    if (0 > num) num = 7;
+                    if (7 < num) num = 0;
+                    _eDir8 = (eDirection)num;
+
                     Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
                     __elapsedTime_1 = 0f;

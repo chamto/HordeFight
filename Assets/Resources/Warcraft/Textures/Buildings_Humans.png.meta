@@ -1,7 +1,27 @@
 fileFormatVersion: 2
 guid: b433d4ab3779d42d29dc170cae423dcb
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: Buildings_Humans_0
+    21300002: Buildings_Humans_1
+    21300004: Buildings_Humans_3
+    21300006: Buildings_Humans_4
+    21300008: Buildings_Humans_5
+    21300010: Buildings_Humans_6
+    21300012: Buildings_Humans_7
+    21300014: Buildings_Humans_8
+    21300016: Buildings_Humans_9
+    21300018: Buildings_Humans_10
+    21300020: Buildings_Humans_11
+    21300022: Buildings_Humans_12
+    21300024: Buildings_Humans_13
+    21300026: Buildings_Humans_15
+    21300028: Buildings_Humans_17
+    21300030: Buildings_Humans_19
+    21300032: Buildings_Humans_20
+    21300034: Buildings_Humans_21
+    21300036: Buildings_Humans_22
+    21300038: Buildings_Humans_23
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -91,11 +111,411 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: Buildings_Humans_0
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 279
+        width: 28
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8af98e57cc3584933a56f67b5cae0136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_1
+      rect:
+        serializedVersion: 2
+        x: 54
+        y: 273
+        width: 36
+        height: 35
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0f0fbb26c90b14862a8afa8ff1d1bf74
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_3
+      rect:
+        serializedVersion: 2
+        x: 165
+        y: 274
+        width: 30
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c334558fd03b04c3d81229fb50a5db9a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_4
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 278
+        width: 24
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5e4283fe5ad184c5eaeef170415e6db0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_5
+      rect:
+        serializedVersion: 2
+        x: 7
+        y: 227
+        width: 34
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a807f788798104c049a57aef7f40156e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_6
+      rect:
+        serializedVersion: 2
+        x: 56
+        y: 227
+        width: 32
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 32b9f8196bf6a42699ea555376758239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_7
+      rect:
+        serializedVersion: 2
+        x: 166
+        y: 226
+        width: 25
+        height: 33
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55c6914f608624959993aa7d11093751
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_8
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 228
+        width: 29
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2508ec9a8673842a3becf1738f837477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_9
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 167
+        width: 48
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f34fe51cd5f194fe5abc2caf14ca5d2b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_10
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 167
+        width: 47
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ef4a4aa1713d9490393df62d65c1fde6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_11
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 163
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d1daed6ee1d4d4adab2abc6cdf91f539
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_12
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 163
+        width: 45
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5dbd07c331eb40619f2dd0c691fbceb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_13
+      rect:
+        serializedVersion: 2
+        x: 9
+        y: 98
+        width: 45
+        height: 46
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 678e0b89d65f94a45a13230a3f82b828
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_15
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 98
+        width: 45
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 614e373374f684769bb0632a01de2021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_17
+      rect:
+        serializedVersion: 2
+        x: 164
+        y: 101
+        width: 47
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8f870d24c510249fea6426ccebe538b4
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_19
+      rect:
+        serializedVersion: 2
+        x: 227
+        y: 102
+        width: 47
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 21cdf10a693b54fa7907c47102727371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_20
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 35
+        width: 48
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f763930c8293644709ba6072966a4976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_21
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 35
+        width: 47
+        height: 38
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c2d96e69f3d5c439884ce8c1a7f98cee
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_22
+      rect:
+        serializedVersion: 2
+        x: 179
+        y: 13
+        width: 77
+        height: 77
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8612cf29f58e74162829ce5c453aad9f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Buildings_Humans_23
+      rect:
+        serializedVersion: 2
+        x: 2
+        y: 2
+        width: 126
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f19712ee09e764aa6b62b64ed2e9127f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: cb8eb793ea33242c5bfbef7c017dd49a
     vertices: []
     indices: 
     edges: []
