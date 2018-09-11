@@ -312,7 +312,7 @@ namespace HordeFight
             //}
 		}
 
-        public int Create_Line_HP(Transform dst)
+        public int Create_LineHP_AxisY(Transform dst)
         {
             GameObject obj = new GameObject();
             LineRenderer render = obj.AddComponent<LineRenderer>();
@@ -339,7 +339,7 @@ namespace HordeFight
             _list.Add(_sequenceId, info); //추가
 
             Vector3 pos = Vector3.zero;
-            pos.x = -0.05f; pos.y = -0.1f;
+            pos.x = -0.05f; pos.z = -0.15f;
             render.SetPosition(0, pos);
             pos.x += 0.1f;
             render.SetPosition(1, pos);
@@ -347,7 +347,7 @@ namespace HordeFight
             return _sequenceId;
         }
 
-        public int Create_Circle(Transform dst)
+        public int Create_Circle_AxisY(Transform dst)
         {
             GameObject obj = new GameObject();
             LineRenderer render = obj.AddComponent<LineRenderer>();
@@ -376,13 +376,13 @@ namespace HordeFight
 
             //info.Update_Circle(); //값설정
             float deg = 360f / render.positionCount;
-            float radius = render.transform.parent.GetComponent<CircleCollider2D>().radius;
+            float radius = render.transform.parent.GetComponent<SphereCollider>().radius;
             Vector3 pos = Vector3.right;
             for (int i = 0; i < render.positionCount; i++)
             {
                 pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
-                pos.y = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
-                //render.SetPosition(i, pos + render.transform.parent.position);
+                pos.z = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
+
                 render.SetPosition(i, pos );
                 //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
             }
@@ -411,7 +411,7 @@ namespace HordeFight
 
             LineRenderer render = _list[id].render;
             Vector3 pos = Vector3.zero;
-            pos.x = -0.05f; pos.y = -0.1f;
+            pos.x = -0.05f; pos.z = -0.15f;
             render.SetPosition(0, pos);
             pos.x += (0.1f * rate) ;
             render.SetPosition(1, pos);
@@ -419,6 +419,455 @@ namespace HordeFight
 
 	}
 }
+
+//========================================================
+//==================      진영 관리기      ==================
+//========================================================
+namespace HordeFight
+{
+    //뛰어난 동물 진영
+    public class CampChamp
+    {
+        //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
+        //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
+        //* 개인행동(뗄감,채집,사냥,정찰 등) 명령을 내리면 진영에서 이탈하게 된다. 
+        //진영 리더 1순위
+        //진영 리더 2순위
+        //진영 리더 3순위
+
+        //* 진영별로 목표점을 조절하여 진영의 모양에 변화를 줄 수 있다.
+        //진영 종류 : 원형 , 종형 , 횡형
+
+        //진영에 있는 챔프목록
+        //개인행동 하는 챔프목록 
+
+    }
+}
+
+
+namespace HordeFight
+{
+    //========================================================
+    //==================     스킬  정보     ==================
+    //========================================================
+
+
+    public class SkillManager
+    {
+
+    }
+
+
+    public class Skill : List<Behavior>
+    {
+
+        public enum eKind
+        {
+            None,
+            Attack_Strong,
+            Attack_Weak,
+            Attack_Counter,
+            Withstand,
+            Block,
+            Hit,
+            Max
+        }
+
+        public enum eName
+        {
+            None,
+            Idle,
+            Hit_Body,
+            Hit_Weapon,
+
+            Attack_Strong_1,
+            Attack_Weak_1,
+            Attack_Counter_1,
+
+            Attack_3Combo,
+
+            Withstand_1,
+            Block_1,
+
+            Max
+        }
+
+
+        //========================================
+
+        private int _index_current = 0;
+
+
+        //========================================
+
+        public eKind kind { get; set; }
+        public eName name { get; set; }
+
+        //========================================
+
+        public Behavior FirstBehavior()
+        {
+            _index_current = 0; //index 초기화
+
+            if (this.Count == 0)
+                return null;
+
+            return this[_index_current];
+        }
+
+        public Behavior NextBehavior()
+        {
+            if (this.Count > _index_current)
+            {
+                //마지막 인덱스임
+                if (this.Count == _index_current + 1)
+                    return null;
+
+                _index_current++;
+                return this[_index_current];
+            }
+
+            return null;
+        }
+
+        //다음 행동이 있나 질의한다
+        public bool IsNextBehavior()
+        {
+            if (this.Count > _index_current)
+            {
+                //마지막 인덱스임
+                if (this.Count == _index_current + 1)
+                    return false;
+
+
+                return true;
+            }
+
+            return false;
+        }
+
+
+
+        //========================================
+
+        //스킬 명세서
+        static public Skill Details_Idle()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.None;
+            skinfo.name = eName.Idle;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_HitBody()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Hit;
+            skinfo.name = eName.Hit_Body;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_HitWeapon()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Hit;
+            skinfo.name = eName.Hit_Weapon;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1.5f;
+            //1
+            bhvo.cloggedTime_0 = 0f;
+            bhvo.cloggedTime_1 = 0f;
+            //2
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            //3
+            bhvo.openTime_0 = -1f; //연결 동작을 못 넣게 막는다. 0으로 설정시 연속입력을 허용하게 된다
+            bhvo.openTime_1 = -1f;
+            //4
+            bhvo.rigidTime = 0f;
+
+
+            //bhvo.attack_shape = eTraceShape.Straight;
+            bhvo.angle = 0f;
+            bhvo.plus_range_0 = 0f;
+            bhvo.plus_range_1 = 0f;
+            bhvo.distance_travel = 0f;
+            bhvo.distance_maxTime = 0f;
+            //bhvo.Calc_Velocity ();
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_Withstand_1()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Withstand;
+            skinfo.name = eName.Withstand_1;
+
+            Behavior bhvo = new Behavior();
+            //bhvo.runningTime = 10.0f; //임시값
+            bhvo.runningTime = 3.0f;
+            //1
+            bhvo.cloggedTime_0 = 0f;
+            bhvo.cloggedTime_1 = 0f;
+            //2
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            //3
+            bhvo.openTime_0 = -1f; //연결 동작을 못 넣게 막는다. 0으로 설정시 연속입력을 허용하게 된다
+            bhvo.openTime_1 = -1f;
+            //4
+            bhvo.rigidTime = 0f;
+
+
+            //bhvo.attack_shape = eTraceShape.Straight;
+            bhvo.angle = 0f;
+            bhvo.plus_range_0 = 0f;
+            bhvo.plus_range_1 = 0f;
+            bhvo.distance_travel = 0f;
+            bhvo.distance_maxTime = 0f;
+            //bhvo.Calc_Velocity ();
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_Attack_Weak()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Attack_Weak;
+            skinfo.name = eName.Attack_Weak_1;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1.5f;
+            //1
+            bhvo.cloggedTime_0 = 0.0f;
+            bhvo.cloggedTime_1 = 1.3f;
+            //2
+            bhvo.eventTime_0 = 0.7f;
+            bhvo.eventTime_1 = 1f;
+            //3
+            bhvo.openTime_0 = 1f;
+            bhvo.openTime_1 = 1.3f;
+            //4
+            bhvo.rigidTime = 0f;
+
+
+            //bhvo.attack_shape = eTraceShape.Straight;
+            //bhvo.attack_shape = eTraceShape.Vertical;
+            bhvo.angle = 45f;
+            bhvo.plus_range_0 = 0f;
+            bhvo.plus_range_1 = -4f;
+            bhvo.distance_travel = Behavior.DEFAULT_DISTANCE - 4f;
+            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
+            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+
+            bhvo.Calc_Velocity();
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_Attack_Counter()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Attack_Counter;
+            skinfo.name = eName.Attack_Counter_1;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1.2f;
+            //1
+            bhvo.cloggedTime_0 = 0.0f;
+            bhvo.cloggedTime_1 = 0.7f;
+            //2
+            bhvo.eventTime_0 = 0.8f;
+            bhvo.eventTime_1 = 1.0f;
+            //3
+            bhvo.openTime_0 = -1f;
+            bhvo.openTime_1 = -1f;
+            //4
+            bhvo.rigidTime = 0.2f;
+
+
+            //bhvo.attack_shape = eTraceShape.Straight;
+            bhvo.distance_travel = Behavior.DEFAULT_DISTANCE;
+            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
+            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+            bhvo.Calc_Velocity();
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_Attack_Strong()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Attack_Strong;
+            skinfo.name = eName.Attack_Strong_1;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 2.0f;
+            //1
+            bhvo.cloggedTime_0 = 0.1f;
+            bhvo.cloggedTime_1 = 1.0f;
+            //2
+            bhvo.eventTime_0 = 1.0f;
+            bhvo.eventTime_1 = 1.2f;
+            //3
+            bhvo.openTime_0 = 1.5f;
+            bhvo.openTime_1 = 1.8f;
+            //4
+            bhvo.rigidTime = 0.5f;
+
+            //bhvo.attack_shape = eTraceShape.Straight;
+            //bhvo.attack_shape = eTraceShape.Vertical;
+            bhvo.angle = 45f;
+            bhvo.plus_range_0 = 2f;
+            bhvo.plus_range_1 = 2f;
+            bhvo.distance_travel = Behavior.DEFAULT_DISTANCE;
+            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
+            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+
+            bhvo.Calc_Velocity();
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+        static public Skill Details_Attack_3Combo()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Attack_Strong;
+            skinfo.name = eName.Attack_3Combo;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+            bhvo = new Behavior();
+            bhvo.runningTime = 2f;
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+            bhvo = new Behavior();
+            bhvo.runningTime = 3f;
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+            return skinfo;
+        }
+
+
+
+        static public Skill Details_Block_1()
+        {
+            Skill skinfo = new Skill();
+
+            skinfo.kind = eKind.Block;
+            skinfo.name = eName.Block_1;
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 1f;
+            bhvo.rigidTime = 0.1f;
+            bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
+            bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
+            skinfo.Add(bhvo);
+
+
+            return skinfo;
+        }
+
+    }
+
+    /// <summary>
+    /// Skill book.
+    /// </summary>
+    public class SkillBook //: Dictionary<Skill.eName, Skill>
+    {
+        private delegate Skill Details_Skill();
+        private Dictionary<Skill.eName, Skill> _referDict = new Dictionary<Skill.eName, Skill>();   //미리 만들어진 정보로 빠르게 사용
+        private Dictionary<Skill.eName, Details_Skill> _createDict = new Dictionary<Skill.eName, Details_Skill>(); //새로운 스킬인스턴스를 만들때 사용 
+
+        public SkillBook()
+        {
+            this.Add(Skill.eName.Idle, Skill.Details_Idle);
+            this.Add(Skill.eName.Hit_Body, Skill.Details_HitBody);
+            this.Add(Skill.eName.Hit_Weapon, Skill.Details_HitWeapon);
+
+            this.Add(Skill.eName.Withstand_1, Skill.Details_Withstand_1);
+            this.Add(Skill.eName.Block_1, Skill.Details_Block_1);
+
+            this.Add(Skill.eName.Attack_Strong_1, Skill.Details_Attack_Strong);
+            this.Add(Skill.eName.Attack_Weak_1, Skill.Details_Attack_Weak);
+            this.Add(Skill.eName.Attack_Counter_1, Skill.Details_Attack_Counter);
+
+            this.Add(Skill.eName.Attack_3Combo, Skill.Details_Attack_3Combo);
+
+        }
+
+        private void Add(Skill.eName name, Details_Skill skillPtr)
+        {
+            _referDict.Add(name, skillPtr());
+            _createDict.Add(name, skillPtr);
+        }
+
+        //만들어진 객체를 참조한다 
+        public Skill Refer(Skill.eName name)
+        {
+            return _referDict[name];
+        }
+
+        //요청객체를 생성한다
+        public Skill Create(Skill.eName name)
+        {
+            return _createDict[name]();
+        }
+    }
+
+}
+
+
 
 //========================================================
 //==================      객체 관리기      ==================
@@ -431,24 +880,24 @@ namespace HordeFight
     {
         public List<Character> _characters = new List<Character>();
 
-		private void Start()
-		{
-            
-		}
+        private void Start()
+        {
 
-		private void Update()
-		{
+        }
+
+        private void Update()
+        {
             UpdateCollision();
-		}
+        }
 
         public void UpdateCollision()
         {
             Vector3 sqr_dis = Vector3.zero;
             float r_sum = 0f;
             //한집합의 원소로 중복되지 않는 한쌍 만들기  
-            for (int i = 0; i < _characters.Count-1;i++)
+            for (int i = 0; i < _characters.Count - 1; i++)
             {
-                for (int j = i+1 ; j < _characters.Count; j++)
+                for (int j = i + 1; j < _characters.Count; j++)
                 {
                     //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
 
@@ -458,7 +907,7 @@ namespace HordeFight
 
 
                     //1.두 캐릭터가 겹친상태 
-                    if(sqr_dis.sqrMagnitude < Mathf.Pow(r_sum,2))
+                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
                     {
                         //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
 
@@ -468,13 +917,13 @@ namespace HordeFight
                         float div_dis = 0.1f;
 
                         //2.반지름 이상으로 겹쳐있는 경우
-                        if(sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
                         {
                             //3.완전 겹쳐있는 경우
-                            if(n == Vector3.zero)
+                            if (n == Vector3.zero)
                             {
                                 //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = Misc.RandomDir8(); 
+                                n = Misc.RandomDir8_AxisY();
                             }
 
                             div_dis = 0.5f;
@@ -487,12 +936,12 @@ namespace HordeFight
                     }
 
 
-                }   
+                }
             }
         }
 
 
-		public void ClearAll()
+        public void ClearAll()
         {
 
             foreach (Character t in _characters)
@@ -536,7 +985,7 @@ namespace HordeFight
                 sqr_dis = (exceptChar.transform.position - t.transform.position).sqrMagnitude;
 
                 //최대 반경 이내일 경우
-                if(sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
+                if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
                 {
 
                     //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  t.name); //chamto test
@@ -552,8 +1001,8 @@ namespace HordeFight
             }
 
             //if(null != target)
-                //DebugWide.LogBlue(min_value + "__" + sqr_dis + "__" + target.name); //chamto test
-            
+            //DebugWide.LogBlue(min_value + "__" + sqr_dis + "__" + target.name); //chamto test
+
             return target;
         }
 
@@ -570,12 +1019,12 @@ namespace HordeFight
                 if (t == target) continue;
 
 
-                if((int)Character.eState.Idle <= (int)t._eState &&  (int)t._eState <= (int)Character.eState.Idle_Max)
+                if ((int)Character.eState.Idle <= (int)t._eState && (int)t._eState <= (int)Character.eState.Idle_Max)
                 {
                     dir = target.transform.position - t.transform.position;
                     t.Idle_View(dir, true);
 
-                    t._eState = Character.eState.Idle_LookAt;    
+                    t._eState = Character.eState.Idle_LookAt;
                 }
 
             }
@@ -586,7 +1035,7 @@ namespace HordeFight
         {
             foreach (Character t in _characters)
             {
-                
+
                 t._eState = state;
 
             }
@@ -610,9 +1059,9 @@ namespace HordeFight
             return obj;
         }
 
-       
 
-        public Character Create_Character(Transform parent, Character.eKind eKind,int id, Vector3 pos)
+
+        public Character Create_Character(Transform parent, Character.eKind eKind, int id, Vector3 pos)
         {
 
             GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
@@ -626,7 +1075,7 @@ namespace HordeFight
 
             _characters.Add(cha);
 
-            if(Character.eKind.spearman == eKind)
+            if (Character.eKind.spearman == eKind)
             {
                 Create_ShotSpear(obj.transform, 0);
                 //Create_ShotSpear(obj.transform, 1);
@@ -640,7 +1089,7 @@ namespace HordeFight
         {
             GameObject obj = CreatePrefab("shot/spear", parent, id.ToString("000") + "_spear");
             obj.transform.parent = parent;
-            obj.transform.localPosition = new Vector3(-0.15f,0.15f,0);
+            obj.transform.localPosition = new Vector3(-0.15f, 0, 0.15f);
 
             return obj;
         }
@@ -677,98 +1126,21 @@ namespace HordeFight
         }
 
     }
+}
 
 
+namespace HordeFight
+{
     //========================================================
-    //==================      진영 관리기      ==================
+    //==================     캐릭터 정보(임시)     ==================
     //========================================================
-    namespace HordeFight
-    {
-        //뛰어난 동물 진영
-        public class CampChamp
-        {
-            //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
-            //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
-            //* 개인행동(뗄감,채집,사냥,정찰 등) 명령을 내리면 진영에서 이탈하게 된다. 
-            //진영 리더 1순위
-            //진영 리더 2순위
-            //진영 리더 3순위
-
-            //* 진영별로 목표점을 조절하여 진영의 모양에 변화를 줄 수 있다.
-            //진영 종류 : 원형 , 종형 , 횡형
-
-            //진영에 있는 챔프목록
-            //개인행동 하는 챔프목록 
-
-        }
-    }
-
-    //========================================================
-    //==================   캐릭터/구조물 정보   ==================
-    //========================================================
-
-    /// <summary>
-    /// 존재
-    /// </summary>
-    public class Being : MonoBehaviour
-    {
-        //** 결합 기능들 **
-        //      이동 , 타기가능 , 탈것가능 , 던지기 , 마법 , 스킬   
-    }
-
-    /// <summary>
-    /// 구조물 : 건물 , 배
-    /// </summary>
-    public class Structure : Being
-    {
-        
-    }
-
-    /// <summary>
-    /// 뛰어난 존재 
-    /// </summary>
-    public class Champ : Being
-    {
-        
-    }
-
-
-    public class Movable_2 : MonoBehaviour
-    {
-
-        private void Start()
-        {
-        }
-
-        private void Update()
-        {
-        }
-
-
-
-        public void Move(Vector3 dir, float distance, float speed)
-        {
-            //보간, 이동 처리
-            //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
-            this.transform.Translate(dir * Time.deltaTime * speed * distance);
-        }
-
-        public void MoveToPoint(Vector3 target, float speed)
-        {
-            //todo 
-            //Vector3 v = target - this.transform.position;
-            //Vector3.Lerp(this.transform.position)
-        }
-    }
-    //========================================================
-
-
 
     public partial class  Character : MonoBehaviour
     {
         
         private Animator                    _animator = null;
         private AnimatorOverrideController  _overCtr = null;
+        private SpriteRenderer              _sprRender = null;
 
         private Movable _move     = null;
         private eDirection8 _eDir8 = eDirection8.down;
@@ -833,7 +1205,9 @@ namespace HordeFight
 
         public void Init_Create()
         {
-            _animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
+            _sprRender = GetComponentInChildren<SpriteRenderer>();
+
             _move = GetComponent<Movable>();
             //Single.touchProcess.Attach_SendObject(this.gameObject);
 
@@ -850,10 +1224,10 @@ namespace HordeFight
             _eState = eState.Idle_Random;
             //_animator.SetInteger("state", (int)eState.Idle);
 
-            _UIID_circle = Single.lineControl.Create_Circle(this.transform);
+            _UIID_circle = Single.lineControl.Create_Circle_AxisY(this.transform);
             Single.lineControl.SetActive(_UIID_circle, false);
 
-            _UIID_hp = Single.lineControl.Create_Line_HP(this.transform);
+            _UIID_hp = Single.lineControl.Create_LineHP_AxisY(this.transform);
 
         }
 
@@ -900,7 +1274,7 @@ namespace HordeFight
 
 
             //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
-            GetComponent<SpriteRenderer>().sortingOrder = -(int)(transform.position.y * 100f);
+            _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
         }
 
 
@@ -927,8 +1301,7 @@ namespace HordeFight
         public void Switch_Ani(string aniKind, string aniName , eDirection8 dir)
         {
             
-            SpriteRenderer sr = GetComponent<SpriteRenderer>();
-            sr.flipX = false;
+            _sprRender.flipX = false;
             string aniNameSum = "";
             switch(dir)
             {
@@ -936,25 +1309,25 @@ namespace HordeFight
                 case eDirection8.leftUp:
                     {
                         aniNameSum = aniName + eDirection8.rightUp.ToString();
-                        sr.flipX = true;
+                        _sprRender.flipX = true;
                     }
                     break;
                 case eDirection8.left:
                     {
                         aniNameSum = aniName + eDirection8.right.ToString();
-                        sr.flipX = true;
+                        _sprRender.flipX = true;
                     }
                     break;
                 case eDirection8.leftDown:
                     {
                         aniNameSum = aniName + eDirection8.rightDown.ToString();
-                        sr.flipX = true;
+                        _sprRender.flipX = true;
                     }
                     break;
                 default:
                     {
                         aniNameSum = aniName + dir.ToString();
-                        sr.flipX = false;
+                        _sprRender.flipX = false;
                     }
                     break;
                 
@@ -966,7 +1339,8 @@ namespace HordeFight
 
         public float GetCollider_Radius()
         {
-            return GetComponent<CircleCollider2D>().radius;
+            
+            return GetComponent<SphereCollider>().radius;
         }
 
         public void SetAIRunning(bool run)
@@ -1013,7 +1387,7 @@ namespace HordeFight
             if (false == forward)
                 dir *= -1f;
 
-            _eDir8 = Misc.TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8_AxisY(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
             Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
@@ -1031,14 +1405,14 @@ namespace HordeFight
             if (false == forward)
                 dir *= -1f;
             
-            _eDir8 = Misc.TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8_AxisY(dir);
             Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
 
 		}
 
         public void Attack(Vector3 dir)
         {
-            _eDir8 = Misc.TransDirection8(dir);
+            _eDir8 = Misc.TransDirection8_AxisY(dir);
             Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
         }
 
@@ -1052,7 +1426,6 @@ namespace HordeFight
             //Vector3 dir = target - this.transform.position;
             //Attack(dir);
 
-            __targetPos = target;
 
             if(null == __things)
             {
@@ -1062,8 +1435,10 @@ namespace HordeFight
 
             if (null != __things && false == __launch)
             {
-                Vector3 angle = new Vector3(0, 0, -120f);
-                angle.z += (float)_eDir8 * 45f;
+                __targetPos = target;
+
+                Vector3 angle = new Vector3(90f, 0, -120f);
+                angle.y += (float)_eDir8 * -45f;
                 __things.transform.localEulerAngles = angle;
                 __things.transform.localPosition = Vector3.zero;
                 __launch = true;
@@ -1111,7 +1486,7 @@ namespace HordeFight
             Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
         }
 
-		private Vector2 _startPos = Vector3.zero;
+		private Vector3 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
             //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
@@ -1119,9 +1494,9 @@ namespace HordeFight
             _animator.speed = 1f;
 
 
-            RaycastHit2D hit = Single.touchProcess.GetHit2D();
-
+            RaycastHit hit = Single.touchProcess.GetHit3D();
             _startPos = hit.point;
+            _startPos.y = 0f;
 
 
             Single.lineControl.SetActive(_UIID_circle, true);
@@ -1158,9 +1533,11 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
 
-            RaycastHit2D hit = Single.touchProcess.GetHit2D();
+            RaycastHit hit = Single.touchProcess.GetHit3D();
 
-            Vector3 dir = (Vector3)hit.point - this.transform.position;
+            Vector3 dir = hit.point - this.transform.position;
+            dir.y = 0;
+            //DebugWide.LogBlue("TouchMoved " + dir);
 
             if (eKind.spearman == _eKind)
             {
@@ -1793,7 +2170,7 @@ namespace HordeFight
             RaycastHit hit3D = default(RaycastHit);
             if (true == Physics.Raycast(ray, out hit3D, Mathf.Infinity))
             {
-                DebugWide.LogBlue("SendMessage_TouchObject 2");
+                //DebugWide.LogBlue("SendMessage_TouchObject 2");
                 hit3D.transform.gameObject.SendMessage(callbackMethod, 0, SendMessageOptions.DontRequireReceiver);
 
                 return hit3D.transform.gameObject;

@@ -29,68 +29,14 @@ namespace Utility
 
 namespace Utility
 {
-    
+
+    ///////////////////////////////////////////////////////////////////////
     /// <summary>
-    /// 보조 함수 묶음 
+    /// 기하 함수 묶음
     /// </summary>
-    public class Misc
+    ///////////////////////////////////////////////////////////////////////
+    public class Geo
     {
-
-        //========================================================
-        //==================        싱글        ==================
-        //========================================================
-
-        private static System.Random _rand = new System.Random();
-        static public System.Random rand
-        {
-            get { return _rand; }
-        }
-
-        //========================================================
-        //==================      8방향 함수     ==================
-        //========================================================
-
-        /// <summary>
-        /// 방향값을 8방향 값으로 변환해 준다 
-        /// </summary>
-        /// <returns>The direction8.</returns>
-        /// <param name="dir">Dir.</param>
-        static public eDirection8 TransDirection8(Vector3 dir)
-        {
-            float rad = Mathf.Atan2(dir.y, dir.x);
-            float deg = Mathf.Rad2Deg * rad;
-
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
-
-            //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
-            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
-            //DebugWide.LogRed(deg + "   " + quad);
-
-            return (eDirection8)quad;
-        }
-
-        /// <summary>
-        ///  여덟 방향중 하나를 무작위로 반환한다. 
-        ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
-        /// </summary>
-        /// <returns> 정규벡터 방향값 </returns>
-        static public Vector3 RandomDir8()
-        {
-            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
-            int rand = Misc.rand.Next(0, 8); //0~7
-            Vector3 dir = Vector3.zero;
-
-            dir.x = Mathf.Cos(ANG_RAD * rand);
-            dir.y = Mathf.Sin(ANG_RAD * rand);
-
-            return dir;
-        }
-
-
-
         //========================================================
         //==================       기 하        ==================
         //========================================================
@@ -203,20 +149,20 @@ namespace Utility
 
 
         //호와 원의 충돌 검사 (2D 한정)
-        static public bool Collision_Arc_VS_Sphere(Misc.Arc arc, Misc.Sphere sph)
+        static public bool Collision_Arc_VS_Sphere(Geo.Arc arc, Geo.Sphere sph)
         {
             //DebugWide.LogBlue ("1  srcPos" + arc.sphere_far.pos + " r:" + arc.sphere_far.radius + " dstPos:" + sph.pos + " r:" + sph.radius); //chamto test
-            if (true == Misc.Collision_Sphere(arc.sphere_far, sph, eSphere_Include_Status.Focus))
+            if (true == Geo.Collision_Sphere(arc.sphere_far, sph, eSphere_Include_Status.Focus))
             {
 
-                if (false == Misc.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
+                if (false == Geo.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
                 {
                     //각도를 반으로 줄여 넣는다. 1과 4분면을 구별 못하기 때문에 1사분면에서 검사하면 4사분면도 검사 결과에 포함된다. 즉 실제 검사 범위가 2배가 된다.
                     float angle_arc = Mathf.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
 
                     //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
 
-                    Vector3 arc_sph_dir = sph.pos - arc.GetPosition_Factor(Misc.Arc.Focus_Included);
+                    Vector3 arc_sph_dir = sph.pos - arc.GetPosition_Factor(Geo.Arc.Focus_Included);
                     arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
 
                     float rate_cos = Vector3.Dot(arc.dir, arc_sph_dir);
@@ -239,7 +185,7 @@ namespace Utility
             Fully           //작은원이 완전포함 
         }
         //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
-        static public bool Collision_Sphere(Misc.Sphere src, Misc.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
+        static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
         {
 
             float min_radius, max_radius, sum_radius, sqr_standard_value;
@@ -307,10 +253,10 @@ namespace Utility
 
         static public bool Collision_Sphere(Vector3 src_pos, float src_radius, Vector3 des_pos, float des_radius, eSphere_Include_Status eInclude)
         {
-            Misc.Sphere src, dst;
+            Geo.Sphere src, dst;
             src.pos = src_pos; src.radius = src_radius;
             dst.pos = des_pos; dst.radius = des_radius;
-            return Misc.Collision_Sphere(src, dst, eInclude);
+            return Geo.Collision_Sphere(src, dst, eInclude);
         }
 
         //!!test 필요
@@ -323,6 +269,71 @@ namespace Utility
             }
 
             return false;
+        }
+    }
+
+
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// 보조 함수 묶음 
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public class Misc
+    {
+
+        //========================================================
+        //==================        싱글        ==================
+        //========================================================
+
+        private static System.Random _rand = new System.Random();
+        static public System.Random rand
+        {
+            get { return _rand; }
+        }
+
+        //========================================================
+        //==================      8방향 함수     ==================
+        //========================================================
+
+        /// <summary>
+        /// 방향값을 8방향 값으로 변환해 준다 
+        /// </summary>
+        /// <returns>The direction8.</returns>
+        /// <param name="dir">Dir.</param>
+        static public eDirection8 TransDirection8_AxisY(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            //DebugWide.LogRed(deg + "   " + quad);
+
+            //DebugWide.LogRed(dir + "   " + (eDirection8)quad); //chamto test
+
+            return (eDirection8)quad;
+        }
+
+        /// <summary>
+        ///  여덟 방향중 하나를 무작위로 반환한다. 
+        ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
+        /// </summary>
+        /// <returns> 정규벡터 방향값 </returns>
+        static public Vector3 RandomDir8_AxisY()
+        {
+            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
+            int rand = Misc.rand.Next(0, 8); //0~7
+            Vector3 dir = Vector3.zero;
+
+            dir.x = Mathf.Cos(ANG_RAD * rand);
+            dir.z = Mathf.Sin(ANG_RAD * rand);
+
+            return dir;
         }
 
 
