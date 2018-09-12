@@ -17,6 +17,7 @@ namespace HordeFight
         // Use this for initialization
         void Start()
         {
+            ResolutionController.CalcViewportRect(Single.canvasRoot, Single.mainCamera); //화면크기조정
            
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
