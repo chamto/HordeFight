@@ -31,6 +31,60 @@ namespace Utility
 {
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
+    /// frame skip 시 해당프레임의 deltaTime을 최소 프레임시간으로 설정한다.
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public class FrameTime
+    {
+        public const float DELTA_FPS_30 = 1f / 30f; 
+        public const float DELTA_FPS_60 = 1f / 60f; 
+
+        //기본값을 30프레임으로 설정한다
+        static private float _deltaTime_mix = DELTA_FPS_30;
+        static private float _deltaTime_max = DELTA_FPS_30 * 2f;
+
+        static public void SetFixedFrame_FPS_30()
+        {
+            FrameTime.SetFixedFrame_FPS(30);
+        }
+
+        static public void SetFixedFrame_FPS(int fps)
+        {
+            //참고 : http://prosto.tistory.com/79
+            //유니티 프레임 고정 , VSyn을 꺼야 적용된다함 , ProjectSettings => Quality => VSynCount
+            Application.targetFrameRate = fps; 
+
+            _deltaTime_mix = 1f / (float)fps;
+            _deltaTime_max = _deltaTime_mix * 2f; //최소시간의 2배 한다. 
+        }
+
+        static public float DeltaTime_Mix()
+        {
+            return _deltaTime_mix;
+        }
+
+        static public float DeltaTime_Max()
+        {
+            return _deltaTime_max;
+        }
+
+        static public float DeltaTime()
+        {
+            //전프레임이 허용프레임 시간의 최대치를 넘었다면 최소시간을 반환한다.
+            if (Time.deltaTime > _deltaTime_max)
+            {
+                //DebugWide.LogBlue ("FrameControl - frameSkip detected !!! - DeltaTime : "+Time.deltaTime);//chamto test
+                return _deltaTime_mix;
+            }
+
+
+            return Time.deltaTime;
+        }
+
+    }//end class
+
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
     /// 화면 해상도 조정
     /// </summary>
     ///////////////////////////////////////////////////////////////////////
