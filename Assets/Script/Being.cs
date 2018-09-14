@@ -77,9 +77,7 @@ namespace HordeFight
         {
         }
 
-
-
-        public void Move(Vector3 dir, float distance, float speed)
+        public void Move_Forward(Vector3 dir, float distance, float speed)
         {
             //보간, 이동 처리
             //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
@@ -183,7 +181,7 @@ namespace HordeFight
         private SphereCollider _collider = null;
 
         //이동 
-        private Movement _move = null;
+        public Movement _move = null;
         //====================================
 
 		private void Start()
@@ -228,8 +226,44 @@ namespace HordeFight
 
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
-        public void Update()
+        private void Update()
         {
+            
+            //if (true == _death) return;
+
+            Update_Shot();
+
+
+            if (Behavior.eKind.Idle == _behaviorKind)
+            {
+                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+            }
+            else if (Behavior.eKind.Idle_Random == _behaviorKind)
+            {
+                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+                Idle_Random();
+
+            }
+            else if (Behavior.eKind.Move == _behaviorKind)
+            {
+                _animator.SetInteger("state", (int)Behavior.eKind.Move);
+            }
+            else if (Behavior.eKind.Attack == _behaviorKind)
+            {
+                _animator.SetInteger("state", (int)Behavior.eKind.Attack);
+            }
+            else if (Behavior.eKind.FallDown == _behaviorKind)
+            {
+                _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
+            }
+
+
+
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
+
+            //========================================
+
             switch (this._phase)
             {
                 case ePhase.None:
@@ -335,6 +369,8 @@ namespace HordeFight
             AnimationClip animationClip = null;
             Single.resourceManager._aniClips.TryGetValue(nameToHash, out animationClip);
 
+            //DebugWide.LogRed(animationClip + "   " + Single.resourceManager._aniClips.Count); //chamto test
+
 
             return animationClip;
         }
@@ -375,7 +411,10 @@ namespace HordeFight
 
             }
 
-            _overCtr[aniKind] = GetClip(aniName.GetHashCode());
+            //DebugWide.LogBlue(aniNameSum + "  " + dir); //chamto test
+
+
+            _overCtr[aniKind] = GetClip(aniNameSum.GetHashCode());
         }
 
 
@@ -400,7 +439,7 @@ namespace HordeFight
                     if (7 < num) num = 0;
                     _move._eDir8 = (eDirection8)num;
 
-                    Switch_Ani("base_idle", _behaviorKind.ToString() + "_idle_", _move._eDir8);
+                    Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
 
                     __elapsedTime_1 = 0f;
 
@@ -420,10 +459,186 @@ namespace HordeFight
 
             _move._eDir8 = Misc.TransDirection8_AxisY(dir);
             //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
-            Switch_Ani("base_idle", _behaviorKind.ToString() + "_idle_", _move._eDir8);
+            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
 
             //if(true == setState)
             //_animator.SetInteger("state", (int)eState.Idle);
+        }
+
+        public void Move(Vector3 dir, float distance, bool forward)//, bool setState)
+        {
+            //Vector3 dir = target - this.transform.position;
+            //dir.Normalize();
+            _move.Move_Forward(dir, distance, 1f);
+
+            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+            if (false == forward)
+                dir *= -1f;
+
+            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
+
+        }
+
+        public void Attack(Vector3 dir)
+        {
+            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+        }
+
+
+        bool __launch = false;
+        GameObject __things = null;
+        Vector3 __targetPos = Vector3.zero;
+        Vector3 __launchPos = Vector3.zero;
+        public void ThrowThings(Vector3 target)
+        {
+            //Vector3 dir = target - this.transform.position;
+            //Attack(dir);
+
+
+            if (null == __things)
+            {
+                __things = GameObject.Find("000_spear");
+            }
+
+
+            if (null != __things && false == __launch)
+            {
+                __targetPos = target;
+
+                Vector3 angle = new Vector3(90f, 0, -120f);
+                angle.y += (float)_move._eDir8 * -45f;
+                __things.transform.localEulerAngles = angle;
+                __things.transform.localPosition = Vector3.zero;
+                __launch = true;
+                __launchPos = __things.transform.position;
+                __elapsedTime_2 = 0f;
+                __things.SetActive(true);
+
+            }
+        }
+        float __elapsedTime_2 = 0f;
+        public void Update_Shot()
+        {
+            if (null != __things && true == __launch)
+            {
+                __elapsedTime_2 += Time.deltaTime;
+                //Vector3 dir = __targetPos - __things.transform.position;
+                __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+
+                if (1f < __elapsedTime_2)
+                {
+                    __launch = false;
+                    __things.SetActive(false);
+                }
+            }
+        }
+
+
+        public void FallDown()
+        {
+            switch (_move._eDir8)
+            {
+                case eDirection8.up:
+                    { }
+                    break;
+                case eDirection8.down:
+                    { }
+                    break;
+                default:
+                    {
+                        _move._eDir8 = eDirection8.up; //기본상태 지정 
+                    }
+                    break;
+            }
+
+            Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
+        }
+
+        //____________________________________________
+        //                  터치 이벤트   
+        //____________________________________________
+
+        private Vector3 _startPos = Vector3.zero;
+        private void TouchBegan()
+        {
+            RaycastHit hit = Single.touchProcess.GetHit3D();
+            _startPos = hit.point;
+            _startPos.y = 0f;
+
+
+            if (8 > _hp_cur)
+            {
+                //다시 살리기
+                _animator.Play("idle 10");
+                _death = false;
+                _hp_cur = 10;
+                _behaviorKind = Behavior.eKind.Idle;
+            }
+
+
+        }
+
+        private void TouchMoved()
+        {
+            //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
+
+            RaycastHit hit = Single.touchProcess.GetHit3D();
+
+            Vector3 dir = hit.point - this.transform.position;
+            dir.y = 0;
+            //DebugWide.LogBlue("TouchMoved " + dir);
+
+            if (eKind.spearman == _kind)
+            {
+                Being target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
+
+                ThrowThings(target.transform.position);
+
+                Vector3 things_dir = target.transform.position - this.transform.position;
+
+                _behaviorKind = Behavior.eKind.Attack;
+                Attack(things_dir);
+
+                _move.Move_Forward(dir, 1f, 1f); //chamto test
+                //DebugWide.LogRed(target.name); //chamto test
+            }
+            else
+            {
+                Being target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
+                if (null != target)
+                {
+                    _behaviorKind = Behavior.eKind.Attack;
+                    Attack(dir);
+
+                    _move.Move_Forward(dir, 1f, 1f); //chamto test
+                }
+                else
+                {
+                    _behaviorKind = Behavior.eKind.Move;
+                    Move(dir, 1f, true);
+                }
+            }
+
+            Single.objectManager.LookAtTarget(this);
+
+
+
+        }
+
+        private void TouchEnded()
+        {
+            //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+
+            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+            //_animator.SetInteger("state", (int)eState.Idle);
+            _animator.Play("idle 10");
+
+            _behaviorKind = Behavior.eKind.Idle_Random;
+            Single.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
+
+         
         }
 
     }

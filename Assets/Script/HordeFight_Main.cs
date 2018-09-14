@@ -239,7 +239,7 @@ namespace HordeFight
 
             foreach(AnimationClip ac in loaded)
             {
-                _aniClips.Add(ac.GetHashCode(), ac);
+                _aniClips.Add(ac.name.GetHashCode(), ac);
             }
         }
 
@@ -490,8 +490,8 @@ namespace HordeFight
                             div_dis = 0.5f;
                         }
 
-                        _beings.Values.ElementAt(i).GetComponent<Movable>().Move_Forward(n, div_dis, 1);
-                        _beings.Values.ElementAt(j).GetComponent<Movable>().Move_Forward(-n, div_dis, 1);
+                        _beings.Values.ElementAt(i)._move.Move_Forward(n, div_dis, 1);
+                        _beings.Values.ElementAt(j)._move.Move_Forward(-n, div_dis, 1);
                         //_characters[i].Idle_View(n, false);
                         //_characters[j].Idle_View(-n, false);
                     }
@@ -626,7 +626,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
             Being cha = obj.AddComponent<Being>();
-            obj.AddComponent<Movable>();
+            obj.AddComponent<Movement>();
             obj.AddComponent<AI>();
             cha._id = id;
             cha._kind = eKind;
@@ -1048,6 +1048,11 @@ namespace HordeFight
             Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
         }
 
+
+        //____________________________________________
+        //                  터치 이벤트  
+        //____________________________________________
+
 		private Vector3 _startPos = Vector3.zero;
         private void TouchBegan() 
         {
@@ -1078,7 +1083,6 @@ namespace HordeFight
 
 
         }
-
 
         private void TouchMoved()
         {
