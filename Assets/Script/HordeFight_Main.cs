@@ -201,7 +201,9 @@ namespace HordeFight
     public class ResourceManager
     {
 
-        public AnimationClip[] _aniClips = null;
+        //키값 : 애니메이션 이름에 대한 해쉬코드 
+        public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
+        //public AnimationClip[] _aniClips = null;
 
         //==================== Get / Set ====================
 
@@ -233,8 +235,12 @@ namespace HordeFight
             //=============================================
             //LOAD 
             //=============================================
-            _aniClips = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
+            AnimationClip[] loaded = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
 
+            foreach(AnimationClip ac in loaded)
+            {
+                _aniClips.Add(ac.GetHashCode(), ac);
+            }
         }
 
 
@@ -857,15 +863,11 @@ namespace HordeFight
         //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
         public AnimationClip GetClip(string name)
         {
-            foreach(AnimationClip ani in Single.resourceManager._aniClips)
-            {
-                if(ani.name.Equals(name))
-                {
-                    return ani;
-                }
-            }
+            AnimationClip animationClip = null;
+            Single.resourceManager._aniClips.TryGetValue(name.GetHashCode(), out animationClip);
 
-            return null;
+
+            return animationClip;
         }
 
 

@@ -97,157 +97,6 @@ namespace HordeFight
 
 
 
-
-
-
-    public class Behavior
-    {
-
-        public enum eKind
-        {
-            None = 0,
-
-            Idle = 10,
-            Idle_Random = 11,
-            Idle_LookAt = 12,
-            Idle_Max = 19,
-
-            Move = 20,
-            Move_Max = 29,
-
-            Attack = 30,
-            Attack_Max = 39,
-
-            FallDown = 40,
-            FallDown_Max = 49,
-
-        }
-
-
-        //===================================
-
-        public float runningTime;   //동작 전체 시간 
-
-
-        //아래는 동작의 전체 시간안에 있는 시간이다 
-
-        //상대가 막을 수 있는 시간
-        public float cloggedTime_0; //막히는 시간 : 0(시작) , 1(끝)  
-        public float cloggedTime_1;
-
-        //동작 이벤트가 성공하는 시간
-        public float eventTime_0;   //동작 유효 범위 : 0(시작) , 1(끝)  
-        public float eventTime_1;
-
-        //콤보 연결을 위한 입력가능 시간
-        public float openTime_0;    //다음 동작 연결시간 : 0(시작) , 1(끝)  
-        public float openTime_1;
-
-        //하나의 동작이 완료후 경직되는 시간. 마지막 모션상태로 경직 상태동안 있는다
-        public float rigidTime;     //동작 완료후 경직 시간
-
-
-        public Behavior()
-        {
-            runningTime = 0f;
-            eventTime_0 = 0f;
-            eventTime_1 = 0f;
-            rigidTime = 0f;
-            openTime_0 = 0f;
-            openTime_1 = 0f;
-            cloggedTime_0 = 0f;
-            cloggedTime_1 = 0f;
-
-        }
-
-        public Behavior Clone()
-        {
-            return this.MemberwiseClone() as Behavior;
-        }
-
-
-
-    }
-
-    public class AttackBehavior : Behavior
-    {
-        //공격의 모양
-        public enum eTraceShape
-        {
-            None,
-            Horizon,  //수평
-            Vertical, //수직
-            Straight, //직선
-        }
-
-        //공격 모델 종류 
-        public eTraceShape attack_shape;
-
-        //=== 범위 공격 모델 === Horizon , Vertical
-        public float plus_range_0;      //더해지는 범위 최소 
-        public float plus_range_1;      //더해지는 범위 최대
-        public float angle;             //범위 각도
-
-        //=== 직선 공격 모델 === Straight
-        //무기를 휘둘러 무기가 최대공격점까지 이동한후 제자리로 돌아오는 것을 수치모델로 만든것임. 요요라 보면됨
-        public float distance_travel;   //공격점까지 이동 거리 : 상대방까지의 직선거리 , 근사치 , 판단을 위한 값임 , 정확한 충돌검사용 값이 아님.
-        public float distance_maxTime;  //최대거리가 되는 시간 , 공격점에 도달하는 시간
-        public float velocity_before;   //공격점 전 속도 
-        public float velocity_after;    //공격점 후 속도  
-
-        public AttackBehavior()
-        {
-            
-            attack_shape = eTraceShape.None;
-            plus_range_0 = 0f;
-            plus_range_1 = 0f;
-            angle = 45f;
-            distance_travel = 0f;
-            distance_maxTime = 0f;
-            velocity_before = 0f;
-            velocity_after = 0f;
-
-        }
-
-        public void Calc_Velocity()
-        {
-            //t * s = d
-            //s = d/t
-            if (0f == distance_maxTime)
-                this.velocity_before = 0f;
-            else
-                this.velocity_before = distance_travel / distance_maxTime;
-
-            this.velocity_after = distance_travel / (runningTime - distance_maxTime);
-
-            //DebugWide.LogBlue("velocity_before : " + this.velocity_before + "   <-- 충돌점 -->   velocity_after : " + this.velocity_after + "  [distance_travel:" + distance_travel + "]"); //chamto test
-        }
-
-        public float CurrentDistance(float currentTime)
-        {
-            //* 러닝타임 보다 더 큰 값이 들어오면 사용오류임
-            if (runningTime < currentTime)
-                return 0f;
-
-            //* 최대거리에 도달하는 시간이 0이면 최대거리를 반환한다.
-            if (0f == distance_maxTime)
-            {
-                return distance_travel;
-            }
-
-            //1. 전진
-            if (currentTime <= distance_maxTime)
-            {
-                return this.velocity_before * currentTime;
-            }
-
-            //2. 후진
-            //if(distance_maxTime < currentTime)
-            return this.velocity_after * (runningTime - currentTime);
-        }
-    }
-
-
     public class Being : MonoBehaviour
     {
         //단계
@@ -377,96 +226,6 @@ namespace HordeFight
         }
 
 
-       
-
-        public float GetEventTime_Interval()
-        {
-            return _behavior.eventTime_1 - _behavior.eventTime_0;
-        }
-
-        public float GetOpenTime_Interval()
-        {
-            return _behavior.openTime_1 - _behavior.openTime_0;
-        }
-
-        public bool Valid_EventTime()
-        {
-
-            if (ePhase.Start == _phase || ePhase.Running == _phase)
-            {
-                if (_behavior.eventTime_0 <= _timeDelta && _timeDelta <= _behavior.eventTime_1)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public bool Valid_CloggedTime()
-        {
-            if (ePhase.Start == _phase || ePhase.Running == _phase)
-            {
-                if (_behavior.cloggedTime_0 <= _timeDelta && _timeDelta <= _behavior.cloggedTime_1)
-                    return true;
-            }
-
-            return false;
-        }
-
-        public bool Valid_OpenTime()
-        {
-            if (ePhase.Running == _phase)
-            {
-                if (_behavior.openTime_0 <= _timeDelta && _timeDelta <= _behavior.openTime_1)
-                    return true;
-            }
-
-            return false;
-        }
-
-
-
-
-        //공격이 상대방에 맞았나?
-        //* 내무기 범위 또는 위치로 상대방 위치로 판단한다.
-        //!!! 무기 범위가 방향성이 없다.  뒤나 앞이나 판정이 같다
-        public bool Collision_Weaphon_Attack_VS(Being dst)
-        {
-            
-            //***** 내무기 범위 vs 상대방 위치 *****
-
-            //return Geo.Collision_Arc_VS_Sphere(this.GetArc_Weapon(), dst.GetCollider_Sphere());
-
-            //{   //***** 내무기 위치 vs 상대방 위치 *****
-
-            //    //fixme : 원과 반직선 충돌 처리로 변경하는게 더 낫다. 현재 처리로는 부족하다.
-            //    //정면 5도안에 상대가 있을 경우만 공격가능
-            //    //=======================================================================
-            //    const float ANGLE_SCOPE = 10f;
-            //    //각도를 2로 나누는 이유 : 1,4사분면 부호가 같기 때문에 둘을 구별 할 수 없다. 의도와 다르게 2배 영역이 된다.
-            //    float angle = Mathf.Cos(ANGLE_SCOPE * 0.5f * Mathf.Deg2Rad);
-            //    Vector3 toDst = dst.GetPosition() - this.GetPosition();
-            //    toDst.Normalize();
-            //    float cos = Vector3.Dot(this.GetDirection(), toDst);
-            //    if (2 == Geo.Compare_CosAngle(angle, cos)) //angle 보다 cos이 작아야 함
-            //    {
-            //        DebugWide.LogBlue("std angle: " + angle + "   dst angle: " + Mathf.Acos(cos) * Mathf.Rad2Deg); //chamto test
-            //        return false;
-            //    }
-            //    //=======================================================================
-
-            //    if (true == Geo.Collision_Sphere(new Geo.Sphere(this.GetWeaponPosition(), this.weapon.collider_sphere_radius),
-            //        dst.GetCollider_Sphere(), Geo.eSphere_Include_Status.Focus))
-            //    {
-            //        return true;
-            //    }
-
-            //}
-
-            return false;
-        }
-
-
-
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         public void Update()
@@ -544,21 +303,40 @@ namespace HordeFight
 
 
         //____________________________________________
+        //                  충돌반응
+        //____________________________________________
+
+        //존재간에 부딪힌 경우
+        public void OnCollision_Beings(Being[] dsts)
+        {
+
+
+        }
+
+        //때렸을때
+        public void OnCollision_WhenHit(Being[] dsts)
+        {
+        }
+
+        //맞았을때
+        public void OnCollision_WhenBeHit(Being[] dsts)
+        {
+        }
+
+        
+
+        //____________________________________________
         //                  애니메이션  
         //____________________________________________
 
         //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
-        public AnimationClip GetClip(string name)
+        public AnimationClip GetClip(int nameToHash)
         {
-            foreach (AnimationClip ani in Single.resourceManager._aniClips)
-            {
-                if (ani.name.Equals(name))
-                {
-                    return ani;
-                }
-            }
+            AnimationClip animationClip = null;
+            Single.resourceManager._aniClips.TryGetValue(nameToHash, out animationClip);
 
-            return null;
+
+            return animationClip;
         }
 
 
@@ -597,7 +375,7 @@ namespace HordeFight
 
             }
 
-            _overCtr[aniKind] = GetClip(aniNameSum);
+            _overCtr[aniKind] = GetClip(aniName.GetHashCode());
         }
 
 
@@ -655,423 +433,203 @@ namespace HordeFight
 
 namespace HordeFight
 {
+
     //========================================================
-    //==================     스킬  정보     ==================
+    //==================     동작  정보     ==================
     //========================================================
-
-
-    public class SkillManager
-    {
-
-    }
-
-
-    public class Skill : List<Behavior>
+    public partial class Behavior
     {
 
         public enum eKind
         {
-            None,
-            Attack_Strong,
-            Attack_Weak,
-            Attack_Counter,
-            Withstand,
-            Block,
-            Hit,
-            Max
+            None = 0,
+
+            Idle = 10,
+            Idle_Random = 11,
+            Idle_LookAt = 12,
+            Idle_Max = 19,
+
+            Move = 20,
+            Move_Max = 29,
+
+            Attack = 30,
+            Attack_Max = 39,
+
+            FallDown = 40,
+            FallDown_Max = 49,
+
         }
 
-        public enum eName
+        //공격의 모양
+        public enum eTraceShape
         {
             None,
-            Idle,
-            Hit_Body,
-            Hit_Weapon,
-
-            Attack_Strong_1,
-            Attack_Weak_1,
-            Attack_Counter_1,
-
-            Attack_3Combo,
-
-            Withstand_1,
-            Block_1,
-
-            Max
+            Horizon,  //수평
+            Vertical, //수직
+            Straight, //직선
         }
 
 
-        //========================================
+        //===================================
 
-        private int _index_current = 0;
+        public float runningTime;   //동작 전체 시간 
 
 
-        //========================================
+        //아래는 동작의 전체 시간안에 있는 시간이다 
 
-        public eKind kind { get; set; }
-        public eName name { get; set; }
+        //상대가 막을 수 있는 시간
+        public float cloggedTime_0; //막히는 시간 : 0(시작) , 1(끝)  
+        public float cloggedTime_1;
 
-        //========================================
+        //동작 이벤트가 성공하는 시간
+        public float eventTime_0;   //동작 유효 범위 : 0(시작) , 1(끝)  
+        public float eventTime_1;
 
-        public Behavior FirstBehavior()
+        //콤보 연결을 위한 입력가능 시간
+        public float openTime_0;    //다음 동작 연결시간 : 0(시작) , 1(끝)  
+        public float openTime_1;
+
+        //하나의 동작이 완료후 경직되는 시간. 마지막 모션상태로 경직 상태동안 있는다
+        public float rigidTime;     //동작 완료후 경직 시간
+
+
+        //공격 모델 종류 
+        public eTraceShape attack_shape;
+
+        //=== 범위 공격 모델 === Horizon , Vertical
+        public float plus_range_0;      //더해지는 범위 최소 
+        public float plus_range_1;      //더해지는 범위 최대
+        public float angle;             //범위 각도
+
+        //=== 직선 공격 모델 === Straight
+        //무기를 휘둘러 무기가 최대공격점까지 이동한후 제자리로 돌아오는 것을 수치모델로 만든것임. 요요라 보면됨
+        public float distance_travel;   //공격점까지 이동 거리 : 상대방까지의 직선거리 , 근사치 , 판단을 위한 값임 , 정확한 충돌검사용 값이 아님.
+        public float distance_maxTime;  //최대거리가 되는 시간 , 공격점에 도달하는 시간
+        public float velocity_before;   //공격점 전 속도 
+        public float velocity_after;    //공격점 후 속도  
+
+
+        public Behavior()
         {
-            _index_current = 0; //index 초기화
+            runningTime = 0f;
+            eventTime_0 = 0f;
+            eventTime_1 = 0f;
+            rigidTime = 0f;
+            openTime_0 = 0f;
+            openTime_1 = 0f;
+            cloggedTime_0 = 0f;
+            cloggedTime_1 = 0f;
 
-            if (this.Count == 0)
-                return null;
-
-            return this[_index_current];
+            attack_shape = eTraceShape.None;
+            plus_range_0 = 0f;
+            plus_range_1 = 0f;
+            angle = 45f;
+            distance_travel = 0f;
+            distance_maxTime = 0f;
+            velocity_before = 0f;
+            velocity_after = 0f;
         }
 
-        public Behavior NextBehavior()
+        public Behavior Clone()
         {
-            if (this.Count > _index_current)
+            return this.MemberwiseClone() as Behavior;
+        }
+
+
+
+    }
+
+    public partial class Behavior 
+    {
+
+        public float GetEventTime_Interval()
+        {
+            return this.eventTime_1 - this.eventTime_0;
+        }
+
+        public float GetOpenTime_Interval()
+        {
+            return this.openTime_1 - this.openTime_0;
+        }
+
+        public bool Valid_EventTime(Being.ePhase phase, float timeDelta)
+        {
+
+            if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
             {
-                //마지막 인덱스임
-                if (this.Count == _index_current + 1)
-                    return null;
-
-                _index_current++;
-                return this[_index_current];
+                if (this.eventTime_0 <= timeDelta && timeDelta <= this.eventTime_1)
+                    return true;
             }
 
-            return null;
+            return false;
         }
 
-        //다음 행동이 있나 질의한다
-        public bool IsNextBehavior()
+        public bool Valid_CloggedTime(Being.ePhase phase, float timeDelta)
         {
-            if (this.Count > _index_current)
+            if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
             {
-                //마지막 인덱스임
-                if (this.Count == _index_current + 1)
-                    return false;
+                if (this.cloggedTime_0 <= timeDelta && timeDelta <= this.cloggedTime_1)
+                    return true;
+            }
 
+            return false;
+        }
 
-                return true;
+        public bool Valid_OpenTime(Being.ePhase phase, float timeDelta )
+        {
+            if (Being.ePhase.Running == phase)
+            {
+                if (this.openTime_0 <= timeDelta && timeDelta <= this.openTime_1)
+                    return true;
             }
 
             return false;
         }
 
 
-
-        //========================================
-
-        //스킬 명세서
-        static public Skill Details_Idle()
+        public void Calc_Velocity()
         {
-            Skill skinfo = new Skill();
+            //t * s = d
+            //s = d/t
+            if (0f == distance_maxTime)
+                this.velocity_before = 0f;
+            else
+                this.velocity_before = distance_travel / distance_maxTime;
 
-            //skinfo.kind = eKind.None;
-            //skinfo.name = eName.Idle;
+            this.velocity_after = distance_travel / (runningTime - distance_maxTime);
 
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1f;
-
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
-
-            return skinfo;
+            //DebugWide.LogBlue("velocity_before : " + this.velocity_before + "   <-- 충돌점 -->   velocity_after : " + this.velocity_after + "  [distance_travel:" + distance_travel + "]"); //chamto test
         }
 
-        static public Skill Details_HitBody()
+        public float CurrentDistance(float currentTime)
         {
-            Skill skinfo = new Skill();
+            //* 러닝타임 보다 더 큰 값이 들어오면 사용오류임
+            if (runningTime < currentTime)
+                return 0f;
 
-            //skinfo.kind = eKind.Hit;
-            //skinfo.name = eName.Hit_Body;
+            //* 최대거리에 도달하는 시간이 0이면 최대거리를 반환한다.
+            if (0f == distance_maxTime)
+            {
+                return distance_travel;
+            }
 
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1f;
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
+            //1. 전진
+            if (currentTime <= distance_maxTime)
+            {
+                return this.velocity_before * currentTime;
+            }
 
-            return skinfo;
-        }
-
-        static public Skill Details_HitWeapon()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Hit;
-            //skinfo.name = eName.Hit_Weapon;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1.5f;
-            ////1
-            //bhvo.cloggedTime_0 = 0f;
-            //bhvo.cloggedTime_1 = 0f;
-            ////2
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            ////3
-            //bhvo.openTime_0 = -1f; //연결 동작을 못 넣게 막는다. 0으로 설정시 연속입력을 허용하게 된다
-            //bhvo.openTime_1 = -1f;
-            ////4
-            //bhvo.rigidTime = 0f;
-
-
-            ////bhvo.attack_shape = eTraceShape.Straight;
-            //bhvo.angle = 0f;
-            //bhvo.plus_range_0 = 0f;
-            //bhvo.plus_range_1 = 0f;
-            //bhvo.distance_travel = 0f;
-            //bhvo.distance_maxTime = 0f;
-            ////bhvo.Calc_Velocity ();
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-        static public Skill Details_Withstand_1()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Withstand;
-            //skinfo.name = eName.Withstand_1;
-
-            //Behavior bhvo = new Behavior();
-            ////bhvo.runningTime = 10.0f; //임시값
-            //bhvo.runningTime = 3.0f;
-            ////1
-            //bhvo.cloggedTime_0 = 0f;
-            //bhvo.cloggedTime_1 = 0f;
-            ////2
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            ////3
-            //bhvo.openTime_0 = -1f; //연결 동작을 못 넣게 막는다. 0으로 설정시 연속입력을 허용하게 된다
-            //bhvo.openTime_1 = -1f;
-            ////4
-            //bhvo.rigidTime = 0f;
-
-
-            ////bhvo.attack_shape = eTraceShape.Straight;
-            //bhvo.angle = 0f;
-            //bhvo.plus_range_0 = 0f;
-            //bhvo.plus_range_1 = 0f;
-            //bhvo.distance_travel = 0f;
-            //bhvo.distance_maxTime = 0f;
-            ////bhvo.Calc_Velocity ();
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-        static public Skill Details_Attack_Weak()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Attack_Weak;
-            //skinfo.name = eName.Attack_Weak_1;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1.5f;
-            ////1
-            //bhvo.cloggedTime_0 = 0.0f;
-            //bhvo.cloggedTime_1 = 1.3f;
-            ////2
-            //bhvo.eventTime_0 = 0.7f;
-            //bhvo.eventTime_1 = 1f;
-            ////3
-            //bhvo.openTime_0 = 1f;
-            //bhvo.openTime_1 = 1.3f;
-            ////4
-            //bhvo.rigidTime = 0f;
-
-
-            ////bhvo.attack_shape = eTraceShape.Straight;
-            ////bhvo.attack_shape = eTraceShape.Vertical;
-            //bhvo.angle = 45f;
-            //bhvo.plus_range_0 = 0f;
-            //bhvo.plus_range_1 = -4f;
-            //bhvo.distance_travel = Behavior.DEFAULT_DISTANCE - 4f;
-            ////bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            //bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
-
-            //bhvo.Calc_Velocity();
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-        static public Skill Details_Attack_Counter()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Attack_Counter;
-            //skinfo.name = eName.Attack_Counter_1;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1.2f;
-            ////1
-            //bhvo.cloggedTime_0 = 0.0f;
-            //bhvo.cloggedTime_1 = 0.7f;
-            ////2
-            //bhvo.eventTime_0 = 0.8f;
-            //bhvo.eventTime_1 = 1.0f;
-            ////3
-            //bhvo.openTime_0 = -1f;
-            //bhvo.openTime_1 = -1f;
-            ////4
-            //bhvo.rigidTime = 0.2f;
-
-
-            ////bhvo.attack_shape = eTraceShape.Straight;
-            //bhvo.distance_travel = Behavior.DEFAULT_DISTANCE;
-            ////bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            //bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
-            //bhvo.Calc_Velocity();
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-        static public Skill Details_Attack_Strong()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Attack_Strong;
-            //skinfo.name = eName.Attack_Strong_1;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 2.0f;
-            ////1
-            //bhvo.cloggedTime_0 = 0.1f;
-            //bhvo.cloggedTime_1 = 1.0f;
-            ////2
-            //bhvo.eventTime_0 = 1.0f;
-            //bhvo.eventTime_1 = 1.2f;
-            ////3
-            //bhvo.openTime_0 = 1.5f;
-            //bhvo.openTime_1 = 1.8f;
-            ////4
-            //bhvo.rigidTime = 0.5f;
-
-            ////bhvo.attack_shape = eTraceShape.Straight;
-            ////bhvo.attack_shape = eTraceShape.Vertical;
-            //bhvo.angle = 45f;
-            //bhvo.plus_range_0 = 2f;
-            //bhvo.plus_range_1 = 2f;
-            //bhvo.distance_travel = Behavior.DEFAULT_DISTANCE;
-            ////bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            //bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
-
-            //bhvo.Calc_Velocity();
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-        static public Skill Details_Attack_3Combo()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Attack_Strong;
-            //skinfo.name = eName.Attack_3Combo;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1f;
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
-
-            //bhvo = new Behavior();
-            //bhvo.runningTime = 2f;
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
-
-            //bhvo = new Behavior();
-            //bhvo.runningTime = 3f;
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 0f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
-
-            return skinfo;
-        }
-
-
-
-        static public Skill Details_Block_1()
-        {
-            Skill skinfo = new Skill();
-
-            //skinfo.kind = eKind.Block;
-            //skinfo.name = eName.Block_1;
-
-            //Behavior bhvo = new Behavior();
-            //bhvo.runningTime = 1f;
-            //bhvo.eventTime_0 = 0f;
-            //bhvo.eventTime_1 = 1f;
-            //bhvo.rigidTime = 0.1f;
-            //bhvo.openTime_0 = Behavior.MIN_OPEN_TIME;
-            //bhvo.openTime_1 = Behavior.MAX_OPEN_TIME;
-            //skinfo.Add(bhvo);
-
-
-            return skinfo;
-        }
-
-    }
-
-    /// <summary>
-    /// Skill book.
-    /// </summary>
-    public class SkillBook //: Dictionary<Skill.eName, Skill>
-    {
-        private delegate Skill Details_Skill();
-        private Dictionary<Skill.eName, Skill> _referDict = new Dictionary<Skill.eName, Skill>();   //미리 만들어진 정보로 빠르게 사용
-        private Dictionary<Skill.eName, Details_Skill> _createDict = new Dictionary<Skill.eName, Details_Skill>(); //새로운 스킬인스턴스를 만들때 사용 
-
-        public SkillBook()
-        {
-            this.Add(Skill.eName.Idle, Skill.Details_Idle);
-            this.Add(Skill.eName.Hit_Body, Skill.Details_HitBody);
-            this.Add(Skill.eName.Hit_Weapon, Skill.Details_HitWeapon);
-
-            this.Add(Skill.eName.Withstand_1, Skill.Details_Withstand_1);
-            this.Add(Skill.eName.Block_1, Skill.Details_Block_1);
-
-            this.Add(Skill.eName.Attack_Strong_1, Skill.Details_Attack_Strong);
-            this.Add(Skill.eName.Attack_Weak_1, Skill.Details_Attack_Weak);
-            this.Add(Skill.eName.Attack_Counter_1, Skill.Details_Attack_Counter);
-
-            this.Add(Skill.eName.Attack_3Combo, Skill.Details_Attack_3Combo);
-
-        }
-
-        private void Add(Skill.eName name, Details_Skill skillPtr)
-        {
-            _referDict.Add(name, skillPtr());
-            _createDict.Add(name, skillPtr);
-        }
-
-        //만들어진 객체를 참조한다 
-        public Skill Refer(Skill.eName name)
-        {
-            return _referDict[name];
-        }
-
-        //요청객체를 생성한다
-        public Skill Create(Skill.eName name)
-        {
-            return _createDict[name]();
+            //2. 후진
+            //if(distance_maxTime < currentTime)
+            return this.velocity_after * (runningTime - currentTime);
         }
     }
+
+
+    //========================================================
+    //==================     스킬  정보     ==================
+    //========================================================
+
 
 }
 
