@@ -22,6 +22,7 @@ namespace HordeFight
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
             gameObject.AddComponent<ObjectManager>();
+            gameObject.AddComponent<UI_Main>();
 
             Single.resourceManager.Init();
 

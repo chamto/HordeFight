@@ -2,10 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 using Utility;
 
+
+
+
+//========================================================
+//==================   User Inteface   ==================
+//========================================================
+namespace HordeFight
+{
+    public class UI_Main : MonoBehaviour
+    {
+        public Text _fpsText = null;
+
+
+		private void Start()
+		{
+            _fpsText = GameObject.Find("FPS").GetComponentInChildren<Text>();
+		}
+
+        float __deltaTime = 0.0f;
+        float __msec, __fps;
+        private void Update()
+        {
+            __deltaTime += (Time.unscaledDeltaTime - __deltaTime) * 0.1f;
+
+            __msec = __deltaTime * 1000.0f;
+            __fps = 1.0f / __deltaTime;
+            _fpsText.text = string.Format("{0:0.0} ms ({1:0.} fps)", __msec, __fps);
+        }
+	}
+}
 
 
 //========================================================
