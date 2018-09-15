@@ -22,6 +22,7 @@ namespace HordeFight
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
             gameObject.AddComponent<ObjectManager>();
+            gameObject.AddComponent<GridManager>();
             gameObject.AddComponent<UI_Main>();
 
             Single.resourceManager.Init();
@@ -73,6 +74,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<ObjectManager>.Instance;
+            }
+        }
+
+        public static GridManager gridManager
+        {
+            get
+            {
+                return CSingletonMono<GridManager>.Instance;
             }
         }
 
@@ -413,6 +422,142 @@ namespace HordeFight
             render.SetPosition(1, pos);
         }
 
+	}
+}
+
+
+//========================================================
+//==================     그리드 관리기     ==================
+//========================================================
+
+namespace HordeFight
+{
+
+    //키값 : being.id
+    public class CellInfo : Dictionary<uint,Being>
+    {
+        public struct Index
+        {
+            public int n1;
+            public int n2;
+
+            public override string ToString()
+            {
+                return n1 + ", " + n2;
+            }
+        }    
+    }
+
+
+
+    public class GridManager : MonoBehaviour
+    {
+
+        private Grid _grid = null;
+        public Dictionary<CellInfo.Index,CellInfo> _cellList = new Dictionary<CellInfo.Index,CellInfo>();
+
+		private void Start()
+		{
+            _grid = GameObject.Find("0_grid").GetComponent<Grid>();
+		}
+
+		private void Update()
+		{
+			
+		}
+
+        public CellInfo GetCellInfo(CellInfo.Index cellIndex)
+        {
+            CellInfo cell = null;
+            _cellList.TryGetValue(cellIndex, out cell);
+
+            return cell;
+        }
+
+        public void AddCellInfo_Being(CellInfo.Index cellIndex , Being being)
+        {
+            CellInfo cell = null;
+            if(false == _cellList.TryGetValue(cellIndex, out cell))
+            {
+                cell = new CellInfo();
+                _cellList.Add(cellIndex, cell);
+            }
+            _cellList[cellIndex].Add(being._id,being);
+        }
+
+        public void RemoveCellInfo_Being(CellInfo.Index cellIndex, Being being)
+        {
+            if (null == being) return;
+
+            CellInfo cell = null;
+            if (true == _cellList.TryGetValue(cellIndex, out cell))
+            {
+                cell.Remove(being._id);
+            }
+
+        }
+
+
+        public CellInfo.Index ToCellIndex(Vector3 pos , Vector3 axis)
+        {
+
+            CellInfo.Index cellIndex = new CellInfo.Index();
+            cellIndex = default(CellInfo.Index);
+            Vector3 cellSize = Vector3.zero;
+
+            if(Vector3.up == axis)
+            {
+                //그리드 자체에 스케일을 적용시킨 경우가 있으므로 스케일값을 적용한다. 
+                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
+                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+
+
+                if(0 <= pos.x)
+                {
+                    //양수일때는 소수점을 버린다. 
+                    cellIndex.n1 = (int)(pos.x / cellSize.x);
+                }
+                else
+                {
+                    //음수일때는 올림을 한다. 
+                    cellIndex.n1 = (int)((pos.x / cellSize.x) - 0.9f);
+                }
+
+
+                if (0 <= pos.z)
+                { 
+                    cellIndex.n2 = (int)(pos.z / cellSize.z);
+                }
+                else
+                { 
+                    cellIndex.n2 = (int)((pos.z / cellSize.z) - 0.9f);
+                }
+
+            }
+
+            return cellIndex;
+        }
+
+        public Vector3 ToPosition(CellInfo.Index ci , Vector3 axis)
+        {
+            Vector3 pos = Vector3.zero;
+            Vector3 cellSize = Vector3.zero;
+
+            if (Vector3.up == axis)
+            {
+                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
+                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+
+                pos.x = (float)ci.n1 * cellSize.x;
+                pos.z = (float)ci.n2 * cellSize.z;
+
+                //셀의 중간에 위치하도록 한다
+                pos.x += cellSize.x * 0.5f;
+                pos.z += cellSize.z * 0.5f;
+            }
+
+            return pos;
+        }
 	}
 }
 
@@ -799,7 +944,7 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
-            for (int i = 0; i < 200;i++)
+            for (int i = 0; i < 1;i++)
             {
                 Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }

@@ -641,7 +641,11 @@ namespace HordeFight
 
             Single.uiMain.SelectLeader(_kind.ToString());
 
-
+            //chamto test
+            CellInfo.Index cidx = Single.gridManager.ToCellIndex(hit.point, Vector3.up);
+            Vector3 cidxToV3 = Single.gridManager.ToPosition(cidx, Vector3.up);
+            DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
+            this.transform.position = cidxToV3;
         }
 
         private void TouchMoved()
