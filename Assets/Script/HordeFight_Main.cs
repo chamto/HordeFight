@@ -462,7 +462,9 @@ namespace HordeFight
 
                 return true;
             }
-        }    
+        }
+
+        public Index _index = default(Index);
     }
 
 
@@ -497,6 +499,7 @@ namespace HordeFight
             if(false == _cellList.TryGetValue(cellIndex, out cell))
             {
                 cell = new CellInfo();
+                cell._index = cellIndex;
                 _cellList.Add(cellIndex, cell);
             }
             _cellList[cellIndex].Add(being._id,being);

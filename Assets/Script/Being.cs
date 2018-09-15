@@ -244,7 +244,7 @@ namespace HordeFight
 
         //이동 
         public Movement _move = null;
-        private CellInfo.Index _cellIdx_prev = default(CellInfo.Index);
+        private CellInfo _cell_prev = null;
         //====================================
 
 		private void Start()
@@ -263,9 +263,10 @@ namespace HordeFight
 
             _move = GetComponent<Movement>();
 
-            //셀정보갱신 
-            _cellIdx_prev = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
-            Single.gridManager.AddCellInfo_Being(_cellIdx_prev, this);
+            //셀정보 초기 위치값에 맞춰 초기화
+            CellInfo.Index cellIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            Single.gridManager.AddCellInfo_Being(cellIdx, this);
+            _cell_prev = Single.gridManager.GetCellInfo(cellIdx);
 		}
 
 
@@ -296,19 +297,18 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            CellInfo.Index _cur = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            CellInfo.Index curIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
 
-            if(_cellIdx_prev != _cur)
+            if(_cell_prev._index != curIdx)
             {
-                Single.gridManager.RemoveCellInfo_Being(_cellIdx_prev, this);
-                Single.gridManager.AddCellInfo_Being(_cur, this);
+                Single.gridManager.RemoveCellInfo_Being(_cell_prev._index, this);
+                Single.gridManager.AddCellInfo_Being(curIdx, this);
 
-                _cellIdx_prev = _cur;
+                _cell_prev = Single.gridManager.GetCellInfo(curIdx);
 
                 //chamto test
-                CellInfo info = Single.gridManager.GetCellInfo(_cur);
-                string temp = "count:"+info.Count + "  (" + _cur + ")  ";
-                foreach(Being b in info.Values)
+                string temp = "count:"+_cell_prev.Count + "  (" + curIdx + ")  ";
+                foreach(Being b in _cell_prev.Values)
                 {
                     temp += " " + b.name;
                 }
