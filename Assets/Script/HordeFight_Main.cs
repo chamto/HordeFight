@@ -494,32 +494,45 @@ namespace HordeFight
         }
 
 
+        //todo : 자료구조를 복사하는데 부하가 있기때문에, 자료구조를 직접 순회하면서 처리하는 방향으로 해봐야겠다
         public CellInfo GetCellInfo_NxN(CellInfo.Index center , ushort NCount_odd)
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == NCount_odd % 2) return null;
 
-            CellInfo dst = null;
             CellInfo cellList = new CellInfo();
             cellList._index = center;
 
+            //DebugWide.LogBlue("================" + NCount_odd + " ================ ");
+            //string temp1 = "";
 
-            DebugWide.LogBlue("================" + NCount_odd + " ================ ");
-            string temp1 = "";
+            CellInfo dst = null;
+            CellInfo.Index index;
             int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
             for (int i = -startIdx; i < NCount_odd - startIdx; i++)
             {
-                temp1 = "";
+                //temp1 = "";
                 for (int j = -startIdx; j < NCount_odd - startIdx; j++)
                 {
-                    temp1 += "(" + i + ", "+ j +")  "; 
+                    //temp1 += "(" + i + ", "+ j +")  "; 
+                    index.n1 = i + center.n1; 
+                    index.n2 = j + center.n2;
+                    dst = this.GetCellInfo(index);
 
+                    if(null != dst && 0 != dst.Count)
+                    {
+                        //DebugWide.LogBlue(dst.Count + "  " + i + "," + j);
+
+                        //cellList.AddLast(dst.First);
+                        foreach(var v in dst)
+                        {
+                            cellList.AddLast(v);    
+                        }
+
+                    }
                 }
-                DebugWide.LogBlue(temp1);
+                //DebugWide.LogBlue(temp1);
             }
-
-
-
 
             return cellList;
         }
@@ -560,8 +573,8 @@ namespace HordeFight
             if(Vector3.up == axis)
             {
                 //그리드 자체에 스케일을 적용시킨 경우가 있으므로 스케일값을 적용한다. 
-                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
-                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x) ;
+                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z) ;
 
 
                 if(0 <= pos.x)
@@ -640,6 +653,7 @@ namespace HordeFight
             //UpdateCollision_UseDictElementAt(); //obj100 , fps10
             //UpdateCollision_UseDictForeach(); //obj100 , fps60
             //UpdateCollision_UseList(); //obj100 , fps80 : obj200 , fps45 , nonUpdateFps100
+            UpdateCollision_UseGrid3x3(); //obj100 , fps70 : obj200 , fps40
         }
 
         //** 그리드 조직 하기
@@ -649,18 +663,54 @@ namespace HordeFight
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
         public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
-            //1. 3x3그리드 정보를 가져온다
-            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            foreach(Being a in _listTest)
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+            
+            CellInfo cellInfo = null;
+            foreach(Being src in _listTest)
             {
 
-                //3x3그리드 정보
-                //Single.gridManager.GetCellInfo()
-                foreach(Being b in a._cellInfo)
+                //1. 3x3그리드 정보를 가져온다
+                cellInfo = Single.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
+                foreach(Being dst in cellInfo)
                 {
-                    if (a == b) continue;
+                    if (src == dst) continue;
 
-                    //충돌검사    
+                    //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
+
+                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
+
+                    //1.두 캐릭터가 겹친상태 
+                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+                    {
+                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                        //todo : 최적화 필요 
+
+                        Vector3 n = sqr_dis.normalized;
+                        //Vector3 n = sqr_dis;
+                        float div_dis = 0.1f;
+
+                        //2.반지름 이상으로 겹쳐있는 경우
+                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                        {
+                            //3.완전 겹쳐있는 경우
+                            if (n == Vector3.zero)
+                            {
+                                //방향값이 없기 때문에 임의로 지정해 준다. 
+                                n = Misc.RandomDir8_AxisY();
+                            }
+
+                            div_dis = 0.3f;
+                        }
+
+                        src._move.Move_Forward(n, div_dis, 1);
+                        dst._move.Move_Forward(-n, div_dis, 1);
+
+
+                    }
+
                 }
 
             }
@@ -672,8 +722,6 @@ namespace HordeFight
 
             Vector3 sqr_dis = Vector3.zero;
             float r_sum = 0f;
-
-
 
             foreach(Being src in _beings.Values)
             {
@@ -1007,7 +1055,7 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
-            for (int i = 0; i < 1;i++)
+            for (int i = 0; i < 200;i++)
             {
                 Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }

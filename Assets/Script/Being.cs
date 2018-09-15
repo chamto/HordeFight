@@ -678,10 +678,14 @@ namespace HordeFight
             //DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
             //this.transform.position = cidxToV3;
 
-            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 5);
-            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 7);
-            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 9);
-            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 11);
+            //CellInfo cinfo = Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 3);
+            //string temp = "count:"+cinfo.Count + "  (" + cinfo._index + ")  ";
+            //foreach(Being b in cinfo)
+            //{
+            //    temp += " " + b.name;
+            //}
+            //DebugWide.LogBlue(temp);
+           
 
         }
 
