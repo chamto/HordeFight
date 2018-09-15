@@ -434,7 +434,7 @@ namespace HordeFight
 {
 
     //키값 : being.id
-    public class CellInfo : Dictionary<uint,Being>
+    public class CellInfo : LinkedList<Being>
     {
         public struct Index
         {
@@ -493,6 +493,38 @@ namespace HordeFight
             return cell;
         }
 
+
+        public CellInfo GetCellInfo_NxN(CellInfo.Index center , ushort NCount_odd)
+        {
+            //NCount 는 홀수값을 넣어야 한다 
+            if (0 == NCount_odd % 2) return null;
+
+            CellInfo dst = null;
+            CellInfo cellList = new CellInfo();
+            cellList._index = center;
+
+
+            DebugWide.LogBlue("================" + NCount_odd + " ================ ");
+            string temp1 = "";
+            int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
+            for (int i = -startIdx; i < NCount_odd - startIdx; i++)
+            {
+                temp1 = "";
+                for (int j = -startIdx; j < NCount_odd - startIdx; j++)
+                {
+                    temp1 += "(" + i + ", "+ j +")  "; 
+
+                }
+                DebugWide.LogBlue(temp1);
+            }
+
+
+
+
+            return cellList;
+        }
+
+
         public void AddCellInfo_Being(CellInfo.Index cellIndex , Being being)
         {
             CellInfo cell = null;
@@ -502,7 +534,7 @@ namespace HordeFight
                 cell._index = cellIndex;
                 _cellList.Add(cellIndex, cell);
             }
-            _cellList[cellIndex].Add(being._id,being);
+            _cellList[cellIndex].AddLast(being);
         }
 
         public void RemoveCellInfo_Being(CellInfo.Index cellIndex, Being being)
@@ -512,7 +544,7 @@ namespace HordeFight
             CellInfo cell = null;
             if (true == _cellList.TryGetValue(cellIndex, out cell))
             {
-                cell.Remove(being._id);
+                cell.Remove(being);
             }
 
         }
@@ -617,11 +649,22 @@ namespace HordeFight
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
         public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
-            for (int i = 0; i < _beings.Count; i++)
+            //1. 3x3그리드 정보를 가져온다
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            foreach(Being a in _listTest)
             {
-                //1. 3x3그리드 정보를 가져온다
-                //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+
+                //3x3그리드 정보
+                //Single.gridManager.GetCellInfo()
+                foreach(Being b in a._cellInfo)
+                {
+                    if (a == b) continue;
+
+                    //충돌검사    
+                }
+
             }
+
         }
 
         public void UpdateCollision_UseDictForeach()

@@ -244,7 +244,7 @@ namespace HordeFight
 
         //이동 
         public Movement _move = null;
-        private CellInfo _cell_prev = null;
+        public CellInfo _cellInfo = null;
         //====================================
 
 		private void Start()
@@ -266,7 +266,7 @@ namespace HordeFight
             //셀정보 초기 위치값에 맞춰 초기화
             CellInfo.Index cellIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
             Single.gridManager.AddCellInfo_Being(cellIdx, this);
-            _cell_prev = Single.gridManager.GetCellInfo(cellIdx);
+            _cellInfo = Single.gridManager.GetCellInfo(cellIdx);
 		}
 
 
@@ -299,20 +299,20 @@ namespace HordeFight
         {
             CellInfo.Index curIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
 
-            if(_cell_prev._index != curIdx)
+            if(_cellInfo._index != curIdx)
             {
-                Single.gridManager.RemoveCellInfo_Being(_cell_prev._index, this);
+                Single.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
                 Single.gridManager.AddCellInfo_Being(curIdx, this);
 
-                _cell_prev = Single.gridManager.GetCellInfo(curIdx);
+                _cellInfo = Single.gridManager.GetCellInfo(curIdx);
 
                 //chamto test
-                string temp = "count:"+_cell_prev.Count + "  (" + curIdx + ")  ";
-                foreach(Being b in _cell_prev.Values)
-                {
-                    temp += " " + b.name;
-                }
-                DebugWide.LogBlue(temp); 
+                //string temp = "count:"+_cellInfo.Count + "  (" + curIdx + ")  ";
+                //foreach(Being b in _cellInfo)
+                //{
+                //    temp += " " + b.name;
+                //}
+                //DebugWide.LogBlue(temp); 
             }
         }
 
@@ -677,6 +677,11 @@ namespace HordeFight
             //Vector3 cidxToV3 = Single.gridManager.ToPosition(cidx, Vector3.up);
             //DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
             //this.transform.position = cidxToV3;
+
+            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 5);
+            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 7);
+            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 9);
+            Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 11);
 
         }
 
