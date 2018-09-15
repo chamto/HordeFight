@@ -594,12 +594,17 @@ namespace HordeFight
             {
                 Being target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
 
-                ThrowThings(target.transform.position);
+                if(null != target)
+                {
+                    ThrowThings(target.transform.position);   
+                    Vector3 things_dir = target.transform.position - this.transform.position;
 
-                Vector3 things_dir = target.transform.position - this.transform.position;
+                    _behaviorKind = Behavior.eKind.Attack;
+                    Attack(things_dir);
+                }
 
-                _behaviorKind = Behavior.eKind.Attack;
-                Attack(things_dir);
+
+
 
                 _move.Move_Forward(dir, 1f, 1f); //chamto test
                 //DebugWide.LogRed(target.name); //chamto test

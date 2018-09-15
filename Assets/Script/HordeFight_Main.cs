@@ -239,7 +239,8 @@ namespace HordeFight
 
             foreach(AnimationClip ac in loaded)
             {
-                _aniClips.Add(ac.name.GetHashCode(), ac);
+                //ac.GetHashCode 값과 ac.name.GetHashCode 값은 다르다
+                _aniClips.Add(ac.name.GetHashCode(), ac); 
             }
         }
 
@@ -438,34 +439,165 @@ namespace HordeFight
     public class ObjectManager : MonoBehaviour
     {
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
-        //public List<Character> _beings = new List<Character>();
+        public List<Being> _listTest = new List<Being>();
 
         private void Start()
         {
 
         }
 
+
+        //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
         private void Update()
         {
-            UpdateCollision();
+            //UpdateCollision();
+
+            //UpdateCollision_UseDictElementAt(); //obj100 , fps10
+            //UpdateCollision_UseDictForeach(); //obj100 , fps60
+            UpdateCollision_UseList(); //obj100 , fps80 : obj200 , fps45 , nonUpdateFps100
         }
 
-        public void UpdateCollision()
+        //** 그리드 조직 하기
+
+
+
+        //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
+        public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
-            
+            for (int i = 0; i < _beings.Count; i++)
+            {
+                //1. 3x3그리드 정보를 가져온다
+                //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            }
+        }
+
+        public void UpdateCollision_UseDictForeach()
+        {
+
             Vector3 sqr_dis = Vector3.zero;
             float r_sum = 0f;
+
+
+
+            foreach(Being src in _beings.Values)
+            {
+                foreach (Being dst in _beings.Values)
+                {
+                    if (src == dst) continue;
+
+                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
+
+                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
+
+                    //1.두 캐릭터가 겹친상태 
+                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+                    {
+                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                        //todo : 최적화 필요 
+
+                        Vector3 n = sqr_dis.normalized;
+                        //Vector3 n = sqr_dis;
+                        float div_dis = 0.1f;
+
+                        //2.반지름 이상으로 겹쳐있는 경우
+                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                        {
+                            //3.완전 겹쳐있는 경우
+                            if (n == Vector3.zero)
+                            {
+                                //방향값이 없기 때문에 임의로 지정해 준다. 
+                                n = Misc.RandomDir8_AxisY();
+                            }
+
+                            div_dis = 0.3f;
+                        }
+
+                        src._move.Move_Forward(n, div_dis, 1);
+                        dst._move.Move_Forward(-n, div_dis, 1);
+
+
+                    }
+                }
+            }
+
+
+        }
+
+
+        //딕셔너리 보다 인덱싱 속도가 빠르다. 안정적 객체수 : 500
+        public void UpdateCollision_UseList()
+        {
+
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+            Being src, dst;
             //한집합의 원소로 중복되지 않는 한쌍 만들기  
             for (int i = 0; i < _beings.Count - 1; i++)
             {
                 for (int j = i + 1; j < _beings.Count; j++)
                 {
-                    //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+                    src = _listTest[i];
+                    dst = _listTest[j];
 
-                    sqr_dis = _beings.Values.ElementAt(i).transform.localPosition - _beings.Values.ElementAt(j).transform.localPosition;
+                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
 
-                    r_sum = _beings.Values.ElementAt(i).GetCollider_Radius() + _beings.Values.ElementAt(j).GetCollider_Radius();
+                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
 
+                    //1.두 캐릭터가 겹친상태 
+                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+                    {
+                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                        //todo : 최적화 필요 
+
+                        Vector3 n = sqr_dis.normalized;
+                        //Vector3 n = sqr_dis;
+                        float div_dis = 0.1f;
+
+                        //2.반지름 이상으로 겹쳐있는 경우
+                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                        {
+                            //3.완전 겹쳐있는 경우
+                            if (n == Vector3.zero)
+                            {
+                                //방향값이 없기 때문에 임의로 지정해 준다. 
+                                n = Misc.RandomDir8_AxisY();
+                            }
+
+                            div_dis = 0.3f;
+                        }
+
+                        src._move.Move_Forward(n, div_dis, 1);
+                        dst._move.Move_Forward(-n, div_dis, 1);
+
+                        //_characters[i].Idle_View(n, false);
+                        //_characters[j].Idle_View(-n, false);
+                    }
+
+
+                }
+            }
+        }
+
+        //딕션너리의 ElementAt 을 사용하여 객체를 가져오는것은 부하가 심하다. 안정적 객체수 : 100이하 
+        public void UpdateCollision_UseDictElementAt()
+        {
+            
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+            Being src, dst;
+            //한집합의 원소로 중복되지 않는 한쌍 만들기  
+            for (int i = 0; i < _beings.Count - 1; i++)
+            {
+                for (int j = i + 1; j < _beings.Count; j++)
+                {
+                    src = _beings.Values.ElementAt(i);
+                    dst = _beings.Values.ElementAt(j);
+
+                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
+
+                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
 
                     //1.두 캐릭터가 겹친상태 
                     if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
@@ -490,8 +622,9 @@ namespace HordeFight
                             div_dis = 0.5f;
                         }
 
-                        _beings.Values.ElementAt(i)._move.Move_Forward(n, div_dis, 1);
-                        _beings.Values.ElementAt(j)._move.Move_Forward(-n, div_dis, 1);
+                        src._move.Move_Forward(n, div_dis, 1);
+                        dst._move.Move_Forward(-n, div_dis, 1);
+
                         //_characters[i].Idle_View(n, false);
                         //_characters[j].Idle_View(-n, false);
                     }
@@ -532,6 +665,7 @@ namespace HordeFight
         /// </summary>
         public Being GetNearCharacter(Being exceptChar, float minRadius, float maxRadius)
         {
+            return null;
 
             float sqr_minRadius = Mathf.Pow(minRadius, 2);
             float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
@@ -573,6 +707,8 @@ namespace HordeFight
         /// <param name="target">Target.</param>
         public void LookAtTarget(Being target)
         {
+            return;
+
             Vector3 dir = Vector3.zero;
             foreach (Being t in _beings.Values)
             {
@@ -634,6 +770,7 @@ namespace HordeFight
             //cha.Init_Create();
 
             _beings.Add(id,cha);
+            _listTest.Add(cha); //chamto test
 
             if (Being.eKind.spearman == eKind)
             {
@@ -674,7 +811,7 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
-            //for (int i = 0; i < 30;i++)
+            for (int i = 0; i < 200;i++)
             {
                 Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
