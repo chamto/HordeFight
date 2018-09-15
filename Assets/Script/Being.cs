@@ -244,6 +244,7 @@ namespace HordeFight
 
         //이동 
         public Movement _move = null;
+        private CellInfo.Index _cellIdx_prev = default(CellInfo.Index);
         //====================================
 
 		private void Start()
@@ -261,6 +262,10 @@ namespace HordeFight
             _collider = GetComponent<SphereCollider>();
 
             _move = GetComponent<Movement>();
+
+            //셀정보갱신 
+            _cellIdx_prev = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            Single.gridManager.AddCellInfo_Being(_cellIdx_prev, this);
 		}
 
 
@@ -286,12 +291,38 @@ namespace HordeFight
         }
 
 
+        /// <summary>
+        /// 그리드상 셀값이 변경되면 셀정보값을 갱신한다 
+        /// </summary>
+        public void Update_CellInfo()
+        {
+            CellInfo.Index _cur = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+
+            if(_cellIdx_prev != _cur)
+            {
+                Single.gridManager.RemoveCellInfo_Being(_cellIdx_prev, this);
+                Single.gridManager.AddCellInfo_Being(_cur, this);
+
+                _cellIdx_prev = _cur;
+
+                //chamto test
+                CellInfo info = Single.gridManager.GetCellInfo(_cur);
+                string temp = "count:"+info.Count + "  (" + _cur + ")  ";
+                foreach(Being b in info.Values)
+                {
+                    temp += " " + b.name;
+                }
+                DebugWide.LogBlue(temp); 
+            }
+        }
+
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         private void Update()
         {
-            
+
             //if (true == _death) return;
+            Update_CellInfo();
 
             Update_Shot();
 
@@ -642,10 +673,11 @@ namespace HordeFight
             Single.uiMain.SelectLeader(_kind.ToString());
 
             //chamto test
-            CellInfo.Index cidx = Single.gridManager.ToCellIndex(hit.point, Vector3.up);
-            Vector3 cidxToV3 = Single.gridManager.ToPosition(cidx, Vector3.up);
-            DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
-            this.transform.position = cidxToV3;
+            //CellInfo.Index cidx = Single.gridManager.ToCellIndex(hit.point, Vector3.up);
+            //Vector3 cidxToV3 = Single.gridManager.ToPosition(cidx, Vector3.up);
+            //DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
+            //this.transform.position = cidxToV3;
+
         }
 
         private void TouchMoved()

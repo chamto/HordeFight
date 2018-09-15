@@ -441,9 +441,26 @@ namespace HordeFight
             public int n1;
             public int n2;
 
+
             public override string ToString()
             {
                 return n1 + ", " + n2;
+            }
+
+            public static bool operator ==(Index a, Index b)
+            {
+                if (a.n1 == b.n1 && a.n2 == b.n2)
+                    return true;
+
+                return false;
+            }
+
+            public static bool operator !=(Index a, Index b)
+            {
+                if (a.n1 == b.n1 && a.n2 == b.n2)
+                    return false;
+
+                return true;
             }
         }    
     }
@@ -587,7 +604,7 @@ namespace HordeFight
 
             //UpdateCollision_UseDictElementAt(); //obj100 , fps10
             //UpdateCollision_UseDictForeach(); //obj100 , fps60
-            UpdateCollision_UseList(); //obj100 , fps80 : obj200 , fps45 , nonUpdateFps100
+            //UpdateCollision_UseList(); //obj100 , fps80 : obj200 , fps45 , nonUpdateFps100
         }
 
         //** 그리드 조직 하기
