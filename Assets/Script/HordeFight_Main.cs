@@ -39,34 +39,7 @@ namespace HordeFight
 
         }
 
-        //private Transform _root_grid = null;
-        //private Transform _root_unit = null;
-        //private Animator  _hero_animator = null;
-        //private void LoadComponent()
-        //{
-        //    const string ROOT_GRID = "0_grid";
-        //    const string ROOT_UNIT = "0_unit";
-        //    const string HERO_LOTHAR = "Lothar";
-        //    foreach (Transform t in this.GetComponentsInChildren<Transform>(true))
-        //    {
-        //        if (ROOT_GRID == t.name)
-        //        {
-        //            _root_grid = t;
-        //        }
-        //        else if (ROOT_UNIT == t.name)
-        //        {
-        //            _root_unit = t;
-        //        }
-        //        else if (HERO_LOTHAR == t.name)
-        //        {
-        //            _hero_animator = t.GetComponent<Animator>();
-        //        }
-        //
-        //        if (null != _root_grid && null != _root_unit && null != _hero_animator)
-        //            break;
-        //    }
-        //    //Debug.Log("dddd " + _root_unit + _root_grid + _hero_animator); //chamto test
-        //}
+
     }
 
 }
@@ -100,6 +73,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<ObjectManager>.Instance;
+            }
+        }
+
+        public static UI_Main uiMain
+        {
+            get
+            {
+                return CSingletonMono<UI_Main>.Instance;
             }
         }
 
@@ -204,7 +185,8 @@ namespace HordeFight
 
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
-        //public AnimationClip[] _aniClips = null;
+        public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
+
 
         //==================== Get / Set ====================
 
@@ -237,11 +219,16 @@ namespace HordeFight
             //LOAD 
             //=============================================
             AnimationClip[] loaded = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
-
             foreach(AnimationClip ac in loaded)
             {
                 //ac.GetHashCode 값과 ac.name.GetHashCode 값은 다르다
                 _aniClips.Add(ac.name.GetHashCode(), ac); 
+            }
+
+            Sprite[] spres = Resources.LoadAll<Sprite>("Warcraft/Textures/Icons");
+            foreach(Sprite spr in spres)
+            {
+                _sprIcons.Add(spr.name.GetHashCode(), spr);
             }
         }
 

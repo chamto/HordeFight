@@ -18,11 +18,14 @@ namespace HordeFight
     public class UI_Main : MonoBehaviour
     {
         public Text _fpsText = null;
+        public Image _img_leader = null;
 
 
 		private void Start()
 		{
             _fpsText = GameObject.Find("FPS").GetComponentInChildren<Text>();
+            _img_leader = GameObject.Find("leader").GetComponent<Image>();
+
 		}
 
         float __deltaTime = 0.0f;
@@ -35,6 +38,34 @@ namespace HordeFight
             __fps = 1.0f / __deltaTime;
             _fpsText.text = string.Format("{0:0.0} ms ({1:0.} fps)", __msec, __fps);
         }
+
+        public void SelectLeader(string name)
+        {
+            Sprite spr = null;
+            Single.resourceManager._sprIcons.TryGetValue(name.GetHashCode(), out spr);
+            if(null == spr)
+            {
+                name = "None";
+                spr = Single.resourceManager._sprIcons[name.GetHashCode()];
+            }
+            _img_leader.sprite = spr;
+
+            //========================================
+
+            foreach (RectTransform rt in _img_leader.GetComponentsInChildren<RectTransform>(true))
+            {
+                if ("back" == rt.name)
+                {
+                    rt.GetComponent<Image>().sprite = spr;
+                }
+                else if ("Text" == rt.name)
+                {
+                    rt.GetComponent<Text>().text = name;
+                }
+
+            }
+        }
+
 	}
 }
 
@@ -607,6 +638,8 @@ namespace HordeFight
                 _hp_cur = 10;
                 _behaviorKind = Behavior.eKind.Idle;
             }
+
+            Single.uiMain.SelectLeader(_kind.ToString());
 
 
         }
