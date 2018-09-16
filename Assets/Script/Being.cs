@@ -264,7 +264,7 @@ namespace HordeFight
             _move = GetComponent<Movement>();
 
             //셀정보 초기 위치값에 맞춰 초기화
-            CellInfo.Index cellIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            CellIndex cellIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
             Single.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = Single.gridManager.GetCellInfo(cellIdx);
 		}
@@ -274,7 +274,8 @@ namespace HordeFight
 
 		public float GetCollider_Radius()
         {
-
+            if (null == _collider)
+                DebugWide.LogRed(this.name);
             return _collider.radius;
         }
 
@@ -297,7 +298,7 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            CellInfo.Index curIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            CellIndex curIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
 
             if(_cellInfo._index != curIdx)
             {

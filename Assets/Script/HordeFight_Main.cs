@@ -21,8 +21,8 @@ namespace HordeFight
            
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
-            gameObject.AddComponent<ObjectManager>();
             gameObject.AddComponent<GridManager>();
+            gameObject.AddComponent<ObjectManager>();
             gameObject.AddComponent<UI_Main>();
 
             Single.resourceManager.Init();
@@ -432,49 +432,51 @@ namespace HordeFight
 
 namespace HordeFight
 {
-
-    //키값 : being.id
-    public class CellInfo : LinkedList<Being>
+    public struct CellIndex
     {
-        public struct Index
+        public int n1;
+        public int n2;
+
+        public CellIndex(int a1, int a2)
         {
-            public int n1;
-            public int n2;
-
-            public Index(int a1,int a2)
-            {
-                n1 = a1;
-                n2 = a2;
-            }
-
-            public override string ToString()
-            {
-                return "("+n1 + ", " + n2+")";
-            }
-
-            public static Index operator +(Index a, Index b)
-            {
-                return new Index(a.n1+b.n1 , a.n2+b.n2);
-            }
-
-            public static bool operator ==(Index a, Index b)
-            {
-                if (a.n1 == b.n1 && a.n2 == b.n2)
-                    return true;
-
-                return false;
-            }
-
-            public static bool operator !=(Index a, Index b)
-            {
-                if (a.n1 == b.n1 && a.n2 == b.n2)
-                    return false;
-
-                return true;
-            }
+            n1 = a1;
+            n2 = a2;
         }
 
-        public Index _index = default(Index);
+        public override string ToString()
+        {
+            return "(" + n1 + ", " + n2 + ")";
+        }
+
+        public static CellIndex operator +(CellIndex a, CellIndex b)
+        {
+            return new CellIndex(a.n1 + b.n1, a.n2 + b.n2);
+        }
+
+        public static bool operator ==(CellIndex a, CellIndex b)
+        {
+            if (a.n1 == b.n1 && a.n2 == b.n2)
+                return true;
+
+            return false;
+        }
+
+        public static bool operator !=(CellIndex a, CellIndex b)
+        {
+            if (a.n1 == b.n1 && a.n2 == b.n2)
+                return false;
+
+            return true;
+        }
+    }
+
+
+
+    public class CellInfo : LinkedList<Being>
+    {
+        
+        public CellIndex _index = default(CellIndex);
+
     }
 
 
@@ -483,10 +485,28 @@ namespace HordeFight
     {
 
         private Grid _grid = null;
-        public Dictionary<CellInfo.Index,CellInfo> _cellList = new Dictionary<CellInfo.Index,CellInfo>();
+        public Dictionary<CellIndex,CellInfo> _cellList = new Dictionary<CellIndex,CellInfo>();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
-        public Dictionary<uint, CellInfo.Index[]> _indexesNxN = new Dictionary<uint, CellInfo.Index[]>();
+        public Dictionary<uint, CellIndex[]> _indexesNxN = new Dictionary<uint, CellIndex[]>();
+
+        public const int NxN_MIN = 3;   //그리드 범위 최소크기
+        public const int NxN_MAX = 11;  //그리드 범위 최대크기
+
+        public float cellSize_x
+        {
+            get
+            {
+                return (_grid.cellSize.x * _grid.transform.localScale.x);
+            }
+        }
+        public float cellSize_z
+        {
+            get
+            {
+                return (_grid.cellSize.z * _grid.transform.localScale.z);
+            }
+        }
 
 		private void Start()
 		{
@@ -495,6 +515,8 @@ namespace HordeFight
             _indexesNxN[3] = CreateIndexesNxN(3);
             _indexesNxN[5] = CreateIndexesNxN(5);
             _indexesNxN[7] = CreateIndexesNxN(7);
+            _indexesNxN[9] = CreateIndexesNxN(9);
+            _indexesNxN[11] = CreateIndexesNxN(11); //화면 세로길이를 벗어나지 않는 그리드 최소값
 		}
 
 		private void Update()
@@ -503,15 +525,15 @@ namespace HordeFight
 		}
 
 
-        private CellInfo.Index[] CreateIndexesNxN(ushort NCount_odd)
+        private CellIndex[] CreateIndexesNxN(ushort NCount_odd)
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == NCount_odd % 2) return null;
 
-            CellInfo.Index[] indexes = new CellInfo.Index[NCount_odd * NCount_odd];
+            CellIndex[] indexes = new CellIndex[NCount_odd * NCount_odd];
 
             int count = 0;           
-            CellInfo.Index index;
+            CellIndex index;
             int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
             for (int i = -startIdx; i < NCount_odd - startIdx; i++)
             {
@@ -531,7 +553,7 @@ namespace HordeFight
 
         }
 
-        public CellInfo GetCellInfo(CellInfo.Index cellIndex)
+        public CellInfo GetCellInfo(CellIndex cellIndex)
         {
             CellInfo cell = null;
             _cellList.TryGetValue(cellIndex, out cell);
@@ -540,21 +562,21 @@ namespace HordeFight
         }
 
 
-        CellInfo __cellList = new CellInfo();
+
         //todo : 자료구조를 복사하는데 부하가 있기때문에, 자료구조를 직접 순회하면서 처리하는 방향으로 해봐야겠다
-        public CellInfo GetCellInfo_NxN(CellInfo.Index center , ushort NCount_odd)
+        public CellInfo GetCellInfo_NxN(CellIndex center , ushort NCount_odd)
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == NCount_odd % 2) return null;
 
-            __cellList.Clear();
-            __cellList._index = center;
+            CellInfo cellList = new CellInfo();
+            cellList._index = center;
 
             //DebugWide.LogBlue("================" + NCount_odd + " ================ ");
             //string temp1 = "";
 
             CellInfo dst = null;
-            CellInfo.Index index;
+            CellIndex index;
             int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
             for (int i = -startIdx; i < NCount_odd - startIdx; i++)
             {
@@ -570,10 +592,9 @@ namespace HordeFight
                     {
                         //DebugWide.LogBlue(dst.Count + "  " + i + "," + j);
 
-                        //cellList.AddLast(dst.First);
                         foreach(var v in dst)
                         {
-                            __cellList.AddLast(v);    
+                           cellList.AddLast(v);    
                         }
 
                     }
@@ -581,14 +602,14 @@ namespace HordeFight
                 //DebugWide.LogBlue(temp1);
             }
 
-            return __cellList;
+            return cellList;
         }
 
 
-        public void AddCellInfo_Being(CellInfo.Index cellIndex , Being being)
+        public void AddCellInfo_Being(CellIndex cellIndex, Being being)
         {
             CellInfo cell = null;
-            if(false == _cellList.TryGetValue(cellIndex, out cell))
+            if (false == _cellList.TryGetValue(cellIndex, out cell))
             {
                 cell = new CellInfo();
                 cell._index = cellIndex;
@@ -597,7 +618,7 @@ namespace HordeFight
             _cellList[cellIndex].AddLast(being);
         }
 
-        public void RemoveCellInfo_Being(CellInfo.Index cellIndex, Being being)
+        public void RemoveCellInfo_Being(CellIndex cellIndex, Being being)
         {
             if (null == being) return;
 
@@ -610,11 +631,11 @@ namespace HordeFight
         }
 
 
-        public CellInfo.Index ToCellIndex(Vector3 pos , Vector3 axis)
+        public CellIndex ToCellIndex(Vector3 pos , Vector3 axis)
         {
 
-            CellInfo.Index cellIndex = new CellInfo.Index();
-            cellIndex = default(CellInfo.Index);
+            CellIndex cellIndex = new CellIndex();
+            cellIndex = default(CellIndex);
             Vector3 cellSize = Vector3.zero;
 
             if(Vector3.up == axis)
@@ -650,7 +671,7 @@ namespace HordeFight
             return cellIndex;
         }
 
-        public Vector3 ToPosition(CellInfo.Index ci , Vector3 axis)
+        public Vector3 ToPosition(CellIndex ci , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
@@ -686,7 +707,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _listTest = new List<Being>();
 
-        private int __TestSkelCount = 100;
+        private int __TestSkelCount = 200;
 
         private void Start()
         {
@@ -696,13 +717,14 @@ namespace HordeFight
 
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
         private void Update()
+        //private void FixedUpdate()
         {
             //UpdateCollision();
 
             //UpdateCollision_UseDictElementAt(); //obj100 : fps10
             //UpdateCollision_UseDictForeach(); //obj100 : fps60
 
-            //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps45 , obj400 : fps15
+            //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
         }
@@ -776,13 +798,11 @@ namespace HordeFight
             {
 
                 //1. 3x3그리드 정보를 가져온다
-
-                foreach (CellInfo.Index ix in Single.gridManager._indexesNxN[3])
+                foreach (CellIndex ix in Single.gridManager._indexesNxN[3])
                 {
                     //count++;
                     cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
                     if (null == cellInfo) continue;
-
 
                     foreach (Being dst in cellInfo)
                     {
@@ -880,19 +900,72 @@ namespace HordeFight
         }
 
 
+
+        public Being GetNearCharacter(Being src, float minRadius, float maxRadius)
+        {
+            float sqr_minRadius = Mathf.Pow(minRadius, 2);
+            float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
+            float min_value = sqr_maxRadius * 2f; //최대 반경보다 큰 최대값 지정
+            float sqr_dis = 0f;
+
+            //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
+            uint NxN = (uint)((maxRadius*2) / Single.gridManager.cellSize_x); //소수점 버림을 한다 
+            if (0 == NxN % 2) NxN -= 1; //짝수라면 홀수로 변환한다
+            if (NxN > GridManager.NxN_MAX) NxN = GridManager.NxN_MAX;
+            if (NxN < GridManager.NxN_MIN) NxN = GridManager.NxN_MIN;
+
+            //int count = 0;
+            CellInfo cellInfo = null;
+            Being target = null;
+            foreach (CellIndex ix in Single.gridManager._indexesNxN[ NxN ])
+            {
+                cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                if (null == cellInfo) continue;
+
+                foreach (Being dst in cellInfo)
+                {
+                    if (src == dst) continue;
+
+                    //count++;
+
+                    //==========================================================v
+                    sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
+
+                    //최대 반경 이내일 경우
+                    if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
+                    {
+
+                        //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  t.name); //chamto test
+
+                        //기존 객체보다 더 가까운 경우
+                        if (min_value > sqr_dis)
+                        {
+                            min_value = sqr_dis;
+                            target = dst;
+                        }
+                    }
+                    //==========================================================v
+                }
+            }
+
+            //DebugWide.LogRed(count);
+            return target;
+        }
+
+
         /// <summary>
         /// 최소 반경보다 크고 최대 반경보다 작은 범위 안에서 가장 가까운 객체를 반환한다
         /// </summary>
-        public Being GetNearCharacter(Being exceptChar, float minRadius, float maxRadius)
+        public Being GetNearCharacter_old(Being exceptChar, float minRadius, float maxRadius)
         {
-            return null;
-
+            
             float sqr_minRadius = Mathf.Pow(minRadius, 2);
             float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
             float min_value = sqr_maxRadius * 2f; //최대 반경보다 큰 최대값 지정
             float sqr_dis = 0f;
             Being target = null;
-            foreach (Being t in _beings.Values)
+            //foreach (Being t in _beings.Values)
+            foreach (Being t in _listTest)
             {
                 if (t == exceptChar) continue;
 
@@ -928,7 +1001,7 @@ namespace HordeFight
         public void LookAtTarget(Being target)
         {
             return;
-
+            
             Vector3 dir = Vector3.zero;
             foreach (Being t in _beings.Values)
             {
@@ -1033,6 +1106,8 @@ namespace HordeFight
 
             for (int i = 0; i < __TestSkelCount;i++)
             {
+                //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
+                //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
