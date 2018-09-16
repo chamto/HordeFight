@@ -100,7 +100,8 @@ public class GraphEdge : System.ICloneable
 	public object Clone()
 	{
 		GraphEdge edge = this.MemberwiseClone () as GraphEdge;
-		return (object)edge;
+
+		return edge;
 	}
 
 }

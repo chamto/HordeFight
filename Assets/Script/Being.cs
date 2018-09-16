@@ -327,6 +327,7 @@ namespace HordeFight
 
             Update_Shot();
 
+            UpdateNextPath(); //chamto test
 
             if (Behavior.eKind.Idle == _behaviorKind)
             {
@@ -650,6 +651,33 @@ namespace HordeFight
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
         }
 
+
+        //____________________________________________
+        //               지정된 경로 이동   
+        //____________________________________________
+
+        Stack<Vector3> __path_find = null;
+        Vector3 __dstPos = Vector3.zero;
+        float __elapsedTime_3 = 10f;
+        public void UpdateNextPath()
+        {
+            if (null == __path_find || 0 == __path_find.Count) return;
+
+
+            if (1f < __elapsedTime_3)
+            {
+                __elapsedTime_3 = 0f;
+                __dstPos = __path_find.Pop();
+            }else
+            {
+                __elapsedTime_3 += Time.deltaTime;
+                this.transform.position = Vector3.Lerp(this.transform.position, __dstPos, __elapsedTime_3);    
+            }
+        }
+
+
+
+
         //____________________________________________
         //                  터치 이벤트   
         //____________________________________________
@@ -703,7 +731,7 @@ namespace HordeFight
             //CellInfo cellInfo = null;
             //foreach (CellInfo.Index ix in Single.gridManager._indexesNxN[3])
             //{
-                
+
             //    cellInfo = Single.gridManager.GetCellInfo(ix + this._cellInfo._index);
             //    if (null == cellInfo) continue;
 
@@ -717,6 +745,8 @@ namespace HordeFight
             //    temp += "] ";
             //}
             //DebugWide.LogBlue("allCnt:"+allCount + "  " +temp);
+
+            __path_find =  Single.pathFinder.Search(this.transform.position, Vector3.zero); //chamto test
 
         }
 

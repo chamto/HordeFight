@@ -86,25 +86,23 @@ public class SparseGraph
 		return true;
 	}
 
-	public NavGraphNode FindNearNode(Vector2 pos)
+	public NavGraphNode FindNearNode(Vector3 pos)
 	{
-		Dictionary<int , float> magList = new Dictionary<int , float> ();
-		List<Vector2> sort = new List<Vector2> ();
-		int index = 0;
-		float outValue;
+        Dictionary<int , float> distance_List = new Dictionary<int , float> ();
 		NavGraphNode findNode = null;
 
+        int index = 0;
 		foreach (NavGraphNode node in m_Nodes) 
 		{
 			if(null != node)
 			{
-				magList.Add(index, (pos - node.Pos()).sqrMagnitude);
+				distance_List.Add(index, (pos - node.Pos()).sqrMagnitude);
 			}
 			index++;
 		}
 
-		magList = magList.OrderBy (x=> x.Value).ToDictionary(x=>x.Key, x=>x.Value);
-		foreach (int nodeNum in magList.Keys) 
+		distance_List = distance_List.OrderBy (x=> x.Value).ToDictionary(x=>x.Key, x=>x.Value);
+		foreach (int nodeNum in distance_List.Keys) 
 		{
 			if (false == this.ClosedNode(nodeNum)) 
 			{
@@ -113,9 +111,9 @@ public class SparseGraph
 			}
 		}
 
-
 		return findNode;
 	}
+
 
 	//returns the node at the given index
 	public  GraphNode  GetNode(int idx)
@@ -345,7 +343,7 @@ public class SparseGraph
 	//returns true if a node with the given index is present in the graph
 	public bool isNodePresent(int nd)
 	{
-		if ((nd >= (int)m_Nodes.Count || (m_Nodes[nd].Index() == GraphNode.INVALID_NODE_INDEX)))
+		if ((nd >= (int)m_Nodes.Count || nd < 0 || (m_Nodes[nd].Index() == GraphNode.INVALID_NODE_INDEX)))
 		{
 			return false;
 		}

@@ -21,8 +21,9 @@ namespace HordeFight
            
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
-            gameObject.AddComponent<GridManager>();
             gameObject.AddComponent<ObjectManager>();
+            gameObject.AddComponent<GridManager>();
+            gameObject.AddComponent<PathFinder>();
             gameObject.AddComponent<UI_Main>();
 
             Single.resourceManager.Init();
@@ -82,6 +83,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<GridManager>.Instance;
+            }
+        }
+
+        public static PathFinder pathFinder
+        {
+            get
+            {
+                return CSingletonMono<PathFinder>.Instance;
             }
         }
 
@@ -719,7 +728,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _listTest = new List<Being>();
 
-        private int __TestSkelCount = 200;
+        private int __TestSkelCount = 100;
 
         private void Start()
         {

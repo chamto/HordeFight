@@ -43,7 +43,7 @@ public	class NavGraphNode : GraphNode
 {
 	
 	//the node's position
-	protected	Vector2     m_vPosition;
+	protected	Vector3     m_vPosition;
 	
 	//often you will require a navgraph node to contain additional information.
 	//For example a node might represent a pickup such as armor in which
@@ -57,7 +57,7 @@ public	class NavGraphNode : GraphNode
 	
 	public NavGraphNode(){}
 	
-	public NavGraphNode(int  idx, Vector2 pos):base(idx)
+	public NavGraphNode(int  idx, Vector3 pos):base(idx)
 	{
 		m_vPosition = pos;
 	}
@@ -69,18 +69,17 @@ public	class NavGraphNode : GraphNode
 	
 	
 	
-	public Vector2   Pos() {return m_vPosition;}
-	public void       SetPos(Vector2 NewPosition){m_vPosition = NewPosition;}
+	public Vector3   Pos() {return m_vPosition;}
+	public void       SetPos(Vector3 NewPosition){m_vPosition = NewPosition;}
 	
 	//public object ExtraInfo() {return m_ExtraInfo;}
 	//public void       SetExtraInfo(object info){m_ExtraInfo = info;}
 	
-	public  override object Clone()
+    public  override object Clone()
 	{
-		NavGraphNode node = base.Clone () as NavGraphNode;
-		node.m_vPosition = this.m_vPosition;
-		
-		return (object)node;
+        NavGraphNode node = this.MemberwiseClone() as NavGraphNode;
+
+		return node;
 	}
 	
 }
