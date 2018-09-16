@@ -508,6 +508,18 @@ namespace HordeFight
             }
         }
 
+        //원 반지름 길이를 포함하는 그리드범위 구하기
+        public uint GetNxNIncluded_CircleRadius(float maxRadius)
+        {
+            //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
+            uint NxN = (uint)((maxRadius * 2) / this.cellSize_x); //소수점 버림을 한다 
+            if (0 == NxN % 2) NxN -= 1; //짝수라면 홀수로 변환한다
+            if (NxN > GridManager.NxN_MAX) NxN = GridManager.NxN_MAX;
+            if (NxN < GridManager.NxN_MIN) NxN = GridManager.NxN_MIN;
+
+            return NxN;
+        }
+
 		private void Start()
 		{
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
@@ -909,10 +921,7 @@ namespace HordeFight
             float sqr_dis = 0f;
 
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-            uint NxN = (uint)((maxRadius*2) / Single.gridManager.cellSize_x); //소수점 버림을 한다 
-            if (0 == NxN % 2) NxN -= 1; //짝수라면 홀수로 변환한다
-            if (NxN > GridManager.NxN_MAX) NxN = GridManager.NxN_MAX;
-            if (NxN < GridManager.NxN_MIN) NxN = GridManager.NxN_MIN;
+            uint NxN = Single.gridManager.GetNxNIncluded_CircleRadius(maxRadius);
 
             //int count = 0;
             CellInfo cellInfo = null;
@@ -995,27 +1004,40 @@ namespace HordeFight
 
 
         /// <summary>
-        /// 전체 캐릭터가 특정캐릭터를 쳐다보게 설정한다
+        /// 지정된 범위의 캐릭터가 특정캐릭터를 쳐다보게 설정한다
         /// </summary>
         /// <param name="target">Target.</param>
-        public void LookAtTarget(Being target)
+        public void LookAtTarget(Being src , uint gridRange_NxN)
         {
-            return;
             
             Vector3 dir = Vector3.zero;
-            foreach (Being t in _beings.Values)
+            CellInfo cellInfo = null;
+            foreach (CellIndex ix in Single.gridManager._indexesNxN[gridRange_NxN])
             {
-                if (t == target) continue;
+                cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                if (null == cellInfo) continue;
 
-
-                if ((int)Behavior.eKind.Idle <= (int)t._behaviorKind && (int)t._behaviorKind <= (int)Behavior.eKind.Idle_Max)
+                foreach (Being dst in cellInfo)
                 {
-                    dir = target.transform.position - t.transform.position;
-                    t.Idle_View(dir, true);
+                    if (src == dst) continue;
 
-                    t._behaviorKind = Behavior.eKind.Idle_LookAt;
+                    if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
+                    {
+                        dir = src.transform.position - dst.transform.position;
+
+                        //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
+                        //==============================
+                        float sqr_radius = (float)(gridRange_NxN) / 2f; //반지름으로 변환
+                        sqr_radius *= Single.gridManager.cellSize_x; //셀크기로 변환
+                        sqr_radius *= sqr_radius; //제곱으로 변환
+                        if(sqr_radius < dir.sqrMagnitude)
+                            continue;
+                        //==============================
+
+                        dst.Idle_View(dir, true);
+                        dst._behaviorKind = Behavior.eKind.Idle_LookAt;
+                    }
                 }
-
             }
 
         }

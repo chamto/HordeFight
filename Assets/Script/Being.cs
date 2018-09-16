@@ -766,7 +766,7 @@ namespace HordeFight
                 }
             }
 
-            Single.objectManager.LookAtTarget(this);
+            Single.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
 
 
 
