@@ -441,10 +441,20 @@ namespace HordeFight
             public int n1;
             public int n2;
 
+            public Index(int a1,int a2)
+            {
+                n1 = a1;
+                n2 = a2;
+            }
 
             public override string ToString()
             {
-                return n1 + ", " + n2;
+                return "("+n1 + ", " + n2+")";
+            }
+
+            public static Index operator +(Index a, Index b)
+            {
+                return new Index(a.n1+b.n1 , a.n2+b.n2);
             }
 
             public static bool operator ==(Index a, Index b)
@@ -475,15 +485,51 @@ namespace HordeFight
         private Grid _grid = null;
         public Dictionary<CellInfo.Index,CellInfo> _cellList = new Dictionary<CellInfo.Index,CellInfo>();
 
+        //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
+        public Dictionary<uint, CellInfo.Index[]> _indexesNxN = new Dictionary<uint, CellInfo.Index[]>();
+
 		private void Start()
 		{
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
+
+            _indexesNxN[3] = CreateIndexesNxN(3);
+            _indexesNxN[5] = CreateIndexesNxN(5);
+            _indexesNxN[7] = CreateIndexesNxN(7);
 		}
 
 		private void Update()
 		{
 			
 		}
+
+
+        private CellInfo.Index[] CreateIndexesNxN(ushort NCount_odd)
+        {
+            //NCount 는 홀수값을 넣어야 한다 
+            if (0 == NCount_odd % 2) return null;
+
+            CellInfo.Index[] indexes = new CellInfo.Index[NCount_odd * NCount_odd];
+
+            int count = 0;           
+            CellInfo.Index index;
+            int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
+            for (int i = -startIdx; i < NCount_odd - startIdx; i++)
+            {
+                //temp1 = "";
+                for (int j = -startIdx; j < NCount_odd - startIdx; j++)
+                {
+                    //temp1 += "(" + i + ", "+ j +")  "; 
+                    index.n1 = i;
+                    index.n2 = j;
+                    indexes[count++] = index;
+                }
+                //DebugWide.LogBlue(temp1);
+            }
+
+            return indexes;
+
+
+        }
 
         public CellInfo GetCellInfo(CellInfo.Index cellIndex)
         {
@@ -494,14 +540,15 @@ namespace HordeFight
         }
 
 
+        CellInfo __cellList = new CellInfo();
         //todo : 자료구조를 복사하는데 부하가 있기때문에, 자료구조를 직접 순회하면서 처리하는 방향으로 해봐야겠다
         public CellInfo GetCellInfo_NxN(CellInfo.Index center , ushort NCount_odd)
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == NCount_odd % 2) return null;
 
-            CellInfo cellList = new CellInfo();
-            cellList._index = center;
+            __cellList.Clear();
+            __cellList._index = center;
 
             //DebugWide.LogBlue("================" + NCount_odd + " ================ ");
             //string temp1 = "";
@@ -526,7 +573,7 @@ namespace HordeFight
                         //cellList.AddLast(dst.First);
                         foreach(var v in dst)
                         {
-                            cellList.AddLast(v);    
+                            __cellList.AddLast(v);    
                         }
 
                     }
@@ -534,7 +581,7 @@ namespace HordeFight
                 //DebugWide.LogBlue(temp1);
             }
 
-            return cellList;
+            return __cellList;
         }
 
 
@@ -639,6 +686,8 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _listTest = new List<Being>();
 
+        private int __TestSkelCount = 100;
+
         private void Start()
         {
 
@@ -650,131 +699,108 @@ namespace HordeFight
         {
             //UpdateCollision();
 
-            //UpdateCollision_UseDictElementAt(); //obj100 , fps10
-            //UpdateCollision_UseDictForeach(); //obj100 , fps60
-            //UpdateCollision_UseList(); //obj100 , fps80 : obj200 , fps45 , nonUpdateFps100
-            UpdateCollision_UseGrid3x3(); //obj100 , fps70 : obj200 , fps40
+            //UpdateCollision_UseDictElementAt(); //obj100 : fps10
+            //UpdateCollision_UseDictForeach(); //obj100 : fps60
+
+            //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps45 , obj400 : fps15
+            //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
+            UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
         }
 
-        //** 그리드 조직 하기
+       
+        public void CollisionPush(Being src , Being dst)
+        {
+            
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
 
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            sqr_dis = src.transform.localPosition - dst.transform.localPosition;
+            r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
 
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+            {
+                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                //todo : 최적화 필요 
+
+                Vector3 n = sqr_dis.normalized;
+                //Vector3 n = sqr_dis;
+                float div_dis = 0.1f;
+
+                //2.반지름 이상으로 겹쳐있는 경우
+                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                {
+                    //3.완전 겹쳐있는 경우
+                    if (n == Vector3.zero)
+                    {
+                        //방향값이 없기 때문에 임의로 지정해 준다. 
+                        n = Misc.RandomDir8_AxisY();
+                    }
+
+                    div_dis = 0.3f;
+                }
+
+                src._move.Move_Forward(n, div_dis, 1);
+                dst._move.Move_Forward(-n, div_dis, 1);
+
+            }
+
+        }
 
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
         public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
-            
             CellInfo cellInfo = null;
             foreach(Being src in _listTest)
             {
 
                 //1. 3x3그리드 정보를 가져온다
                 cellInfo = Single.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
-                foreach(Being dst in cellInfo)
+
+                foreach (Being dst in cellInfo)
                 {
                     if (src == dst) continue;
-
-                    //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
-
-                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
-
-                    //1.두 캐릭터가 겹친상태 
-                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-                    {
-                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                        //todo : 최적화 필요 
-
-                        Vector3 n = sqr_dis.normalized;
-                        //Vector3 n = sqr_dis;
-                        float div_dis = 0.1f;
-
-                        //2.반지름 이상으로 겹쳐있는 경우
-                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                        {
-                            //3.완전 겹쳐있는 경우
-                            if (n == Vector3.zero)
-                            {
-                                //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = Misc.RandomDir8_AxisY();
-                            }
-
-                            div_dis = 0.3f;
-                        }
-
-                        src._move.Move_Forward(n, div_dis, 1);
-                        dst._move.Move_Forward(-n, div_dis, 1);
-
-
-                    }
-
+                    CollisionPush(src, dst);
                 }
-
             }
-
         }
 
-        public void UpdateCollision_UseDictForeach()
+        public void UpdateCollision_UseDirectGrid3x3()
         {
+            //int count = 0;
 
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
-
-            foreach(Being src in _beings.Values)
+            CellInfo cellInfo = null;
+            foreach (Being src in _listTest)
             {
-                foreach (Being dst in _beings.Values)
+
+                //1. 3x3그리드 정보를 가져온다
+
+                foreach (CellInfo.Index ix in Single.gridManager._indexesNxN[3])
                 {
-                    if (src == dst) continue;
+                    //count++;
+                    cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                    if (null == cellInfo) continue;
 
-                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
 
-                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
-
-                    //1.두 캐릭터가 겹친상태 
-                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+                    foreach (Being dst in cellInfo)
                     {
-                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                        //todo : 최적화 필요 
-
-                        Vector3 n = sqr_dis.normalized;
-                        //Vector3 n = sqr_dis;
-                        float div_dis = 0.1f;
-
-                        //2.반지름 이상으로 겹쳐있는 경우
-                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                        {
-                            //3.완전 겹쳐있는 경우
-                            if (n == Vector3.zero)
-                            {
-                                //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = Misc.RandomDir8_AxisY();
-                            }
-
-                            div_dis = 0.3f;
-                        }
-
-                        src._move.Move_Forward(n, div_dis, 1);
-                        dst._move.Move_Forward(-n, div_dis, 1);
-
-
+                        //count++;
+                        if (src == dst) continue;
+                        CollisionPush(src, dst);
                     }
                 }
+
             }
 
-
+            //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
         }
-
 
         //딕셔너리 보다 인덱싱 속도가 빠르다. 안정적 객체수 : 500
         public void UpdateCollision_UseList()
         {
-
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
+            //int count = 0;
             Being src, dst;
             //한집합의 원소로 중복되지 않는 한쌍 만들기  
             for (int i = 0; i < _beings.Count - 1; i++)
@@ -784,52 +810,35 @@ namespace HordeFight
                     src = _listTest[i];
                     dst = _listTest[j];
 
-                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
+                    CollisionPush(src, dst);
 
-                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
-
-                    //1.두 캐릭터가 겹친상태 
-                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-                    {
-                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                        //todo : 최적화 필요 
-
-                        Vector3 n = sqr_dis.normalized;
-                        //Vector3 n = sqr_dis;
-                        float div_dis = 0.1f;
-
-                        //2.반지름 이상으로 겹쳐있는 경우
-                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                        {
-                            //3.완전 겹쳐있는 경우
-                            if (n == Vector3.zero)
-                            {
-                                //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = Misc.RandomDir8_AxisY();
-                            }
-
-                            div_dis = 0.3f;
-                        }
-
-                        src._move.Move_Forward(n, div_dis, 1);
-                        dst._move.Move_Forward(-n, div_dis, 1);
-
-                        //_characters[i].Idle_View(n, false);
-                        //_characters[j].Idle_View(-n, false);
-                    }
-
-
+                    //count++;
                 }
             }
+
+            //DebugWide.LogRed(_beings.Count + "  총회전:" + count); //114 , 6441
         }
+
+        public void UpdateCollision_UseDictForeach()
+        {
+            
+            foreach(Being src in _beings.Values)
+            {
+                foreach (Being dst in _beings.Values)
+                {
+                    if (src == dst) continue;
+                    CollisionPush(src, dst);
+                }
+            }
+
+
+        }
+
 
         //딕션너리의 ElementAt 을 사용하여 객체를 가져오는것은 부하가 심하다. 안정적 객체수 : 100이하 
         public void UpdateCollision_UseDictElementAt()
         {
             
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
             Being src, dst;
             //한집합의 원소로 중복되지 않는 한쌍 만들기  
             for (int i = 0; i < _beings.Count - 1; i++)
@@ -839,40 +848,7 @@ namespace HordeFight
                     src = _beings.Values.ElementAt(i);
                     dst = _beings.Values.ElementAt(j);
 
-                    sqr_dis = src.transform.localPosition - dst.transform.localPosition;
-
-                    r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
-
-                    //1.두 캐릭터가 겹친상태 
-                    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-                    {
-                        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                        //todo : 최적화 필요 
-
-                        Vector3 n = sqr_dis.normalized;
-                        float div_dis = 0.1f;
-
-                        //2.반지름 이상으로 겹쳐있는 경우
-                        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                        {
-                            //3.완전 겹쳐있는 경우
-                            if (n == Vector3.zero)
-                            {
-                                //방향값이 없기 때문에 임의로 지정해 준다. 
-                                n = Misc.RandomDir8_AxisY();
-                            }
-
-                            div_dis = 0.5f;
-                        }
-
-                        src._move.Move_Forward(n, div_dis, 1);
-                        dst._move.Move_Forward(-n, div_dis, 1);
-
-                        //_characters[i].Idle_View(n, false);
-                        //_characters[j].Idle_View(-n, false);
-                    }
-
+                    CollisionPush(src, dst);
 
                 }
             }
@@ -1055,7 +1031,7 @@ namespace HordeFight
             Create_Character(Single.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
-            for (int i = 0; i < 200;i++)
+            for (int i = 0; i < __TestSkelCount;i++)
             {
                 Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }

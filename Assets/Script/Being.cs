@@ -685,7 +685,37 @@ namespace HordeFight
             //    temp += " " + b.name;
             //}
             //DebugWide.LogBlue(temp);
-           
+
+
+            //int count = 1;
+            //string temp = "";
+            //foreach (CellInfo.Index b in Single.gridManager._indexesNxN[3])
+            //{
+            //    temp += " " + b;
+            //    if (0 == count % 3) temp += "\n";
+            //    count++;
+            //}
+            //DebugWide.LogBlue(temp);
+
+            //int allCount = 0;
+            //string temp = "";
+            //CellInfo cellInfo = null;
+            //foreach (CellInfo.Index ix in Single.gridManager._indexesNxN[3])
+            //{
+                
+            //    cellInfo = Single.gridManager.GetCellInfo(ix + this._cellInfo._index);
+            //    if (null == cellInfo) continue;
+
+            //    temp += "   [" + "  cnt:" + cellInfo.Count + " "+(ix + this._cellInfo._index);
+
+            //    foreach (Being dst in cellInfo)
+            //    {
+            //        temp += ", " + dst.name;
+            //        allCount++;
+            //    }
+            //    temp += "] ";
+            //}
+            //DebugWide.LogBlue("allCnt:"+allCount + "  " +temp);
 
         }
 
