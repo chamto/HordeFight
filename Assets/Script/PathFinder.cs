@@ -27,15 +27,14 @@ namespace HordeFight
         void Start()
         {
             //타일맵크기 임시지정
-            const int TILEMAP_W = 15; //홀수여야 정중앙이 있음 
-            const int TILEMAP_H = 15;
+            const int TILEMAP_W = 7; //홀수여야 정중앙이 있음 
+            const int TILEMAP_H = 7;
             int id_wh = 0;
             //int id_center = (TILEMAP_W * TILEMAP_H -1) / 2; //31x31 그리드의 중간셀 1차원위치값을 구한다
 
             float cellSize = Single.gridManager.cellSize_x;
             NavGraphNode node = new NavGraphNode(0, Vector3.zero);
             Vector3 pos = Vector3.zero;
-
 
             for (int h = 0; h < TILEMAP_H; h++) //세로
             {
@@ -61,22 +60,36 @@ namespace HordeFight
 
 
             CellIndex[] grid3x3 =  Single.gridManager._indexesNxN[3];
+            CellIndex toPos;
             int from , to;
             GraphEdge edge = new GraphEdge(0, 1);
             for (int h = 0; h < TILEMAP_H; h++) //세로
             {
                 for (int w = 0; w < TILEMAP_W; w++) //가로
                 {
-                    pos.x = (float)w * cellSize;
-                    pos.z = (float)h * cellSize;
+                    
                     from = (w + h * TILEMAP_W);
-
+                    //DebugWide.LogBlue("====================="); //chamto test
                     foreach(CellIndex cidx in grid3x3)
                     {
-                        to = cidx.n1 + cidx.n2 * TILEMAP_W;
+                        //미리구한 그리드범위에 중심위치값 더하기
+                        toPos.n1 = cidx.n1 + w;
+                        toPos.n2 = cidx.n2 + h;
+
+                        //설정된 노드 범위를 벗어나는 노드값은 추가하면 안된다 
+                        if (toPos.n1 < 0 || TILEMAP_W <= toPos.n1) continue;
+                        if (toPos.n2 < 0 || TILEMAP_H <= toPos.n2) continue;
+                            
+
+                        //1차원으로 변환
+                        to = toPos.n1 + toPos.n2 * TILEMAP_W;
 
                         if (false == _graph.isNodePresent(to)) continue;
 
+                        //자기자신을 연결하는 엣지는 추가하면 안된다 
+                        if (from == to) continue; 
+
+                        //DebugWide.LogBlue(from + "  " + to); //chamto test
                         edge.SetFrom(from);
                         edge.SetTo(to);
                         _graph.AddEdge(edge.Clone() as GraphEdge);    
