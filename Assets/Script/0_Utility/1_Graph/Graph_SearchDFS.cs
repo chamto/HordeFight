@@ -111,11 +111,8 @@ public class Graph_SearchDFS
 
 		for (int i=0; i<m_Graph.NumNodes(); i++) 
 		{
-			//Debug.Log(m_Graph.NumNodes() + " : " + i); //chamto test
 			m_Visited.Add((int)Aid.unvisited);
 			m_Route.Add((int)Aid.no_parent_assigned);
-			//m_Visited[i] = (int)Aid.unvisited;
-			//m_Route[i] = (int)Aid.no_parent_assigned;
 		}
 
 		m_bFound = Search(); 
@@ -136,23 +133,23 @@ public class Graph_SearchDFS
 	
 	//returns a vector of node indexes that comprise the shortest path
 	//from the source to the target
-	public List<int> GetPathToTarget()
+    public LinkedList<int> GetPathToTarget()
 	{
-		List<int> path = new List<int>();
-		
-		//just return an empty path if no path to target found or if
-		//no target has been specified
-		if (!m_bFound || m_iTarget<0) return path;
+        //just return an empty path if no path to target found or if
+        //no target has been specified
+        if (!m_bFound || m_iTarget < 0) return null;
+
+        LinkedList<int> path = new LinkedList<int>();
 		
 		int nd = m_iTarget;
 
-		path.Add(nd);
+		path.AddFirst(nd);
 		
 		while (nd != m_iSource)
 		{
 			nd = m_Route[nd];
 			
-			path.Add(nd);
+            path.AddFirst(nd);
 		}
 		
 		return path;

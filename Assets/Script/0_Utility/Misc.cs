@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-
+using UnityEngine.Assertions;
+using System;
 
 namespace Utility
 {
@@ -442,13 +442,99 @@ namespace Utility
     {
 
         //========================================================
-        //==================        싱글        ==================
+        //==================       랜덤함수       ==================
         //========================================================
 
+        //https://docs.microsoft.com/ko-kr/dotnet/api/system.random.sample?view=netframework-4.7.2#System_Random_Sample
+        //.NextDouble() : 0 보다 크고 1.0 보다 작은 임의의 실수값 (1.0은 포함되지 않는다)
+        //.Sample() : 0 과 1.0 사이의 실수값 (1.0은 포함된다)
+        //.Next(int minValue, int maxValue) : minValue ~ maxValue 사이의 값을 반환한다. (maxValue 는 포함되지 않는다)
         private static System.Random _rand = new System.Random();
         static public System.Random rand
         {
             get { return _rand; }
+        }
+
+        //==============================================
+        //ref : Mat Buckland - Programming Game AI by Example
+        // 랜덤함수 참조 
+        //==============================================
+
+        //.Next(int minValue, int maxValue) 와 비슷한 함수이다.
+        // maxValue 값이 포함된다는 차이점이 있다. maxValue 에 int.MaxValue 를 넣을시 오버플로우가 발생한다. 최대값 예외처리 없음 
+        //returns a random integer between x and y
+        static public int RandInt(int x, int y)
+        {
+            Assert.IsTrue((y >= x) , "<RandInt>: y is less than x");
+            
+            return rand.Next() % (y - x + 1) + x;
+        }
+
+
+        //http://gabble-workers.tistory.com/6
+        //실수 랜덤값 구하는 다른 방법
+        //(rand() % 10000 ) * 0.0001f : 0~1.0 (1.0은 포함되지 않는다)
+        //(rand() % 10000 + 1) * 0.0001f : 0~1.0 (1.0은 포함된다)
+
+
+        //.NextDouble() 과 같은 함수이다.
+        //returns a random double between zero and 1
+        static public double RandFloat() 
+        { 
+            //https://docs.microsoft.com/ko-kr/dotnet/api/system.random.next?view=netframework-4.7.2#System_Random_Next
+            //MaxValue 는 rand.Next 가 나올수 있는 값보다 1 큰 값이다. 
+            //1 큰값으로 나누기 때문에 1.0 에 결코 도달하지 못한다 
+            return (rand.Next() / (int.MaxValue)); 
+        }
+
+        //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 
+        static public double RandInRange(double x, double y)
+        {
+            return x + RandFloat() * (y - x);
+        }
+
+        //returns a random bool
+        static public bool RandBool()
+        {
+            if (RandFloat() > 0.5) return true;
+
+            else return false;
+        }
+
+        //returns a random double in the range -1 < n < 1
+        static public double RandomClamped() { return RandFloat() - RandFloat(); }
+
+
+        //returns a random number with a normal distribution. See method at
+        //http://www.taygeta.com/random/gaussian.html
+        private static double  __gaussian_y2 = 0;
+        private static bool __gaussian_useLast = false;
+        static public double RandGaussian(double mean = 0.0, double standard_deviation = 1.0)
+        {
+            double x1, x2, w, y1;
+
+            if (__gaussian_useLast)               /* use value from previous call */
+            {
+                y1 = __gaussian_y2;
+                __gaussian_useLast = false;
+            }
+            else
+            {
+                do
+                {
+                    x1 = 2.0 * RandFloat() - 1.0;
+                    x2 = 2.0 * RandFloat() - 1.0;
+                    w = x1 * x1 + x2 * x2;
+                }
+                while (w >= 1.0);
+
+                w = Math.Sqrt((-2.0 * Math.Log(w)) / w);
+                y1 = x1 * w;
+                __gaussian_y2 = x2 * w;
+                __gaussian_useLast = true;
+            }
+
+            return (mean + y1 * standard_deviation);
         }
 
         //========================================================

@@ -17,7 +17,7 @@ namespace HordeFight
         //*
         public SparseGraph _graph = new SparseGraph(false);
         public Graph_SearchDFS _searchDFS = new Graph_SearchDFS();
-
+        public Graph_SearchAStar _searchAStar = new Graph_SearchAStar();
 
         public Transform _town = null;
 
@@ -92,6 +92,7 @@ namespace HordeFight
                         //DebugWide.LogBlue(from + "  " + to); //chamto test
                         edge.SetFrom(from);
                         edge.SetTo(to);
+                        edge.SetCost(1.0f);
                         _graph.AddEdge(edge.Clone() as GraphEdge);    
                     }
 
@@ -120,7 +121,7 @@ namespace HordeFight
         /// Searchs the non alloc.
         /// </summary>
         /// <returns> pathPos.Count.</returns>
-        public int SearchNonAlloc(Vector3 srcPos, Vector3 destPos, ref Stack<Vector3> pathPos)
+        public int SearchNonAlloc(Vector3 srcPos, Vector3 destPos, ref Queue<Vector3> pathPos)
         {
             NavGraphNode destNode = _graph.FindNearNode(destPos);
             NavGraphNode srcNode = _graph.FindNearNode(srcPos);
@@ -133,69 +134,68 @@ namespace HordeFight
             if (true == this.Possible_LinearMove(srcPos, destPos, 0))
             {
                 pathPos.Clear();
-                pathPos.Push(destPos);
+                pathPos.Enqueue(destPos);
 
                 return 1;
             }
 
             _searchDFS.Init(_graph, srcNode.Index(), destNode.Index());
-            List<int> pathList = _searchDFS.GetPathToTarget();
+            LinkedList<int> pathList = _searchDFS.GetPathToTarget();
 
             //-------- chamto test --------
             //      string nodeChaine = "nodeChaine : ";
             //      foreach (int node in pathList) 
             //      {
-            //          nodeChaine += node + "<-";
+            //          nodeChaine += node + "->";
             //      }
             //      Debug.Log (nodeChaine); 
             //-------- ------------ --------
 
 
             pathPos.Clear();
-            pathPos.Push(destPos);
             foreach (int node in pathList)
             {
                 tempNode = _graph.GetNode(node) as NavGraphNode;
-                pathPos.Push(tempNode.Pos());
+                pathPos.Enqueue(tempNode.Pos());
             }
-            //pathPos.Push (srcPos);
+            pathPos.Enqueue(destPos);
 
             return pathPos.Count;
         }
 
-        public Stack<Vector3> Search(Vector3 srcPos, Vector3 destPos)
+        public Queue<Vector3> Search(Vector3 srcPos, Vector3 destPos)
         {
             NavGraphNode destNode = _graph.FindNearNode(destPos);
             NavGraphNode srcNode = _graph.FindNearNode(srcPos);
             NavGraphNode tempNode = null;
-            Stack<Vector3> pathPos = new Stack<Vector3>();
+            Queue<Vector3> pathPos = new Queue<Vector3>();
 
             if (true == this.Possible_LinearMove(srcPos, destPos, 0))
             {
-                pathPos.Push(destPos);
+                pathPos.Enqueue(destPos);
                 return pathPos;
             }
 
             _searchDFS.Init(_graph, srcNode.Index(), destNode.Index());
-            List<int> pathList = _searchDFS.GetPathToTarget();
+            _searchAStar.Init(_graph, srcNode.Index(), destNode.Index());
+            //LinkedList<int> pathList = _searchDFS.GetPathToTarget();
+            LinkedList<int> pathList = _searchAStar.GetPathToTarget();
 
             //-------- chamto test --------
             string nodeChaine = "nodeChaine : ";
             foreach (int node in pathList)
             {
-                nodeChaine += node + "<-";
+                nodeChaine += node + "->";
             }
             Debug.Log(nodeChaine);
             //-------- ------------ --------
 
-
-            pathPos.Push(destPos);
             foreach (int node in pathList)
             {
                 tempNode = _graph.GetNode(node) as NavGraphNode;
-                pathPos.Push(tempNode.Pos());
+                pathPos.Enqueue(tempNode.Pos());
             }
-            //pathPos.Push (srcPos);
+            pathPos.Enqueue(destPos);
 
             return pathPos;
 

@@ -287,7 +287,7 @@ public class SparseGraph
 	}
 	
 	//sets the cost of an edge
-	public void  SetEdgeCost(int from, int to, double cost)
+	public void  SetEdgeCost(int from, int to, float cost)
 	{
 		//make sure the nodes given are valid
 		Assert.IsTrue( (from < m_Nodes.Count) && (to < m_Nodes.Count) ,

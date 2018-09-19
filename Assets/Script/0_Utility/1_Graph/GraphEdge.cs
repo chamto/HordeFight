@@ -10,10 +10,10 @@ public class GraphEdge : System.ICloneable
 	protected	int     m_iTo;
 	
 	//the cost of traversing the edge
-	protected 	double  m_dCost;
+	protected 	float  m_dCost;
 		
 		//ctors
-	public	GraphEdge(int from, int to, double cost)
+	public	GraphEdge(int from, int to, float cost)
 	{
 		m_dCost = cost;
 		m_iFrom = from;
@@ -22,14 +22,14 @@ public class GraphEdge : System.ICloneable
 	
 	public GraphEdge(int from, int  to)
 	{
-		m_dCost = 1.0;
+		m_dCost = 1.0f;
 		m_iFrom = from;
 		m_iTo = to;
 	}
 	
 	public GraphEdge()
 	{
-		m_dCost = 1.0;
+		m_dCost = 1.0f;
 		m_iFrom = GraphNode.INVALID_NODE_INDEX;
 		m_iTo = GraphNode.INVALID_NODE_INDEX;
 	}
@@ -45,15 +45,20 @@ public class GraphEdge : System.ICloneable
 	public int   To() {return m_iTo;}
 	public void  SetTo(int NewIndex){m_iTo = NewIndex;}
 	
-	public double Cost() {return m_dCost;}
-	public void  SetCost(double NewCost){m_dCost = NewCost;}
+	public float Cost() {return m_dCost;}
+	public void  SetCost(float NewCost){m_dCost = NewCost;}
 	
 	//these two operators are required
 	public static bool operator ==(GraphEdge rhsA, GraphEdge rhsB)
 	{
-		return rhsA.m_iFrom == rhsB.m_iFrom &&
-			rhsA.m_iTo   == rhsB.m_iTo   &&
-				rhsA.m_dCost == rhsB.m_dCost;
+        //https://code.i-harness.com/ko/q/11ff1
+        //무한 재귀없이 '=='연산자 오버로드에서 null을 확인
+
+        //object로 형변환 안하면 무한재귀로 강제종료된다. 
+        if (null == (object)rhsA)
+            return null == (object)rhsB;
+
+        return rhsA.Equals(rhsB);
 	}
 	
 	public static bool operator !=(GraphEdge rhsA, GraphEdge rhsB)
@@ -77,7 +82,7 @@ public class GraphEdge : System.ICloneable
 		}
 		
 		// Return true if the fields match:
-		return (m_iFrom == p.m_iFrom) && (m_iTo == p.m_iTo);
+        return (m_iFrom == p.m_iFrom) && (m_iTo == p.m_iTo) && m_dCost.Equals(p.m_dCost);
 	}
 	
 	public bool Equals(GraphEdge p)
@@ -89,7 +94,7 @@ public class GraphEdge : System.ICloneable
 		}
 		
 		// Return true if the fields match:
-		return (m_iFrom == p.m_iFrom) && (m_iTo == p.m_iTo);
+        return (m_iFrom == p.m_iFrom) && (m_iTo == p.m_iTo) && m_dCost.Equals(p.m_dCost);
 	}
 	
 	public override int GetHashCode()

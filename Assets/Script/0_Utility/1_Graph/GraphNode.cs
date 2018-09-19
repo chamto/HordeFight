@@ -10,8 +10,14 @@ public class GraphNode : System.ICloneable
 
 	public const int INVALID_NODE_INDEX = -1;
 		
-	public GraphNode(){ m_iIndex = GraphNode.INVALID_NODE_INDEX;}
-	public GraphNode(int idx){ m_iIndex = idx;}
+	public GraphNode()
+    { 
+        m_iIndex = GraphNode.INVALID_NODE_INDEX;
+    }
+	public GraphNode(int idx)
+    { 
+        m_iIndex = idx;
+    }
 
 	public int  Index() {return m_iIndex;}
 	public void SetIndex(int NewIndex){m_iIndex = NewIndex;}

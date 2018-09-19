@@ -656,7 +656,7 @@ namespace HordeFight
         //               지정된 경로 이동   
         //____________________________________________
 
-        Stack<Vector3> __path_find = null;
+        Queue<Vector3> __path_find = null;
         Vector3 __dstPos = Vector3.zero;
         float __elapsedTime_3 = 10f;
         public void UpdateNextPath()
@@ -667,7 +667,7 @@ namespace HordeFight
             if (1f < __elapsedTime_3)
             {
                 __elapsedTime_3 = 0f;
-                __dstPos = __path_find.Pop();
+                __dstPos = __path_find.Dequeue();
             }else
             {
                 __elapsedTime_3 += Time.deltaTime;
