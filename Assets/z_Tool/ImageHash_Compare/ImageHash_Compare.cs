@@ -19,21 +19,24 @@ using System.Security.Cryptography;
 
 namespace Tool
 {
+    public enum eTileMap_Kind
+    {
+        None,
+        Dungeon,
+        Forest,
+        Swamp,
+    }
+
     public class ImageHashValue
     {
-        public enum eKind
-        {
-            None,
-            Dungeon,
-            Forest,
-            Swamp,
-        }
-        public eKind    kind = eKind.None;      //타일의 종류를 지정
-        public string   hash = string.Empty;    //지정한 영역의 이미지를 md5암호화 알고리즘으로 해쉬로 변환한 값 
-        public string   fileName = string.Empty;//전체이미지의 파일이름 
-        public RectInt  rect = new RectInt();   //이미지 영역 지정
 
-        public Color[]  colors = null;          //이미지색값
+        public string           hash = string.Empty;    //지정한 영역의 이미지를 md5암호화 알고리즘으로 해쉬로 변환한 값 
+
+        public eTileMap_Kind    kind = eTileMap_Kind.None;      //타일맵의 종류를 지정
+        public string           fileName = string.Empty;//전체이미지의 파일이름 
+        public RectInt          rect = new RectInt();   //이미지 영역 지정
+
+        public Color[]          colors = null;          //이미지색값
 
     }
 
@@ -109,116 +112,159 @@ namespace Tool
             byte[] new_raw = new_tilemap.EncodeToPNG();
             File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName + "_addPadding.png", new_raw);
 
-
             DebugWide.LogBlue("done. file create complete +" + ((Time.time - startTime) / 60f).ToString() + "분 걸림");
 
             yield break;
         }
 
-        IEnumerator Start_()
+        /// <summary>
+        /// 이미지 해쉬맵을 구성한다
+        /// </summary>
+        public IEnumerator MakeUp_ImageHashMap(string imgFileName , eTileMap_Kind kind, Vector2Int cellSize , Vector2Int padding )
         {
-            const int TILEMAP_WITH = 1024;
-            const int TILEMAP_HEIGHT = 1024;
-            const int TILE_SIZE = 16;
-            const int TILE_MAX_COUNT = 1024 / 16; //64 
-            Vector2Int pos = Vector2Int.zero;
-            string str_hash = string.Empty;
             float startTime = Time.time;
+            Vector2Int pos = Vector2Int.zero;
+            Vector2Int TILE_COUNT = Vector2Int.zero;
+            string str_hash = string.Empty;
             //===================================================
-            Sprite dungeon = Resources.Load<Sprite>("Warcraft/Textures/Test/dungeon_01");
-            if (null == dungeon)
+            Sprite ori_image = Resources.Load<Sprite>("Warcraft/Textures/TileMap/" + imgFileName);
+            if (null == ori_image)
             {
-                DebugWide.LogRed("File not found!!");
+                DebugWide.LogRed("File not found!! " + imgFileName);
                 yield break;
             }
-            DebugWide.LogBlue(dungeon.texture.format);
+            TILE_COUNT.x = ori_image.texture.width / cellSize.x;
+            TILE_COUNT.y = ori_image.texture.height / cellSize.y;
 
-            Texture2D ori_tilemap = dungeon.texture;
-            //byte[] raw = tex_tilemap.EncodeToPNG();
 
-            Texture2D tile = new Texture2D(TILE_SIZE, TILE_SIZE, TextureFormat.ARGB32, false);
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
+            Texture2D ori_tilemap = ori_image.texture;
+            Texture2D get_tile = new Texture2D(cellSize.x, cellSize.y, TextureFormat.ARGB32, false);
 
-            for (int h = 0; h < TILE_MAX_COUNT; h++)
+            DebugWide.LogBlue(ori_tilemap.format + "  w:" + ori_tilemap.width + "   h:" + ori_tilemap.height); //print
+
+            int count = 0;
+            int uniCount = 0;
+            float progress = 0f;
+            for (int h = 0; h < TILE_COUNT.y; h++)
             {
-                for (int w = 0; w < TILE_MAX_COUNT; w++)
+                for (int w = 0; w < TILE_COUNT.x; w++)
                 {
-                    pos.x = w;
-                    pos.y = h;
+                    pos.x = cellSize.x * w;
+                    pos.y = cellSize.y * h;
+
+                    pos.x += padding.x * w;
+                    pos.y += padding.y * h;
 
                     //텍스쳐의 좌하단이 0,0 좌표이다 
-                    Color[] colors = ori_tilemap.GetPixels(TILE_SIZE * pos.x, TILE_SIZE * pos.y, TILE_SIZE, TILE_SIZE);
+                    Color[] colors = ori_tilemap.GetPixels(pos.x, pos.y, cellSize.x, cellSize.y);
+
                     //타일 중앙의 알파값이 투명일때 이미지가 없는 것으로 간주한다 
-                    if (true == colors[TILE_SIZE * TILE_SIZE / 2].a.Equals(0f))
+                    int center = cellSize.x * cellSize.y / 2;
+                    if (true == colors[center].a.Equals(0f))
                     {
                         continue;
                     }
-                    tile.SetPixels(colors);
-                    byte[] raw = tile.EncodeToPNG();
 
+                    //이미지에서 해쉬값 구하기
+                    get_tile.SetPixels(colors);
+                    byte[] raw = get_tile.EncodeToPNG();
                     byte[] byte_hash = md5.ComputeHash(raw);
 
+                    //해쉬값을 문자열로 변환 
                     str_hash = string.Empty;
                     foreach (byte one in byte_hash)
                     {
                         str_hash += one;
                     }
-                    DebugWide.LogBlue(str_hash + "   " + byte_hash.Length + "   " + pos); //print
+                    //DebugWide.LogBlue(str_hash + "   " + byte_hash.Length + "   " + pos); //print
 
                     ImageHashValue out_value = null;
                     if (false == _uniqueImages.TryGetValue(str_hash, out out_value))
                     {
                         out_value = new ImageHashValue();
                         out_value.colors = colors;
-                        out_value.fileName = "";
+                        out_value.fileName = imgFileName;
                         out_value.hash = str_hash;
-                        out_value.rect = new RectInt(TILE_SIZE * pos.x, TILE_SIZE * pos.y, TILE_SIZE, TILE_SIZE);
+                        out_value.rect = new RectInt(pos.x, pos.y, cellSize.x, cellSize.y);
+                        out_value.kind = kind;
                         _uniqueImages.Add(str_hash, out_value);
+
+                        uniCount++;
                     }
 
-                    //File.WriteAllBytes(Application.dataPath + "/../test/tile"+pos.x +"_"+pos.y +".png", raw);
-
+                    count++;
+                    progress = (float)count / (TILE_COUNT.y * TILE_COUNT.x);
+                    DebugWide.LogBlue("진행률 : " + progress * 100f + "%  - count:" + (TILE_COUNT.y * TILE_COUNT.x) + " : " + count + "  :" + pos); //print
                     yield return new WaitForEndOfFrame();
                 }
             }
 
 
-            DebugWide.LogBlue("done. unique tile find complete");
-
-
-            Texture2D new_tilemap = new Texture2D(TILEMAP_WITH / 2, TILEMAP_HEIGHT / 2, TextureFormat.ARGB32, false);
-            int count = 0;
-            foreach (ImageHashValue byby in _uniqueImages.Values)
-            {
-                pos.x = (count % (TILE_MAX_COUNT / 2)) * TILE_SIZE;
-                pos.y = (count / (TILE_MAX_COUNT / 2)) * TILE_SIZE;
-                DebugWide.LogBlue(pos);
-                new_tilemap.SetPixels(pos.x, pos.y, TILE_SIZE, TILE_SIZE, byby.colors);
-
-                count++;
-            }
-
-            byte[] new_raw = new_tilemap.EncodeToPNG();
-            File.WriteAllBytes(Application.dataPath + "/../TileTool/tilemap.png", new_raw);
-
-            //pos = Vector3.zero;
-            //foreach(byte[] byby in _uniqueTiles.Values)
-            //{
-
-            //    File.WriteAllBytes(Application.dataPath + "/../test/tile" + pos.x + "_" + pos.y + ".png", byby);
-            //    DebugWide.LogBlue(pos);
-            //    pos.x++;
-            //    yield return new WaitForEndOfFrame();
-            //}
-
-            DebugWide.LogBlue("done. file create complete +" + (Time.time - startTime) / 1000 + "초 걸림");
+            DebugWide.LogBlue("done. unique tile find complete! : " + imgFileName + " add result: " + uniCount);
 
             yield break;
         }
 
+        /// <summary>
+        /// 저장된 이미지해쉬맵으로 타일맵 텍스쳐를 만든다
+        /// </summary>
+        public IEnumerator CreatePNG_ImageHashMap(string imgFileName , eTileMap_Kind createKind , Vector2Int padding)
+        {
+            float startTime = Time.time;
+            Vector2Int pos = Vector2Int.zero;
+            Vector2Int CELL_SIZE = new Vector2Int(16, 16); //16x16 셀이미지
+            Vector2Int TILE_COUNT = Vector2Int.zero;
+            Vector2Int IMG_SIZE = new Vector2Int(512, 0); //생성할 이미지 가로길이를 512로 고정한다 
+
+            TILE_COUNT.x = IMG_SIZE.x / (CELL_SIZE.x + padding.x);
+            TILE_COUNT.y = IMG_SIZE.x / (CELL_SIZE.y + padding.y);
+
+
+            int MAX_COUNT = 0;
+            foreach (ImageHashValue byby in _uniqueImages.Values)
+            {
+                if (createKind != byby.kind) continue;
+                MAX_COUNT++;
+            }
+
+            IMG_SIZE.y = (MAX_COUNT / TILE_COUNT.x);
+            IMG_SIZE.y *= (CELL_SIZE.y + padding.y);
+            DebugWide.LogBlue(imgFileName +"   :  "+ IMG_SIZE +"    :  "+ createKind.ToString()); //print
+            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
+
+            int count = 0;
+            float progress = 0f;
+            foreach (ImageHashValue byby in _uniqueImages.Values)
+            {
+                if (createKind != byby.kind) continue;
+
+                pos.x = (count % TILE_COUNT.x) * (CELL_SIZE.x + padding.x);
+                pos.y = (count / TILE_COUNT.y) * (CELL_SIZE.y + padding.y);
+
+                new_tilemap.SetPixels(pos.x, pos.y, CELL_SIZE.x, CELL_SIZE.y, byby.colors);
+
+                count++;
+                progress = (float)count / (TILE_COUNT.y * TILE_COUNT.x);
+                DebugWide.LogBlue("진행률 : " + progress * 100f + "%  - count:" + MAX_COUNT + " : " + count + "  :" + pos); //print
+                yield return new WaitForEndOfFrame();
+            }
+
+
+
+            byte[] new_raw = new_tilemap.EncodeToPNG();
+            File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName , new_raw);
+
+            DebugWide.LogBlue("done. file create complete +" + ((Time.time - startTime) / 60f).ToString() + "분 걸림");
+
+            yield break;
+        }
         // Update is called once per frame
         void Update()
         {
+           
+
+
 
         }
 
@@ -234,7 +280,49 @@ namespace Tool
             {
                 Vector2Int CELL_SIZE = new Vector2Int(16, 16);
                 Vector2Int PADDING = new Vector2Int(2, 2);
-                StartCoroutine(CreateImage_AddPadding("dungeon_01", CELL_SIZE, PADDING));   
+
+                //StartCoroutine(CreateImage_AddPadding("dungeon_01", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("dungeon_02", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("dungeon_03", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("dungeon_04", CELL_SIZE, PADDING));   
+
+                //StartCoroutine(CreateImage_AddPadding("forest_01", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("forest_02", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("forest_03", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("forest_04", CELL_SIZE, PADDING));   
+
+                //StartCoroutine(CreateImage_AddPadding("swamp_01", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("swamp_02", CELL_SIZE, PADDING));   
+                //StartCoroutine(CreateImage_AddPadding("swamp_03", CELL_SIZE, PADDING));   
+            }
+
+            if (GUI.Button(new Rect(10, 120, 200, 100), new GUIContent("MakeUp_ImageHashMap", icon)))
+            {
+                Vector2Int CELL_SIZE = new Vector2Int(16, 16);
+                Vector2Int PADDING = new Vector2Int(2, 2);
+
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_01_addPadding",eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_02_addPadding",eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_03_addPadding",eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_04_addPadding",eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));   
+							   
+                StartCoroutine(MakeUp_ImageHashMap("forest_01_addPadding",eTileMap_Kind.Forest, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("forest_02_addPadding",eTileMap_Kind.Forest, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("forest_03_addPadding",eTileMap_Kind.Forest, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("forest_04_addPadding",eTileMap_Kind.Forest, CELL_SIZE, PADDING));   
+							   
+                StartCoroutine(MakeUp_ImageHashMap("swamp_01_addPadding",eTileMap_Kind.Swamp, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("swamp_02_addPadding",eTileMap_Kind.Swamp, CELL_SIZE, PADDING));   
+                StartCoroutine(MakeUp_ImageHashMap("swamp_03_addPadding",eTileMap_Kind.Swamp, CELL_SIZE, PADDING)); 
+            }
+
+            if (GUI.Button(new Rect(10, 230, 200, 100), new GUIContent("CreatePNG_ImageHashMap", icon)))
+            {
+                Vector2Int PADDING = new Vector2Int(2, 2);
+
+                StartCoroutine(CreatePNG_ImageHashMap("dungeon",eTileMap_Kind.Dungeon, PADDING));   
+                StartCoroutine(CreatePNG_ImageHashMap("forest",eTileMap_Kind.Forest, PADDING));   
+                StartCoroutine(CreatePNG_ImageHashMap("swamp",eTileMap_Kind.Swamp, PADDING));   
             }
         }
 
