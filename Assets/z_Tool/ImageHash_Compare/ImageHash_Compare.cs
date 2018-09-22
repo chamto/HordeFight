@@ -47,17 +47,20 @@ namespace Tool
     public class ImageHash_Compare : MonoBehaviour
     {
 
-
-
+        private XML_Parser _parser = new XML_Parser();
         public Dictionary<string, ImageHashValue> _uniqueImages = new Dictionary<string, ImageHashValue>();
-
-        //<문자열 해쉬키 , 타일Colors>
-        //public Dictionary<string, Color[]> _uniqueImages = new Dictionary<string, Color[]>();
-
+        Dictionary<string, Sprite> _spriteMap = new Dictionary<string, Sprite>();
 
         void Start()
         {
+            _parser.SetREF_UniqueImage(ref _uniqueImages);
 
+            //타일맵 스프라이트 목록을 저장한다 
+            Sprite[] sprs = Resources.LoadAll<Sprite>("Warcraft/Textures/TileMap/");
+            foreach(Sprite s in sprs)
+            {
+                _spriteMap.Add(s.name, s);
+            }
         }
 
         /// <summary>
@@ -72,12 +75,13 @@ namespace Tool
             Vector2Int TILE_COUNT = Vector2Int.zero;
             Vector2Int newImgSize = Vector2Int.zero;
             //===================================================
-            Sprite ori_image = Resources.Load<Sprite>("Warcraft/Textures/TileMap/" + imgFileName);
-            if (null == ori_image)
+            if(false == _spriteMap.Keys.Contains(imgFileName))
             {
                 DebugWide.LogRed("File not found!! " + imgFileName);
                 yield break;
             }
+            Sprite ori_image = _spriteMap[imgFileName];
+
             TILE_COUNT.x = ori_image.texture.width / cellSize.x;
             TILE_COUNT.y = ori_image.texture.height / cellSize.y;
             newImgSize.x = ori_image.texture.width + (TILE_COUNT.x * padding.x);
@@ -131,14 +135,15 @@ namespace Tool
             Vector2Int TILE_COUNT = Vector2Int.zero;
             string str_hash = string.Empty;
             //===================================================
-            Sprite ori_image = Resources.Load<Sprite>("Warcraft/Textures/TileMap/" + imgFileName);
-            if (null == ori_image)
+            if (false == _spriteMap.Keys.Contains(imgFileName))
             {
                 DebugWide.LogRed("File not found!! " + imgFileName);
                 yield break;
             }
-            TILE_COUNT.x = ori_image.texture.width / cellSize.x;
-            TILE_COUNT.y = ori_image.texture.height / cellSize.y;
+            Sprite ori_image = _spriteMap[imgFileName];
+
+            TILE_COUNT.x = ori_image.texture.width / (cellSize.x + padding.x);
+            TILE_COUNT.y = ori_image.texture.height / (cellSize.y + padding.y);
 
 
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
@@ -221,19 +226,22 @@ namespace Tool
             Vector2Int TILE_COUNT = Vector2Int.zero;
             Vector2Int IMG_SIZE = new Vector2Int(512, 0); //생성할 이미지 가로길이를 512로 고정한다 
 
-            TILE_COUNT.x = IMG_SIZE.x / (CELL_SIZE.x + padding.x);
-            TILE_COUNT.y = IMG_SIZE.x / (CELL_SIZE.y + padding.y);
 
 
-            int MAX_COUNT = 0;
+
+            int MAX_KIND_COUNT = 0;
             foreach (ImageHashValue byby in _uniqueImages.Values)
             {
                 if (createKind != byby.kind) continue;
-                MAX_COUNT++;
+                MAX_KIND_COUNT++;
             }
 
-            IMG_SIZE.y = (MAX_COUNT / TILE_COUNT.x);
-            IMG_SIZE.y *= (CELL_SIZE.y + padding.y);
+            //처리할 데이터가 없는 경우 
+            if (0 == MAX_KIND_COUNT) yield break;
+
+            TILE_COUNT.x = IMG_SIZE.x / (CELL_SIZE.x + padding.x);
+            TILE_COUNT.y = (MAX_KIND_COUNT / TILE_COUNT.x);
+            IMG_SIZE.y = (TILE_COUNT.y+1) * (CELL_SIZE.y + padding.y);
             DebugWide.LogBlue(imgFileName + "   :  " + IMG_SIZE + "    :  " + createKind.ToString()); //print
             Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
 
@@ -244,32 +252,39 @@ namespace Tool
                 if (createKind != byby.kind) continue;
 
                 pos.x = (count % TILE_COUNT.x) * (CELL_SIZE.x + padding.x);
-                pos.y = (count / TILE_COUNT.y) * (CELL_SIZE.y + padding.y);
+                pos.y = (count / TILE_COUNT.x) * (CELL_SIZE.y + padding.y);
 
                 new_tilemap.SetPixels(pos.x, pos.y, CELL_SIZE.x, CELL_SIZE.y, byby.colors);
 
                 count++;
-                progress = (float)count / (TILE_COUNT.y * TILE_COUNT.x);
-                DebugWide.LogBlue("진행률 : " + progress * 100f + "%  - count:" + MAX_COUNT + " : " + count + "  :" + pos); //print
+                progress = (float)count / (MAX_KIND_COUNT);
+                DebugWide.LogBlue("진행률 : " + progress * 100f + "%  - count:" + MAX_KIND_COUNT + " : " + count + "  :" + pos); //print
                 yield return new WaitForEndOfFrame();
             }
 
 
 
             byte[] new_raw = new_tilemap.EncodeToPNG();
-            File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName, new_raw);
+            File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName + ".png", new_raw);
 
             DebugWide.LogBlue("done. file create complete +" + ((Time.time - startTime) / 60f).ToString() + "분 걸림");
 
             yield break;
         }
-        // Update is called once per frame
-        void Update()
+
+        /// <summary>
+        /// 이미지해쉬맵의 객체컬러값을 갱신한다
+        /// 파일에서 불러온 이미지해쉬맵의 아이템은 컬러값이 없기 떄문에, 따로 채워주어야 한다  
+        /// </summary>
+        public void UpdateAllColors()
         {
+            foreach(ImageHashValue hv in _uniqueImages.Values)
+            {
+                Sprite tileMap_spr = _spriteMap[hv.fileName];
+                hv.colors = tileMap_spr.texture.GetPixels(hv.rect.x, hv.rect.y, hv.rect.width, hv.rect.height);
+            }
 
-
-
-
+            DebugWide.LogBlue("=============UpdateAllColors=============");
         }
 
         //==================================================
@@ -306,18 +321,22 @@ namespace Tool
                 Vector2Int PADDING = new Vector2Int(2, 2);
 
                 StartCoroutine(MakeUp_ImageHashMap("dungeon_01_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("dungeon_02_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("dungeon_03_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("dungeon_04_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("dungeon_02_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("dungeon_03_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("dungeon_04_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
 
-                StartCoroutine(MakeUp_ImageHashMap("forest_01_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("forest_02_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("forest_03_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("forest_04_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("forest_01_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("forest_02_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("forest_03_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("forest_04_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
 
-                StartCoroutine(MakeUp_ImageHashMap("swamp_01_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("swamp_02_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
-                StartCoroutine(MakeUp_ImageHashMap("swamp_03_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("swamp_01_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("swamp_02_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                //StartCoroutine(MakeUp_ImageHashMap("swamp_03_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+
+                //코루틴 때문에 수행되는 시기가 처음부분이다 <= 정상수행 안됨 
+                //_parser.SaveXML();
+                //DebugWide.LogBlue("Saved!!");
             }
 
             if (GUI.Button(new Rect(10, 230, 200, 100), new GUIContent("CreatePNG_ImageHashMap", icon)))
@@ -333,21 +352,16 @@ namespace Tool
 
             if (GUI.Button(new Rect(10, 340, 200, 100), new GUIContent("Save", icon)))
             {
-             
+                //StartCoroutine(_parser.SaveXML());
+                _parser.SaveXML();
+
             }
 
             if (GUI.Button(new Rect(220, 340, 200, 100), new GUIContent("Load", icon)))
             {
-                XML_Parser parser = new XML_Parser();
-                parser.SetREF_UniqueImage(ref _uniqueImages);
-                HordeFight.Single.coroutine.Start_Sync(parser.LoadXML(), null, "ImageHashMap");
+                HordeFight.Single.coroutine.Start_Sync(_parser.LoadXML(), null, "ImageHashMap");
 
-                DebugWide.LogBlue(_uniqueImages.Count);
-                foreach(ImageHashValue iv in _uniqueImages.Values)
-                {
-                    DebugWide.LogBlue(iv);
-                }
-
+                UpdateAllColors();
             }
         }
 
@@ -460,9 +474,24 @@ namespace Tool
                     }//attrs
                 }//second
 
-                _uniqueImages.Add(item.hash, item);
+                ImageHashValue updateValue = null;
+                if(false == _uniqueImages.TryGetValue(item.hash, out updateValue))
+                {
+                    //키가 없다면 값추가
+                    _uniqueImages.Add(item.hash, item);
+                }else
+                {
+                    //키가 있다면 값갱신
+                    updateValue.fileName = item.fileName;
+                    updateValue.kind = item.kind;
+                    updateValue.rect = item.rect;    
+                }
+
+                    
             }//first
             _bCompleteLoad = true;
+
+            DebugWide.LogBlue("=====================Loaded!!=====================");
         }//func end
 
         public IEnumerator FileLoading(string strFilePath, System.Action<MemoryStream> result = null)
@@ -526,9 +555,50 @@ namespace Tool
             }
             this.Parse_MemoryStream(stream);
 
+        }
 
-            //Print(); //chamto test
+        //public IEnumerator SaveXML()
+        public void SaveXML()
+        {
+            XmlDocument Xmldoc = new XmlDocument();
+            XmlDeclaration decl = Xmldoc.CreateXmlDeclaration("1.0", "UTF-8", "yes");
+            Xmldoc.AppendChild(decl);
+            XmlElement root_element = Xmldoc.CreateElement("root");
+            XmlElement first_element = null;
+            XmlElement second_element = null;
 
+            int count = 0;
+            Vector2Int cell = Vector2Int.zero;
+            //-----------------------------------
+            foreach (ImageHashValue n in _uniqueImages.Values)
+            {
+                first_element = Xmldoc.CreateElement("ImageHash");
+                first_element.SetAttribute("fileName", n.fileName);
+                first_element.SetAttribute("kind", n.kind.ToString());
+
+
+                second_element = Xmldoc.CreateElement("Info");
+                cell.x = n.rect.x;
+                cell.y = n.rect.y;
+                second_element.SetAttribute("cellPos", cell.ToString());
+                cell.x = n.rect.width;
+                cell.y = n.rect.height;
+                second_element.SetAttribute("cellSize", cell.ToString());
+                second_element.SetAttribute("hash", n.hash);
+
+                first_element.AppendChild(second_element);
+                root_element.AppendChild(first_element);
+
+                //count++;
+                //DebugWide.LogBlue(n.fileName + "  : " + count); //print
+                //yield return new WaitForEndOfFrame();
+            }
+
+            Xmldoc.AppendChild(root_element);
+            Xmldoc.Save(Application.dataPath +"/StreamingAssets/" +m_strFileName);
+
+            DebugWide.LogBlue("=====================Saved!!=====================");
+            //yield break;
         }
 
     }
