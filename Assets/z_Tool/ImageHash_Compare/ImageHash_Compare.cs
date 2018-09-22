@@ -61,6 +61,7 @@ namespace Tool
             {
                 _spriteMap.Add(s.name, s);
             }
+
         }
 
         /// <summary>
@@ -188,18 +189,28 @@ namespace Tool
                     }
                     //DebugWide.LogBlue(str_hash + "   " + byte_hash.Length + "   " + pos); //print
 
-                    ImageHashValue out_value = null;
-                    if (false == _uniqueImages.TryGetValue(str_hash, out out_value))
+                    ImageHashValue updateValue = null;
+                    if (false == _uniqueImages.TryGetValue(str_hash, out updateValue))
                     {
-                        out_value = new ImageHashValue();
-                        out_value.colors = colors;
-                        out_value.fileName = imgFileName;
-                        out_value.hash = str_hash;
-                        out_value.rect = new RectInt(pos.x, pos.y, cellSize.x, cellSize.y);
-                        out_value.kind = kind;
-                        _uniqueImages.Add(str_hash, out_value);
+                        //키가 없다면 값추가
+                        updateValue = new ImageHashValue();
+                        updateValue.hash = str_hash;
+                        updateValue.fileName = imgFileName;
+                        updateValue.kind = kind;
+                        updateValue.rect = new RectInt(pos.x, pos.y, cellSize.x, cellSize.y);
+                        updateValue.colors = colors;
+                        _uniqueImages.Add(str_hash, updateValue);
 
                         uniCount++;
+                    }
+                    else
+                    {
+                        //키가 있다면 값갱신
+                        updateValue.hash = str_hash;
+                        updateValue.fileName = imgFileName;
+                        updateValue.kind = kind;
+                        updateValue.rect = new RectInt(pos.x, pos.y, cellSize.x, cellSize.y);
+                        updateValue.colors = colors;
                     }
 
                     count++;
@@ -278,13 +289,28 @@ namespace Tool
         /// </summary>
         public void UpdateAllColors()
         {
+            int MAX_COUNT = _uniqueImages.Count;
+            List<string> removeKeyList = new List<string>();
             foreach(ImageHashValue hv in _uniqueImages.Values)
             {
                 Sprite tileMap_spr = _spriteMap[hv.fileName];
                 hv.colors = tileMap_spr.texture.GetPixels(hv.rect.x, hv.rect.y, hv.rect.width, hv.rect.height);
+
+                //가져온 색정보가 0인 경우 이미지목록에서 해당 해쉬값을 제거한다 
+                int center = hv.rect.width * hv.rect.height / 2;
+                if (true == hv.colors[center].a.Equals(0f))
+                {
+                    //지울대상 지정
+                    removeKeyList.Add(hv.hash);
+                }
             }
 
-            DebugWide.LogBlue("=============UpdateAllColors=============");
+            foreach(string key in removeKeyList)
+            {
+                _uniqueImages.Remove(key);
+            }
+
+            DebugWide.LogBlue("=============UpdateAllColors=============  전체: " + MAX_COUNT + " 제거한 타일: " + removeKeyList.Count);
         }
 
         //==================================================
@@ -321,47 +347,45 @@ namespace Tool
                 Vector2Int PADDING = new Vector2Int(2, 2);
 
                 StartCoroutine(MakeUp_ImageHashMap("dungeon_01_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("dungeon_02_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("dungeon_03_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("dungeon_04_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_02_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_03_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("dungeon_04_addPadding", eTileMap_Kind.Dungeon, CELL_SIZE, PADDING));
 
-                //StartCoroutine(MakeUp_ImageHashMap("forest_01_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("forest_02_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("forest_03_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("forest_04_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("forest_01_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("forest_02_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("forest_03_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("forest_04_addPadding", eTileMap_Kind.Forest, CELL_SIZE, PADDING));
 
-                //StartCoroutine(MakeUp_ImageHashMap("swamp_01_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("swamp_02_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
-                //StartCoroutine(MakeUp_ImageHashMap("swamp_03_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("swamp_01_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("swamp_02_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
+                StartCoroutine(MakeUp_ImageHashMap("swamp_03_addPadding", eTileMap_Kind.Swamp, CELL_SIZE, PADDING));
 
                 //코루틴 때문에 수행되는 시기가 처음부분이다 <= 정상수행 안됨 
                 //_parser.SaveXML();
                 //DebugWide.LogBlue("Saved!!");
             }
 
-            if (GUI.Button(new Rect(10, 230, 200, 100), new GUIContent("CreatePNG_ImageHashMap", icon)))
-            {
-                Vector2Int PADDING = new Vector2Int(2, 2);
-
-                StartCoroutine(CreatePNG_ImageHashMap("dungeon", eTileMap_Kind.Dungeon, PADDING));
-                StartCoroutine(CreatePNG_ImageHashMap("forest", eTileMap_Kind.Forest, PADDING));
-                StartCoroutine(CreatePNG_ImageHashMap("swamp", eTileMap_Kind.Swamp, PADDING));
-
-
-            }
-
-            if (GUI.Button(new Rect(10, 340, 200, 100), new GUIContent("Save", icon)))
+            if (GUI.Button(new Rect(10, 230, 200, 100), new GUIContent("Save", icon)))
             {
                 //StartCoroutine(_parser.SaveXML());
                 _parser.SaveXML();
 
             }
 
-            if (GUI.Button(new Rect(220, 340, 200, 100), new GUIContent("Load", icon)))
+            if (GUI.Button(new Rect(10, 340, 200, 100), new GUIContent("Load", icon)))
             {
                 HordeFight.Single.coroutine.Start_Sync(_parser.LoadXML(), null, "ImageHashMap");
 
                 UpdateAllColors();
+            }
+
+            if (GUI.Button(new Rect(220, 340, 200, 100), new GUIContent("CreatePNG_ImageHashMap", icon)))
+            {
+                Vector2Int PADDING = new Vector2Int(2, 2);
+
+                StartCoroutine(CreatePNG_ImageHashMap("dungeon", eTileMap_Kind.Dungeon, PADDING));
+                StartCoroutine(CreatePNG_ImageHashMap("forest", eTileMap_Kind.Forest, PADDING));
+                StartCoroutine(CreatePNG_ImageHashMap("swamp", eTileMap_Kind.Swamp, PADDING));
             }
         }
 
@@ -597,7 +621,7 @@ namespace Tool
             Xmldoc.AppendChild(root_element);
             Xmldoc.Save(Application.dataPath +"/StreamingAssets/" +m_strFileName);
 
-            DebugWide.LogBlue("=====================Saved!!=====================");
+            DebugWide.LogBlue("=====================Saved!!=====================  전체추가: " + _uniqueImages.Count);
             //yield break;
         }
 
