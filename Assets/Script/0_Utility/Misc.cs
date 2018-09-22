@@ -263,7 +263,7 @@ namespace Utility
 
             }
 
-            public string ToString()
+            public override string ToString()
             {
 
                 return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
@@ -285,7 +285,7 @@ namespace Utility
                 radius = r;
             }
 
-            public string ToString()
+            public override string ToString()
             {
                 return "pos: " + pos + "  radius: " + radius;
             }
@@ -440,6 +440,51 @@ namespace Utility
     ///////////////////////////////////////////////////////////////////////
     public class Misc
     {
+        //========================================================
+        //==================       애셋 경로       ==================
+        //========================================================
+
+        #if UNITY_EDITOR
+        public const string CURRENT_PLATFORM = "UNITY_EDITOR";
+        public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
+        #elif UNITY_IPHONE
+            public const string CURRENT_PLATFORM = "UNITY_IPHONE";
+            public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
+        #elif UNITY_ANDROID
+            public const string CURRENT_PLATFORM = "UNITY_ANDROID";
+            public static string ASSET_PATH = "jar:file://" + UnityEngine.Application.dataPath + "!/assets/";
+        #elif SERVER
+            public const string CURRENT_PLATFORM = "SERVER";
+            public static string ASSET_PATH = "Data_KOR\\";
+        #elif TOOL
+            public const string CURRENT_PLATFORM = "TOOL";
+            public static string ASSET_PATH = "Data_KOR\\";
+        #endif
+
+        //========================================================
+        //==================     문자열 처리     ==================
+        //========================================================
+        static  public Vector3 StringToVector3(string s)
+        {
+            char[] delimiterChars = { ' ', ',', '(', ')' };
+            string[] parts = s.Split(delimiterChars, System.StringSplitOptions.RemoveEmptyEntries);
+
+            return new Vector3(
+                float.Parse(parts[0]),
+                float.Parse(parts[1]),
+                float.Parse(parts[2]));
+        }
+
+        static  public Vector2Int StringToVector2Int(string s)
+        {
+            char[] delimiterChars = { ' ', ',', '(', ')' };
+            string[] parts = s.Split(delimiterChars, System.StringSplitOptions.RemoveEmptyEntries);
+
+            return new Vector2Int(
+                int.Parse(parts[0]),
+                int.Parse(parts[1]));
+        }
+
 
         //========================================================
         //==================       랜덤함수       ==================

@@ -10,10 +10,7 @@ namespace HordeFight
 {
     public class HordeFight_Main : MonoBehaviour
     {
-
-
-
-
+        
         // Use this for initialization
         void Start()
         {
@@ -107,6 +104,14 @@ namespace HordeFight
             get
             {
                 return CSingleton<ResourceManager>.Instance;
+            }
+        }
+
+        public static WideCoroutine coroutine
+        {
+            get
+            {
+                return CSingleton<WideCoroutine>.Instance;
             }
         }
 
@@ -210,14 +215,6 @@ namespace HordeFight
 
 
         //==================== <Method> ====================
-
-        //public eSPRITE_NAME StringToEnum(string name)
-        //{
-        //    //20170813 chamto fixme - value 값이 없을 때의 예외 처리가 없음 
-        //    //ref : https://stackoverflow.com/questions/2444033/get-dictionary-key-by-value
-        //    return _spriteNames.FirstOrDefault(x => x.Value == name).Key;
-        //}
-
 
         public void ClearAll()
         {

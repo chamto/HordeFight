@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<root>
+  <!---참고 :  -->
+  <ImageHash fileName="dungeon_0" kind="Dungeon">
+	<info num = "0" cellPos="(6,7)" cellSize="(16,0)" hash = "dddsdf"/>
+  </ImageHash>
+  <ImageHash fileName="forest_0" kind="Forest">
+    <info num = "0" cellPos="(0,1)" cellSize="(4,4)" hash = "ddgffgdsdf"/>
+  </ImageHash>
+
+</root>
