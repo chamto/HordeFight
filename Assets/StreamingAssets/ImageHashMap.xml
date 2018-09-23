@@ -5412,9 +5412,6 @@
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(108, 954)" cellSize="(16, 16)" hash="234881491082508023595214414414112998194116" />
   </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(36, 918)" cellSize="(16, 16)" hash="025881597283241732182361655112916921216" />
-  </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(90, 918)" cellSize="(16, 16)" hash="212951761031011812624824412819722322089104252" />
   </ImageHash>
@@ -5522,9 +5519,6 @@
   </ImageHash>
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(1026, 918)" cellSize="(16, 16)" hash="2031247520082161371052218915147144197240189" />
-  </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(72, 936)" cellSize="(16, 16)" hash="2054715320228200205225200702474819422745202" />
   </ImageHash>
   <ImageHash fileName="forest_01_addPadding" kind="Forest">
     <Info cellPos="(90, 936)" cellSize="(16, 16)" hash="7225013215128148811821107719211617325321828" />
@@ -6564,12 +6558,6 @@
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(468, 1044)" cellSize="(16, 16)" hash="13173110229321262467819876100110119203202247" />
   </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(504, 1044)" cellSize="(16, 16)" hash="138516511210121391251783633123511410732" />
-  </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(522, 1044)" cellSize="(16, 16)" hash="17341138147166811097207172092092191937191" />
-  </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(594, 1044)" cellSize="(16, 16)" hash="174160190152190521948210325524812974126200" />
   </ImageHash>
@@ -6675,9 +6663,6 @@
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(468, 1062)" cellSize="(16, 16)" hash="193506545163171120213111220222174124152197152" />
   </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(486, 1062)" cellSize="(16, 16)" hash="208248206194120841923016778916916443127153" />
-  </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(594, 1062)" cellSize="(16, 16)" hash="2404560211161196198860198117317024725449" />
   </ImageHash>
@@ -6738,14 +6723,8 @@
   <ImageHash fileName="forest_03_addPadding" kind="Forest">
     <Info cellPos="(450, 1080)" cellSize="(16, 16)" hash="42206213142174174462453414412086214105124100" />
   </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(486, 1080)" cellSize="(16, 16)" hash="953521612770197612512252029780159130248" />
-  </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(486, 1080)" cellSize="(16, 16)" hash="1954206169912022165723314713194602468691" />
-  </ImageHash>
-  <ImageHash fileName="forest_01_addPadding" kind="Forest">
-    <Info cellPos="(504, 1080)" cellSize="(16, 16)" hash="119131521671578610891201741331512031291253" />
   </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(594, 1080)" cellSize="(16, 16)" hash="2359972672311233414511711289168945189187" />

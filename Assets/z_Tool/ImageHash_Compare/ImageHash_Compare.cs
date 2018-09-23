@@ -74,7 +74,7 @@ namespace Tool
             float startTime = Time.time;
             Vector2Int pos = Vector2Int.zero;
             Vector2Int TILE_COUNT = Vector2Int.zero;
-            Vector2Int newImgSize = Vector2Int.zero;
+            Vector2Int IMG_SIZE = Vector2Int.zero;
             //===================================================
             if(false == _spriteMap.Keys.Contains(imgFileName))
             {
@@ -85,13 +85,17 @@ namespace Tool
 
             TILE_COUNT.x = ori_image.texture.width / cellSize.x;
             TILE_COUNT.y = ori_image.texture.height / cellSize.y;
-            newImgSize.x = ori_image.texture.width + (TILE_COUNT.x * padding.x);
-            newImgSize.y = ori_image.texture.height + (TILE_COUNT.y * padding.y);
+            IMG_SIZE.x = ori_image.texture.width + (TILE_COUNT.x * padding.x);
+            IMG_SIZE.y = ori_image.texture.height + (TILE_COUNT.y * padding.y);
 
             Texture2D ori_tilemap = ori_image.texture;
-            Texture2D new_tilemap = new Texture2D(newImgSize.x, newImgSize.y, TextureFormat.ARGB32, false);
+            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
 
-            DebugWide.LogBlue(new_tilemap.format + "  w:" + newImgSize.x + "   h:" + newImgSize.y); //print
+            //투명(0,0,0,0)색으로 초기화 한다 
+            Color[] black_colors = new Color[IMG_SIZE.x * IMG_SIZE.y];
+            new_tilemap.SetPixels(black_colors);
+
+            DebugWide.LogBlue(new_tilemap.format + "  w:" + IMG_SIZE.x + "   h:" + IMG_SIZE.y); //print
 
             int count = 0;
             float progress = 0f;
@@ -117,7 +121,7 @@ namespace Tool
                 }
             }
 
-
+            new_tilemap.Apply();
             byte[] new_raw = new_tilemap.EncodeToPNG();
             File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName + "_addPadding.png", new_raw);
 
@@ -256,6 +260,11 @@ namespace Tool
             DebugWide.LogBlue(imgFileName + "   :  " + IMG_SIZE + "    :  " + createKind.ToString()); //print
             Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
 
+            //투명(0,0,0,0)색으로 초기화 한다 
+            Color[] black_colors = new Color[IMG_SIZE.x * IMG_SIZE.y];
+            new_tilemap.SetPixels(black_colors);
+
+
             int count = 0;
             float progress = 0f;
             foreach (ImageHashValue byby in _uniqueImages.Values)
@@ -274,7 +283,7 @@ namespace Tool
             }
 
 
-
+            new_tilemap.Apply();
             byte[] new_raw = new_tilemap.EncodeToPNG();
             File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/" + imgFileName + ".png", new_raw);
 
