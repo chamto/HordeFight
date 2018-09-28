@@ -93,16 +93,19 @@ namespace UnityEditor
 			
 			Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
 			Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
-            Rect matrixRect2 = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos + k_DefaultElementHeight + 5f , matrixWidth, k_DefaultElementHeight);
-			Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
+            Rect matrixRect_Length = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos + k_DefaultElementHeight + 5f, matrixWidth, k_DefaultElementHeight);
+            Rect matrixRect_RuleID = new Rect(rect.xMax - matrixWidth * 2f + 40f, yPos + k_DefaultElementHeight + 5f , matrixWidth, k_DefaultElementHeight);
+			Rect spriteRect = new Rect(rect.xMax - matrixWidth + 7f, yPos, matrixWidth, k_DefaultElementHeight);
 
 			EditorGUI.BeginChangeCheck();
-			RuleInspectorOnGUI(inspectorRect, rule);
+			RuleInspectorOnGUI(inspectorRect, rule , index);
 			RuleMatrixOnGUI(tile, matrixRect, rule);
 
+            //멀티모드에서만 보여지게 한다 - 보여지는 것과 상관없이 다른모드에도 영향을 준다
             if (rule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
             {
-                RuleMatrixOnGUI_InputLength(tile, matrixRect2, rule); //chamto test    
+                RuleMatrixOnGUI_RuleLength(tile, matrixRect_Length, rule);
+                RuleMatrixOnGUI_RuleID(tile, matrixRect_RuleID, rule);    
             }
 
 			SpriteOnGUI(spriteRect, rule);
@@ -148,7 +151,43 @@ namespace UnityEditor
 				m_ReorderableList.DoLayoutList();
 		}
 
-        internal static void RuleMatrixOnGUI_InputLength(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
+        internal static void RuleMatrixOnGUI_RuleID(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
+        {
+            Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.8f) : new Color(0f, 0f, 0f, 0.8f);
+            int index = 0;
+            float w = rect.width / 2.3f;
+            float h = rect.height / 2.3f;
+
+            Handles.color = Color.white;
+
+            for (int y = 0; y <= 2; y++)
+            {
+                for (int x = 0; x <= 2; x++)
+                {
+                    Rect r = new Rect(rect.xMin + x * w, rect.yMin + y * h, w - 1, h - 1);
+                    if (x != 1 || y != 1)
+                    {
+                        //8방향
+                        EditorGUI.BeginChangeCheck();
+                        string newID = EditorGUI.DelayedTextField(r, tilingRule.m_Neighbors_ID[index]);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            
+                            tilingRule.m_Neighbors_ID[index] = newID.Substring(0, Mathf.Min(2,newID.Length)); //두글자로 제한한다 
+                        }
+
+                        index++;
+                    }
+                    else
+                    {
+                        //중앙 
+                        GUI.Label(r, tilingRule.m_ID);
+                    }
+                }
+            }
+        }
+
+        internal static void RuleMatrixOnGUI_RuleLength(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
         {
             Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.8f) : new Color(0f, 0f, 0f, 0.8f);
             int index = 0;
@@ -186,11 +225,12 @@ namespace UnityEditor
                     }
                     else
                     {
-                       //중앙 
+                        //중앙 
                     }
                 }
             }
         }
+
 
 		internal static void RuleMatrixOnGUI(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
 		{
@@ -284,31 +324,38 @@ namespace UnityEditor
 
 		internal static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
 		{
-			
-            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
-            {
-                float padding = rect.height;
-                int seq = 0;
-                for (int i = 0; i < tilingRule.m_Sprites.Length; i++)
-                {
-                    if (3 == i) break; //최대 3개까지만 출력한다
 
-                    //거꾸로 출력하여 보기 편하게 한다 
-                    seq = tilingRule.m_Sprites.Length - 1 - i;
-                    tilingRule.m_Sprites[seq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + padding * i, rect.height, rect.height), tilingRule.m_Sprites[seq], typeof(Sprite), false) as Sprite;
-                }
-            }else 
+            float HEIGHT = rect.height / 1.2f;
+            float PADDING = HEIGHT;
+            //출력할 자리가 없다. ... 
+            //if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
+            //{
+                
+            //    int seq = 0;
+            //    for (int i = 0; i < tilingRule.m_Sprites.Length; i++)
+            //    {
+            //        if (3 == i) break; //최대 3개까지만 출력한다
+
+            //        //거꾸로 출력하여 보기 편하게 한다 
+            //        seq = tilingRule.m_Sprites.Length - 1 - i;
+            //        tilingRule.m_Sprites[seq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + PADDING * i, HEIGHT, HEIGHT), tilingRule.m_Sprites[seq], typeof(Sprite), false) as Sprite;
+            //    }
+            //}else 
             {
-                tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
+                tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, HEIGHT, HEIGHT), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
             }
 
 
 		}
 
-		internal static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
+		internal static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule , int index)
 		{
 			float y = rect.yMin;
 			EditorGUI.BeginChangeCheck();
+            //GUI.Label(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, k_LabelWidth, k_SingleLineHeight), index.ToString("00"));
+            string newID = EditorGUI.DelayedTextField(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, 20f, k_SingleLineHeight), tilingRule.m_ID);
+            tilingRule.m_ID = newID.Substring(0,Mathf.Min(2, newID.Length)); //입력한 글자를 2글자로 제한한다 
+
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
             tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), true);
             y += k_ObjectFieldLineHeight;

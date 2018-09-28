@@ -117,8 +117,10 @@ namespace UnityEngine
 		[Serializable]
 		public class TilingRule
 		{
+            public string m_ID; //고유 식별값 , 사용자가 인스펙터상에서 직접 지정한다
 			public int[] m_Neighbors;
             public int[] m_Neighbors_Length; //기본거리 1 , 이웃한 타일 검사시 중앙에서 n칸 거리까지 검사한다
+            public string[] m_Neighbors_ID; //이웃한 객체의 아이디를 나타낸다
 			public Sprite[] m_Sprites;
 			public GameObject m_GameObject;
             public float m_AnimationSpeed;
@@ -130,9 +132,11 @@ namespace UnityEngine
 
 			public TilingRule()
 			{
+                m_ID = "00";
 				m_Output = OutputSprite.Single;
 				m_Neighbors = new int[NeighborCount];
                 m_Neighbors_Length = new int[NeighborCount];
+                m_Neighbors_ID = new string[NeighborCount];
 				m_Sprites = new Sprite[1];
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;
@@ -143,6 +147,7 @@ namespace UnityEngine
                 {
                     m_Neighbors[i] = Neighbor.DontCare;
                     m_Neighbors_Length[i] = 1; //기본거리 1
+                    m_Neighbors_ID[i] = string.Empty; //기본값 공백
                 }
 					
 			}
@@ -167,6 +172,7 @@ namespace UnityEngine
             public Sprite sprite = null;
             public int max_size = 0; //예약한 전체 스프라이트배열 크기 
             public Matrix4x4 transform = Matrix4x4.identity;
+            public TilingRule tilingRule = null;
 
             public void Init()
             {
@@ -175,6 +181,7 @@ namespace UnityEngine
                 sprite = null;
                 max_size = 0;
                 transform = Matrix4x4.identity;
+                tilingRule = null;
             }
         }
 
@@ -198,7 +205,7 @@ namespace UnityEngine
             }
 
 
-            public void SetMultiData(Vector3Int rootPos, ITilemap tilemap, Sprite[] multi_sprites , Matrix4x4 transform)
+            public void SetMultiData(Vector3Int rootPos, ITilemap tilemap, TilingRule rule , Matrix4x4 transform)
             {
                 RuleTile ruleTile = null;
                 AppointData newData = null;
@@ -211,24 +218,19 @@ namespace UnityEngine
                     return;
                 }
 
-                ////** 
-                //AppointData getData = null;
-                //if (true == this.TryGetValue(rootPos, out getData))
-                //{
-                //    return;
-                //}
 
-                for (int i = 0; i < multi_sprites.Length; i++)
+                for (int i = 0; i < rule.m_Sprites.Length; i++)
                 {
 
-                    newPos.y = rootPos.y + 1 * i;
+                    newPos.y = rootPos.y + 1 * i; //위로 자라는 방식
 
                     newData = new AppointData();
                     newData.root_pos = rootPos;
-                    newData.sprite = multi_sprites[i];
+                    newData.sprite = rule.m_Sprites[i];
                     newData.activeMultiTile = true;
-                    newData.max_size = multi_sprites.Length;
+                    newData.max_size = rule.m_Sprites.Length;
                     newData.transform = transform;
+                    newData.tilingRule = rule;
 
                     AddOrUpdate(newPos, newData);
                     //DebugWide.LogBlue(newPos + "  " + rootPos +  "  "  + newData.sprite.name); //chamto test
@@ -271,22 +273,11 @@ namespace UnityEngine
                 {
                     newPos.y = rootPos.y + 1 * i;
 
-                    //ruleTile = tilemap.GetTile<RuleTile>(newPos);
-                    //if (null == ruleTile)
-                    //{
-                    //    //처리할 데이터 없음 
-                    //    continue;
-                    //}
-
-
                     if (false == this.TryGetValue(newPos, out getData))
                     {
                         //처리할 데이터 없음 
                         continue;
                     }
-
-                    //if (false == getData.activeMultiTile)
-                        //return;
 
                     getData.Init();
 
@@ -295,7 +286,7 @@ namespace UnityEngine
             }
 
             /// <summary>
-            /// 루트위치가 활정중인지 알려준다 
+            /// 루트위치가 활성중인지 알려준다 
             /// </summary>
             public bool IsActive_Root(Vector3Int childPos , ITilemap tilemap)
             {
@@ -355,6 +346,39 @@ namespace UnityEngine
         //========================================================================
         //========================================================================
 
+        public class RulePositionMap : Dictionary<Vector3Int, TilingRule>
+        {
+            public void AddOrUpdate(Vector3Int position, TilingRule data)
+            {
+                TilingRule getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    this.Add(position, data);
+                }
+                this[position] = data;
+            }
+
+            public string GetID(Vector3Int position)
+            {
+                TilingRule getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return string.Empty;
+                }
+
+                if(null == getData)
+                    return string.Empty;
+                
+                return getData.m_ID;
+            }
+
+        }
+
+        public RulePositionMap _rulePositionMap = new RulePositionMap();
+
+        //========================================================================
+        //========================================================================
+
         public override bool StartUp(Vector3Int location, ITilemap tilemap, GameObject instantiateedGameObject)
         {
             if (instantiateedGameObject != null)
@@ -385,11 +409,14 @@ namespace UnityEngine
 			tileData.flags = TileFlags.LockTransform;
 			tileData.transform = iden;
 
+            //** 현재 위치에 멀티타일 루트설정이 있으면 해제한다
             if(_appointDataMap.IsRoot(position))
             {
-                //현재 위치에 멀티타일 루트설정이 있으면 해제한다
                 _appointDataMap.ResetAll(position, tilemap);
             }
+
+            //** 기록 초기화 
+            _rulePositionMap.AddOrUpdate(position, null); 
 
 			foreach (TilingRule rule in m_TilingRules)
 			{
@@ -414,7 +441,7 @@ namespace UnityEngine
                                 }
 
                                 //루트 멀티타일 설정을 한다 
-                                _appointDataMap.SetMultiData(position, tilemap, rule.m_Sprites , transform);
+                                _appointDataMap.SetMultiData(position, tilemap, rule , transform);
                                 //DebugWide.LogBlue(_appoint_sprite); //chamto test
 
                             }
@@ -435,6 +462,10 @@ namespace UnityEngine
 
                     // Converts the tile's rotation matrix to a quaternion to be used by the instantiated Game Object
                     m_GameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
+
+                    //** 어떤 규칙이 어느 위치로 들어갔는지 기록 
+                    _rulePositionMap.AddOrUpdate(position, rule); 
+
                     break;
 				}
 
@@ -450,7 +481,11 @@ namespace UnityEngine
                 tileData.sprite = _appointDataMap[position].sprite;
                 tileData.transform = _appointDataMap[position].transform;
 
-                //DebugWide.LogBlue(_appointDataMap[position].sprite.name + "   " + position);
+                //** 어떤 규칙이 어느 위치로 들어갔는지 기록 
+                //멀티설정에 적용되는 타일까지 기록을 하면 ID비교 검사시 겹치는 규칙이 많아지게 된다. 
+                //!! 멀티설정 루트 타일 외에는 기록하지 않는다 
+                //_rulePositionMap.AddOrUpdate(position, _appointDataMap[position].tilingRule);
+
             }else
             {
                 if(true == _appointDataMap.IsActive_Child(position))
@@ -593,6 +628,10 @@ namespace UnityEngine
 			return true;
 		}
 
+
+        //============================================================================================================================
+        //============================================================================================================================
+
         public bool RuleMatchesFull_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, ref Matrix4x4 transform)
         {
             // Check rule against rotations of 0, 90, 180, 270
@@ -640,6 +679,7 @@ namespace UnityEngine
             int seq = 0;
             TileBase tile = null;
             TileBase[] neighboringTiles = new TileBase[NeighborCount];
+            string[] neighbors_GetID = new string[NeighborCount]; 
             for (int y = 1; y >= -1; y--)
             {
                 for (int x = -1; x <= 1; x++)
@@ -650,32 +690,70 @@ namespace UnityEngine
                         Vector3Int tilePosition = new Vector3Int(position.x + x * add_len, position.y + y * add_len, position.z);
                         tile = tilemap.GetTile(tilePosition);
                         neighboringTiles[seq] = tile;
+
+                        //주변 아이디 수집 
+                        neighbors_GetID[seq] = _rulePositionMap.GetID(tilePosition);
+
                         seq++;
                     }
                 }
             }
 
-            int index = -1;
+            int trsIndex = -1;
             for (int i = 0; i < NeighborCount; ++i)
             {
                 if (0 < angle)
                 {
-                    index = GetRotatedIndex(i, angle);    
+                    trsIndex = GetRotatedIndex(i, angle);    
                 }else
                 {
-                    index = GetMirroredIndex(i, mirrorX, mirrorY);    
+                    trsIndex = GetMirroredIndex(i, mirrorX, mirrorY);    
                 }
 
 
-                tile = neighboringTiles[index];
+
+                tile = neighboringTiles[trsIndex];
                 if (!RuleMatch(rule.m_Neighbors[i], tile))
                 {
                     return false;
                 }
-            }
+
+
+
+                //** 공백 아이디 아닌 것만 검사한다 
+                if(string.Empty != rule.m_Neighbors_ID[i])
+                {
+                    switch (rule.m_Neighbors[i])
+                    {
+                        case TilingRule.Neighbor.DontCare:
+                        case TilingRule.Neighbor.This:
+                            {
+                                ////** 주변설정ID값과 다른지 검사 
+                                if (neighbors_GetID[trsIndex] != rule.m_Neighbors_ID[i])
+                                {
+                                    return false;
+                                }
+                            }
+                            break;
+                        case TilingRule.Neighbor.NotThis:
+                            {
+                                ////** 주변설정ID값과 같은지 검사 
+                                if (neighbors_GetID[trsIndex] == rule.m_Neighbors_ID[i])
+                                {
+                                    return false;
+                                }
+                            }
+                            break;
+                    }//end switch
+                }//end if
+            }//end for
 
             return true;
 		}
+
+        //============================================================================================================================
+        //============================================================================================================================
+
 
 		private void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
 		{
