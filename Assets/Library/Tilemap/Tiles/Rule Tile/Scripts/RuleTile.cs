@@ -41,7 +41,7 @@ namespace UnityEngine
 					s_Arrows[6] = Base64ToTexture(s_Arrow6);
 					s_Arrows[7] = Base64ToTexture(s_Arrow7);
 					s_Arrows[8] = Base64ToTexture(s_Arrow8);
-					s_Arrows[9] = Base64ToTexture(s_XIconString);
+                    s_Arrows[9] = Base64ToTexture(s_XIconString);
 				}
 				return s_Arrows;
 			}
@@ -88,6 +88,9 @@ namespace UnityEngine
 
 		public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
+        //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
+        //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
+        //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
 		private static readonly int[,] RotatedOrMirroredIndexes =
 		{
 			{2, 4, 7, 1, 6, 0, 3, 5}, // 90
@@ -115,6 +118,7 @@ namespace UnityEngine
 		public class TilingRule
 		{
 			public int[] m_Neighbors;
+            public int[] m_Neighbors_Length; //기본거리 1 , 이웃한 타일 검사시 중앙에서 n칸 거리까지 검사한다
 			public Sprite[] m_Sprites;
 			public GameObject m_GameObject;
             public float m_AnimationSpeed;
@@ -128,6 +132,7 @@ namespace UnityEngine
 			{
 				m_Output = OutputSprite.Single;
 				m_Neighbors = new int[NeighborCount];
+                m_Neighbors_Length = new int[NeighborCount];
 				m_Sprites = new Sprite[1];
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;
@@ -135,7 +140,11 @@ namespace UnityEngine
 				m_ColliderType = Tile.ColliderType.Sprite;
 
 				for (int i = 0; i < m_Neighbors.Length; i++)
-					m_Neighbors[i] = Neighbor.DontCare;
+                {
+                    m_Neighbors[i] = Neighbor.DontCare;
+                    m_Neighbors_Length[i] = 1; //기본거리 1
+                }
+					
 			}
 
 			public class Neighbor
@@ -366,8 +375,8 @@ namespace UnityEngine
 
         public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData)
 		{
-			TileBase[] neighboringTiles = null;
-			GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
+			//TileBase[] neighboringTiles = null;
+			//GetMatchingNeighboringTiles(tilemap, position, ref neighboringTiles);
 			var iden = Matrix4x4.identity;
 
 			tileData.sprite = m_DefaultSprite;
@@ -378,14 +387,15 @@ namespace UnityEngine
 
             if(_appointDataMap.IsRoot(position))
             {
-                //현재 멀티타일 설정이 있으면 해제한다 
+                //현재 위치에 멀티타일 루트설정이 있으면 해제한다
                 _appointDataMap.ResetAll(position, tilemap);
             }
 
 			foreach (TilingRule rule in m_TilingRules)
 			{
 				Matrix4x4 transform = iden;
-				if (RuleMatches(rule, ref neighboringTiles, ref transform))
+				//if (RuleMatches(rule, ref neighboringTiles, ref transform))
+                if (RuleMatchesFull_ToNeighborLength(tilemap,position,rule,ref transform))
 				{
 					switch (rule.m_Output)
 					{
@@ -396,9 +406,10 @@ namespace UnityEngine
                             break;
                         case TilingRule.OutputSprite.Multi:
                             {
-                                //다른 루트 설정이 있으면 추가하지 않는다 
+                                //현재 위치를 포함하는 활성화된 루트설정이 있는 경우 
                                 if (true == _appointDataMap.IsActive_Root(position, tilemap))
                                 {
+                                    //설정을 안한다 
                                     break;
                                 }
 
@@ -582,6 +593,90 @@ namespace UnityEngine
 			return true;
 		}
 
+        public bool RuleMatchesFull_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, ref Matrix4x4 transform)
+        {
+            // Check rule against rotations of 0, 90, 180, 270
+            for (int angle = 0; angle <= (rule.m_RuleTransform == TilingRule.Transform.Rotated ? 270 : 0); angle += 90)
+            {
+                if (RuleMatches_ToNeighborLength(tilemap, position, rule, angle, false, false))
+                {
+                    transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
+                    return true;
+                }
+            }
+
+            // Check rule against x-axis mirror
+            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, true, false))
+            {
+                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
+                return true;
+            }
+
+            // Check rule against y-axis mirror
+            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, false, true))
+            {
+                transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool RuleMatches_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, int angle, bool mirrorX, bool mirrorY)
+		{
+
+            //각도모드와 미러모드로 각각 동작한다
+            //둘 동시에 작동못함 
+            if(0 < angle )
+            {
+                mirrorX = false;
+                mirrorY = false;
+            }
+
+
+            //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
+            //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
+            //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
+            int seq = 0;
+            TileBase tile = null;
+            TileBase[] neighboringTiles = new TileBase[NeighborCount];
+            for (int y = 1; y >= -1; y--)
+            {
+                for (int x = -1; x <= 1; x++)
+                {
+                    if (x != 0 || y != 0)
+                    {
+                        int add_len = rule.m_Neighbors_Length[seq];
+                        Vector3Int tilePosition = new Vector3Int(position.x + x * add_len, position.y + y * add_len, position.z);
+                        tile = tilemap.GetTile(tilePosition);
+                        neighboringTiles[seq] = tile;
+                        seq++;
+                    }
+                }
+            }
+
+            int index = -1;
+            for (int i = 0; i < NeighborCount; ++i)
+            {
+                if (0 < angle)
+                {
+                    index = GetRotatedIndex(i, angle);    
+                }else
+                {
+                    index = GetMirroredIndex(i, mirrorX, mirrorY);    
+                }
+
+
+                tile = neighboringTiles[index];
+                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+		}
+
 		private void GetMatchingNeighboringTiles(ITilemap tilemap, Vector3Int position, ref TileBase[] neighboringTiles)
 		{
 			if (neighboringTiles != null)
@@ -590,6 +685,9 @@ namespace UnityEngine
 			if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < NeighborCount)
 				m_CachedNeighboringTiles = new TileBase[NeighborCount];
 
+            //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
+            //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
+            //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
 			int index = 0;
 			for (int y = 1; y >= -1; y--)
 			{
@@ -597,8 +695,10 @@ namespace UnityEngine
 				{
 					if (x != 0 || y != 0)
 					{
-						Vector3Int tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
-						m_CachedNeighboringTiles[index++] = tilemap.GetTile(tilePosition);
+                        Vector3Int tilePosition = new Vector3Int(position.x + x, position.y + y, position.z);
+						m_CachedNeighboringTiles[index] = tilemap.GetTile(tilePosition);
+
+                        index++;
 					}
 				}
 			}

@@ -93,11 +93,18 @@ namespace UnityEditor
 			
 			Rect inspectorRect = new Rect(rect.xMin, yPos, rect.width - matrixWidth * 2f - 20f, height);
 			Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
+            Rect matrixRect2 = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos + k_DefaultElementHeight + 5f , matrixWidth, k_DefaultElementHeight);
 			Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
 			EditorGUI.BeginChangeCheck();
 			RuleInspectorOnGUI(inspectorRect, rule);
 			RuleMatrixOnGUI(tile, matrixRect, rule);
+
+            if (rule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
+            {
+                RuleMatrixOnGUI_InputLength(tile, matrixRect2, rule); //chamto test    
+            }
+
 			SpriteOnGUI(spriteRect, rule);
 			if (EditorGUI.EndChangeCheck())
 				SaveTile();
@@ -140,6 +147,50 @@ namespace UnityEditor
 			if (m_ReorderableList != null && tile.m_TilingRules != null)
 				m_ReorderableList.DoLayoutList();
 		}
+
+        internal static void RuleMatrixOnGUI_InputLength(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
+        {
+            Handles.color = EditorGUIUtility.isProSkin ? new Color(1f, 1f, 1f, 0.8f) : new Color(0f, 0f, 0f, 0.8f);
+            int index = 0;
+            float w = rect.width / 3f;
+            float h = rect.height / 3f;
+
+            for (int y = 0; y <= 3; y++)
+            {
+                float top = rect.yMin + y * h;
+                Handles.DrawLine(new Vector3(rect.xMin, top), new Vector3(rect.xMax, top));
+            }
+            for (int x = 0; x <= 3; x++)
+            {
+                float left = rect.xMin + x * w;
+                Handles.DrawLine(new Vector3(left, rect.yMin), new Vector3(left, rect.yMax));
+            }
+            Handles.color = Color.white;
+
+            for (int y = 0; y <= 2; y++)
+            {
+                for (int x = 0; x <= 2; x++)
+                {
+                    Rect r = new Rect(rect.xMin + x * w, rect.yMin + y * h, w - 1, h - 1);
+                    if (x != 1 || y != 1)
+                    {
+                        //8방향
+                        EditorGUI.BeginChangeCheck();
+                        int newLength = EditorGUI.DelayedIntField(r, tilingRule.m_Neighbors_Length[index]);
+                        if (EditorGUI.EndChangeCheck())
+                        {
+                            tilingRule.m_Neighbors_Length[index] = newLength;
+                        }
+
+                        index++;
+                    }
+                    else
+                    {
+                       //중앙 
+                    }
+                }
+            }
+        }
 
 		internal static void RuleMatrixOnGUI(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
 		{
@@ -233,17 +284,24 @@ namespace UnityEditor
 
 		internal static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
 		{
-			tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof (Sprite), false) as Sprite;
-
-            if(tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
+			
+            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
             {
-                //최대 3개까지 스프라이트 이미지 출력 
                 float padding = rect.height;
-                if (2 <= tilingRule.m_Sprites.Length)
-                    tilingRule.m_Sprites[1] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + padding * 1, rect.height, rect.height), tilingRule.m_Sprites[1], typeof(Sprite), false) as Sprite;
-                if (3 <= tilingRule.m_Sprites.Length)
-                    tilingRule.m_Sprites[2] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + padding * 2, rect.height, rect.height), tilingRule.m_Sprites[2], typeof(Sprite), false) as Sprite;    
+                int seq = 0;
+                for (int i = 0; i < tilingRule.m_Sprites.Length; i++)
+                {
+                    if (3 == i) break; //최대 3개까지만 출력한다
+
+                    //거꾸로 출력하여 보기 편하게 한다 
+                    seq = tilingRule.m_Sprites.Length - 1 - i;
+                    tilingRule.m_Sprites[seq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + padding * i, rect.height, rect.height), tilingRule.m_Sprites[seq], typeof(Sprite), false) as Sprite;
+                }
+            }else 
+            {
+                tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, rect.height, rect.height), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
             }
+
 
 		}
 
