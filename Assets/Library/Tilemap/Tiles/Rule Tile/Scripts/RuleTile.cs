@@ -390,7 +390,7 @@ namespace UnityEngine
             if(null == _appointDataMap._DST_TileMap)
             {
                 //todo : fixe me : 임시처리 
-                _appointDataMap._DST_TileMap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+                //_appointDataMap._DST_TileMap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
             }
 
             return true;
