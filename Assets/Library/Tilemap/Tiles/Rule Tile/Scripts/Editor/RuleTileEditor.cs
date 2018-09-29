@@ -70,6 +70,7 @@ namespace UnityEditor
 				switch (tile.m_TilingRules[index].m_Output)
 				{
                     case RuleTile.TilingRule.OutputSprite.Random_Multi:
+                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 5) + k_PaddingBetweenRules;
 					case RuleTile.TilingRule.OutputSprite.Random:
 						return k_DefaultElementHeight + k_SingleLineHeight*(tile.m_TilingRules[index].m_Sprites.Length + 4) + k_PaddingBetweenRules;
 					case RuleTile.TilingRule.OutputSprite.Animation:
@@ -77,7 +78,7 @@ namespace UnityEditor
 
                         //멀티모드일 경우 추가
                     case RuleTile.TilingRule.OutputSprite.Multi:
-                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 2) + k_PaddingBetweenRules;
+                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
 				}
 			}
             return k_DefaultElementHeight + k_PaddingBetweenRules;
@@ -96,7 +97,7 @@ namespace UnityEditor
 			Rect matrixRect = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos, matrixWidth, k_DefaultElementHeight);
             Rect matrixRect_Length = new Rect(rect.xMax - matrixWidth * 2f - 10f, yPos + k_DefaultElementHeight + 5f, matrixWidth, k_DefaultElementHeight);
             Rect matrixRect_RuleID = new Rect(rect.xMax - matrixWidth * 2f + 40f, yPos + k_DefaultElementHeight + 5f , matrixWidth, k_DefaultElementHeight);
-			Rect spriteRect = new Rect(rect.xMax - matrixWidth + 7f, yPos, matrixWidth, k_DefaultElementHeight);
+			Rect spriteRect = new Rect(rect.xMax - matrixWidth, yPos, matrixWidth, k_DefaultElementHeight);
 
 			EditorGUI.BeginChangeCheck();
 			RuleInspectorOnGUI(inspectorRect, rule);
@@ -326,22 +327,40 @@ namespace UnityEditor
 		internal static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
 		{
 
-            float HEIGHT = rect.height / 1.2f;
-            float PADDING = HEIGHT;
-            //출력할 자리가 없다. ... 
-            //if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
-            //{
-                
-            //    int seq = 0;
-            //    for (int i = 0; i < tilingRule.m_Sprites.Length; i++)
-            //    {
-            //        if (3 == i) break; //최대 3개까지만 출력한다
+            float HEIGHT = rect.height;// / 1.2f;
 
-            //        //거꾸로 출력하여 보기 편하게 한다 
-            //        seq = tilingRule.m_Sprites.Length - 1 - i;
-            //        tilingRule.m_Sprites[seq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + PADDING * i, HEIGHT, HEIGHT), tilingRule.m_Sprites[seq], typeof(Sprite), false) as Sprite;
-            //    }
-            //}else 
+            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random_Multi)
+            {
+
+                //(0 1) (2 3) (4 5)
+                //(1 0) (3 2) (5 4)
+                //(1 1) (5 5) (9 9) 
+
+                int revSeq = 0;
+                float MULTI_PADDING = 0f;
+                for (int seq = 0; seq < tilingRule.m_Sprites.Length; seq++)
+                {
+                    if (tilingRule.m_MultiLength * 2 == seq) break; //최대 3개까지만 출력한다
+
+                    //완전 뒤에서 부터 보기
+                    //revSeq = tilingRule.m_Sprites.Length - 1 - seq; 
+
+                    //역수를 만들어 뺀다
+                    int multiIndex_1 = (int)(seq % tilingRule.m_MultiLength); // 0 1 0 1 0 1 .... 
+                    multiIndex_1 = (tilingRule.m_MultiLength-1) - (multiIndex_1); //1 0 1 0 1 0 ....
+                    int multiIndex_2 = (int)(seq / tilingRule.m_MultiLength); // 0 0 1 1 2 2 .... 
+                    revSeq = tilingRule.m_MultiLength * multiIndex_2 + multiIndex_1;
+                    //DebugWide.LogBlue(multiIndex_1 + "  " + multiIndex_2 + "  " + revSeq + "  " + seq);
+
+                    tilingRule.m_Sprites[revSeq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + MULTI_PADDING, HEIGHT, HEIGHT), tilingRule.m_Sprites[revSeq], typeof(Sprite), false) as Sprite;
+
+                    MULTI_PADDING += HEIGHT;
+                    //멀티타일 간의 간격을 띈다
+                    if (1 != tilingRule.m_MultiLength && tilingRule.m_MultiLength - 1 == seq % tilingRule.m_MultiLength) 
+                        MULTI_PADDING += 5;
+                    
+                }
+            }else 
             {
                 tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, HEIGHT, HEIGHT), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
             }
@@ -399,21 +418,40 @@ namespace UnityEditor
             //멀티모드에서도 여러개의 타일을 넣을수 있게 변경한다 
 			if (tilingRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)
 			{
-                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Multi Length");
-                tilingRule.m_MultiLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MultiLength);
-                y += k_SingleLineHeight;
+                if(tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Multi ||
+                   tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random_Multi )
+                {
+                    GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Multi Length");
+                    tilingRule.m_MultiLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MultiLength);
+                    y += k_SingleLineHeight;    
+                }
+
 
 				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
 				EditorGUI.BeginChangeCheck();
-				int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length);
+                int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length / tilingRule.m_MultiLength);
 				if (EditorGUI.EndChangeCheck())
-					Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength, 1));
+                {
+                    Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength * tilingRule.m_MultiLength, 1));
+                }
+					
 				y += k_SingleLineHeight;
 
+                int seq = 0;
 				for (int i = 0; i < tilingRule.m_Sprites.Length; i++)
 				{
+                    seq = i % tilingRule.m_MultiLength;
+
+                    //멀티타일 길이가 1이면 일반타일이다 
+                    if (1 == tilingRule.m_MultiLength)
+                        seq = i;
+
+                    GUI.Label(new Rect(rect.xMin + k_LabelWidth - 25, y, 20, 20), seq.ToString(" 0"));
 					tilingRule.m_Sprites[i] = EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites[i], typeof(Sprite), false) as Sprite;
 					y += k_SingleLineHeight;
+
+                    //멀티타일 간의 간격을 띈다
+                    if (1 != tilingRule.m_MultiLength && tilingRule.m_MultiLength-1 == seq) y += 5;
 				}
 			}
 		}
