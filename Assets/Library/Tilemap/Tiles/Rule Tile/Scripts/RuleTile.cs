@@ -122,6 +122,7 @@ namespace UnityEngine
             public int[] m_Neighbors_Length; //기본거리 1 , 이웃한 타일 검사시 중앙에서 n칸 거리까지 검사한다
             public string[] m_Neighbors_ID; //이웃한 객체의 아이디를 나타낸다
 			public Sprite[] m_Sprites;
+            public int m_MultiLength; //멀티모드에서 스프라이트를 몇개 단위로 읽어 들일지 설정
 			public GameObject m_GameObject;
             public float m_AnimationSpeed;
 			public float m_PerlinScale;
@@ -138,6 +139,7 @@ namespace UnityEngine
                 m_Neighbors_Length = new int[NeighborCount];
                 m_Neighbors_ID = new string[NeighborCount];
 				m_Sprites = new Sprite[1];
+                m_MultiLength = 1;
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;
 				m_PerlinScale = 0.5f;
@@ -159,7 +161,7 @@ namespace UnityEngine
 				public const int NotThis = 2;
 			}
 			public enum Transform { Fixed, Rotated, MirrorX, MirrorY }
-			public enum OutputSprite { Single, Multi, Random, Animation }
+            public enum OutputSprite { Single, Multi, Random, Random_Multi, Animation }
 		}
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
@@ -205,7 +207,7 @@ namespace UnityEngine
             }
 
 
-            public void SetMultiData(Vector3Int rootPos, ITilemap tilemap, TilingRule rule , Matrix4x4 transform)
+            public void SetMultiData(Vector3Int rootPos, ITilemap tilemap, TilingRule rule , Matrix4x4 transform , int multiIndex)
             {
                 RuleTile ruleTile = null;
                 AppointData newData = null;
@@ -218,17 +220,27 @@ namespace UnityEngine
                     return;
                 }
 
+                //X{ 0 1 2 3 4 5 }
+                //3개씩 읽을시 : x1{ 0 1 2 } x2{ 3 4 5 } 
+                // X의 인덱스 % 3
 
-                for (int i = 0; i < rule.m_Sprites.Length; i++)
+
+                int MULTI_LENGTH = rule.m_MultiLength;
+                int MAX_MULTI_LENGTH = rule.m_Sprites.Length / MULTI_LENGTH;
+
+                Assertions.Assert.IsTrue(0 <= multiIndex && multiIndex < MAX_MULTI_LENGTH, multiIndex + "  " + MAX_MULTI_LENGTH +" 요청된 멀티인덱스값이 범위를 벗어난다");
+
+
+                for (int i = 0; i < MULTI_LENGTH; i++)
                 {
 
                     newPos.y = rootPos.y + 1 * i; //위로 자라는 방식
 
                     newData = new AppointData();
                     newData.root_pos = rootPos;
-                    newData.sprite = rule.m_Sprites[i];
+                    newData.sprite = rule.m_Sprites[i + multiIndex * MULTI_LENGTH];
                     newData.activeMultiTile = true;
-                    newData.max_size = rule.m_Sprites.Length;
+                    newData.max_size = MULTI_LENGTH;
                     newData.transform = transform;
                     newData.tilingRule = rule;
 
@@ -431,6 +443,7 @@ namespace UnityEngine
                                 tileData.sprite = rule.m_Sprites[0];
                             }
                             break;
+                        case TilingRule.OutputSprite.Random_Multi:
                         case TilingRule.OutputSprite.Multi:
                             {
                                 //현재 위치를 포함하는 활성화된 루트설정이 있는 경우 
@@ -440,21 +453,35 @@ namespace UnityEngine
                                     break;
                                 }
 
-                                //루트 멀티타일 설정을 한다 
-                                _appointDataMap.SetMultiData(position, tilemap, rule , transform);
-                                //DebugWide.LogBlue(_appoint_sprite); //chamto test
 
+                                //** 랜덤멀티 설정을 한다 
+                                int multiIndex = 0; //기본 멀티모드에서는 0으로 동
+                                int MAX_MULTI_LENGTH = rule.m_Sprites.Length / rule.m_MultiLength;
+                                if(TilingRule.OutputSprite.Random_Multi == rule.m_Output)
+                                {
+                                    multiIndex = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * MAX_MULTI_LENGTH), 0, MAX_MULTI_LENGTH - 1);
+                                    //tileData.sprite = rule.m_Sprites[index]; //todo - 
+                                    if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
+                                        transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
+                                }
+
+                                //** 루트 멀티타일 설정을 한다 
+                                _appointDataMap.SetMultiData(position, tilemap, rule, transform , multiIndex);
+                                //DebugWide.LogBlue(MAX_MULTI_LENGTH + "  " + multiIndex); //chamto test
                             }
                             break;
 						case TilingRule.OutputSprite.Animation:
 							tileData.sprite = rule.m_Sprites[0];
 							break;
 						case TilingRule.OutputSprite.Random:
-							int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
-							tileData.sprite = rule.m_Sprites[index];
-							if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
-								transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);
-							break;
+                            {
+                                int index = Mathf.Clamp(Mathf.FloorToInt(GetPerlinValue(position, rule.m_PerlinScale, 100000f) * rule.m_Sprites.Length), 0, rule.m_Sprites.Length - 1);
+                                tileData.sprite = rule.m_Sprites[index];
+                                if (rule.m_RandomTransform != TilingRule.Transform.Fixed)
+                                    transform = ApplyRandomTransform(rule.m_RandomTransform, transform, rule.m_PerlinScale, position);    
+                            }
+                            break;
+                        
 					}
                     tileData.transform = transform;
 					tileData.gameObject = rule.m_GameObject;

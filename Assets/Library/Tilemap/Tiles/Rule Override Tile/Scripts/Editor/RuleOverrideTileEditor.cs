@@ -168,7 +168,7 @@ namespace UnityEditor
 				Rect spriteRect = new Rect(rect.xMax - matrixWidth - 5f, yPos, matrixWidth, k_DefaultElementHeight);
 
 				if (!isDefault)
-					RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule, 0); //임시로 index값을 0으로 넣어둠 - chamto 
+					RuleTileEditor.RuleInspectorOnGUI(inspectorRect, originalRule);
 				else
 					RuleOriginalDefaultInspectorOnGUI(inspectorRect, originalRule);
 				RuleTileEditor.RuleMatrixOnGUI(overrideTile.m_Tile, matrixRect, originalRule);

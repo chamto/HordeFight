@@ -69,10 +69,11 @@ namespace UnityEditor
 			{
 				switch (tile.m_TilingRules[index].m_Output)
 				{
+                    case RuleTile.TilingRule.OutputSprite.Random_Multi:
 					case RuleTile.TilingRule.OutputSprite.Random:
-						return k_DefaultElementHeight + k_SingleLineHeight*(tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
+						return k_DefaultElementHeight + k_SingleLineHeight*(tile.m_TilingRules[index].m_Sprites.Length + 4) + k_PaddingBetweenRules;
 					case RuleTile.TilingRule.OutputSprite.Animation:
-						return k_DefaultElementHeight + k_SingleLineHeight*(tile.m_TilingRules[index].m_Sprites.Length + 2) + k_PaddingBetweenRules;
+						return k_DefaultElementHeight + k_SingleLineHeight*(tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
 
                         //멀티모드일 경우 추가
                     case RuleTile.TilingRule.OutputSprite.Multi:
@@ -98,7 +99,7 @@ namespace UnityEditor
 			Rect spriteRect = new Rect(rect.xMax - matrixWidth + 7f, yPos, matrixWidth, k_DefaultElementHeight);
 
 			EditorGUI.BeginChangeCheck();
-			RuleInspectorOnGUI(inspectorRect, rule , index);
+			RuleInspectorOnGUI(inspectorRect, rule);
 			RuleMatrixOnGUI(tile, matrixRect, rule);
 
             //멀티모드에서만 보여지게 한다 - 보여지는 것과 상관없이 다른모드에도 영향을 준다
@@ -348,7 +349,7 @@ namespace UnityEditor
 
 		}
 
-		internal static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule , int index)
+		internal static void RuleInspectorOnGUI(Rect rect, RuleTile.TilingRule tilingRule )
 		{
 			float y = rect.yMin;
 			EditorGUI.BeginChangeCheck();
@@ -370,27 +371,38 @@ namespace UnityEditor
 			y += k_SingleLineHeight;
             
 
+            switch(tilingRule.m_Output)
+            {
+                case RuleTile.TilingRule.OutputSprite.Animation:
+                    {
+                        GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Speed");
+                        tilingRule.m_AnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_AnimationSpeed);
+                        y += k_SingleLineHeight;
+                    }
+                    break;
+                case RuleTile.TilingRule.OutputSprite.Random_Multi:
+                case RuleTile.TilingRule.OutputSprite.Random:
+                    {
+                        GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Noise");
+                        tilingRule.m_PerlinScale = EditorGUI.Slider(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_PerlinScale, 0.001f, 0.999f);
+                        y += k_SingleLineHeight;
 
-            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Animation)
-			{
-				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Speed");
-				tilingRule.m_AnimationSpeed = EditorGUI.FloatField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_AnimationSpeed);
-				y += k_SingleLineHeight;
-			}
-			if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random)
-			{
-				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Noise");
-				tilingRule.m_PerlinScale = EditorGUI.Slider(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_PerlinScale, 0.001f, 0.999f);
-				y += k_SingleLineHeight;
+                        GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Shuffle");
+                        tilingRule.m_RandomTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RandomTransform);
+                        y += k_SingleLineHeight;
+                    }
+                    break;
+                
+            }
 
-				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Shuffle");
-				tilingRule.m_RandomTransform = (RuleTile.TilingRule.Transform)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_RandomTransform);
-				y += k_SingleLineHeight;
-			}
 
             //멀티모드에서도 여러개의 타일을 넣을수 있게 변경한다 
 			if (tilingRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)
 			{
+                GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Multi Length");
+                tilingRule.m_MultiLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MultiLength);
+                y += k_SingleLineHeight;
+
 				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
 				EditorGUI.BeginChangeCheck();
 				int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length);
