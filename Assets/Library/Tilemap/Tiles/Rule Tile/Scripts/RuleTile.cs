@@ -86,6 +86,21 @@ namespace UnityEngine
 		}
 #endif
 
+
+        //룰타일 간의 이웃검사시 사용할 분류항목  
+        public enum eClassification
+        {
+            None,
+            Dungeon,
+            Dungeon_Structure,
+            Dungeon_Floor,
+
+            Forest,
+
+            Swamp,
+        }
+        public eClassification _classification = eClassification.None;
+
 		public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
         //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
@@ -563,8 +578,6 @@ namespace UnityEngine
 					}
 				}
 
-                //세로로 길게 배치되는 타일 호출
-                //base.RefreshTile(location + new Vector3Int(0, 2, 0), tileMap);
 			}
 			else
 			{
@@ -619,11 +632,34 @@ namespace UnityEngine
 
 		public virtual bool RuleMatch(int neighbor, TileBase tile)
 		{
-			switch (neighbor)
-			{
-				case TilingRule.Neighbor.This: return tile == m_Self;
-				case TilingRule.Neighbor.NotThis: return tile != m_Self;
-			}
+            //switch (neighbor)
+            //{
+            //	case TilingRule.Neighbor.This: return tile == m_Self;
+            //	case TilingRule.Neighbor.NotThis: return tile != m_Self;
+            //}
+
+            RuleTile neighborTile = tile as RuleTile;
+            bool result = false;
+
+
+            if(eClassification.None == this._classification)
+            {
+                //** 분류항목값이 None 일때는 주소값 비교 방식으로 검사한다  
+                result = (tile == m_Self);
+            }else
+            {
+                //** 분류항목값이 있을때는 대분류 비교 방식으로 검사한다 - 같은 분류의 타일들을 함께 섞으며 배치 할수 있게 하기 위한 기능 
+                result = (null != neighborTile) && this._classification == neighborTile._classification;
+            }
+
+            switch (neighbor)
+            {
+              case TilingRule.Neighbor.This:
+                    return result;
+              case TilingRule.Neighbor.NotThis:
+                    return !result;
+            }
+
 			return true;
 		}
 

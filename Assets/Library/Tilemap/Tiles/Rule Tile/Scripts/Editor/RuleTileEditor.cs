@@ -141,6 +141,7 @@ namespace UnityEditor
 			tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
 			tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
+            tile._classification = (RuleTile.eClassification)EditorGUILayout.EnumPopup("Classification", tile._classification); //대분류 추가 
 
 			var baseFields = typeof(RuleTile).GetFields().Select(field => field.Name);
 			var fields = target.GetType().GetFields().Select(field => field.Name).Where(field => !baseFields.Contains(field));
