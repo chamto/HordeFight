@@ -148,7 +148,9 @@ MonoBehaviour:
     - 
     - 
     m_Sprites:
-    - {fileID: 21300000, guid: 51d5890a31de54a3e99a05ca31a4045a, type: 3}
+    - {fileID: 21300000, guid: f571a05d88b7c4b69bc956245faf31ea, type: 3}
+    - {fileID: 21300000, guid: 7bb367101ff484029834744f81325e7c, type: 3}
+    - {fileID: 21300000, guid: 6ec23d14e8cf948148b62b5bcc2fbb56, type: 3}
     - {fileID: 21300000, guid: 7bb367101ff484029834744f81325e7c, type: 3}
     m_MultiLength: 2
     m_GameObject: {fileID: 0}
