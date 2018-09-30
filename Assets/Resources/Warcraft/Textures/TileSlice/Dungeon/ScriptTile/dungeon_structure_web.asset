@@ -103,10 +103,16 @@ MonoBehaviour:
     - {fileID: 21300000, guid: caf03c47b35ec4f489d0d0baa491c33b, type: 3}
     - {fileID: 21300000, guid: cb0792652f63f434b9b33a5bcabbe20a, type: 3}
     - {fileID: 21300000, guid: 7c14658ab5b2d428a8e59c1188e9dbc5, type: 3}
+    - {fileID: 21300000, guid: 7b91c9d28e89b405a9dd27928cd80294, type: 3}
+    - {fileID: 21300000, guid: fa6aeba1cd25f45b78db5d5300a5ee18, type: 3}
+    - {fileID: 21300000, guid: 017c75161a1184b8e9d1e4ddad9e3042, type: 3}
+    - {fileID: 21300000, guid: 12cb4f4bc1c0d49e598d8335ff65e9f2, type: 3}
+    - {fileID: 21300000, guid: 98232b5a4f6d4429f9b15b311b555cc4, type: 3}
+    - {fileID: 21300000, guid: 47f7af579b2a447ffa5d834e19e4e1e5, type: 3}
     m_MultiLength: 3
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
-    m_PerlinScale: 0.508
+    m_PerlinScale: 0.45
     m_RuleTransform: 2
     m_Output: 3
     m_ColliderType: 1
