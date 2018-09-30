@@ -30,9 +30,6 @@
   <ImageHash fileName="forest_01_addPadding" kind="Forest">
     <Info cellPos="(828, 1062)" cellSize="(16, 16)" hash="240585915515020311381179751712925022025150" />
   </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(882, 1062)" cellSize="(16, 16)" hash="130133892027362292002021861647711314163105" />
-  </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(180, 1134)" cellSize="(16, 16)" hash="2385416486861851362492391372292472102180224" />
   </ImageHash>
@@ -185,9 +182,6 @@
   </ImageHash>
   <ImageHash fileName="forest_01_addPadding" kind="Forest">
     <Info cellPos="(126, 1116)" cellSize="(16, 16)" hash="1626515710672152342101142341079722564145168" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(252, 1026)" cellSize="(16, 16)" hash="23911520519923316042809146140202212202334" />
   </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(432, 756)" cellSize="(16, 16)" hash="25031871731552181591874529249131169136175229" />
@@ -510,9 +504,6 @@
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(1044, 1116)" cellSize="(16, 16)" hash="107184128152983158162682362217197160133202" />
   </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(882, 1044)" cellSize="(16, 16)" hash="22616915663261421853648130173642241825737" />
-  </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(792, 1008)" cellSize="(16, 16)" hash="583210187253162461861121192321476519816177" />
   </ImageHash>
@@ -669,12 +660,6 @@
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(360, 1098)" cellSize="(16, 16)" hash="23224279129109197561462713924525125191143196" />
   </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(882, 1080)" cellSize="(16, 16)" hash="14010313586136322411910571825213631155217" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(900, 1080)" cellSize="(16, 16)" hash="7962125932092422122141041674514914121224" />
-  </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(1098, 990)" cellSize="(16, 16)" hash="15745199178172225113219420519410815810073203" />
   </ImageHash>
@@ -820,16 +805,7 @@
     <Info cellPos="(18, 1098)" cellSize="(16, 16)" hash="21220424692066130224223118610425136212171" />
   </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(270, 1116)" cellSize="(16, 16)" hash="82901299923585952242111573015712311315694" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(900, 1098)" cellSize="(16, 16)" hash="199312421424311573466118414238147244141224" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(306, 1116)" cellSize="(16, 16)" hash="135107141392352171341219080241178451712271" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(288, 1098)" cellSize="(16, 16)" hash="1112220111111217310670188129191692501731885" />
   </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(342, 1098)" cellSize="(16, 16)" hash="176138708721010220222617212720012624191181131" />
@@ -848,9 +824,6 @@
   </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(324, 1116)" cellSize="(16, 16)" hash="1201282012021157621422231422129515327130" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(918, 1080)" cellSize="(16, 16)" hash="4912351717515175581713721482156210242255" />
   </ImageHash>
   <ImageHash fileName="forest_03_addPadding" kind="Forest">
     <Info cellPos="(324, 1080)" cellSize="(16, 16)" hash="7561051412482054151501372251416512111632" />
@@ -948,9 +921,6 @@
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(558, 864)" cellSize="(16, 16)" hash="1376820311757195204151524911121821422418179" />
   </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(900, 1116)" cellSize="(16, 16)" hash="1122532372212425512120595817425522821584" />
-  </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(306, 1134)" cellSize="(16, 16)" hash="119812821083208178731512291601647120211190" />
   </ImageHash>
@@ -959,9 +929,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(72, 1026)" cellSize="(16, 16)" hash="122182422953722031294313418519624218935222" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(288, 1116)" cellSize="(16, 16)" hash="43155263200157147474420416920117210150252" />
   </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(900, 936)" cellSize="(16, 16)" hash="13717911923815631269613760236250238212187172" />
@@ -977,9 +944,6 @@
   </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(324, 1134)" cellSize="(16, 16)" hash="2051129216125249220145310861548312164122" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(918, 1098)" cellSize="(16, 16)" hash="852720723161111207238725818424912819410185" />
   </ImageHash>
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(972, 1062)" cellSize="(16, 16)" hash="24810317683191125202416312424717914698110137" />
@@ -1073,9 +1037,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(72, 1044)" cellSize="(16, 16)" hash="89236056371291943723622586153124132182236" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(288, 1134)" cellSize="(16, 16)" hash="207972071711221219171215103155132282724271" />
   </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(342, 1134)" cellSize="(16, 16)" hash="15022110311521533111651707669724918455246" />
@@ -1283,9 +1244,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(198, 162)" cellSize="(16, 16)" hash="941061383017248722032551548813614418024762" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(234, 162)" cellSize="(16, 16)" hash="10117097012815089321247210912319948842" />
   </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(252, 1044)" cellSize="(16, 16)" hash="202155244106942011701048515714417313020262" />
@@ -1515,9 +1473,6 @@
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(414, 936)" cellSize="(16, 16)" hash="1051162312231901712461226923168239178575196" />
   </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(558, 234)" cellSize="(16, 16)" hash="45108582261715791162281571901311533814" />
-  </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(702, 1044)" cellSize="(16, 16)" hash="109186882132104015922722624623523826124249" />
   </ImageHash>
@@ -1530,9 +1485,6 @@
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(1062, 234)" cellSize="(16, 16)" hash="5417977181946116325224468160110241183161213" />
   </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(882, 1062)" cellSize="(16, 16)" hash="114190107204124221181661241522011125213612032" />
-  </ImageHash>
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(594, 828)" cellSize="(16, 16)" hash="2229621071648122166176577514661424574" />
   </ImageHash>
@@ -1544,9 +1496,6 @@
   </ImageHash>
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(612, 432)" cellSize="(16, 16)" hash="209131149236311918135243236221193115212152112" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(1044, 1116)" cellSize="(16, 16)" hash="852176253246222223196222071301814545222198" />
   </ImageHash>
   <ImageHash fileName="forest_01_addPadding" kind="Forest">
     <Info cellPos="(594, 558)" cellSize="(16, 16)" hash="011087218131161581942126813019104224165179" />
@@ -1690,12 +1639,6 @@
     <Info cellPos="(630, 1062)" cellSize="(16, 16)" hash="2409334231231201361368821694016824320523" />
   </ImageHash>
   <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(576, 324)" cellSize="(16, 16)" hash="714351661081845190821321515414818031145" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(612, 324)" cellSize="(16, 16)" hash="2411271841741171111471121225117921366119142128" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
     <Info cellPos="(648, 1062)" cellSize="(16, 16)" hash="1481501846116115186100849517383172109187" />
   </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
@@ -1769,9 +1712,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_03_addPadding" kind="Swamp">
     <Info cellPos="(864, 576)" cellSize="(16, 16)" hash="18884621472224812053666824717324224390147" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(540, 414)" cellSize="(16, 16)" hash="10136184226281961697816315139394416819188" />
   </ImageHash>
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(1062, 1098)" cellSize="(16, 16)" hash="178122632152170254150136721491791819611010" />
@@ -1875,9 +1815,6 @@
   <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
     <Info cellPos="(288, 900)" cellSize="(16, 16)" hash="16612723710423484304561146301235189182251" />
   </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(576, 972)" cellSize="(16, 16)" hash="17116941160173198724115819847220516325143" />
-  </ImageHash>
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(594, 972)" cellSize="(16, 16)" hash="23323422615025017750124182951121621444821456" />
   </ImageHash>
@@ -1898,9 +1835,6 @@
   </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(936, 1044)" cellSize="(16, 16)" hash="61394247187233221442761181342081337276" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(540, 774)" cellSize="(16, 16)" hash="1041355266184991054913221724211221154459" />
   </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(1062, 1044)" cellSize="(16, 16)" hash="252787382214621131691201412391202281194318" />
@@ -2010,9 +1944,6 @@
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(486, 918)" cellSize="(16, 16)" hash="161391277139211732046113126331848162182" />
   </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(378, 990)" cellSize="(16, 16)" hash="14213247218180162122234071331702081206970" />
-  </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(666, 738)" cellSize="(16, 16)" hash="19314924780124158301091181231361283183225176" />
   </ImageHash>
@@ -2058,17 +1989,11 @@
   <ImageHash fileName="swamp_03_addPadding" kind="Swamp">
     <Info cellPos="(576, 738)" cellSize="(16, 16)" hash="23318925101158225241228129649719615910699165" />
   </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(828, 738)" cellSize="(16, 16)" hash="217203225101972248102351834015171239112168" />
-  </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(594, 1080)" cellSize="(16, 16)" hash="8514893778177231687160215147902330227" />
   </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(306, 1080)" cellSize="(16, 16)" hash="1632241461153171241111129239225171911686190" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(450, 1062)" cellSize="(16, 16)" hash="135251146354510816516114414780971287343193" />
   </ImageHash>
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(720, 990)" cellSize="(16, 16)" hash="20891818018264239791982342034812149113175" />
@@ -2091,9 +2016,6 @@
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(936, 756)" cellSize="(16, 16)" hash="98169616622216916208192177211238253176213217" />
   </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(972, 756)" cellSize="(16, 16)" hash="5122120173167203152960632028623172145113" />
-  </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
     <Info cellPos="(108, 972)" cellSize="(16, 16)" hash="1531133525132331271072131141002386621811374" />
   </ImageHash>
@@ -2102,9 +2024,6 @@
   </ImageHash>
   <ImageHash fileName="forest_04_addPadding" kind="Forest">
     <Info cellPos="(342, 774)" cellSize="(16, 16)" hash="5019514522344212822914013916621681518527" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(486, 1026)" cellSize="(16, 16)" hash="1191761121161201492441517822467179971006" />
   </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(468, 954)" cellSize="(16, 16)" hash="24142111125206978299642041365761918108" />
@@ -2134,12 +2053,6 @@
     <Info cellPos="(450, 972)" cellSize="(16, 16)" hash="14723982129561311471842266422213820015224684" />
   </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(450, 954)" cellSize="(16, 16)" hash="11821718214343217113321991332125736251112" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(486, 1044)" cellSize="(16, 16)" hash="43173153313360491996924813770102169156178" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(468, 972)" cellSize="(16, 16)" hash="712195648242217752710793196769830" />
   </ImageHash>
   <ImageHash fileName="swamp_01_addPadding" kind="Swamp">
@@ -2157,9 +2070,6 @@
   <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
     <Info cellPos="(126, 810)" cellSize="(16, 16)" hash="713241103246253240125232641978112611421112" />
   </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(234, 810)" cellSize="(16, 16)" hash="124228525735427162491641781421295739127" />
-  </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(234, 1062)" cellSize="(16, 16)" hash="10615395142106237246159175126023432142185149" />
   </ImageHash>
@@ -2168,15 +2078,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(396, 1044)" cellSize="(16, 16)" hash="23783592336321149232141511010320353653" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(252, 828)" cellSize="(16, 16)" hash="14923124547180234328224020620122517877175" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
-    <Info cellPos="(612, 1008)" cellSize="(16, 16)" hash="11118123911381208146161132196157520121085176" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(360, 828)" cellSize="(16, 16)" hash="54152211521629123126123441345110122613349" />
   </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(558, 828)" cellSize="(16, 16)" hash="3619175482078543602381741313597153188248" />
@@ -2219,9 +2120,6 @@
   </ImageHash>
   <ImageHash fileName="forest_02_addPadding" kind="Forest">
     <Info cellPos="(954, 1116)" cellSize="(16, 16)" hash="13615218138562111351216615241806315120628" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(432, 936)" cellSize="(16, 16)" hash="1053228206188186961826111222343229128216" />
   </ImageHash>
   <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
     <Info cellPos="(828, 900)" cellSize="(16, 16)" hash="232248244836177116103163105462302247455140" />
@@ -2328,9 +2226,6 @@
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(504, 990)" cellSize="(16, 16)" hash="1554021887570139558921969153152129201129" />
   </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(576, 990)" cellSize="(16, 16)" hash="6010744175241671511529122013019211012125254" />
-  </ImageHash>
   <ImageHash fileName="forest_01_addPadding" kind="Forest">
     <Info cellPos="(90, 1008)" cellSize="(16, 16)" hash="53288108245819969131271998985157193154" />
   </ImageHash>
@@ -2342,15 +2237,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(504, 1008)" cellSize="(16, 16)" hash="106114920117220271061006514725211245227152" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(540, 1008)" cellSize="(16, 16)" hash="12719038167158136177382543212519416216715732" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_04_addPadding" kind="Dungeon">
-    <Info cellPos="(630, 1008)" cellSize="(16, 16)" hash="1682482302272398682236714396158254191216134" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_01_addPadding" kind="Dungeon">
-    <Info cellPos="(702, 1008)" cellSize="(16, 16)" hash="11154139241219191191158245225151171199319156" />
   </ImageHash>
   <ImageHash fileName="dungeon_03_addPadding" kind="Dungeon">
     <Info cellPos="(738, 1008)" cellSize="(16, 16)" hash="98954833208353351051162619818104177" />
@@ -2399,9 +2285,6 @@
   </ImageHash>
   <ImageHash fileName="swamp_02_addPadding" kind="Swamp">
     <Info cellPos="(396, 1080)" cellSize="(16, 16)" hash="1862471265371173272101666917636231763574" />
-  </ImageHash>
-  <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
-    <Info cellPos="(954, 1080)" cellSize="(16, 16)" hash="204148213941781634227142150584715342395" />
   </ImageHash>
   <ImageHash fileName="dungeon_02_addPadding" kind="Dungeon">
     <Info cellPos="(972, 1080)" cellSize="(16, 16)" hash="23110018222220322816212631158683124160103147" />

@@ -90,7 +90,7 @@ namespace Tool
             IMG_SIZE.y = ori_image.texture.height + (TILE_COUNT.y * padding.y);
 
             Texture2D ori_tilemap = ori_image.texture;
-            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
+            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.RGBA32, false);
 
             //투명(0,0,0,0)색으로 초기화 한다 
             Color[] black_colors = new Color[IMG_SIZE.x * IMG_SIZE.y];
@@ -154,7 +154,7 @@ namespace Tool
 
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             Texture2D ori_tilemap = ori_image.texture;
-            Texture2D get_tile = new Texture2D(cellSize.x, cellSize.y, TextureFormat.ARGB32, false);
+            Texture2D get_tile = new Texture2D(cellSize.x, cellSize.y, TextureFormat.RGBA32, false);
 
             DebugWide.LogBlue(ori_tilemap.format + "  w:" + ori_tilemap.width + "   h:" + ori_tilemap.height); //print
 
@@ -262,7 +262,7 @@ namespace Tool
             TILE_COUNT.y = (MAX_KIND_COUNT / TILE_COUNT.x);
             IMG_SIZE.y = (TILE_COUNT.y+1) * (CELL_SIZE.y + padding.y);
             DebugWide.LogBlue(imgFileName + "   :  " + IMG_SIZE + "    :  " + createKind.ToString()); //print
-            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.ARGB32, false);
+            Texture2D new_tilemap = new Texture2D(IMG_SIZE.x, IMG_SIZE.y, TextureFormat.RGBA32, false);
 
             //투명(0,0,0,0)색으로 초기화 한다 
             Color[] black_colors = new Color[IMG_SIZE.x * IMG_SIZE.y];
@@ -319,7 +319,7 @@ namespace Tool
             {
                 if (createKind != byby.kind) continue;
 
-                tile = new Texture2D(byby.rect.width, byby.rect.height, TextureFormat.ARGB32, false);
+                tile = new Texture2D(byby.rect.width, byby.rect.height, TextureFormat.RGBA32, false);
                 tile.SetPixels(byby.colors);
                 byte[] new_raw = tile.EncodeToPNG();
                 File.WriteAllBytes(Application.dataPath + "/Resources/Warcraft/Textures/TileMap/"  + byby.kind + "/" + imgFileName + "_" + count.ToString() + ".png", new_raw);
@@ -368,12 +368,13 @@ namespace Tool
 
         public void RemoveFromPath(string path)
         {
-            Object[] tx = Resources.LoadAll(path);
+            Texture2D[] tx = Resources.LoadAll<Texture2D>(path);
             DebugWide.LogBlue(tx.Length);
 
             int count = 0;
             MD5CryptoServiceProvider md5 = new MD5CryptoServiceProvider();
             string str_hash = string.Empty;
+            string temp = string.Empty;
             foreach(Object t in tx)
             {
 
@@ -383,7 +384,12 @@ namespace Tool
                 if (t is Texture2D)
                 {
                     Texture2D t2d = t as Texture2D;
-
+                    if(TextureFormat.RGBA32 != t2d.format)
+                    {
+                        DebugWide.LogYellow("[waring] 텍스쳐 포맷이 RGBA32 이어야 합니다!!! " + t2d.name );
+                        continue;
+                    }
+                    //같은 텍스쳐라도 텍스쳐 포맷에 따라 해쉬값이 다르게 나온다. 저장된 해쉬는 RGB32 기반으로 구한 값이기 때문에 해당 포맷을 맞춰주어야 한다 
                     byte[] raw = (t2d).EncodeToPNG();
                     byte[] byte_hash = md5.ComputeHash(raw);
                     //해쉬값을 문자열로 변환 
@@ -392,10 +398,15 @@ namespace Tool
                     {
                         str_hash += one;
                     }
-                    DebugWide.LogBlue(str_hash);
+
                     if(true == _uniqueImages.Remove(str_hash))
                     {
                         count++;
+
+                        temp = Application.dataPath + "/Resources/" + path + t2d.name + ".png";
+                        DebugWide.LogBlue(temp + "  :   " + str_hash); //chamto test
+                        System.IO.File.Delete(temp); //실제 파일도 제거한다 
+
                     }    
                 }
 
@@ -757,7 +768,7 @@ namespace Tool
             // Create a texture the size of the screen, RGB24 format
             int width = Screen.width;
             int height = Screen.height;
-            Texture2D tex = new Texture2D(width, height, TextureFormat.RGB24, false);
+            Texture2D tex = new Texture2D(width, height, TextureFormat.RGBA32, false);
 
             // Read screen contents into the texture
             tex.ReadPixels(new Rect(0, 0, width, height), 0, 0);
