@@ -239,17 +239,15 @@ namespace UnityEngine
                     return;
                 }
 
-                //X{ 0 1 2 3 4 5 }
-                //3개씩 읽을시 : x1{ 0 1 2 } x2{ 3 4 5 } 
-                // X의 인덱스 % 3
-
 
                 int MULTI_LENGTH = rule.m_MultiLength;
-                int MAX_MULTI_LENGTH = rule.m_Sprites.Length / MULTI_LENGTH;
+                //int MAX_MULTI_LENGTH = rule.m_Sprites.Length / MULTI_LENGTH;
+                //Assertions.Assert.IsTrue(0 <= multiIndex && multiIndex < MAX_MULTI_LENGTH, multiIndex + "  " + MAX_MULTI_LENGTH +" 요청된 멀티인덱스값이 범위를 벗어난다");
 
-                Assertions.Assert.IsTrue(0 <= multiIndex && multiIndex < MAX_MULTI_LENGTH, multiIndex + "  " + MAX_MULTI_LENGTH +" 요청된 멀티인덱스값이 범위를 벗어난다");
-
-
+                //멀티길이가 스프라이트 길이보다 작은 경우 : 현재 스프라이트 길이만큼만 멀티설정을 한다 
+                if (MULTI_LENGTH > rule.m_Sprites.Length)
+                    MULTI_LENGTH = rule.m_Sprites.Length;
+                
                 for (int i = 0; i < MULTI_LENGTH; i++)
                 {
 

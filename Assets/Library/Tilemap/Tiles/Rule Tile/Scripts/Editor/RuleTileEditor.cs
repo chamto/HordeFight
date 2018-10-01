@@ -424,13 +424,15 @@ namespace UnityEditor
                 {
                     GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Multi Length");
                     tilingRule.m_MultiLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MultiLength);
+                    tilingRule.m_MultiLength = Math.Max(tilingRule.m_MultiLength, 1); //길이가 0이 못되게 최대값을 1로 설정한다
                     y += k_SingleLineHeight;    
                 }
 
 
 				GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Size");
 				EditorGUI.BeginChangeCheck();
-                int newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites.Length / tilingRule.m_MultiLength);
+                int newLength = Math.Max(tilingRule.m_Sprites.Length / tilingRule.m_MultiLength, 1); //길이가 0이 못되게 최대값을 1로 설정한다 
+                newLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), newLength);
 				if (EditorGUI.EndChangeCheck())
                 {
                     Array.Resize(ref tilingRule.m_Sprites, Math.Max(newLength * tilingRule.m_MultiLength, 1));
