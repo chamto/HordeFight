@@ -1,4 +1,4 @@
-﻿Shader "Sprites/Reversal"
+﻿Shader "Sprites/FragmentLevels"
 {
     Properties
     {

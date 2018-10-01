@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf92cecb0902846019c850c4407d9866, type: 3}
+  m_Name: dungeon_floor_1_base
+  m_EditorClassIdentifier: 
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Transform:
+    e00: 1
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 1
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 1
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 1
+  m_InstancedGameObject: {fileID: 0}
+  m_Flags: 1
+  m_ColliderType: 1
+  Sprites:
+  - Sprite: {fileID: 21300000, guid: 5ef8b306404bd49a787aedf63d65969a, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: e94925fd196eb40b4b0ad5bc714bd3aa, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: 8cea0a414df7e43f0991e5fb5f23d7bb, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: 61e5376f2bd004085a8e9f9dc979cd99, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: 502b7acb1ba3c4cf79bea535e9f30e03, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: 2eb4176dacd2a4177866a375a3736740, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: c388862194f704711aebde74ad3cdb39, type: 3}
+    Weight: 100
+  - Sprite: {fileID: 21300000, guid: 27da518043af84b498b47ad7bea31fa0, type: 3}
+    Weight: 5
+  - Sprite: {fileID: 21300000, guid: a50480ef34ae1447bb402fc3ad5424d7, type: 3}
+    Weight: 3
+  - Sprite: {fileID: 21300000, guid: d00932a1175c249e0927be1c64318f0c, type: 3}
+    Weight: 10
+  - Sprite: {fileID: 21300000, guid: 67b2f707e2c0f4c208e656a1b098d12d, type: 3}
+    Weight: 5
+  - Sprite: {fileID: 21300000, guid: 113eab24975d0447c9413e8bc0f5da91, type: 3}
+    Weight: 10

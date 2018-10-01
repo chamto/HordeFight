@@ -4,19 +4,23 @@ using System;
 using UnityEditor;
 #endif
 
-namespace UnityEngine.Tilemaps {
+namespace UnityEngine.Tilemaps 
+{
     [Serializable]
-    public struct WeightedSprite {
+    public struct WeightedSprite 
+    {
         public Sprite Sprite;
         public int Weight;
     }
 
     [Serializable]
     [CreateAssetMenu(fileName = "New Weighted Random Tile", menuName = "Tiles/Weighted Random Tile")]
-    public class WeightedRandomTile : Tile {
+    public class WeightedRandomTile : Tile 
+    {
         [SerializeField] public WeightedSprite[] Sprites;
 
-        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData) {
+        public override void GetTileData(Vector3Int location, ITilemap tileMap, ref TileData tileData) 
+        {
             base.GetTileData(location, tileMap, ref tileData);
             
             if (Sprites == null || Sprites.Length <= 0) return;
@@ -35,9 +39,11 @@ namespace UnityEngine.Tilemaps {
 
             // Pick a random weight and choose a sprite depending on it
             var randomWeight = Random.Range(0, cumulativeWeight);
-            foreach (var spriteInfo in Sprites) {
+            foreach (var spriteInfo in Sprites) 
+            {
                 randomWeight -= spriteInfo.Weight;
-                if (randomWeight < 0) {
+                if (randomWeight < 0) 
+                {
                     tileData.sprite = spriteInfo.Sprite;    
                     break;
                 }

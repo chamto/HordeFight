@@ -90,7 +90,11 @@ namespace UnityEngine
         //룰타일 간의 이웃검사시 사용할 분류항목  
         public enum eClassification
         {
-            None,
+            This,           //내주소값과 같은지 비교하는 방식 
+            TileBase_Type,  //객체타입이 TileBase 인지 검사하는 방식 
+            RuleTile_Type,  //객체타입이 룰타일인지만 검사하는 방식
+
+            //주소값과 상관없이 분류항목만으로 비교하는 방식 
             Dungeon,
             Dungeon_Structure,
             Dungeon_Floor,
@@ -99,7 +103,7 @@ namespace UnityEngine
 
             Swamp,
         }
-        public eClassification _classification = eClassification.None;
+        public eClassification _classification = eClassification.This;
 
 		public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
@@ -642,11 +646,22 @@ namespace UnityEngine
             bool result = false;
 
 
-            if(eClassification.None == this._classification)
+            if(eClassification.This == this._classification)
             {
                 //** 분류항목값이 None 일때는 주소값 비교 방식으로 검사한다  
                 result = (tile == m_Self);
-            }else
+            }
+            else if (eClassification.TileBase_Type == this._classification)
+            {
+                //** TileBase 객체가 있는지만 검사한다 
+                result = (null != tile);
+            }
+            else if (eClassification.RuleTile_Type == this._classification)
+            {
+                //** 객체타입이 같은지만 검사한다 
+                result = (null != neighborTile);
+            }
+            else
             {
                 //** 분류항목값이 있을때는 대분류 비교 방식으로 검사한다 - 같은 분류의 타일들을 함께 섞으며 배치 할수 있게 하기 위한 기능 
                 result = (null != neighborTile) && this._classification == neighborTile._classification;
