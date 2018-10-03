@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bf92cecb0902846019c850c4407d9866, type: 3}
-  m_Name: dungeon_floor_1_base
+  m_Name: dungeon_floor_s1_base
   m_EditorClassIdentifier: 
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

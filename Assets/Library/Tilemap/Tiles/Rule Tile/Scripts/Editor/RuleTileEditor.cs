@@ -79,6 +79,8 @@ namespace UnityEditor
                         //멀티모드일 경우 추가
                     case RuleTile.TilingRule.OutputSprite.Multi:
                         return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
+                    case RuleTile.TilingRule.OutputSprite.Single:
+                        return k_DefaultElementHeight + k_SingleLineHeight * (tile.m_TilingRules[index].m_Sprites.Length + 3) + k_PaddingBetweenRules;
 				}
 			}
             return k_DefaultElementHeight + k_PaddingBetweenRules;
@@ -104,7 +106,7 @@ namespace UnityEditor
 			RuleMatrixOnGUI(tile, matrixRect, rule);
 
             //멀티모드에서만 보여지게 한다 - 보여지는 것과 상관없이 다른모드에도 영향을 준다
-            if (rule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
+            //if (rule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
             {
                 RuleMatrixOnGUI_RuleLength(tile, matrixRect_Length, rule);
                 RuleMatrixOnGUI_RuleID(tile, matrixRect_RuleID, rule);    
@@ -141,7 +143,20 @@ namespace UnityEditor
 			tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
 			tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
-            tile._classification = (RuleTile.eClassification)EditorGUILayout.EnumPopup("Classification", tile._classification); //대분류 추가 
+            tile._class_id = (RuleTile.eClassification)EditorGUILayout.EnumPopup("Classification ID", tile._class_id); //대분류 추가 
+
+
+            RuleTile.eClassification select = 0;
+            RuleTile.eClassification next = 0;
+            int MAX_LENGTH = 10; //임의로 최대개수를 10개로 잡는다 
+            for (int i = 0; i < MAX_LENGTH; i++)
+            {
+                next = tile.GetPermitRule(i);
+                select |= (RuleTile.eClassification)EditorGUILayout.EnumPopup("Permit Rules " + (i+1), next); //대분류 추가 
+                if (RuleTile.eClassification.None == next) break;
+            }
+            tile._permit_rules = select;
+
 
 			var baseFields = typeof(RuleTile).GetFields().Select(field => field.Name);
 			var fields = target.GetType().GetFields().Select(field => field.Name).Where(field => !baseFields.Contains(field));
@@ -328,40 +343,42 @@ namespace UnityEditor
 		internal static void SpriteOnGUI(Rect rect, RuleTile.TilingRule tilingRule)
 		{
 
-            float HEIGHT = rect.height;// / 1.2f;
+            float HEIGHT = rect.height;
 
-            if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random_Multi)
-            {
+            //출력할 자리가 없음..
+            //if (tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random_Multi)
+            //{
 
-                //(0 1) (2 3) (4 5)
-                //(1 0) (3 2) (5 4)
-                //(1 1) (5 5) (9 9) 
+            //    //(0 1) (2 3) (4 5)
+            //    //(1 0) (3 2) (5 4)
+            //    //(1 1) (5 5) (9 9) 
 
-                int revSeq = 0;
-                float MULTI_PADDING = 0f;
-                for (int seq = 0; seq < tilingRule.m_Sprites.Length; seq++)
-                {
-                    if (tilingRule.m_MultiLength * 2 == seq) break; //최대 3개까지만 출력한다
+            //    int revSeq = 0;
+            //    float MULTI_PADDING = 0f;
+            //    for (int seq = 0; seq < tilingRule.m_Sprites.Length; seq++)
+            //    {
+            //        if (tilingRule.m_MultiLength * 2 == seq) break; //최대 3개까지만 출력한다
 
-                    //완전 뒤에서 부터 보기
-                    //revSeq = tilingRule.m_Sprites.Length - 1 - seq; 
+            //        //완전 뒤에서 부터 보기
+            //        //revSeq = tilingRule.m_Sprites.Length - 1 - seq; 
 
-                    //역수를 만들어 뺀다
-                    int multiIndex_1 = (int)(seq % tilingRule.m_MultiLength); // 0 1 0 1 0 1 .... 
-                    multiIndex_1 = (tilingRule.m_MultiLength-1) - (multiIndex_1); //1 0 1 0 1 0 ....
-                    int multiIndex_2 = (int)(seq / tilingRule.m_MultiLength); // 0 0 1 1 2 2 .... 
-                    revSeq = tilingRule.m_MultiLength * multiIndex_2 + multiIndex_1;
-                    //DebugWide.LogBlue(multiIndex_1 + "  " + multiIndex_2 + "  " + revSeq + "  " + seq);
+            //        //역수를 만들어 뺀다
+            //        int multiIndex_1 = (int)(seq % tilingRule.m_MultiLength); // 0 1 0 1 0 1 .... 
+            //        multiIndex_1 = (tilingRule.m_MultiLength-1) - (multiIndex_1); //1 0 1 0 1 0 ....
+            //        int multiIndex_2 = (int)(seq / tilingRule.m_MultiLength); // 0 0 1 1 2 2 .... 
+            //        revSeq = tilingRule.m_MultiLength * multiIndex_2 + multiIndex_1;
+            //        //DebugWide.LogBlue(multiIndex_1 + "  " + multiIndex_2 + "  " + revSeq + "  " + seq);
 
-                    tilingRule.m_Sprites[revSeq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + MULTI_PADDING, HEIGHT, HEIGHT), tilingRule.m_Sprites[revSeq], typeof(Sprite), false) as Sprite;
+            //        tilingRule.m_Sprites[revSeq] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin + MULTI_PADDING, HEIGHT, HEIGHT), tilingRule.m_Sprites[revSeq], typeof(Sprite), false) as Sprite;
 
-                    MULTI_PADDING += HEIGHT;
-                    //멀티타일 간의 간격을 띈다
-                    if (1 != tilingRule.m_MultiLength && tilingRule.m_MultiLength - 1 == seq % tilingRule.m_MultiLength) 
-                        MULTI_PADDING += 5;
+            //        MULTI_PADDING += HEIGHT;
+            //        //멀티타일 간의 간격을 띈다
+            //        if (1 != tilingRule.m_MultiLength && tilingRule.m_MultiLength - 1 == seq % tilingRule.m_MultiLength) 
+            //            MULTI_PADDING += 5;
                     
-                }
-            }else 
+            //    }
+            //}
+            //else 
             {
                 tilingRule.m_Sprites[0] = EditorGUI.ObjectField(new Rect(rect.xMax - rect.height, rect.yMin, HEIGHT, HEIGHT), tilingRule.m_Sprites[0], typeof(Sprite), false) as Sprite;
             }
@@ -414,7 +431,7 @@ namespace UnityEditor
                     break;
                 
             }
-
+            EditorGUI.EndChangeCheck();
 
             //멀티모드에서도 여러개의 타일을 넣을수 있게 변경한다 
 			if (tilingRule.m_Output != RuleTile.TilingRule.OutputSprite.Single)

@@ -88,22 +88,67 @@ namespace UnityEngine
 
 
         //룰타일 간의 이웃검사시 사용할 분류항목  
-        public enum eClassification
+        public enum eClassification : Int32
         {
-            This,           //내주소값과 같은지 비교하는 방식 
-            TileBase_Type,  //객체타입이 TileBase 인지 검사하는 방식 
-            RuleTile_Type,  //객체타입이 룰타일인지만 검사하는 방식
+            None                = 0,        //0은 비트연산시 항상 참 , 사용하지 말것
+            This                = 1 << 0,   //내주소값과 같은지 비교하는 방식 
+            TileBase_Type       = 1 << 1,   //객체타입이 TileBase 인지 검사하는 방식 
+            RuleTile_Type       = 1 << 2,   //객체타입이 룰타일인지만 검사하는 방식
 
-            //주소값과 상관없이 분류항목만으로 비교하는 방식 
-            Dungeon,
-            Dungeon_Structure,
-            Dungeon_Floor,
+            Boundary            = 1 << 5,   //분류값 경계 : 이 아래 열거형은 분류값으로 처리된다 
 
-            Forest,
+            Dungeon             = Boundary,
+            Dungeon_Structure   = 1 << 6,
+            Dungeon_Floor       = 1 << 7,
+            Dungeon_Floor_Ston  = 1 << 8,
 
-            Swamp,
+            Forest              = 1 << 20,
+
+            Swamp               = 1 << 26,
         }
-        public eClassification _classification = eClassification.This;
+        public eClassification _class_id = eClassification.This;       //자신의 분류값
+        public eClassification _permit_rules =  eClassification.This;   //비교할 대상의 분류값들 모임
+        public int permit_rules_size
+        {
+            get
+            {
+                int count = 0;
+                int LENGTH = 8 * sizeof(Int32);
+                int mask = 0;
+                for (int i = 1; i < LENGTH; i++)
+                {
+                    mask = 1 << i;
+                    if(0 != ((int)_permit_rules & mask))
+                        count++;
+                       
+                }
+                return count;
+            }
+        }
+
+        public eClassification GetPermitRule(int index)
+        {
+            if (index > permit_rules_size) return (eClassification)0;
+
+            int count = 0;
+            int LENGTH = 8 * sizeof(Int32);
+            int mask = 0;
+            for (int i = 0; i < LENGTH; i++)
+            {
+                mask = 1 << i;
+                if (0 != ((int)_permit_rules & mask))
+                {
+                    if (count == index)
+                        return (eClassification)mask;
+
+                    count++;
+                }
+            }
+
+            return (eClassification)0;
+        }
+
+
 
 		public virtual Type m_NeighborType { get { return typeof(TilingRule.Neighbor); } }
 
@@ -634,37 +679,66 @@ namespace UnityEngine
 
 		public virtual bool RuleMatch(int neighbor, TileBase tile)
 		{
-            //switch (neighbor)
-            //{
-            //	case TilingRule.Neighbor.This: return tile == m_Self;
-            //	case TilingRule.Neighbor.NotThis: return tile != m_Self;
-            //}
+            //****** 있냐 없냐 를 판단하는 검사 ********
 
             RuleTile neighborTile = tile as RuleTile;
             bool result = false;
 
 
-            if(eClassification.This == this._classification)
+            int test = (int)eClassification.This;
+
+            //!!! 검사순서 중요 : 범위 작은것 부터 큰것까지 순으로 검사한다 
+           
+            if (null != neighborTile)
             {
-                //** 분류항목값이 None 일때는 주소값 비교 방식으로 검사한다  
-                result = (tile == m_Self);
-            }
-            else if (eClassification.TileBase_Type == this._classification)
-            {
-                //** TileBase 객체가 있는지만 검사한다 
-                result = (null != tile);
-            }
-            else if (eClassification.RuleTile_Type == this._classification)
-            {
-                //** 객체타입이 같은지만 검사한다 
-                result = (null != neighborTile);
-            }
-            else
-            {
-                //** 분류항목값이 있을때는 대분류 비교 방식으로 검사한다 - 같은 분류의 타일들을 함께 섞으며 배치 할수 있게 하기 위한 기능 
-                result = (null != neighborTile) && this._classification == neighborTile._classification;
+                //** 분류항목값들을 검사한다. 분류항목값은 경계값 보다 커야 한다
+                if(eClassification.Boundary <= neighborTile._class_id)
+                {
+                    test = (int)this._permit_rules & (int)neighborTile._class_id;
+                    result = test == (int)neighborTile._class_id;    
+                }
+
             }
 
+            test = (int)this._permit_rules & (int)eClassification.RuleTile_Type;
+            if(false == result)
+            {
+                if (test == (int)eClassification.RuleTile_Type)
+                {
+                    //** RuleTile 객체가 있는지만 검사한다 
+                    result = (null != neighborTile);
+                }    
+            }
+
+
+            test = (int)this._permit_rules & (int)eClassification.TileBase_Type;
+            if (false == result)
+            {
+                if (test == (int)eClassification.TileBase_Type)
+                {
+                    //** TileBase 객체가 있는지만 검사한다 
+                    result = (null != tile);
+                }
+            }
+
+
+
+            test = (int)this._permit_rules & (int)eClassification.This;
+            if (false == result)
+            {
+                if (test == (int)eClassification.This)
+                {
+                    //** 주소값이 같은지 검사한다 
+                    result = (tile == m_Self);
+                }
+            }
+
+
+           
+
+
+            //============================================================
+            //판단값 변환 
             switch (neighbor)
             {
               case TilingRule.Neighbor.This:
@@ -787,23 +861,32 @@ namespace UnityEngine
                 }
 
 
-
-                tile = neighboringTiles[trsIndex];
-                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                //==================================================
+                if (string.Empty == rule.m_Neighbors_ID[i])
                 {
-                    return false;
+                    //대분류 값에 따른 검사를 한다
+                    tile = neighboringTiles[trsIndex];
+                    if (!RuleMatch(rule.m_Neighbors[i], tile))
+                    {
+                        return false;
+                    }
                 }
-
-
-
-                //** 공백 아이디 아닌 것만 검사한다 
-                if(string.Empty != rule.m_Neighbors_ID[i])
+                else
                 {
+                    //** 공백 아이디가 아닌 경우 아이디 비교 검사를 한다
                     switch (rule.m_Neighbors[i])
                     {
+                        
                         case TilingRule.Neighbor.DontCare:
                         case TilingRule.Neighbor.This:
                             {
+                                //대분류 값에 따른 검사를 한다
+                                tile = neighboringTiles[trsIndex];
+                                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                                {
+                                    return false;
+                                }
+
                                 ////** 주변설정ID값과 다른지 검사 
                                 if (neighbors_GetID[trsIndex] != rule.m_Neighbors_ID[i])
                                 {
@@ -813,6 +896,10 @@ namespace UnityEngine
                             break;
                         case TilingRule.Neighbor.NotThis:
                             {
+                                //대분류 검사를 하지 않는다
+                                // - 아이디검사의 전제조건은 비교객체가 존재하는가이다
+                                //   대분류 검사에서 비교객체가 존재하면 거짓이 되므로, 아래 처리로 들어오지 못한다  
+
                                 ////** 주변설정ID값과 같은지 검사 
                                 if (neighbors_GetID[trsIndex] == rule.m_Neighbors_ID[i])
                                 {
@@ -822,6 +909,9 @@ namespace UnityEngine
                             break;
                     }//end switch
                 }//end if
+
+
+
             }//end for
 
             return true;
