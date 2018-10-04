@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Tilemaps;
 
 using Utility;
 
@@ -14,7 +15,7 @@ namespace HordeFight
         // Use this for initialization
         void Start()
         {
-            ResolutionController.CalcViewportRect(Single.canvasRoot, Single.mainCamera); //화면크기조정
+            ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
            
             gameObject.AddComponent<TouchProcess>();
             gameObject.AddComponent<LineControl>();
@@ -23,11 +24,11 @@ namespace HordeFight
             gameObject.AddComponent<PathFinder>();
             gameObject.AddComponent<UI_Main>();
 
-            Single.resourceManager.Init();
+            SingleO.resourceManager.Init();
 
             //===================
 
-            Single.objectManager.Create_StageInfo();
+            SingleO.objectManager.Create_StageInfo();
 
 
         }
@@ -48,7 +49,7 @@ namespace HordeFight
 //========================================================
 namespace HordeFight
 {
-    public static class Single
+    public static class SingleO
     {
         
         public static TouchProcess touchProcess
@@ -438,50 +439,50 @@ namespace HordeFight
 
 namespace HordeFight
 {
-    public struct CellIndex
-    {
-        public int n1;
-        public int n2;
+    //public struct CellIndex
+    //{
+    //    public int n1;
+    //    public int n2;
 
-        public CellIndex(int a1, int a2)
-        {
-            n1 = a1;
-            n2 = a2;
-        }
+    //    public CellIndex(int a1, int a2)
+    //    {
+    //        n1 = a1;
+    //        n2 = a2;
+    //    }
 
-        public override string ToString()
-        {
-            return "(" + n1 + ", " + n2 + ")";
-        }
+    //    public override string ToString()
+    //    {
+    //        return "(" + n1 + ", " + n2 + ")";
+    //    }
 
-        public static CellIndex operator +(CellIndex a, CellIndex b)
-        {
-            return new CellIndex(a.n1 + b.n1, a.n2 + b.n2);
-        }
+    //    public static CellIndex operator +(CellIndex a, CellIndex b)
+    //    {
+    //        return new CellIndex(a.n1 + b.n1, a.n2 + b.n2);
+    //    }
 
-        public static bool operator ==(CellIndex a, CellIndex b)
-        {
-            if (a.n1 == b.n1 && a.n2 == b.n2)
-                return true;
+    //    public static bool operator ==(CellIndex a, CellIndex b)
+    //    {
+    //        if (a.n1 == b.n1 && a.n2 == b.n2)
+    //            return true;
 
-            return false;
-        }
+    //        return false;
+    //    }
 
-        public static bool operator !=(CellIndex a, CellIndex b)
-        {
-            if (a.n1 == b.n1 && a.n2 == b.n2)
-                return false;
+    //    public static bool operator !=(CellIndex a, CellIndex b)
+    //    {
+    //        if (a.n1 == b.n1 && a.n2 == b.n2)
+    //            return false;
 
-            return true;
-        }
-    }
+    //        return true;
+    //    }
+    //}
 
 
 
     public class CellInfo : LinkedList<Being>
     {
         
-        public CellIndex _index = default(CellIndex);
+        public Vector3Int _index = default(Vector3Int);
 
     }
 
@@ -491,10 +492,11 @@ namespace HordeFight
     {
 
         private Grid _grid = null;
-        public Dictionary<CellIndex,CellInfo> _cellList = new Dictionary<CellIndex,CellInfo>();
+        private Tilemap _structTilemap = null;
+        public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
-        public Dictionary<uint, CellIndex[]> _indexesNxN = new Dictionary<uint, CellIndex[]>();
+        public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
 
         public const int NxN_MIN = 3;   //그리드 범위 최소크기
         public const int NxN_MAX = 11;  //그리드 범위 최대크기
@@ -510,9 +512,27 @@ namespace HordeFight
         {
             get
             {
-                return (_grid.cellSize.z * _grid.transform.localScale.z);
+                return (_grid.cellSize.y * _grid.transform.localScale.z);
             }
         }
+
+
+		private void Start()
+		{
+            _grid = GameObject.Find("0_grid").GetComponent<Grid>();
+            _structTilemap  = GameObject.Find("Tilemap_Structure").GetComponent<Tilemap>();
+
+            _indexesNxN[3] = CreateIndexesNxN_SquareCenter(3, Vector3.up);
+            _indexesNxN[5] = CreateIndexesNxN_SquareCenter(5, Vector3.up);
+            _indexesNxN[7] = CreateIndexesNxN_SquareCenter(7, Vector3.up);
+            _indexesNxN[9] = CreateIndexesNxN_SquareCenter(9, Vector3.up);
+            _indexesNxN[11] = CreateIndexesNxN_SquareCenter(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
+		}
+
+		private void Update()
+		{
+			
+		}
 
         //원 반지름 길이를 포함하는 그리드범위 구하기
         public uint GetNxNIncluded_CircleRadius(float maxRadius)
@@ -526,52 +546,205 @@ namespace HordeFight
             return NxN;
         }
 
-		private void Start()
-		{
-            _grid = GameObject.Find("0_grid").GetComponent<Grid>();
-
-            _indexesNxN[3] = CreateIndexesNxN(3);
-            _indexesNxN[5] = CreateIndexesNxN(5);
-            _indexesNxN[7] = CreateIndexesNxN(7);
-            _indexesNxN[9] = CreateIndexesNxN(9);
-            _indexesNxN[11] = CreateIndexesNxN(11); //화면 세로길이를 벗어나지 않는 그리드 최소값
-		}
-
-		private void Update()
-		{
-			
-		}
-
-
-        private CellIndex[] CreateIndexesNxN(ushort NCount_odd)
+        /// <summary>
+        /// 정사각형 모양의 중심이 0인 인덱스 배열을 만든다
+        /// </summary>
+        /// <param name="widthCenter">홀수만 가능 , 가운데 가로길이a</param>
+        /// <param name="axis">Y축 , -Z축 만 가능</param>
+        public Vector3Int[] CreateIndexesNxN_SquareCenter(ushort widthCenter , Vector3 axis)
         {
             //NCount 는 홀수값을 넣어야 한다 
-            if (0 == NCount_odd % 2) return null;
+            if (0 == widthCenter % 2) return null;
 
-            CellIndex[] indexes = new CellIndex[NCount_odd * NCount_odd];
+            Vector3Int[] indexes = new Vector3Int[widthCenter * widthCenter];
 
             int count = 0;           
-            CellIndex index;
-            int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
-            for (int i = -startIdx; i < NCount_odd - startIdx; i++)
+            Vector3Int index = Vector3Int.zero;
+            int startIdx = (widthCenter - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
+            for (int i = -startIdx; i < widthCenter - startIdx; i++)
             {
                 //temp1 = "";
-                for (int j = -startIdx; j < NCount_odd - startIdx; j++)
+                for (int j = -startIdx; j < widthCenter - startIdx; j++)
                 {
                     //temp1 += "(" + i + ", "+ j +")  "; 
-                    index.n1 = i;
-                    index.n2 = j;
+
+                    if (Vector3.up == axis)
+                    {
+                        //y축 중심 : 3d용 좌표
+                        index.x = i;
+                        index.y = 0;
+                        index.z = j;    
+                    }
+                        if (Vector3.back == axis)
+                    {
+                        //-z축 중심 : 2d용 좌표
+                        index.x = i;
+                        index.y = j;
+                        index.z = 0;    
+                    }
+
                     indexes[count++] = index;
                 }
                 //DebugWide.LogBlue(temp1);
             }
-
             return indexes;
-
 
         }
 
-        public CellInfo GetCellInfo(CellIndex cellIndex)
+        //중심좌표로부터 가까운 순으로 배열이 배치된다
+        public Vector3Int[] CreateIndexesNxN_SquareCenter_Tornado(ushort widthCenter, Vector3 axis)
+        {
+            //NCount 는 홀수값을 넣어야 한다 
+            if (0 == widthCenter % 2) return null;
+
+            int Tornado_Num = 1; 
+            int Tornado_Count = 0;
+            Vector3 dir = Vector3.right;
+            Vector3 prevMax = Vector3.zero;
+            Vector3Int cur = Vector3Int.zero;
+            Vector3Int[] indexes = new Vector3Int[widthCenter * widthCenter];
+            for (int cnt = 0; cnt < indexes.Length; cnt++)
+            {
+                indexes[cnt] = cur;
+
+                //해당방향의 최대값에 도달하면 90도 회전 
+                if(prevMax + dir * Tornado_Num == cur)
+                {
+                    prevMax = cur; //최대 위치값 갱신
+                    Tornado_Num = (Tornado_Num + Tornado_Count%2); //1 1 2 2 3 3 4 4 5 5 .... 이렇게 증가하는 수열값임 
+                    Tornado_Count++;
+
+                    if (Vector3.up == axis)
+                    {
+                        //y축 중심 : 3d용 좌표
+                        dir = Quaternion.Euler(0, -90f, 0) * dir;
+                        //DebugWide.LogBlue(dir + "  " + Tornado_Num); //chamto test
+                    }
+                    if (Vector3.back == axis)
+                    {
+                        //-z축 중심 : 2d용 좌표
+                        dir = Quaternion.Euler(0, 0, -90f) * dir;
+                    }
+                }
+
+                //지정된 방향값으로 한칸씩 증가한다
+                cur.x += (int)Mathf.Round(dir.x); //반올림 한다 : 대각선 방향 때문 
+                cur.y += (int)Mathf.Round(dir.y);
+                cur.z += (int)Mathf.Round(dir.z);
+            }
+
+            return indexes;
+
+        }
+
+        //마름모꼴
+        public Vector3Int[] CreateIndexesNxN_RhombusCenter(ushort widthCenter, Vector3 axis)
+        {
+            //NCount 는 홀수값을 넣어야 한다 
+            if (0 == widthCenter % 2) return null;
+
+            //마름모꼴의 전체 셀 개수구하기
+            //마름모 반지름의 크기에 따라 1 4 8 12 16 ... 으로 증가한다 
+            int Length = 1;
+            for (int i = 1; i <= widthCenter / 2; i++)
+            {
+                Length += i * 4;
+            }
+
+            int Tornado_Num = 1;
+            int Tornado_Count = 0;
+            float angle = 0f;
+            Vector3 dir = Vector3.zero;
+            Vector3 prevMax = Vector3.zero;
+            Vector3Int curMax = Vector3Int.zero;
+            Vector3Int cur = Vector3Int.zero;
+            Vector3Int[] indexes = new Vector3Int[Length];
+            for (int cnt = 0; cnt < indexes.Length; cnt++)
+            {
+                indexes[cnt] = cur;
+
+
+                //지정된 방향값으로 한칸씩 증가한다
+                cur.x += (int)Mathf.Round(dir.x); //반올림 한다 : 대각선 방향 때문 
+                cur.y += (int)Mathf.Round(dir.y);
+                cur.z += (int)Mathf.Round(dir.z);
+
+                //DebugWide.LogBlue("cur:  " + cur + "   perv" + prevMax + "   if" + (prevMax + dir * Tornado_Num));
+                //해당방향의 최대값에 도달하면 90도 회전 
+                curMax.x = (int)(prevMax.x + Mathf.Round(dir.x) * Tornado_Num);
+                curMax.y = (int)(prevMax.y + Mathf.Round(dir.y) * Tornado_Num);
+                curMax.z = (int)(prevMax.z + Mathf.Round(dir.z) * Tornado_Num);
+
+                if (curMax == cur)
+                {
+                    
+                    if (Vector3.up == axis)
+                    {
+                        //y축 중심 : 3d용 좌표
+
+                        //DebugWide.LogBlue(curMax + "  " + Tornado_Count % 4 + "  :" + Tornado_Count);
+                        if (0 == Tornado_Count % 4)
+                        {
+                            //좌상단으로 방향 전환
+                            angle = -135f;
+
+                            //오른쪽으로 한칸더 간다
+                            dir = Vector3.right;
+                            cur.x += (int)Mathf.Round(dir.x);
+                            cur.y += (int)Mathf.Round(dir.y);
+                            cur.z += (int)Mathf.Round(dir.z);
+
+                        }
+                        else
+                        {
+                            angle = -90f;
+                        }
+
+                        dir = Quaternion.Euler(0, angle, 0) * dir;
+                    }
+
+                    prevMax = cur; //최대 위치값 갱신
+                    Tornado_Num = (Tornado_Count/4)+1; //1 1 1 1 2 2 2 2 3 3 3 3 .... 이렇게 증가하는 수열값임 
+
+                    Tornado_Count++;
+                }
+
+            }
+
+            return indexes;
+
+        }
+
+        public Tilemap GetStructTileMap()
+        {
+            return _structTilemap;
+        }
+        public bool HasStructTile(Vector3 tilePos, out Vector3 tileCenterToWorld)
+        {
+
+            //x-z 평면상에 타일맵을 놓아도 내부적으로는 x-y 평면으로 처리된다
+            Vector3Int tileInt = _structTilemap.WorldToCell(tilePos);
+
+            //x-z 평면을 가정하고 처리
+            //CellToWorld 함수의 값과 cellSize 값이 부정확하여 직접 계산한다 
+            //Vector3 의 ToString 함수내부에서 원래값을 반올림하여 출력한다는 것을 알게 되었다. 값은 올바로 가지고 있는 것이었음 
+            tileCenterToWorld.x = (float)tileInt.x * cellSize_x + (cellSize_x * 0.5f);
+            tileCenterToWorld.y = 0;
+            tileCenterToWorld.z = (float)tileInt.y * cellSize_z + (cellSize_z * 0.5f);
+
+            //DebugWide.LogBlue(tileInt.x + "  " + cellSize_x + "   " + tileInt.x * cellSize_x + "   " + tileCenterToWorld.x + "   "  + _structTilemap.cellSize.x); //chamto test
+
+            RuleTile rTile = _structTilemap.GetTile<RuleTile>(tileInt);
+            if (null != rTile)
+            {
+                //DebugWide.LogBlue(tileInt + "  " + tilePos + "   " + tileCenterToWorld.x + ", " + tileCenterToWorld.z ); //chamto test
+                return true;
+            }
+
+            return false;
+        }
+
+        public CellInfo GetCellInfo(Vector3Int cellIndex)
         {
             CellInfo cell = null;
             _cellList.TryGetValue(cellIndex, out cell);
@@ -582,7 +755,7 @@ namespace HordeFight
 
 
         //todo : 자료구조를 복사하는데 부하가 있기때문에, 자료구조를 직접 순회하면서 처리하는 방향으로 해봐야겠다
-        public CellInfo GetCellInfo_NxN(CellIndex center , ushort NCount_odd)
+        public CellInfo GetCellInfo_NxN(Vector3Int center , ushort NCount_odd)
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == NCount_odd % 2) return null;
@@ -594,7 +767,7 @@ namespace HordeFight
             //string temp1 = "";
 
             CellInfo dst = null;
-            CellIndex index;
+            Vector3Int index = Vector3Int.zero;
             int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
             for (int i = -startIdx; i < NCount_odd - startIdx; i++)
             {
@@ -602,8 +775,8 @@ namespace HordeFight
                 for (int j = -startIdx; j < NCount_odd - startIdx; j++)
                 {
                     //temp1 += "(" + i + ", "+ j +")  "; 
-                    index.n1 = i + center.n1; 
-                    index.n2 = j + center.n2;
+                    index.x = i + center.x; 
+                    index.z = j + center.z;
                     dst = this.GetCellInfo(index);
 
                     if(null != dst && 0 != dst.Count)
@@ -624,7 +797,7 @@ namespace HordeFight
         }
 
 
-        public void AddCellInfo_Being(CellIndex cellIndex, Being being)
+        public void AddCellInfo_Being(Vector3Int cellIndex, Being being)
         {
             CellInfo cell = null;
             if (false == _cellList.TryGetValue(cellIndex, out cell))
@@ -636,7 +809,7 @@ namespace HordeFight
             _cellList[cellIndex].AddLast(being);
         }
 
-        public void RemoveCellInfo_Being(CellIndex cellIndex, Being being)
+        public void RemoveCellInfo_Being(Vector3Int cellIndex, Being being)
         {
             if (null == being) return;
 
@@ -649,11 +822,10 @@ namespace HordeFight
         }
 
 
-        public CellIndex ToCellIndex(Vector3 pos , Vector3 axis)
+        public Vector3Int ToCellIndex(Vector3 pos , Vector3 axis)
         {
 
-            CellIndex cellIndex = new CellIndex();
-            cellIndex = default(CellIndex);
+            Vector3Int cellIndex = Vector3Int.zero;
             Vector3 cellSize = Vector3.zero;
 
             if(Vector3.up == axis)
@@ -666,22 +838,22 @@ namespace HordeFight
                 if(0 <= pos.x)
                 {
                     //양수일때는 소수점을 버린다. 
-                    cellIndex.n1 = (int)(pos.x / cellSize.x);
+                    cellIndex.x = (int)(pos.x / cellSize.x);
                 }
                 else
                 {
                     //음수일때는 올림을 한다. 
-                    cellIndex.n1 = (int)((pos.x / cellSize.x) - 0.9f);
+                    cellIndex.x = (int)((pos.x / cellSize.x) - 0.9f);
                 }
 
 
                 if (0 <= pos.z)
                 { 
-                    cellIndex.n2 = (int)(pos.z / cellSize.z);
+                    cellIndex.z = (int)(pos.z / cellSize.z);
                 }
                 else
                 { 
-                    cellIndex.n2 = (int)((pos.z / cellSize.z) - 0.9f);
+                    cellIndex.z = (int)((pos.z / cellSize.z) - 0.9f);
                 }
 
             }
@@ -689,7 +861,7 @@ namespace HordeFight
             return cellIndex;
         }
 
-        public Vector3 ToPosition(CellIndex ci , Vector3 axis)
+        public Vector3 ToPosition(Vector3Int ci , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
@@ -699,8 +871,8 @@ namespace HordeFight
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
                 cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
 
-                pos.x = (float)ci.n1 * cellSize.x;
-                pos.z = (float)ci.n2 * cellSize.z;
+                pos.x = (float)ci.x * cellSize.x;
+                pos.z = (float)ci.z * cellSize.z;
 
                 //셀의 중간에 위치하도록 한다
                 pos.x += cellSize.x * 0.5f;
@@ -723,9 +895,9 @@ namespace HordeFight
     public class ObjectManager : MonoBehaviour
     {
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
-        public List<Being> _listTest = new List<Being>();
+        public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 100;
+        private int __TestSkelCount = 1;
 
         private void Start()
         {
@@ -747,7 +919,66 @@ namespace HordeFight
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
         }
 
+        //____________________________________________
+        //              선분을 이용한 CCD   
+        //____________________________________________
+        public void LineSegmentTest(Vector3 origin, Vector3 last)
+        {
+            LineSegment3 lineSeg = LineSegment3.zero;
+            lineSeg.origin = origin;
+            lineSeg.direction = last - origin;
+
+            float t_c = 0;
+            foreach (Vector3Int iy in SingleO.gridManager._indexesNxN[5])
+            {
+                Vector3 vx = (Vector3)iy * SingleO.gridManager.cellSize_x;
+                //lineSeg.MinimumDistanceSquared(origin + iy, out t_c);
+            }
+
+        }
+
+        //____________________________________________
+        //                  충돌 검사   
+        //____________________________________________
        
+        public void CollisionPush_Rigid(Being src, Vector3 rigPos, float rigRadius)
+        {
+
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            sqr_dis = src.transform.position - rigPos;
+            r_sum = src.GetCollider_Radius() + rigRadius;
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+            {
+                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                //todo : 최적화 필요 
+
+                Vector3 n = sqr_dis.normalized;
+
+
+                //2.반지름 이상으로 겹쳐있는 경우
+                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                {
+                    //3.완전 겹쳐있는 경우
+                    if (n == Vector3.zero)
+                    {
+                        //방향값이 없기 때문에 임의로 지정해 준다. 
+                        n = Misc.RandomDir8_AxisY();
+                    }
+
+
+                }
+
+                //src._move.Move_Forward(n, div_dis, 1);
+                src.transform.position = rigPos + (n * rigRadius); 
+            }
+        }
+
         public void CollisionPush(Being src , Being dst)
         {
             
@@ -786,18 +1017,17 @@ namespace HordeFight
                 dst._move.Move_Forward(-n, div_dis, 1);
 
             }
-
         }
 
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
         public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
             CellInfo cellInfo = null;
-            foreach(Being src in _listTest)
+            foreach(Being src in _being_list)
             {
 
                 //1. 3x3그리드 정보를 가져온다
-                cellInfo = Single.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
+                cellInfo = SingleO.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
 
                 foreach (Being dst in cellInfo)
                 {
@@ -810,16 +1040,17 @@ namespace HordeFight
         public void UpdateCollision_UseDirectGrid3x3()
         {
             //int count = 0;
-
+            Vector3 centerPos = Vector3.zero;
             CellInfo cellInfo = null;
-            foreach (Being src in _listTest)
+            foreach (Being src in _being_list)
             {
-
+                
                 //1. 3x3그리드 정보를 가져온다
-                foreach (CellIndex ix in Single.gridManager._indexesNxN[3])
+                foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
                 {
+                    
                     //count++;
-                    cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                    cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
                     if (null == cellInfo) continue;
 
                     foreach (Being dst in cellInfo)
@@ -829,6 +1060,14 @@ namespace HordeFight
                         CollisionPush(src, dst);
                     }
                 }
+
+                //동굴벽과 캐릭터 충돌처리 
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out centerPos))
+                {
+                    //CollisionPush_Rigid(src, centerPos, 0.1f);
+
+                }
+
 
             }
 
@@ -845,8 +1084,8 @@ namespace HordeFight
             {
                 for (int j = i + 1; j < _beings.Count; j++)
                 {
-                    src = _listTest[i];
-                    dst = _listTest[j];
+                    src = _being_list[i];
+                    dst = _being_list[j];
 
                     CollisionPush(src, dst);
 
@@ -927,14 +1166,14 @@ namespace HordeFight
             float sqr_dis = 0f;
 
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-            uint NxN = Single.gridManager.GetNxNIncluded_CircleRadius(maxRadius);
+            uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(maxRadius);
 
             //int count = 0;
             CellInfo cellInfo = null;
             Being target = null;
-            foreach (CellIndex ix in Single.gridManager._indexesNxN[ NxN ])
+            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[ NxN ])
             {
-                cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
                 if (null == cellInfo) continue;
 
                 foreach (Being dst in cellInfo)
@@ -980,7 +1219,7 @@ namespace HordeFight
             float sqr_dis = 0f;
             Being target = null;
             //foreach (Being t in _beings.Values)
-            foreach (Being t in _listTest)
+            foreach (Being t in _being_list)
             {
                 if (t == exceptChar) continue;
 
@@ -1018,9 +1257,9 @@ namespace HordeFight
             
             Vector3 dir = Vector3.zero;
             CellInfo cellInfo = null;
-            foreach (CellIndex ix in Single.gridManager._indexesNxN[gridRange_NxN])
+            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[gridRange_NxN])
             {
-                cellInfo = Single.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
                 if (null == cellInfo) continue;
 
                 foreach (Being dst in cellInfo)
@@ -1034,7 +1273,7 @@ namespace HordeFight
                         //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
                         //==============================
                         float sqr_radius = (float)(gridRange_NxN) / 2f; //반지름으로 변환
-                        sqr_radius *= Single.gridManager.cellSize_x; //셀크기로 변환
+                        sqr_radius *= SingleO.gridManager.cellSize_x; //셀크기로 변환
                         sqr_radius *= sqr_radius; //제곱으로 변환
                         if(sqr_radius < dir.sqrMagnitude)
                             continue;
@@ -1091,7 +1330,7 @@ namespace HordeFight
             //cha.Init_Create();
 
             _beings.Add(id,cha);
-            _listTest.Add(cha); //chamto test
+            _being_list.Add(cha); //chamto test
 
             if (Being.eKind.spearman == eKind)
             {
@@ -1115,33 +1354,33 @@ namespace HordeFight
         public void Create_StageInfo()
         {
 
-            if (null == Single.unitRoot) return;
+            if (null == SingleO.unitRoot) return;
 
             uint id_sequence = 0;
             Vector3 pos = Vector3.zero;
-            Create_Character(Single.unitRoot, Being.eKind.lothar, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.footman, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.spearman, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.brigand, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.ogre, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.grunt, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
+            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                Create_Character(Single.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
-            Create_Character(Single.unitRoot, Being.eKind.daemon, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            Create_Character(Single.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
 
@@ -1155,456 +1394,456 @@ namespace HordeFight
     //==================     캐릭터 정보(임시)     ==================
     //========================================================
 
-    public partial class  Character : MonoBehaviour
-    {
+  //  public partial class  Character : MonoBehaviour
+  //  {
 
-        //애니
-        private Animator                    _animator = null;
-        private AnimatorOverrideController  _overCtr = null;
-        private SpriteRenderer              _sprRender = null;
+  //      //애니
+  //      private Animator                    _animator = null;
+  //      private AnimatorOverrideController  _overCtr = null;
+  //      private SpriteRenderer              _sprRender = null;
 
-        //이동
-        private Movable _move     = null;
-        private eDirection8 _eDir8 = eDirection8.down;
+  //      //이동
+  //      private Movable _move     = null;
+  //      private eDirection8 _eDir8 = eDirection8.down;
 
-        //상태
-        public eState   _eState = eState.None;
+  //      //상태
+  //      public eState   _eState = eState.None;
 
-        //UI
-        public int      _UIID_circle = -1;
-        public int      _UIID_hp = -1;
+  //      //UI
+  //      public int      _UIID_circle = -1;
+  //      public int      _UIID_hp = -1;
 
-        //고유정보
-        public int _id = -1;
-        public eKind _eKind = eKind.None;
+  //      //고유정보
+  //      public int _id = -1;
+  //      public eKind _eKind = eKind.None;
 
-        public float    _disPerSecond = 1f; //초당 이동거리 
+  //      public float    _disPerSecond = 1f; //초당 이동거리 
 
-        public ushort   _power = 1;
-        public ushort   _hp_cur = 10;
-        public ushort   _hp_max = 10;
-        public float    _range_min = 0.15f;
-        public float    _range_max = 0.15f;
-        public bool     _death = false;
+  //      public ushort   _power = 1;
+  //      public ushort   _hp_cur = 10;
+  //      public ushort   _hp_max = 10;
+  //      public float    _range_min = 0.15f;
+  //      public float    _range_max = 0.15f;
+  //      public bool     _death = false;
        
 
-        public enum eKind
-        {
-            None = 0,
-            footman,
-            lothar,
-            skeleton,
-            garona,
-            conjurer,
-            raider,
-            slime,
-            spearman,
-            grunt,
-            brigand,
-            knight,
-            ogre,
-            daemon,
-            waterElemental,
-            fireElemental,
+  //      public enum eKind
+  //      {
+  //          None = 0,
+  //          footman,
+  //          lothar,
+  //          skeleton,
+  //          garona,
+  //          conjurer,
+  //          raider,
+  //          slime,
+  //          spearman,
+  //          grunt,
+  //          brigand,
+  //          knight,
+  //          ogre,
+  //          daemon,
+  //          waterElemental,
+  //          fireElemental,
 
-        }
+  //      }
 
-        public enum eState
-        {
-            None        = 0,
+  //      public enum eState
+  //      {
+  //          None        = 0,
 
-            Idle        = 10,
-            Idle_Random = 11,
-            Idle_LookAt = 12,
-            Idle_Max    = 19,
+  //          Idle        = 10,
+  //          Idle_Random = 11,
+  //          Idle_LookAt = 12,
+  //          Idle_Max    = 19,
 
-            Move        = 20,
-            Move_Max    = 29,
+  //          Move        = 20,
+  //          Move_Max    = 29,
 
-            Attack      = 30,
-            Attack_Max  = 39,
+  //          Attack      = 30,
+  //          Attack_Max  = 39,
 
-            FallDown        = 40,
-            FallDown_Max    = 49,
+  //          FallDown        = 40,
+  //          FallDown_Max    = 49,
 
-        }
-
-
-        public void Init_Create()
-        {
-            _animator = GetComponentInChildren<Animator>();
-            _sprRender = GetComponentInChildren<SpriteRenderer>();
-
-            _move = GetComponent<Movable>();
-            //Single.touchProcess.Attach_SendObject(this.gameObject);
-
-            //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
-            _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-            _overCtr.name = "divide_character_"+ _id.ToString();
-            _animator.runtimeAnimatorController = _overCtr;
-
-        }
-
-        //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
-        private void Start()
-        {
-            _eState = eState.Idle_Random;
-            //_animator.SetInteger("state", (int)eState.Idle);
-
-            _UIID_circle = Single.lineControl.Create_Circle_AxisY(this.transform);
-            Single.lineControl.SetActive(_UIID_circle, false);
-
-            _UIID_hp = Single.lineControl.Create_LineHP_AxisY(this.transform);
-
-        }
+  //      }
 
 
+  //      public void Init_Create()
+  //      {
+  //          _animator = GetComponentInChildren<Animator>();
+  //          _sprRender = GetComponentInChildren<SpriteRenderer>();
 
-        private void Update()
-        {
-            if (true == _death) return;
+  //          _move = GetComponent<Movable>();
+  //          //Single.touchProcess.Attach_SendObject(this.gameObject);
 
-            if (9 > _hp_cur)
-            {
-                //DebugWide.LogBlue("death  " + _eState);
-                _death = true;
-                _eState = eState.FallDown;
-                FallDown();
-            }
+  //          //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
+  //          _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+  //          _overCtr.name = "divide_character_"+ _id.ToString();
+  //          _animator.runtimeAnimatorController = _overCtr;
 
-            Update_Shot();
+  //      }
 
+  //      //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+  //      private void Start()
+  //      {
+  //          _eState = eState.Idle_Random;
+  //          //_animator.SetInteger("state", (int)eState.Idle);
 
-            if (eState.Idle == _eState)
-            {
-                _animator.SetInteger("state", (int)eState.Idle);
-            }
-            else if (eState.Idle_Random == _eState)
-            {
-                _animator.SetInteger("state", (int)eState.Idle);
-                Idle_Random();
+  //          _UIID_circle = Single.lineControl.Create_Circle_AxisY(this.transform);
+  //          Single.lineControl.SetActive(_UIID_circle, false);
 
-            }
-            else if (eState.Move == _eState)
-            {
-                _animator.SetInteger("state", (int)eState.Move);
-            }
-            else if (eState.Attack == _eState)
-            {
-                _animator.SetInteger("state", (int)eState.Attack);
-            }
-            else if (eState.FallDown == _eState)
-            {
-                _animator.SetInteger("state", (int)eState.FallDown);
-            }
+  //          _UIID_hp = Single.lineControl.Create_LineHP_AxisY(this.transform);
+
+  //      }
 
 
 
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
-        }
+  //      private void Update()
+  //      {
+  //          if (true == _death) return;
 
-        public float GetCollider_Radius()
-        {
+  //          if (9 > _hp_cur)
+  //          {
+  //              //DebugWide.LogBlue("death  " + _eState);
+  //              _death = true;
+  //              _eState = eState.FallDown;
+  //              FallDown();
+  //          }
 
-            return GetComponent<SphereCollider>().radius;
-        }
-
-        public void SetAIRunning(bool run)
-        {
-            this.GetComponent<AI>()._ai_running = run;
-        }
-
-
-        //____________________________________________
-        //                  애니메이션  
-        //____________________________________________
-
-        //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
-        public AnimationClip GetClip(string name)
-        {
-            AnimationClip animationClip = null;
-            Single.resourceManager._aniClips.TryGetValue(name.GetHashCode(), out animationClip);
+  //          Update_Shot();
 
 
-            return animationClip;
-        }
+  //          if (eState.Idle == _eState)
+  //          {
+  //              _animator.SetInteger("state", (int)eState.Idle);
+  //          }
+  //          else if (eState.Idle_Random == _eState)
+  //          {
+  //              _animator.SetInteger("state", (int)eState.Idle);
+  //              Idle_Random();
+
+  //          }
+  //          else if (eState.Move == _eState)
+  //          {
+  //              _animator.SetInteger("state", (int)eState.Move);
+  //          }
+  //          else if (eState.Attack == _eState)
+  //          {
+  //              _animator.SetInteger("state", (int)eState.Attack);
+  //          }
+  //          else if (eState.FallDown == _eState)
+  //          {
+  //              _animator.SetInteger("state", (int)eState.FallDown);
+  //          }
 
 
-        public void Switch_Ani(string aniKind, string aniName , eDirection8 dir)
-        {
+
+  //          //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
+  //          _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
+  //      }
+
+  //      public float GetCollider_Radius()
+  //      {
+
+  //          return GetComponent<SphereCollider>().radius;
+  //      }
+
+  //      public void SetAIRunning(bool run)
+  //      {
+  //          this.GetComponent<AI>()._ai_running = run;
+  //      }
+
+
+  //      //____________________________________________
+  //      //                  애니메이션  
+  //      //____________________________________________
+
+  //      //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
+  //      public AnimationClip GetClip(string name)
+  //      {
+  //          AnimationClip animationClip = null;
+  //          Single.resourceManager._aniClips.TryGetValue(name.GetHashCode(), out animationClip);
+
+
+  //          return animationClip;
+  //      }
+
+
+  //      public void Switch_Ani(string aniKind, string aniName , eDirection8 dir)
+  //      {
             
-            _sprRender.flipX = false;
-            string aniNameSum = "";
-            switch(dir)
-            {
+  //          _sprRender.flipX = false;
+  //          string aniNameSum = "";
+  //          switch(dir)
+  //          {
                 
-                case eDirection8.leftUp:
-                    {
-                        aniNameSum = aniName + eDirection8.rightUp.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.left:
-                    {
-                        aniNameSum = aniName + eDirection8.right.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.leftDown:
-                    {
-                        aniNameSum = aniName + eDirection8.rightDown.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                default:
-                    {
-                        aniNameSum = aniName + dir.ToString();
-                        _sprRender.flipX = false;
-                    }
-                    break;
+  //              case eDirection8.leftUp:
+  //                  {
+  //                      aniNameSum = aniName + eDirection8.rightUp.ToString();
+  //                      _sprRender.flipX = true;
+  //                  }
+  //                  break;
+  //              case eDirection8.left:
+  //                  {
+  //                      aniNameSum = aniName + eDirection8.right.ToString();
+  //                      _sprRender.flipX = true;
+  //                  }
+  //                  break;
+  //              case eDirection8.leftDown:
+  //                  {
+  //                      aniNameSum = aniName + eDirection8.rightDown.ToString();
+  //                      _sprRender.flipX = true;
+  //                  }
+  //                  break;
+  //              default:
+  //                  {
+  //                      aniNameSum = aniName + dir.ToString();
+  //                      _sprRender.flipX = false;
+  //                  }
+  //                  break;
                 
-            }
+  //          }
 
-            _overCtr[aniKind] = GetClip(aniNameSum);
-        }
-
-
-        private float __elapsedTime_1 = 0f;
-        private float __randTime = 0f;
-        public void Idle_Random()
-        {
-            if ((int)eState.Idle == _animator.GetInteger("state"))
-            {
-                __elapsedTime_1 += Time.deltaTime;
+  //          _overCtr[aniKind] = GetClip(aniNameSum);
+  //      }
 
 
-                if (__randTime < __elapsedTime_1)
-                {
+  //      private float __elapsedTime_1 = 0f;
+  //      private float __randTime = 0f;
+  //      public void Idle_Random()
+  //      {
+  //          if ((int)eState.Idle == _animator.GetInteger("state"))
+  //          {
+  //              __elapsedTime_1 += Time.deltaTime;
+
+
+  //              if (__randTime < __elapsedTime_1)
+  //              {
                     
-                    //_eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
+  //                  //_eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
 
-                    //근접 방향으로 랜덤하게 회전하게 한다 
-                    int num = Misc.rand.Next(-1, 2); //-1 ~ 1
-                    num += (int)_eDir8;
-                    if (0 > num) num = 7;
-                    if (7 < num) num = 0;
-                    _eDir8 = (eDirection8)num;
+  //                  //근접 방향으로 랜덤하게 회전하게 한다 
+  //                  int num = Misc.rand.Next(-1, 2); //-1 ~ 1
+  //                  num += (int)_eDir8;
+  //                  if (0 > num) num = 7;
+  //                  if (7 < num) num = 0;
+  //                  _eDir8 = (eDirection8)num;
 
-                    Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+  //                  Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
-                    __elapsedTime_1 = 0f;
+  //                  __elapsedTime_1 = 0f;
 
-                    //3~6초가 지났을 때 돌아감
-                    __randTime = (float)Misc.rand.Next(3, 7); //3~6
-                }
+  //                  //3~6초가 지났을 때 돌아감
+  //                  __randTime = (float)Misc.rand.Next(3, 7); //3~6
+  //              }
 
-            }
+  //          }
 
-        }
+  //      }
 
-        public void Idle_View(Vector3 dir , bool forward )//, bool setState)
-        {
+  //      public void Idle_View(Vector3 dir , bool forward )//, bool setState)
+  //      {
             
-            if (false == forward)
-                dir *= -1f;
+  //          if (false == forward)
+  //              dir *= -1f;
 
-            _eDir8 = Misc.TransDirection8_AxisY(dir);
-            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
-            Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
+  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
+  //          //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
+  //          Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
 
-            //if(true == setState)
-                //_animator.SetInteger("state", (int)eState.Idle);
-        }
+  //          //if(true == setState)
+  //              //_animator.SetInteger("state", (int)eState.Idle);
+  //      }
 
-        public void Move(Vector3 dir ,  float distance ,bool forward )//, bool setState)
-		{
-            //Vector3 dir = target - this.transform.position;
-            //dir.Normalize();
-            _move.Move_Forward(dir, distance, 1f);
+  //      public void Move(Vector3 dir ,  float distance ,bool forward )//, bool setState)
+		//{
+  //          //Vector3 dir = target - this.transform.position;
+  //          //dir.Normalize();
+  //          _move.Move_Forward(dir, distance, 1f);
 
-            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
-            if (false == forward)
-                dir *= -1f;
+  //          //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+  //          if (false == forward)
+  //              dir *= -1f;
             
-            _eDir8 = Misc.TransDirection8_AxisY(dir);
-            Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
+  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
+  //          Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
 
-		}
+		//}
 
-        public void Attack(Vector3 dir)
-        {
-            _eDir8 = Misc.TransDirection8_AxisY(dir);
-            Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
-        }
-
-
-        bool __launch = false;
-        GameObject __things = null;
-        Vector3 __targetPos = Vector3.zero;
-        Vector3 __launchPos = Vector3.zero;
-        public void ThrowThings(Vector3 target)
-        {
-            //Vector3 dir = target - this.transform.position;
-            //Attack(dir);
+  //      public void Attack(Vector3 dir)
+  //      {
+  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
+  //          Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
+  //      }
 
 
-            if(null == __things)
-            {
-                __things = GameObject.Find("000_spear");
-            }
+  //      bool __launch = false;
+  //      GameObject __things = null;
+  //      Vector3 __targetPos = Vector3.zero;
+  //      Vector3 __launchPos = Vector3.zero;
+  //      public void ThrowThings(Vector3 target)
+  //      {
+  //          //Vector3 dir = target - this.transform.position;
+  //          //Attack(dir);
 
 
-            if (null != __things && false == __launch)
-            {
-                __targetPos = target;
+  //          if(null == __things)
+  //          {
+  //              __things = GameObject.Find("000_spear");
+  //          }
 
-                Vector3 angle = new Vector3(90f, 0, -120f);
-                angle.y += (float)_eDir8 * -45f;
-                __things.transform.localEulerAngles = angle;
-                __things.transform.localPosition = Vector3.zero;
-                __launch = true;
-                __launchPos = __things.transform.position;
-                __elapsedTime_2 = 0f;
-                __things.SetActive(true);
 
-            }
-        }
-        float __elapsedTime_2 = 0f;
-        public void Update_Shot()
-        {
-            if (null != __things && true == __launch)
-            {
-                __elapsedTime_2 += Time.deltaTime;
-                //Vector3 dir = __targetPos - __things.transform.position;
-                __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+  //          if (null != __things && false == __launch)
+  //          {
+  //              __targetPos = target;
+
+  //              Vector3 angle = new Vector3(90f, 0, -120f);
+  //              angle.y += (float)_eDir8 * -45f;
+  //              __things.transform.localEulerAngles = angle;
+  //              __things.transform.localPosition = Vector3.zero;
+  //              __launch = true;
+  //              __launchPos = __things.transform.position;
+  //              __elapsedTime_2 = 0f;
+  //              __things.SetActive(true);
+
+  //          }
+  //      }
+  //      float __elapsedTime_2 = 0f;
+  //      public void Update_Shot()
+  //      {
+  //          if (null != __things && true == __launch)
+  //          {
+  //              __elapsedTime_2 += Time.deltaTime;
+  //              //Vector3 dir = __targetPos - __things.transform.position;
+  //              __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
                     
-                if(1f < __elapsedTime_2)
-                {
-                    __launch = false;
-                    __things.SetActive(false);
-                }
-            }
-        }
+  //              if(1f < __elapsedTime_2)
+  //              {
+  //                  __launch = false;
+  //                  __things.SetActive(false);
+  //              }
+  //          }
+  //      }
 
 
-        public void FallDown()
-        {
-            switch (_eDir8)
-            {
-                case eDirection8.up:
-                    { }
-                    break;
-                case eDirection8.down:
-                    { }
-                    break;
-                default:
-                    {
-                        _eDir8 = eDirection8.up; //기본상태 지정 
-                    }
-                    break;
-            }
+  //      public void FallDown()
+  //      {
+  //          switch (_eDir8)
+  //          {
+  //              case eDirection8.up:
+  //                  { }
+  //                  break;
+  //              case eDirection8.down:
+  //                  { }
+  //                  break;
+  //              default:
+  //                  {
+  //                      _eDir8 = eDirection8.up; //기본상태 지정 
+  //                  }
+  //                  break;
+  //          }
 
-            Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
-        }
-
-
-        //____________________________________________
-        //                  터치 이벤트  
-        //____________________________________________
-
-		private Vector3 _startPos = Vector3.zero;
-        private void TouchBegan() 
-        {
-            //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
-
-            _animator.speed = 1f;
+  //          Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
+  //      }
 
 
-            RaycastHit hit = Single.touchProcess.GetHit3D();
-            _startPos = hit.point;
-            _startPos.y = 0f;
+  //      //____________________________________________
+  //      //                  터치 이벤트  
+  //      //____________________________________________
+
+		//private Vector3 _startPos = Vector3.zero;
+    //    private void TouchBegan() 
+    //    {
+    //        //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
+
+    //        _animator.speed = 1f;
 
 
-            Single.lineControl.SetActive(_UIID_circle, true);
-
-            //_hp_cur--;
-            Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
-
-
-            if(8 > _hp_cur)
-            {
-                //다시 살리기
-                _animator.Play("idle 10");
-                _death = false;
-                _hp_cur = 10;
-                _eState = eState.Idle;    
-            }
+    //        RaycastHit hit = Single.touchProcess.GetHit3D();
+    //        _startPos = hit.point;
+    //        _startPos.y = 0f;
 
 
-        }
+    //        Single.lineControl.SetActive(_UIID_circle, true);
 
-        private void TouchMoved()
-        {
-            //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
+    //        //_hp_cur--;
+    //        Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
 
-            RaycastHit hit = Single.touchProcess.GetHit3D();
 
-            Vector3 dir = hit.point - this.transform.position;
-            dir.y = 0;
-            //DebugWide.LogBlue("TouchMoved " + dir);
+    //        if(8 > _hp_cur)
+    //        {
+    //            //다시 살리기
+    //            _animator.Play("idle 10");
+    //            _death = false;
+    //            _hp_cur = 10;
+    //            _eState = eState.Idle;    
+    //        }
 
-            //if (eKind.spearman == _eKind)
-            //{
-            //    Character target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
 
-            //    ThrowThings(target.transform.position);
+    //    }
 
-            //    Vector3 things_dir = target.transform.position - this.transform.position;
+    //    private void TouchMoved()
+    //    {
+    //        //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
 
-            //    _eState = eState.Attack;
-            //    Attack(things_dir);
+    //        RaycastHit hit = Single.touchProcess.GetHit3D();
 
-            //    _move.Move_Forward(dir, 1f, 1f); //chamto test
-            //    //DebugWide.LogRed(target.name); //chamto test
-            //}
-            //else
-            //{
-            //    Character target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
-            //    if (null != target)
-            //    {
-            //        _eState = eState.Attack;
-            //        Attack(dir);
+    //        Vector3 dir = hit.point - this.transform.position;
+    //        dir.y = 0;
+    //        //DebugWide.LogBlue("TouchMoved " + dir);
 
-            //        _move.Move_Forward(dir, 1f, 1f); //chamto test
-            //    }
-            //    else
-            //    {
-            //        _eState = eState.Move;
-            //        Move(dir, _disPerSecond, true);
-            //    }
-            //}
+    //        //if (eKind.spearman == _eKind)
+    //        //{
+    //        //    Character target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
+
+    //        //    ThrowThings(target.transform.position);
+
+    //        //    Vector3 things_dir = target.transform.position - this.transform.position;
+
+    //        //    _eState = eState.Attack;
+    //        //    Attack(things_dir);
+
+    //        //    _move.Move_Forward(dir, 1f, 1f); //chamto test
+    //        //    //DebugWide.LogRed(target.name); //chamto test
+    //        //}
+    //        //else
+    //        //{
+    //        //    Character target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
+    //        //    if (null != target)
+    //        //    {
+    //        //        _eState = eState.Attack;
+    //        //        Attack(dir);
+
+    //        //        _move.Move_Forward(dir, 1f, 1f); //chamto test
+    //        //    }
+    //        //    else
+    //        //    {
+    //        //        _eState = eState.Move;
+    //        //        Move(dir, _disPerSecond, true);
+    //        //    }
+    //        //}
                 
-            //Single.objectManager.LookAtTarget(this);
+    //        //Single.objectManager.LookAtTarget(this);
 
 
 
-        }
+    //    }
 
-        private void TouchEnded() 
-        {
-            //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+    //    private void TouchEnded() 
+    //    {
+    //        //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
 
-            Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
-            //_animator.SetInteger("state", (int)eState.Idle);
-            _animator.Play("idle 10");
+    //        Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
+    //        //_animator.SetInteger("state", (int)eState.Idle);
+    //        _animator.Play("idle 10");
 
-            //_eState = eState.Idle_Random;
-            //Single.objectManager.SetAll_Behavior(eState.Idle_Random);
+    //        //_eState = eState.Idle_Random;
+    //        //Single.objectManager.SetAll_Behavior(eState.Idle_Random);
 
-            //Single.lineControl.SetActive(_UIID_circle, false);
-        }
-    }
+    //        //Single.lineControl.SetActive(_UIID_circle, false);
+    //    }
+    //}
 
 
 
@@ -1692,7 +1931,7 @@ namespace HordeFight
 
         public bool _ai_running = false;
 
-        private Character _target = null;
+        //private Character _target = null;
 
 
         public enum eState
@@ -1802,28 +2041,26 @@ namespace HordeFight
 
                         float MIN_DIS = 0f;
                         float MAX_DIS = 1f;
-                        if(null == _target)
-                        {
-                            //_target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(),MIN_DIS, MAX_DIS);
-                        }
-                        else
-                        {
+                        //if(null == _target)
+                        //{
+                        //    //_target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(),MIN_DIS, MAX_DIS);
+                        //}
+                        //else
+                        //{
                             
-                            Vector3 dir = _target.transform.position - this.transform.position;
+                        //    Vector3 dir = _target.transform.position - this.transform.position;
 
-                            if (dir.sqrMagnitude > Mathf.Pow(MAX_DIS, 2))
-                            {
-                                _target = null;
-                            }
-                            else
-                            {
-                                //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
-                                this.GetComponent<Character>().Move(dir, 1f,true);
-                                this.GetComponent<Character>()._eState = Character.eState.Move;
-                            }
-
-
-                        }
+                        //    if (dir.sqrMagnitude > Mathf.Pow(MAX_DIS, 2))
+                        //    {
+                        //        _target = null;
+                        //    }
+                        //    else
+                        //    {
+                        //        //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
+                        //        this.GetComponent<Character>().Move(dir, 1f,true);
+                        //        this.GetComponent<Character>()._eState = Character.eState.Move;
+                        //    }
+                        //}
 
 
                     }

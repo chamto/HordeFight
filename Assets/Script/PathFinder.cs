@@ -32,7 +32,7 @@ namespace HordeFight
             int id_wh = 0;
             //int id_center = (TILEMAP_W * TILEMAP_H -1) / 2; //31x31 그리드의 중간셀 1차원위치값을 구한다
 
-            float cellSize = Single.gridManager.cellSize_x;
+            float cellSize = SingleO.gridManager.cellSize_x;
             NavGraphNode node = new NavGraphNode(0, Vector3.zero);
             Vector3 pos = Vector3.zero;
 
@@ -59,8 +59,8 @@ namespace HordeFight
             }
 
 
-            CellIndex[] grid3x3 =  Single.gridManager._indexesNxN[3];
-            CellIndex toPos;
+            Vector3Int[] grid3x3 =  SingleO.gridManager._indexesNxN[3];
+            Vector3Int toPos = Vector3Int.zero;
             int from , to;
             GraphEdge edge = new GraphEdge(0, 1);
             for (int h = 0; h < TILEMAP_H; h++) //세로
@@ -70,19 +70,19 @@ namespace HordeFight
                     
                     from = (w + h * TILEMAP_W);
                     //DebugWide.LogBlue("====================="); //chamto test
-                    foreach(CellIndex cidx in grid3x3)
+                    foreach(Vector3Int cidx in grid3x3)
                     {
                         //미리구한 그리드범위에 중심위치값 더하기
-                        toPos.n1 = cidx.n1 + w;
-                        toPos.n2 = cidx.n2 + h;
+                        toPos.x = cidx.x + w;
+                        toPos.z = cidx.z + h;
 
                         //설정된 노드 범위를 벗어나는 노드값은 추가하면 안된다 
-                        if (toPos.n1 < 0 || TILEMAP_W <= toPos.n1) continue;
-                        if (toPos.n2 < 0 || TILEMAP_H <= toPos.n2) continue;
+                        if (toPos.x < 0 || TILEMAP_W <= toPos.x) continue;
+                        if (toPos.z < 0 || TILEMAP_H <= toPos.z) continue;
                             
 
                         //1차원으로 변환
-                        to = toPos.n1 + toPos.n2 * TILEMAP_W;
+                        to = toPos.x + toPos.z * TILEMAP_W;
 
                         if (false == _graph.isNodePresent(to)) continue;
 

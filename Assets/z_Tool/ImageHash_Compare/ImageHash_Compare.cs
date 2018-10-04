@@ -482,7 +482,7 @@ namespace Tool
 
             if (GUI.Button(new Rect(10, 340, 200, 100), new GUIContent("Load", icon)))
             {
-                HordeFight.Single.coroutine.Start_Sync(_parser.LoadXML("ImageHashMap.xml"), null, "ImageHashMap");
+                HordeFight.SingleO.coroutine.Start_Sync(_parser.LoadXML("ImageHashMap.xml"), null, "ImageHashMap");
                 //HordeFight.Single.coroutine.Start_Sync(_parser.LoadXML("UnityImage_Hash128_Map.xml"), null, "UnityImage_Hash128_Map");
 
                 UpdateColors_Remove();

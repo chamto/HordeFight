@@ -42,11 +42,11 @@ namespace HordeFight
         public void SelectLeader(string name)
         {
             Sprite spr = null;
-            Single.resourceManager._sprIcons.TryGetValue(name.GetHashCode(), out spr);
+            SingleO.resourceManager._sprIcons.TryGetValue(name.GetHashCode(), out spr);
             if(null == spr)
             {
                 name = "None";
-                spr = Single.resourceManager._sprIcons[name.GetHashCode()];
+                spr = SingleO.resourceManager._sprIcons[name.GetHashCode()];
             }
             _img_leader.sprite = spr;
 
@@ -264,9 +264,9 @@ namespace HordeFight
             _move = GetComponent<Movement>();
 
             //셀정보 초기 위치값에 맞춰 초기화
-            CellIndex cellIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
-            Single.gridManager.AddCellInfo_Being(cellIdx, this);
-            _cellInfo = Single.gridManager.GetCellInfo(cellIdx);
+            Vector3Int cellIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
+            SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
+            _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 		}
 
 
@@ -298,14 +298,14 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            CellIndex curIdx = Single.gridManager.ToCellIndex(transform.position, Vector3.up);
+            Vector3Int curIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
 
             if(_cellInfo._index != curIdx)
             {
-                Single.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
-                Single.gridManager.AddCellInfo_Being(curIdx, this);
+                SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
+                SingleO.gridManager.AddCellInfo_Being(curIdx, this);
 
-                _cellInfo = Single.gridManager.GetCellInfo(curIdx);
+                _cellInfo = SingleO.gridManager.GetCellInfo(curIdx);
 
                 //chamto test
                 //string temp = "count:"+_cellInfo.Count + "  (" + curIdx + ")  ";
@@ -462,7 +462,7 @@ namespace HordeFight
         public AnimationClip GetClip(int nameToHash)
         {
             AnimationClip animationClip = null;
-            Single.resourceManager._aniClips.TryGetValue(nameToHash, out animationClip);
+            SingleO.resourceManager._aniClips.TryGetValue(nameToHash, out animationClip);
 
             //DebugWide.LogRed(animationClip + "   " + Single.resourceManager._aniClips.Count); //chamto test
 
@@ -676,18 +676,17 @@ namespace HordeFight
         }
 
 
-
-
         //____________________________________________
         //                  터치 이벤트   
         //____________________________________________
 
-        private Vector3 _startPos = Vector3.zero;
+        private Vector3 __startPos = Vector3.zero;
+        private LineSegment3 __lineSeg = LineSegment3.zero;
         private void TouchBegan()
         {
-            RaycastHit hit = Single.touchProcess.GetHit3D();
-            _startPos = hit.point;
-            _startPos.y = 0f;
+            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            __startPos = hit.point;
+            __startPos.y = 0f;
 
 
             if (8 > _hp_cur)
@@ -699,7 +698,7 @@ namespace HordeFight
                 _behaviorKind = Behavior.eKind.Idle;
             }
 
-            Single.uiMain.SelectLeader(_kind.ToString());
+            SingleO.uiMain.SelectLeader(_kind.ToString());
 
             //chamto test
             //CellInfo.Index cidx = Single.gridManager.ToCellIndex(hit.point, Vector3.up);
@@ -746,7 +745,24 @@ namespace HordeFight
             //}
             //DebugWide.LogBlue("allCnt:"+allCount + "  " +temp);
 
-            __path_find =  Single.pathFinder.Search(this.transform.position, Vector3.zero); //chamto test
+            //길찾기 시험 
+            //__path_find =  SingleO.pathFinder.Search(this.transform.position, Vector3.zero); //chamto test
+
+
+
+            __path_find = new Queue<Vector3>();
+            //foreach (Vector3Int v in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(5, Vector3.up))
+            foreach (Vector3Int v in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(5, Vector3.up))
+            {
+                Vector3 vv = v;
+
+                __path_find.Enqueue( vv * 0.16f);
+                //DebugWide.LogBlue(v);
+            }
+            __path_find.Enqueue(Vector3.zero);
+
+
+
 
         }
 
@@ -754,7 +770,7 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
 
-            RaycastHit hit = Single.touchProcess.GetHit3D();
+            RaycastHit hit = SingleO.touchProcess.GetHit3D();
 
             Vector3 dir = hit.point - this.transform.position;
             dir.y = 0;
@@ -762,7 +778,7 @@ namespace HordeFight
 
             if (eKind.spearman == _kind)
             {
-                Being target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this, 0.5f, 2f);
 
                 if(null != target)
                 {
@@ -781,7 +797,7 @@ namespace HordeFight
             }
             else
             {
-                Being target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this, 0, 0.2f);
                 if (null != target)
                 {
                     _behaviorKind = Behavior.eKind.Attack;
@@ -796,7 +812,7 @@ namespace HordeFight
                 }
             }
 
-            Single.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
+            SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
 
 
 
@@ -811,7 +827,7 @@ namespace HordeFight
             _animator.Play("idle 10");
 
             _behaviorKind = Behavior.eKind.Idle_Random;
-            Single.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
+            SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
 
          
         }
