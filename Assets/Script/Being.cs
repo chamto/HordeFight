@@ -300,6 +300,7 @@ namespace HordeFight
         {
             Vector3Int curIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
 
+            UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
             if(_cellInfo._index != curIdx)
             {
                 SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
@@ -750,16 +751,14 @@ namespace HordeFight
 
 
 
-            __path_find = new Queue<Vector3>();
+            //__path_find = new Queue<Vector3>();
             //foreach (Vector3Int v in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(5, Vector3.up))
-            foreach (Vector3Int v in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(5, Vector3.up))
-            {
-                Vector3 vv = v;
-
-                __path_find.Enqueue( vv * 0.16f);
-                //DebugWide.LogBlue(v);
-            }
-            __path_find.Enqueue(Vector3.zero);
+            //{
+            //    Vector3 vv = v;
+            //    __path_find.Enqueue( vv * 0.16f);
+            
+            //}
+            //__path_find.Enqueue(Vector3.zero);
 
 
 
@@ -830,6 +829,28 @@ namespace HordeFight
             SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
 
          
+            //==========
+
+            SingleO.debugViewer.ResetColor(); //타일 색정보 초기화  
+            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            Vector3 last = hit.point; last.y = 0;
+            Color color = Color.black;
+            foreach(Vector3 v3 in SingleO.objectManager.LineSegmentTest(__startPos, last))
+            {
+                Vector3Int iv = SingleO.gridManager.grid.WorldToCell(v3);
+                float sqrL = (v3 - __startPos).sqrMagnitude;
+
+                color = Color.blue;
+
+                SingleO.debugViewer.SetColor(v3, color);
+                //DebugWide.LogBlue(v3);
+
+                //DebugWide.LogBlue( iv + "  " + sqrL);
+            }
+            //DebugWide.LogBlue("++++++++++++++++++++++++++++++");
+
+            SingleO.debugViewer.DrawLine(__startPos, last);
+
         }
 
     }

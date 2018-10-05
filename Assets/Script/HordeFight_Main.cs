@@ -23,6 +23,7 @@ namespace HordeFight
             gameObject.AddComponent<GridManager>();
             gameObject.AddComponent<PathFinder>();
             gameObject.AddComponent<UI_Main>();
+            gameObject.AddComponent<DebugViewer>();
 
             SingleO.resourceManager.Init();
 
@@ -113,6 +114,14 @@ namespace HordeFight
             get
             {
                 return CSingleton<WideCoroutine>.Instance;
+            }
+        }
+
+        public static DebugViewer debugViewer
+        {
+            get
+            {
+                return CSingletonMono<DebugViewer>.Instance;
             }
         }
 
@@ -432,6 +441,55 @@ namespace HordeFight
 	}
 }
 
+//========================================================
+//==================     디버그      ==================
+//========================================================
+
+namespace HordeFight
+{
+    public class DebugViewer : MonoBehaviour
+    {
+        private Tilemap _tilemap = null;
+        private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
+
+
+		private void Start()
+		{
+            _tilemap = GameObject.Find("Tilemap_Debug").GetComponent<Tilemap>();
+		}
+
+		public void ResetColor()
+		{
+            foreach(Vector3Int i3 in _colorMap.Keys)
+            {
+                _tilemap.SetColor(i3, Color.white);
+            }
+		}
+        public void SetColor(Vector3 pos , Color c)
+        {
+            Vector3Int i3 = _tilemap.WorldToCell(pos);
+            _tilemap.SetTileFlags(i3, UnityEngine.Tilemaps.TileFlags.None);
+            _tilemap.SetColor(i3, c);
+
+            if(!_colorMap.Keys.Contains(i3))
+                _colorMap.Add(i3, c);
+        }
+
+        private Vector3 _start = Vector3.zero;
+        private Vector3 _end = Vector3.zero;
+        public void DrawLine(Vector3 start, Vector3 end)
+        {
+            _start = start;
+            _end = end;
+        }
+
+		private void Update()
+		{
+            Debug.DrawLine(_start, _end);
+		}
+	}
+}
+
 
 //========================================================
 //==================     그리드 관리기     ==================
@@ -501,6 +559,10 @@ namespace HordeFight
         public const int NxN_MIN = 3;   //그리드 범위 최소크기
         public const int NxN_MAX = 11;  //그리드 범위 최대크기
 
+        public Grid grid
+        {
+            get { return _grid; }
+        }
         public float cellSize_x
         {
             get
@@ -520,13 +582,18 @@ namespace HordeFight
 		private void Start()
 		{
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
-            _structTilemap  = GameObject.Find("Tilemap_Structure").GetComponent<Tilemap>();
+            GameObject o = GameObject.Find("Tilemap_Structure");
+            if(null != o)
+            {
+                _structTilemap = o.GetComponent<Tilemap>();    
+            }
 
-            _indexesNxN[3] = CreateIndexesNxN_SquareCenter(3, Vector3.up);
-            _indexesNxN[5] = CreateIndexesNxN_SquareCenter(5, Vector3.up);
-            _indexesNxN[7] = CreateIndexesNxN_SquareCenter(7, Vector3.up);
-            _indexesNxN[9] = CreateIndexesNxN_SquareCenter(9, Vector3.up);
-            _indexesNxN[11] = CreateIndexesNxN_SquareCenter(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
+
+            _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
+            _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.up);
+            _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up);
+            _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.up);
+            _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
 		}
 
 		private void Update()
@@ -721,6 +788,8 @@ namespace HordeFight
         }
         public bool HasStructTile(Vector3 tilePos, out Vector3 tileCenterToWorld)
         {
+            tileCenterToWorld = Vector3.zero;
+            if (null == _structTilemap) return false;
 
             //x-z 평면상에 타일맵을 놓아도 내부적으로는 x-y 평면으로 처리된다
             Vector3Int tileInt = _structTilemap.WorldToCell(tilePos);
@@ -861,7 +930,7 @@ namespace HordeFight
             return cellIndex;
         }
 
-        public Vector3 ToPosition(Vector3Int ci , Vector3 axis)
+        public Vector3 ToPosition_Center(Vector3Int ci , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
@@ -877,6 +946,24 @@ namespace HordeFight
                 //셀의 중간에 위치하도록 한다
                 pos.x += cellSize.x * 0.5f;
                 pos.z += cellSize.z * 0.5f;
+            }
+
+            return pos;
+        }
+
+        public Vector3 ToPosition(Vector3Int ci, Vector3 axis)
+        {
+            Vector3 pos = Vector3.zero;
+            Vector3 cellSize = Vector3.zero;
+
+            if (Vector3.up == axis)
+            {
+                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
+                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+
+                pos.x = (float)ci.x * cellSize.x;
+                pos.z = (float)ci.z * cellSize.z;
+
             }
 
             return pos;
@@ -922,19 +1009,53 @@ namespace HordeFight
         //____________________________________________
         //              선분을 이용한 CCD   
         //____________________________________________
-        public void LineSegmentTest(Vector3 origin, Vector3 last)
+        public Vector3[] LineSegmentTest(Vector3 origin, Vector3 last)
         {
             LineSegment3 lineSeg = LineSegment3.zero;
             lineSeg.origin = origin;
             lineSeg.direction = last - origin;
 
+            LinkedList<Vector3> cellList = new LinkedList<Vector3>();
+            float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
+            float CELL_SQUARED_RADIUS = Mathf.Pow(CELL_HARF_SIZE, 2f);
+            float sqrDis = 0f;
             float t_c = 0;
-            foreach (Vector3Int iy in SingleO.gridManager._indexesNxN[5])
+
+            //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
+            Vector3Int toGridInt = SingleO.gridManager.ToCellIndex(origin, Vector3.up);
+            Vector3 toPos = SingleO.gridManager.ToPosition(toGridInt, Vector3.up);
+            //DebugWide.LogBlue(toGridInt);
+            foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
-                Vector3 vx = (Vector3)iy * SingleO.gridManager.cellSize_x;
-                //lineSeg.MinimumDistanceSquared(origin + iy, out t_c);
+                //셀의 중심좌표로 변환 
+                Vector3 worldCellCenterPos = SingleO.gridManager.ToPosition_Center(cellLBPos, Vector3.up);
+                worldCellCenterPos += toPos;
+
+
+                //시작위치셀을 포함하거나 뺄때가 있다. 사용하지 않느다 
+                //선분방향과 반대방향인 셀들을 걸러낸다 
+                //if(0 > Vector3.Dot(lineSeg.direction, worldCellCenterPos - origin))
+                //{
+                //    continue;
+                //}
+
+                sqrDis = lineSeg.MinimumDistanceSquared(worldCellCenterPos, out t_c);
+
+                //선분에 멀리있는 셀들을 걸러낸다
+                if(CELL_SQUARED_RADIUS < sqrDis)
+                {
+                    continue;
+                }
+
+                cellList.AddLast(worldCellCenterPos);
             }
 
+
+            Vector3[] result = (from v3 in cellList
+                                orderby (v3-origin).sqrMagnitude ascending
+                                select v3).ToArray();
+
+            return result;
         }
 
         //____________________________________________
@@ -1358,7 +1479,7 @@ namespace HordeFight
 
             uint id_sequence = 0;
             Vector3 pos = Vector3.zero;
-            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
@@ -1375,7 +1496,7 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
