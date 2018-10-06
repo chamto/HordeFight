@@ -455,7 +455,12 @@ namespace HordeFight
 
 		private void Start()
 		{
-            _tilemap = GameObject.Find("Tilemap_Debug").GetComponent<Tilemap>();
+            GameObject game = GameObject.Find("Tilemap_Debug");
+            if(null != game)
+            {
+                _tilemap = game.GetComponent<Tilemap>();    
+            }
+
 		}
 
 		public void ResetColor()
@@ -786,6 +791,19 @@ namespace HordeFight
         {
             return _structTilemap;
         }
+
+        public bool HasStructTile(Vector3 tilePos)
+        {
+            Vector3Int tileInt = _structTilemap.WorldToCell(tilePos);
+
+            RuleTile rTile = _structTilemap.GetTile<RuleTile>(tileInt);
+            if (null != rTile)
+            {
+                return true;
+            }
+
+            return false;
+        }
         public bool HasStructTile(Vector3 tilePos, out Vector3 tileCenterToWorld)
         {
             tileCenterToWorld = Vector3.zero;
@@ -930,6 +948,16 @@ namespace HordeFight
             return cellIndex;
         }
 
+        public Vector3 ToCenterPosition(Vector3 worldPos, Vector3 axis)
+        {
+            Vector3 pos = Vector3.zero;
+            Vector3 cellSize = Vector3.zero;
+
+            Vector3Int cellPos = this.ToCellIndex(worldPos, axis);
+
+            return this.ToPosition_Center(cellPos, axis);
+        }
+
         public Vector3 ToPosition_Center(Vector3Int ci , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
@@ -984,7 +1012,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 1;
+        private int __TestSkelCount = 30;
 
         private void Start()
         {
@@ -1009,11 +1037,11 @@ namespace HordeFight
         //____________________________________________
         //              선분을 이용한 CCD   
         //____________________________________________
-        public Vector3[] LineSegmentTest(Vector3 origin, Vector3 last)
+        public Vector3[] LineSegmentTest(Vector3 origin, Vector3 dir)
         {
             LineSegment3 lineSeg = LineSegment3.zero;
             lineSeg.origin = origin;
-            lineSeg.direction = last - origin;
+            lineSeg.direction = dir;
 
             LinkedList<Vector3> cellList = new LinkedList<Vector3>();
             float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
@@ -1022,22 +1050,22 @@ namespace HordeFight
             float t_c = 0;
 
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
-            Vector3Int toGridInt = SingleO.gridManager.ToCellIndex(origin, Vector3.up);
-            Vector3 toPos = SingleO.gridManager.ToPosition(toGridInt, Vector3.up);
+            Vector3Int originToGridInt = SingleO.gridManager.ToCellIndex(origin, Vector3.up);
+            Vector3 originToPos = SingleO.gridManager.ToPosition(originToGridInt, Vector3.up);
             //DebugWide.LogBlue(toGridInt);
             foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
                 Vector3 worldCellCenterPos = SingleO.gridManager.ToPosition_Center(cellLBPos, Vector3.up);
-                worldCellCenterPos += toPos;
+                worldCellCenterPos += originToPos;
 
 
                 //시작위치셀을 포함하거나 뺄때가 있다. 사용하지 않느다 
-                //선분방향과 반대방향인 셀들을 걸러낸다 
-                //if(0 > Vector3.Dot(lineSeg.direction, worldCellCenterPos - origin))
-                //{
-                //    continue;
-                //}
+                //선분방향과 반대방향인 셀들을 걸러낸다 , (0,0)원점 즉 출발점의 셀은 제외한다 
+                if(0 == cellLBPos.sqrMagnitude || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - origin))
+                {
+                    continue;
+                }
 
                 sqrDis = lineSeg.MinimumDistanceSquared(worldCellCenterPos, out t_c);
 
@@ -1062,43 +1090,6 @@ namespace HordeFight
         //                  충돌 검사   
         //____________________________________________
        
-        public void CollisionPush_Rigid(Being src, Vector3 rigPos, float rigRadius)
-        {
-
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
-
-            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            sqr_dis = src.transform.position - rigPos;
-            r_sum = src.GetCollider_Radius() + rigRadius;
-
-            //1.두 캐릭터가 겹친상태 
-            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-            {
-                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                //todo : 최적화 필요 
-
-                Vector3 n = sqr_dis.normalized;
-
-
-                //2.반지름 이상으로 겹쳐있는 경우
-                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                {
-                    //3.완전 겹쳐있는 경우
-                    if (n == Vector3.zero)
-                    {
-                        //방향값이 없기 때문에 임의로 지정해 준다. 
-                        n = Misc.RandomDir8_AxisY();
-                    }
-
-
-                }
-
-                //src._move.Move_Forward(n, div_dis, 1);
-                src.transform.position = rigPos + (n * rigRadius); 
-            }
-        }
 
         public void CollisionPush(Being src , Being dst)
         {
@@ -1134,8 +1125,11 @@ namespace HordeFight
                     div_dis = 0.3f;
                 }
 
+                //밀리는 처리 
+                //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
                 src._move.Move_Forward(n, div_dis, 1);
-                dst._move.Move_Forward(-n, div_dis, 1);
+                //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
+                //dst._move.Move_Forward(-n, div_dis, 1);
 
             }
         }
@@ -1158,10 +1152,93 @@ namespace HordeFight
             }
         }
 
+        //고정된 물체와 충돌 검사 : 동굴벽 등 
+        public void CollisionPush_Rigid(Being src, Vector3 collisionCellPos_center, float rigRadius)
+        {
+
+            Vector3 sqr_dis = collisionCellPos_center - src._lastCellPos_withoutCollision;
+
+            Vector3 pos = src.transform.position;
+
+            eDirection8 eDirection = Misc.TransDirection8_AxisY(sqr_dis);
+            //DebugWide.LogBlue(eDirection + "   "  + collisionCellPos_center + "   " + SingleO.gridManager.ToCellIndex(src._lastCellPos_withoutCollision, Vector3.up) );
+
+
+
+            switch (eDirection)
+            {
+                case eDirection8.up:
+                case eDirection8.down:
+                    {
+                        pos.z = collisionCellPos_center.z - 0.08f;
+                    }
+                    break;
+                case eDirection8.left:
+                case eDirection8.right:
+                    {
+                        pos.x = collisionCellPos_center.x - 0.08f;
+                    }
+                    break;
+                default:
+                    {
+                        pos.z = collisionCellPos_center.z;
+                        //pos = src._lastCellPos_withoutCollision;
+                    }
+                    break;
+            }
+
+            src.transform.position = pos;
+
+        }
+
+        public void CollisionPush_Rigid2(Being src, Vector3 collisionCellPos_center, float rigRadius)
+        {
+
+            Vector3 sqr_dis = Vector3.zero;
+            float r_sum = 0f;
+
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            sqr_dis = src.transform.localPosition - collisionCellPos_center;
+            r_sum = src.GetCollider_Radius() + rigRadius;
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+            {
+                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+                //todo : 최적화 필요 
+
+                Vector3 n = sqr_dis.normalized;
+                //n = Vector3.back;
+                //Vector3 n = sqr_dis;
+                float div_dis = 0.5f;
+
+                //2.반지름 이상으로 겹쳐있는 경우
+                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                {
+                    //3.완전 겹쳐있는 경우
+                    if (n == Vector3.zero)
+                    {
+                        //방향값이 없기 때문에 임의로 지정해 준다. 
+                        n = Misc.RandomDir8_AxisY();
+                    }
+
+                    div_dis = 0.3f;
+                }
+
+
+
+                //src._move.Move_Forward(n, div_dis, 1);
+                //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, Vector3.up) + "   " + src.transform.position);
+                
+
+            }
+        }
+
         public void UpdateCollision_UseDirectGrid3x3()
         {
             //int count = 0;
-            Vector3 centerPos = Vector3.zero;
+            Vector3 collisionCellPos_center = Vector3.zero;
             CellInfo cellInfo = null;
             foreach (Being src in _being_list)
             {
@@ -1182,12 +1259,14 @@ namespace HordeFight
                     }
                 }
 
-                //동굴벽과 캐릭터 충돌처리 
-                if (SingleO.gridManager.HasStructTile(src.transform.position, out centerPos))
-                {
-                    //CollisionPush_Rigid(src, centerPos, 0.1f);
 
+
+                //동굴벽과 캐릭터 충돌처리 
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out collisionCellPos_center))
+                {
+                    CollisionPush_Rigid2(src, collisionCellPos_center, 0.2f);
                 }
+
 
 
             }
@@ -1479,7 +1558,7 @@ namespace HordeFight
 
             uint id_sequence = 0;
             Vector3 pos = Vector3.zero;
-            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
@@ -1487,7 +1566,7 @@ namespace HordeFight
             //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 

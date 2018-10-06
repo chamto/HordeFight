@@ -129,7 +129,23 @@ namespace HordeFight
 
     public class Movement : MonoBehaviour
     {
+        public const float ONE_METER = 0.16f; //타일 한개의 가로길이 
+        public const float SQR_ONE_METER = ONE_METER * ONE_METER;
+        public const float WorldToMeter = 1f / ONE_METER;
+        public const float MeterToWorld = ONE_METER;
+
         public eDirection8 _eDir8 = eDirection8.down;
+        private float _speed_meterPerSecond = 1f;
+
+        private bool _isMoving = false;
+        private float _elapsedTime = 0f;
+        private float _prevInterpolationTime = 0;
+        private Vector3 _dir = Vector3.zero;
+        private Vector3 _startPos = Vector3.zero; 
+        private Vector3 _lastTargetPos = Vector3.zero;
+        private Vector3 _nextTargetPos = Vector3.zero;
+        private Queue<Vector3> _targetPath = new Queue<Vector3>();
+
 
         private void Start()
         {
@@ -137,6 +153,77 @@ namespace HordeFight
 
         private void Update()
         {
+            UpdateNextPath();
+        }
+
+
+        public void UpdateNextPath()
+        {
+            if (false == _isMoving) return;
+
+            if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER)
+            {
+                if (0 == _targetPath.Count)
+                {
+                    //이동종료 
+                    _isMoving = false;
+                    return;
+                }
+
+                _nextTargetPos = _targetPath.Dequeue();
+                _dir = Quaternion.FromToRotation(_dir, _nextTargetPos - this.transform.position) * _dir;
+                _eDir8 = Misc.TransDirection8_AxisY(_dir);
+
+            }
+
+
+
+            //1초후 초기화 
+            if(_speed_meterPerSecond < _elapsedTime)
+            {
+                _elapsedTime = 0;
+                _prevInterpolationTime = 0;
+            }
+            _elapsedTime += Time.deltaTime;
+             
+            Move_MeterPerSecond(_dir, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
+
+            //this.transform.position = Vector3.Lerp(this.transform.position, _targetPos, _elapsedTime / (_onePath_movingTime * _speed));
+        }
+
+        public void MoveToTarget(Vector3 targetPos, float speed_meterPerSecond)
+        {
+            _targetPath.Clear(); //기존 설정 경로를 비운다
+
+            _isMoving = true;
+            _startPos = this.transform.position;
+            _lastTargetPos = targetPos;
+            _nextTargetPos = this.transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
+            _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
+            _dir = Misc.GetDir8Normal_AxisY(_eDir8);
+
+            //연속이동요청시에 이동처리를 할수 있게 주석처리함
+            //_elapsedTime = 0; 
+            //_prevInterpolationTime = 0;
+
+            //_target_path =  //todo : 목표까지의 길찾기 경로 넣기
+            _targetPath.Enqueue(_lastTargetPos);
+        }
+
+
+        private void Move_MeterPerSecond(Vector3 dir, float meter, float perSecond)
+        {
+            float interpolationTime = Interpolation.easeInOutBack(0f, 1f, (_elapsedTime) / perSecond);
+            //float deltaTime = Interpolation.linear(0f, 1f, (_elapsedTime) / perSecond);
+
+
+            //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
+            this.transform.Translate(dir * (ONE_METER * meter) * (interpolationTime -_prevInterpolationTime));
+
+            //보간 없는 기본형
+            //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
+
+            _prevInterpolationTime = interpolationTime;
         }
 
         public void Move_Forward(Vector3 dir, float distance, float speed)
@@ -144,14 +231,25 @@ namespace HordeFight
             //보간, 이동 처리
             //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
             this.transform.Translate(dir * Time.deltaTime * speed * distance);
+            //dir.Normalize();
+            //this.transform.Translate(dir * 0.05f);
+            //DebugWide.LogBlue((dir * 0.05f).magnitude);
         }
 
-        public void MoveToPoint(Vector3 target, float speed)
-        {
-            //todo 
-            //Vector3 v = target - this.transform.position;
-            //Vector3.Lerp(this.transform.position)
-        }
+        //public void Move_Forward2(Vector3 dir, float distance, float speed)
+        //{
+        //    Vector3[] lineTest = SingleO.objectManager.LineSegmentTest(transform.position, dir);
+        //    foreach (Vector3 centerPos in lineTest)
+        //    {
+        //        if (true == SingleO.gridManager.HasStructTile(centerPos))
+        //        {
+        //            return;
+        //        }
+
+        //        break; //첫번째 것만 검사한다 
+        //    }
+        //    Move_Forward(dir, distance, speed);
+        //}
     }
     //========================================================
 
@@ -245,6 +343,7 @@ namespace HordeFight
         //이동 
         public Movement _move = null;
         public CellInfo _cellInfo = null;
+        public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
 
 		private void Start()
@@ -300,6 +399,15 @@ namespace HordeFight
         {
             Vector3Int curIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
 
+            //충돌없는 마지막 타일 위치를 갱신한다 
+            Vector3 centerPos = Vector3.zero;
+            if(false == SingleO.gridManager.HasStructTile(transform.position, out centerPos))
+            {
+                _lastCellPos_withoutCollision = centerPos;//SingleO.gridManager.ToPosition_Center(curIdx,Vector3.up);
+                //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
+            }
+                
+
             UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
             if(_cellInfo._index != curIdx)
             {
@@ -342,6 +450,7 @@ namespace HordeFight
             }
             else if (Behavior.eKind.Move == _behaviorKind)
             {
+                Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
                 _animator.SetInteger("state", (int)Behavior.eKind.Move);
             }
             else if (Behavior.eKind.Attack == _behaviorKind)
@@ -756,14 +865,13 @@ namespace HordeFight
             //{
             //    Vector3 vv = v;
             //    __path_find.Enqueue( vv * 0.16f);
-            
+
             //}
             //__path_find.Enqueue(Vector3.zero);
 
 
-
-
         }
+
 
         private void TouchMoved()
         {
@@ -796,30 +904,43 @@ namespace HordeFight
             }
             else
             {
+
+                //Vector3[] lineTest = SingleO.objectManager.LineSegmentTest(transform.position, dir);
+                //foreach (Vector3 centerPos in lineTest)
+                //{
+                //    if(true == SingleO.gridManager.HasStructTile(centerPos))
+                //        return;
+
+                //    break; //첫번째 것만 검사한다 
+                //}
+
+                //dir.Normalize();
+                //float dis = 0.16f * 1f;
+                float dis = 1f;
                 Being target = SingleO.objectManager.GetNearCharacter(this, 0, 0.2f);
                 if (null != target)
                 {
                     _behaviorKind = Behavior.eKind.Attack;
                     Attack(dir);
 
-                    _move.Move_Forward(dir, 1f, 1f); //chamto test
+                    _move.Move_Forward(dir, dis, 1f); //chamto test
                 }
                 else
                 {
                     _behaviorKind = Behavior.eKind.Move;
-                    Move(dir, 1f, true);
+                    //Move(dir, dis, true);
+                    _move.MoveToTarget(hit.point, 1f);
                 }
             }
 
             SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
-
-
 
         }
 
         private void TouchEnded()
         {
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
+            _move.MoveToTarget(transform.position, 1f); //이동종료
 
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);
@@ -831,25 +952,24 @@ namespace HordeFight
          
             //==========
 
-            SingleO.debugViewer.ResetColor(); //타일 색정보 초기화  
-            RaycastHit hit = SingleO.touchProcess.GetHit3D();
-            Vector3 last = hit.point; last.y = 0;
-            Color color = Color.black;
-            foreach(Vector3 v3 in SingleO.objectManager.LineSegmentTest(__startPos, last))
-            {
-                Vector3Int iv = SingleO.gridManager.grid.WorldToCell(v3);
-                float sqrL = (v3 - __startPos).sqrMagnitude;
+            //SingleO.debugViewer.ResetColor(); //타일 색정보 초기화  
+            //RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            //Vector3 last = hit.point; last.y = 0;
+            //Color color = Color.black;
+            //foreach(Vector3 v3 in SingleO.objectManager.LineSegmentTest(__startPos, last))
+            //{
+            //    Vector3Int iv = SingleO.gridManager.grid.WorldToCell(v3);
+            //    float sqrL = (v3 - __startPos).sqrMagnitude;
 
-                color = Color.blue;
+            //    color = Color.blue;
+            //    color.a = 0.2f;
+            //    SingleO.debugViewer.SetColor(v3, color);
+            //    //DebugWide.LogBlue(v3);
 
-                SingleO.debugViewer.SetColor(v3, color);
-                //DebugWide.LogBlue(v3);
-
-                //DebugWide.LogBlue( iv + "  " + sqrL);
-            }
-            //DebugWide.LogBlue("++++++++++++++++++++++++++++++");
-
-            SingleO.debugViewer.DrawLine(__startPos, last);
+            //    //DebugWide.LogBlue( iv + "  " + sqrL);
+            //}
+            ////DebugWide.LogBlue("++++++++++++++++++++++++++++++");
+            //SingleO.debugViewer.DrawLine(__startPos, last);
 
         }
 

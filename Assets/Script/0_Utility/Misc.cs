@@ -21,6 +21,7 @@ namespace Utility
         leftDown = 5,
         down = 6,
         rightDown = 7,
+        max,
 
     }
 }
@@ -444,27 +445,27 @@ namespace Utility
         //==================       애셋 경로       ==================
         //========================================================
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         public const string CURRENT_PLATFORM = "UNITY_EDITOR";
         public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
-        #elif UNITY_IPHONE
+#elif UNITY_IPHONE
             public const string CURRENT_PLATFORM = "UNITY_IPHONE";
             public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
-        #elif UNITY_ANDROID
+#elif UNITY_ANDROID
             public const string CURRENT_PLATFORM = "UNITY_ANDROID";
             public static string ASSET_PATH = "jar:file://" + UnityEngine.Application.dataPath + "!/assets/";
-        #elif SERVER
+#elif SERVER
             public const string CURRENT_PLATFORM = "SERVER";
             public static string ASSET_PATH = "Data_KOR\\";
-        #elif TOOL
+#elif TOOL
             public const string CURRENT_PLATFORM = "TOOL";
             public static string ASSET_PATH = "Data_KOR\\";
-        #endif
+#endif
 
         //========================================================
         //==================     문자열 처리     ==================
         //========================================================
-        static  public Vector3 StringToVector3(string s)
+        static public Vector3 StringToVector3(string s)
         {
             char[] delimiterChars = { ' ', ',', '(', ')' };
             string[] parts = s.Split(delimiterChars, System.StringSplitOptions.RemoveEmptyEntries);
@@ -475,7 +476,7 @@ namespace Utility
                 float.Parse(parts[2]));
         }
 
-        static  public Vector2Int StringToVector2Int(string s)
+        static public Vector2Int StringToVector2Int(string s)
         {
             char[] delimiterChars = { ' ', ',', '(', ')' };
             string[] parts = s.Split(delimiterChars, System.StringSplitOptions.RemoveEmptyEntries);
@@ -510,8 +511,8 @@ namespace Utility
         //returns a random integer between x and y
         static public int RandInt(int x, int y)
         {
-            Assert.IsTrue((y >= x) , "<RandInt>: y is less than x");
-            
+            Assert.IsTrue((y >= x), "<RandInt>: y is less than x");
+
             return rand.Next() % (y - x + 1) + x;
         }
 
@@ -524,12 +525,12 @@ namespace Utility
 
         //.NextDouble() 과 같은 함수이다.
         //returns a random double between zero and 1
-        static public double RandFloat() 
-        { 
+        static public double RandFloat()
+        {
             //https://docs.microsoft.com/ko-kr/dotnet/api/system.random.next?view=netframework-4.7.2#System_Random_Next
             //MaxValue 는 rand.Next 가 나올수 있는 값보다 1 큰 값이다. 
             //1 큰값으로 나누기 때문에 1.0 에 결코 도달하지 못한다 
-            return (rand.Next() / (int.MaxValue)); 
+            return (rand.Next() / (int.MaxValue));
         }
 
         //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 
@@ -552,7 +553,7 @@ namespace Utility
 
         //returns a random number with a normal distribution. See method at
         //http://www.taygeta.com/random/gaussian.html
-        private static double  __gaussian_y2 = 0;
+        private static double __gaussian_y2 = 0;
         private static bool __gaussian_useLast = false;
         static public double RandGaussian(double mean = 0.0, double standard_deviation = 1.0)
         {
@@ -625,6 +626,23 @@ namespace Utility
             dir.z = Mathf.Sin(ANG_RAD * rand);
 
             return dir;
+        }
+
+
+        //미리구한 정규화된 8방향값 
+        static private Vector3[] _Dir8_AxisY = new Vector3[]
+        {   new Vector3(1,0,0).normalized ,     //    right = 0, 
+            new Vector3(1,0,1).normalized ,     //    rightUp = 1, 
+            new Vector3(0,0,1).normalized ,     //    up = 2,
+            new Vector3(-1,0,1).normalized ,    //    leftUp = 3,
+            new Vector3(-1,0,0).normalized ,    //    left = 4,
+            new Vector3(-1,0,-1).normalized ,   //    leftDown = 5,
+            new Vector3(0,0,-1).normalized ,    //    down = 6,
+            new Vector3(1,0,-1).normalized ,    //    rightDown = 7,
+        };
+        static public Vector3 GetDir8Normal_AxisY(eDirection8 eDirection)
+        {
+            return _Dir8_AxisY[(int)eDirection];
         }
 
 
