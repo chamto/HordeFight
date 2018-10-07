@@ -1116,7 +1116,7 @@ namespace HordeFight
 
                 Vector3 n = sqr_dis.normalized;
                 //Vector3 n = sqr_dis;
-                float div_dis = 0.1f;
+                float div_dis = 0.5f;
 
                 //2.반지름 이상으로 겹쳐있는 경우
                 if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
@@ -1128,14 +1128,14 @@ namespace HordeFight
                         n = Misc.RandomDir8_AxisY();
                     }
 
-                    div_dis = 0.3f;
+                    div_dis = 0.2f;
                 }
 
                 //밀리는 처리 
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-                src._move.Move_Forward(n, div_dis, 1);
+                src._move.Move_Forward(n, 2f, div_dis);
                 //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                dst._move.Move_Forward(-n, div_dis, 1);
+                dst._move.Move_Forward(-n, 2f, div_dis);
 
             }
         }
@@ -1381,6 +1381,7 @@ namespace HordeFight
             foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[ NxN ])
             {
                 cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+
                 if (null == cellInfo) continue;
 
                 foreach (Being dst in cellInfo)
@@ -1388,7 +1389,6 @@ namespace HordeFight
                     if (src == dst) continue;
 
                     //count++;
-
                     //==========================================================v
                     sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
 
@@ -1396,7 +1396,7 @@ namespace HordeFight
                     if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
                     {
 
-                        //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  t.name); //chamto test
+                        //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  dst.name); //chamto test
 
                         //기존 객체보다 더 가까운 경우
                         if (min_value > sqr_dis)
@@ -1582,7 +1582,7 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);

@@ -173,6 +173,8 @@ namespace HordeFight
                 }
 
                 _nextTargetPos = _targetPath.Dequeue();
+                _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
+
                 _dir = Quaternion.FromToRotation(_dir, _nextTargetPos - this.transform.position) * _dir;
                 _eDir8 = Misc.TransDirection8_AxisY(_dir);
 
@@ -233,7 +235,8 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
-            
+
+            perSecond = 1f / perSecond;
             //보간 없는 기본형
             this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
         }
@@ -919,14 +922,14 @@ namespace HordeFight
 
                 //dir.Normalize();
                 //float dis = 0.16f * 1f;
-                float dis = 1f;
+
                 Being target = SingleO.objectManager.GetNearCharacter(this, 0, 0.2f);
                 if (null != target)
                 {
                     _behaviorKind = Behavior.eKind.Attack;
                     Attack(dir);
 
-                    _move.Move_Forward(dir, dis, 1f); //chamto test
+                    _move.Move_Forward(dir, 2f, 1f); //chamto test
                 }
                 else
                 {
