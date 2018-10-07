@@ -16,16 +16,18 @@ namespace HordeFight
         void Start()
         {
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
-           
-            gameObject.AddComponent<TouchProcess>();
+            SingleO.resourceManager.Init(); //스프라이트 로드 
+
             gameObject.AddComponent<LineControl>();
-            gameObject.AddComponent<ObjectManager>();
-            gameObject.AddComponent<GridManager>();
+
             gameObject.AddComponent<PathFinder>();
+            gameObject.AddComponent<GridManager>();
+            gameObject.AddComponent<ObjectManager>();
+
             gameObject.AddComponent<UI_Main>();
             gameObject.AddComponent<DebugViewer>();
 
-            SingleO.resourceManager.Init();
+            gameObject.AddComponent<TouchProcess>();
 
             //===================
 
@@ -35,7 +37,8 @@ namespace HordeFight
         }
 
         // Update is called once per frame
-        void Update()
+        //void Update()
+        void FixedUpdate()
         {
 
         }
@@ -322,7 +325,8 @@ namespace HordeFight
 			
 		}
 
-		private void Update()
+		//private void Update()
+        void FixedUpdate()
 		{
             //foreach(LineInfo info in _list.Values)
             //{
@@ -488,7 +492,8 @@ namespace HordeFight
             _end = end;
         }
 
-		private void Update()
+		//private void Update()
+        void FixedUpdate()
 		{
             Debug.DrawLine(_start, _end);
 		}
@@ -593,15 +598,16 @@ namespace HordeFight
                 _structTilemap = o.GetComponent<Tilemap>();    
             }
 
-
             _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
             _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.up);
             _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up);
             _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.up);
             _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
+
 		}
 
-		private void Update()
+		//private void Update()
+        void FixedUpdate()
 		{
 			
 		}
@@ -1012,7 +1018,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 30;
+        private int __TestSkelCount = 3;
 
         private void Start()
         {
@@ -1021,8 +1027,8 @@ namespace HordeFight
 
 
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
-        private void Update()
-        //private void FixedUpdate()
+        //private void Update()
+        private void FixedUpdate()
         {
             //UpdateCollision();
 
@@ -1129,7 +1135,7 @@ namespace HordeFight
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
                 src._move.Move_Forward(n, div_dis, 1);
                 //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                //dst._move.Move_Forward(-n, div_dis, 1);
+                dst._move.Move_Forward(-n, div_dis, 1);
 
             }
         }
@@ -1242,7 +1248,8 @@ namespace HordeFight
             CellInfo cellInfo = null;
             foreach (Being src in _being_list)
             {
-                
+                if (null == src._cellInfo) continue;
+
                 //1. 3x3그리드 정보를 가져온다
                 foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
                 {
@@ -1566,9 +1573,9 @@ namespace HordeFight
             //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
+            Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
@@ -1580,7 +1587,7 @@ namespace HordeFight
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
 

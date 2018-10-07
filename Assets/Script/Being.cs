@@ -30,7 +30,8 @@ namespace HordeFight
 
         float __deltaTime = 0.0f;
         float __msec, __fps;
-        private void Update()
+        //private void Update()
+        void FixedUpdate()
         {
             __deltaTime += (Time.unscaledDeltaTime - __deltaTime) * 0.1f;
 
@@ -151,7 +152,8 @@ namespace HordeFight
         {
         }
 
-        private void Update()
+        //private void Update()
+        void FixedUpdate()
         {
             UpdateNextPath();
         }
@@ -186,7 +188,7 @@ namespace HordeFight
             }
             _elapsedTime += Time.deltaTime;
              
-            Move_MeterPerSecond(_dir, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
+            Move_Interpolation(_dir, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
 
             //this.transform.position = Vector3.Lerp(this.transform.position, _targetPos, _elapsedTime / (_onePath_movingTime * _speed));
         }
@@ -211,10 +213,13 @@ namespace HordeFight
         }
 
 
-        private void Move_MeterPerSecond(Vector3 dir, float meter, float perSecond)
+        private void Move_Interpolation(Vector3 dir, float meter, float perSecond)
         {
-            float interpolationTime = Interpolation.easeInOutBack(0f, 1f, (_elapsedTime) / perSecond);
-            //float deltaTime = Interpolation.linear(0f, 1f, (_elapsedTime) / perSecond);
+            //float interpolationTime = Interpolation.easeInBack(0f, 1f, (_elapsedTime) / perSecond); //슬라임
+            //float interpolationTime = Interpolation.easeInOutSine(0f, 1f, (_elapsedTime) / perSecond); //말탄애들 
+            //float interpolationTime = Interpolation.punch( 1f, (_elapsedTime) / perSecond);
+
+            float interpolationTime = Interpolation.linear(0f, 1f, (_elapsedTime) / perSecond);
 
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
@@ -226,14 +231,11 @@ namespace HordeFight
             _prevInterpolationTime = interpolationTime;
         }
 
-        public void Move_Forward(Vector3 dir, float distance, float speed)
+        public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
-            //보간, 이동 처리
-            //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
-            this.transform.Translate(dir * Time.deltaTime * speed * distance);
-            //dir.Normalize();
-            //this.transform.Translate(dir * 0.05f);
-            //DebugWide.LogBlue((dir * 0.05f).magnitude);
+            
+            //보간 없는 기본형
+            this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
         }
 
         //public void Move_Forward2(Vector3 dir, float distance, float speed)
@@ -428,7 +430,8 @@ namespace HordeFight
 
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
-        private void Update()
+        //private void Update()
+        void FixedUpdate()
         {
 
             //if (true == _death) return;
