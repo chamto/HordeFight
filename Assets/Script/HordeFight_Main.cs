@@ -1364,12 +1364,16 @@ namespace HordeFight
         }
 
 
-
+        /// <summary>
+        /// 가까운 대상 객체의 충돌원이 지정된 최소/최대 원에 포함되는지 검사한다 
+        /// 조건에 포함하는 가장 가까운 객체를 반환한다
+        /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
+        /// </summary>
         public Being GetNearCharacter(Being src, float minRadius, float maxRadius)
         {
-            float sqr_minRadius = Mathf.Pow(minRadius, 2);
-            float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
-            float min_value = sqr_maxRadius * 2f; //최대 반경보다 큰 최대값 지정
+            float sqr_minRadius = 0;
+            float sqr_maxRadius = 0;
+            float min_value = maxRadius * maxRadius * 1000f; //최대 반경보다 큰 최대값 지정
             float sqr_dis = 0f;
 
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
@@ -1389,7 +1393,9 @@ namespace HordeFight
                     if (src == dst) continue;
 
                     //count++;
-                    //==========================================================v
+                    //==========================================================
+                    sqr_minRadius = Mathf.Pow(minRadius + dst.GetCollider_Radius(), 2);
+                    sqr_maxRadius = Mathf.Pow(maxRadius + dst.GetCollider_Radius(), 2);
                     sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
 
                     //최대 반경 이내일 경우

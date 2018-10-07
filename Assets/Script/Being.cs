@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-
+using UnityEngine.Assertions;
 using Utility;
 
 
@@ -378,8 +378,11 @@ namespace HordeFight
 
 		public float GetCollider_Radius()
         {
-            if (null == _collider)
-                DebugWide.LogRed(this.name);
+            Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
+                  
+            //if (null == _collider)
+                //DebugWide.LogRed(this.name);
+
             return _collider.radius;
         }
 

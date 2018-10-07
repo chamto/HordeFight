@@ -364,7 +364,7 @@ namespace Utility
             //(src.r - dst.r) < src.r  < (src.r + dst.r)
             //완전포함        < 중점포함  < 경계포함
             //Fully           < Focus   < Boundary
-            const float Minimum_Error_Value = 1.0f; //최소오차값
+            const float Minimum_Error_Value = 0.01f; //최소오차값
             switch (eInclude)
             {
                 case eSphere_Include_Status.Fully:
@@ -395,7 +395,8 @@ namespace Utility
                 //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
                 return true; //두원이 겹쳐짐 
             }
-            if (sqr_standard_value == sqr_dis_between)
+            //if (sqr_standard_value == sqr_dis_between)
+            if(float.Epsilon >= Mathf.Abs(sqr_standard_value - sqr_dis_between))
             {
                 //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
                 //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
