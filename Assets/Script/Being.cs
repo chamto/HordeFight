@@ -679,11 +679,11 @@ namespace HordeFight
             //_animator.SetInteger("state", (int)eState.Idle);
         }
 
-        public void Move(Vector3 dir, float distance, bool forward)//, bool setState)
+        public void Move(Vector3 dir, float second, bool forward)//, bool setState)
         {
             //Vector3 dir = target - this.transform.position;
             //dir.Normalize();
-            _move.Move_Forward(dir, distance, 1f);
+            _move.Move_Forward(dir, 2f, second);
 
             //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
             if (false == forward)
@@ -908,7 +908,7 @@ namespace HordeFight
 
 
 
-                _move.Move_Forward(dir, 1f, 1f); //chamto test
+                _move.Move_Forward(dir, 2f, 1f); //chamto test
                 //DebugWide.LogRed(target.name); //chamto test
             }
             else
@@ -937,8 +937,8 @@ namespace HordeFight
                 else
                 {
                     _behaviorKind = Behavior.eKind.Move;
-                    //Move(dir, dis, true);
-                    _move.MoveToTarget(hit.point, 1f);
+                    Move(dir, 0.5f, true);
+                    //_move.MoveToTarget(hit.point, 1f);
                 }
             }
 

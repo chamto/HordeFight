@@ -1229,12 +1229,12 @@ namespace HordeFight
                         n = Misc.RandomDir8_AxisY();
                     }
 
-                    div_dis = 0.3f;
+                    div_dis = 0.2f;
                 }
 
 
 
-                //src._move.Move_Forward(n, div_dis, 1);
+                src._move.Move_Forward(n, 2f, div_dis);
                 //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, Vector3.up) + "   " + src.transform.position);
                 
 
@@ -1281,62 +1281,6 @@ namespace HordeFight
             //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
         }
 
-        //딕셔너리 보다 인덱싱 속도가 빠르다. 안정적 객체수 : 500
-        public void UpdateCollision_UseList()
-        {
-            //int count = 0;
-            Being src, dst;
-            //한집합의 원소로 중복되지 않는 한쌍 만들기  
-            for (int i = 0; i < _beings.Count - 1; i++)
-            {
-                for (int j = i + 1; j < _beings.Count; j++)
-                {
-                    src = _being_list[i];
-                    dst = _being_list[j];
-
-                    CollisionPush(src, dst);
-
-                    //count++;
-                }
-            }
-
-            //DebugWide.LogRed(_beings.Count + "  총회전:" + count); //114 , 6441
-        }
-
-        public void UpdateCollision_UseDictForeach()
-        {
-            
-            foreach(Being src in _beings.Values)
-            {
-                foreach (Being dst in _beings.Values)
-                {
-                    if (src == dst) continue;
-                    CollisionPush(src, dst);
-                }
-            }
-
-
-        }
-
-
-        //딕션너리의 ElementAt 을 사용하여 객체를 가져오는것은 부하가 심하다. 안정적 객체수 : 100이하 
-        public void UpdateCollision_UseDictElementAt()
-        {
-            
-            Being src, dst;
-            //한집합의 원소로 중복되지 않는 한쌍 만들기  
-            for (int i = 0; i < _beings.Count - 1; i++)
-            {
-                for (int j = i + 1; j < _beings.Count; j++)
-                {
-                    src = _beings.Values.ElementAt(i);
-                    dst = _beings.Values.ElementAt(j);
-
-                    CollisionPush(src, dst);
-
-                }
-            }
-        }
 
 
         public void ClearAll()
@@ -1419,46 +1363,6 @@ namespace HordeFight
             return target;
         }
 
-
-        /// <summary>
-        /// 최소 반경보다 크고 최대 반경보다 작은 범위 안에서 가장 가까운 객체를 반환한다
-        /// </summary>
-        public Being GetNearCharacter_old(Being exceptChar, float minRadius, float maxRadius)
-        {
-            
-            float sqr_minRadius = Mathf.Pow(minRadius, 2);
-            float sqr_maxRadius = Mathf.Pow(maxRadius, 2);
-            float min_value = sqr_maxRadius * 2f; //최대 반경보다 큰 최대값 지정
-            float sqr_dis = 0f;
-            Being target = null;
-            //foreach (Being t in _beings.Values)
-            foreach (Being t in _being_list)
-            {
-                if (t == exceptChar) continue;
-
-                sqr_dis = (exceptChar.transform.position - t.transform.position).sqrMagnitude;
-
-                //최대 반경 이내일 경우
-                if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
-                {
-
-                    //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  t.name); //chamto test
-
-                    //기존 객체보다 더 가까운 경우
-                    if (min_value > sqr_dis)
-                    {
-                        min_value = sqr_dis;
-                        target = t;
-                    }
-                }
-
-            }
-
-            //if(null != target)
-            //DebugWide.LogBlue(min_value + "__" + sqr_dis + "__" + target.name); //chamto test
-
-            return target;
-        }
 
 
         /// <summary>
@@ -1572,7 +1476,7 @@ namespace HordeFight
             uint id_sequence = 0;
             Vector3 pos = Vector3.zero;
             //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
@@ -1588,12 +1492,12 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
 
@@ -1610,99 +1514,14 @@ namespace HordeFight
   //  public partial class  Character : MonoBehaviour
   //  {
 
-  //      //애니
-  //      private Animator                    _animator = null;
-  //      private AnimatorOverrideController  _overCtr = null;
-  //      private SpriteRenderer              _sprRender = null;
-
-  //      //이동
-  //      private Movable _move     = null;
-  //      private eDirection8 _eDir8 = eDirection8.down;
-
-  //      //상태
-  //      public eState   _eState = eState.None;
-
+  
   //      //UI
   //      public int      _UIID_circle = -1;
   //      public int      _UIID_hp = -1;
 
-  //      //고유정보
-  //      public int _id = -1;
-  //      public eKind _eKind = eKind.None;
-
-  //      public float    _disPerSecond = 1f; //초당 이동거리 
-
-  //      public ushort   _power = 1;
-  //      public ushort   _hp_cur = 10;
-  //      public ushort   _hp_max = 10;
-  //      public float    _range_min = 0.15f;
-  //      public float    _range_max = 0.15f;
-  //      public bool     _death = false;
-       
-
-  //      public enum eKind
-  //      {
-  //          None = 0,
-  //          footman,
-  //          lothar,
-  //          skeleton,
-  //          garona,
-  //          conjurer,
-  //          raider,
-  //          slime,
-  //          spearman,
-  //          grunt,
-  //          brigand,
-  //          knight,
-  //          ogre,
-  //          daemon,
-  //          waterElemental,
-  //          fireElemental,
-
-  //      }
-
-  //      public enum eState
-  //      {
-  //          None        = 0,
-
-  //          Idle        = 10,
-  //          Idle_Random = 11,
-  //          Idle_LookAt = 12,
-  //          Idle_Max    = 19,
-
-  //          Move        = 20,
-  //          Move_Max    = 29,
-
-  //          Attack      = 30,
-  //          Attack_Max  = 39,
-
-  //          FallDown        = 40,
-  //          FallDown_Max    = 49,
-
-  //      }
-
-
-  //      public void Init_Create()
-  //      {
-  //          _animator = GetComponentInChildren<Animator>();
-  //          _sprRender = GetComponentInChildren<SpriteRenderer>();
-
-  //          _move = GetComponent<Movable>();
-  //          //Single.touchProcess.Attach_SendObject(this.gameObject);
-
-  //          //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
-  //          _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-  //          _overCtr.name = "divide_character_"+ _id.ToString();
-  //          _animator.runtimeAnimatorController = _overCtr;
-
-  //      }
-
-  //      //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+  
   //      private void Start()
-  //      {
-  //          _eState = eState.Idle_Random;
-  //          //_animator.SetInteger("state", (int)eState.Idle);
-
+  //      {      
   //          _UIID_circle = Single.lineControl.Create_Circle_AxisY(this.transform);
   //          Single.lineControl.SetActive(_UIID_circle, false);
 
@@ -1712,372 +1531,35 @@ namespace HordeFight
 
 
 
-  //      private void Update()
-  //      {
-  //          if (true == _death) return;
-
-  //          if (9 > _hp_cur)
-  //          {
-  //              //DebugWide.LogBlue("death  " + _eState);
-  //              _death = true;
-  //              _eState = eState.FallDown;
-  //              FallDown();
-  //          }
-
-  //          Update_Shot();
-
-
-  //          if (eState.Idle == _eState)
-  //          {
-  //              _animator.SetInteger("state", (int)eState.Idle);
-  //          }
-  //          else if (eState.Idle_Random == _eState)
-  //          {
-  //              _animator.SetInteger("state", (int)eState.Idle);
-  //              Idle_Random();
-
-  //          }
-  //          else if (eState.Move == _eState)
-  //          {
-  //              _animator.SetInteger("state", (int)eState.Move);
-  //          }
-  //          else if (eState.Attack == _eState)
-  //          {
-  //              _animator.SetInteger("state", (int)eState.Attack);
-  //          }
-  //          else if (eState.FallDown == _eState)
-  //          {
-  //              _animator.SetInteger("state", (int)eState.FallDown);
-  //          }
-
-
-
-  //          //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
-  //          _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
-  //      }
-
-  //      public float GetCollider_Radius()
-  //      {
-
-  //          return GetComponent<SphereCollider>().radius;
-  //      }
-
-  //      public void SetAIRunning(bool run)
-  //      {
-  //          this.GetComponent<AI>()._ai_running = run;
-  //      }
-
-
-  //      //____________________________________________
-  //      //                  애니메이션  
-  //      //____________________________________________
-
-  //      //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
-  //      public AnimationClip GetClip(string name)
-  //      {
-  //          AnimationClip animationClip = null;
-  //          Single.resourceManager._aniClips.TryGetValue(name.GetHashCode(), out animationClip);
-
-
-  //          return animationClip;
-  //      }
-
-
-  //      public void Switch_Ani(string aniKind, string aniName , eDirection8 dir)
-  //      {
-            
-  //          _sprRender.flipX = false;
-  //          string aniNameSum = "";
-  //          switch(dir)
-  //          {
-                
-  //              case eDirection8.leftUp:
-  //                  {
-  //                      aniNameSum = aniName + eDirection8.rightUp.ToString();
-  //                      _sprRender.flipX = true;
-  //                  }
-  //                  break;
-  //              case eDirection8.left:
-  //                  {
-  //                      aniNameSum = aniName + eDirection8.right.ToString();
-  //                      _sprRender.flipX = true;
-  //                  }
-  //                  break;
-  //              case eDirection8.leftDown:
-  //                  {
-  //                      aniNameSum = aniName + eDirection8.rightDown.ToString();
-  //                      _sprRender.flipX = true;
-  //                  }
-  //                  break;
-  //              default:
-  //                  {
-  //                      aniNameSum = aniName + dir.ToString();
-  //                      _sprRender.flipX = false;
-  //                  }
-  //                  break;
-                
-  //          }
-
-  //          _overCtr[aniKind] = GetClip(aniNameSum);
-  //      }
-
-
-  //      private float __elapsedTime_1 = 0f;
-  //      private float __randTime = 0f;
-  //      public void Idle_Random()
-  //      {
-  //          if ((int)eState.Idle == _animator.GetInteger("state"))
-  //          {
-  //              __elapsedTime_1 += Time.deltaTime;
-
-
-  //              if (__randTime < __elapsedTime_1)
-  //              {
-                    
-  //                  //_eDir8 = (eDirection)Single.rand.Next(0, 8); //0~7
-
-  //                  //근접 방향으로 랜덤하게 회전하게 한다 
-  //                  int num = Misc.rand.Next(-1, 2); //-1 ~ 1
-  //                  num += (int)_eDir8;
-  //                  if (0 > num) num = 7;
-  //                  if (7 < num) num = 0;
-  //                  _eDir8 = (eDirection8)num;
-
-  //                  Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
-
-  //                  __elapsedTime_1 = 0f;
-
-  //                  //3~6초가 지났을 때 돌아감
-  //                  __randTime = (float)Misc.rand.Next(3, 7); //3~6
-  //              }
-
-  //          }
-
-  //      }
-
-  //      public void Idle_View(Vector3 dir , bool forward )//, bool setState)
-  //      {
-            
-  //          if (false == forward)
-  //              dir *= -1f;
-
-  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
-  //          //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
-  //          Switch_Ani("base_idle", _eKind.ToString() + "_idle_", _eDir8);
-
-  //          //if(true == setState)
-  //              //_animator.SetInteger("state", (int)eState.Idle);
-  //      }
-
-  //      public void Move(Vector3 dir ,  float distance ,bool forward )//, bool setState)
-		//{
-  //          //Vector3 dir = target - this.transform.position;
-  //          //dir.Normalize();
-  //          _move.Move_Forward(dir, distance, 1f);
-
-  //          //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
-  //          if (false == forward)
-  //              dir *= -1f;
-            
-  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
-  //          Switch_Ani("base_move", _eKind.ToString() + "_move_", _eDir8);
-
-		//}
-
-  //      public void Attack(Vector3 dir)
-  //      {
-  //          _eDir8 = Misc.TransDirection8_AxisY(dir);
-  //          Switch_Ani("base_attack",_eKind.ToString()+"_attack_",_eDir8);
-  //      }
-
-
-  //      bool __launch = false;
-  //      GameObject __things = null;
-  //      Vector3 __targetPos = Vector3.zero;
-  //      Vector3 __launchPos = Vector3.zero;
-  //      public void ThrowThings(Vector3 target)
-  //      {
-  //          //Vector3 dir = target - this.transform.position;
-  //          //Attack(dir);
-
-
-  //          if(null == __things)
-  //          {
-  //              __things = GameObject.Find("000_spear");
-  //          }
-
-
-  //          if (null != __things && false == __launch)
-  //          {
-  //              __targetPos = target;
-
-  //              Vector3 angle = new Vector3(90f, 0, -120f);
-  //              angle.y += (float)_eDir8 * -45f;
-  //              __things.transform.localEulerAngles = angle;
-  //              __things.transform.localPosition = Vector3.zero;
-  //              __launch = true;
-  //              __launchPos = __things.transform.position;
-  //              __elapsedTime_2 = 0f;
-  //              __things.SetActive(true);
-
-  //          }
-  //      }
-  //      float __elapsedTime_2 = 0f;
-  //      public void Update_Shot()
-  //      {
-  //          if (null != __things && true == __launch)
-  //          {
-  //              __elapsedTime_2 += Time.deltaTime;
-  //              //Vector3 dir = __targetPos - __things.transform.position;
-  //              __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
-                    
-  //              if(1f < __elapsedTime_2)
-  //              {
-  //                  __launch = false;
-  //                  __things.SetActive(false);
-  //              }
-  //          }
-  //      }
-
-
-  //      public void FallDown()
-  //      {
-  //          switch (_eDir8)
-  //          {
-  //              case eDirection8.up:
-  //                  { }
-  //                  break;
-  //              case eDirection8.down:
-  //                  { }
-  //                  break;
-  //              default:
-  //                  {
-  //                      _eDir8 = eDirection8.up; //기본상태 지정 
-  //                  }
-  //                  break;
-  //          }
-
-  //          Switch_Ani("base_fallDown", _eKind.ToString() + "_fallDown_", _eDir8);
-  //      }
-
 
   //      //____________________________________________
   //      //                  터치 이벤트  
   //      //____________________________________________
 
-		//private Vector3 _startPos = Vector3.zero;
     //    private void TouchBegan() 
     //    {
-    //        //DebugWide.LogBlue("TouchBegan " + Single.touchProcess.GetTouchPos());
-
-    //        _animator.speed = 1f;
-
-
-    //        RaycastHit hit = Single.touchProcess.GetHit3D();
-    //        _startPos = hit.point;
-    //        _startPos.y = 0f;
-
-
+ 
     //        Single.lineControl.SetActive(_UIID_circle, true);
 
     //        //_hp_cur--;
     //        Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
 
-
-    //        if(8 > _hp_cur)
-    //        {
-    //            //다시 살리기
-    //            _animator.Play("idle 10");
-    //            _death = false;
-    //            _hp_cur = 10;
-    //            _eState = eState.Idle;    
-    //        }
-
-
     //    }
 
-    //    private void TouchMoved()
-    //    {
-    //        //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
-
-    //        RaycastHit hit = Single.touchProcess.GetHit3D();
-
-    //        Vector3 dir = hit.point - this.transform.position;
-    //        dir.y = 0;
-    //        //DebugWide.LogBlue("TouchMoved " + dir);
-
-    //        //if (eKind.spearman == _eKind)
-    //        //{
-    //        //    Character target = Single.objectManager.GetNearCharacter(this, 0.5f, 2f);
-
-    //        //    ThrowThings(target.transform.position);
-
-    //        //    Vector3 things_dir = target.transform.position - this.transform.position;
-
-    //        //    _eState = eState.Attack;
-    //        //    Attack(things_dir);
-
-    //        //    _move.Move_Forward(dir, 1f, 1f); //chamto test
-    //        //    //DebugWide.LogRed(target.name); //chamto test
-    //        //}
-    //        //else
-    //        //{
-    //        //    Character target = Single.objectManager.GetNearCharacter(this, 0, 0.2f);
-    //        //    if (null != target)
-    //        //    {
-    //        //        _eState = eState.Attack;
-    //        //        Attack(dir);
-
-    //        //        _move.Move_Forward(dir, 1f, 1f); //chamto test
-    //        //    }
-    //        //    else
-    //        //    {
-    //        //        _eState = eState.Move;
-    //        //        Move(dir, _disPerSecond, true);
-    //        //    }
-    //        //}
-                
-    //        //Single.objectManager.LookAtTarget(this);
-
-
-
+   
     //    }
 
     //    private void TouchEnded() 
     //    {
-    //        //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
-
-    //        Switch_Ani("base_idle", _eKind.ToString()+"_idle_", _eDir8);
-    //        //_animator.SetInteger("state", (int)eState.Idle);
-    //        _animator.Play("idle 10");
-
-    //        //_eState = eState.Idle_Random;
-    //        //Single.objectManager.SetAll_Behavior(eState.Idle_Random);
-
+  
     //        //Single.lineControl.SetActive(_UIID_circle, false);
     //    }
     //}
 
 
 
-    public class Movable : MonoBehaviour
-    {
-
-		private void Start()
-		{
-		}
-
-		private void Update()
-		{
-		}
-
-
-		public void Move_Forward(Vector3 dir , float distance , float speed)
-        {
-            //보간, 이동 처리
-            //float delta = Interpolation.easeInOutBack(0f, 0.2f, accumulate / MAX_SECOND);
-            this.transform.Translate(dir * Time.deltaTime * speed * distance);
-        }
+    //public class Movable : MonoBehaviour
+    //{
 
         //public Vector3 GetDirect(Vector3 dstPos)
         //{
@@ -2130,7 +1612,8 @@ namespace HordeFight
         //    return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
 
         //}
-    }
+    //}
+
 }
 
 
