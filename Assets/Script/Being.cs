@@ -472,9 +472,9 @@ namespace HordeFight
             }
 
 
-
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 100배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 100f);
+            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
 
             //========================================
 
