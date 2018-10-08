@@ -43,6 +43,18 @@ namespace HordeFight
 
         }
 
+        void OnGUI()
+        {
+
+            if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
+            {
+
+                SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
+                DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+
+            }
+        }
+
 
     }
 
@@ -507,46 +519,7 @@ namespace HordeFight
 
 namespace HordeFight
 {
-    //public struct CellIndex
-    //{
-    //    public int n1;
-    //    public int n2;
-
-    //    public CellIndex(int a1, int a2)
-    //    {
-    //        n1 = a1;
-    //        n2 = a2;
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return "(" + n1 + ", " + n2 + ")";
-    //    }
-
-    //    public static CellIndex operator +(CellIndex a, CellIndex b)
-    //    {
-    //        return new CellIndex(a.n1 + b.n1, a.n2 + b.n2);
-    //    }
-
-    //    public static bool operator ==(CellIndex a, CellIndex b)
-    //    {
-    //        if (a.n1 == b.n1 && a.n2 == b.n2)
-    //            return true;
-
-    //        return false;
-    //    }
-
-    //    public static bool operator !=(CellIndex a, CellIndex b)
-    //    {
-    //        if (a.n1 == b.n1 && a.n2 == b.n2)
-    //            return false;
-
-    //        return true;
-    //    }
-    //}
-
-
-
+    
     public class CellInfo : LinkedList<Being>
     {
         
@@ -560,7 +533,8 @@ namespace HordeFight
     {
 
         private Grid _grid = null;
-        private Tilemap _structTilemap = null;
+        private Tilemap _tilemap_structUp = null; //항상 캐릭터 보다 위에 있는 타일지도 
+        private Tilemap _tilemap_struct = null;
         public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
@@ -588,6 +562,15 @@ namespace HordeFight
             }
         }
 
+        public Tilemap GetTileMap_Struct()
+        {
+            return _tilemap_struct;
+        }
+
+        public Tilemap GetTileMap_StructUp()
+        {
+            return _tilemap_structUp;
+        }
 
 		private void Start()
 		{
@@ -595,7 +578,12 @@ namespace HordeFight
             GameObject o = GameObject.Find("Tilemap_Structure");
             if(null != o)
             {
-                _structTilemap = o.GetComponent<Tilemap>();    
+                _tilemap_struct = o.GetComponent<Tilemap>();    
+            }
+            o = GameObject.Find("Tilemap_Structure_Up");
+            if (null != o)
+            {
+                _tilemap_structUp = o.GetComponent<Tilemap>();
             }
 
             _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
@@ -793,16 +781,12 @@ namespace HordeFight
 
         }
 
-        public Tilemap GetStructTileMap()
-        {
-            return _structTilemap;
-        }
 
         public bool HasStructTile(Vector3 tilePos)
         {
-            Vector3Int tileInt = _structTilemap.WorldToCell(tilePos);
+            Vector3Int tileInt = _tilemap_struct.WorldToCell(tilePos);
 
-            RuleTile rTile = _structTilemap.GetTile<RuleTile>(tileInt);
+            RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
             if (null != rTile)
             {
                 return true;
@@ -813,10 +797,10 @@ namespace HordeFight
         public bool HasStructTile(Vector3 tilePos, out Vector3 tileCenterToWorld)
         {
             tileCenterToWorld = Vector3.zero;
-            if (null == _structTilemap) return false;
+            if (null == _tilemap_struct) return false;
 
             //x-z 평면상에 타일맵을 놓아도 내부적으로는 x-y 평면으로 처리된다
-            Vector3Int tileInt = _structTilemap.WorldToCell(tilePos);
+            Vector3Int tileInt = _tilemap_struct.WorldToCell(tilePos);
 
             //x-z 평면을 가정하고 처리
             //CellToWorld 함수의 값과 cellSize 값이 부정확하여 직접 계산한다 
@@ -827,7 +811,7 @@ namespace HordeFight
 
             //DebugWide.LogBlue(tileInt.x + "  " + cellSize_x + "   " + tileInt.x * cellSize_x + "   " + tileCenterToWorld.x + "   "  + _structTilemap.cellSize.x); //chamto test
 
-            RuleTile rTile = _structTilemap.GetTile<RuleTile>(tileInt);
+            RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
             if (null != rTile)
             {
                 //DebugWide.LogBlue(tileInt + "  " + tilePos + "   " + tileCenterToWorld.x + ", " + tileCenterToWorld.z ); //chamto test
@@ -1001,6 +985,17 @@ namespace HordeFight
             }
 
             return pos;
+        }
+
+        public void SetTile_StructUp(Vector3Int pos, Sprite spr)
+        {
+            if (null == _tilemap_structUp) return;
+
+            Tile tile = new Tile();
+            tile.sprite = spr;
+
+
+            _tilemap_structUp.SetTile(pos, tile);
         }
 	}
 }

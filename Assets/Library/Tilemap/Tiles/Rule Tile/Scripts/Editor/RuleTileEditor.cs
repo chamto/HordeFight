@@ -56,6 +56,22 @@ namespace UnityEditor
 			m_ReorderableList.elementHeightCallback = GetElementHeight;
 			m_ReorderableList.onReorderCallback = ListUpdated;
 			m_ReorderableList.onAddCallback = OnAddElement;
+
+
+            //에디터상에서 타일맵 전체 갱신을 수동으로 하기 위하여 이 코드를 넣음
+            //롤설정 파일을 선택할시 인스펙터창이 활성되면서 자동으로 아래 코드가 호출된다   
+            if(null != tile._tilemap_copy)
+            {
+                //tile._tilemap_copy.ClearAllTiles();
+                //DebugWide.LogBlue(tile._tilemap_copy.name + " : ClearAllTiles"); 
+            }
+            if (null != tile._tilemap_this)
+            {
+                tile._tilemap_this.RefreshAllTiles();
+                //DebugWide.LogBlue(tile._tilemap_this.name + " : RefreshAllTiles"); 
+            }
+                
+
 		}
 
 		private void ListUpdated(ReorderableList list)
@@ -143,6 +159,7 @@ namespace UnityEditor
 			tile.m_DefaultSprite = EditorGUILayout.ObjectField("Default Sprite", tile.m_DefaultSprite, typeof(Sprite), false) as Sprite;
 			tile.m_DefaultGameObject = EditorGUILayout.ObjectField("Default Game Object", tile.m_DefaultGameObject, typeof(GameObject), false) as GameObject;
             tile.m_DefaultColliderType = (Tile.ColliderType)EditorGUILayout.EnumPopup("Default Collider", tile.m_DefaultColliderType);
+            tile._tilemap_copy = EditorGUILayout.ObjectField("TileMap Copy", tile._tilemap_copy, typeof(Tilemap), true) as Tilemap;
             tile._class_id = (RuleTile.eClassification)EditorGUILayout.EnumPopup("Classification ID", tile._class_id); //대분류 추가 
 
 
@@ -394,6 +411,9 @@ namespace UnityEditor
             string newID = EditorGUI.DelayedTextField(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, 20f, k_SingleLineHeight), tilingRule.m_ID);
             tilingRule.m_ID = newID.Substring(0,Mathf.Min(2, newID.Length)); //입력한 글자를 2글자로 제한한다 
 
+            tilingRule._isTilemapCopy = EditorGUI.ToggleLeft(new Rect(rect.xMin, y, k_LabelWidth + 70f, k_SingleLineHeight), "Copy to another Tilemap", tilingRule._isTilemapCopy);
+            y += k_SingleLineHeight;
+
             GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Game Object");
             tilingRule.m_GameObject = (GameObject)EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), "", tilingRule.m_GameObject, typeof(GameObject), true);
             y += k_ObjectFieldLineHeight;
@@ -406,7 +426,7 @@ namespace UnityEditor
 			GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Output");
 			tilingRule.m_Output = (RuleTile.TilingRule.OutputSprite)EditorGUI.EnumPopup(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Output);
 			y += k_SingleLineHeight;
-            
+
 
             switch(tilingRule.m_Output)
             {

@@ -11,7 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: dungeon_structure_wall
   m_EditorClassIdentifier: 
-  _classification: 1
+  _class_id: 1
+  _permit_rules: 1
   m_DefaultSprite: {fileID: 21300000, guid: 6d9e42a99f11f4d20b3c58c7d637ce41, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
@@ -37,6 +38,7 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 0
     m_Output: 1
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_ID: TL
@@ -60,6 +62,7 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 0
     m_Output: 1
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_ID: 00
@@ -85,6 +88,7 @@ MonoBehaviour:
     m_PerlinScale: 0.45
     m_RuleTransform: 0
     m_Output: 3
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_ID: 00
@@ -108,5 +112,8 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 0
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
+  _tilemap_this: {fileID: 0}
+  _tilemap_copy: {fileID: 0}
