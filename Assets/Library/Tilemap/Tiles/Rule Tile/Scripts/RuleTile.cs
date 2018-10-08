@@ -192,6 +192,7 @@ namespace UnityEngine
             public string[] m_Neighbors_ID; //이웃한 객체의 아이디를 나타낸다
 			public Sprite[] m_Sprites;
             public int m_MultiLength; //멀티모드에서 스프라이트를 몇개 단위로 읽어 들일지 설정
+            public bool[] _multi_copy; //지정된 Tilemap에 복사할시 어떤 멀티타일을 복사할지 설정 
 			public GameObject m_GameObject;
             public float m_AnimationSpeed;
 			public float m_PerlinScale;
@@ -211,6 +212,8 @@ namespace UnityEngine
                 m_Neighbors_ID = new string[NeighborCount];
 				m_Sprites = new Sprite[1];
                 m_MultiLength = 1;
+                _multi_copy = new bool[m_MultiLength];
+
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;
 				m_PerlinScale = 0.5f;
@@ -244,6 +247,7 @@ namespace UnityEngine
             public Vector3Int root_pos = Vector3Int.zero;
             public Sprite sprite = null;
             public int max_size = 0; //예약한 전체 스프라이트배열 크기 
+            public int multi_sequence = 0; //멀티스프라이트 순서값.
             public Matrix4x4 transform = Matrix4x4.identity;
             public TilingRule tilingRule = null;
 
@@ -253,6 +257,7 @@ namespace UnityEngine
                 root_pos = Vector3Int.zero;
                 sprite = null;
                 max_size = 0;
+                multi_sequence = 0;
                 transform = Matrix4x4.identity;
                 tilingRule = null;
             }
@@ -290,8 +295,7 @@ namespace UnityEngine
 
 
                 int MULTI_LENGTH = rule.m_MultiLength;
-                //int MAX_MULTI_LENGTH = rule.m_Sprites.Length / MULTI_LENGTH;
-                //Assertions.Assert.IsTrue(0 <= multiIndex && multiIndex < MAX_MULTI_LENGTH, multiIndex + "  " + MAX_MULTI_LENGTH +" 요청된 멀티인덱스값이 범위를 벗어난다");
+
 
                 //멀티길이가 스프라이트 길이보다 작은 경우 : 현재 스프라이트 길이만큼만 멀티설정을 한다 
                 if (MULTI_LENGTH > rule.m_Sprites.Length)
@@ -307,6 +311,7 @@ namespace UnityEngine
                     newData.sprite = rule.m_Sprites[i + multiIndex * MULTI_LENGTH];
                     newData.activeMultiTile = true;
                     newData.max_size = MULTI_LENGTH;
+                    newData.multi_sequence = i;
                     newData.transform = transform;
                     newData.tilingRule = rule;
 
@@ -343,7 +348,7 @@ namespace UnityEngine
                     return;
                 }
 
-                RuleTile ruleTile = null;
+                //RuleTile ruleTile = null;
                 Vector3Int newPos = getData.root_pos;
                 Vector3Int rootPos = getData.root_pos;
                 int max_size = getData.max_size;
@@ -362,6 +367,25 @@ namespace UnityEngine
                 }
 
             }
+
+
+            /// <summary>
+            /// 활성중인 루트위치가 있을시, 요청된 자식위치를 복사할수 있는지 알려준다 
+            /// </summary>
+            public bool IsTileMapCopy_Child(Vector3Int childPos , ITilemap tilemap)
+            {
+                if (false == this.IsActive_Root(childPos, tilemap))
+                    return false;
+
+                int multiSeq = this[childPos].multi_sequence;
+                Vector3Int rootPos = this[childPos].root_pos;
+
+                if (this[rootPos].tilingRule._multi_copy.Length <= multiSeq)
+                    return false;
+
+                return this[rootPos].tilingRule._multi_copy[multiSeq];
+            }
+
 
             /// <summary>
             /// 루트위치가 활성중인지 알려준다 
@@ -631,9 +655,16 @@ namespace UnityEngine
             //자식위치의 룰데이터는 다른 룰데이터에 스프라이트만 덮은 것이기때문에 쓰면 안된다 
             if (true == _appointDataMap.IsActive_Root(position, tilemap))
             {
+                //루트로 변환하여 검사 
                 if (_rulePositionMap.IsTileMapCopy(_appointDataMap[position].root_pos))
                 {
-                    CopyTile_AnotherTilemap(position, tilemap, tileData);
+
+                    //자식위치가 복사가능한지 검사
+                    if(true == _appointDataMap.IsTileMapCopy_Child(position,tilemap))
+                    {
+                        CopyTile_AnotherTilemap(position, tilemap, tileData);    
+                    }
+                       
                 }
             }
             //싱글모드일 경우 복사옵션이 있는지 검사한다
