@@ -213,6 +213,7 @@ namespace UnityEngine
 				m_Sprites = new Sprite[1];
                 m_MultiLength = 1;
                 _multi_copy = new bool[m_MultiLength];
+                _multi_copy[0] = true;
 
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;

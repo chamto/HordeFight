@@ -460,8 +460,15 @@ namespace UnityEditor
                    tilingRule.m_Output == RuleTile.TilingRule.OutputSprite.Random_Multi )
                 {
                     GUI.Label(new Rect(rect.xMin, y, k_LabelWidth, k_SingleLineHeight), "Multi Length");
+                    //EditorGUI.BeginChangeCheck();
                     tilingRule.m_MultiLength = EditorGUI.DelayedIntField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_MultiLength);
                     tilingRule.m_MultiLength = Math.Max(tilingRule.m_MultiLength, 1); //길이가 0이 못되게 최대값을 1로 설정한다
+                    //if (EditorGUI.EndChangeCheck())
+                    {
+                        //멀티길이에 따라 멀티복사 배열도 크기 조정한다 
+                        Array.Resize(ref tilingRule._multi_copy, Math.Max(tilingRule.m_MultiLength, 1));    
+                    }
+
                     y += k_SingleLineHeight;    
                 }
 
@@ -485,6 +492,14 @@ namespace UnityEditor
                     //멀티타일 길이가 1이면 일반타일이다 
                     if (1 == tilingRule.m_MultiLength)
                         seq = i;
+
+
+                    if(true == tilingRule._isTilemapCopy && i < tilingRule.m_MultiLength)
+                    {
+                        //DebugWide.LogBlue(tilingRule._multi_copy.Length  + "   i" + i + "  ml" + tilingRule.m_MultiLength);
+                        if(i < tilingRule._multi_copy.Length)
+                            tilingRule._multi_copy[i] = EditorGUI.Toggle(new Rect(rect.xMin + k_LabelWidth - 50f, y, 20, 20), tilingRule._multi_copy[i]);    
+                    }
 
                     GUI.Label(new Rect(rect.xMin + k_LabelWidth - 25, y, 20, 20), seq.ToString(" 0"));
 					tilingRule.m_Sprites[i] = EditorGUI.ObjectField(new Rect(rect.xMin + k_LabelWidth, y, rect.width - k_LabelWidth, k_SingleLineHeight), tilingRule.m_Sprites[i], typeof(Sprite), false) as Sprite;
