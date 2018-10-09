@@ -235,6 +235,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
+            _eDir8 = Misc.TransDirection8_AxisY(_dir);
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형

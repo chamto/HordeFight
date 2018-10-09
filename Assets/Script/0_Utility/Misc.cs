@@ -646,6 +646,15 @@ namespace Utility
             return _Dir8_AxisY[(int)eDirection];
         }
 
+        static public eDirection8 ReverseDir8_AxisY(eDirection8 eDirection)
+        {
+            if (eDirection8.none == eDirection) return eDirection8.none;
+            
+            int dir = (int)eDirection;
+            dir += 4;
+            dir %= (int)eDirection8.max;
+            return (eDirection8)dir;
+        }
 
         //========================================================
         //==================       비트연산        ==================

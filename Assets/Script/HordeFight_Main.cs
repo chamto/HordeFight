@@ -43,17 +43,17 @@ namespace HordeFight
 
         }
 
-        void OnGUI()
-        {
+        //void OnGUI()
+        //{
 
-            if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
-            {
+        //    if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
+        //    {
 
-                SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
-                DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+        //        SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
+        //        DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
 
-            }
-        }
+        //    }
+        //}
 
 
     }
@@ -542,6 +542,8 @@ namespace HordeFight
 
         public const int NxN_MIN = 3;   //그리드 범위 최소크기
         public const int NxN_MAX = 11;  //그리드 범위 최대크기
+        public const float GridCell_Size = 0.16f;
+        public const float GridCell_HalfSize = GridCell_Size * 0.5f;
 
         public Grid grid
         {
@@ -1157,38 +1159,71 @@ namespace HordeFight
         public void CollisionPush_Rigid(Being src, Vector3 collisionCellPos_center, float rigRadius)
         {
 
-            Vector3 sqr_dis = collisionCellPos_center - src._lastCellPos_withoutCollision;
+            //Vector3 min = src.transform.position - collisionCellPos_center;
 
-            Vector3 pos = src.transform.position;
+            //Bounds bound = new Bounds(collisionCellPos_center,new Vector3(0.16f , 0.16f));
+            //Vector3 max =  bound.ClosestPoint(src.transform.position);
+            //max = max - collisionCellPos_center;
 
-            eDirection8 eDirection = Misc.TransDirection8_AxisY(sqr_dis);
-            //DebugWide.LogBlue(eDirection + "   "  + collisionCellPos_center + "   " + SingleO.gridManager.ToCellIndex(src._lastCellPos_withoutCollision, Vector3.up) );
+            //Vector3 outForce = max - min;
+            //src._move.Move_Forward(outForce * 50f, 2f, 1f);
+            //src.transform.position = max;
+            //=================
 
-
+            Vector3 srcPos = src.transform.position;
+            Vector3 dir_inCellToOutCell = src._lastCellPos_withoutCollision - collisionCellPos_center;
+            eDirection8 eDirection = Misc.TransDirection8_AxisY(dir_inCellToOutCell); //중심 타일을 기준으로 주위 8타일에 해당하는 방향을 얻는다
+            float size = GridManager.GridCell_HalfSize; 
 
             switch (eDirection)
             {
                 case eDirection8.up:
+                    {
+                        srcPos.z = collisionCellPos_center.z + size;
+                    }
+                    break;
                 case eDirection8.down:
                     {
-                        pos.z = collisionCellPos_center.z - 0.08f;
+                        srcPos.z = collisionCellPos_center.z - size;
                     }
                     break;
                 case eDirection8.left:
-                case eDirection8.right:
                     {
-                        pos.x = collisionCellPos_center.x - 0.08f;
+                        srcPos.x = collisionCellPos_center.x - size;
                     }
                     break;
-                default:
+                case eDirection8.right:
                     {
-                        pos.z = collisionCellPos_center.z;
-                        //pos = src._lastCellPos_withoutCollision;
+                        srcPos.x = collisionCellPos_center.x + size;
+                    }
+                    break;
+                case eDirection8.leftUp:
+                    {
+                        srcPos.x = collisionCellPos_center.x - size;
+                        srcPos.z = collisionCellPos_center.z + size;
+                    }
+                    break;
+                case eDirection8.rightUp:
+                    {
+                        srcPos.x = collisionCellPos_center.x + size;
+                        srcPos.z = collisionCellPos_center.z + size;
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        srcPos.x = collisionCellPos_center.x - size;
+                        srcPos.z = collisionCellPos_center.z - size;
+                    }
+                    break;
+                case eDirection8.rightDown:
+                    {
+                        srcPos.x = collisionCellPos_center.x + size;
+                        srcPos.z = collisionCellPos_center.z - size;
                     }
                     break;
             }
 
-            src.transform.position = pos;
+            src.transform.position = srcPos;
 
         }
 
@@ -1228,7 +1263,6 @@ namespace HordeFight
                 }
 
 
-
                 src._move.Move_Forward(n, 2f, div_dis);
                 //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, Vector3.up) + "   " + src.transform.position);
                 
@@ -1266,7 +1300,7 @@ namespace HordeFight
                 //동굴벽과 캐릭터 충돌처리 
                 if (SingleO.gridManager.HasStructTile(src.transform.position, out collisionCellPos_center))
                 {
-                    CollisionPush_Rigid2(src, collisionCellPos_center, 0.2f);
+                    CollisionPush_Rigid(src, collisionCellPos_center, 0.2f);
                 }
 
 
