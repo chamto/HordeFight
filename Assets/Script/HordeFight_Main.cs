@@ -48,7 +48,7 @@ namespace HordeFight
 
             if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
             {
-                RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 2, 0));
+                RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
 
                 DebugWide.LogBlue("before" + ruleTile._rulePositionMap.Count);
                 SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
@@ -536,7 +536,7 @@ namespace HordeFight
     {
 
         private Grid _grid = null;
-        private Tilemap _tilemap_structUp = null; //항상 캐릭터 보다 위에 있는 타일지도 
+        private RuleTile _ruleTile_struct = null; //구조타일맵의 룰타일객체  
         private Tilemap _tilemap_struct = null;
         public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
 
@@ -572,9 +572,11 @@ namespace HordeFight
             return _tilemap_struct;
         }
 
-        public Tilemap GetTileMap_StructUp()
+       
+
+        public RuleTile GetRuleTile_Struct()
         {
-            return _tilemap_structUp;
+            return _ruleTile_struct;
         }
 
 		private void Start()
@@ -585,10 +587,9 @@ namespace HordeFight
             {
                 _tilemap_struct = o.GetComponent<Tilemap>();    
             }
-            o = GameObject.Find("Tilemap_Structure_Up");
-            if (null != o)
+            if(null != _tilemap_struct)
             {
-                _tilemap_structUp = o.GetComponent<Tilemap>();
+                _ruleTile_struct = _tilemap_struct.GetTile(Vector3Int.zero) as RuleTile;
             }
 
             _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
@@ -604,6 +605,23 @@ namespace HordeFight
 		{
 			
 		}
+
+        public eDirection8 GetDirection8_Struct(Vector3 pos)
+        {
+            if (null == _ruleTile_struct) return eDirection8.none;
+
+            Vector3Int vint = _tilemap_struct.WorldToCell(pos);
+            RuleTile.TilingRule tileRule = null;
+            if(_ruleTile_struct._rulePositionMap.TryGetValue(vint, out tileRule))
+            {
+                if(null != tileRule)
+                {
+                    return tileRule._push_dir8;
+                }
+            }
+
+            return eDirection8.none;
+        }
 
         //원 반지름 길이를 포함하는 그리드범위 구하기
         public uint GetNxNIncluded_CircleRadius(float maxRadius)
@@ -1004,16 +1022,7 @@ namespace HordeFight
             return pos;
         }
 
-        public void SetTile_StructUp(Vector3Int pos, Sprite spr)
-        {
-            if (null == _tilemap_structUp) return;
 
-            Tile tile = new Tile();
-            tile.sprite = spr;
-
-
-            _tilemap_structUp.SetTile(pos, tile);
-        }
 	}
 }
 
@@ -1658,7 +1667,7 @@ namespace HordeFight
             if (null == SingleO.unitRoot) return;
 
             uint id_sequence = 0;
-            Vector3 pos = Vector3.zero;
+            Vector3 pos = new Vector3(3,0,1);
             //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
