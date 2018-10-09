@@ -120,6 +120,7 @@ namespace UnityEditor
 			EditorGUI.BeginChangeCheck();
 			RuleInspectorOnGUI(inspectorRect, rule);
 			RuleMatrixOnGUI(tile, matrixRect, rule);
+            RuleMatrixOnGUI_Direction(tile, inspectorRect , rule);
 
             //멀티모드에서만 보여지게 한다 - 보여지는 것과 상관없이 다른모드에도 영향을 준다
             //if (rule.m_Output == RuleTile.TilingRule.OutputSprite.Multi)
@@ -185,6 +186,42 @@ namespace UnityEditor
 			if (m_ReorderableList != null && tile.m_TilingRules != null)
 				m_ReorderableList.DoLayoutList();
 		}
+
+
+        internal static void RuleMatrixOnGUI_Direction(RuleTile tile, Rect rect , RuleTile.TilingRule tilingRule)
+        {
+            Rect r = rect;
+            r.x -= 20f;
+            r.y += 40f;
+            r.width = 20f;
+            r.height = 20f;
+
+            //s_Arrows[0] = Base64ToTexture(s_Arrow0); //leftUp -> 4 -> 0
+            //s_Arrows[1] = Base64ToTexture(s_Arrow1); //up -> 3 -> 1
+            //s_Arrows[2] = Base64ToTexture(s_Arrow2); //rightUp -> 2 -> 2
+            //s_Arrows[3] = Base64ToTexture(s_Arrow3); //left -> 5 -> 3
+            //s_Arrows[5] = Base64ToTexture(s_Arrow5); //right -> 1 -> 5
+            //s_Arrows[6] = Base64ToTexture(s_Arrow6); //leftDown -> 6 -> 6
+            //s_Arrows[7] = Base64ToTexture(s_Arrow7); //down -> 7 -> 7
+            //s_Arrows[8] = Base64ToTexture(s_Arrow8); //rightDown -> 8 -> 8
+            //s_Arrows[9] = Base64ToTexture(s_XIconString); // 0 -> 9
+            int[] tr =  new int[]{9,5,2,1,0,3,6,7,8};
+
+            //DebugWide.LogBlue(tilingRule._push_dir8 + "  " + tr.Length);
+
+            if ((int)tilingRule._push_dir8 < 0) tilingRule._push_dir8 = Utility.eDirection8.none;
+
+            GUI.DrawTexture(r, RuleTile.arrows[tr[(int)tilingRule._push_dir8]]);
+
+
+            if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
+            {
+                tilingRule._push_dir8 = (Utility.eDirection8)((((int)tilingRule._push_dir8 + 1) % 9));
+                GUI.changed = true;
+                Event.current.Use();
+            }
+        
+        }
 
         internal static void RuleMatrixOnGUI_RuleID(RuleTile tile, Rect rect, RuleTile.TilingRule tilingRule)
         {
@@ -408,6 +445,8 @@ namespace UnityEditor
 			float y = rect.yMin;
 			EditorGUI.BeginChangeCheck();
             //GUI.Label(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, k_LabelWidth, k_SingleLineHeight), index.ToString("00"));
+
+            //ID입력 
             string newID = EditorGUI.DelayedTextField(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, 20f, k_SingleLineHeight), tilingRule.m_ID);
             tilingRule.m_ID = newID.Substring(0,Mathf.Min(2, newID.Length)); //입력한 글자를 2글자로 제한한다 
 
@@ -494,6 +533,7 @@ namespace UnityEditor
                         seq = i;
 
 
+                    //타일맵 복사 가능 옵션 
                     if(true == tilingRule._isTilemapCopy && i < tilingRule.m_MultiLength)
                     {
                         //DebugWide.LogBlue(tilingRule._multi_copy.Length  + "   i" + i + "  ml" + tilingRule.m_MultiLength);

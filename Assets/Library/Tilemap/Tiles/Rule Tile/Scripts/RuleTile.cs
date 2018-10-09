@@ -193,6 +193,7 @@ namespace UnityEngine
 			public Sprite[] m_Sprites;
             public int m_MultiLength; //멀티모드에서 스프라이트를 몇개 단위로 읽어 들일지 설정
             public bool[] _multi_copy; //지정된 Tilemap에 복사할시 어떤 멀티타일을 복사할지 설정 
+            public Utility.eDirection8 _push_dir8; //충돌체크시 밀어내는 방향 
 			public GameObject m_GameObject;
             public float m_AnimationSpeed;
 			public float m_PerlinScale;
@@ -214,6 +215,7 @@ namespace UnityEngine
                 m_MultiLength = 1;
                 _multi_copy = new bool[m_MultiLength];
                 _multi_copy[0] = true;
+                _push_dir8 = Utility.eDirection8.none;
 
                 m_GameObject = null;
                 m_AnimationSpeed = 1f;

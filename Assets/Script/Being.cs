@@ -141,7 +141,7 @@ namespace HordeFight
         private bool _isMoving = false;
         private float _elapsedTime = 0f;
         private float _prevInterpolationTime = 0;
-        private Vector3 _dir = Vector3.zero;
+        public Vector3 _dir = Vector3.zero;
         private Vector3 _startPos = Vector3.zero; 
         private Vector3 _lastTargetPos = Vector3.zero;
         private Vector3 _nextTargetPos = Vector3.zero;
@@ -313,7 +313,7 @@ namespace HordeFight
 
         //보조정보 
         //private Geo.Sphere _collider;
-        private Vector3 _direction = Vector3.forward;
+        //private Vector3 _direction = Vector3.forward;
 
 
         //동작정보
@@ -650,8 +650,8 @@ namespace HordeFight
                     //근접 방향으로 랜덤하게 회전하게 한다 
                     int num = Misc.rand.Next(-1, 2); //-1 ~ 1
                     num += (int)_move._eDir8;
-                    if (0 > num) num = 7;
-                    if (7 < num) num = 0;
+                    if (1 > num) num = 8;
+                    if (8 < num) num = 1;
                     _move._eDir8 = (eDirection8)num;
 
                     Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);

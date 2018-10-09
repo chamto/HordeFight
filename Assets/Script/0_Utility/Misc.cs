@@ -12,16 +12,17 @@ namespace Utility
     /// </summary>
     public enum eDirection8 : int
     {
-        none = -1,
-        right = 0,
-        rightUp = 1,
-        up = 2,
-        leftUp = 3,
-        left = 4,
-        leftDown = 5,
-        down = 6,
-        rightDown = 7,
+        none = 0,
+        right = 1,
+        rightUp = 2,
+        up = 3,
+        leftUp = 4,
+        left = 5,
+        leftDown = 6,
+        down = 7,
+        rightDown = 8,
         max,
+
 
     }
 }
@@ -604,7 +605,7 @@ namespace Utility
             //360 / 45 = 8
             int quad = Mathf.RoundToInt(deg / 45f);
             quad %= 8; //8 => 0 , 8을 0으로 변경  
-            //quad++; //값의 범위를 0~7 에서 1~8로 변경 
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
             //DebugWide.LogRed(deg + "   " + quad);
 
             //DebugWide.LogRed(dir + "   " + (eDirection8)quad); //chamto test
@@ -620,9 +621,9 @@ namespace Utility
         static public Vector3 RandomDir8_AxisY()
         {
             const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
-            int rand = Misc.rand.Next(0, 8); //0~7
+            int rand = Misc.rand.Next(1, 9); //1~8
             Vector3 dir = Vector3.zero;
-
+            rand -= 1;
             dir.x = Mathf.Cos(ANG_RAD * rand);
             dir.z = Mathf.Sin(ANG_RAD * rand);
 
@@ -632,14 +633,15 @@ namespace Utility
 
         //미리구한 정규화된 8방향값 
         static private Vector3[] _Dir8_AxisY = new Vector3[]
-        {   new Vector3(1,0,0).normalized ,     //    right = 0, 
-            new Vector3(1,0,1).normalized ,     //    rightUp = 1, 
-            new Vector3(0,0,1).normalized ,     //    up = 2,
-            new Vector3(-1,0,1).normalized ,    //    leftUp = 3,
-            new Vector3(-1,0,0).normalized ,    //    left = 4,
-            new Vector3(-1,0,-1).normalized ,   //    leftDown = 5,
-            new Vector3(0,0,-1).normalized ,    //    down = 6,
-            new Vector3(1,0,-1).normalized ,    //    rightDown = 7,
+        {   new Vector3(0,0,0) ,                //    zero = 0, 
+            new Vector3(1,0,0).normalized ,     //    right = 1, 
+            new Vector3(1,0,1).normalized ,     //    rightUp = 2, 
+            new Vector3(0,0,1).normalized ,     //    up = 3,
+            new Vector3(-1,0,1).normalized ,    //    leftUp = 4,
+            new Vector3(-1,0,0).normalized ,    //    left = 5,
+            new Vector3(-1,0,-1).normalized ,   //    leftDown = 6,
+            new Vector3(0,0,-1).normalized ,    //    down = 7,
+            new Vector3(1,0,-1).normalized ,    //    rightDown = 8,
         };
         static public Vector3 GetDir8Normal_AxisY(eDirection8 eDirection)
         {
