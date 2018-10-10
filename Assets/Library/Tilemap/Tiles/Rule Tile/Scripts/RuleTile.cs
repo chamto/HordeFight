@@ -251,8 +251,10 @@ namespace UnityEngine
             public Sprite sprite = null;
             public int max_size = 0; //예약한 전체 스프라이트배열 크기 
             public int multi_sequence = 0; //멀티스프라이트 순서값.
+
             public Matrix4x4 transform = Matrix4x4.identity;
             public TilingRule tilingRule = null;
+            public Utility.eDirection8 eTransDir = Utility.eDirection8.none; //transform 으로 변환된 값을 저장한 방향 
 
             public void Init()
             {
@@ -263,13 +265,22 @@ namespace UnityEngine
                 multi_sequence = 0;
                 transform = Matrix4x4.identity;
                 tilingRule = null;
+                eTransDir = Utility.eDirection8.none;
+            }
+
+            public void ApplyData()
+            {
+                if (null == tilingRule) return;
+                Vector3 n = Utility.Misc.GetDir8Normal_AxisMZ(tilingRule._push_dir8);
+                Vector3 tn = transform * n;
+                eTransDir = Utility.Misc.TransDirection8_AxisMZ(tn);
             }
         }
 
         /// <summary>
         /// Tile에 적용할 예약 정보를 관리한다 
         /// </summary>
-        public class AppointDataMap : Dictionary<Vector3Int, AppointData>
+        public class MultiDataMap : Dictionary<Vector3Int, AppointData>
         {
             
             private void AddOrUpdate(Vector3Int position, AppointData data)
@@ -280,6 +291,9 @@ namespace UnityEngine
                     this.Add(position, data);
                 }
                 this[position] = data;
+
+                if(null != data)
+                    data.ApplyData();
             }
 
 
@@ -446,57 +460,86 @@ namespace UnityEngine
             }
         }
 
-        public AppointDataMap _appointDataMap = new AppointDataMap();
+        public MultiDataMap _multiDataMap = new MultiDataMap();
 
         //========================================================================
         //========================================================================
 
-        public class RulePositionMap : Dictionary<Vector3Int, TilingRule>
+        public class TileDataMap : Dictionary<Vector3Int, AppointData>
         {
-            public void AddOrUpdate(Vector3Int position, TilingRule data)
+            public void AddOrUpdate(Vector3Int position, AppointData data)
             {
-                TilingRule getData = null;
+                AppointData getData = null;
                 if (false == this.TryGetValue(position, out getData))
                 {
                     this.Add(position, data);
                 }
                 this[position] = data;
+
+                if (null != data)
+                    data.ApplyData();
+            }
+
+            public void AddOrUpdate(Vector3Int position, TilingRule rule, Matrix4x4 transform)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    getData = new AppointData();
+                    getData.Init();
+                    this.Add(position,getData);
+                }
+
+                //위치만 있고 알맹이가 없는 경우 
+                if(null == getData)
+                {
+                    getData = new AppointData();
+                    getData.Init();
+                    this.Add(position, getData);
+                }
+
+                getData.transform = transform;
+                getData.tilingRule = rule;
+                getData.ApplyData();
+            }
+
+            public void InitPosition(Vector3Int position)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return;
+                }
+
+                getData.Init();
             }
 
             public string GetID(Vector3Int position)
             {
-                TilingRule getData = null;
-                if (false == this.TryGetValue(position, out getData))
-                {
-                    return string.Empty;
-                }
+                TilingRule getData = GetTilingRule(position);
 
-                if(null == getData)
+                if (null == getData)
                     return string.Empty;
-                
+
                 return getData.m_ID;
             }
 
             public TilingRule GetTilingRule(Vector3Int position)
             {
-                TilingRule getData = null;
+                AppointData getData = null;
                 if (false == this.TryGetValue(position, out getData))
                 {
                     return null;
                 }
 
-                return getData;
+                return getData.tilingRule;
             }
 
             //멀티모드에서 자식위치에 대해서는 TilingRule 값이 없기 때문에 검사하지 못한다 
             //IsActive_Root() 함수를 사용하여 자식위치로 부모위치를 찾아 검사하여야 한다 
             public bool IsTileMapCopy(Vector3Int position)
             {
-                TilingRule getData = null;
-                if (false == this.TryGetValue(position, out getData))
-                {
-                    return false;
-                }
+                TilingRule getData = GetTilingRule(position);
 
                 if (null == getData)
                     return false;
@@ -504,9 +547,25 @@ namespace UnityEngine
                 return getData._isTilemapCopy;
             }
 
+            public Utility.eDirection8 GetDirection8(Vector3Int position)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return Utility.eDirection8.none;
+                }
+
+                if (null == getData || null == getData.tilingRule)
+                    return Utility.eDirection8.none;
+
+                getData.ApplyData(); //적용 
+
+                return getData.eTransDir;
+            }
+
         }
 
-        public RulePositionMap _rulePositionMap = new RulePositionMap();
+        public TileDataMap _tileDataMap = new TileDataMap();
 
         public Tilemap _tilemap_this = null; //현재 타일맵
         public Tilemap _tilemap_copy = null; //설정된 타일 정보를 복사할 타일맵
@@ -548,13 +607,13 @@ namespace UnityEngine
 			tileData.transform = iden;
 
             //** 현재 위치에 멀티타일 루트설정이 있으면 해제한다
-            if(_appointDataMap.IsRoot(position))
+            if(_multiDataMap.IsRoot(position))
             {
-                _appointDataMap.ResetAll(position, tilemap);
+                _multiDataMap.ResetAll(position, tilemap);
             }
 
             //** 기록 초기화 
-            _rulePositionMap.AddOrUpdate(position, null); 
+            _tileDataMap.InitPosition(position);
 
 			foreach (TilingRule rule in m_TilingRules)
 			{
@@ -573,7 +632,7 @@ namespace UnityEngine
                         case TilingRule.OutputSprite.Multi:
                             {
                                 //현재 위치를 포함하는 활성화된 루트설정이 있는 경우 
-                                if (true == _appointDataMap.IsActive_Root(position, tilemap))
+                                if (true == _multiDataMap.IsActive_Root(position, tilemap))
                                 {
                                     //설정을 안한다 
                                     break;
@@ -592,7 +651,7 @@ namespace UnityEngine
                                 }
 
                                 //** 루트 멀티타일 설정을 한다 
-                                _appointDataMap.SetMultiData(position, tilemap, rule, transform , multiIndex);
+                                _multiDataMap.SetMultiData(position, tilemap, rule, transform , multiIndex);
                                 //DebugWide.LogBlue(MAX_MULTI_LENGTH + "  " + multiIndex); //chamto test
                             }
                             break;
@@ -617,7 +676,7 @@ namespace UnityEngine
                     m_GameObjectQuaternion = Quaternion.LookRotation(new Vector3(transform.m02, transform.m12, transform.m22), new Vector3(transform.m01, transform.m11, transform.m21));
 
                     //** 어떤 규칙이 어느 위치로 들어갔는지 기록 
-                    _rulePositionMap.AddOrUpdate(position, rule); 
+                    _tileDataMap.AddOrUpdate(position, rule, transform); 
 
                     break;
 				}
@@ -630,11 +689,11 @@ namespace UnityEngine
             //DebugWide.LogBlue(_appointDataMap.IsActive_MultiTile_Child(position) + "   " + position);
 
             //멀티설정이 있는 경우, 설정된 값으로 덮는다 
-            if (_appointDataMap.IsActive_Root(position, tilemap))
+            if (_multiDataMap.IsActive_Root(position, tilemap))
             {
                 //멀티설정 적용 
-                tileData.sprite = _appointDataMap[position].sprite;
-                tileData.transform = _appointDataMap[position].transform;
+                tileData.sprite = _multiDataMap[position].sprite;
+                tileData.transform = _multiDataMap[position].transform;
 
                 //** 어떤 규칙이 어느 위치로 들어갔는지 기록 
                 //멀티설정에 적용되는 타일까지 기록을 하면 ID비교 검사시 겹치는 규칙이 많아지게 된다. 
@@ -643,11 +702,11 @@ namespace UnityEngine
 
             }else
             {
-                if(true == _appointDataMap.IsActive_Child(position))
+                if(true == _multiDataMap.IsActive_Child(position))
                 {
                     //루트설정이 해제되어 있는데, 자식설정이 활성상태인 경우 
                     //자식설정값을 제거해 준다
-                    _appointDataMap.Reset(position);
+                    _multiDataMap.Reset(position);
                 }
             }
 
@@ -656,14 +715,14 @@ namespace UnityEngine
 
             //멀티모드일 경우 루트데이터를 찾아내 복사옵션이 있는지 검사한다
             //자식위치의 룰데이터는 다른 룰데이터에 스프라이트만 덮은 것이기때문에 쓰면 안된다 
-            if (true == _appointDataMap.IsActive_Root(position, tilemap))
+            if (true == _multiDataMap.IsActive_Root(position, tilemap))
             {
                 //루트로 변환하여 검사 
-                if (_rulePositionMap.IsTileMapCopy(_appointDataMap[position].root_pos))
+                if (_tileDataMap.IsTileMapCopy(_multiDataMap[position].root_pos))
                 {
 
                     //자식위치가 복사가능한지 검사
-                    if(true == _appointDataMap.IsTileMapCopy_Child(position,tilemap))
+                    if(true == _multiDataMap.IsTileMapCopy_Child(position,tilemap))
                     {
                         CopyTile_AnotherTilemap(position, tilemap, tileData);    
                     }
@@ -671,7 +730,7 @@ namespace UnityEngine
                 }
             }
             //싱글모드일 경우 복사옵션이 있는지 검사한다
-            else if (_rulePositionMap.IsTileMapCopy(position))
+            else if (_tileDataMap.IsTileMapCopy(position))
             {
                 CopyTile_AnotherTilemap(position, tilemap, tileData);    
             }
@@ -952,7 +1011,7 @@ namespace UnityEngine
                         neighboringTiles[seq] = tile;
 
                         //주변 아이디 수집 
-                        neighbors_GetID[seq] = _rulePositionMap.GetID(tilePosition);
+                        neighbors_GetID[seq] = _tileDataMap.GetID(tilePosition);
 
                         seq++;
                     }

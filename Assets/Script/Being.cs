@@ -945,8 +945,6 @@ namespace HordeFight
 
             SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
 
-            DebugWide.LogBlue(SingleO.gridManager.GetDirection8_Struct(__startPos));
-
         }
 
         private void TouchEnded()

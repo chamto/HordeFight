@@ -590,30 +590,6 @@ namespace Utility
         //========================================================
 
         /// <summary>
-        /// 방향값을 8방향 값으로 변환해 준다 
-        /// </summary>
-        /// <returns>The direction8.</returns>
-        /// <param name="dir">Dir.</param>
-        static public eDirection8 TransDirection8_AxisY(Vector3 dir)
-        {
-            float rad = Mathf.Atan2(dir.z, dir.x);
-            float deg = Mathf.Rad2Deg * rad;
-
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
-
-            //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
-            quad++; //값의 범위를 0~7 에서 1~8로 변경 
-            //DebugWide.LogRed(deg + "   " + quad);
-
-            //DebugWide.LogRed(dir + "   " + (eDirection8)quad); //chamto test
-
-            return (eDirection8)quad;
-        }
-
-        /// <summary>
         ///  여덟 방향중 하나를 무작위로 반환한다. 
         ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
         /// </summary>
@@ -643,9 +619,63 @@ namespace Utility
             new Vector3(0,0,-1).normalized ,    //    down = 7,
             new Vector3(1,0,-1).normalized ,    //    rightDown = 8,
         };
+
+        //-z축 기준 
+        static private Vector3[] _Dir8_AxisMZ = new Vector3[]
+        {   new Vector3(0,0,0) ,                //    zero = 0, 
+            new Vector3(1,0,0).normalized ,     //    right = 1, 
+            new Vector3(1,1,0).normalized ,     //    rightUp = 2, 
+            new Vector3(0,1,0).normalized ,     //    up = 3,
+            new Vector3(-1,1,0).normalized ,    //    leftUp = 4,
+            new Vector3(-1,0,0).normalized ,    //    left = 5,
+            new Vector3(-1,-1,0).normalized ,   //    leftDown = 6,
+            new Vector3(0,-1,0).normalized ,    //    down = 7,
+            new Vector3(1,-1,0).normalized ,    //    rightDown = 8,
+        };
+
         static public Vector3 GetDir8Normal_AxisY(eDirection8 eDirection)
         {
             return _Dir8_AxisY[(int)eDirection];
+        }
+
+        static public Vector3 GetDir8Normal_AxisMZ(eDirection8 eDirection)
+        {
+            return _Dir8_AxisMZ[(int)eDirection];
+        }
+
+        /// <summary>
+        /// 방향값을 8방향 값으로 변환해 준다 
+        /// </summary>
+        static public eDirection8 TransDirection8_AxisY(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+
+            return (eDirection8)quad;
+        }
+
+        static public eDirection8 TransDirection8_AxisMZ(Vector3 dir)
+        {
+            float rad = Mathf.Atan2(dir.y, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+
+            return (eDirection8)quad;
         }
 
         static public eDirection8 ReverseDir8_AxisY(eDirection8 eDirection)

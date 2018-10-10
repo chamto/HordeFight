@@ -50,11 +50,15 @@ namespace HordeFight
             {
                 RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
 
-                DebugWide.LogBlue("before" + ruleTile._rulePositionMap.Count);
+                DebugWide.LogBlue("before" + ruleTile._tileDataMap.Count);
+
                 SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
                 DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
 
-                DebugWide.LogBlue("after" + ruleTile._rulePositionMap.Count);
+                DebugWide.LogBlue("after" + ruleTile._tileDataMap.Count);
+
+                SingleO.gridManager.Apply_DebugView_StructDir();
+
             }
         }
 
@@ -470,6 +474,7 @@ namespace HordeFight
     {
         private Tilemap _tilemap = null;
         private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
+        private Dictionary<Vector3Int, eDirection8> _dirMap = new Dictionary<Vector3Int, eDirection8>();
 
 
 		private void Start()
@@ -499,18 +504,46 @@ namespace HordeFight
                 _colorMap.Add(i3, c);
         }
 
+        public void SetDir(Tilemap tilemap , Vector3Int posInt, eDirection8 dir)
+        {
+            
+            if (!_dirMap.Keys.Contains(posInt))
+                _dirMap.Add(posInt, dir);
+
+            _dirMap[posInt] = dir;
+        }
+
         private Vector3 _start = Vector3.zero;
-        private Vector3 _end = Vector3.zero;
+        private Vector3 _end = Vector3.right;
         public void DrawLine(Vector3 start, Vector3 end)
         {
             _start = start;
             _end = end;
         }
 
-		//private void Update()
+        //int __ccc = 0;
         void FixedUpdate()
 		{
             Debug.DrawLine(_start, _end);
+
+            //if (1 <= __ccc) return;
+
+            foreach(KeyValuePair<Vector3Int,eDirection8> pair in _dirMap)
+            {
+                //__ccc++;
+
+                //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
+                //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
+                Vector3Int pint = pair.Key;
+                pint.z = pint.y; pint.y = 0;
+
+                Vector3 world = SingleO.gridManager.ToPosition_Center(pint, Vector3.up);
+                Vector3 end = world + Misc.GetDir8Normal_AxisY(pair.Value) * 0.12f;
+
+                Debug.DrawLine(world, end);
+                //DebugWide.LogBlue(pair.Key + "   " + world + "   " + pair.Value);
+            }
+
 		}
 	}
 }
@@ -611,12 +644,12 @@ namespace HordeFight
             if (null == _ruleTile_struct) return eDirection8.none;
 
             Vector3Int vint = _tilemap_struct.WorldToCell(pos);
-            RuleTile.TilingRule tileRule = null;
-            if(_ruleTile_struct._rulePositionMap.TryGetValue(vint, out tileRule))
+            RuleTile.AppointData getData = null;
+            if(_ruleTile_struct._tileDataMap.TryGetValue(vint, out getData))
             {
-                if(null != tileRule)
+                if(null != getData && null != getData.tilingRule)
                 {
-                    return tileRule._push_dir8;
+                    return getData.tilingRule._push_dir8;
                 }
             }
 
@@ -1022,7 +1055,17 @@ namespace HordeFight
             return pos;
         }
 
+        public void Apply_DebugView_StructDir()
+        {
+            if (null == _ruleTile_struct) return;
 
+            foreach(KeyValuePair<Vector3Int, RuleTile.AppointData> pair in _ruleTile_struct._tileDataMap)
+            {
+                if (null == pair.Value ) continue;
+
+                SingleO.debugViewer.SetDir(_tilemap_struct , pair.Key, pair.Value.eTransDir);
+            }
+        }
 	}
 }
 
