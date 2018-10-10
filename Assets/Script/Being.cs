@@ -940,6 +940,8 @@ namespace HordeFight
                     _behaviorKind = Behavior.eKind.Move;
                     Move(dir, 0.5f, true);
                     //_move.MoveToTarget(hit.point, 1f);
+
+                    //DebugWide.LogBlue(dir + "  " + Misc.TransDirection8_AxisY(dir));
                 }
             }
 

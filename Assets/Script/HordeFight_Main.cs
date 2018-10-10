@@ -43,22 +43,16 @@ namespace HordeFight
 
         }
 
-        void OnGUI()
-        {
+        //void OnGUI()
+        //{
+        //    if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
+        //    {
+        //        RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
 
-            if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
-            {
-                RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
-
-                DebugWide.LogBlue("before" + ruleTile._tileDataMap.Count);
-
-                SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
-                DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
-
-                DebugWide.LogBlue("after" + ruleTile._tileDataMap.Count);
-
-            }
-        }
+        //        SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
+        //        DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+        //    }
+        //}
 
 
     }
@@ -653,7 +647,7 @@ namespace HordeFight
 
             }
 
-            DebugWide.LogBlue("Load : TileMap_Struct RefreshAllTiles : " + _structTileList.Count);
+            DebugWide.LogBlue("LoadTile : " + _structTileList.Count + "  -  TileMap_Struct RefreshAllTiles");
         }
 
 
