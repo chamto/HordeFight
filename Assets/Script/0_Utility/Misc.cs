@@ -648,6 +648,8 @@ namespace Utility
         /// </summary>
         static public eDirection8 TransDirection8_AxisY(Vector3 dir)
         {
+            if (Vector3.zero.Equals(dir)) return eDirection8.none;
+
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 
@@ -664,6 +666,8 @@ namespace Utility
 
         static public eDirection8 TransDirection8_AxisMZ(Vector3 dir)
         {
+            if (Vector3.zero.Equals(dir)) return eDirection8.none;
+
             float rad = Mathf.Atan2(dir.y, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 

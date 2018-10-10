@@ -521,16 +521,16 @@ namespace HordeFight
             _end = end;
         }
 
-        //int __ccc = 0;
+
         void FixedUpdate()
 		{
             Debug.DrawLine(_start, _end);
 
-            //if (1 <= __ccc) return;
 
             foreach(KeyValuePair<Vector3Int,eDirection8> pair in _dirMap)
             {
-                //__ccc++;
+
+                if (eDirection8.none == pair.Value) continue;
 
                 //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
                 //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
@@ -541,7 +541,6 @@ namespace HordeFight
                 Vector3 end = world + Misc.GetDir8Normal_AxisY(pair.Value) * 0.12f;
 
                 Debug.DrawLine(world, end);
-                //DebugWide.LogBlue(pair.Key + "   " + world + "   " + pair.Value);
             }
 
 		}
