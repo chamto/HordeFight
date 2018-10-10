@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -563,7 +564,7 @@ namespace UnityEngine
                 if (null == getData || null == getData.tilingRule)
                     return Utility.eDirection8.none;
 
-                getData.ApplyData(); //적용 
+                //getData.ApplyData(); //적용 
 
                 return getData.eTransDir;
             }
@@ -741,8 +742,14 @@ namespace UnityEngine
             }
 
 
-        }
+            //Vector3Int testPos = new Vector3Int(16, 0, 0);
+            //RuleTile test = _tilemap_this.GetTile(testPos) as RuleTile;
+            //if(null != test)
+            //{
+            //    DebugWide.LogBlue(test._tileDataMap.GetDirection8(testPos) + "  cur:" + position + "   " + _class_id);
 
+            //}
+        }
 
 
         public void CopyTile_AnotherTilemap(Vector3Int pos, ITilemap tilemap, TileData data)
@@ -1186,3 +1193,4 @@ namespace UnityEngine
 		}
     }
 }
+

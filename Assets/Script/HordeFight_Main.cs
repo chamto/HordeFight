@@ -57,8 +57,6 @@ namespace HordeFight
 
                 DebugWide.LogBlue("after" + ruleTile._tileDataMap.Count);
 
-                SingleO.gridManager.Apply_DebugView_StructDir();
-
             }
         }
 
@@ -526,21 +524,17 @@ namespace HordeFight
 		{
             Debug.DrawLine(_start, _end);
 
-
-            foreach(KeyValuePair<Vector3Int,eDirection8> pair in _dirMap)
+            foreach(StructTile t in SingleO.gridManager._structTileList.Values)
             {
 
-                if (eDirection8.none == pair.Value) continue;
+                if (eDirection8.none == t._dir) continue;
 
                 //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
                 //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
-                Vector3Int pint = pair.Key;
-                pint.z = pint.y; pint.y = 0;
 
-                Vector3 world = SingleO.gridManager.ToPosition_Center(pint, Vector3.up);
-                Vector3 end = world + Misc.GetDir8Normal_AxisY(pair.Value) * 0.12f;
+                Vector3 end = t._v3Center + Misc.GetDir8Normal_AxisY(t._dir) * 0.12f;
 
-                Debug.DrawLine(world, end);
+                Debug.DrawLine(t._v3Center, end);
             }
 
 		}
@@ -554,14 +548,21 @@ namespace HordeFight
 
 namespace HordeFight
 {
-    
+
+    //한셀에 몇명의 캐릭터가 있는지 나타낸다 
     public class CellInfo : LinkedList<Being>
     {
         
         public Vector3Int _index = default(Vector3Int);
-
     }
 
+    //장애물 정보 
+    public class StructTile
+    {
+        public eDirection8 _dir = eDirection8.none;
+        public Vector3 _v3Center = Vector3.zero;    //타일의 중앙 월드위치
+
+    }
 
 
     public class GridManager : MonoBehaviour
@@ -571,6 +572,7 @@ namespace HordeFight
         private RuleTile _ruleTile_struct = null; //구조타일맵의 룰타일객체  
         private Tilemap _tilemap_struct = null;
         public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
+        public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
         public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
@@ -604,13 +606,6 @@ namespace HordeFight
             return _tilemap_struct;
         }
 
-       
-
-        public RuleTile GetRuleTile_Struct()
-        {
-            return _ruleTile_struct;
-        }
-
 		private void Start()
 		{
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
@@ -619,16 +614,14 @@ namespace HordeFight
             {
                 _tilemap_struct = o.GetComponent<Tilemap>();    
             }
-            if(null != _tilemap_struct)
-            {
-                _ruleTile_struct = _tilemap_struct.GetTile(Vector3Int.zero) as RuleTile;
-            }
 
             _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
             _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.up);
             _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up);
             _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.up);
             _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
+
+            this.LoadTilemap_Struct();
 
 		}
 
@@ -637,6 +630,32 @@ namespace HordeFight
 		{
 			
 		}
+
+        //ref : https://gamedev.stackexchange.com/questions/150917/how-to-get-all-tiles-from-a-tilemap
+        public void LoadTilemap_Struct()
+        {
+            if (null == _tilemap_struct) return;
+
+            SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
+            StructTile structTile = null;
+            foreach (Vector3Int vint in _tilemap_struct.cellBounds.allPositionsWithin)
+            {
+                RuleTile ruleTile = _tilemap_struct.GetTile(vint) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
+                if (null == ruleTile) continue;
+
+                structTile = new StructTile();
+                structTile._v3Center = _tilemap_struct.CellToWorld(vint);
+                structTile._v3Center.x += GridCell_HalfSize;
+                structTile._v3Center.z += GridCell_HalfSize;
+                //structTile._v3Center = this.ToPosition_Center(vint, Vector3.up); //grid 함수와 호환안됨 
+                structTile._dir = ruleTile._tileDataMap.GetDirection8(vint);
+                _structTileList.Add(vint, structTile);
+
+            }
+
+            DebugWide.LogBlue("Load : TileMap_Struct RefreshAllTiles : " + _structTileList.Count);
+        }
+
 
         public eDirection8 GetDirection8_Struct(Vector3 pos)
         {
@@ -1015,6 +1034,7 @@ namespace HordeFight
             return this.ToPosition_Center(cellPos, axis);
         }
 
+        //grid 와 호환 안되는 함수 
         public Vector3 ToPosition_Center(Vector3Int ci , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
@@ -1054,17 +1074,7 @@ namespace HordeFight
             return pos;
         }
 
-        public void Apply_DebugView_StructDir()
-        {
-            if (null == _ruleTile_struct) return;
 
-            foreach(KeyValuePair<Vector3Int, RuleTile.AppointData> pair in _ruleTile_struct._tileDataMap)
-            {
-                if (null == pair.Value ) continue;
-
-                SingleO.debugViewer.SetDir(_tilemap_struct , pair.Key, pair.Value.eTransDir);
-            }
-        }
 	}
 }
 
