@@ -138,10 +138,10 @@ namespace HordeFight
         public eDirection8 _eDir8 = eDirection8.down;
         private float _speed_meterPerSecond = 1f;
 
-        private bool _isMoving = false;
+        private bool _isNextMoving = false;
         private float _elapsedTime = 0f;
         private float _prevInterpolationTime = 0;
-        public Vector3 _dir = Vector3.zero;
+        public Vector3 _direction = Vector3.zero;
         private Vector3 _startPos = Vector3.zero; 
         private Vector3 _lastTargetPos = Vector3.zero;
         private Vector3 _nextTargetPos = Vector3.zero;
@@ -161,22 +161,22 @@ namespace HordeFight
 
         public void UpdateNextPath()
         {
-            if (false == _isMoving) return;
+            if (false == _isNextMoving) return;
 
             if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER)
             {
                 if (0 == _targetPath.Count)
                 {
                     //이동종료 
-                    _isMoving = false;
+                    _isNextMoving = false;
                     return;
                 }
 
                 _nextTargetPos = _targetPath.Dequeue();
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
-                _dir = Quaternion.FromToRotation(_dir, _nextTargetPos - this.transform.position) * _dir;
-                _eDir8 = Misc.TransDirection8_AxisY(_dir);
+                _direction = Quaternion.FromToRotation(_direction, _nextTargetPos - this.transform.position) * _direction;
+                _eDir8 = Misc.TransDirection8_AxisY(_direction);
 
             }
 
@@ -190,21 +190,26 @@ namespace HordeFight
             }
             _elapsedTime += Time.deltaTime;
              
-            Move_Interpolation(_dir, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
+            Move_Interpolation(_direction, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
 
             //this.transform.position = Vector3.Lerp(this.transform.position, _targetPos, _elapsedTime / (_onePath_movingTime * _speed));
+        }
+
+        public void SetNextMoving(bool isNext)
+        {
+            _isNextMoving = isNext;
         }
 
         public void MoveToTarget(Vector3 targetPos, float speed_meterPerSecond)
         {
             _targetPath.Clear(); //기존 설정 경로를 비운다
 
-            _isMoving = true;
+            _isNextMoving = true;
             _startPos = this.transform.position;
             _lastTargetPos = targetPos;
             _nextTargetPos = this.transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
             _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
-            _dir = Misc.GetDir8Normal_AxisY(_eDir8);
+            _direction = Misc.GetDir8Normal_AxisY(_eDir8);
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             //_elapsedTime = 0; 
@@ -235,7 +240,9 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
-            _eDir8 = Misc.TransDirection8_AxisY(_dir);
+            _isNextMoving = false;
+            _eDir8 = Misc.TransDirection8_AxisY(dir);
+            //DebugWide.LogBlue(_eDir8 + "  " + dir); //chamto test
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
@@ -598,7 +605,11 @@ namespace HordeFight
             string aniNameSum = "";
             switch (dir)
             {
-
+                //case eDirection8.none:
+                    //{
+                    //    DebugWide.LogRed("Switch_Ani : "+dir  + "값은 처리 할 수 없다 ");
+                    //}
+                    //break;
                 case eDirection8.leftUp:
                     {
                         aniNameSum = aniName + eDirection8.rightUp.ToString();
@@ -690,7 +701,7 @@ namespace HordeFight
             if (false == forward)
                 dir *= -1f;
 
-            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
             Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
 
         }
@@ -938,7 +949,7 @@ namespace HordeFight
                 else
                 {
                     _behaviorKind = Behavior.eKind.Move;
-                    Move(dir, 0.5f, true);
+                    Move(dir, 0.4f, true);
                     //_move.MoveToTarget(hit.point, 1f);
 
                     //DebugWide.LogBlue(dir + "  " + Misc.TransDirection8_AxisY(dir));
@@ -952,7 +963,8 @@ namespace HordeFight
         private void TouchEnded()
         {
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
-            _move.MoveToTarget(transform.position, 1f); //이동종료
+            //_move.MoveToTarget(transform.position, 1f); //이동종료
+            _move.SetNextMoving(false);
 
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);

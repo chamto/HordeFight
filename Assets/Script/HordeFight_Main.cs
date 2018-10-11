@@ -1097,7 +1097,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 30;
+        private int __TestSkelCount = 1;
 
         private void Start()
         {
