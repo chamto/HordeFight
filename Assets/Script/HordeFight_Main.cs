@@ -513,14 +513,28 @@ namespace HordeFight
             _end = end;
         }
 
+        public void UpdateDraw_IndexesNxN()
+        {
+            Vector3Int prev = Vector3Int.zero;
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.up))
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.back))
 
-        void FixedUpdate()
-		{
-            Debug.DrawLine(_start, _end);
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up))
+            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.back))
 
-            foreach(StructTile t in SingleO.gridManager._structTileList.Values)
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.up))
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.back))
             {
+                //DebugWide.LogBlue(v);
+                Debug.DrawLine(prev, cur);
+                prev = cur;
+            }
+        }
 
+        public void UpdateDraw_StructTileDir()
+        {
+            foreach (StructTile t in SingleO.gridManager._structTileList.Values)
+            {
                 if (eDirection8.none == t._dir) continue;
 
                 //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
@@ -530,6 +544,16 @@ namespace HordeFight
 
                 Debug.DrawLine(t._v3Center, end);
             }
+        }
+
+
+        void FixedUpdate()
+		{
+            Debug.DrawLine(_start, _end);
+
+            UpdateDraw_StructTileDir();
+
+            //UpdateDraw_IndexesNxN();
 
 		}
 	}
@@ -561,9 +585,13 @@ namespace HordeFight
 
     public class GridManager : MonoBehaviour
     {
+        public const int NxN_MIN = 3;   //그리드 범위 최소크기
+        public const int NxN_MAX = 11;  //그리드 범위 최대크기
+        public const float GridCell_Size = 0.16f;
+        public const float GridCell_HalfSize = GridCell_Size * 0.5f;
+
 
         private Grid _grid = null;
-        private RuleTile _ruleTile_struct = null; //구조타일맵의 룰타일객체  
         private Tilemap _tilemap_struct = null;
         public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
         public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>();
@@ -571,10 +599,6 @@ namespace HordeFight
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
         public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
 
-        public const int NxN_MIN = 3;   //그리드 범위 최소크기
-        public const int NxN_MAX = 11;  //그리드 범위 최대크기
-        public const float GridCell_Size = 0.16f;
-        public const float GridCell_HalfSize = GridCell_Size * 0.5f;
 
         public Grid grid
         {
@@ -609,11 +633,12 @@ namespace HordeFight
                 _tilemap_struct = o.GetComponent<Tilemap>();    
             }
 
-            _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.up);
-            _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.up);
-            _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up);
-            _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.up);
-            _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up); //화면 세로길이를 벗어나지 않는 그리드 최소값
+            //타일맵 좌표계 x-y에 해당하는 축값 back로 구한다 
+            _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.back);
+            _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.back);
+            _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.back);
+            _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.back);
+            _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.back); //화면 세로길이를 벗어나지 않는 그리드 최소값
 
             this.LoadTilemap_Struct();
 
@@ -651,33 +676,16 @@ namespace HordeFight
         }
 
 
-        public eDirection8 GetDirection8_Struct(Vector3 pos)
-        {
-            if (null == _ruleTile_struct) return eDirection8.none;
-
-            Vector3Int vint = _tilemap_struct.WorldToCell(pos);
-            RuleTile.AppointData getData = null;
-            if(_ruleTile_struct._tileDataMap.TryGetValue(vint, out getData))
-            {
-                if(null != getData && null != getData.tilingRule)
-                {
-                    return getData.tilingRule._push_dir8;
-                }
-            }
-
-            return eDirection8.none;
-        }
-
         //원 반지름 길이를 포함하는 그리드범위 구하기
         public uint GetNxNIncluded_CircleRadius(float maxRadius)
         {
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-            uint NxN = (uint)((maxRadius * 2) / this.cellSize_x); //소수점 버림을 한다 
-            if (0 == NxN % 2) NxN -= 1; //짝수라면 홀수로 변환한다
-            if (NxN > GridManager.NxN_MAX) NxN = GridManager.NxN_MAX;
-            if (NxN < GridManager.NxN_MIN) NxN = GridManager.NxN_MIN;
+            uint nxn = (uint)((maxRadius * 2) / this.cellSize_x); //소수점 버림을 한다 
+            if (0 == nxn % 2) nxn -= 1; //짝수라면 홀수로 변환한다
+            if (nxn > GridManager.NxN_MAX) nxn = GridManager.NxN_MAX;
+            if (nxn < GridManager.NxN_MIN) nxn = GridManager.NxN_MIN;
 
-            return NxN;
+            return nxn;
         }
 
         /// <summary>
@@ -705,15 +713,16 @@ namespace HordeFight
                     if (Vector3.up == axis)
                     {
                         //y축 중심 : 3d용 좌표
-                        index.x = i;
+                        index.x = j;
                         index.y = 0;
-                        index.z = j;    
+                        index.z = i;    
                     }
-                        if (Vector3.back == axis)
+
+                    if (Vector3.back == axis)
                     {
                         //-z축 중심 : 2d용 좌표
-                        index.x = i;
-                        index.y = j;
+                        index.x = j;
+                        index.y = i;
                         index.z = 0;    
                     }
 
@@ -748,6 +757,7 @@ namespace HordeFight
                     Tornado_Num = (Tornado_Num + Tornado_Count%2); //1 1 2 2 3 3 4 4 5 5 .... 이렇게 증가하는 수열값임 
                     Tornado_Count++;
 
+                    //반시계방향으로 회전하도록 한다 
                     if (Vector3.up == axis)
                     {
                         //y축 중심 : 3d용 좌표
@@ -757,7 +767,7 @@ namespace HordeFight
                     if (Vector3.back == axis)
                     {
                         //-z축 중심 : 2d용 좌표
-                        dir = Quaternion.Euler(0, 0, -90f) * dir;
+                        dir = Quaternion.Euler(0, 0, 90f) * dir;
                     }
                 }
 
@@ -811,30 +821,32 @@ namespace HordeFight
 
                 if (curMax == cur)
                 {
-                    
+                    //DebugWide.LogBlue(curMax + "  " + Tornado_Count % 4 + "  :" + Tornado_Count);
+                    if (0 == Tornado_Count % 4)
+                    {
+                        //좌상단으로 방향 전환
+                        angle = -135f;
+
+                        //오른쪽으로 한칸더 간다
+                        dir = Vector3.right;
+                        cur.x += (int)Mathf.Round(dir.x);
+                        cur.y += (int)Mathf.Round(dir.y);
+                        cur.z += (int)Mathf.Round(dir.z);
+                    }
+                    else
+                    {
+                        angle = -90f;
+                    }
+
                     if (Vector3.up == axis)
                     {
                         //y축 중심 : 3d용 좌표
-
-                        //DebugWide.LogBlue(curMax + "  " + Tornado_Count % 4 + "  :" + Tornado_Count);
-                        if (0 == Tornado_Count % 4)
-                        {
-                            //좌상단으로 방향 전환
-                            angle = -135f;
-
-                            //오른쪽으로 한칸더 간다
-                            dir = Vector3.right;
-                            cur.x += (int)Mathf.Round(dir.x);
-                            cur.y += (int)Mathf.Round(dir.y);
-                            cur.z += (int)Mathf.Round(dir.z);
-
-                        }
-                        else
-                        {
-                            angle = -90f;
-                        }
-
                         dir = Quaternion.Euler(0, angle, 0) * dir;
+                    }
+                    if (Vector3.back == axis)
+                    {
+                        //-z축 중심 : 2d용 좌표
+                        dir = Quaternion.Euler(0, 0, -angle) * dir;
                     }
 
                     prevMax = cur; //최대 위치값 갱신
@@ -850,7 +862,7 @@ namespace HordeFight
         }
 
 
-        public bool HasStructTile(Vector3Int tileInt)
+        public bool HasStructTile_CellPos(Vector3Int tileInt)
         {
             
             RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
@@ -933,7 +945,7 @@ namespace HordeFight
                 {
                     //temp1 += "(" + i + ", "+ j +")  "; 
                     index.x = i + center.x; 
-                    index.z = j + center.z;
+                    index.y = j + center.y;
                     dst = this.GetCellInfo(index);
 
                     if(null != dst && 0 != dst.Count)
@@ -989,7 +1001,7 @@ namespace HordeFight
             {
                 //그리드 자체에 스케일을 적용시킨 경우가 있으므로 스케일값을 적용한다. 
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x) ;
-                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z) ;
+                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z) ;
 
 
                 if(0 <= pos.x)
@@ -1006,11 +1018,11 @@ namespace HordeFight
 
                 if (0 <= pos.z)
                 { 
-                    cellIndex.z = (int)(pos.z / cellSize.z);
+                    cellIndex.y = (int)(pos.z / cellSize.y);
                 }
                 else
                 { 
-                    cellIndex.z = (int)((pos.z / cellSize.z) - 0.9f);
+                    cellIndex.y = (int)((pos.z / cellSize.y) - 0.9f);
                 }
 
             }
@@ -1037,14 +1049,14 @@ namespace HordeFight
             if (Vector3.up == axis)
             {
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
-                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
 
                 pos.x = (float)ci.x * cellSize.x;
-                pos.z = (float)ci.z * cellSize.z;
+                pos.z = (float)ci.y * cellSize.y;
 
                 //셀의 중간에 위치하도록 한다
                 pos.x += cellSize.x * 0.5f;
-                pos.z += cellSize.z * 0.5f;
+                pos.z += cellSize.y * 0.5f;
             }
 
             return pos;
@@ -1058,10 +1070,10 @@ namespace HordeFight
             if (Vector3.up == axis)
             {
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
-                cellSize.z = (_grid.cellSize.y * _grid.transform.localScale.z);
+                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
 
                 pos.x = (float)ci.x * cellSize.x;
-                pos.z = (float)ci.z * cellSize.z;
+                pos.z = (float)ci.y * cellSize.y;
 
             }
 
@@ -1085,7 +1097,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 3;
+        private int __TestSkelCount = 30;
 
         private void Start()
         {
@@ -1183,7 +1195,7 @@ namespace HordeFight
 
                 Vector3 n = sqr_dis.normalized;
                 //Vector3 n = sqr_dis;
-                float div_dis = 0.5f;
+                float meterPersecond = 2f;
 
                 //2.반지름 이상으로 겹쳐있는 경우
                 if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
@@ -1195,14 +1207,14 @@ namespace HordeFight
                         n = Misc.RandomDir8_AxisY();
                     }
 
-                    div_dis = 0.2f;
+                    meterPersecond = 0.5f;
                 }
 
                 //밀리는 처리 
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-                src._move.Move_Forward(n, 2f, div_dis);
+                src._move.Move_Forward(n, 2f, meterPersecond);
                 //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                dst._move.Move_Forward(-n, 2f, div_dis);
+                dst._move.Move_Forward(-n, 2f, meterPersecond);
 
             }
         }
@@ -1247,10 +1259,10 @@ namespace HordeFight
             float size = GridManager.GridCell_HalfSize;
 
             Vector3Int colllIntPos = SingleO.gridManager.grid.WorldToCell(collisionCellPos_center);
-            bool isUp = SingleO.gridManager.HasStructTile(colllIntPos + Vector3Int.up);
-            bool isDown = SingleO.gridManager.HasStructTile(colllIntPos + Vector3Int.down);
-            bool isLeft = SingleO.gridManager.HasStructTile(colllIntPos + Vector3Int.left);
-            bool isRight = SingleO.gridManager.HasStructTile(colllIntPos + Vector3Int.right);
+            bool isUp = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.up);
+            bool isDown = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.down);
+            bool isLeft = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.left);
+            bool isRight = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.right);
             DebugWide.LogBlue(eDirection + "  " + colllIntPos + "  up:" + isUp + "  down:" + isDown + "  left:" + isLeft + "  right:" + isRight);
 
 
@@ -1731,7 +1743,7 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
