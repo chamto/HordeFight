@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
   m_Name: dungeon_structure_web
   m_EditorClassIdentifier: 
-  _class_id: 1
-  _permit_rules: 1
+  _class_id: 64
+  _permit_rules: 64
   m_DefaultSprite: {fileID: 21300000, guid: a96d0ef6cb2524b8aad190907891292d, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
@@ -69,7 +69,7 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 2
-  - m_ID: 00
+  - m_ID: 07
     m_Neighbors: 0200000001000000000000000100000000000000000000000000000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
     m_Neighbors_ID:
@@ -85,38 +85,13 @@ MonoBehaviour:
     - {fileID: 21300000, guid: a6fe6742947374faf99b5c3362626fea, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 4
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 0
-    _isTilemapCopy: 0
-    m_ColliderType: 1
-    m_RandomTransform: 0
-  - m_ID: 00
-    m_Neighbors: 0000000000000000000000000100000000000000020000000100000000000000
-    m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    - 
-    m_Sprites:
-    - {fileID: 21300000, guid: 51d5890a31de54a3e99a05ca31a4045a, type: 3}
-    m_MultiLength: 1
-    _multi_copy: 01
-    _push_dir8: 6
-    m_GameObject: {fileID: 0}
-    m_AnimationSpeed: 1
-    m_PerlinScale: 0.5
-    m_RuleTransform: 2
-    m_Output: 0
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_ID: s1
@@ -145,7 +120,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 98232b5a4f6d4429f9b15b311b555cc4, type: 3}
     - {fileID: 21300000, guid: 47f7af579b2a447ffa5d834e19e4e1e5, type: 3}
     m_MultiLength: 3
-    _multi_copy: 010000
+    _multi_copy: 000001
     _push_dir8: 6
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
@@ -183,7 +158,7 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 2
-  - m_ID: 00
+  - m_ID: 07
     m_Neighbors: 0100000001000000010000000100000000000000020000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
     m_Neighbors_ID:
@@ -199,14 +174,14 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 51d5890a31de54a3e99a05ca31a4045a, type: 3}
     - {fileID: 21300000, guid: 7bb367101ff484029834744f81325e7c, type: 3}
     m_MultiLength: 2
-    _multi_copy: 0100
-    _push_dir8: 0
+    _multi_copy: 0001
+    _push_dir8: 6
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 1
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_ID: 00

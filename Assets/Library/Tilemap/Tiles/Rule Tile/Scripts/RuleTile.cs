@@ -94,6 +94,7 @@ namespace UnityEngine
 
 
         //룰타일 간의 이웃검사시 사용할 분류항목  
+        [Serializable]
         public enum eClassification : Int32
         {
             None                = 0,        //0은 비트연산시 항상 참 , 사용하지 말것
@@ -244,7 +245,7 @@ namespace UnityEngine
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
 
-
+        [Serializable]
         public class AppointData
         {
             public bool activeMultiTile = false;
@@ -286,6 +287,7 @@ namespace UnityEngine
         /// <summary>
         /// Tile에 적용할 예약 정보를 관리한다 
         /// </summary>
+        [Serializable]
         public class MultiDataMap : Dictionary<Vector3Int, AppointData>
         {
             
@@ -471,6 +473,7 @@ namespace UnityEngine
         //========================================================================
         //========================================================================
 
+        [Serializable]
         public class TileDataMap : Dictionary<Vector3Int, AppointData>
         {
             public void AddOrUpdate(Vector3Int position, AppointData data)

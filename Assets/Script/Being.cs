@@ -416,10 +416,10 @@ namespace HordeFight
             Vector3Int curIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
 
             //충돌없는 마지막 타일 위치를 갱신한다 
-            Vector3 centerPos = Vector3.zero;
-            if(false == SingleO.gridManager.HasStructTile(transform.position, out centerPos))
+            StructTile structTile = null;
+            if(false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
             {
-                _lastCellPos_withoutCollision = centerPos;//SingleO.gridManager.ToPosition_Center(curIdx,Vector3.up);
+                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition_Center(curIdx,Vector3.up);
                 //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
             }
                 

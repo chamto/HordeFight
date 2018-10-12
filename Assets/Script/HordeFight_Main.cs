@@ -533,6 +533,7 @@ namespace HordeFight
 
         public void UpdateDraw_StructTileDir()
         {
+            Color ccc = Color.white;
             foreach (StructTile t in SingleO.gridManager._structTileList.Values)
             {
                 if (eDirection8.none == t._dir) continue;
@@ -540,9 +541,23 @@ namespace HordeFight
                 //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
                 //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
 
+                ccc = Color.white;
+                if(StructTile.DiagonalFixing == t._id)
+                {
+                    ccc = Color.red;
+                }
+
                 Vector3 end = t._v3Center + Misc.GetDir8Normal_AxisY(t._dir) * 0.12f;
 
-                Debug.DrawLine(t._v3Center, end);
+                Debug.DrawLine(t._v3Center, end, ccc);
+
+                //Vector3 crossL = t._v3Center;
+                //crossL.x += -0.08f;
+                //crossL.z += 0.08f;
+                //Vector3 crossR = t._v3Center;
+                //crossR.x += 0.08f;
+                //crossR.z += -0.08f;
+                //Debug.DrawLine(crossL, crossR, ccc);
             }
         }
 
@@ -577,9 +592,11 @@ namespace HordeFight
     //장애물 정보 
     public class StructTile
     {
+        public const int DiagonalFixing = 7; //대각고정 예약어
+
+        public int _id = 0;
         public eDirection8 _dir = eDirection8.none;
         public Vector3 _v3Center = Vector3.zero;    //타일의 중앙 월드위치
-
     }
 
 
@@ -657,12 +674,19 @@ namespace HordeFight
 
             SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
             StructTile structTile = null;
+            RuleTile.TilingRule ruleInfo = null;
+            int intId = 0;
             foreach (Vector3Int vint in _tilemap_struct.cellBounds.allPositionsWithin)
             {
                 RuleTile ruleTile = _tilemap_struct.GetTile(vint) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
+                ruleInfo = ruleTile._tileDataMap.GetTilingRule(vint);
+                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_ID, out intId)) 
+                    intId = 0;
+
                 structTile = new StructTile();
+                structTile._id = intId;
                 structTile._v3Center = _tilemap_struct.CellToWorld(vint);
                 structTile._v3Center.x += GridCell_HalfSize;
                 structTile._v3Center.z += GridCell_HalfSize;
@@ -886,27 +910,16 @@ namespace HordeFight
 
             return false;
         }
-        public bool HasStructTile(Vector3 tilePos, out Vector3 tileCenterToWorld)
+        public bool HasStructTile(Vector3 tilePos, out StructTile structTile)
         {
-            tileCenterToWorld = Vector3.zero;
+            structTile = null;
+
             if (null == _tilemap_struct) return false;
 
             //x-z 평면상에 타일맵을 놓아도 내부적으로는 x-y 평면으로 처리된다
             Vector3Int tileInt = _tilemap_struct.WorldToCell(tilePos);
-
-            //x-z 평면을 가정하고 처리
-            //CellToWorld 함수의 값과 cellSize 값이 부정확하여 직접 계산한다 
-            //Vector3 의 ToString 함수내부에서 원래값을 반올림하여 출력한다는 것을 알게 되었다. 값은 올바로 가지고 있는 것이었음 
-            tileCenterToWorld.x = (float)tileInt.x * cellSize_x + (cellSize_x * 0.5f);
-            tileCenterToWorld.y = 0;
-            tileCenterToWorld.z = (float)tileInt.y * cellSize_z + (cellSize_z * 0.5f);
-
-            //DebugWide.LogBlue(tileInt.x + "  " + cellSize_x + "   " + tileInt.x * cellSize_x + "   " + tileCenterToWorld.x + "   "  + _structTilemap.cellSize.x); //chamto test
-
-            RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
-            if (null != rTile)
+            if(true == _structTileList.TryGetValue(tileInt, out structTile))
             {
-                //DebugWide.LogBlue(tileInt + "  " + tilePos + "   " + tileCenterToWorld.x + ", " + tileCenterToWorld.z ); //chamto test
                 return true;
             }
 
@@ -1097,7 +1110,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        private int __TestSkelCount = 1;
+        private int __TestSkelCount = 5;
 
         private void Start()
         {
@@ -1423,66 +1436,148 @@ namespace HordeFight
             }
         }
 
-        public void CollisionPush_Rigid3(Being src, Vector3 collisionCellPos_center, float rigRadius)
+        public void CollisionPush_Rigid3(Being src, StructTile structTile)
         {
-            
+            if (null == structTile) return;
+
             Vector3 srcPos = src.transform.position;
-            //Vector3 dir_inCellToOutCell = src._lastCellPos_withoutCollision - collisionCellPos_center;
-            Vector3 dir_inCellToOutCell = src.transform.position - collisionCellPos_center;
-            eDirection8 eDirection = Misc.TransDirection8_AxisY(dir_inCellToOutCell); //중심 타일을 기준으로 주위 8타일에 해당하는 방향을 얻는다
+            Vector3 centerToSrc_dir = srcPos - structTile._v3Center;
+            Vector3 push_dir = Misc.GetDir8Normal_AxisY(structTile._dir);
+
+            //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
+            //if (0 > Vector3.Dot(centerToSrc_dir, push_dir)) return;
+
+
+
             float size = GridManager.GridCell_HalfSize;
-
-            //src._move._dir
-
+            Vector3 center = Vector3.zero;
+            LineSegment3 line3 = new LineSegment3();
             //8방향별 축값 고정  
-            switch (eDirection)
+            switch (structTile._dir)
             {
                 case eDirection8.up:
                     {
-                        srcPos.z = collisionCellPos_center.z + size;
+                        srcPos.z = structTile._v3Center.z + size;
                     }
                     break;
                 case eDirection8.down:
                     {
-                        srcPos.z = collisionCellPos_center.z - size;
+                        srcPos.z = structTile._v3Center.z - size;
                     }
                     break;
                 case eDirection8.left:
                     {
-                        srcPos.x = collisionCellPos_center.x - size;
+                        srcPos.x = structTile._v3Center.x - size;
                     }
                     break;
                 case eDirection8.right:
                     {
-                        srcPos.x = collisionCellPos_center.x + size;
+                        srcPos.x = structTile._v3Center.x + size;
                     }
                     break;
                 case eDirection8.leftUp:
                     {
                         //down , right
-                        srcPos.x = collisionCellPos_center.x - size;
-                        srcPos.z = collisionCellPos_center.z + size;
+                        if(StructTile.DiagonalFixing == structTile._id)
+                        {
+                            srcPos.x = structTile._v3Center.x - size;
+                            srcPos.z = structTile._v3Center.z + size;
+                            break;
+                        }
+
+
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
+                        center = structTile._v3Center;
+                        center.x -= size;
+                        center.z -= size;
+                        line3.origin = center;
+
+                        center = structTile._v3Center;
+                        center.x += size;
+                        center.z += size;
+                        line3.last = center;
+
+                        srcPos = line3.ClosestPoint(srcPos);
+
                     }
                     break;
                 case eDirection8.rightUp:
                     {
                         //down , left
-                        srcPos.x = collisionCellPos_center.x + size;
-                        srcPos.z = collisionCellPos_center.z + size;
+                        if (StructTile.DiagonalFixing == structTile._id)
+                        {
+                            srcPos.x = structTile._v3Center.x + size;
+                            srcPos.z = structTile._v3Center.z + size;
+                            break;
+                        }
+
+
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
+                        center = structTile._v3Center;
+                        center.x -= size;
+                        center.z += size;
+                        line3.origin = center;
+
+                        center = structTile._v3Center;
+                        center.x += size;
+                        center.z -= size;
+                        line3.last = center;
+
+                        srcPos = line3.ClosestPoint(srcPos);
                     }
                     break;
                 case eDirection8.leftDown:
                     {
                         //up , right
-                        srcPos.x = collisionCellPos_center.x - size;
-                        srcPos.z = collisionCellPos_center.z - size;
+                        if (StructTile.DiagonalFixing == structTile._id)
+                        {
+                            srcPos.x = structTile._v3Center.x - size;
+                            srcPos.z = structTile._v3Center.z - size;
+                            break;
+                        }
+
+
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) 
+                        {
+                            //DebugWide.LogBlue( centerToSrc_dir + "   " + Vector3.Dot(centerToSrc_dir, push_dir) + "  " + push_dir);
+                            return;
+                        }
+                        center = structTile._v3Center;
+                        center.x -= size;
+                        center.z += size;
+                        line3.origin = center;
+
+                        center = structTile._v3Center;
+                        center.x += size;
+                        center.z -= size;
+                        line3.last = center;
+
+                        srcPos = line3.ClosestPoint(srcPos);
                     }
                     break;
                 case eDirection8.rightDown:
                     {
                         //up , left
-                        srcPos.x = collisionCellPos_center.x + size;
-                        srcPos.z = collisionCellPos_center.z - size;
+                        if (StructTile.DiagonalFixing == structTile._id)
+                        {
+                            srcPos.x = structTile._v3Center.x + size;
+                            srcPos.z = structTile._v3Center.z - size;
+                            break;
+                        }
+
+
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
+                        center = structTile._v3Center;
+                        center.x -= size;
+                        center.z -= size;
+                        line3.origin = center;
+
+                        center = structTile._v3Center;
+                        center.x += size;
+                        center.z += size;
+                        line3.last = center;
+
+                        srcPos = line3.ClosestPoint(srcPos);
                     }
                     break;
 
@@ -1497,6 +1592,7 @@ namespace HordeFight
             //int count = 0;
             Vector3 collisionCellPos_center = Vector3.zero;
             CellInfo cellInfo = null;
+            StructTile structTile = null;
             foreach (Being src in _being_list)
             {
                 if (null == src._cellInfo) continue;
@@ -1520,9 +1616,9 @@ namespace HordeFight
 
 
                 //동굴벽과 캐릭터 충돌처리 
-                if (SingleO.gridManager.HasStructTile(src.transform.position, out collisionCellPos_center))
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
                 {
-                    CollisionPush_Rigid3(src, collisionCellPos_center, 0.2f);
+                    CollisionPush_Rigid3(src, structTile);
                 }
 
 
@@ -1726,17 +1822,17 @@ namespace HordeFight
 
             uint id_sequence = 0;
             Vector3 pos = new Vector3(3,0,1);
-            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
+            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
@@ -1746,8 +1842,8 @@ namespace HordeFight
                 Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
-            //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
             Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
