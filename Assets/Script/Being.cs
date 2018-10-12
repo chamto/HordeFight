@@ -376,7 +376,7 @@ namespace HordeFight
             _move = GetComponent<Movement>();
 
             //셀정보 초기 위치값에 맞춰 초기화
-            Vector3Int cellIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
+            Vector3Int cellIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
             SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 		}
@@ -413,13 +413,13 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            Vector3Int curIdx = SingleO.gridManager.ToCellIndex(transform.position, Vector3.up);
+            Vector3Int curIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
 
             //충돌없는 마지막 타일 위치를 갱신한다 
             StructTile structTile = null;
             if(false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
             {
-                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition_Center(curIdx,Vector3.up);
+                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(curIdx,Vector3.up);
                 //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
             }
                 

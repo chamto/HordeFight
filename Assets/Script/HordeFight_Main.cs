@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
+using UnityEngine.Assertions;
 
 using Utility;
 
@@ -1004,7 +1005,7 @@ namespace HordeFight
         }
 
 
-        public Vector3Int ToCellIndex(Vector3 pos , Vector3 axis)
+        public Vector3Int ToPosition2D(Vector3 pos3d , Vector3 axis)
         {
 
             Vector3Int cellIndex = Vector3Int.zero;
@@ -1017,25 +1018,25 @@ namespace HordeFight
                 cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z) ;
 
 
-                if(0 <= pos.x)
+                if(0 <= pos3d.x)
                 {
                     //양수일때는 소수점을 버린다. 
-                    cellIndex.x = (int)(pos.x / cellSize.x);
+                    cellIndex.x = (int)(pos3d.x / cellSize.x);
                 }
                 else
                 {
                     //음수일때는 올림을 한다. 
-                    cellIndex.x = (int)((pos.x / cellSize.x) - 0.9f);
+                    cellIndex.x = (int)((pos3d.x / cellSize.x) - 0.9f);
                 }
 
 
-                if (0 <= pos.z)
+                if (0 <= pos3d.z)
                 { 
-                    cellIndex.y = (int)(pos.z / cellSize.y);
+                    cellIndex.y = (int)(pos3d.z / cellSize.y);
                 }
                 else
                 { 
-                    cellIndex.y = (int)((pos.z / cellSize.y) - 0.9f);
+                    cellIndex.y = (int)((pos3d.z / cellSize.y) - 0.9f);
                 }
 
             }
@@ -1043,18 +1044,18 @@ namespace HordeFight
             return cellIndex;
         }
 
-        public Vector3 ToCenterPosition(Vector3 worldPos, Vector3 axis)
+        public Vector3 ToCenter3D_FromPosition3D(Vector3 pos3d, Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
 
-            Vector3Int cellPos = this.ToCellIndex(worldPos, axis);
+            Vector3Int cellPos = this.ToPosition2D(pos3d, axis);
 
-            return this.ToPosition_Center(cellPos, axis);
+            return this.ToPosition3D_Center(cellPos, axis);
         }
 
         //grid 와 호환 안되는 함수 
-        public Vector3 ToPosition_Center(Vector3Int ci , Vector3 axis)
+        public Vector3 ToPosition3D_Center(Vector3Int pos2d , Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
@@ -1064,8 +1065,8 @@ namespace HordeFight
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
                 cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
 
-                pos.x = (float)ci.x * cellSize.x;
-                pos.z = (float)ci.y * cellSize.y;
+                pos.x = (float)pos2d.x * cellSize.x;
+                pos.z = (float)pos2d.y * cellSize.y;
 
                 //셀의 중간에 위치하도록 한다
                 pos.x += cellSize.x * 0.5f;
@@ -1075,7 +1076,7 @@ namespace HordeFight
             return pos;
         }
 
-        public Vector3 ToPosition(Vector3Int ci, Vector3 axis)
+        public Vector3 ToPosition3D(Vector3Int pos2d, Vector3 axis)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
@@ -1085,14 +1086,35 @@ namespace HordeFight
                 cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
                 cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
 
-                pos.x = (float)ci.x * cellSize.x;
-                pos.z = (float)ci.y * cellSize.y;
+                pos.x = (float)pos2d.x * cellSize.x;
+                pos.z = (float)pos2d.y * cellSize.y;
 
             }
 
             return pos;
         }
 
+        public int ToPosition1D(Vector3Int pos2d)
+        {
+            Assert.IsFalse(0 > pos2d.x || 0 > pos2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
+            if (0 > pos2d.x || 0 > pos2d.y) return -1;
+            
+            return (pos2d.x + pos2d.y * _tilemap_struct.size.x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+
+        }
+
+        public Vector3Int ToPosition2D(int pos1d)
+        {
+            Assert.IsFalse(0 > pos1d, "음수좌표값은 2차원값으로 변환 할 수 없다");
+            if (0 > pos1d) return Vector3Int.zero;
+
+            Vector3Int v3int = Vector3Int.zero;
+
+            v3int.x = pos1d % _tilemap_struct.size.x;
+            v3int.y = pos1d / _tilemap_struct.size.x;
+
+            return v3int;
+        }
 
 	}
 }
@@ -1148,13 +1170,13 @@ namespace HordeFight
             float t_c = 0;
 
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
-            Vector3Int originToGridInt = SingleO.gridManager.ToCellIndex(origin, Vector3.up);
-            Vector3 originToPos = SingleO.gridManager.ToPosition(originToGridInt, Vector3.up);
+            Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(origin, Vector3.up);
+            Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt, Vector3.up);
             //DebugWide.LogBlue(toGridInt);
             foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
-                Vector3 worldCellCenterPos = SingleO.gridManager.ToPosition_Center(cellLBPos, Vector3.up);
+                Vector3 worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
                 worldCellCenterPos += originToPos;
 
 

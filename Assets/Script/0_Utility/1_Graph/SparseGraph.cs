@@ -180,7 +180,7 @@ public class SparseGraph
 		else
 		{
 			//make sure the new node has been indexed correctly
-			Assert.IsTrue (node.Index() == m_iNextNodeIndex , "<SparseGraph::AddNode>:invalid index");
+            Assert.IsTrue (node.Index() == m_iNextNodeIndex , "<SparseGraph::AddNode>:invalid index " + node.Index() + " != "+ m_iNextNodeIndex);
 
 			m_Nodes.Add(node);
 			m_Edges.Add(new EdgeList());
