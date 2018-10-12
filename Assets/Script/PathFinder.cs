@@ -22,47 +22,51 @@ namespace HordeFight
 
         public Transform _town = null;
 
-
+        const int TILE_BLOCK_WIDTH = 38;
+        const int TILE_BLOCK_HEIGHT = 24;
+        //const int TILE_BLOCK_WIDTH = 15;
+        //const int TILE_BLOCK_HEIGHT = 15;
+        public Vector3Int TILE_BLOCK_SIZE =  new Vector3Int(TILE_BLOCK_WIDTH, TILE_BLOCK_HEIGHT, 1);
 
         // Use this for initialization
         void Start()
         {
-            LoadNodes_Tilemap();
-            LoadEdges_Tilemap();
+            LoadNodes(TILE_BLOCK_SIZE);
+            LoadEdges(TILE_BLOCK_SIZE);
 
             DebugWide.LogBlue("!!! Loaded Nodes,Edges !!!");
+
+
         }
 
 
         //void Update()
         void FixedUpdate()
         {
-
+            
 
         }
 
-        public void LoadNodes_Tilemap()
+        public void LoadNodes(Vector3Int tileBlock_size)
         {
-            Tilemap tilemap = SingleO.gridManager.GetTileMap_Struct();
-
-            if (null == tilemap) return;
-
+            //if (null == tilemap) return;
+            //int count = 0;
             int id_wh = 0;
             NavGraphNode node = new NavGraphNode(0, Vector3.zero);
-            BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tilemap.size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
+            BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
             foreach (Vector3Int pos2d in boundsInt.allPositionsWithin)
             {
                 //chamto test
-                //DebugWide.LogBlue(pos2d + "   " + SingleO.gridManager.ToPosition1D(pos2d));
+                //DebugWide.LogBlue(count++ + "   " + pos2d + "   " + SingleO.gridManager.ToPosition1D(pos2d , boundsInt.size.x) + "    " + SingleO.gridManager.ToPosition3D_Center(pos2d, Vector3.up));
                 //id_wh++;
                 //if (id_wh == 30) return;
 
-                TileBase baseTile = tilemap.GetTile(pos2d); 
+                //TileBase baseTile = tilemap.GetTile(pos2d); 
                 //if (null == baseTile) continue; //모든 노드가 순서대로 들어가야 한다. 타일이 없다고 건너뛰면 안된다
 
-                id_wh = SingleO.gridManager.ToPosition1D(pos2d);
+                id_wh = SingleO.gridManager.ToPosition1D(pos2d , boundsInt.size.x);
 
-                node.SetPos(pos2d);
+                node.SetPos(SingleO.gridManager.ToPosition3D_Center(pos2d,Vector3.up));
                 node.SetIndex(id_wh); //id 순서값과 루프문 순서와 일치해야 한다. 내부에서 리스트에 들어가는 순서값을 1차원 위치값으로 사용하기 때문임 
                 _graph.AddNode(node.Clone() as NavGraphNode);
 
@@ -70,45 +74,48 @@ namespace HordeFight
 
         }
 
-        public void LoadEdges_Tilemap()
+        public void LoadEdges(Vector3Int tileBlock_size)
         {
             Tilemap tilemap = SingleO.gridManager.GetTileMap_Struct();
 
-            if (null == tilemap) return;
+            //if (null == tilemap) return;
 
-            int from = 0, to = 0;
-            Vector3Int toPos = Vector3Int.zero;
+            int from_1d = 0, to_1d = 0;
+            Vector3Int to_2d = Vector3Int.zero;
             GraphEdge edge = new GraphEdge(0, 1);
             Vector3Int[] grid3x3 = SingleO.gridManager._indexesNxN[3];
-            BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tilemap.size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
-            foreach (Vector3Int pos2d in boundsInt.allPositionsWithin)
+            BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
+            foreach (Vector3Int from_2d in boundsInt.allPositionsWithin)
             {
-                TileBase baseTile = tilemap.GetTile(pos2d);
-                if (null == baseTile) continue;
+                //구조물이 있는 셀에는 엣지를 연결하지 않는다 - 임시처리 : 엣지를 어떻게 연결할지 좀더 생각해 봐야 함
+                if (true == SingleO.gridManager.HasStructTile_InPostion2D(from_2d)) continue;
 
-                from = SingleO.gridManager.ToPosition1D(pos2d);
 
-                foreach (Vector3Int cidx in grid3x3)
+                from_1d = SingleO.gridManager.ToPosition1D(from_2d , boundsInt.size.x);
+
+                foreach (Vector3Int dst_2d in grid3x3)
                 {
                     //미리구한 그리드범위에 중심위치값 더하기
-                    toPos = pos2d + cidx;
+                    to_2d = from_2d + dst_2d;
+
+                    if (true == SingleO.gridManager.HasStructTile_InPostion2D(to_2d)) continue;
 
                     //설정된 노드 범위를 벗어나는 노드값은 추가하면 안된다 
-                    if (toPos.x < 0 || tilemap.size.x <= toPos.x) continue;
-                    if (toPos.y < 0 || tilemap.size.y <= toPos.y) continue;
+                    if (to_2d.x < 0 || TILE_BLOCK_WIDTH <= to_2d.x) continue;
+                    if (to_2d.y < 0 || TILE_BLOCK_HEIGHT <= to_2d.y) continue;
 
 
                     //1차원으로 변환
-                    to = SingleO.gridManager.ToPosition1D(toPos);
+                    to_1d = SingleO.gridManager.ToPosition1D(to_2d , boundsInt.size.x);
 
-                    if (false == _graph.isNodePresent(to)) continue;
+                    if (false == _graph.isNodePresent(to_1d)) continue;
 
                     //자기자신을 연결하는 엣지는 추가하면 안된다 
-                    if (from == to) continue;
+                    if (from_1d == to_1d) continue;
 
                     //DebugWide.LogBlue(from + "  " + to); //chamto test
-                    edge.SetFrom(from);
-                    edge.SetTo(to);
+                    edge.SetFrom(from_1d);
+                    edge.SetTo(to_1d);
                     edge.SetCost(1.0f);
                     _graph.AddEdge(edge.Clone() as GraphEdge);
                 }   
@@ -183,6 +190,8 @@ namespace HordeFight
                 return pathPos;
             }
 
+            //DebugWide.LogBlue(srcNode + "   " + destNode); //chamto test
+
             _searchDFS.Init(_graph, srcNode.Index(), destNode.Index());
             _searchAStar.Init(_graph, srcNode.Index(), destNode.Index());
             //LinkedList<int> pathList = _searchDFS.GetPathToTarget();
@@ -190,9 +199,11 @@ namespace HordeFight
 
             //-------- chamto test --------
             string nodeChaine = "nodeChaine : ";
+            Vector3Int pos2d = Vector3Int.zero;
             foreach (int node in pathList)
             {
-                nodeChaine += node + "->";
+                pos2d = SingleO.gridManager.ToPosition2D(node , TILE_BLOCK_WIDTH);
+                nodeChaine += pos2d + "->";
             }
             Debug.Log(nodeChaine);
             //-------- ------------ --------

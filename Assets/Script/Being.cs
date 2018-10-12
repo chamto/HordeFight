@@ -23,8 +23,20 @@ namespace HordeFight
 
 		private void Start()
 		{
-            _fpsText = GameObject.Find("FPS").GetComponentInChildren<Text>();
-            _img_leader = GameObject.Find("leader").GetComponent<Image>();
+            GameObject o = null;
+            o = GameObject.Find("FPS");
+            if(null != o)
+            {
+                _fpsText = o.GetComponentInChildren<Text>();
+            }
+
+            o = GameObject.Find("leader");
+            if (null != o)
+            {
+                _img_leader = o.GetComponentInChildren<Image>();
+            }
+
+
 
 		}
 
@@ -42,6 +54,8 @@ namespace HordeFight
 
         public void SelectLeader(string name)
         {
+            if (null == _img_leader) return;
+            
             Sprite spr = null;
             SingleO.resourceManager._sprIcons.TryGetValue(name.GetHashCode(), out spr);
             if(null == spr)
@@ -163,7 +177,8 @@ namespace HordeFight
         {
             if (false == _isNextMoving) return;
 
-            if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER)
+            //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
+            if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f) 
             {
                 if (0 == _targetPath.Count)
                 {
@@ -203,6 +218,7 @@ namespace HordeFight
         public void MoveToTarget(Vector3 targetPos, float speed_meterPerSecond)
         {
             _targetPath.Clear(); //기존 설정 경로를 비운다
+            targetPos.y = 0;
 
             _isNextMoving = true;
             _startPos = this.transform.position;
@@ -212,11 +228,12 @@ namespace HordeFight
             _direction = Misc.GetDir8Normal_AxisY(_eDir8);
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
-            //_elapsedTime = 0; 
-            //_prevInterpolationTime = 0;
+            _elapsedTime = 0; 
+            _prevInterpolationTime = 0;
 
-            //_target_path =  //todo : 목표까지의 길찾기 경로 넣기
-            _targetPath.Enqueue(_lastTargetPos);
+
+            _targetPath =  SingleO.pathFinder.Search(this.transform.position, targetPos);
+            //_targetPath.Enqueue(_lastTargetPos);
         }
 
 
@@ -962,6 +979,9 @@ namespace HordeFight
 
         private void TouchEnded()
         {
+            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+
+
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
             //_move.MoveToTarget(transform.position, 1f); //이동종료
             _move.SetNextMoving(false);
@@ -974,6 +994,9 @@ namespace HordeFight
             SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
 
          
+            _behaviorKind = Behavior.eKind.Move;
+
+            _move.MoveToTarget(hit.point, 1f);
             //==========
 
             //SingleO.debugViewer.ResetColor(); //타일 색정보 초기화  

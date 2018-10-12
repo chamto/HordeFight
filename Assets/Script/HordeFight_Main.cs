@@ -467,7 +467,7 @@ namespace HordeFight
     {
         private Tilemap _tilemap = null;
         private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
-        private Dictionary<Vector3Int, eDirection8> _dirMap = new Dictionary<Vector3Int, eDirection8>();
+        //private Dictionary<Vector3Int, eDirection8> _dirMap = new Dictionary<Vector3Int, eDirection8>();
 
 
 		private void Start()
@@ -497,14 +497,14 @@ namespace HordeFight
                 _colorMap.Add(i3, c);
         }
 
-        public void SetDir(Tilemap tilemap , Vector3Int posInt, eDirection8 dir)
-        {
+        //public void SetDir(Tilemap tilemap , Vector3Int posInt, eDirection8 dir)
+        //{
             
-            if (!_dirMap.Keys.Contains(posInt))
-                _dirMap.Add(posInt, dir);
+        //    if (!_dirMap.Keys.Contains(posInt))
+        //        _dirMap.Add(posInt, dir);
 
-            _dirMap[posInt] = dir;
-        }
+        //    _dirMap[posInt] = dir;
+        //}
 
         private Vector3 _start = Vector3.zero;
         private Vector3 _end = Vector3.right;
@@ -562,14 +562,52 @@ namespace HordeFight
             }
         }
 
+        public void Update_DrawEdges( bool debugLog)
+        {
+            PathFinder finder = SingleO.pathFinder;
+            GridManager grid = SingleO.gridManager;
+            Vector3Int tileBlock_size = finder.TILE_BLOCK_SIZE;
+
+            int from_1d = 0;
+            Vector3Int to_2d;
+            Vector3 from_3d, to_3d;
+            NavGraphNode from_nav, to_nav;
+            BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
+            foreach (Vector3Int from_2d in boundsInt.allPositionsWithin)
+            {
+                from_1d = grid.ToPosition1D(from_2d, boundsInt.size.x);
+                from_3d = grid.ToPosition3D(from_2d, Vector3.up);
+
+                SparseGraph.EdgeList list = finder._graph.GetEdges(from_1d);
+                foreach (GraphEdge e in list)
+                {
+                    to_2d = grid.ToPosition2D(e.To(), boundsInt.size.x);
+                    to_3d = grid.ToPosition3D(to_2d, Vector3.up);
+
+                    from_nav = finder._graph.GetNode(e.From()) as NavGraphNode;
+                    to_nav = finder._graph.GetNode(e.To()) as NavGraphNode;
+                    Debug.DrawLine(from_nav.Pos(), to_nav.Pos(), Color.green);
+
+                    //chamto test
+                    if (true == debugLog)
+                    {
+                        DebugWide.LogBlue(e + "  " + from_2d + "   " + to_2d);
+                    }
+
+                }
+            }
+        }
+
 
         void FixedUpdate()
 		{
-            Debug.DrawLine(_start, _end);
+            //Debug.DrawLine(_start, _end);
 
-            UpdateDraw_StructTileDir();
+            //UpdateDraw_StructTileDir();
 
             //UpdateDraw_IndexesNxN();
+
+            Update_DrawEdges(false);
 
 		}
 	}
@@ -887,11 +925,10 @@ namespace HordeFight
         }
 
 
-        public bool HasStructTile_CellPos(Vector3Int tileInt)
+        public bool HasStructTile_InPostion2D(Vector3Int tileInt)
         {
-            
-            RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
-            if (null != rTile)
+            StructTile structTile = null;
+            if (true == _structTileList.TryGetValue(tileInt, out structTile))
             {
                 return true;
             }
@@ -903,8 +940,8 @@ namespace HordeFight
         {
             Vector3Int tileInt = _tilemap_struct.WorldToCell(tilePos);
 
-            RuleTile rTile = _tilemap_struct.GetTile<RuleTile>(tileInt);
-            if (null != rTile)
+            StructTile structTile = null;
+            if (true == _structTileList.TryGetValue(tileInt, out structTile))
             {
                 return true;
             }
@@ -1094,24 +1131,25 @@ namespace HordeFight
             return pos;
         }
 
-        public int ToPosition1D(Vector3Int pos2d)
+
+        public int ToPosition1D(Vector3Int pos2d , int tileBlock_width_size)
         {
             Assert.IsFalse(0 > pos2d.x || 0 > pos2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
             if (0 > pos2d.x || 0 > pos2d.y) return -1;
             
-            return (pos2d.x + pos2d.y * _tilemap_struct.size.x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            return (pos2d.x + pos2d.y * tileBlock_width_size); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
 
         }
 
-        public Vector3Int ToPosition2D(int pos1d)
+        public Vector3Int ToPosition2D(int pos1d , int tileBlock_width_size)
         {
             Assert.IsFalse(0 > pos1d, "음수좌표값은 2차원값으로 변환 할 수 없다");
             if (0 > pos1d) return Vector3Int.zero;
 
             Vector3Int v3int = Vector3Int.zero;
 
-            v3int.x = pos1d % _tilemap_struct.size.x;
-            v3int.y = pos1d / _tilemap_struct.size.x;
+            v3int.x = pos1d % tileBlock_width_size;
+            v3int.y = pos1d / tileBlock_width_size;
 
             return v3int;
         }
@@ -1692,16 +1730,17 @@ namespace HordeFight
 
             uint id_sequence = 0;
             Vector3 pos = new Vector3(3,0,1);
-            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
+            //Vector3 pos = new Vector3(0, 0, 0);
+            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
             Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
@@ -1709,12 +1748,12 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
-            Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
             Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
 
