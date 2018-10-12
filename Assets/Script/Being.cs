@@ -30,8 +30,8 @@ namespace HordeFight
 
         float __deltaTime = 0.0f;
         float __msec, __fps;
-        //private void Update()
-        void FixedUpdate()
+        private void Update()
+        //void FixedUpdate()
         {
             __deltaTime += (Time.unscaledDeltaTime - __deltaTime) * 0.1f;
 

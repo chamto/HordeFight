@@ -1250,148 +1250,6 @@ namespace HordeFight
             }
         }
 
-        //고정된 물체와 충돌 검사 : 동굴벽 등 
-        public void CollisionPush_Rigid(Being src, Vector3 collisionCellPos_center, float rigRadius)
-        {
-
-            //Vector3 min = src.transform.position - collisionCellPos_center;
-
-            //Bounds bound = new Bounds(collisionCellPos_center,new Vector3(0.16f , 0.16f));
-            //Vector3 max =  bound.ClosestPoint(src.transform.position);
-            //max = max - collisionCellPos_center;
-
-            //Vector3 outForce = max - min;
-            //src._move.Move_Forward(outForce * 50f, 2f, 1f);
-            //src.transform.position = max;
-            //=================
-
-            Vector3 srcPos = src.transform.position;
-            //Vector3 dir_inCellToOutCell = src._lastCellPos_withoutCollision - collisionCellPos_center;
-            Vector3 dir_inCellToOutCell = src.transform.position - collisionCellPos_center;
-            eDirection8 eDirection = Misc.TransDirection8_AxisY(dir_inCellToOutCell); //중심 타일을 기준으로 주위 8타일에 해당하는 방향을 얻는다
-            float size = GridManager.GridCell_HalfSize;
-
-            Vector3Int colllIntPos = SingleO.gridManager.grid.WorldToCell(collisionCellPos_center);
-            bool isUp = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.up);
-            bool isDown = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.down);
-            bool isLeft = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.left);
-            bool isRight = SingleO.gridManager.HasStructTile_CellPos(colllIntPos + Vector3Int.right);
-            DebugWide.LogBlue(eDirection + "  " + colllIntPos + "  up:" + isUp + "  down:" + isDown + "  left:" + isLeft + "  right:" + isRight);
-
-
-            //상단방향 밀기 조건 
-            if (isLeft && isRight && !isUp)
-            {
-                switch (eDirection)
-                {
-                    case eDirection8.leftUp:
-                    case eDirection8.rightUp:
-                        {
-                            eDirection = eDirection8.up;
-                        }
-                        break;
-                }
-            }
-
-            //하단방향 밀기 조건 
-            if(isLeft && isRight && !isDown)
-            {
-                switch (eDirection)
-                {
-                    case eDirection8.leftDown:
-                    case eDirection8.rightDown:
-                        {
-                            eDirection = eDirection8.down;
-                        }
-                        break;
-                }
-            }
-
-            //왼방향 밀기 조건 
-            if (!isLeft && isUp && isDown)
-            {
-                switch (eDirection)
-                {
-                    case eDirection8.leftUp:
-                    case eDirection8.leftDown:
-                        {
-                            eDirection = eDirection8.left;
-                        }
-                        break;
-                }
-            }
-
-            //오른방향 밀기 조건 
-            if (!isRight && isUp && isDown)
-            {
-                switch (eDirection)
-                {
-                    case eDirection8.rightUp:
-                    case eDirection8.rightDown:
-                        {
-                            eDirection = eDirection8.right;
-                        }
-                        break;
-                }
-            }
-
-            //8방향별 축값 고정  
-            switch (eDirection)
-            {
-                case eDirection8.up:
-                    {
-                        srcPos.z = collisionCellPos_center.z + size;
-                    }
-                    break;
-                case eDirection8.down:
-                    {
-                        srcPos.z = collisionCellPos_center.z - size;
-                    }
-                    break;
-                case eDirection8.left:
-                    {
-                        srcPos.x = collisionCellPos_center.x - size;
-                    }
-                    break;
-                case eDirection8.right:
-                    {
-                        srcPos.x = collisionCellPos_center.x + size;
-                    }
-                    break;
-                case eDirection8.leftUp:
-                    {
-                        //down , right
-                        srcPos.x = collisionCellPos_center.x - size;
-                        srcPos.z = collisionCellPos_center.z + size;
-                    }
-                    break;
-                case eDirection8.rightUp:
-                    {
-                        //down , left
-                        srcPos.x = collisionCellPos_center.x + size;
-                        srcPos.z = collisionCellPos_center.z + size;
-                    }
-                    break;
-                case eDirection8.leftDown:
-                    {
-                        //up , right
-                        srcPos.x = collisionCellPos_center.x - size;
-                        srcPos.z = collisionCellPos_center.z - size;
-                    }
-                    break;
-                case eDirection8.rightDown:
-                    {
-                        //up , left
-                        srcPos.x = collisionCellPos_center.x + size;
-                        srcPos.z = collisionCellPos_center.z - size;
-                    }
-                    break;
-                
-            }
-
-            src.transform.position = srcPos;
-
-        }
 
         public void CollisionPush_Rigid2(Being src, Vector3 collisionCellPos_center, float rigRadius)
         {
@@ -1436,18 +1294,14 @@ namespace HordeFight
             }
         }
 
-        public void CollisionPush_Rigid3(Being src, StructTile structTile)
+        //고정된 물체와 충돌 검사 : 동굴벽 등 
+        public void CollisionPush_StructTile(Being src, StructTile structTile)
         {
             if (null == structTile) return;
 
             Vector3 srcPos = src.transform.position;
             Vector3 centerToSrc_dir = srcPos - structTile._v3Center;
             Vector3 push_dir = Misc.GetDir8Normal_AxisY(structTile._dir);
-
-            //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
-            //if (0 > Vector3.Dot(centerToSrc_dir, push_dir)) return;
-
-
 
             float size = GridManager.GridCell_HalfSize;
             Vector3 center = Vector3.zero;
@@ -1485,7 +1339,7 @@ namespace HordeFight
                             break;
                         }
 
-
+                        //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
                         center = structTile._v3Center;
                         center.x -= size;
@@ -1537,11 +1391,8 @@ namespace HordeFight
                         }
 
 
-                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) 
-                        {
-                            //DebugWide.LogBlue( centerToSrc_dir + "   " + Vector3.Dot(centerToSrc_dir, push_dir) + "  " + push_dir);
-                            return;
-                        }
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
+
                         center = structTile._v3Center;
                         center.x -= size;
                         center.z += size;
@@ -1614,14 +1465,11 @@ namespace HordeFight
                 }
 
 
-
                 //동굴벽과 캐릭터 충돌처리 
                 if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
                 {
-                    CollisionPush_Rigid3(src, structTile);
+                    CollisionPush_StructTile(src, structTile);
                 }
-
-
 
             }
 
