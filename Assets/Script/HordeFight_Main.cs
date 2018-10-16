@@ -368,10 +368,13 @@ namespace HordeFight
             render.transform.parent = dst;
             render.sortingOrder = -10; //나중에 그려지게 한다.
             render.positionCount = 2;
+            render.transform.localPosition = Vector3.zero;
 
-            render.SetWidth(0.02f, 0.02f);
-            render.SetColors(Color.red, Color.red);
 
+            render.startWidth = 0.02f;
+            render.endWidth = 0.02f;
+            render.startColor = Color.red;
+            render.endColor = Color.red;
 
             _list.Add(_sequenceId, info); //추가
 
@@ -404,10 +407,13 @@ namespace HordeFight
             render.sortingOrder = -10; //먼저그려지게 한다.
             render.positionCount = 20;
             render.loop = true; //처음과 끝을 연결한다 .
+            render.transform.localPosition = Vector3.zero;
 
-            render.SetWidth(0.01f, 0.01f);
-            render.SetColors(Color.green, Color.green);
 
+            render.startWidth = 0.01f;
+            render.endWidth = 0.01f;
+            render.startColor = Color.green;
+            render.endColor = Color.green;
 
             _list.Add(_sequenceId, info); //추가
 
@@ -467,8 +473,6 @@ namespace HordeFight
     {
         private Tilemap _tilemap = null;
         private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
-        //private Dictionary<Vector3Int, eDirection8> _dirMap = new Dictionary<Vector3Int, eDirection8>();
-
 
 		private void Start()
 		{
@@ -497,14 +501,6 @@ namespace HordeFight
                 _colorMap.Add(i3, c);
         }
 
-        //public void SetDir(Tilemap tilemap , Vector3Int posInt, eDirection8 dir)
-        //{
-            
-        //    if (!_dirMap.Keys.Contains(posInt))
-        //        _dirMap.Add(posInt, dir);
-
-        //    _dirMap[posInt] = dir;
-        //}
 
         private Vector3 _start = Vector3.zero;
         private Vector3 _end = Vector3.right;
@@ -607,7 +603,7 @@ namespace HordeFight
 
             //UpdateDraw_IndexesNxN();
 
-            Update_DrawEdges(false);
+            //Update_DrawEdges(false);
 
 		}
 	}
@@ -1311,15 +1307,20 @@ namespace HordeFight
         }
 
 
-        public void CollisionPush_Rigid2(Being src, Vector3 collisionCellPos_center, float rigRadius)
+        public void CollisionPush_Rigid(Being src, StructTile structTile)
         {
 
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
+            //이상진동 : 방향의 평균내기 방식
+            //Vector3 smoothDir = Misc.GetDir8Normal_AxisY(structTile._dir);
+            //smoothDir += src._move._direction.normalized;
+            //smoothDir /= 2f;
+            //src._move.Move_Forward(smoothDir, 2f, 0.5f);
+            //return;
 
+            const float Tile_Radius = 0.08f;
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            sqr_dis = src.transform.localPosition - collisionCellPos_center;
-            r_sum = src.GetCollider_Radius() + rigRadius;
+            Vector3 sqr_dis = src.transform.localPosition - structTile._v3Center;
+            float r_sum = src.GetCollider_Radius() + Tile_Radius;
 
             //1.두 캐릭터가 겹친상태 
             if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
@@ -1529,6 +1530,7 @@ namespace HordeFight
                 if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
                 {
                     CollisionPush_StructTile(src, structTile);
+                    //CollisionPush_Rigid(src, structTile);
                 }
 
             }

@@ -161,6 +161,8 @@ namespace HordeFight
         private Vector3 _nextTargetPos = Vector3.zero;
         private Queue<Vector3> _targetPath = new Queue<Vector3>();
 
+        private float _oneMeter_movingTime = 0.8f; //임시처리
+        private float _elapsed_movingTime = 0f;
 
         private void Start()
         {
@@ -178,8 +180,16 @@ namespace HordeFight
             if (false == _isNextMoving) return;
 
             //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
-            if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f) 
+            if(_oneMeter_movingTime < _elapsed_movingTime)
             {
+                _elapsed_movingTime = 0;
+
+                MoveToTarget(_lastTargetPos, _speed_meterPerSecond); //test
+            }
+            else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f) 
+            {
+                _elapsed_movingTime = 0;
+
                 if (0 == _targetPath.Count)
                 {
                     //이동종료 
@@ -194,6 +204,7 @@ namespace HordeFight
                 _eDir8 = Misc.TransDirection8_AxisY(_direction);
 
             }
+            _elapsed_movingTime += Time.deltaTime;
 
 
 
@@ -205,9 +216,12 @@ namespace HordeFight
             }
             _elapsedTime += Time.deltaTime;
              
+
             Move_Interpolation(_direction, 2f, _speed_meterPerSecond); //2 미터를 1초에 간다
 
             //this.transform.position = Vector3.Lerp(this.transform.position, _targetPos, _elapsedTime / (_onePath_movingTime * _speed));
+
+            DebugVeiw_DrawPath();
         }
 
         public void SetNextMoving(bool isNext)
@@ -237,6 +251,17 @@ namespace HordeFight
         }
 
 
+        public void DebugVeiw_DrawPath()
+        {
+            Vector3 prev = _targetPath.FirstOrDefault();
+            foreach(Vector3 pos3d in _targetPath)
+            {
+                
+                Debug.DrawLine(prev, pos3d);
+                prev = pos3d;
+            }
+        }
+
         private void Move_Interpolation(Vector3 dir, float meter, float perSecond)
         {
             //float interpolationTime = Interpolation.easeInBack(0f, 1f, (_elapsedTime) / perSecond); //슬라임
@@ -257,7 +282,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
-            _isNextMoving = false;
+            //_isNextMoving = false;
             _eDir8 = Misc.TransDirection8_AxisY(dir);
             //DebugWide.LogBlue(_eDir8 + "  " + dir); //chamto test
 
@@ -376,6 +401,11 @@ namespace HordeFight
         public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
 
+        //전용UI
+        public int  _UIID_circle = -1;
+        public int  _UIID_hp = -1;
+        //====================================
+
 		private void Start()
 		{
             _behaviorKind = Behavior.eKind.Idle_Random;
@@ -396,6 +426,12 @@ namespace HordeFight
             Vector3Int cellIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
             SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
+
+            //_UIID_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform);
+            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            //SingleO.lineControl.SetActive(_UIID_circle, false);
+
+
 		}
 
 
