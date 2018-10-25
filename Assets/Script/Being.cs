@@ -90,6 +90,19 @@ namespace HordeFight
 //========================================================
 namespace HordeFight
 {
+
+    //전술원
+    public class TacticsSphere
+    {
+        public uint _leaderId = 0; //연결된 리더ID
+        public Vector3 _local_initPosition = Vector3.zero; //리더중심으로 부터의 초기 위치 
+        public Vector3 _local_calcPosition = Vector3.zero; //리더중심으로 부터의 계산된 위치 (초기위치가 이동 할 수 없는 위치에 있는 경우, 이동 할 수 있는 위치로 계산한다)
+        public float _min_radius = 0;
+        public float _max_radius = 0;
+        public Geo.Sphere _sphere = Geo.Sphere.Zero;
+
+    }
+
     //뛰어난 동물 진영
     public class CampChamp
     {
@@ -105,6 +118,10 @@ namespace HordeFight
 
         //진영에 있는 챔프목록
         //개인행동 하는 챔프목록 
+
+        public uint _leaderId = 0;
+        public List<Being> _beings = new List<Being>();
+
 
     }
 }
@@ -138,6 +155,35 @@ namespace HordeFight
     /// </summary>
     public class Champ : Being
     {
+        //직책 
+        public enum eJobPosition 
+        {
+            None = 0,
+            Squad_Leader, //분대장 10
+            Platoon_Leader, //소대장 20
+            Company_Commander, //중대장 100
+            Battalion_Commander, //대대장 300
+
+            Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
+        }
+
+        //병종
+        public enum eClass
+        {
+            None = 0,
+            PaengBaeSu, //팽배수 - 방패 
+            GeomSu, //검수 - 언월도
+            BuWolSu, //부월수 - 도끼 
+            SaSu, //사수 - 활
+            GiSa, //기사 - 마상활 
+            GiChang, //기창 - 마상창 
+
+        }
+
+        public eJobPosition _jobPosition = eJobPosition.None;
+        public eClass _class = eClass.None; 
+
+        public ushort _level = 1;
 
     }
 
@@ -402,12 +448,17 @@ namespace HordeFight
         //====================================
 
         //전용UI
-        public int  _UIID_circle = -1;
+        public int  _UIID_circle_collider = -1;
         public int  _UIID_hp = -1;
+        //====================================
+
+        public TacticsSphere _tacticsSphere = new TacticsSphere();
         //====================================
 
 		private void Start()
 		{
+            this.Init();
+
             _behaviorKind = Behavior.eKind.Idle_Random;
 
             //Single.touchProcess.Attach_SendObject(this.gameObject);
@@ -427,15 +478,23 @@ namespace HordeFight
             SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 
-            //_UIID_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform);
-            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            //SingleO.lineControl.SetActive(_UIID_circle, false);
+            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _tacticsSphere._sphere.radius, Color.green);
+            //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
+            SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 
 
 		}
 
+		public void Init()
+		{
+            _tacticsSphere._leaderId = this._id;
+            _tacticsSphere._min_radius = 0.1f;
+            _tacticsSphere._max_radius = 0.3f;
+            _tacticsSphere._sphere.radius = 0.2f;
 
-    
+		}
+
 
 		public float GetCollider_Radius()
         {

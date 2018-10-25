@@ -387,7 +387,7 @@ namespace HordeFight
             return _sequenceId;
         }
 
-        public int Create_Circle_AxisY(Transform dst)
+        public int Create_Circle_AxisY(Transform parent, float radius, Color color)
         {
             GameObject obj = new GameObject();
             LineRenderer render = obj.AddComponent<LineRenderer>();
@@ -403,7 +403,7 @@ namespace HordeFight
             render.name = info.kind.ToString() + "_" + _sequenceId.ToString("000");
             render.material = new Material(Shader.Find("Sprites/Default"));
             render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
-            render.transform.parent = dst;//부모객체 지정
+            render.transform.parent = parent;//부모객체 지정
             render.sortingOrder = -10; //먼저그려지게 한다.
             render.positionCount = 20;
             render.loop = true; //처음과 끝을 연결한다 .
@@ -412,14 +412,14 @@ namespace HordeFight
 
             render.startWidth = 0.01f;
             render.endWidth = 0.01f;
-            render.startColor = Color.green;
-            render.endColor = Color.green;
+            render.startColor = color;//Color.green;
+            render.endColor = color;//Color.green;
 
             _list.Add(_sequenceId, info); //추가
 
             //info.Update_Circle(); //값설정
             float deg = 360f / render.positionCount;
-            float radius = render.transform.parent.GetComponent<SphereCollider>().radius;
+            //float radius = render.transform.parent.GetComponent<SphereCollider>().radius;
             Vector3 pos = Vector3.right;
             for (int i = 0; i < render.positionCount; i++)
             {
@@ -444,6 +444,17 @@ namespace HordeFight
         {
             //todo : 예외처리 추가하기 
             _list[id].render.gameObject.SetActive(onOff);
+        }
+
+        public void SetScale(int id, float scale)
+        {
+            //Vector3 s = _list[id].render.transform.localScale;
+            _list[id].render.transform.localScale = Vector3.one * scale; 
+        }
+
+        public void SetCircle_Radius(int id, float radius)
+        {
+            
         }
 
         //rate : 0~1
@@ -1730,19 +1741,19 @@ namespace HordeFight
 
             if (null == SingleO.unitRoot) return;
 
-            uint id_sequence = 0;
-            Vector3 pos = new Vector3(3,0,1);
+            uint id_sequence = 1; //0 아이디는 사용하지 않는다. [0 예약값 : 초기화 안된 객체]  
+            Vector3 pos = new Vector3(3.2f,0,1.12f);
             //Vector3 pos = new Vector3(0, 0, 0);
-            //Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
+            Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
             Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
 
 
@@ -1750,11 +1761,11 @@ namespace HordeFight
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                //Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
             }
 
             //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
+            //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
             //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }

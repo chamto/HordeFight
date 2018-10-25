@@ -287,6 +287,18 @@ namespace Utility
                 radius = r;
             }
 
+            static public Sphere Zero
+            {
+                get
+                {
+                    Sphere sphere = new Sphere();
+                    sphere.pos = Vector3.zero;
+                    sphere.radius = 0f;
+
+                    return sphere;
+                }
+            }
+
             public override string ToString()
             {
                 return "pos: " + pos + "  radius: " + radius;
