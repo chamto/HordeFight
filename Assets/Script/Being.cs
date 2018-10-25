@@ -120,6 +120,7 @@ namespace HordeFight
         //개인행동 하는 챔프목록 
 
         public uint _leaderId = 0;
+        public TacticsSphere _camp_tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
         public List<Being> _beings = new List<Being>();
 
 
@@ -478,10 +479,11 @@ namespace HordeFight
             SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 
+
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _tacticsSphere._sphere.radius, Color.green);
             //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
-            SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
+            //SingleO.lineControl.SetActive(_UIID_circle_collider, false);
+            //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 
 
 		}

@@ -409,7 +409,7 @@ namespace HordeFight
             render.loop = true; //처음과 끝을 연결한다 .
             render.transform.localPosition = Vector3.zero;
 
-
+            color.a = 0.15f; //흐리게 한다
             render.startWidth = 0.01f;
             render.endWidth = 0.01f;
             render.startColor = color;//Color.green;
