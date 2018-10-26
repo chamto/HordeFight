@@ -121,7 +121,7 @@ namespace HordeFight
 
         public uint _leaderId = 0;
         public TacticsSphere _camp_tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
-        public List<Being> _beings = new List<Being>();
+        public List<Being> _campList = new List<Being>();
 
 
     }
@@ -462,7 +462,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Idle_Random;
 
-            //Single.touchProcess.Attach_SendObject(this.gameObject);
+            //SingleO.touchProcess.Attach_SendObject(this.gameObject);
 
             _animator = GetComponentInChildren<Animator>();
             //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
@@ -929,7 +929,7 @@ namespace HordeFight
         private LineSegment3 __lineSeg = LineSegment3.zero;
         private void TouchBegan()
         {
-            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
             __startPos = hit.point;
             __startPos.y = 0f;
 
@@ -1012,7 +1012,7 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
 
-            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
 
             Vector3 dir = hit.point - this.transform.position;
             dir.y = 0;
@@ -1076,7 +1076,7 @@ namespace HordeFight
 
         private void TouchEnded()
         {
-            RaycastHit hit = SingleO.touchProcess.GetHit3D();
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
 
 
             //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
