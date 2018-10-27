@@ -206,7 +206,7 @@ namespace HordeFight
         private Vector3 _startPos = Vector3.zero; 
         private Vector3 _lastTargetPos = Vector3.zero;
         private Vector3 _nextTargetPos = Vector3.zero;
-        private Queue<Vector3> _targetPath = new Queue<Vector3>();
+        private Queue<Vector3> _targetPath = null;
 
         private float _oneMeter_movingTime = 0.8f; //임시처리
         private float _elapsed_movingTime = 0f;
@@ -226,13 +226,14 @@ namespace HordeFight
         {
             if (false == _isNextMoving) return;
 
-            //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
+            //1meter 가는데 걸리는 시간을 넘었다면 다시 경로를 찾는다
             if(_oneMeter_movingTime < _elapsed_movingTime)
             {
                 _elapsed_movingTime = 0;
 
                 MoveToTarget(_lastTargetPos, _speed_meterPerSecond); //test
             }
+            //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
             else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f) 
             {
                 _elapsed_movingTime = 0;
@@ -268,7 +269,7 @@ namespace HordeFight
 
             //this.transform.position = Vector3.Lerp(this.transform.position, _targetPos, _elapsedTime / (_onePath_movingTime * _speed));
 
-            DebugVeiw_DrawPath();
+            DebugVeiw_DrawPath_MoveToTarget(); //chamto test
         }
 
         public void SetNextMoving(bool isNext)
@@ -276,9 +277,14 @@ namespace HordeFight
             _isNextMoving = isNext;
         }
 
+        public bool IsMoving()
+        {
+            return _isNextMoving;
+        }
+
         public void MoveToTarget(Vector3 targetPos, float speed_meterPerSecond)
         {
-            _targetPath.Clear(); //기존 설정 경로를 비운다
+            _targetPath = null; //기존 설정 경로를 비운다
             targetPos.y = 0;
 
             _isNextMoving = true;
@@ -286,28 +292,18 @@ namespace HordeFight
             _lastTargetPos = targetPos;
             _nextTargetPos = this.transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
             _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
-            _direction = Misc.GetDir8Normal_AxisY(_eDir8);
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             _elapsedTime = 0; 
             _prevInterpolationTime = 0;
 
-
             _targetPath =  SingleO.pathFinder.Search(this.transform.position, targetPos);
-            //_targetPath.Enqueue(_lastTargetPos);
+
+            //초기방향을 구한다
+            _eDir8 = Misc.TransDirection8_AxisY(_targetPath.First() - _startPos);
+            _direction = Misc.GetDir8Normal_AxisY(_eDir8);
         }
 
-
-        public void DebugVeiw_DrawPath()
-        {
-            Vector3 prev = _targetPath.FirstOrDefault();
-            foreach(Vector3 pos3d in _targetPath)
-            {
-                
-                Debug.DrawLine(prev, pos3d);
-                prev = pos3d;
-            }
-        }
 
         private void Move_Interpolation(Vector3 dir, float meter, float perSecond)
         {
@@ -331,27 +327,30 @@ namespace HordeFight
         {
             //_isNextMoving = false;
             _eDir8 = Misc.TransDirection8_AxisY(dir);
-            //DebugWide.LogBlue(_eDir8 + "  " + dir); //chamto test
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
             this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
         }
 
-        //public void Move_Forward2(Vector3 dir, float distance, float speed)
-        //{
-        //    Vector3[] lineTest = SingleO.objectManager.LineSegmentTest(transform.position, dir);
-        //    foreach (Vector3 centerPos in lineTest)
-        //    {
-        //        if (true == SingleO.gridManager.HasStructTile(centerPos))
-        //        {
-        //            return;
-        //        }
+        public void Move_Push(Vector3 dir, float meter, float perSecond)
+        {
+            perSecond = 1f / perSecond;
+            //보간 없는 기본형
+            this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
+        }
 
-        //        break; //첫번째 것만 검사한다 
-        //    }
-        //    Move_Forward(dir, distance, speed);
-        //}
+        public void DebugVeiw_DrawPath_MoveToTarget()
+        {
+            Vector3 prev = _targetPath.FirstOrDefault();
+            foreach (Vector3 pos3d in _targetPath)
+            {
+
+                Debug.DrawLine(prev, pos3d);
+                prev = pos3d;
+            }
+        }
+
     }
     //========================================================
 
@@ -462,7 +461,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Idle_Random;
 
-            //SingleO.touchProcess.Attach_SendObject(this.gameObject);
+            //SingleO.touchEvent.Attach_SendObject(this.gameObject);
 
             _animator = GetComponentInChildren<Animator>();
             //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
@@ -482,7 +481,7 @@ namespace HordeFight
 
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _tacticsSphere._sphere.radius, Color.green);
             //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            //SingleO.lineControl.SetActive(_UIID_circle_collider, false);
+            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 
 
@@ -567,11 +566,18 @@ namespace HordeFight
 
             Update_Shot();
 
-            UpdateNextPath(); //chamto test
+            //UpdateNextPath(); //chamto test
+
+            if(false == _move.IsMoving())
+            {
+                _behaviorKind = Behavior.eKind.Idle;
+            }
 
             if (Behavior.eKind.Idle == _behaviorKind)
             {
+                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
                 _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+                _animator.Play("idle 10"); //상태전이 없이 바로 적용되게 한다
             }
             else if (Behavior.eKind.Idle_Random == _behaviorKind)
             {
@@ -896,29 +902,41 @@ namespace HordeFight
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
         }
 
+        public void MoveToTarget(Vector3 targetPos , float speed)
+        {
+            targetPos.y = 0;
+            _move.SetNextMoving(false);
+
+            _behaviorKind = Behavior.eKind.Move;
+            _move.MoveToTarget(targetPos, speed);
+
+            //이동방향으로 아이들애니를 설정한다 - 아주약간 끌려가는 느낌이 있어 해당느낌을 없애려 미리 설정함
+            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+            _animator.Play("idle 10"); //상태전이 없이 바로 적용
+        }
 
         //____________________________________________
         //               지정된 경로 이동   
         //____________________________________________
 
-        Queue<Vector3> __path_find = null;
-        Vector3 __dstPos = Vector3.zero;
-        float __elapsedTime_3 = 10f;
-        public void UpdateNextPath()
-        {
-            if (null == __path_find || 0 == __path_find.Count) return;
+        //Queue<Vector3> __path_find = null;
+        //Vector3 __dstPos = Vector3.zero;
+        //float __elapsedTime_3 = 10f;
+        //public void UpdateNextPath()
+        //{
+        //    if (null == __path_find || 0 == __path_find.Count) return;
 
 
-            if (1f < __elapsedTime_3)
-            {
-                __elapsedTime_3 = 0f;
-                __dstPos = __path_find.Dequeue();
-            }else
-            {
-                __elapsedTime_3 += Time.deltaTime;
-                this.transform.position = Vector3.Lerp(this.transform.position, __dstPos, __elapsedTime_3);    
-            }
-        }
+        //    if (1f < __elapsedTime_3)
+        //    {
+        //        __elapsedTime_3 = 0f;
+        //        __dstPos = __path_find.Dequeue();
+        //    }else
+        //    {
+        //        __elapsedTime_3 += Time.deltaTime;
+        //        this.transform.position = Vector3.Lerp(this.transform.position, __dstPos, __elapsedTime_3);    
+        //    }
+        //}
 
 
         //____________________________________________
@@ -945,67 +963,8 @@ namespace HordeFight
 
             SingleO.uiMain.SelectLeader(_kind.ToString());
 
-            //chamto test
-            //CellInfo.Index cidx = Single.gridManager.ToCellIndex(hit.point, Vector3.up);
-            //Vector3 cidxToV3 = Single.gridManager.ToPosition(cidx, Vector3.up);
-            //DebugWide.LogBlue(hit.point +"  "+cidx + "  " + cidxToV3); 
-            //this.transform.position = cidxToV3;
-
-            //CellInfo cinfo = Single.gridManager.GetCellInfo_NxN(_cellInfo._index, 3);
-            //string temp = "count:"+cinfo.Count + "  (" + cinfo._index + ")  ";
-            //foreach(Being b in cinfo)
-            //{
-            //    temp += " " + b.name;
-            //}
-            //DebugWide.LogBlue(temp);
-
-
-            //int count = 1;
-            //string temp = "";
-            //foreach (CellInfo.Index b in Single.gridManager._indexesNxN[3])
-            //{
-            //    temp += " " + b;
-            //    if (0 == count % 3) temp += "\n";
-            //    count++;
-            //}
-            //DebugWide.LogBlue(temp);
-
-            //int allCount = 0;
-            //string temp = "";
-            //CellInfo cellInfo = null;
-            //foreach (CellInfo.Index ix in Single.gridManager._indexesNxN[3])
-            //{
-
-            //    cellInfo = Single.gridManager.GetCellInfo(ix + this._cellInfo._index);
-            //    if (null == cellInfo) continue;
-
-            //    temp += "   [" + "  cnt:" + cellInfo.Count + " "+(ix + this._cellInfo._index);
-
-            //    foreach (Being dst in cellInfo)
-            //    {
-            //        temp += ", " + dst.name;
-            //        allCount++;
-            //    }
-            //    temp += "] ";
-            //}
-            //DebugWide.LogBlue("allCnt:"+allCount + "  " +temp);
-
-            //길찾기 시험 
-            //__path_find =  SingleO.pathFinder.Search(this.transform.position, Vector3.zero); //chamto test
-
-
-
-            //__path_find = new Queue<Vector3>();
-            //foreach (Vector3Int v in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(5, Vector3.up))
-            //{
-            //    Vector3 vv = v;
-            //    __path_find.Enqueue( vv * 0.16f);
-
-            //}
-            //__path_find.Enqueue(Vector3.zero);
-
-
         }
+
 
 
         private void TouchMoved()

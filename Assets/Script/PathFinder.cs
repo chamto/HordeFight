@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Linq;
-//using System.String;
+
+using Utility;
 
 
 //========================================================
@@ -129,7 +130,51 @@ namespace HordeFight
             return Physics.Linecast(srcPos, destPos, layerMask);
         }
 
+        public bool Possible_LinearMove_TileMap(Vector3 srcPos, Vector3 destPos)
+        {
+            LineSegment3 lineSeg = LineSegment3.zero;
+            lineSeg.origin = srcPos;
+            lineSeg.last = destPos;
 
+            float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
+            float CELL_SQUARED_RADIUS = Mathf.Pow(CELL_HARF_SIZE, 2f);
+            float sqrDis = 0f;
+            float t_c = 0;
+
+            //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
+            Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(srcPos, Vector3.up);
+            Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt, Vector3.up);
+            Vector3 worldCellCenterPos = Vector3.zero;
+            foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
+            {
+                //셀의 중심좌표로 변환 
+                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
+                worldCellCenterPos += originToPos;
+
+
+                //시작위치셀을 포함하거나 뺄때가 있다. 사용하지 않느다 
+                //선분방향과 반대방향인 셀들을 걸러낸다 , (0,0)원점 즉 출발점의 셀은 제외한다 
+                if (0 == cellLBPos.sqrMagnitude || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - srcPos))
+                {
+                    continue;
+                }
+
+                sqrDis = lineSeg.MinimumDistanceSquared(worldCellCenterPos, out t_c);
+
+                //선분에 멀리있는 셀들을 걸러낸다
+                if (CELL_SQUARED_RADIUS < sqrDis)
+                {
+                    continue;
+                }
+
+                if (true == SingleO.gridManager.HasStructTile(worldCellCenterPos))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Searchs the non alloc.
@@ -145,7 +190,8 @@ namespace HordeFight
                 return 0;
 
             //직선이동이 가능하면 길찾기 안하고 종료한다
-            if (true == this.Possible_LinearMove(srcPos, destPos, 0))
+            //if (true == this.Possible_LinearMove(srcPos, destPos, 0))
+            if (true == this.Possible_LinearMove_TileMap(srcPos, destPos))
             {
                 pathPos.Clear();
                 pathPos.Enqueue(destPos);
@@ -184,8 +230,11 @@ namespace HordeFight
             NavGraphNode tempNode = null;
             Queue<Vector3> pathPos = new Queue<Vector3>();
 
-            if (true == this.Possible_LinearMove(srcPos, destPos, 0))
+            //if (true == this.Possible_LinearMove(srcPos, destPos, 0))
+            if (true == this.Possible_LinearMove_TileMap(srcPos, destPos))
             {
+                //DebugWide.LogBlue("Possible_LinearMove_TileMap !!! ");
+
                 pathPos.Enqueue(destPos);
                 return pathPos;
             }

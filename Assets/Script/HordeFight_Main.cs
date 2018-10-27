@@ -29,6 +29,7 @@ namespace HordeFight
             gameObject.AddComponent<DebugViewer>();
 
             gameObject.AddComponent<TouchEvent>();
+            gameObject.AddComponent<TouchControl>();
 
             //===================
 
@@ -409,7 +410,7 @@ namespace HordeFight
             render.loop = true; //처음과 끝을 연결한다 .
             render.transform.localPosition = Vector3.zero;
 
-            color.a = 0.15f; //흐리게 한다
+            color.a = 0.4f; //흐리게 한다
             render.startWidth = 0.01f;
             render.endWidth = 0.01f;
             render.startColor = color;//Color.green;
@@ -1202,11 +1203,12 @@ namespace HordeFight
         //____________________________________________
         //              선분을 이용한 CCD   
         //____________________________________________
-        public Vector3[] LineSegmentTest(Vector3 origin, Vector3 dir)
+        public Vector3[] LineSegmentTest(Vector3 origin, Vector3 last)
         {
             LineSegment3 lineSeg = LineSegment3.zero;
             lineSeg.origin = origin;
-            lineSeg.direction = dir;
+            //lineSeg.direction = dir;
+            lineSeg.last = last;
 
             LinkedList<Vector3> cellList = new LinkedList<Vector3>();
             float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
@@ -1217,11 +1219,11 @@ namespace HordeFight
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
             Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(origin, Vector3.up);
             Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt, Vector3.up);
-            //DebugWide.LogBlue(toGridInt);
+            Vector3 worldCellCenterPos = Vector3.zero;
             foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
-                Vector3 worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
+                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
                 worldCellCenterPos += originToPos;
 
 
@@ -1292,9 +1294,9 @@ namespace HordeFight
 
                 //밀리는 처리 
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-                src._move.Move_Forward(n, 2f, meterPersecond);
+                src._move.Move_Push(n, 2f, meterPersecond);
                 //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                dst._move.Move_Forward(-n, 2f, meterPersecond);
+                dst._move.Move_Push(-n, 2f, meterPersecond);
 
             }
         }
@@ -2050,14 +2052,67 @@ namespace HordeFight
 
     public class TouchControl : MonoBehaviour
     {
+        public Being _selected = null;
+        
 		private void Start()
 		{
-			
+            SingleO.touchEvent.Attach_SendObject(this.gameObject);
 		}
 
-		private void TouchBegan() { }
-        private void TouchMoved() { }
-        private void TouchEnded() { }
+        private Vector3 __startPos = Vector3.zero;
+		private void TouchBegan() 
+        {
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+            __startPos = hit.point;
+            __startPos.y = 0f;
+
+
+            Being getBeing = hit.transform.GetComponent<Being>();
+            if(null != getBeing)
+            {
+                //전 객체 선택 해제 
+                if (null != _selected)
+                {
+                    SingleO.lineControl.SetActive(_selected._UIID_circle_collider, false);
+                }
+
+                //새로운 객체 선택
+                _selected = getBeing;
+                SingleO.lineControl.SetActive(_selected._UIID_circle_collider, true);
+            }
+            //else
+            //{
+            //    if (null != _selected)
+            //    {
+            //        SingleO.lineControl.SetActive(_selected._UIID_circle_collider, false);
+            //    }
+            //    _selected = null;
+            //}
+
+
+            //DebugWide.LogBlue(__startPos + "  " + _selected); //chamto test
+
+            //===============================================
+
+            if (null == _selected) return;
+
+            //챔프를 선택한 경우, 추가 처리 하지 않는다
+            if (getBeing == _selected) return;
+
+            _selected.MoveToTarget(hit.point, 1f);
+           
+        }
+        private void TouchMoved() 
+        {
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+
+            if (null == _selected) return;
+
+            //_selected._move.MoveToTarget(hit.point, 1f);
+        }
+        private void TouchEnded() 
+        {
+        }
     }
 
 
