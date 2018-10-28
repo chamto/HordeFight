@@ -94,9 +94,11 @@ namespace HordeFight
     //전술원
     public class TacticsSphere
     {
-        public uint _leaderId = 0; //연결된 리더ID
-        public Vector3 _local_initPosition = Vector3.zero; //리더중심으로 부터의 초기 위치 
-        public Vector3 _local_calcPosition = Vector3.zero; //리더중심으로 부터의 계산된 위치 (초기위치가 이동 할 수 없는 위치에 있는 경우, 이동 할 수 있는 위치로 계산한다)
+        //public uint _leaderId = 0; //연결된 리더ID
+        //public Vector3 _local_initPosition = Vector3.zero; //리더중심으로 부터의 초기 위치 
+        //public Vector3 _local_calcPosition = Vector3.zero; //리더중심으로 부터의 계산된 위치 (초기위치가 이동 할 수 없는 위치에 있는 경우, 이동 할 수 있는 위치로 계산한다)
+
+        //public Vector3 _position = Vector3.zero; //전술원의 월드 위치
         public float _min_radius = 0;
         public float _max_radius = 0;
         public Geo.Sphere _sphere = Geo.Sphere.Zero;
@@ -530,7 +532,9 @@ namespace HordeFight
 
         //진영정보
         public Camp _belongCamp = null; //소속 캠프
-        public TacticsSphere _tacticsSphere = new TacticsSphere();
+        //public TacticsSphere _tacticsSphere = new TacticsSphere();
+
+        public Geo.Sphere _activeRange = Geo.Sphere.Zero;
         //====================================
 
 		private void Start()
@@ -557,7 +561,7 @@ namespace HordeFight
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 
 
-            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _tacticsSphere._sphere.radius, Color.green);
+            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _activeRange.radius, Color.green);
             //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
@@ -567,10 +571,12 @@ namespace HordeFight
 
 		public void Init()
 		{
-            _tacticsSphere._leaderId = this._id;
-            _tacticsSphere._min_radius = 0.1f;
-            _tacticsSphere._max_radius = 0.3f;
-            _tacticsSphere._sphere.radius = 0.2f;
+           
+            _activeRange.radius  = 0.2f;
+            //_tacticsSphere._leaderId = this._id;
+            //_tacticsSphere._min_radius = 0.1f;
+            //_tacticsSphere._max_radius = 0.3f;
+            //_tacticsSphere._sphere.radius = 0.2f;
 
 		}
 
