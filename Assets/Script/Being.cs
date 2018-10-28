@@ -104,7 +104,7 @@ namespace HordeFight
     }
 
     //뛰어난 동물 진영
-    public class CampChamp
+    public class Camp
     {
         //* 리더1이 부상시 2,3순위가 리더가 된다. 리더가 없을 경우 진영이 흩어진다. 
         //* 진영에 포함된 캐릭터는 진영컨트롤로 한꺼번에 조종 할 수 있다.
@@ -119,9 +119,85 @@ namespace HordeFight
         //진영에 있는 챔프목록
         //개인행동 하는 챔프목록 
 
+        //진영
+        public enum eKind
+        {
+            None = 0,
+
+            Blue,
+            Red,
+            White,
+            Black,
+
+            Max,
+        }
+
+        //진영간 관계
+        public enum eRelation
+        {
+            Unknown = 0, //알수없음
+            Neutrality, //중립
+            Alliance, //동맹
+            Enemy, //적대
+
+        }
+
+
+        //====================================
+
+        public uint _campId = 0;
+        public eKind _eCampKind = eKind.None;
+        public Dictionary<eKind, eRelation> _relations = new Dictionary<eKind, eRelation>();
+
+        //====================================
+
         public uint _leaderId = 0;
-        public TacticsSphere _camp_tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
-        public List<Being> _campList = new List<Being>();
+        public TacticsSphere _tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
+        public List<Being> _members = new List<Being>();
+
+        private Camp() {}
+
+        public Camp(uint campId, eKind kind)
+        {
+            _campId = campId;
+            _eCampKind = kind;
+        }
+
+    }
+
+    //[캠프ID , 캠프정보] : 블루팀의 여러개의 캠프가 들어갈 수 있다 
+    public class CampManager
+    {
+        private uint _campSequece = 0; //0 id는 사용하지 않는다 
+        private Dictionary<uint, Camp> _campList = new Dictionary<uint, Camp>();
+
+        public Camp AddCamp(Camp.eKind eKind)
+        {
+            _campSequece++;
+            Camp camp = null;
+            camp = new Camp(_campSequece , eKind);
+            camp._relations.Add(eKind, Camp.eRelation.Alliance);
+            _campList.Add(_campSequece, camp);
+
+            return camp;
+        }
+
+        public void SetRelation(Camp.eRelation eRelation, uint campId_one, uint campId_two)
+        {
+            //같은 캠프는 설정 할 수 없다. 
+            if (campId_one == campId_two) return;
+            
+            Camp one = _campList[campId_one];
+            Camp two = _campList[campId_two];
+
+            one._relations.Add(two._eCampKind, eRelation);
+            two._relations.Add(one._eCampKind, eRelation);
+        }
+
+        public Camp GetCamp(uint campId)
+        {
+            return _campList[campId];
+        }
 
 
     }
@@ -148,43 +224,6 @@ namespace HordeFight
     /// </summary>
     public class Structure : Being
     {
-
-    }
-
-    /// <summary>
-    /// 뛰어난 존재 
-    /// </summary>
-    public class Champ : Being
-    {
-        //직책 
-        public enum eJobPosition 
-        {
-            None = 0,
-            Squad_Leader, //분대장 10
-            Platoon_Leader, //소대장 20
-            Company_Commander, //중대장 100
-            Battalion_Commander, //대대장 300
-
-            Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
-        }
-
-        //병종
-        public enum eClass
-        {
-            None = 0,
-            PaengBaeSu, //팽배수 - 방패 
-            GeomSu, //검수 - 언월도
-            BuWolSu, //부월수 - 도끼 
-            SaSu, //사수 - 활
-            GiSa, //기사 - 마상활 
-            GiChang, //기창 - 마상창 
-
-        }
-
-        public eJobPosition _jobPosition = eJobPosition.None;
-        public eClass _class = eClass.None; 
-
-        public ushort _level = 1;
 
     }
 
@@ -354,6 +393,42 @@ namespace HordeFight
     }
     //========================================================
 
+    /// <summary>
+    /// 뛰어난 존재 
+    /// </summary>
+    public class ChampUnit : Being
+    {
+        //직책 
+        public enum eJobPosition
+        {
+            None = 0,
+            Squad_Leader, //분대장 10
+            Platoon_Leader, //소대장 20
+            Company_Commander, //중대장 100
+            Battalion_Commander, //대대장 300
+
+            Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
+        }
+
+        //병종
+        public enum eClass
+        {
+            None = 0,
+            PaengBaeSu, //팽배수 - 방패 
+            GeomSu, //검수 - 언월도
+            BuWolSu, //부월수 - 도끼 
+            SaSu, //사수 - 활
+            GiSa, //기사 - 마상활 
+            GiChang, //기창 - 마상창 
+
+        }
+
+        public eJobPosition _jobPosition = eJobPosition.None;
+        public eClass _class = eClass.None;
+
+        public ushort _level = 1;
+
+    }
 
 
     public class Being : MonoBehaviour
@@ -394,6 +469,7 @@ namespace HordeFight
 
 
         //====================================
+
 
         //고유정보
         public uint _id;
@@ -452,6 +528,8 @@ namespace HordeFight
         public int  _UIID_hp = -1;
         //====================================
 
+        //진영정보
+        public Camp _belongCamp = null; //소속 캠프
         public TacticsSphere _tacticsSphere = new TacticsSphere();
         //====================================
 

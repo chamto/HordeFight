@@ -1176,7 +1176,9 @@ namespace HordeFight
     public class ObjectManager : MonoBehaviour
     {
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
-        public List<Being> _being_list = new List<Being>(); //충돌처리 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
+        public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
+
+        public CampManager _campManager = new CampManager();
 
         private int __TestSkelCount = 5;
 
@@ -1305,7 +1307,7 @@ namespace HordeFight
         public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
         {
             CellInfo cellInfo = null;
-            foreach(Being src in _being_list)
+            foreach(Being src in _linearSearch_list)
             {
 
                 //1. 3x3그리드 정보를 가져온다
@@ -1518,7 +1520,7 @@ namespace HordeFight
             Vector3 collisionCellPos_center = Vector3.zero;
             CellInfo cellInfo = null;
             StructTile structTile = null;
-            foreach (Being src in _being_list)
+            foreach (Being src in _linearSearch_list)
             {
                 if (null == src._cellInfo) continue;
 
@@ -1704,7 +1706,7 @@ namespace HordeFight
 
 
 
-        public Being Create_Character(Transform parent, Being.eKind eKind, uint id, Vector3 pos)
+        public Being Create_Character(Transform parent, Being.eKind eKind, Camp belongCamp, uint id, Vector3 pos)
         {
 
             GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
@@ -1713,11 +1715,12 @@ namespace HordeFight
             obj.AddComponent<AI>();
             cha._id = id;
             cha._kind = eKind;
+            cha._belongCamp = belongCamp;
             cha.transform.localPosition = pos;
             //cha.Init_Create();
 
             _beings.Add(id,cha);
-            _being_list.Add(cha); //chamto test
+            _linearSearch_list.Add(cha); //chamto test
 
             if (Being.eKind.spearman == eKind)
             {
@@ -1743,32 +1746,39 @@ namespace HordeFight
 
             if (null == SingleO.unitRoot) return;
 
+            //진영 설정
+            Camp camp_BLUE = _campManager.AddCamp(Camp.eKind.Blue);
+            Camp camp_WHITE = _campManager.AddCamp(Camp.eKind.White);
+            _campManager.SetRelation(Camp.eRelation.Enemy, camp_BLUE._campId, camp_WHITE._campId);
+
+            //챔프 설정
             uint id_sequence = 1; //0 아이디는 사용하지 않는다. [0 예약값 : 초기화 안된 객체]  
             Vector3 pos = new Vector3(3.2f,0,1.12f);
+            Being being = null;
             //Vector3 pos = new Vector3(0, 0, 0);
-            Create_Character(SingleO.unitRoot, Being.eKind.lothar, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.footman, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.spearman, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.grunt, id_sequence++, pos);
-            Create_Character(SingleO.unitRoot, Being.eKind.knight, id_sequence++, pos);//.SetAIRunning(false);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, id_sequence++, pos);//.SetAIRunning(false);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                Create_Character(SingleO.unitRoot, Being.eKind.skeleton, id_sequence++, pos);
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, id_sequence++, pos);
             }
 
-            //Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            //Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
 
         }
 
