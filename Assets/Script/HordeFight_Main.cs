@@ -17,6 +17,7 @@ namespace HordeFight
         void Start()
         {
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
+            SingleO.hierarchy.Init(); //계층도 읽어들이기 
             SingleO.resourceManager.Init(); //스프라이트 로드 
 
             gameObject.AddComponent<LineControl>();
@@ -122,6 +123,14 @@ namespace HordeFight
             get
             {
                 return CSingleton<ResourceManager>.Instance;
+            }
+        }
+
+        public static HierarchyPreLoader hierarchy
+        {
+            get
+            {
+                return CSingleton<HierarchyPreLoader>.Instance;
             }
         }
 
@@ -235,6 +244,9 @@ namespace HordeFight
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
+
+        //캠프의 초기 배치정보 
+
 
 
         //==================== Get / Set ====================
@@ -1792,27 +1804,7 @@ namespace HordeFight
     //==================     캐릭터 정보(임시)     ==================
     //========================================================
 
-  //  public partial class  Character : MonoBehaviour
-  //  {
-
   
-  //      //UI
-  //      public int      _UIID_circle = -1;
-  //      public int      _UIID_hp = -1;
-
-  
-  //      private void Start()
-  //      {      
-  //          _UIID_circle = Single.lineControl.Create_Circle_AxisY(this.transform);
-  //          Single.lineControl.SetActive(_UIID_circle, false);
-
-  //          _UIID_hp = Single.lineControl.Create_LineHP_AxisY(this.transform);
-
-  //      }
-
-
-
-
   //      //____________________________________________
   //      //                  터치 이벤트  
   //      //____________________________________________
@@ -1820,24 +1812,12 @@ namespace HordeFight
     //    private void TouchBegan() 
     //    {
  
-    //        Single.lineControl.SetActive(_UIID_circle, true);
-
     //        //_hp_cur--;
     //        Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
 
     //    }
 
    
-    //    }
-
-    //    private void TouchEnded() 
-    //    {
-  
-    //        //Single.lineControl.SetActive(_UIID_circle, false);
-    //    }
-    //}
-
-
 
     //public class Movable : MonoBehaviour
     //{
@@ -1907,8 +1887,6 @@ namespace HordeFight
     {
 
         public bool _ai_running = false;
-
-        //private Character _target = null;
 
 
         public enum eState

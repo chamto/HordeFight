@@ -3760,7 +3760,7 @@ GameObject:
   m_Component:
   - component: {fileID: 660328563}
   m_Layer: 0
-  m_Name: Camp_Blue
+  m_Name: Camp_Blue_0
   m_TagString: Untagged
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
@@ -5887,7 +5887,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1088033471}
   m_Layer: 0
-  m_Name: Camp_White
+  m_Name: Camp_White_0
   m_TagString: Untagged
   m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
