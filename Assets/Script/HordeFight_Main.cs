@@ -23,6 +23,7 @@ namespace HordeFight
             gameObject.AddComponent<LineControl>();
 
             gameObject.AddComponent<GridManager>();
+            gameObject.AddComponent<CampManager>();
             gameObject.AddComponent<ObjectManager>();
             gameObject.AddComponent<PathFinder>();
 
@@ -83,6 +84,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<LineControl>.Instance;
+            }
+        }
+
+        public static CampManager campManager
+        {
+            get
+            {
+                return CSingletonMono<CampManager>.Instance;
             }
         }
 
@@ -238,14 +247,14 @@ namespace HordeFight
 
 namespace HordeFight
 {
+
+
     public class ResourceManager
     {
 
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
-
-        //캠프의 초기 배치정보 
 
 
 
@@ -1190,7 +1199,7 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        public CampManager _campManager = new CampManager();
+        //public CampManager _campManager = new CampManager();
 
         private int __TestSkelCount = 5;
 
@@ -1759,9 +1768,10 @@ namespace HordeFight
             if (null == SingleO.unitRoot) return;
 
             //진영 설정
-            Camp camp_BLUE = _campManager.AddCamp(Camp.eKind.Blue);
-            Camp camp_WHITE = _campManager.AddCamp(Camp.eKind.White);
-            _campManager.SetRelation(Camp.eRelation.Enemy, camp_BLUE._campId, camp_WHITE._campId);
+            //Camp camp_BLUE = SingleO.campManager.AddCamp(Camp.eKind.Blue);
+            //Camp camp_WHITE = SingleO.campManager.AddCamp(Camp.eKind.White);
+            //SingleO.campManager.SetRelation(Camp.eRelation.Enemy, camp_BLUE._campId, camp_WHITE._campId);
+            Camp camp_BLUE = null, camp_WHITE = null;
 
             //챔프 설정
             uint id_sequence = 1; //0 아이디는 사용하지 않는다. [0 예약값 : 초기화 안된 객체]  

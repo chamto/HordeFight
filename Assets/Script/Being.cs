@@ -144,62 +144,87 @@ namespace HordeFight
 
         }
 
+        //캠프 배치 정보
+        public class Placement
+        {
+            public Being _champUnit = null;
+            public Vector3 _localPos = Vector3.zero; //캠프 위치로부터의 상대적 위치
+
+        }
 
         //====================================
 
-        public uint _campId = 0;
+        public int _campHashId = 0;
         public eKind _eCampKind = eKind.None;
         public Dictionary<eKind, eRelation> _relations = new Dictionary<eKind, eRelation>();
 
         //====================================
 
         public uint _leaderId = 0;
+        public Vector3 _campPos = Vector3.zero; //캠프의 위치
         public TacticsSphere _tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
-        public List<Being> _members = new List<Being>();
+        public List<Placement> _placements = new List<Placement>(); //배치 위치-객체 정보 
 
         private Camp() {}
 
-        public Camp(uint campId, eKind kind)
+        public Camp(int campHashId, eKind kind)
         {
-            _campId = campId;
+            _campHashId = campHashId;
             _eCampKind = kind;
         }
 
     }
 
-    //[캠프ID , 캠프정보] : 블루팀의 여러개의 캠프가 들어갈 수 있다 
-    public class CampManager
+    //캠프(분대)를 소대로 묶음 : 키값 : 문자열 해쉬
+    public class CampPlatoon : Dictionary<int, Camp> {}
+
+
+   
+    public class CampManager : MonoBehaviour
     {
-        private uint _campSequece = 0; //0 id는 사용하지 않는다 
-        private Dictionary<uint, Camp> _campList = new Dictionary<uint, Camp>();
+        private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(); //전체소대를 포함하는 사단
 
-        public Camp AddCamp(Camp.eKind eKind)
+		//캠프의 초기 배치정보 
+
+		private void Start()
+		{
+			
+		}
+
+        public void Load_CampPlacement()
         {
-            _campSequece++;
-            Camp camp = null;
-            camp = new Camp(_campSequece , eKind);
-            camp._relations.Add(eKind, Camp.eRelation.Alliance);
-            _campList.Add(_campSequece, camp);
-
-            return camp;
-        }
-
-        public void SetRelation(Camp.eRelation eRelation, uint campId_one, uint campId_two)
-        {
-            //같은 캠프는 설정 할 수 없다. 
-            if (campId_one == campId_two) return;
             
-            Camp one = _campList[campId_one];
-            Camp two = _campList[campId_two];
-
-            one._relations.Add(two._eCampKind, eRelation);
-            two._relations.Add(one._eCampKind, eRelation);
         }
 
-        public Camp GetCamp(uint campId)
-        {
-            return _campList[campId];
-        }
+        //chamto : 함수 완성하기 : 
+		//public Camp AddCamp(int hashId, Camp.eKind eKind)
+        //{
+        //    Camp camp = null;
+        //    camp = new Camp(hashId , eKind);
+        //    camp._relations.Add(eKind, Camp.eRelation.Alliance);
+
+
+        //    _campDivision.Add(hashId, camp);
+
+        //    return camp;
+        //}
+
+        //public void SetRelation(Camp.eRelation eRelation, int campId_one, int campId_two)
+        //{
+        //    //같은 캠프는 설정 할 수 없다. 
+        //    if (campId_one == campId_two) return;
+            
+        //    Camp one = _campDivision[campId_one];
+        //    Camp two = _campDivision[campId_two];
+
+        //    one._relations.Add(two._eCampKind, eRelation);
+        //    two._relations.Add(one._eCampKind, eRelation);
+        //}
+
+        //public Camp GetCamp(int campId)
+        //{
+        //    return _campDivision[campId];
+        //}
 
 
     }
