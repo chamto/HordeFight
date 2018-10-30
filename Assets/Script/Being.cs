@@ -150,6 +150,11 @@ namespace HordeFight
             public Being _champUnit = null;
             public Vector3 _localPos = Vector3.zero; //캠프 위치로부터의 상대적 위치
 
+            public Placement(Vector3 localPos)
+            {
+                _localPos = localPos;
+            }
+
         }
 
         //====================================
@@ -170,6 +175,13 @@ namespace HordeFight
         {
             _campHashName = campHashName;
             _eCampKind = kind;
+        }
+
+        public Vector3 GetPosition(int posNum)
+        {
+            if (posNum >= _placements.Count || 0 > posNum) return _campPos;
+
+            return _placements[posNum]._localPos + _campPos;
         }
 
     }
@@ -214,12 +226,46 @@ namespace HordeFight
 
 		private void Start()
 		{
-			
+            //DebugWide.LogBlue("CampManager Start");
+            
+            //Load_CampPlacement(Camp.eKind.Blue);
+            //Load_CampPlacement(Camp.eKind.White);
+            //SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
 		}
 
-        public void Load_CampPlacement()
+        //계층도에서 읽어들인다 
+        public void Load_CampPlacement(Camp.eKind kind)
         {
-            
+            string campRoot = "0_main/0_placement/Camp/";
+            string campPath = campRoot + kind.ToString();
+
+            Transform campKind = SingleO.hierarchy.GetTransform(campPath);
+
+            Camp camp = null; 
+            foreach(Transform TcampName in campKind.GetComponentsInChildren<Transform>())
+            {
+                if(TcampName.parent == campKind)
+                {
+                    //DebugWide.LogBlue(TcampName.name);
+
+                    //캠프 추가 
+                    camp = AddCamp(kind, TcampName.name.GetHashCode());
+                    camp._campHashName = TcampName.name.GetHashCode();
+                    camp._campPos = TcampName.position;
+                    //맴버위치 추가 
+                    foreach (Transform Tmember in TcampName.GetComponentsInChildren<Transform>())
+                    {
+                        if (Tmember.parent == TcampName)
+                        {
+                            //DebugWide.LogBlue(Tmember.name);
+
+                            camp._placements.Add(new Camp.Placement(Tmember.localPosition));
+                        }
+                    }
+                }
+                    
+            }
+
         }
 
 
@@ -264,9 +310,7 @@ namespace HordeFight
             CampPlatoon platoon = null;
             if (false == _campDivision.TryGetValue(kind, out platoon))
             {
-                //없으면 추가한다 
-                platoon = new CampPlatoon();
-                _campDivision.Add(kind, platoon);
+                return null;
             }
 
             return platoon;
@@ -275,11 +319,11 @@ namespace HordeFight
 
         public Camp AddCamp(Camp.eKind kind, int hashName)
         {
-            
-            Camp camp = null;
-            camp = new Camp(hashName , kind);
+            Camp camp = new Camp(hashName, kind);
 
             CampPlatoon platoon = GetPlatoon(kind);
+            if (null == platoon)
+                platoon = new CampPlatoon();
             platoon.Add(hashName, camp);
 
             _campDivision.Add(kind, platoon);

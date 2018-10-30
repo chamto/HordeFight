@@ -35,6 +35,9 @@ namespace HordeFight
 
             //===================
 
+            SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
+            SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
             SingleO.objectManager.Create_StageInfo();
 
 
@@ -1199,13 +1202,8 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
-        //public CampManager _campManager = new CampManager();
-
-        private int __TestSkelCount = 5;
-
         private void Start()
         {
-
         }
 
 
@@ -1762,40 +1760,40 @@ namespace HordeFight
             return obj;
         }
 
+        private int __TestSkelCount = 5;
         public void Create_StageInfo()
         {
 
             if (null == SingleO.unitRoot) return;
 
             //진영 설정
-            //Camp camp_BLUE = SingleO.campManager.AddCamp(Camp.eKind.Blue);
-            //Camp camp_WHITE = SingleO.campManager.AddCamp(Camp.eKind.White);
-            //SingleO.campManager.SetRelation(Camp.eRelation.Enemy, camp_BLUE._campId, camp_WHITE._campId);
-            Camp camp_BLUE = null, camp_WHITE = null;
-
+            string Blue_CampName = "Blue_Champ";
+            string White_CampName = "White_Skel";
+            Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
+            Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
+            //DebugWide.LogBlue(camp_BLUE);
             //챔프 설정
             uint id_sequence = 1; //0 아이디는 사용하지 않는다. [0 예약값 : 초기화 안된 객체]  
-            Vector3 pos = new Vector3(3.2f,0,1.12f);
+            //Vector3 pos = new Vector3(3.2f,0,1.12f);
             Being being = null;
-            //Vector3 pos = new Vector3(0, 0, 0);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(0));
             //being = Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, id_sequence++, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(1));
+            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(2));
             //being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
             //being = Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
             //being = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
             //being = Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
             //being = Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, id_sequence++, pos);//.SetAIRunning(false);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(3));
+            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(4));//.SetAIRunning(false);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, id_sequence++, pos);
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, id_sequence++, camp_WHITE.GetPosition(i));
             }
 
             //being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
