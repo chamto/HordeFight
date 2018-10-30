@@ -154,9 +154,8 @@ namespace HordeFight
 
         //====================================
 
-        public int _campHashId = 0;
+        public int _campHashName = 0;
         public eKind _eCampKind = eKind.None;
-        public Dictionary<eKind, eRelation> _relations = new Dictionary<eKind, eRelation>();
 
         //====================================
 
@@ -167,21 +166,48 @@ namespace HordeFight
 
         private Camp() {}
 
-        public Camp(int campHashId, eKind kind)
+        public Camp(int campHashName, eKind kind)
         {
-            _campHashId = campHashId;
+            _campHashName = campHashName;
             _eCampKind = kind;
         }
 
     }
 
     //캠프(분대)를 소대로 묶음 : 키값 : 문자열 해쉬
-    public class CampPlatoon : Dictionary<int, Camp> {}
+    public class CampPlatoon : Dictionary<int, Camp> 
+    {
+        public Camp GetCamp(int hashName)
+        {
+            if(true == this.ContainsKey(hashName))
+            {
+                return this[hashName];
+            }
 
+            return null;
+        }
+    }
 
+    //캠프와 캠프간의 관계를 저장 
+    public class CampRelation : Dictionary<Camp.eKind,Camp.eRelation> 
+    {
+        public void SetRelation(Camp.eKind camp , Camp.eRelation relat)
+        {
+            
+            if (false == this.ContainsKey(camp))
+            {
+                //없으면 추가 한다
+                this.Add(camp, relat);
+            }
+
+            this[camp] = relat;
+
+        }
+    }
    
     public class CampManager : MonoBehaviour
     {
+        private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>();
         private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(); //전체소대를 포함하는 사단
 
 		//캠프의 초기 배치정보 
@@ -196,36 +222,70 @@ namespace HordeFight
             
         }
 
-        //chamto : 함수 완성하기 : 
-		//public Camp AddCamp(int hashId, Camp.eKind eKind)
-        //{
-        //    Camp camp = null;
-        //    camp = new Camp(hashId , eKind);
-        //    camp._relations.Add(eKind, Camp.eRelation.Alliance);
 
+        private CampRelation GetCampRelation(Camp.eKind camp)
+        {
+            CampRelation camp_relat = null;
+            if (false == _relations.TryGetValue(camp, out camp_relat))
+            {
+                //없으면 추가 한다
+                camp_relat = new CampRelation();
+                _relations.Add(camp, camp_relat);
+            }
 
-        //    _campDivision.Add(hashId, camp);
+            return camp_relat;
+        }
 
-        //    return camp;
-        //}
-
-        //public void SetRelation(Camp.eRelation eRelation, int campId_one, int campId_two)
-        //{
-        //    //같은 캠프는 설정 할 수 없다. 
-        //    if (campId_one == campId_two) return;
+        public void SetRelation(Camp.eRelation eRelation, Camp.eKind camp_1, Camp.eKind camp_2)
+        {
+            //같은 캠프에 관계를 설정 할 수 없다
+            if (camp_1 == camp_2) return;
             
-        //    Camp one = _campDivision[campId_one];
-        //    Camp two = _campDivision[campId_two];
+            GetCampRelation(camp_1).SetRelation(camp_2, eRelation);
+            GetCampRelation(camp_2).SetRelation(camp_1, eRelation);
+        }
 
-        //    one._relations.Add(two._eCampKind, eRelation);
-        //    two._relations.Add(one._eCampKind, eRelation);
-        //}
+        public Camp GetCamp(Camp.eKind kind, int hashName)
+        {
+            CampPlatoon platoon = null;
+            if (true == _campDivision.TryGetValue(kind, out platoon))
+            {
+                if (null != platoon)
+                {
+                    return platoon.GetCamp(hashName);
+                }
+            }
 
-        //public Camp GetCamp(int campId)
-        //{
-        //    return _campDivision[campId];
-        //}
+            return null;
+        }
 
+        public CampPlatoon GetPlatoon(Camp.eKind kind)
+        {
+            CampPlatoon platoon = null;
+            if (false == _campDivision.TryGetValue(kind, out platoon))
+            {
+                //없으면 추가한다 
+                platoon = new CampPlatoon();
+                _campDivision.Add(kind, platoon);
+            }
+
+            return platoon;
+        }
+
+
+        public Camp AddCamp(Camp.eKind kind, int hashName)
+        {
+            
+            Camp camp = null;
+            camp = new Camp(hashName , kind);
+
+            CampPlatoon platoon = GetPlatoon(kind);
+            platoon.Add(hashName, camp);
+
+            _campDivision.Add(kind, platoon);
+
+            return camp;
+        }
 
     }
 }
