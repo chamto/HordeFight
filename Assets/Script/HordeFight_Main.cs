@@ -38,7 +38,8 @@ namespace HordeFight
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
             SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
             SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
-            SingleO.objectManager.Create_StageInfo();
+            //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
+            SingleO.objectManager.Create_ChampCamp();
 
 
         }
@@ -254,7 +255,7 @@ namespace HordeFight
 
     public class ResourceManager
     {
-
+        
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
@@ -1199,6 +1200,9 @@ namespace HordeFight
 
     public class ObjectManager : MonoBehaviour
     {
+
+        private uint _id_sequence = 0;
+
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
 
@@ -1725,21 +1729,22 @@ namespace HordeFight
 
 
 
-        public Being Create_Character(Transform parent, Being.eKind eKind, Camp belongCamp, uint id, Vector3 pos)
+        public Being Create_Character(Transform parent, Being.eKind eKind, Camp belongCamp, Vector3 pos)
         {
+            _id_sequence++;
 
-            GameObject obj = CreatePrefab(eKind.ToString(), parent, id.ToString("000") + "_" + eKind.ToString());
+            GameObject obj = CreatePrefab(eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             Being cha = obj.AddComponent<Being>();
             obj.AddComponent<Movement>();
             obj.AddComponent<AI>();
-            cha._id = id;
+            cha._id = _id_sequence;
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
             cha.transform.localPosition = pos;
             //cha.Init_Create();
 
-            _beings.Add(id,cha);
-            _linearSearch_list.Add(cha); //chamto test
+            _beings.Add(_id_sequence,cha);
+            _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
 
             if (Being.eKind.spearman == eKind)
             {
@@ -1760,45 +1765,75 @@ namespace HordeFight
             return obj;
         }
 
-        private int __TestSkelCount = 5;
-        public void Create_StageInfo()
+        private int __TestSkelCount = 9;
+        public void Create_Characters()
         {
 
             if (null == SingleO.unitRoot) return;
 
-            //진영 설정
-            string Blue_CampName = "Blue_Champ";
-            string White_CampName = "White_Skel";
-            Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
-            Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
-            //DebugWide.LogBlue(camp_BLUE);
             //챔프 설정
-            uint id_sequence = 1; //0 아이디는 사용하지 않는다. [0 예약값 : 초기화 안된 객체]  
-            //Vector3 pos = new Vector3(3.2f,0,1.12f);
+
+            Vector3 pos = new Vector3(3.2f,0,1.12f);
             Being being = null;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(0));
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.garona, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(1));
-            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(2));
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.ogre, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.slime, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.raider, id_sequence++, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(3));
-            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, id_sequence++, camp_BLUE.GetPosition(4));//.SetAIRunning(false);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.garona, null, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, null, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.ogre, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.slime, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.raider, null, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, null, pos);
+            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, null, pos);
 
 
             for (int i = 0; i < __TestSkelCount;i++)
             {
                 //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
                 //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, id_sequence++, camp_WHITE.GetPosition(i));
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, null, pos);
             }
 
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, id_sequence++, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, id_sequence++, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, null, pos);
+            //being = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, null, pos);
+
+        }
+
+        public void Create_ChampCamp()
+        {
+            if (null == SingleO.unitRoot) return;
+
+            string Blue_CampName = "Blue_Champ";
+            string White_CampName = "White_Skel";
+            int camp_position = 0;
+
+            Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
+            Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
+            Being being = null;
+
+            // -- 블루 진형 --
+            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            camp_position++;
+            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            camp_position++;
+            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            camp_position++;
+            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            camp_position++;
+            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+
+
+            // -- 휜색 진형 --
+            camp_position = 0;
+            being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            camp_position++;
+            for (int i = 0; i < 6; i++)
+            { 
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+                camp_position++;
+            }
 
         }
 

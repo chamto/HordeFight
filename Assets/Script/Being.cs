@@ -259,6 +259,7 @@ namespace HordeFight
                         {
                             //DebugWide.LogBlue(Tmember.name);
 
+                            //계층도 이름과 상관없이 단순히 게임오브젝트 순서대로 위치값을 얻는다 (순서가 중요)
                             camp._placements.Add(new Camp.Placement(Tmember.localPosition));
                         }
                     }
