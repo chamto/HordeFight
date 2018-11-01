@@ -694,13 +694,26 @@ namespace Utility
             return (eDirection8)quad;
         }
 
+
+        //none = 0,
+        //right = 1,
+        //rightUp = 2,
+        //up = 3,
+        //leftUp = 4,
+        //left = 5,
+        //leftDown = 6,
+        //down = 7,
+        //rightDown = 8,
+        //max,
         static public eDirection8 ReverseDir8_AxisY(eDirection8 eDirection)
         {
             if (eDirection8.none == eDirection) return eDirection8.none;
             
             int dir = (int)eDirection;
+            dir--; //0~7로 변경
             dir += 4;
-            dir %= (int)eDirection8.max;
+            dir %= 8;
+            dir++; //1~8로 변경 
             return (eDirection8)dir;
         }
 

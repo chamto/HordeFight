@@ -1832,6 +1832,7 @@ namespace HordeFight
             for (int i = 0; i < 6; i++)
             { 
                 being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+                being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -1928,10 +1929,7 @@ namespace HordeFight
 {
     public class AI : MonoBehaviour
     {
-
-        public bool _ai_running = false;
-
-
+        
         public enum eState
         {
             Detect, //탐지
@@ -1941,10 +1939,18 @@ namespace HordeFight
             Roaming, //배회하기
         }
         private eState _state = eState.Roaming;
+        private Movement _movement = null;
+        private Being _being = null;
+        private Vector3 _ai_Dir = Vector3.zero;
+        private float _elapsedTime = 0f;
+
+
+        public bool _ai_running = false;
 
         private void Start()
         {
-           
+            _being = GetComponent<Being>();
+            _movement = GetComponent<Movement>();
         }
 
 
@@ -2036,35 +2042,24 @@ namespace HordeFight
                         //    _state = eState.Detect;
                         //}
 
+                        if(1f <= _elapsedTime)
+                        {
+                            _ai_Dir = Misc.RandomDir8_AxisY();
+                            _elapsedTime = 0f;
+                        }
 
-                        float MIN_DIS = 0f;
-                        float MAX_DIS = 1f;
-                        //if(null == _target)
-                        //{
-                        //    //_target = Single.objectManager.GetNearCharacter(this.GetComponent<Character>(),MIN_DIS, MAX_DIS);
-                        //}
-                        //else
-                        //{
-                            
-                        //    Vector3 dir = _target.transform.position - this.transform.position;
+                        //_movement.Move_Forward(_ai_Dir, 2f, 1f);
+                        _being.Move(_ai_Dir, 3f, false);
 
-                        //    if (dir.sqrMagnitude > Mathf.Pow(MAX_DIS, 2))
-                        //    {
-                        //        _target = null;
-                        //    }
-                        //    else
-                        //    {
-                        //        //this.GetComponent<Movable>().Move_Forward(dir, 1f, 1f);
-                        //        this.GetComponent<Character>().Move(dir, 1f,true);
-                        //        this.GetComponent<Character>()._eState = Character.eState.Move;
-                        //    }
-                        //}
 
 
                     }
                     break;
-            }
-        }
+            }//end switch
+
+            _elapsedTime += Time.deltaTime;
+
+        }//end func
 
     }
 
@@ -2130,7 +2125,8 @@ namespace HordeFight
             //챔프를 선택한 경우, 추가 처리 하지 않는다
             if (getBeing == _selected) return;
 
-            _selected.MoveToTarget(hit.point, 1f);
+            //_selected.MoveToTarget(hit.point, 1f);
+           
            
         }
         private void TouchMoved() 
@@ -2140,6 +2136,7 @@ namespace HordeFight
             if (null == _selected) return;
 
             //_selected._move.MoveToTarget(hit.point, 1f);
+            _selected.Move(hit.point - _selected.transform.position, 1f, true);
         }
         private void TouchEnded() 
         {

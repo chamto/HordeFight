@@ -387,15 +387,23 @@ namespace HordeFight
         }
 
         //private void Update()
-        void FixedUpdate()
-        {
-            UpdateNextPath();
-        }
+        //void FixedUpdate()
+        //{
+        //    //UpdateNextPath();
+        //}
 
 
         public void UpdateNextPath()
         {
             if (false == _isNextMoving) return;
+
+            if (null == _targetPath || 0 == _targetPath.Count)
+            {
+                //이동종료 
+                _elapsed_movingTime = 0;
+                _isNextMoving = false;
+                return;
+            }
 
             //1meter 가는데 걸리는 시간을 넘었다면 다시 경로를 찾는다
             if(_oneMeter_movingTime < _elapsed_movingTime)
@@ -408,13 +416,6 @@ namespace HordeFight
             else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f) 
             {
                 _elapsed_movingTime = 0;
-
-                if (0 == _targetPath.Count)
-                {
-                    //이동종료 
-                    _isNextMoving = false;
-                    return;
-                }
 
                 _nextTargetPos = _targetPath.Dequeue();
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
@@ -496,7 +497,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
-            //_isNextMoving = false;
+            _isNextMoving = true;
             _eDir8 = Misc.TransDirection8_AxisY(dir);
 
             perSecond = 1f / perSecond;
@@ -506,6 +507,7 @@ namespace HordeFight
 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
         {
+            _isNextMoving = true;
             perSecond = 1f / perSecond;
             //보간 없는 기본형
             this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
@@ -888,6 +890,8 @@ namespace HordeFight
             }
 
 
+            //이동정보에 따라 위치 갱신
+            _move.UpdateNextPath();
         }//end func
 
 
@@ -1025,20 +1029,6 @@ namespace HordeFight
             //_animator.SetInteger("state", (int)eState.Idle);
         }
 
-        public void Move(Vector3 dir, float second, bool forward)//, bool setState)
-        {
-            //Vector3 dir = target - this.transform.position;
-            //dir.Normalize();
-            _move.Move_Forward(dir, 2f, second);
-
-            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
-            if (false == forward)
-                dir *= -1f;
-
-            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
-            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
-
-        }
 
         public void Attack(Vector3 dir)
         {
@@ -1114,6 +1104,24 @@ namespace HordeFight
             }
 
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
+        }
+
+        public void Move(Vector3 dir, float second, bool forward)//, bool setState)
+        {
+            eDirection8 eDirection = eDirection8.none;
+            dir.y = 0;
+            _move.SetNextMoving(false);
+
+            _behaviorKind = Behavior.eKind.Move;
+            _move.Move_Forward(dir, 2f, second);
+            eDirection = _move._eDir8;
+
+            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+            if (false == forward)
+                eDirection = Misc.ReverseDir8_AxisY(eDirection);
+
+            Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
+
         }
 
         public void MoveToTarget(Vector3 targetPos , float speed)
@@ -1235,7 +1243,7 @@ namespace HordeFight
                 }
                 else
                 {
-                    _behaviorKind = Behavior.eKind.Move;
+                    //_behaviorKind = Behavior.eKind.Move;
                     Move(dir, 0.4f, true);
                     //_move.MoveToTarget(hit.point, 1f);
 
