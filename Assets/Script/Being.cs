@@ -632,8 +632,8 @@ namespace HordeFight
 
         //능력치1 
         public ushort _power = 1;
-        public ushort _hp_cur = 10;
-        public ushort _hp_max = 10;
+        public int  _hp_cur = 30;
+        public int  _hp_max = 30;
         public float _range_min = 0.15f;
         public float _range_max = 0.15f;
 
@@ -649,7 +649,7 @@ namespace HordeFight
 
         //상태정보
         public ePhase _phase = ePhase.None;
-        public bool _death = false;
+        private bool _death = false;
 
         //주시대상
         public Being _looking = null;
@@ -723,7 +723,7 @@ namespace HordeFight
             //=====================================================
             // ui 설정 
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _activeRange.radius, Color.green);
-            //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 
@@ -740,8 +740,14 @@ namespace HordeFight
             return _collider.radius;
         }
 
+        public bool isDeath()
+        {
+            if (0 == _hp_cur) return true;
 
-        public void AddHP(ushort amount)
+            return false;
+        }
+
+        public void AddHP(int amount)
         {
             _hp_cur += amount;
 
@@ -750,6 +756,8 @@ namespace HordeFight
 
             if (_hp_max < _hp_cur)
                 _hp_cur = _hp_max;
+
+            SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
 
         }
 
@@ -793,11 +801,24 @@ namespace HordeFight
         //private void Update()
         void FixedUpdate()
         {
+            
+            if(isDeath())
+            {
+                FallDown();
 
-            //if (true == _death) return;
+                //if(false == _death)
+                //{
+                //    FallDown();
+                //    _death = true;
+                //}
+                    
+                return;
+            }
+
             Update_CellInfo();
 
             Update_Shot();
+
 
             if(false == _move.IsMoving())
             {

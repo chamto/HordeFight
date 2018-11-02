@@ -1840,9 +1840,16 @@ namespace HordeFight
             camp_position = 0;
             being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             camp_position++;
-            for (int i = 0; i < 6; i++)
-            { 
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //for (int i = 0; i < 6; i++)
+            //{ 
+            //    being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //    being.GetComponent<AI>()._ai_running = true;
+            //    camp_position++;
+            //}
+
+            for (int i = 0; i < 10; i++)
+            {
+                being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
                 being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -1855,25 +1862,7 @@ namespace HordeFight
 
 namespace HordeFight
 {
-    //========================================================
-    //==================     캐릭터 정보(임시)     ==================
-    //========================================================
-
-  
-  //      //____________________________________________
-  //      //                  터치 이벤트  
-  //      //____________________________________________
-
-    //    private void TouchBegan() 
-    //    {
- 
-    //        //_hp_cur--;
-    //        Single.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur/(float)_hp_max);
-
-    //    }
-
    
-
     //public class Movable : MonoBehaviour
     //{
 
@@ -1968,6 +1957,8 @@ namespace HordeFight
         private void FixedUpdate()
         {
             if (false == _ai_running) return;
+
+            if (true == _me.isDeath()) return;
 
             this.StateUpdate();
         }
@@ -2184,6 +2175,7 @@ namespace HordeFight
             {
                 //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
                 _selected.Attack(target.transform.position - _selected.transform.position);
+                target.AddHP(-1);
 
             }
 
