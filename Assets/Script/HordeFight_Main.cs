@@ -1319,9 +1319,11 @@ namespace HordeFight
 
                 //밀리는 처리 
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-                src._move.Move_Push(n, 2f, meterPersecond);
+
+                src.Move_Push(n, meterPersecond);
                 //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                dst._move.Move_Push(-n, 2f, meterPersecond);
+
+                dst.Move_Push(-n, meterPersecond);
 
             }
         }
@@ -1386,7 +1388,8 @@ namespace HordeFight
                 }
 
                 //src.transform.position = collisionCellPos_center + n * 0.16f;
-                src._move.Move_Forward(n, 2f, div_dis);
+                //src._move.Move_Forward(n, 2f, div_dis);
+                src.Move_Forward(n, div_dis, true);
                 //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, Vector3.up) + "   " + src.transform.position);
                 
 
@@ -1939,7 +1942,6 @@ namespace HordeFight
             Roaming, //배회하기
         }
         private eState _state = eState.Roaming;
-        private Movement _movement = null;
         private Being _being = null;
         private Vector3 _ai_Dir = Vector3.zero;
         private float _elapsedTime = 0f;
@@ -1950,7 +1952,6 @@ namespace HordeFight
         private void Start()
         {
             _being = GetComponent<Being>();
-            _movement = GetComponent<Movement>();
         }
 
 
@@ -2048,8 +2049,7 @@ namespace HordeFight
                             _elapsedTime = 0f;
                         }
 
-                        //_movement.Move_Forward(_ai_Dir, 2f, 1f);
-                        _being.Move(_ai_Dir, 3f, false);
+                        _being.Move_Forward(_ai_Dir, 3f, true);
 
 
 
@@ -2136,7 +2136,7 @@ namespace HordeFight
             if (null == _selected) return;
 
             //_selected._move.MoveToTarget(hit.point, 1f);
-            _selected.Move(hit.point - _selected.transform.position, 1f, true);
+            _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);
         }
         private void TouchEnded() 
         {

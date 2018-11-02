@@ -652,7 +652,7 @@ namespace HordeFight
         private SphereCollider _collider = null;
 
         //이동 
-        public Movement _move = null;
+        private Movement _move = null;
         public CellInfo _cellInfo = null;
         public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
@@ -1106,7 +1106,7 @@ namespace HordeFight
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
         }
 
-        public void Move(Vector3 dir, float second, bool forward)//, bool setState)
+        public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
             eDirection8 eDirection = eDirection8.none;
             dir.y = 0;
@@ -1119,8 +1119,20 @@ namespace HordeFight
             //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
             if (false == forward)
                 eDirection = Misc.ReverseDir8_AxisY(eDirection);
+            //_move._eDir8 = eDirection; //test
 
             Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
+
+        }
+
+        public void Move_Push(Vector3 dir, float second)
+        {
+            
+            dir.y = 0;
+            _move.SetNextMoving(false);
+
+            //_behaviorKind = Behavior.eKind.Move;
+            _move.Move_Push(dir, 2f, second);
 
         }
 
@@ -1244,7 +1256,7 @@ namespace HordeFight
                 else
                 {
                     //_behaviorKind = Behavior.eKind.Move;
-                    Move(dir, 0.4f, true);
+                    Move_Forward(dir, 0.4f, true);
                     //_move.MoveToTarget(hit.point, 1f);
 
                     //DebugWide.LogBlue(dir + "  " + Misc.TransDirection8_AxisY(dir));
