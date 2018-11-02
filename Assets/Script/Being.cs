@@ -160,7 +160,7 @@ namespace HordeFight
         //====================================
 
         public int _campHashName = 0;
-        public eKind _eCampKind = eKind.None;
+        private eKind _eCampKind = eKind.None;
 
         //====================================
 
@@ -175,6 +175,11 @@ namespace HordeFight
         {
             _campHashName = campHashName;
             _eCampKind = kind;
+        }
+
+        public eKind campKind
+        {
+            get { return _eCampKind; }
         }
 
         public Vector3 GetPosition(int posNum)
@@ -203,6 +208,7 @@ namespace HordeFight
     //캠프와 캠프간의 관계를 저장 
     public class CampRelation : Dictionary<Camp.eKind,Camp.eRelation> 
     {
+
         public void SetRelation(Camp.eKind camp , Camp.eRelation relat)
         {
             
@@ -214,6 +220,16 @@ namespace HordeFight
 
             this[camp] = relat;
 
+        }
+
+        public Camp.eRelation GetRelation(Camp.eKind camp)
+        {
+            if (true == this.ContainsKey(camp))
+            {
+                return this[camp];
+            }
+
+            return Camp.eRelation.Unknown;
         }
     }
    
@@ -290,6 +306,11 @@ namespace HordeFight
             
             GetCampRelation(camp_1).SetRelation(camp_2, eRelation);
             GetCampRelation(camp_2).SetRelation(camp_1, eRelation);
+        }
+
+        public Camp.eRelation GetRelation(Camp.eKind camp_1, Camp.eKind camp_2)
+        {
+            return GetCampRelation(camp_1).GetRelation(camp_2);
         }
 
         public Camp GetCamp(Camp.eKind kind, int hashName)
@@ -671,44 +692,40 @@ namespace HordeFight
 
 		private void Start()
 		{
-            this.Init();
+            //=====================================================
+            _sprRender = GetComponentInChildren<SpriteRenderer>();
+            _collider = GetComponent<SphereCollider>();
+            _move = GetComponent<Movement>();
 
-            _behaviorKind = Behavior.eKind.Idle_Random;
 
-            //SingleO.touchEvent.Attach_SendObject(this.gameObject);
-
+            //=====================================================
+            //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
+            //오버라이트컨트롤러를 직접 생성해서 추가한다
             _animator = GetComponentInChildren<Animator>();
-            //오버라이드컨트롤러를 생성해서 추가하지 않고, 미리 생성된 것을 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
             _overCtr.name = "divide_character_" + _id.ToString();
             _animator.runtimeAnimatorController = _overCtr;
-            _sprRender = GetComponentInChildren<SpriteRenderer>();
-            _collider = GetComponent<SphereCollider>();
 
-            _move = GetComponent<Movement>();
 
+            //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
             Vector3Int cellIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
             SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
             _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
 
 
+            //=====================================================
+            //초기 애니 설정 
+            this.Idle();
+            _activeRange.radius = 0.2f;
+
+
+            //=====================================================
+            // ui 설정 
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _activeRange.radius, Color.green);
             //_UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
-
-
-		}
-
-		public void Init()
-		{
-           
-            _activeRange.radius  = 0.2f;
-            //_tacticsSphere._leaderId = this._id;
-            //_tacticsSphere._min_radius = 0.1f;
-            //_tacticsSphere._max_radius = 0.3f;
-            //_tacticsSphere._sphere.radius = 0.2f;
 
 		}
 
@@ -782,43 +799,17 @@ namespace HordeFight
 
             Update_Shot();
 
-            //UpdateNextPath(); //chamto test
-
             if(false == _move.IsMoving())
             {
-                _behaviorKind = Behavior.eKind.Idle;
+                //_behaviorKind = Behavior.eKind.Idle;
             }
 
-            if (Behavior.eKind.Idle == _behaviorKind)
+            if (Behavior.eKind.Idle_Random == _behaviorKind)
             {
-                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
-                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
-                _animator.Play("idle 10"); //상태전이 없이 바로 적용되게 한다
-            }
-            else if (Behavior.eKind.Idle_Random == _behaviorKind)
-            {
-                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+                //_animator.SetInteger("state", (int)Behavior.eKind.Idle);
                 Idle_Random();
 
             }
-            else if (Behavior.eKind.Move == _behaviorKind)
-            {
-                Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
-                _animator.SetInteger("state", (int)Behavior.eKind.Move);
-            }
-            else if (Behavior.eKind.Attack == _behaviorKind)
-            {
-                _animator.SetInteger("state", (int)Behavior.eKind.Attack);
-            }
-            else if (Behavior.eKind.FallDown == _behaviorKind)
-            {
-                _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
-            }
-
-
-            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
 
             //========================================
 
@@ -889,9 +880,16 @@ namespace HordeFight
                     break;
             }
 
+            //========================================
 
             //이동정보에 따라 위치 갱신
             _move.UpdateNextPath();
+
+            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+
+            //========================================
         }//end func
 
 
@@ -1004,6 +1002,7 @@ namespace HordeFight
                     _move._eDir8 = (eDirection8)num;
 
                     Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                    _animator.SetInteger("state", (int)Behavior.eKind.Idle);
 
                     __elapsedTime_1 = 0f;
 
@@ -1015,25 +1014,25 @@ namespace HordeFight
 
         }
 
-        public void Idle_View(Vector3 dir, bool forward)//, bool setState)
+        public void Idle()
         {
-
-            if (false == forward)
-                dir *= -1f;
-
-            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
-            //Switch_AniMove("base_move",_eKind.ToString()+"_attack_",_eDir8);
+            _behaviorKind = Behavior.eKind.Idle;
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
-
-            //if(true == setState)
-            //_animator.SetInteger("state", (int)eState.Idle);
+            _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+            _animator.Play("idle 10"); //상태전이 없이 바로 적용되게 한다
         }
 
+        //public void Idle_LookAt()
+        //{
+        //    //todo..
+        //}
 
         public void Attack(Vector3 dir)
         {
+            _behaviorKind = Behavior.eKind.Attack;
             _move._eDir8 = Misc.TransDirection8_AxisY(dir);
             Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            _animator.SetInteger("state", (int)Behavior.eKind.Attack);
         }
 
 
@@ -1103,36 +1102,37 @@ namespace HordeFight
                     break;
             }
 
+            _behaviorKind = Behavior.eKind.FallDown;
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
+            _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
         }
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
-            eDirection8 eDirection = eDirection8.none;
             dir.y = 0;
             _move.SetNextMoving(false);
-
-            _behaviorKind = Behavior.eKind.Move;
             _move.Move_Forward(dir, 2f, second);
-            eDirection = _move._eDir8;
+            eDirection8 eDirection = _move._eDir8;
 
             //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
             if (false == forward)
                 eDirection = Misc.ReverseDir8_AxisY(eDirection);
-            //_move._eDir8 = eDirection; //test
 
+            _behaviorKind = Behavior.eKind.Move;
             Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
-
+            _animator.SetInteger("state", (int)Behavior.eKind.Move);
         }
 
         public void Move_Push(Vector3 dir, float second)
         {
-            
             dir.y = 0;
             _move.SetNextMoving(false);
-
-            //_behaviorKind = Behavior.eKind.Move;
             _move.Move_Push(dir, 2f, second);
+
+            //아이들 상태에서 밀려 이동하는 걸 표현
+            _behaviorKind = Behavior.eKind.Idle;
+            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+            _animator.SetInteger("state", (int)Behavior.eKind.Idle);
 
         }
 
@@ -1140,13 +1140,12 @@ namespace HordeFight
         {
             targetPos.y = 0;
             _move.SetNextMoving(false);
-
-            _behaviorKind = Behavior.eKind.Move;
             _move.MoveToTarget(targetPos, speed);
 
-            //이동방향으로 아이들애니를 설정한다 - 아주약간 끌려가는 느낌이 있어 해당느낌을 없애려 미리 설정함
-            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
-            _animator.Play("idle 10"); //상태전이 없이 바로 적용
+            _behaviorKind = Behavior.eKind.Move;
+            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
+            _animator.SetInteger("state", (int)Behavior.eKind.Move);
+            //_animator.Play("idle 10"); //상태전이 없이 바로 적용
         }
 
         //____________________________________________
@@ -1213,7 +1212,7 @@ namespace HordeFight
 
             if (eKind.spearman == _kind)
             {
-                Being target = SingleO.objectManager.GetNearCharacter(this, 0.5f, 2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this,Camp.eRelation.Unknown, 0.5f, 2f);
 
                 if(null != target)
                 {
@@ -1245,7 +1244,7 @@ namespace HordeFight
                 //dir.Normalize();
                 //float dis = 0.16f * 1f;
 
-                Being target = SingleO.objectManager.GetNearCharacter(this, 0, 0.2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this,Camp.eRelation.Unknown, 0, 0.2f);
                 if (null != target)
                 {
                     _behaviorKind = Behavior.eKind.Attack;

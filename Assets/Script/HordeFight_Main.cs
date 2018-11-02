@@ -37,7 +37,7 @@ namespace HordeFight
 
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
             SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
-            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Blue, Camp.eKind.White);
             //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
             SingleO.objectManager.Create_ChampCamp();
 
@@ -1319,10 +1319,9 @@ namespace HordeFight
 
                 //밀리는 처리 
                 //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-
                 src.Move_Push(n, meterPersecond);
-                //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
 
+                //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
                 dst.Move_Push(-n, meterPersecond);
 
             }
@@ -1611,7 +1610,7 @@ namespace HordeFight
         /// 조건에 포함하는 가장 가까운 객체를 반환한다
         /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
         /// </summary>
-        public Being GetNearCharacter(Being src, float minRadius, float maxRadius)
+        public Being GetNearCharacter(Being src, Camp.eRelation vsRelation, float minRadius, float maxRadius)
         {
             float sqr_minRadius = 0;
             float sqr_maxRadius = 0;
@@ -1633,6 +1632,15 @@ namespace HordeFight
                 foreach (Being dst in cellInfo)
                 {
                     if (src == dst) continue;
+
+                    if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != dst._belongCamp)
+                    {
+                        Camp.eRelation getRelation = SingleO.campManager.GetRelation(src._belongCamp.campKind, dst._belongCamp.campKind);
+
+                        //요청 관계가 아니면 처리하지 않는다 
+                        if (vsRelation != getRelation)
+                            continue;
+                    }
 
                     //count++;
                     //==========================================================
@@ -1694,7 +1702,7 @@ namespace HordeFight
                             continue;
                         //==============================
 
-                        dst.Idle_View(dir, true);
+                        //dst.Idle_View(dir, true); //todo 나중에 수정된 함수 호출하기 
                         dst._behaviorKind = Behavior.eKind.Idle_LookAt;
                     }
                 }
@@ -1942,7 +1950,8 @@ namespace HordeFight
             Roaming, //배회하기
         }
         private eState _state = eState.Roaming;
-        private Being _being = null;
+        private Being _me = null;
+        private Being _target = null;
         private Vector3 _ai_Dir = Vector3.zero;
         private float _elapsedTime = 0f;
 
@@ -1951,7 +1960,7 @@ namespace HordeFight
 
         private void Start()
         {
-            _being = GetComponent<Being>();
+            _me = GetComponent<Being>();
         }
 
 
@@ -1964,13 +1973,29 @@ namespace HordeFight
         }
 
 
-        public bool Situation_Is_AttackTarget()
+        public bool Situation_Is_Enemy()
         {
+            //불확실한 대상
+            if (null == _target || null == _target._belongCamp || null == _me._belongCamp) return false;
+
+            Camp.eRelation relation = SingleO.campManager.GetRelation(_me._belongCamp.campKind, _target._belongCamp.campKind);
+
+            if (Camp.eRelation.Enemy == relation) return true;
+
             return false;
         }
 
-        public bool Situation_Is_AttackRange()
+
+        public bool Situation_Is_InRange(float range)
         {
+            if (null == _target) return false;
+
+            float sqrDis = (_me.transform.position - _target.transform.position).sqrMagnitude;
+
+            float sqrRange = Mathf.Pow(range, 2);
+
+            if (sqrRange >= sqrDis) return true;
+
             return false;
         }
 
@@ -1981,7 +2006,7 @@ namespace HordeFight
                 case eState.Detect:
                     {
                         //공격대상이 맞으면 추격한다.
-                        if (true == Situation_Is_AttackTarget())
+                        if (true == Situation_Is_Enemy())
                         {
                             _state = eState.Chase;
                         }
@@ -1996,28 +2021,41 @@ namespace HordeFight
 
                 case eState.Chase:
                     {
-                        //공격사정거리까지 이동했으면 공격한다. 
-                        if (true == Situation_Is_AttackRange())
+                        //DebugWide.LogBlue("Chase");
+                        if (false == Situation_Is_InRange(Movement.ONE_METER * 6f))
                         {
-                            _state = eState.Attack;
-                        }
-                        //거리가 멀리 떨어져 있으면 다시 배회한다.
-                        {
+                            //거리가 멀리 떨어져 있으면 다시 배회한다.
                             _state = eState.Roaming;
+
+                        }else
+                        {
+
+                            //공격사거리 안에 들어오면 공격한다 
+                            if (true == Situation_Is_InRange(Movement.ONE_METER * 1f))
+                            {
+                                _me.Attack(_target.transform.position - _me.transform.position);
+                                //_state = eState.Attack;
+                                break;
+                                //DebugWide.LogBlue("attack");
+                            }
+
+
+                            _me.Move_Forward(_target.transform.position - _me.transform.position, 0.4f, true);
                         }
 
                     }
                     break;
                 case eState.Attack:
                     {
+                        
                         //못이길것 같으면 도망간다.
                         {
-                            _state = eState.Escape;
+                            //_state = eState.Escape;
                         }
 
                         //적을 잡았으면 다시 배회한다.
                         {
-                            _state = eState.Roaming;
+                            //_state = eState.Roaming;
                         }
 
                     }
@@ -2037,21 +2075,24 @@ namespace HordeFight
                     break;
                 case eState.Roaming:
                     {
-                        //일정 거리 안에 적이 있으면 탐지한다.
-                        //if (false)
-                        //{
-                        //    _state = eState.Detect;
-                        //}
+                        //일정 거리 안에 적이 있으면 추격한다
+                        _target = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, Movement.ONE_METER * 5f);
+                        //DebugWide.LogBlue("Roaming: " + _target);
+                        if (true == Situation_Is_Enemy())
+                        {
+                            _state = eState.Chase;
+                            //DebugWide.LogBlue("Chase");
+                            break;
+                        }
 
+                        //1초마다 방향을 바꾼다
                         if(1f <= _elapsedTime)
                         {
                             _ai_Dir = Misc.RandomDir8_AxisY();
                             _elapsedTime = 0f;
                         }
 
-                        _being.Move_Forward(_ai_Dir, 3f, true);
-
-
+                        _me.Move_Forward(_ai_Dir, 3f, true);
 
                     }
                     break;
@@ -2135,11 +2176,23 @@ namespace HordeFight
 
             if (null == _selected) return;
 
-            //_selected._move.MoveToTarget(hit.point, 1f);
-            _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);
+            //_selected.Attack(Vector3.forward);
+            _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);  
+
+            Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER);
+            if (null != target)
+            {
+                //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
+                _selected.Attack(target.transform.position - _selected.transform.position);
+
+            }
+
         }
         private void TouchEnded() 
         {
+            if (null == _selected) return;
+
+            _selected.Idle();
         }
     }
 
