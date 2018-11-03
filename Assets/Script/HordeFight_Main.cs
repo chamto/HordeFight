@@ -1548,6 +1548,7 @@ namespace HordeFight
             foreach (Being src in _linearSearch_list)
             {
                 if (null == src._cellInfo) continue;
+                if (true == src.isDeath()) continue;
 
                 //1. 3x3그리드 정보를 가져온다
                 foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
@@ -1561,6 +1562,8 @@ namespace HordeFight
                     {
                         //count++;
                         if (src == dst) continue;
+                        if (true == dst.isDeath()) continue;
+
                         CollisionPush(src, dst);
                     }
                 }
@@ -1632,6 +1635,7 @@ namespace HordeFight
                 foreach (Being dst in cellInfo)
                 {
                     if (src == dst) continue;
+                    if (true == dst.isDeath()) continue; //쓰러진 객체는 처리하지 않는다 
 
                     if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != dst._belongCamp)
                     {
@@ -2128,6 +2132,9 @@ namespace HordeFight
             Being getBeing = hit.transform.GetComponent<Being>();
             if(null != getBeing)
             {
+                //쓰러진 객체는 처리하지 않는다 
+                if (true == getBeing.isDeath()) return;
+                
                 //전 객체 선택 해제 
                 if (null != _selected)
                 {

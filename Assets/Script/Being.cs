@@ -806,6 +806,7 @@ namespace HordeFight
             {
                 FallDown();
 
+                _sprRender.sortingOrder = -800; //바닥타일과 동굴벽 보다 위에 있게 하고 다른 챔프들 보다 아래에 있게 한다 
                 //if(false == _death)
                 //{
                 //    FallDown();
