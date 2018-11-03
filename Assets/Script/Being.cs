@@ -1111,17 +1111,19 @@ namespace HordeFight
         {
             switch (_move._eDir8)
             {
+                case eDirection8.left:
+                case eDirection8.leftUp:
+                case eDirection8.rightUp:
                 case eDirection8.up:
-                    { }
+                    { _move._eDir8 = eDirection8.up;}
                     break;
+                case eDirection8.right:
+                case eDirection8.leftDown:
+                case eDirection8.rightDown:
                 case eDirection8.down:
-                    { }
+                    { _move._eDir8 = eDirection8.down;}
                     break;
-                default:
-                    {
-                        _move._eDir8 = eDirection8.up; //기본상태 지정 
-                    }
-                    break;
+                
             }
 
             _behaviorKind = Behavior.eKind.FallDown;
