@@ -26,7 +26,7 @@ SpriteAtlas:
       allowAlphaSplitting: 0
       enableRotation: 1
       enableTightPacking: 1
-    variantMultiplier: 0.8
+    variantMultiplier: 1
     packables: []
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 4343727234628468602, guid: 45fa7cb6169a441a394d577b67ccb245,
