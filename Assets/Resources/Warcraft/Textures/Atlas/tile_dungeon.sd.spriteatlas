@@ -53,16 +53,19 @@ SpriteAtlas:
   - {fileID: 21300000, guid: ddaa4ef0b60794776ba6dd8cae55ce55, type: 3}
   - {fileID: 21300000, guid: fe519f4d1dc4b4832ab53bb91071cc6d, type: 3}
   - {fileID: 21300000, guid: 4cd327932b17d4b5ab049380403bb36c, type: 3}
+  - {fileID: 21300000, guid: ac02a5994e71e4bd4a447991267b842e, type: 3}
   - {fileID: 21300000, guid: 40268a795bc7746e69cc6616a0cbafac, type: 3}
   - {fileID: 21300000, guid: 67b2f707e2c0f4c208e656a1b098d12d, type: 3}
   - {fileID: 21300000, guid: 5051b90a523cc4828b3f7e0d95f2d84d, type: 3}
   - {fileID: 21300000, guid: b43603f00e73f4abfb14ccc9ad5e0cce, type: 3}
   - {fileID: 21300000, guid: 8e86c69b0d08f4f82a49f7b07fe30969, type: 3}
+  - {fileID: 21300000, guid: 29fc8129b249740b3b547a872c632c82, type: 3}
   - {fileID: 21300000, guid: cef76a8dc6287428680070c09cdf30f4, type: 3}
   - {fileID: 21300000, guid: 166d7b81c784545a28d82ee55c804f0e, type: 3}
   - {fileID: 21300000, guid: 0f14053900eef4a18a7a9a884af319a6, type: 3}
   - {fileID: 21300000, guid: a50480ef34ae1447bb402fc3ad5424d7, type: 3}
   - {fileID: 21300000, guid: 63e8111c7eaff41d09525bc36e5b3b18, type: 3}
+  - {fileID: 21300000, guid: 5f1b44d3ece204559b2e059d4ea8e73c, type: 3}
   - {fileID: 21300000, guid: e37c17ff695624e0382ca4a3893f7a3b, type: 3}
   - {fileID: 21300000, guid: 165c2b7989791471db312f27c5c72328, type: 3}
   - {fileID: 21300000, guid: 66b6061679d5f4527affe0839cb8b23d, type: 3}
@@ -301,16 +304,19 @@ SpriteAtlas:
   - dungeon_155
   - dungeon_131
   - dungeon_125
+  - fog_0
   - d_f_s_2_3
   - dungeon_57
   - dungeon_27
   - dungeon_37
   - dungeon_136
+  - fog_1
   - dungeon_196
   - d_f_s_2_0
   - dungeon_20
   - dungeon_137
   - dungeon_127
+  - fog_2
   - dungeon_197
   - d_f_s_2_1
   - dungeon_134
