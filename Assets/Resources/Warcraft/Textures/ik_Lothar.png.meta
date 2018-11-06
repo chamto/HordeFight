@@ -1,0 +1,2360 @@
+fileFormatVersion: 2
+guid: 1b0657d751aea4e9eb147f21921b2a62
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: ik_Lothar_0
+    21300002: ik_Lothar_1
+    21300004: ik_Lothar_2
+    21300006: ik_Lothar_3
+    21300008: ik_Lothar_4
+    21300010: ik_Lothar_5
+    21300012: ik_Lothar_6
+    21300014: ik_Lothar_7
+    21300016: ik_Lothar_8
+    21300018: ik_Lothar_9
+    21300020: ik_Lothar_10
+    21300022: ik_Lothar_11
+    21300024: ik_Lothar_12
+    21300026: ik_Lothar_13
+    21300028: ik_Lothar_14
+    21300030: ik_Lothar_15
+    21300032: ik_Lothar_16
+    21300034: ik_Lothar_17
+    21300036: ik_Lothar_18
+    21300038: ik_Lothar_19
+    21300040: ik_Lothar_20
+    21300042: ik_Lothar_21
+    21300044: ik_Lothar_22
+    21300046: ik_Lothar_23
+    21300048: ik_Lothar_24
+    21300050: ik_Lothar_25
+    21300052: ik_Lothar_26
+    21300054: ik_Lothar_27
+    21300056: ik_Lothar_28
+    21300058: ik_Lothar_29
+    21300060: ik_Lothar_30
+    21300062: ik_Lothar_31
+    21300064: ik_Lothar_32
+    21300066: ik_Lothar_33
+    21300068: ik_Lothar_34
+    21300070: ik_Lothar_35
+    21300072: ik_Lothar_36
+    21300074: ik_Lothar_37
+    21300076: ik_Lothar_38
+    21300078: ik_Lothar_39
+    21300080: ik_Lothar_40
+    21300082: ik_Lothar_41
+    21300084: ik_Lothar_42
+    21300086: ik_Lothar_43
+    21300088: ik_Lothar_44
+    21300090: ik_Lothar_45
+    21300092: ik_Lothar_46
+    21300094: ik_Lothar_47
+    21300096: ik_Lothar_48
+    21300098: ik_Lothar_49
+    21300100: ik_Lothar_50
+    21300102: ik_Lothar_51
+    21300104: ik_Lothar_52
+    21300106: ik_Lothar_53
+    21300108: ik_Lothar_54
+    21300110: ik_Lothar_55
+    21300112: ik_Lothar_56
+    21300114: ik_Lothar_57
+    21300116: ik_Lothar_58
+    21300118: ik_Lothar_59
+    21300120: ik_Lothar_60
+    21300122: ik_Lothar_61
+    21300124: ik_Lothar_62
+    21300126: ik_Lothar_63
+    21300128: ik_Lothar_64
+    21300130: ik_Lothar_65
+    21300132: ik_Lothar_66
+    21300134: ik_Lothar_67
+    21300136: ik_Lothar_68
+    21300138: ik_Lothar_69
+    21300140: ik_Lothar_70
+    21300142: ik_Lothar_71
+  externalObjects: {}
+  serializedVersion: 5
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -1
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 2
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: iPhone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  - serializedVersion: 2
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: ik_Lothar_0
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 207
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e5a0925ecadb4813b1d394cb72c4e5b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_1
+      rect:
+        serializedVersion: 2
+        x: 65
+        y: 205
+        width: 15
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 40e6f3bd7d362479b836edd9e75add3d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_2
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 207
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 909a1e79c91c44b3db5a7e2887d425f9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_3
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 208
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4a0946f61a9340639873d94f79c8b52
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_4
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 204
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones:
+      - name: root
+        position: {x: 9.503784, y: 7.6197205, z: 0}
+        rotation: {x: 0, y: 0, z: 0.71806556, w: 0.6959755}
+        length: 5.0471406
+        parentId: -1
+      - name: bone_1
+        position: {x: 5.0471435, y: 0.000026008109, z: 0}
+        rotation: {x: 0, y: 0, z: 0.012919862, w: 0.99991655}
+        length: 5.5266094
+        parentId: 0
+      - name: bone_2
+        position: {x: 3.4715152, y: -5.5675435, z: 0}
+        rotation: {x: 0, y: 0, z: -0.99124444, w: 0.13203974}
+        length: 7.9768095
+        parentId: 1
+      - name: bone_3
+        position: {x: 4.5283036, y: 4.636008, z: 0}
+        rotation: {x: 0, y: 0, z: 0.9729925, w: 0.23083682}
+        length: 5.1540594
+        parentId: 1
+      - name: bone_4
+        position: {x: 5.1540523, y: 0.0000013560202, z: 0}
+        rotation: {x: 0, y: 0, z: 0.48738474, w: 0.87318736}
+        length: 10.189357
+        parentId: 3
+      spriteID: d541d06495f904c27acd553ee160890d
+      vertices:
+      - {x: 19, y: 4}
+      - {x: 19, y: 20}
+      - {x: 16, y: 21}
+      - {x: 3, y: 21}
+      - {x: 0, y: 18}
+      - {x: 0, y: 6}
+      - {x: 3, y: 3}
+      - {x: 4, y: 3}
+      - {x: 7, y: 0}
+      - {x: 12, y: 0}
+      - {x: 12, y: 2}
+      - {x: 14, y: 4}
+      - {x: 18, y: 3}
+      - {x: 9.371918, y: 6.878525}
+      - {x: 11.671204, y: 4.926941}
+      - {x: 19, y: 16}
+      - {x: 6.8347626, y: 6.124222}
+      - {x: 16.72696, y: 18.666}
+      - {x: 19, y: 12}
+      - {x: 9.310333, y: 4.366699}
+      - {x: 9.887466, y: 12.082886}
+      - {x: 11.773773, y: 7.6910706}
+      - {x: 6.6551056, y: 3.672348}
+      - {x: 8.889572, y: 2.1355133}
+      - {x: 6.2927246, y: 14.020447}
+      - {x: 11.306091, y: 14.73468}
+      - {x: 12.964203, y: 16.802628}
+      - {x: 14.113342, y: 14.549988}
+      - {x: 16.058212, y: 16.34082}
+      - {x: 16.600357, y: 13.693253}
+      - {x: 14.218124, y: 9.243881}
+      - {x: 14.49794, y: 11.876282}
+      - {x: 4.9792023, y: 16.449493}
+      - {x: 3.536148, y: 18.49614}
+      - {x: 1.9519958, y: 13.128265}
+      - {x: 14.233139, y: 18.872955}
+      - {x: 2.0659637, y: 16.398254}
+      - {x: 4.4230957, y: 12.208237}
+      - {x: 3.7292633, y: 14.565521}
+      - {x: 4.583435, y: 7.8558807}
+      - {x: 7.341675, y: 11.539047}
+      - {x: 5.1066895, y: 10.084198}
+      - {x: 2.385315, y: 10.227234}
+      - {x: 9.51239, y: 9.531387}
+      - {x: 7.204254, y: 8.67955}
+      - {x: 4.1816406, y: 5.41333}
+      - {x: 2.1496735, y: 7.3772125}
+      - {x: 9.5, y: 21}
+      - {x: 8.753967, y: 14.267822}
+      - {x: 10.031479, y: 16.821503}
+      - {x: 11.290924, y: 18.98822}
+      - {x: 5.810669, y: 18.814941}
+      - {x: 7.449539, y: 16.529678}
+      - {x: 8.367615, y: 18.95604}
+      - {x: 11.964294, y: 10.261505}
+      - {x: 12.303513, y: 12.655518}
+      - {x: 14.096069, y: 6.597458}
+      - {x: 19, y: 8}
+      - {x: 16.549728, y: 5.7804413}
+      - {x: 16.516586, y: 8.278595}
+      - {x: 16.633423, y: 10.881897}
+      - {x: 6.25, y: 21}
+      - {x: 1.5, y: 19.5}
+      - {x: 0, y: 12}
+      - {x: 5.5, y: 1.5}
+      - {x: 9.5, y: 0}
+      - {x: 12.75, y: 21}
+      - {x: 0, y: 9}
+      - {x: 0, y: 15}
+      - {x: 1.5, y: 4.5}
+      - {x: 19, y: 18}
+      - {x: 19, y: 14}
+      - {x: 16, y: 3.5}
+      - {x: 19, y: 10}
+      - {x: 19, y: 6}
+      indices: 2d0000000600000045000000060000002d00000007000000100000002d000000270000002e0000002d000000450000002e0000000500000043000000270000002e0000002a00000045000000050000002e00000027000000290000002c0000002a0000002e000000430000002e000000270000002d000000270000002a00000029000000070000002d000000160000001700000008000000400000000a0000001700000013000000080000001700000041000000160000001700000040000000160000002d000000100000001300000016000000100000002c0000000d0000001000000013000000100000000d000000130000000d0000000e0000002b0000002c0000002800000013000000170000001600000010000000270000002c00000041000000170000000a000000160000004000000007000000280000002c00000029000000220000003f000000440000002200000024000000260000003f000000220000002a0000002a000000430000003f00000024000000220000004400000024000000040000003e0000003e0000000300000021000000240000002100000020000000330000002100000003000000240000003e00000021000000240000004400000004000000250000002a0000002200000018000000250000002600000022000000260000002500000030000000280000001800000025000000180000002800000028000000300000001400000020000000180000002600000025000000290000002a00000030000000180000003400000033000000030000003d0000003400000020000000330000003d00000035000000330000003400000033000000350000003400000035000000310000002f000000350000003d0000003400000018000000200000003300000020000000210000003000000034000000310000002000000026000000240000002500000028000000290000002c0000002b0000000d0000000e0000000a000000130000000d000000150000000e0000000e0000000b0000000a000000380000000b0000000e00000036000000150000002b000000150000000d0000002b000000360000001e0000001500000038000000150000001e000000380000001e0000003b0000001f0000001e00000036000000380000000e00000015000000360000002b000000140000003a0000000b0000003800000009000000410000000a0000003a000000380000003b0000000c000000480000003a0000003a0000004a000000000000000c0000003a00000000000000390000004a0000003a0000001f0000003c0000001e0000003c0000003b0000001e0000003c000000490000003b000000390000003b000000490000001d0000003c0000001f000000390000003a0000003b000000490000003c00000012000000480000000b0000003a0000001f0000003600000037000000300000003100000019000000370000001400000019000000190000001b000000370000001b0000001f000000370000001400000037000000360000001a0000001b000000190000002f000000320000003500000032000000310000003500000023000000320000004200000031000000320000001a00000032000000230000001a0000002f00000042000000320000001a00000019000000310000001c0000001b0000001a0000003000000019000000140000000f0000001d0000001c0000001a000000230000001c0000001d00000047000000120000001d0000000f000000470000001b0000001d0000001f000000460000000f0000001c0000004200000002000000230000001100000023000000020000000100000046000000110000001c000000230000001100000002000000010000001100000011000000460000001c0000001d0000001b0000001c0000003c0000001d000000120000002b0000002800000014000000
+      edges:
+      - {x: 1, y: 70}
+      - {x: 2, y: 1}
+      - {x: 3, y: 61}
+      - {x: 4, y: 62}
+      - {x: 5, y: 67}
+      - {x: 6, y: 69}
+      - {x: 6, y: 7}
+      - {x: 8, y: 64}
+      - {x: 9, y: 65}
+      - {x: 10, y: 9}
+      - {x: 10, y: 11}
+      - {x: 72, y: 12}
+      - {x: 0, y: 12}
+      - {x: 18, y: 73}
+      - {x: 15, y: 71}
+      - {x: 47, y: 66}
+      - {x: 57, y: 74}
+      - {x: 61, y: 47}
+      - {x: 62, y: 3}
+      - {x: 63, y: 68}
+      - {x: 64, y: 7}
+      - {x: 65, y: 8}
+      - {x: 66, y: 2}
+      - {x: 67, y: 63}
+      - {x: 68, y: 4}
+      - {x: 69, y: 5}
+      - {x: 70, y: 15}
+      - {x: 71, y: 18}
+      - {x: 72, y: 11}
+      - {x: 73, y: 57}
+      - {x: 74, y: 0}
+      weights:
+      - weight[0]: 0.89910305
+        weight[1]: 0.10089693
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9158402
+        weight[1]: 0.084159814
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.92310697
+        weight[1]: 0.076893024
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.86612993
+        weight[1]: 0.10978838
+        weight[2]: 0.02408169
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 0.7060698
+        weight[1]: 0.21723084
+        weight[2]: 0.076699324
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 0.43824887
+        weight[1]: 0.378096
+        weight[2]: 0.18365514
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 4
+        boneIndex[3]: 0
+      - weight[0]: 0.87979215
+        weight[1]: 0.12020785
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.8764071
+        weight[1]: 0.123592936
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 4
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.48883373
+        weight[1]: 0.3251822
+        weight[2]: 0.18598408
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 4
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9711703
+        weight[1]: 0.028829714
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.97327465
+        weight[1]: 0.02672534
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.74464446
+        weight[1]: 0.22990315
+        weight[2]: 0.025452385
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 0.9208612
+        weight[1]: 0.05395819
+        weight[2]: 0.025180621
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 1
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 0.76422614
+        weight[1]: 0.21110237
+        weight[2]: 0.0246715
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 2
+        boneIndex[2]: 4
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9541198
+        weight[1]: 0.045880172
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.4783631
+        weight[1]: 0.4154654
+        weight[2]: 0.059590135
+        weight[3]: 0.046581354
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 4
+      - weight[0]: 0.7324746
+        weight[1]: 0.25277114
+        weight[2]: 0.014754238
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 2
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.6182188
+        weight[1]: 0.3817812
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.8253914
+        weight[1]: 0.15190147
+        weight[2]: 0.022707151
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.63236797
+        weight[1]: 0.3569826
+        weight[2]: 0.0106494
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 1
+        boneIndex[3]: 0
+      - weight[0]: 0.78678256
+        weight[1]: 0.14745307
+        weight[2]: 0.0657644
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 1
+        boneIndex[3]: 0
+      - weight[0]: 0.9002278
+        weight[1]: 0.09977224
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.96396357
+        weight[1]: 0.036036424
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.7801867
+        weight[1]: 0.21981329
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 4
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.77052087
+        weight[1]: 0.2294791
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9870901
+        weight[1]: 0.012909886
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 4
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.51791555
+        weight[1]: 0.35303277
+        weight[2]: 0.066648215
+        weight[3]: 0.062403485
+        boneIndex[0]: 3
+        boneIndex[1]: 4
+        boneIndex[2]: 1
+        boneIndex[3]: 0
+      - weight[0]: 0.98532265
+        weight[1]: 0.014677384
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.5382785
+        weight[1]: 0.19474807
+        weight[2]: 0.15770051
+        weight[3]: 0.10927299
+        boneIndex[0]: 0
+        boneIndex[1]: 4
+        boneIndex[2]: 1
+        boneIndex[3]: 3
+      - weight[0]: 0.80622834
+        weight[1]: 0.1178603
+        weight[2]: 0.059142377
+        weight[3]: 0.016768996
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 3
+        boneIndex[3]: 1
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.5157804
+        weight[1]: 0.4842196
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.86855876
+        weight[1]: 0.08850031
+        weight[2]: 0.04294092
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 2
+        boneIndex[2]: 3
+        boneIndex[3]: 0
+      - weight[0]: 0.9616323
+        weight[1]: 0.03836771
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 3
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.91805136
+        weight[1]: 0.081948645
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 2
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.7132637
+        weight[1]: 0.2867363
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 2
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.63773674
+        weight[1]: 0.36226323
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.7141079
+        weight[1]: 0.28589213
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 3
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.88695544
+        weight[1]: 0.113044545
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 1
+        boneIndex[1]: 3
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.674991
+        weight[1]: 0.27563098
+        weight[2]: 0.049378008
+        weight[3]: 0
+        boneIndex[0]: 0
+        boneIndex[1]: 2
+        boneIndex[2]: 1
+        boneIndex[3]: 0
+      - weight[0]: 0.39620504
+        weight[1]: 0.32463768
+        weight[2]: 0.27915728
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.52988756
+        weight[1]: 0.41616994
+        weight[2]: 0.053942513
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 4
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.81814265
+        weight[1]: 0.16352193
+        weight[2]: 0.01833542
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 4
+        boneIndex[3]: 0
+      - weight[0]: 0.92282295
+        weight[1]: 0.0771771
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.5143907
+        weight[1]: 0.4856093
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.937753
+        weight[1]: 0.062246956
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 3
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9368542
+        weight[1]: 0.052892845
+        weight[2]: 0.010252969
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 2
+        boneIndex[3]: 0
+      - weight[0]: 0.5194325
+        weight[1]: 0.4805675
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 1
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.86192894
+        weight[1]: 0.13807106
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 3
+        boneIndex[1]: 4
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 4
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.76627934
+        weight[1]: 0.20085642
+        weight[2]: 0.03286426
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 4
+        boneIndex[3]: 0
+      - weight[0]: 1
+        weight[1]: 0
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+      - weight[0]: 0.9347813
+        weight[1]: 0.06521866
+        weight[2]: 0
+        weight[3]: 0
+        boneIndex[0]: 2
+        boneIndex[1]: 0
+        boneIndex[2]: 0
+        boneIndex[3]: 0
+    - serializedVersion: 2
+      name: ik_Lothar_5
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 208
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c3b67c05b098b4bbb9d5699b5f9ff221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_6
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 206
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 97cdb6089e5a74641894dab77729c550
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_7
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 207
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d20b3597c1c54644b1286e50f636351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_8
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 206
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a5b25b84bd4d4823b825d7cab3b4371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_9
+      rect:
+        serializedVersion: 2
+        x: 446
+        y: 203
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c72c6942db8644ff97cb33dfd9d1a4a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_10
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 208
+        width: 27
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 5ef4d827d3dc348ba8f0ed94d3427244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_11
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 215
+        width: 5
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0c47fee27219845118251097e8137aeb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_12
+      rect:
+        serializedVersion: 2
+        x: 535
+        y: 208
+        width: 27
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f5874273f6b2c4265b064c82aba296d0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_13
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 215
+        width: 5
+        height: 9
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c159101f5412947f388973578e0ae79e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_14
+      rect:
+        serializedVersion: 2
+        x: 590
+        y: 203
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 90297f8af9a6041f786988f0fa9da5b4
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_15
+      rect:
+        serializedVersion: 2
+        x: 638
+        y: 203
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca2f700e6909c40d9a81b40115a031cb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_16
+      rect:
+        serializedVersion: 2
+        x: 686
+        y: 203
+        width: 21
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1ab759cddf95140f2b105d0901f9b67d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_17
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 159
+        width: 18
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c5de9327e96c44508b63be4f86854247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_18
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 158
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8d629d024480e4f2599574b2a6aab009
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_19
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 159
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3c33b425664a14dbc973217f7b24382d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_20
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 160
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 687c85a41aa824366b1be9b87cea2ab6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_21
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 156
+        width: 17
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cf8c1181fea4c4b53a24a72ae8ac33c6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_22
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 161
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 970d3f0af73d54720b278ef4ccdb25ab
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_23
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 158
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35b88d9e8fb5f4d2cb7f4280b2ca7572
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_24
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 157
+        width: 16
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11abd08cb2e8545b3854789f3971fb6f
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_25
+      rect:
+        serializedVersion: 2
+        x: 401
+        y: 155
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6eea5c265b14142bf8a0bfaa1644b477
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_26
+      rect:
+        serializedVersion: 2
+        x: 443
+        y: 156
+        width: 21
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 55c2cca16f94b4ef5b7fb7f53dc93003
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_27
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 161
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 06c7123ca0bad49be86a2dcd2997af44
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_28
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 159
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 64e5b94affb48474caef6e0977adcb99
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_29
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 161
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ba079e345d98c4a36a165aac14ba3d72
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_30
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 159
+        width: 24
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 43be2bbe5988f4bad8469e262486a6f2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_31
+      rect:
+        serializedVersion: 2
+        x: 586
+        y: 158
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee97ecff2e9b743c5b6c1ac76a1a3c17
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_32
+      rect:
+        serializedVersion: 2
+        x: 634
+        y: 158
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e2989c54a5be4494b001ae78d461105
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_33
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 158
+        width: 28
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 75b2cf7b2307b4880b121a70da449d40
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_34
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 111
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9ad09b97b0982411c944c7f4a9fa0c58
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_35
+      rect:
+        serializedVersion: 2
+        x: 62
+        y: 110
+        width: 17
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3b3699ebcbfb0469d89b25c816ec4d38
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_36
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 112
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a16c14fea8764644bbb74d1b59f7574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_37
+      rect:
+        serializedVersion: 2
+        x: 163
+        y: 111
+        width: 18
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 737038bf1fc7b458296284499dc2a6aa
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_38
+      rect:
+        serializedVersion: 2
+        x: 211
+        y: 110
+        width: 15
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 6bc7be8805f844813a31f4de5315da2b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_39
+      rect:
+        serializedVersion: 2
+        x: 254
+        y: 114
+        width: 18
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7adaba772731143339bf1744529f31d1
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_40
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 111
+        width: 25
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 57a90d10b9c7144acbd89dd6d6c9bad0
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_41
+      rect:
+        serializedVersion: 2
+        x: 356
+        y: 112
+        width: 26
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 44c69e16558c943d6a7d10128930b508
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_42
+      rect:
+        serializedVersion: 2
+        x: 403
+        y: 108
+        width: 24
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c00dc78d90ba441229e4b937f70b58b2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_43
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 101
+        width: 18
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 50ed76df56cfc49878bf23e29c5ba5c5
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_44
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 113
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e64e425898bbd4bc6a6321f81d3df4e7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_45
+      rect:
+        serializedVersion: 2
+        x: 495
+        y: 110
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2dd5e8e759a2640a0ac90551049a3e7d
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_46
+      rect:
+        serializedVersion: 2
+        x: 532
+        y: 113
+        width: 10
+        height: 6
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e44e1362032494c9c8f22e842d540742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_47
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 110
+        width: 24
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ddfefa407a0934fcc9170cd2b7e5c05b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_48
+      rect:
+        serializedVersion: 2
+        x: 587
+        y: 110
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 51159cb9f0fd24f86a8fc2dbc22af2b2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_49
+      rect:
+        serializedVersion: 2
+        x: 635
+        y: 110
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 13f560b44c51f4493a040d78275b99ba
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_50
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 110
+        width: 29
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c195e0f0766f043fe8910d8069e08125
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_51
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 63
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 219e2785b499845db9880d4cf355bf14
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_52
+      rect:
+        serializedVersion: 2
+        x: 67
+        y: 60
+        width: 17
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b18a2ff1b4229429c82264d162af46a2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_53
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 63
+        width: 16
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbce4ca7cd5d74dbfbe3fbc0afc7343a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_54
+      rect:
+        serializedVersion: 2
+        x: 160
+        y: 63
+        width: 17
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95c163b1959484c84aaa39db2d9273c9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_55
+      rect:
+        serializedVersion: 2
+        x: 209
+        y: 61
+        width: 15
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a4a4a5fef4e6e4caca2a09f26a36295e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_56
+      rect:
+        serializedVersion: 2
+        x: 255
+        y: 66
+        width: 16
+        height: 25
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b99d4238a80594775970f8d44a6b38e9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_57
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 63
+        width: 20
+        height: 27
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 80b628320dcf14cfd8be3579233f8a87
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_58
+      rect:
+        serializedVersion: 2
+        x: 357
+        y: 64
+        width: 20
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: aa1f424a407324fdda422b23e03dddb7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_59
+      rect:
+        serializedVersion: 2
+        x: 404
+        y: 61
+        width: 25
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11fbe74f3a0d84841a94c754fca11894
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_60
+      rect:
+        serializedVersion: 2
+        x: 450
+        y: 57
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 77bd56f5310ce418f9b04ed03c7cc4c2
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_61
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 15
+        width: 18
+        height: 19
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2f1ac5f22f12c485bad12ebb4295f1df
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_62
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 13
+        width: 16
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1418997a62b124c418d6a8624d0d86c6
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_63
+      rect:
+        serializedVersion: 2
+        x: 115
+        y: 15
+        width: 18
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2e2a391c1dcf64d1c810c5a2d248ecf4
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_64
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 15
+        width: 14
+        height: 18
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2284e0cb3be7248a1b3d5b362022db3b
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_65
+      rect:
+        serializedVersion: 2
+        x: 208
+        y: 12
+        width: 19
+        height: 21
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7a17756e9956a45ac9792b0dffe55a7c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_66
+      rect:
+        serializedVersion: 2
+        x: 253
+        y: 19
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 28d5e9031937d407eaaaa62209d624a1
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_67
+      rect:
+        serializedVersion: 2
+        x: 305
+        y: 13
+        width: 16
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1b5f7e0bb35f647b48dda8de31677bc7
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_68
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 15
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3918ad36b18c14fa5a3d412b985a2b7c
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_69
+      rect:
+        serializedVersion: 2
+        x: 402
+        y: 14
+        width: 20
+        height: 20
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 058da3d75ef554f7f8467e38c159feee
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_70
+      rect:
+        serializedVersion: 2
+        x: 448
+        y: 12
+        width: 18
+        height: 17
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 85f90ff26204c42e79f21a819c80f124
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: ik_Lothar_71
+      rect:
+        serializedVersion: 2
+        x: 592
+        y: 2
+        width: 126
+        height: 23
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: cc2c7ba62afc4438e9a2cf321862a08a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: eaf680cc8ee3b486583ffc269bb7efd8
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
