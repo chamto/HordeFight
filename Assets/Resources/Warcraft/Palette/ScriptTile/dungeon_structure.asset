@@ -118,7 +118,7 @@ MonoBehaviour:
     _push_dir8: 6
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
-    m_PerlinScale: 0.508
+    m_PerlinScale: 0.58
     m_RuleTransform: 2
     m_Output: 3
     _isTilemapCopy: 0
