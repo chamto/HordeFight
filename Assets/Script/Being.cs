@@ -632,8 +632,8 @@ namespace HordeFight
 
         //능력치1 
         public ushort _power = 1;
-        public int  _hp_cur = 30;
-        public int  _hp_max = 30;
+        public int  _hp_cur = 10;
+        public int  _hp_max = 10;
         public float _range_min = 0.15f;
         public float _range_max = 0.15f;
 
@@ -667,7 +667,7 @@ namespace HordeFight
         //====================================
 
         //애니
-        private Animator _animator = null;
+        public Animator _animator = null;
         private AnimatorOverrideController _overCtr = null;
         private SpriteRenderer _sprRender = null;
         private SphereCollider _collider = null;
@@ -825,6 +825,13 @@ namespace HordeFight
             {
                 //_behaviorKind = Behavior.eKind.Idle;
             }
+
+            //int hash = Animator.StringToHash("idle");
+            //AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            //if(hash == stateInfo.shortNameHash)
+            //{
+            //    //Idle();
+            //}
 
             if (Behavior.eKind.Idle_Random == _behaviorKind)
             {
@@ -1041,7 +1048,7 @@ namespace HordeFight
             _behaviorKind = Behavior.eKind.Idle;
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.Idle);
-            _animator.Play("idle 10"); //상태전이 없이 바로 적용되게 한다
+            _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다
         }
 
         //public void Idle_LookAt()
@@ -1051,10 +1058,130 @@ namespace HordeFight
 
         public void Attack(Vector3 dir)
         {
-            _behaviorKind = Behavior.eKind.Attack;
-            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
-            Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            this.Attack(dir, null);
+        }
+
+        Vector3 _appointmentDir = Vector3.zero;
+        Being _target = null;
+        public void Attack(Vector3 dir , Being target)
+        {
             _animator.SetInteger("state", (int)Behavior.eKind.Attack);
+            _behaviorKind = Behavior.eKind.Attack;
+
+            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            _appointmentDir = dir;
+            _target = target;
+
+            //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
+            Update_AnimatorState(_hash_attack, 0.8f);
+
+        }
+
+        //임시처리
+        public void OnAniState_Start(int hash_state)
+        {
+            if(hash_state == _hash_attack)
+            {
+                //예약된 방향값 설정
+                _move._eDir8 = Misc.TransDirection8_AxisY(_appointmentDir);
+                Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            }
+        }
+
+        //임시처리
+        public void OnAniState_End(int hash_state)
+        {
+            if (hash_state == _hash_attack)
+            {
+                //목표에 피해를 준다
+                if(null != _target)
+                    _target.AddHP(-1);
+            }
+        }
+
+
+        int _hash_attack = Animator.StringToHash("attack");
+        bool _trans_start = false;
+        int _prevCount = -1;
+        int _curCount = 0;
+        int _nextCount = 0; //동작카운트
+        public void Update_AnimatorState(int hash_state , float progress)
+        {
+            AnimatorStateInfo aniState = _animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorTransitionInfo aniTrans = _animator.GetAnimatorTransitionInfo(0);
+
+            float normalTime = 0;
+
+            //* 상태전이 없고, 요청 상태값이 아닌 경우
+            if (0 == aniTrans.nameHash && hash_state != aniState.shortNameHash) 
+            {
+                //요청 전 동작일 때 값을 초기화 해준다 
+                _prevCount = -1;
+                _curCount = 0;
+                _nextCount = 0;
+                _trans_start = false;
+
+                return;
+            }
+
+            //====================================================================
+            //동작 전환전에 상태전이가 있다 
+            if (0 != aniTrans.nameHash)
+            {
+                //상태전이시작
+                if(false == _trans_start)
+                {
+                    _trans_start = true;
+                    //DebugWide.LogGreen("상태전이 시작");
+                }
+
+                //상태전이 진행비율값이 progress 보다 큰경우 하나 이상의 공격동작이 진행됨
+                //if(progress < aniTrans.duration)
+                {
+                    _curCount = (int)aniTrans.normalizedTime;
+                    normalTime = aniTrans.normalizedTime - _curCount;    
+                }
+
+            }
+            //동작으로 전환되었다 
+            else if (hash_state == aniState.shortNameHash)
+            {
+                _trans_start = false; //상태전이에서 동작으로 전환되면, 상태전이 시작값을 해제해 준다
+                _curCount = (int)aniState.normalizedTime;
+                normalTime = aniState.normalizedTime - _curCount;
+            }
+            //====================================================================
+
+
+            if(_curCount != _prevCount)
+            {
+                _prevCount = _curCount;
+                //DebugWide.LogGreen("애니동작 시작" + normalTime + "   cur: " + _curCount + "   next: " + _nextCount);
+                this.OnAniState_Start(hash_state);
+            }
+
+
+            //* 1회 동작이 80% 진행되었다면 동작이 완료되었다고 간주한다. 한동작에서 한번만 수행되게 한다
+            if (progress < normalTime && _nextCount == _curCount)
+            {
+                _nextCount = _curCount + 1; //동작카운트의 소수점을 올림한다
+                //DebugWide.LogGreen("애니동작 완료 " + normalTime +  "   cur: " + _curCount + "   next: " + _nextCount);
+                this.OnAniState_End(hash_state);
+            }
+        }
+
+
+
+        public void Demage()
+        {
+            if (Behavior.eKind.Attack != _behaviorKind) return;
+
+            float progress = _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+            float normal = progress - (int)progress;
+
+            //if()
+
         }
 
 
@@ -1129,7 +1256,24 @@ namespace HordeFight
             _behaviorKind = Behavior.eKind.FallDown;
             Switch_Ani("base_fallDown",  _kind.ToString() + "_fallDown_", _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
+            //int hash = Animator.StringToHash("fallDown");
+            //_animator.SetTrigger(hash);
         }
+
+        public void Block_Forward(Vector3 dir)
+        {
+            dir.y = 0;
+           
+            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
+
+            _behaviorKind = Behavior.eKind.Block;
+            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
+            //Switch_Ani("base_move", _kind.ToString() + "_attack_", _move._eDir8);
+            _animator.SetInteger("state", (int)Behavior.eKind.Block);
+           
+        }
+
+
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
@@ -1145,6 +1289,8 @@ namespace HordeFight
             _behaviorKind = Behavior.eKind.Move;
             Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
             _animator.SetInteger("state", (int)Behavior.eKind.Move);
+            //int hash = Animator.StringToHash("move");
+            //_animator.SetTrigger(hash);
         }
 
         public void Move_Push(Vector3 dir, float second)
@@ -1157,6 +1303,8 @@ namespace HordeFight
             _behaviorKind = Behavior.eKind.Idle;
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+            //int hash = Animator.StringToHash("move");
+            //_animator.SetTrigger(hash);
 
         }
 
@@ -1169,7 +1317,10 @@ namespace HordeFight
             _behaviorKind = Behavior.eKind.Move;
             Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.Move);
-            //_animator.Play("idle 10"); //상태전이 없이 바로 적용
+            //int hash = Animator.StringToHash("move");
+            //_animator.SetTrigger(hash);
+
+            //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
 
         //____________________________________________
@@ -1212,7 +1363,7 @@ namespace HordeFight
             if (8 > _hp_cur)
             {
                 //다시 살리기
-                _animator.Play("idle 10");
+                _animator.Play("idle");
                 _death = false;
                 _hp_cur = 10;
                 _behaviorKind = Behavior.eKind.Idle;
@@ -1301,7 +1452,7 @@ namespace HordeFight
 
             Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);
-            _animator.Play("idle 10");
+            _animator.Play("idle");
 
             _behaviorKind = Behavior.eKind.Idle_Random;
             SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
@@ -1359,11 +1510,14 @@ namespace HordeFight
             Move = 20,
             Move_Max = 29,
 
-            Attack = 30,
-            Attack_Max = 39,
+            Block = 30,
+            Block_Max = 39,
 
-            FallDown = 40,
-            FallDown_Max = 49,
+            Attack = 40,
+            Attack_Max = 49,
+
+            FallDown = 50,
+            FallDown_Max = 59,
 
         }
 

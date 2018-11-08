@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Assertions;
 using System;
+using System.Text.RegularExpressions;
 
 namespace Utility
 {
@@ -31,6 +32,54 @@ namespace Utility
 
 namespace Utility
 {
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// 해쉬값과 문자열을 쌍으로 묶어 관리하는 객체
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public class HashToStringMap
+    {
+        Dictionary<int, string> _hashStringMap = new Dictionary<int, string>();
+
+        public void Add(int hash, string str)
+        {
+            if (false == _hashStringMap.ContainsKey(hash))
+            {
+                _hashStringMap.Add(hash, str);
+            }
+        }
+
+        public void Add(string str)
+        {
+            int hash = str.GetHashCode();
+            this.Add(hash, str);
+        }
+
+        public bool Contain(int hash)
+        {
+            return _hashStringMap.ContainsKey(hash);
+        }
+
+        public string GetString(int hash)
+        {
+            if (_hashStringMap.ContainsKey(hash))
+            {
+                return _hashStringMap[hash];
+            }
+
+            //throw new KeyNotFoundException();
+
+            return ""; //존재하지 않는 키값
+        }
+
+        public string GetString_ForAssetFile(int hash)
+        {
+            string tempStr = this.GetString(hash);
+            return Regex.Replace(tempStr, "[?<>:*|\"]", ""); //애셋파일 이름에 들어가면 안되는 특수문자 제거 ?, <, >, :, *, |, ".
+        }
+    }
+
+
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
     /// frame skip 시 해당프레임의 deltaTime을 최소 프레임시간으로 설정한다.

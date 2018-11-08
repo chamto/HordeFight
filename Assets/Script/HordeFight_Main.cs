@@ -155,6 +155,14 @@ namespace HordeFight
             }
         }
 
+        public static HashToStringMap hashMap
+        {
+            get
+            {
+                return CSingleton<HashToStringMap>.Instance;
+            }
+        }
+
         public static DebugViewer debugViewer
         {
             get
@@ -1208,6 +1216,18 @@ namespace HordeFight
 
         private void Start()
         {
+            //===============
+            //해쉬와 문자열 설정
+            //===============
+
+            SingleO.hashMap.Add(Animator.StringToHash("idle"),"idle");
+            SingleO.hashMap.Add(Animator.StringToHash("move"),"move");
+            SingleO.hashMap.Add(Animator.StringToHash("block"),"block");
+            SingleO.hashMap.Add(Animator.StringToHash("attack"),"attack");
+            SingleO.hashMap.Add(Animator.StringToHash("fallDown"),"fallDown");
+            SingleO.hashMap.Add(Animator.StringToHash("idle -> attack"),"idle -> attack");
+            SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"),"attack -> idle");
+
         }
 
 
@@ -2121,7 +2141,14 @@ namespace HordeFight
             SingleO.touchEvent.Attach_SendObject(this.gameObject);
 		}
 
-        private Vector3 __startPos = Vector3.zero;
+		private void Update()
+		{
+            if (null == _selected) return;
+
+
+		}
+
+		private Vector3 __startPos = Vector3.zero;
 		private void TouchBegan() 
         {
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
@@ -2174,17 +2201,37 @@ namespace HordeFight
 
             if (null == _selected) return;
 
-            //_selected.Attack(Vector3.forward);
+            //_selected.Attack(hit.point - _selected.transform.position);
+            //_selected.Block_Forward(hit.point - _selected.transform.position);
             _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);  
 
             Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER);
             if (null != target)
             {
                 //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
-                _selected.Attack(target.transform.position - _selected.transform.position);
-                target.AddHP(-1);
+                _selected.Attack(target.transform.position - _selected.transform.position , target);
+                //target.AddHP(-1);
 
             }
+
+            //AnimatorStateInfo aniState = _selected._animator.GetCurrentAnimatorStateInfo(0);
+            //AnimatorTransitionInfo aniTrans = _selected._animator.GetAnimatorTransitionInfo(0);
+            //float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
+            //float playTime = aniState.length;
+            //string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
+            //string transName = SingleO.hashMap.GetString(aniTrans.nameHash);
+            //int hash = Animator.StringToHash("attack");
+            //if (hash == aniState.shortNameHash)
+            //{
+
+            //    DebugWide.LogBlue(aniTrans.nameHash +  "   tr: " + transName  + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
+            //                      "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            //}
+            //else
+            //{
+            //    DebugWide.LogRed(aniTrans.nameHash +  "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
+            //                     "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            //}
 
         }
         private void TouchEnded() 
@@ -2192,6 +2239,7 @@ namespace HordeFight
             if (null == _selected) return;
 
             _selected.Idle();
+
         }
     }
 
@@ -2554,4 +2602,3 @@ namespace HordeFight
     }
 
 }//end namespace
-
