@@ -702,9 +702,12 @@ namespace HordeFight
             //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             //오버라이트컨트롤러를 직접 생성해서 추가한다
             _animator = GetComponentInChildren<Animator>();
+            //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
             _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
             _overCtr.name = "divide_character_" + _id.ToString();
             _animator.runtimeAnimatorController = _overCtr;
+
+
 
 
             //=====================================================

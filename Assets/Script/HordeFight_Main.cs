@@ -267,7 +267,7 @@ namespace HordeFight
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
-
+        public RuntimeAnimatorController _base_Animator = null;
 
 
         //==================== Get / Set ====================
@@ -304,6 +304,8 @@ namespace HordeFight
             {
                 _sprIcons.Add(spr.name.GetHashCode(), spr);
             }
+
+            _base_Animator = Resources.Load<RuntimeAnimatorController>("Warcraft/Animation/base_Animator");
         }
 
 
@@ -2046,7 +2048,7 @@ namespace HordeFight
                         {
 
                             //공격사거리 안에 들어오면 공격한다 
-                            if (true == Situation_Is_InRange(Movement.ONE_METER * 1f))
+                            if (true == Situation_Is_InRange(Movement.ONE_METER * 1.2f))
                             {
                                 _me.Attack(_target.transform.position - _me.transform.position);
                                 //_state = eState.Attack;
@@ -2205,7 +2207,7 @@ namespace HordeFight
             //_selected.Block_Forward(hit.point - _selected.transform.position);
             _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);  
 
-            Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER);
+            Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER * 1.2f);
             if (null != target)
             {
                 //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
