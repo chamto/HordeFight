@@ -2216,25 +2216,7 @@ namespace HordeFight
 
             }
 
-            //AnimatorStateInfo aniState = _selected._animator.GetCurrentAnimatorStateInfo(0);
-            //AnimatorTransitionInfo aniTrans = _selected._animator.GetAnimatorTransitionInfo(0);
-            //float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
-            //float playTime = aniState.length;
-            //string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
-            //string transName = SingleO.hashMap.GetString(aniTrans.nameHash);
-            //int hash = Animator.StringToHash("attack");
-            //if (hash == aniState.shortNameHash)
-            //{
-
-            //    DebugWide.LogBlue(aniTrans.nameHash +  "   tr: " + transName  + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
-            //                      "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
-            //}
-            //else
-            //{
-            //    DebugWide.LogRed(aniTrans.nameHash +  "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
-            //                     "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
-            //}
-
+            //View_AnimatorState();
         }
         private void TouchEnded() 
         {
@@ -2242,6 +2224,30 @@ namespace HordeFight
 
             _selected.Idle();
 
+        }
+
+        //애니메이터 상태별 상세값이 어떻게 변화되는지 보기 위해 작성함
+        //ChampStateMachine.OnStateEnter 에서 전이중일 때, "상태 시작함수"의 현재상태값이 "다음 상태"로 나오는 반면, 아래함수로 직접 출력해 보면 "현재 상태"로 나온다
+        public void View_AnimatorState()
+        {
+            AnimatorStateInfo aniState = _selected._animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorTransitionInfo aniTrans = _selected._animator.GetAnimatorTransitionInfo(0);
+            float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
+            float playTime = aniState.length;
+            string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
+            string transName = SingleO.hashMap.GetString(aniTrans.nameHash);
+            int hash = Animator.StringToHash("attack");
+            if (hash == aniState.shortNameHash)
+            {
+
+                DebugWide.LogBlue(aniTrans.nameHash +  "   tr: " + transName  + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
+                                  "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            }
+            else
+            {
+                DebugWide.LogRed(aniTrans.nameHash +  "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime + 
+                                 "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            }
         }
     }
 
