@@ -728,6 +728,7 @@ namespace HordeFight
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform , _activeRange.radius, Color.green);
             _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
+            SingleO.lineControl.SetActive(_UIID_hp, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 
 		}
@@ -1099,7 +1100,11 @@ namespace HordeFight
             {
                 //목표에 피해를 준다
                 if(null != _target)
+                {
                     _target.AddHP(-1);
+                    StartCoroutine(_target.Demage());
+                }
+                    
             }
         }
 
@@ -1176,15 +1181,19 @@ namespace HordeFight
 
 
 
-        public void Demage()
+        IEnumerator Demage()
         {
-            if (Behavior.eKind.Attack != _behaviorKind) return;
+            for (int i = 0; i < 10;i++)
+            {
+                //_sprRender.color = Color.Lerp(Color.red, Color.white, i / 10f);
+                _sprRender.color = Color.red;
+                yield return new WaitForSeconds(0.05f); 
 
-            float progress = _animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            float normal = progress - (int)progress;
+            }
 
-            //if()
+            _sprRender.color = Color.white;
 
+            yield break; 
         }
 
 
