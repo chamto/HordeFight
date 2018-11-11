@@ -188,7 +188,7 @@ namespace UnityEngine
 		[Serializable]
 		public class TilingRule
 		{
-            public string m_ID; //고유 식별값 , 사용자가 인스펙터상에서 직접 지정한다
+            public string m_specifier; //임의의 지정값 , 사용자가 인스펙터상에서 직접 지정한다
 			public int[] m_Neighbors;
             public int[] m_Neighbors_Length; //기본거리 1 , 이웃한 타일 검사시 중앙에서 n칸 거리까지 검사한다
             public string[] m_Neighbors_ID; //이웃한 객체의 아이디를 나타낸다
@@ -207,7 +207,7 @@ namespace UnityEngine
 
 			public TilingRule()
 			{
-                m_ID = "00";
+                m_specifier = "00";
 				m_Output = OutputSprite.Single;
                 _isTilemapCopy = false;
 				m_Neighbors = new int[NeighborCount];
@@ -257,6 +257,7 @@ namespace UnityEngine
             public Matrix4x4 transform = Matrix4x4.identity;
             public TilingRule tilingRule = null;
             public Utility.eDirection8 eTransDir = Utility.eDirection8.none; //transform 으로 변환된 값을 저장한 방향 
+            public bool isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
 
             public void Init()
             {
@@ -268,6 +269,7 @@ namespace UnityEngine
                 transform = Matrix4x4.identity;
                 tilingRule = null;
                 eTransDir = Utility.eDirection8.none;
+                isUpTile = false;
             }
 
             public void ApplyData()
@@ -512,6 +514,41 @@ namespace UnityEngine
                 getData.ApplyData();
             }
 
+            public void Set_IsUpTile(Vector3Int position, bool isUpTime)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return;    
+                }
+
+                getData.isUpTile = isUpTime;
+
+            }
+
+            public bool Get_IsUpTile(Vector3Int position)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return false;
+                }
+
+                return getData.isUpTile;
+
+            }
+
+            public AppointData GetData(Vector3Int position)
+            {
+                AppointData getData = null;
+                if (false == this.TryGetValue(position, out getData))
+                {
+                    return null;
+                }
+
+                return getData;
+            }
+
             public void InitPosition(Vector3Int position)
             {
                 AppointData getData = null;
@@ -530,7 +567,7 @@ namespace UnityEngine
                 if (null == getData)
                     return string.Empty;
 
-                return getData.m_ID;
+                return getData.m_specifier;
             }
 
             public TilingRule GetTilingRule(Vector3Int position)
@@ -733,6 +770,7 @@ namespace UnityEngine
                     //자식위치가 복사가능한지 검사
                     if(true == _multiDataMap.IsTileMapCopy_Child(position,tilemap))
                     {
+                        _tileDataMap.Set_IsUpTile(position, true);
                         CopyTile_AnotherTilemap(position, tilemap, tileData);    
                     }
                        
@@ -741,6 +779,7 @@ namespace UnityEngine
             //싱글모드일 경우 복사옵션이 있는지 검사한다
             else if (_tileDataMap.IsTileMapCopy(position))
             {
+                _tileDataMap.Set_IsUpTile(position, true);
                 CopyTile_AnotherTilemap(position, tilemap, tileData);    
             }
 

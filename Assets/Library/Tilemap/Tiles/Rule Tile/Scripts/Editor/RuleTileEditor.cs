@@ -253,7 +253,7 @@ namespace UnityEditor
                     else
                     {
                         //중앙 
-                        GUI.Label(r, tilingRule.m_ID);
+                        GUI.Label(r, tilingRule.m_specifier);
                     }
                 }
             }
@@ -447,8 +447,8 @@ namespace UnityEditor
             //GUI.Label(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, k_LabelWidth, k_SingleLineHeight), index.ToString("00"));
 
             //ID입력 
-            string newID = EditorGUI.DelayedTextField(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, 20f, k_SingleLineHeight), tilingRule.m_ID);
-            tilingRule.m_ID = newID.Substring(0,Mathf.Min(2, newID.Length)); //입력한 글자를 2글자로 제한한다 
+            string newID = EditorGUI.DelayedTextField(new Rect(rect.xMin - 19, rect.yMin + k_ObjectFieldLineHeight, 20f, k_SingleLineHeight), tilingRule.m_specifier);
+            tilingRule.m_specifier = newID.Substring(0,Mathf.Min(2, newID.Length)); //입력한 글자를 2글자로 제한한다 
 
             tilingRule._isTilemapCopy = EditorGUI.ToggleLeft(new Rect(rect.xMin, y, k_LabelWidth + 70f, k_SingleLineHeight), "Copy to another Tilemap", tilingRule._isTilemapCopy);
             y += k_SingleLineHeight;

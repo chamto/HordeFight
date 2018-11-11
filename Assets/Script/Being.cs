@@ -1799,9 +1799,9 @@ namespace HordeFight
             _camera = SingleO.mainCamera;
 		}
 
-		private void Update()
+		private void FixedUpdate()
 		{
-            if (null == _target) return;
+            if (null == _target || null == _camera) return;
 
 
             Vector3 targetPos = _target.position;

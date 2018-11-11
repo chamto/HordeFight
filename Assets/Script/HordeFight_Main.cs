@@ -595,7 +595,7 @@ namespace HordeFight
                 //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
 
                 ccc = Color.white;
-                if(StructTile.DiagonalFixing == t._id)
+                if(StructTile.Specifier_DiagonalFixing == t._specifier)
                 {
                     ccc = Color.red;
                 }
@@ -683,11 +683,12 @@ namespace HordeFight
     //장애물 정보 
     public class StructTile
     {
-        public const int DiagonalFixing = 7; //대각고정 예약어
+        public const int Specifier_DiagonalFixing = 7; //대각고정 예약어
 
-        public int _id = 0;
+        public int _specifier = 0;
         public eDirection8 _dir = eDirection8.none;
         public Vector3 _v3Center = Vector3.zero;    //타일의 중앙 월드위치
+        public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
     }
 
 
@@ -701,7 +702,8 @@ namespace HordeFight
 
         private Grid _grid = null;
         private Tilemap _tilemap_struct = null;
-        public Dictionary<Vector3Int,CellInfo> _cellList = new Dictionary<Vector3Int,CellInfo>();
+        private Tilemap _tilemap_fogOfWar = null;
+        public Dictionary<Vector3Int,CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>();
         public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
@@ -732,6 +734,11 @@ namespace HordeFight
             return _tilemap_struct;
         }
 
+        public Tilemap GetTileMap_FogOfWar()
+        {
+            return _tilemap_fogOfWar;
+        }
+
 		private void Start()
 		{
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
@@ -739,6 +746,11 @@ namespace HordeFight
             if(null != o)
             {
                 _tilemap_struct = o.GetComponent<Tilemap>();    
+            }
+            o = GameObject.Find("Tilemap_FogOfWar");
+            if (null != o)
+            {
+                _tilemap_fogOfWar = o.GetComponent<Tilemap>();
             }
 
             //타일맵 좌표계 x-y에 해당하는 축값 back로 구한다 
@@ -752,11 +764,6 @@ namespace HordeFight
 
 		}
 
-		//private void Update()
-        void FixedUpdate()
-		{
-			
-		}
 
         //ref : https://gamedev.stackexchange.com/questions/150917/how-to-get-all-tiles-from-a-tilemap
         public void LoadTilemap_Struct()
@@ -766,23 +773,25 @@ namespace HordeFight
             SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
             StructTile structTile = null;
             RuleTile.TilingRule ruleInfo = null;
-            int intId = 0;
+            int specifier = 0;
             foreach (Vector3Int vint in _tilemap_struct.cellBounds.allPositionsWithin)
             {
                 RuleTile ruleTile = _tilemap_struct.GetTile(vint) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
                 ruleInfo = ruleTile._tileDataMap.GetTilingRule(vint);
-                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_ID, out intId)) 
-                    intId = 0;
+                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier)) 
+                    specifier = 0;
+
 
                 structTile = new StructTile();
-                structTile._id = intId;
+                structTile._specifier = specifier;
                 structTile._v3Center = _tilemap_struct.CellToWorld(vint);
                 structTile._v3Center.x += GridCell_HalfSize;
                 structTile._v3Center.z += GridCell_HalfSize;
                 //structTile._v3Center = this.ToPosition_Center(vint, Vector3.up); //grid 함수와 호환안됨 
                 structTile._dir = ruleTile._tileDataMap.GetDirection8(vint);
+                structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(vint);
                 _structTileList.Add(vint, structTile);
 
             }
@@ -790,6 +799,33 @@ namespace HordeFight
             DebugWide.LogBlue("LoadTile : " + _structTileList.Count + "  -  TileMap_Struct RefreshAllTiles");
         }
 
+
+        //private void Update()
+        void FixedUpdate()
+        {
+
+        }
+
+        public void Update_FogOfWar(Vector3 tilePos, float radius)
+        {
+            if (null == _tilemap_fogOfWar) return;
+
+            Vector3Int posInt = this.ToPosition2D(tilePos, Vector3.up);
+
+
+            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
+            {
+                //if (null != _tilemap_struct.GetTile(posInt + ix)) continue; //구조타일 위치에 있는 포그타일은 변경하지 않는다
+                StructTile structTile = null;
+                if(true == _structTileList.TryGetValue(posInt + ix , out structTile))
+                {
+                    //덮개 타일인 경우 안개타일을 지우지 않는다
+                    if (true == structTile._isUpTile) continue;
+                }
+
+                _tilemap_fogOfWar.SetTile(posInt + ix, null);        
+            }
+        }
 
         //원 반지름 길이를 포함하는 그리드범위 구하기
         public uint GetNxNIncluded_CircleRadius(float maxRadius)
@@ -1019,7 +1055,7 @@ namespace HordeFight
         public CellInfo GetCellInfo(Vector3Int cellIndex)
         {
             CellInfo cell = null;
-            _cellList.TryGetValue(cellIndex, out cell);
+            _cellInfoList.TryGetValue(cellIndex, out cell);
 
             return cell;
         }
@@ -1072,13 +1108,13 @@ namespace HordeFight
         public void AddCellInfo_Being(Vector3Int cellIndex, Being being)
         {
             CellInfo cell = null;
-            if (false == _cellList.TryGetValue(cellIndex, out cell))
+            if (false == _cellInfoList.TryGetValue(cellIndex, out cell))
             {
                 cell = new CellInfo();
                 cell._index = cellIndex;
-                _cellList.Add(cellIndex, cell);
+                _cellInfoList.Add(cellIndex, cell);
             }
-            _cellList[cellIndex].AddLast(being);
+            _cellInfoList[cellIndex].AddLast(being);
         }
 
         public void RemoveCellInfo_Being(Vector3Int cellIndex, Being being)
@@ -1086,7 +1122,7 @@ namespace HordeFight
             if (null == being) return;
 
             CellInfo cell = null;
-            if (true == _cellList.TryGetValue(cellIndex, out cell))
+            if (true == _cellInfoList.TryGetValue(cellIndex, out cell))
             {
                 cell.Remove(being);
             }
@@ -1464,7 +1500,7 @@ namespace HordeFight
                 case eDirection8.leftUp:
                     {
                         //down , right
-                        if(StructTile.DiagonalFixing == structTile._id)
+                        if(StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
                             srcPos.x = structTile._v3Center.x - size;
                             srcPos.z = structTile._v3Center.z + size;
@@ -1490,7 +1526,7 @@ namespace HordeFight
                 case eDirection8.rightUp:
                     {
                         //down , left
-                        if (StructTile.DiagonalFixing == structTile._id)
+                        if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
                             srcPos.x = structTile._v3Center.x + size;
                             srcPos.z = structTile._v3Center.z + size;
@@ -1515,7 +1551,7 @@ namespace HordeFight
                 case eDirection8.leftDown:
                     {
                         //up , right
-                        if (StructTile.DiagonalFixing == structTile._id)
+                        if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
                             srcPos.x = structTile._v3Center.x - size;
                             srcPos.z = structTile._v3Center.z - size;
@@ -1541,7 +1577,7 @@ namespace HordeFight
                 case eDirection8.rightDown:
                     {
                         //up , left
-                        if (StructTile.DiagonalFixing == structTile._id)
+                        if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
                             srcPos.x = structTile._v3Center.x + size;
                             srcPos.z = structTile._v3Center.z - size;
@@ -2226,6 +2262,7 @@ namespace HordeFight
 
             }
 
+            SingleO.gridManager.Update_FogOfWar(_selected.transform.position, 0.1f);
             //View_AnimatorState();
         }
         private void TouchEnded() 
