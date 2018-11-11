@@ -29,6 +29,7 @@ namespace HordeFight
 
             gameObject.AddComponent<UI_Main>();
             gameObject.AddComponent<DebugViewer>();
+            gameObject.AddComponent<CameraWalk>();
 
             gameObject.AddComponent<TouchEvent>();
             gameObject.AddComponent<TouchControl>();
@@ -128,6 +129,14 @@ namespace HordeFight
             get
             {
                 return CSingletonMono<UI_Main>.Instance;
+            }
+        }
+
+        public static CameraWalk cameraWalk
+        {
+            get
+            {
+                return CSingletonMono<CameraWalk>.Instance;
             }
         }
 
@@ -2173,6 +2182,7 @@ namespace HordeFight
                 //새로운 객체 선택
                 _selected = getBeing;
                 SingleO.lineControl.SetActive(_selected._UIID_circle_collider, true);
+                SingleO.cameraWalk.SetTarget(_selected.transform);
             }
             //else
             //{
