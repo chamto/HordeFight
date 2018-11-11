@@ -1181,17 +1181,29 @@ namespace HordeFight
 
 
 
+        bool __in_corutin_Damage = false;
         IEnumerator Demage()
         {
+            //같은 코루틴을 요청하면 빨강색으로 변경후 종료한다  
+            if (true == __in_corutin_Damage) 
+            {
+                _sprRender.color = Color.red;
+                yield break;
+            }
+            
             for (int i = 0; i < 10;i++)
             {
-                //_sprRender.color = Color.Lerp(Color.red, Color.white, i / 10f);
-                _sprRender.color = Color.red;
+                __in_corutin_Damage = true;
+                
+                _sprRender.color = Color.Lerp(Color.red, Color.white, i / 10f);
+                //_sprRender.color = Color.red;
                 yield return new WaitForSeconds(0.05f); 
 
             }
 
             _sprRender.color = Color.white;
+
+            __in_corutin_Damage = false;
 
             yield break; 
         }
