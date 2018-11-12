@@ -712,9 +712,9 @@ namespace HordeFight
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-            Vector3Int cellIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
-            SingleO.gridManager.AddCellInfo_Being(cellIdx, this);
-            _cellInfo = SingleO.gridManager.GetCellInfo(cellIdx);
+            Vector3Int posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
+            SingleO.gridManager.AddCellInfo_Being(posXY_2d, this);
+            _cellInfo = SingleO.gridManager.GetCellInfo(posXY_2d);
 
 
             //=====================================================
@@ -771,24 +771,24 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            Vector3Int curIdx = SingleO.gridManager.ToPosition2D(transform.position, Vector3.up);
+            Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
 
             //충돌없는 마지막 타일 위치를 갱신한다 
             StructTile structTile = null;
             if (false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
             {
-                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(curIdx, Vector3.up);
+                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(cur_posXY_2d);
                 //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
             }
 
 
             UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
-            if (_cellInfo._index != curIdx)
+            if (_cellInfo._index != cur_posXY_2d)
             {
                 SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
-                SingleO.gridManager.AddCellInfo_Being(curIdx, this);
+                SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this);
 
-                _cellInfo = SingleO.gridManager.GetCellInfo(curIdx);
+                _cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
 
                 //chamto test
                 //string temp = "count:"+_cellInfo.Count + "  (" + curIdx + ")  ";

@@ -55,7 +55,7 @@ namespace HordeFight
             int id_wh = 0;
             NavGraphNode node = new NavGraphNode(0, Vector3.zero);
             BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
-            foreach (Vector3Int pos2d in boundsInt.allPositionsWithin)
+            foreach (Vector3Int posXY_2d in boundsInt.allPositionsWithin)
             {
                 //chamto test
                 //DebugWide.LogBlue(count++ + "   " + pos2d + "   " + SingleO.gridManager.ToPosition1D(pos2d , boundsInt.size.x) + "    " + SingleO.gridManager.ToPosition3D_Center(pos2d, Vector3.up));
@@ -65,9 +65,9 @@ namespace HordeFight
                 //TileBase baseTile = tilemap.GetTile(pos2d); 
                 //if (null == baseTile) continue; //모든 노드가 순서대로 들어가야 한다. 타일이 없다고 건너뛰면 안된다
 
-                id_wh = SingleO.gridManager.ToPosition1D(pos2d , boundsInt.size.x);
+                id_wh = SingleO.gridManager.ToPosition1D(posXY_2d , boundsInt.size.x);
 
-                node.SetPos(SingleO.gridManager.ToPosition3D_Center(pos2d,Vector3.up));
+                node.SetPos(SingleO.gridManager.ToPosition3D_Center(posXY_2d));
                 node.SetIndex(id_wh); //id 순서값과 루프문 순서와 일치해야 한다. 내부에서 리스트에 들어가는 순서값을 1차원 위치값으로 사용하기 때문임 
                 _graph.AddNode(node.Clone() as NavGraphNode);
 
@@ -142,19 +142,19 @@ namespace HordeFight
             float t_c = 0;
 
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
-            Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(srcPos, Vector3.up);
-            Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt, Vector3.up);
+            Vector3Int originToGrid_XY_2d = SingleO.gridManager.ToPosition2D(srcPos);
+            Vector3 originToPos_3d = SingleO.gridManager.ToPosition3D(originToGrid_XY_2d);
             Vector3 worldCellCenterPos = Vector3.zero;
-            foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
+            foreach (Vector3Int cell_posXY_2d in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
-                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
-                worldCellCenterPos += originToPos;
+                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cell_posXY_2d);
+                worldCellCenterPos += originToPos_3d;
 
 
                 //시작위치셀을 포함하거나 뺄때가 있다. 사용하지 않느다 
                 //선분방향과 반대방향인 셀들을 걸러낸다 , (0,0)원점 즉 출발점의 셀은 제외한다 
-                if (0 == cellLBPos.sqrMagnitude || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - srcPos))
+                if (0 == cell_posXY_2d.sqrMagnitude || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - srcPos))
                 {
                     continue;
                 }

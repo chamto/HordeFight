@@ -272,11 +272,13 @@ namespace HordeFight
 
     public class ResourceManager
     {
-        
+
+        public RuntimeAnimatorController _base_Animator = null;
+
         //키값 : 애니메이션 이름에 대한 해쉬코드 
         public Dictionary<int, AnimationClip> _aniClips = new Dictionary<int, AnimationClip>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
-        public RuntimeAnimatorController _base_Animator = null;
+        public Dictionary<int, TileBase> _tileScripts = new Dictionary<int, TileBase>();
 
 
         //==================== Get / Set ====================
@@ -301,6 +303,9 @@ namespace HordeFight
             //=============================================
             //LOAD 
             //=============================================
+            _base_Animator = Resources.Load<RuntimeAnimatorController>("Warcraft/Animation/base_Animator");
+
+
             AnimationClip[] loaded = Resources.LoadAll<AnimationClip>("Warcraft/Animation");
             foreach(AnimationClip ac in loaded)
             {
@@ -314,9 +319,24 @@ namespace HordeFight
                 _sprIcons.Add(spr.name.GetHashCode(), spr);
             }
 
-            _base_Animator = Resources.Load<RuntimeAnimatorController>("Warcraft/Animation/base_Animator");
+            TileBase[] tiles = Resources.LoadAll<TileBase>("Warcraft/Palette/ScriptTile");
+            foreach(TileBase r in tiles)
+            {
+                _tileScripts.Add(r.name.GetHashCode(), r);
+                //DebugWide.LogBlue(r.name);
+            }
         }
 
+
+        public TileBase GetTileScript(int nameToHash)
+        {
+            if(true == _tileScripts.ContainsKey(nameToHash))
+            {
+                return _tileScripts[nameToHash];
+            }
+
+            return null;
+        }
 
 
     }//end class
@@ -600,9 +620,9 @@ namespace HordeFight
                     ccc = Color.red;
                 }
 
-                Vector3 end = t._v3Center + Misc.GetDir8Normal_AxisY(t._dir) * 0.12f;
+                Vector3 end = t._center_3d + Misc.GetDir8Normal_AxisY(t._dir) * 0.12f;
 
-                Debug.DrawLine(t._v3Center, end, ccc);
+                Debug.DrawLine(t._center_3d, end, ccc);
 
                 //Vector3 crossL = t._v3Center;
                 //crossL.x += -0.08f;
@@ -621,20 +641,20 @@ namespace HordeFight
             Vector3Int tileBlock_size = finder.TILE_BLOCK_SIZE;
 
             int from_1d = 0;
-            Vector3Int to_2d;
+            Vector3Int to_XY_2d;
             Vector3 from_3d, to_3d;
             NavGraphNode from_nav, to_nav;
             BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
-            foreach (Vector3Int from_2d in boundsInt.allPositionsWithin)
+            foreach (Vector3Int from_XY_2d in boundsInt.allPositionsWithin)
             {
-                from_1d = grid.ToPosition1D(from_2d, boundsInt.size.x);
-                from_3d = grid.ToPosition3D(from_2d, Vector3.up);
+                from_1d = grid.ToPosition1D(from_XY_2d, boundsInt.size.x);
+                from_3d = grid.ToPosition3D(from_XY_2d);
 
                 SparseGraph.EdgeList list = finder._graph.GetEdges(from_1d);
                 foreach (GraphEdge e in list)
                 {
-                    to_2d = grid.ToPosition2D(e.To(), boundsInt.size.x);
-                    to_3d = grid.ToPosition3D(to_2d, Vector3.up);
+                    to_XY_2d = grid.ToPosition2D(e.To(), boundsInt.size.x);
+                    to_3d = grid.ToPosition3D(to_XY_2d);
 
                     from_nav = finder._graph.GetNode(e.From()) as NavGraphNode;
                     to_nav = finder._graph.GetNode(e.To()) as NavGraphNode;
@@ -643,7 +663,7 @@ namespace HordeFight
                     //chamto test
                     if (true == debugLog)
                     {
-                        DebugWide.LogBlue(e + "  " + from_2d + "   " + to_2d);
+                        DebugWide.LogBlue(e + "  " + from_XY_2d + "   " + to_XY_2d);
                     }
 
                 }
@@ -687,7 +707,7 @@ namespace HordeFight
 
         public int _specifier = 0;
         public eDirection8 _dir = eDirection8.none;
-        public Vector3 _v3Center = Vector3.zero;    //타일의 중앙 월드위치
+        public Vector3 _center_3d = Vector3.zero;    //타일의 중앙 월드위치
         public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
     }
 
@@ -774,25 +794,25 @@ namespace HordeFight
             StructTile structTile = null;
             RuleTile.TilingRule ruleInfo = null;
             int specifier = 0;
-            foreach (Vector3Int vint in _tilemap_struct.cellBounds.allPositionsWithin)
+            foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
             {
-                RuleTile ruleTile = _tilemap_struct.GetTile(vint) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
-                ruleInfo = ruleTile._tileDataMap.GetTilingRule(vint);
+                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
                 if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier)) 
                     specifier = 0;
 
 
                 structTile = new StructTile();
                 structTile._specifier = specifier;
-                structTile._v3Center = _tilemap_struct.CellToWorld(vint);
-                structTile._v3Center.x += GridCell_HalfSize;
-                structTile._v3Center.z += GridCell_HalfSize;
-                //structTile._v3Center = this.ToPosition_Center(vint, Vector3.up); //grid 함수와 호환안됨 
-                structTile._dir = ruleTile._tileDataMap.GetDirection8(vint);
-                structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(vint);
-                _structTileList.Add(vint, structTile);
+                //structTile._center_3d = _tilemap_struct.CellToWorld(XY_2d);
+                //structTile._center_3d.x += GridCell_HalfSize;
+                //structTile._center_3d.z += GridCell_HalfSize;
+                structTile._center_3d = this.ToPosition3D_Center(XY_2d); //grid 함수와 호환안됨 
+                structTile._dir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                _structTileList.Add(XY_2d, structTile);
 
             }
 
@@ -806,24 +826,49 @@ namespace HordeFight
 
         }
 
-        public void Update_FogOfWar(Vector3 tilePos, float radius)
+        int HashId_FogOfWarBlack = "fogOfWar_black".GetHashCode();
+        public void FullFill_FogOfWar(Vector3 tilePos)
+		{
+            //TileBase tileScript = SingleO.resourceManager.GetTileScript("dungeon_floor_s1_base".GetHashCode());
+            ////DebugWide.LogBlue(tileScript.name);
+            //Vector3Int posInt = this.ToPosition2D(tilePos, Vector3.up);
+
+            //_tilemap_fogOfWar.BoxFill(posInt, tileScript as WeightedRandomTile,0,0,20,20);
+
+
+            TileBase tileScript = SingleO.resourceManager.GetTileScript(HashId_FogOfWarBlack);
+            Vector3Int posXY_2d = this.ToPosition2D(tilePos);
+            _tilemap_fogOfWar.BoxFill(posXY_2d, tileScript as RuleTile, 0, 0, 20, 20);
+		}
+
+		public void Update_FogOfWar(Vector3 tilePos, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
-            Vector3Int posInt = this.ToPosition2D(tilePos, Vector3.up);
+            //FullFill_FogOfWar(tilePos);
+            //return;
 
+            Vector3Int posXY_2d = this.ToPosition2D(tilePos);
+            Vector3Int calcPos = Vector3Int.zero;
+            TileBase tileScript = SingleO.resourceManager.GetTileScript(HashId_FogOfWarBlack);
 
-            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
+            foreach (Vector3Int xy in SingleO.gridManager._indexesNxN[7])
             {
-                //if (null != _tilemap_struct.GetTile(posInt + ix)) continue; //구조타일 위치에 있는 포그타일은 변경하지 않는다
+                calcPos = posXY_2d + xy;
+                if(3 <= Mathf.Abs(xy.x) || 3 <= Mathf.Abs(xy.y) )
+                {
+                    _tilemap_fogOfWar.SetTile(calcPos, tileScript);
+                    continue;
+                }
+                   
                 StructTile structTile = null;
-                if(true == _structTileList.TryGetValue(posInt + ix , out structTile))
+                if(true == _structTileList.TryGetValue(calcPos , out structTile))
                 {
                     //덮개 타일인 경우 안개타일을 지우지 않는다
                     if (true == structTile._isUpTile) continue;
                 }
 
-                _tilemap_fogOfWar.SetTile(posInt + ix, null);        
+                _tilemap_fogOfWar.SetTile(calcPos, null);        
             }
         }
 
@@ -1130,102 +1175,85 @@ namespace HordeFight
         }
 
 
-        public Vector3Int ToPosition2D(Vector3 pos3d , Vector3 axis)
+        //2d 좌표는 x,y만 사용한다. x,z좌표로의 변환은 허용 안한다 
+        public Vector3Int ToPosition2D(Vector3 pos3d)
         {
 
-            Vector3Int cellIndex = Vector3Int.zero;
-            Vector3 cellSize = Vector3.zero;
+            Vector3Int posXY_2d = Vector3Int.zero;
 
-            if(Vector3.up == axis)
             {
-                //그리드 자체에 스케일을 적용시킨 경우가 있으므로 스케일값을 적용한다. 
-                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x) ;
-                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z) ;
-
-
                 if(0 <= pos3d.x)
                 {
                     //양수일때는 소수점을 버린다. 
-                    cellIndex.x = (int)(pos3d.x / cellSize.x);
+                    posXY_2d.x = (int)(pos3d.x / cellSize_x);
                 }
                 else
                 {
                     //음수일때는 올림을 한다. 
-                    cellIndex.x = (int)((pos3d.x / cellSize.x) - 0.9f);
+                    posXY_2d.x = (int)((pos3d.x / cellSize_x) - 0.9f);
                 }
-
 
                 if (0 <= pos3d.z)
                 { 
-                    cellIndex.y = (int)(pos3d.z / cellSize.y);
+                    posXY_2d.y = (int)(pos3d.z / cellSize_z);
                 }
                 else
                 { 
-                    cellIndex.y = (int)((pos3d.z / cellSize.y) - 0.9f);
+                    posXY_2d.y = (int)((pos3d.z / cellSize_z) - 0.9f);
                 }
-
             }
 
-            return cellIndex;
+
+            return posXY_2d;
         }
 
-        public Vector3 ToCenter3D_FromPosition3D(Vector3 pos3d, Vector3 axis)
+        public Vector3 ToCenter3D_FromPosition3D(Vector3 pos3d)
         {
             Vector3 pos = Vector3.zero;
             Vector3 cellSize = Vector3.zero;
 
-            Vector3Int cellPos = this.ToPosition2D(pos3d, axis);
+            Vector3Int cellPos = this.ToPosition2D(pos3d);
 
-            return this.ToPosition3D_Center(cellPos, axis);
+            return this.ToPosition3D_Center(cellPos);
         }
 
+        //pos2d 는 항시 x,y공간만 사용한다. 다른 공간은 변환 허용안함.
         //grid 와 호환 안되는 함수 
-        public Vector3 ToPosition3D_Center(Vector3Int pos2d , Vector3 axis)
+        public Vector3 ToPosition3D_Center(Vector3Int posXY_2d)
         {
-            Vector3 pos = Vector3.zero;
-            Vector3 cellSize = Vector3.zero;
+            Vector3 pos3d = Vector3.zero;
 
-            if (Vector3.up == axis)
             {
-                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
-                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
-
-                pos.x = (float)pos2d.x * cellSize.x;
-                pos.z = (float)pos2d.y * cellSize.y;
+                pos3d.x = (float)posXY_2d.x * cellSize_x;
+                pos3d.z = (float)posXY_2d.y * cellSize_z;
 
                 //셀의 중간에 위치하도록 한다
-                pos.x += cellSize.x * 0.5f;
-                pos.z += cellSize.y * 0.5f;
+                pos3d.x += cellSize_x * 0.5f;
+                pos3d.z += cellSize_z * 0.5f;
             }
 
-            return pos;
+            return pos3d;
         }
 
-        public Vector3 ToPosition3D(Vector3Int pos2d, Vector3 axis)
+        public Vector3 ToPosition3D(Vector3Int posXY_2d)
         {
-            Vector3 pos = Vector3.zero;
-            Vector3 cellSize = Vector3.zero;
+            Vector3 pos3d = Vector3.zero;
 
-            if (Vector3.up == axis)
             {
-                cellSize.x = (_grid.cellSize.x * _grid.transform.localScale.x);
-                cellSize.y = (_grid.cellSize.y * _grid.transform.localScale.z);
-
-                pos.x = (float)pos2d.x * cellSize.x;
-                pos.z = (float)pos2d.y * cellSize.y;
-
+                pos3d.x = (float)posXY_2d.x * cellSize_x;
+                pos3d.z = (float)posXY_2d.y * cellSize_z;
             }
 
-            return pos;
+            return pos3d;
         }
 
 
-        public int ToPosition1D(Vector3Int pos2d , int tileBlock_width_size)
+        public int ToPosition1D(Vector3Int posXY_2d , int tileBlock_width_size)
         {
-            Assert.IsFalse(0 > pos2d.x || 0 > pos2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
-            if (0 > pos2d.x || 0 > pos2d.y) return -1;
+            Assert.IsFalse(0 > posXY_2d.x || 0 > posXY_2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
+            if (0 > posXY_2d.x || 0 > posXY_2d.y) return -1;
             
-            return (pos2d.x + pos2d.y * tileBlock_width_size); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            return (posXY_2d.x + posXY_2d.y * tileBlock_width_size); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
 
         }
 
@@ -1234,12 +1262,12 @@ namespace HordeFight
             Assert.IsFalse(0 > pos1d, "음수좌표값은 2차원값으로 변환 할 수 없다");
             if (0 > pos1d) return Vector3Int.zero;
 
-            Vector3Int v3int = Vector3Int.zero;
+            Vector3Int posXY_2d = Vector3Int.zero;
 
-            v3int.x = pos1d % tileBlock_width_size;
-            v3int.y = pos1d / tileBlock_width_size;
+            posXY_2d.x = pos1d % tileBlock_width_size;
+            posXY_2d.y = pos1d / tileBlock_width_size;
 
-            return v3int;
+            return posXY_2d;
         }
 
 	}
@@ -1309,13 +1337,13 @@ namespace HordeFight
             float t_c = 0;
 
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
-            Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(origin, Vector3.up);
-            Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt, Vector3.up);
+            Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(origin);
+            Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt);
             Vector3 worldCellCenterPos = Vector3.zero;
             foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
-                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos, Vector3.up);
+                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cellLBPos);
                 worldCellCenterPos += originToPos;
 
 
@@ -1425,7 +1453,7 @@ namespace HordeFight
 
             const float Tile_Radius = 0.08f;
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 sqr_dis = src.transform.localPosition - structTile._v3Center;
+            Vector3 sqr_dis = src.transform.localPosition - structTile._center_3d;
             float r_sum = src.GetCollider_Radius() + Tile_Radius;
 
             //1.두 캐릭터가 겹친상태 
@@ -1468,7 +1496,7 @@ namespace HordeFight
             if (null == structTile) return;
 
             Vector3 srcPos = src.transform.position;
-            Vector3 centerToSrc_dir = srcPos - structTile._v3Center;
+            Vector3 centerToSrc_dir = srcPos - structTile._center_3d;
             Vector3 push_dir = Misc.GetDir8Normal_AxisY(structTile._dir);
 
             float size = GridManager.GridCell_HalfSize;
@@ -1479,22 +1507,22 @@ namespace HordeFight
             {
                 case eDirection8.up:
                     {
-                        srcPos.z = structTile._v3Center.z + size;
+                        srcPos.z = structTile._center_3d.z + size;
                     }
                     break;
                 case eDirection8.down:
                     {
-                        srcPos.z = structTile._v3Center.z - size;
+                        srcPos.z = structTile._center_3d.z - size;
                     }
                     break;
                 case eDirection8.left:
                     {
-                        srcPos.x = structTile._v3Center.x - size;
+                        srcPos.x = structTile._center_3d.x - size;
                     }
                     break;
                 case eDirection8.right:
                     {
-                        srcPos.x = structTile._v3Center.x + size;
+                        srcPos.x = structTile._center_3d.x + size;
                     }
                     break;
                 case eDirection8.leftUp:
@@ -1502,19 +1530,19 @@ namespace HordeFight
                         //down , right
                         if(StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._v3Center.x - size;
-                            srcPos.z = structTile._v3Center.z + size;
+                            srcPos.x = structTile._center_3d.x - size;
+                            srcPos.z = structTile._center_3d.z + size;
                             break;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x -= size;
                         center.z -= size;
                         line3.origin = center;
 
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x += size;
                         center.z += size;
                         line3.last = center;
@@ -1528,19 +1556,19 @@ namespace HordeFight
                         //down , left
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._v3Center.x + size;
-                            srcPos.z = structTile._v3Center.z + size;
+                            srcPos.x = structTile._center_3d.x + size;
+                            srcPos.z = structTile._center_3d.z + size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x -= size;
                         center.z += size;
                         line3.origin = center;
 
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x += size;
                         center.z -= size;
                         line3.last = center;
@@ -1553,20 +1581,20 @@ namespace HordeFight
                         //up , right
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._v3Center.x - size;
-                            srcPos.z = structTile._v3Center.z - size;
+                            srcPos.x = structTile._center_3d.x - size;
+                            srcPos.z = structTile._center_3d.z - size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
 
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x -= size;
                         center.z += size;
                         line3.origin = center;
 
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x += size;
                         center.z -= size;
                         line3.last = center;
@@ -1579,19 +1607,19 @@ namespace HordeFight
                         //up , left
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._v3Center.x + size;
-                            srcPos.z = structTile._v3Center.z - size;
+                            srcPos.x = structTile._center_3d.x + size;
+                            srcPos.z = structTile._center_3d.z - size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x -= size;
                         center.z -= size;
                         line3.origin = center;
 
-                        center = structTile._v3Center;
+                        center = structTile._center_3d;
                         center.x += size;
                         center.z += size;
                         line3.last = center;
