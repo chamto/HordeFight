@@ -676,7 +676,7 @@ namespace HordeFight
 
             //Debug.DrawLine(_start, _end);
 
-            UpdateDraw_StructTileDir();
+            //UpdateDraw_StructTileDir();
 
             //Update_DrawEdges(false);
         }
@@ -825,24 +825,54 @@ namespace HordeFight
 
         }
 
+        public void SetTile(Tilemap tilemap, Vector3Int xy_2d , TileBase setTile)
+        {
+            TileBase getTile = tilemap.GetTile(xy_2d);
+            if(getTile != setTile)
+            {
+                tilemap.SetTile(xy_2d, setTile);        
+            }
+        }
+
+
         int HashId_FogOfWarBlack = "fogOfWar_black".GetHashCode();
         public void FullFill_FogOfWar(Vector3 tilePos)
 		{
+            Color baseColor = Color.white;
+            Color fogColor = new Color(1, 1, 1, 0.3f);
             TileBase tileScript = SingleO.resourceManager.GetTileScript("fogOfWar_black".GetHashCode());
+            TileBase tileScript2 = SingleO.resourceManager.GetTileScript("dungeon_floor_s1_carpet".GetHashCode());
             Vector3Int posXY_2d = this.ToPosition2D(tilePos);
             _tilemap_fogOfWar.BoxFill(posXY_2d, tileScript ,0,0,20,15);
             BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14,11,0), new Vector3Int(27, 21, 1));
 
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
+                _tilemap_fogOfWar.SetColor(xy, baseColor);
+                _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
+                SetTile(_tilemap_fogOfWar, xy, tileScript);
+
+
                 StructTile structTile = null;
                 if (true == _structTileList.TryGetValue(xy, out structTile))
                 {
                     if (true == structTile._isUpTile) 
-                        _tilemap_fogOfWar.SetTile(xy, null);
+                    {
+                        _tilemap_fogOfWar.SetColor(xy, fogColor);
+                        //SetTile(_tilemap_fogOfWar, xy, null);
+                        continue;
+                    }
                 }
-                else
-                    _tilemap_fogOfWar.SetTile(xy, tileScript);
+
+                float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
+                if(sqrDis <  Mathf.Pow(Movement.MeterToWorld * 4f,2))
+                {
+                    _tilemap_fogOfWar.SetColor(xy, fogColor);
+                    //SetTile(_tilemap_fogOfWar, xy, null);
+                    continue;
+                }
+
+
             }
 
 		}
