@@ -588,19 +588,18 @@ namespace HordeFight
 
         public void UpdateDraw_IndexesNxN()
         {
+            
             Vector3Int prev = Vector3Int.zero;
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.up))
-            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.back))
-
-            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.up))
-            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.back))
-
+            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up))
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.up))
-            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.back))
             {
                 //DebugWide.LogBlue(v);
+                Debug.DrawLine(cur - Vector3.one * 0.3f , cur + Vector3.one * 0.3f, Color.red);
                 Debug.DrawLine(prev, cur);
+                UnityEditor.Handles.Label(cur, "( "+cur.x + " , " + cur.z + " )");
                 prev = cur;
+
             }
         }
 
@@ -670,18 +669,21 @@ namespace HordeFight
             }
         }
 
-
-        void FixedUpdate()
-		{
-            //Debug.DrawLine(_start, _end);
-
-            //UpdateDraw_StructTileDir();
-
+        void OnDrawGizmos()
+        {
+            //UnityEditor.Handles.Label(Vector3.zero, "0,0");
             //UpdateDraw_IndexesNxN();
 
-            //Update_DrawEdges(false);
+            //Debug.DrawLine(_start, _end);
 
-		}
+            UpdateDraw_StructTileDir();
+
+            //Update_DrawEdges(false);
+        }
+
+  //      void FixedUpdate()
+		//{
+		//}
 	}
 }
 
@@ -806,10 +808,7 @@ namespace HordeFight
 
                 structTile = new StructTile();
                 structTile._specifier = specifier;
-                //structTile._center_3d = _tilemap_struct.CellToWorld(XY_2d);
-                //structTile._center_3d.x += GridCell_HalfSize;
-                //structTile._center_3d.z += GridCell_HalfSize;
-                structTile._center_3d = this.ToPosition3D_Center(XY_2d); //grid 함수와 호환안됨 
+                structTile._center_3d = this.ToPosition3D_Center(XY_2d); 
                 structTile._dir = ruleTile._tileDataMap.GetDirection8(XY_2d);
                 structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
                 _structTileList.Add(XY_2d, structTile);
@@ -829,24 +828,31 @@ namespace HordeFight
         int HashId_FogOfWarBlack = "fogOfWar_black".GetHashCode();
         public void FullFill_FogOfWar(Vector3 tilePos)
 		{
-            //TileBase tileScript = SingleO.resourceManager.GetTileScript("dungeon_floor_s1_base".GetHashCode());
-            ////DebugWide.LogBlue(tileScript.name);
-            //Vector3Int posInt = this.ToPosition2D(tilePos, Vector3.up);
-
-            //_tilemap_fogOfWar.BoxFill(posInt, tileScript as WeightedRandomTile,0,0,20,20);
-
-
-            TileBase tileScript = SingleO.resourceManager.GetTileScript(HashId_FogOfWarBlack);
+            TileBase tileScript = SingleO.resourceManager.GetTileScript("fogOfWar_black".GetHashCode());
             Vector3Int posXY_2d = this.ToPosition2D(tilePos);
-            _tilemap_fogOfWar.BoxFill(posXY_2d, tileScript as RuleTile, 0, 0, 20, 20);
+            _tilemap_fogOfWar.BoxFill(posXY_2d, tileScript ,0,0,20,15);
+            BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14,11,0), new Vector3Int(27, 21, 1));
+
+            foreach (Vector3Int xy in bounds.allPositionsWithin)
+            {
+                StructTile structTile = null;
+                if (true == _structTileList.TryGetValue(xy, out structTile))
+                {
+                    if (true == structTile._isUpTile) 
+                        _tilemap_fogOfWar.SetTile(xy, null);
+                }
+                else
+                    _tilemap_fogOfWar.SetTile(xy, tileScript);
+            }
+
 		}
 
 		public void Update_FogOfWar(Vector3 tilePos, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
-            //FullFill_FogOfWar(tilePos);
-            //return;
+            FullFill_FogOfWar(tilePos);
+            return;
 
             Vector3Int posXY_2d = this.ToPosition2D(tilePos);
             Vector3Int calcPos = Vector3Int.zero;
@@ -855,11 +861,11 @@ namespace HordeFight
             foreach (Vector3Int xy in SingleO.gridManager._indexesNxN[7])
             {
                 calcPos = posXY_2d + xy;
-                if(3 <= Mathf.Abs(xy.x) || 3 <= Mathf.Abs(xy.y) )
-                {
-                    _tilemap_fogOfWar.SetTile(calcPos, tileScript);
-                    continue;
-                }
+                //if(3 <= Mathf.Abs(xy.x) || 3 <= Mathf.Abs(xy.y) )
+                //{
+                //    _tilemap_fogOfWar.SetTile(calcPos, tileScript);
+                //    continue;
+                //}
                    
                 StructTile structTile = null;
                 if(true == _structTileList.TryGetValue(calcPos , out structTile))
@@ -935,36 +941,49 @@ namespace HordeFight
         {
             //NCount 는 홀수값을 넣어야 한다 
             if (0 == widthCenter % 2) return null;
+            //DebugWide.LogBlue("_____________________" + widthCenter);
+            //string debugStr = "";
+            //int debugSum = 0;
 
             int Tornado_Num = 1; 
             int Tornado_Count = 0;
             Vector3 dir = Vector3.right;
-            Vector3 prevMax = Vector3.zero;
+            Vector3Int prevMax = Vector3Int.zero;
+            Vector3Int prediction = Vector3Int.zero;
             Vector3Int cur = Vector3Int.zero;
             Vector3Int[] indexes = new Vector3Int[widthCenter * widthCenter];
             for (int cnt = 0; cnt < indexes.Length; cnt++)
             {
                 indexes[cnt] = cur;
 
+                prediction.x = (int)(dir.x * Tornado_Num); //소수점 버림
+                prediction.y = (int)(dir.y * Tornado_Num); //소수점 버림
+                prediction.z = (int)(dir.z * Tornado_Num); //소수점 버림
+
+                //DebugWide.LogBlue(" cnt: " + cnt + "  tnum : " + Tornado_Num + "  " +(prevMax + dir * Tornado_Num) + "  cur : " + cur);
                 //해당방향의 최대값에 도달하면 90도 회전 
-                if(prevMax + dir * Tornado_Num == cur)
+                if(prevMax + prediction == cur)
                 {
+                    //DebugWide.LogBlue("___" + cur);
                     prevMax = cur; //최대 위치값 갱신
                     Tornado_Num = (Tornado_Num + Tornado_Count%2); //1 1 2 2 3 3 4 4 5 5 .... 이렇게 증가하는 수열값임 
                     Tornado_Count++;
+
+                    //debugStr += " " + Tornado_Num; //chamto test
+                    //debugSum += Tornado_Num; 
 
                     //반시계방향으로 회전하도록 한다 
                     if (Vector3.up == axis)
                     {
                         //y축 중심 : 3d용 좌표
                         dir = Quaternion.Euler(0, -90f, 0) * dir;
-                        //DebugWide.LogBlue(dir + "  " + Tornado_Num); //chamto test
                     }
                     if (Vector3.back == axis)
                     {
                         //-z축 중심 : 2d용 좌표
                         dir = Quaternion.Euler(0, 0, 90f) * dir;
                     }
+                    dir.Normalize(); //부동소수점 문제 때문에 정규화 해준다 
                 }
 
                 //지정된 방향값으로 한칸씩 증가한다
@@ -973,8 +992,20 @@ namespace HordeFight
                 cur.z += (int)Mathf.Round(dir.z);
             }
 
+            //DebugWide.LogBlue(debugStr + "   : sum : " + debugSum);
+
             return indexes;
 
+        }
+
+        //원형
+        public Vector3Int[] CreateIndexesNxN_Circle(ushort radius, Vector3 axis)
+        {
+            Vector3Int[] indexes = new Vector3Int[5];
+
+
+
+            return indexes;
         }
 
         //마름모꼴
@@ -1044,6 +1075,7 @@ namespace HordeFight
                         //-z축 중심 : 2d용 좌표
                         dir = Quaternion.Euler(0, 0, -angle) * dir;
                     }
+                    dir.Normalize(); //부동소수점 문제 때문에 정규화 해준다 
 
                     prevMax = cur; //최대 위치값 갱신
                     Tornado_Num = (Tornado_Count/4)+1; //1 1 1 1 2 2 2 2 3 3 3 3 .... 이렇게 증가하는 수열값임 
