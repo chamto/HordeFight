@@ -170,7 +170,7 @@ namespace UnityEngine
 			{2, 1, 0, 4, 3, 7, 6, 5}, // X
 			{5, 6, 7, 3, 4, 0, 1, 2}, // Y
 		};
-		private static readonly int NeighborCount = 8;
+        private static readonly int NEIGHBOR_COUNT = 8;
 
 		public Sprite m_DefaultSprite;
 		public GameObject m_DefaultGameObject;
@@ -181,7 +181,7 @@ namespace UnityEngine
 			set { m_OverrideSelf = value; }
 		}
 
-		private TileBase[] m_CachedNeighboringTiles = new TileBase[NeighborCount];
+		private TileBase[] m_CachedNeighboringTiles = new TileBase[NEIGHBOR_COUNT];
 		private TileBase m_OverrideSelf;
         private Quaternion m_GameObjectQuaternion;
 
@@ -191,7 +191,7 @@ namespace UnityEngine
             public string m_specifier; //임의의 지정값 , 사용자가 인스펙터상에서 직접 지정한다
 			public int[] m_Neighbors;
             public int[] m_Neighbors_Length; //기본거리 1 , 이웃한 타일 검사시 중앙에서 n칸 거리까지 검사한다
-            public string[] m_Neighbors_ID; //이웃한 객체의 아이디를 나타낸다
+            public string[] m_Neighbors_Specifier; //이웃한 객체의 지정값을 나타낸다
 			public Sprite[] m_Sprites;
             public int m_MultiLength; //멀티모드에서 스프라이트를 몇개 단위로 읽어 들일지 설정
             public bool[] _multi_copy; //지정된 Tilemap에 복사할시 어떤 멀티타일을 복사할지 설정 
@@ -210,9 +210,9 @@ namespace UnityEngine
                 m_specifier = "00";
 				m_Output = OutputSprite.Single;
                 _isTilemapCopy = false;
-				m_Neighbors = new int[NeighborCount];
-                m_Neighbors_Length = new int[NeighborCount];
-                m_Neighbors_ID = new string[NeighborCount];
+				m_Neighbors = new int[NEIGHBOR_COUNT];
+                m_Neighbors_Length = new int[NEIGHBOR_COUNT];
+                m_Neighbors_Specifier = new string[NEIGHBOR_COUNT];
 				m_Sprites = new Sprite[1];
                 m_MultiLength = 1;
                 _multi_copy = new bool[m_MultiLength];
@@ -228,7 +228,7 @@ namespace UnityEngine
                 {
                     m_Neighbors[i] = Neighbor.DontCare;
                     m_Neighbors_Length[i] = 1; //기본거리 1
-                    m_Neighbors_ID[i] = string.Empty; //기본값 공백
+                    m_Neighbors_Specifier[i] = string.Empty; //기본값 공백
                 }
 					
 			}
@@ -245,6 +245,8 @@ namespace UnityEngine
 
 		[HideInInspector] public List<TilingRule> m_TilingRules;
 
+        private static readonly byte DIVISION_MAX_NUM = byte.MaxValue;
+
         [Serializable]
         public class AppointData
         {
@@ -257,7 +259,9 @@ namespace UnityEngine
             public Matrix4x4 transform = Matrix4x4.identity;
             public TilingRule tilingRule = null;
             public Utility.eDirection8 eTransDir = Utility.eDirection8.none; //transform 으로 변환된 값을 저장한 방향 
-            public bool isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
+            public bool isUpTile = false; //덮개 타일 (TileMap_StructUp)
+
+            public byte divisionNum = 0; //분리번호가 다르면 다른타일로 인식한다. 초기화 대상값이 아니다
 
             public void Init()
             {
@@ -538,6 +542,26 @@ namespace UnityEngine
 
             }
 
+            public void Set_DivisionNum(Vector3Int position, byte num)
+            {
+                AppointData getData = null;
+                if (true == this.TryGetValue(position, out getData))
+                {
+                    getData.divisionNum = num;
+                }
+            }
+
+            public byte Get_DivisionNum(Vector3Int position)
+            {
+                AppointData getData = null;
+                if (true == this.TryGetValue(position, out getData))
+                {
+                    return getData.divisionNum;
+                }
+
+                return DIVISION_MAX_NUM;
+            }
+
             public AppointData GetData(Vector3Int position)
             {
                 AppointData getData = null;
@@ -560,7 +584,7 @@ namespace UnityEngine
                 getData.Init();
             }
 
-            public string GetID(Vector3Int position)
+            public string GetSpecifierName(Vector3Int position)
             {
                 TilingRule getData = GetTilingRule(position);
 
@@ -957,8 +981,6 @@ namespace UnityEngine
             }
 
 
-           
-
 
             //============================================================
             //판단값 변환 
@@ -975,7 +997,7 @@ namespace UnityEngine
 
 		public bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, int angle)
 		{
-			for (int i = 0; i < NeighborCount; ++i)
+			for (int i = 0; i < NEIGHBOR_COUNT; ++i)
 			{
 				int index = GetRotatedIndex(i, angle);
 				TileBase tile = neighboringTiles[index];
@@ -989,7 +1011,7 @@ namespace UnityEngine
 
 		public bool RuleMatches(TilingRule rule, ref TileBase[] neighboringTiles, bool mirrorX, bool mirrorY)
 		{
-			for (int i = 0; i < NeighborCount; ++i)
+			for (int i = 0; i < NEIGHBOR_COUNT; ++i)
 			{
 				int index = GetMirroredIndex(i, mirrorX, mirrorY);
 				TileBase tile = neighboringTiles[index];
@@ -1007,10 +1029,12 @@ namespace UnityEngine
 
         public bool RuleMatchesFull_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, ref Matrix4x4 transform)
         {
+            Neighbors8_info neighbors8_Info = GetNeighbors8_Info(tilemap, position, rule);
+
             // Check rule against rotations of 0, 90, 180, 270
             for (int angle = 0; angle <= (rule.m_RuleTransform == TilingRule.Transform.Rotated ? 270 : 0); angle += 90)
             {
-                if (RuleMatches_ToNeighborLength(tilemap, position, rule, angle, false, false))
+                if (RuleMatches_ToNeighborLength(tilemap, position, rule, angle, false, false, neighbors8_Info))
                 {
                     transform = Matrix4x4.TRS(Vector3.zero, Quaternion.Euler(0f, 0f, -angle), Vector3.one);
                     return true;
@@ -1018,14 +1042,14 @@ namespace UnityEngine
             }
 
             // Check rule against x-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, true, false))
+            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorX) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, true, false, neighbors8_Info))
             {
                 transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(-1f, 1f, 1f));
                 return true;
             }
 
             // Check rule against y-axis mirror
-            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, false, true))
+            if ((rule.m_RuleTransform == TilingRule.Transform.MirrorY) && RuleMatches_ToNeighborLength(tilemap, position, rule, 0, false, true, neighbors8_Info))
             {
                 transform = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(1f, -1f, 1f));
                 return true;
@@ -1034,62 +1058,136 @@ namespace UnityEngine
             return false;
         }
 
-        public bool RuleMatches_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, int angle, bool mirrorX, bool mirrorY)
-		{
 
-            //각도모드와 미러모드로 각각 동작한다
-            //둘 동시에 작동못함 
-            if(0 < angle )
+        public struct Neighbors8_info
+        {
+            //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
+            //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
+            //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
+
+            public TileBase[] _tiles;
+            public string[] _specifierNames;
+            public byte[] _divideNums;
+
+            public Neighbors8_info(TileBase[] tiles , string[] names , byte[] divideNums)
             {
-                mirrorX = false;
-                mirrorY = false;
+                _tiles = tiles;
+                _specifierNames = names;
+                _divideNums = divideNums;
             }
+            
+        }
 
-
+        //todo !!! 최적화 필요 : 주변타일정보를 힙메모리에 저장하지 말고, 바로 조회하게 변경해야 한다 
+        //요청 타일의 주변 8개 타일에 대하여 길이설정값에 따른 지정이름을 가져온다
+        public Neighbors8_info GetNeighbors8_Info(ITilemap tilemap, Vector3Int position, TilingRule rule)
+        {
             //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
             //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
             //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
             int seq = 0;
-            TileBase tile = null;
-            TileBase[] neighboringTiles = new TileBase[NeighborCount];
-            string[] neighbors_GetID = new string[NeighborCount]; 
+            TileBase[] neighbors_tiles = new TileBase[NEIGHBOR_COUNT];
+            string[] neighbors_specifierNames = new string[NEIGHBOR_COUNT];
+            byte[] neighbors_divideNums = new byte[NEIGHBOR_COUNT];
             for (int y = 1; y >= -1; y--)
             {
                 for (int x = -1; x <= 1; x++)
                 {
+                    //(0,0)좌표가 아닐 때만 처리한다 
                     if (x != 0 || y != 0)
                     {
+                        //길이값 정보에 따른 주변 타일 가져오기
                         int add_len = rule.m_Neighbors_Length[seq];
-                        Vector3Int tilePosition = new Vector3Int(position.x + x * add_len, position.y + y * add_len, position.z);
-                        tile = tilemap.GetTile(tilePosition);
-                        neighboringTiles[seq] = tile;
+                        Vector3Int getPos = new Vector3Int(position.x + x, position.y + y, position.z);
+                        Vector3Int getPos_length = new Vector3Int(position.x + x * add_len, position.y + y * add_len, position.z);
 
-                        //주변 아이디 수집 
-                        neighbors_GetID[seq] = _tileDataMap.GetID(tilePosition);
+                        //주변 타일 가져오기 - (길이값 정보 적용)
+                        neighbors_tiles[seq] = tilemap.GetTile(getPos_length);
+
+                        //주변 아이디 가져오기 - (길이값 정보 적용)
+                        neighbors_specifierNames[seq] = _tileDataMap.GetSpecifierName(getPos_length);
+
+                        //주변 분리번호 가져오기 - (길이값 정보 적용)
+                        neighbors_divideNums[seq] = _tileDataMap.Get_DivisionNum(getPos_length);
 
                         seq++;
                     }
                 }
             }
 
+            return new Neighbors8_info(neighbors_tiles, neighbors_specifierNames, neighbors_divideNums);
+
+        }
+
+        public bool RuleMatches_ToNeighborLength(ITilemap tilemap, Vector3Int position, TilingRule rule, 
+                                                 int angle, bool mirrorX, bool mirrorY , Neighbors8_info neighbors8)
+		{
+
+            //각도모드와 미러모드로 각각 동작한다
+            //둘 동시에 작동못함 
+            if(0 < angle )
+            {
+                //각도값이 있으면 미러모드는 해제한다 
+                mirrorX = false; mirrorY = false;
+            }
+
+            //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
+            //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)
+            //5 6 7  :  (-1,-1)  ( 0,-1)  ( 1,-1)
+            //주변타일 8개에 대한 규칙이 맞는지 검사한다
+            TileBase trsTile = null;
             int trsIndex = -1;
-            for (int i = 0; i < NeighborCount; ++i)
+            byte divisionNum = _tileDataMap.Get_DivisionNum(position);
+            for (int oriIndex = 0; oriIndex < NEIGHBOR_COUNT; ++oriIndex)
             {
                 if (0 < angle)
                 {
-                    trsIndex = GetRotatedIndex(i, angle);    
+                    trsIndex = GetRotatedIndex(oriIndex, angle);    
                 }else
                 {
-                    trsIndex = GetMirroredIndex(i, mirrorX, mirrorY);    
+                    trsIndex = GetMirroredIndex(oriIndex, mirrorX, mirrorY);    
+                }
+
+                trsTile = neighbors8._tiles[trsIndex];
+
+                //==================================================
+
+                //* 같은 규칙타일 인스턴스의 구분값(DivideNum)이 다른지 검사한다
+                //최대분리값 일때는 타일이 아직 추가되지 않은것이기 때문에 처리하지 않는다
+                //RuleTile 이 아니면 neighbors8._divideNums[n] 값은 최대분리값이 들어가게 된다 
+                if (DIVISION_MAX_NUM != divisionNum)
+                {
+                    switch (rule.m_Neighbors[oriIndex])
+                    {
+                        case TilingRule.Neighbor.This:
+                            {
+                                if (divisionNum != neighbors8._divideNums[trsIndex])
+                                    return false;
+                            }
+                            break;
+                        case TilingRule.Neighbor.NotThis:
+                            {
+                                //없는 조건에서의 타일주소값 처리때문에 이렇게 처리하면 안된다
+                                //if (divisionNum == neighbors8._divideNums[trsIndex])
+                                //return false;
+
+                                //없는 조건이 맞았을때 타일주소값을 null로 만든다
+                                //타일주소가 있으면 다음판단에서 있는 조건이 된다
+                                if (divisionNum != neighbors8._divideNums[trsIndex])
+                                    trsTile = null;
+                            }
+                            break;
+                    }
                 }
 
 
+
+
                 //==================================================
-                if (string.Empty == rule.m_Neighbors_ID[i])
+                if (string.Empty == rule.m_Neighbors_Specifier[oriIndex])
                 {
-                    //대분류 값에 따른 검사를 한다
-                    tile = neighboringTiles[trsIndex];
-                    if (!RuleMatch(rule.m_Neighbors[i], tile))
+                    //** 대분류 값에 따른 검사를 한다
+                    if (!RuleMatch(rule.m_Neighbors[oriIndex], trsTile))
                     {
                         return false;
                     }
@@ -1097,21 +1195,20 @@ namespace UnityEngine
                 else
                 {
                     //** 공백 아이디가 아닌 경우 아이디 비교 검사를 한다
-                    switch (rule.m_Neighbors[i])
+                    switch (rule.m_Neighbors[oriIndex])
                     {
                         
                         case TilingRule.Neighbor.DontCare:
                         case TilingRule.Neighbor.This:
                             {
                                 //대분류 값에 따른 검사를 한다
-                                tile = neighboringTiles[trsIndex];
-                                if (!RuleMatch(rule.m_Neighbors[i], tile))
+                                if (!RuleMatch(rule.m_Neighbors[oriIndex], trsTile))
                                 {
                                     return false;
                                 }
 
                                 ////** 주변설정ID값과 다른지 검사 
-                                if (neighbors_GetID[trsIndex] != rule.m_Neighbors_ID[i])
+                                if (rule.m_Neighbors_Specifier[oriIndex] != neighbors8._specifierNames[trsIndex])
                                 {
                                     return false;
                                 }
@@ -1124,7 +1221,7 @@ namespace UnityEngine
                                 //   대분류 검사에서 비교객체가 존재하면 거짓이 되므로, 아래 처리로 들어오지 못한다  
 
                                 ////** 주변설정ID값과 같은지 검사 
-                                if (neighbors_GetID[trsIndex] == rule.m_Neighbors_ID[i])
+                                if (rule.m_Neighbors_Specifier[oriIndex] != neighbors8._specifierNames[trsIndex])
                                 {
                                     return false;
                                 }
@@ -1132,7 +1229,6 @@ namespace UnityEngine
                             break;
                     }//end switch
                 }//end if
-
 
 
             }//end for
@@ -1149,8 +1245,8 @@ namespace UnityEngine
 			if (neighboringTiles != null)
 				return;
 
-			if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < NeighborCount)
-				m_CachedNeighboringTiles = new TileBase[NeighborCount];
+			if (m_CachedNeighboringTiles == null || m_CachedNeighboringTiles.Length < NEIGHBOR_COUNT)
+				m_CachedNeighboringTiles = new TileBase[NEIGHBOR_COUNT];
 
             //0 1 2  :  (-1, 1)  ( 0, 1)  ( 1, 1)
             //3 x 4  :  (-1, 0)  ( 0, 0)  ( 1, 0)

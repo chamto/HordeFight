@@ -241,11 +241,11 @@ namespace UnityEditor
                     {
                         //8방향
                         EditorGUI.BeginChangeCheck();
-                        string newID = EditorGUI.DelayedTextField(r, tilingRule.m_Neighbors_ID[index]);
+                        string newID = EditorGUI.DelayedTextField(r, tilingRule.m_Neighbors_Specifier[index]);
                         if (EditorGUI.EndChangeCheck())
                         {
                             
-                            tilingRule.m_Neighbors_ID[index] = newID.Substring(0, Mathf.Min(2,newID.Length)); //두글자로 제한한다 
+                            tilingRule.m_Neighbors_Specifier[index] = newID.Substring(0, Mathf.Min(2,newID.Length)); //두글자로 제한한다 
                         }
 
                         index++;

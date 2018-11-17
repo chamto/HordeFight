@@ -17,10 +17,10 @@ MonoBehaviour:
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000200000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -43,10 +43,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000100000001000000000000000200000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -68,10 +68,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000100000001000000000000000000000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -94,10 +94,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0200000001000000000000000100000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -119,10 +119,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000200000000000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -145,10 +145,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000200000001000000000000000200000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -170,10 +170,10 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000100000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 

@@ -52,16 +52,16 @@ namespace HordeFight
 
         }
 
-        //void OnGUI()
-        //{
-        //    if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Struct")))
-        //    {
-        //        RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
+        void OnGUI()
+        {
+            if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
+            {
+                //RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
 
-        //        SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
-        //        DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
-        //    }
-        //}
+                SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
+                //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+            }
+        }
 
 
     }
@@ -603,6 +603,33 @@ namespace HordeFight
             }
         }
 
+        public void UpdateDraw_FogOfWar_DivisionNum()
+        {
+            BoundsInt bounds = SingleO.gridManager.GetTileMap_FogOfWar().cellBounds;
+            RuleTile rule = null;
+            byte divisionNum = 0;
+            Vector3 pos3d = Vector3.zero;
+            foreach (Vector3Int xy in bounds.allPositionsWithin)
+            {
+                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleTile>(xy);
+                if(null != rule)
+                {
+                    pos3d = SingleO.gridManager.ToPosition3D(xy);
+                    pos3d.x += 0.08f;
+                    pos3d.z += 0.16f;
+                    divisionNum = rule._tileDataMap.Get_DivisionNum(xy);
+                    if (0 < divisionNum)
+                        UnityEditor.Handles.color = Color.red;
+                    else
+                        UnityEditor.Handles.color = Color.white;
+                    
+                    UnityEditor.Handles.Label(pos3d, "" + divisionNum);    
+                }
+
+
+            }
+        }
+
         public void UpdateDraw_StructTileDir()
         {
             Color ccc = Color.white;
@@ -620,8 +647,10 @@ namespace HordeFight
                 }
 
                 Vector3 end = t._center_3d + Misc.GetDir8Normal_AxisY(t._dir) * 0.12f;
-
                 Debug.DrawLine(t._center_3d, end, ccc);
+
+
+                //UnityEditor.Handles.Label(t._center_3d, "( " + cur.x + " , " + cur.z + " )");
 
                 //Vector3 crossL = t._v3Center;
                 //crossL.x += -0.08f;
@@ -677,6 +706,8 @@ namespace HordeFight
             //Debug.DrawLine(_start, _end);
 
             //UpdateDraw_StructTileDir();
+
+            UpdateDraw_FogOfWar_DivisionNum();
 
             //Update_DrawEdges(false);
         }
@@ -843,37 +874,52 @@ namespace HordeFight
             TileBase tileScript = SingleO.resourceManager.GetTileScript("fogOfWar_black".GetHashCode());
             TileBase tileScript2 = SingleO.resourceManager.GetTileScript("dungeon_floor_s1_carpet".GetHashCode());
             Vector3Int posXY_2d = this.ToPosition2D(tilePos);
-            _tilemap_fogOfWar.BoxFill(posXY_2d, tileScript ,0,0,20,15);
+            //_tilemap_fogOfWar.BoxFill(posXY_2d, tileScript ,0,0,20,15);
             BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14,11,0), new Vector3Int(27, 21, 1));
 
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
-                _tilemap_fogOfWar.SetColor(xy, baseColor);
                 _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
-                SetTile(_tilemap_fogOfWar, xy, tileScript);
+                _tilemap_fogOfWar.SetColor(xy, baseColor);
+
+                //SetTile(_tilemap_fogOfWar, xy, tileScript);
 
 
                 StructTile structTile = null;
                 if (true == _structTileList.TryGetValue(xy, out structTile))
                 {
+                    //덮개타일인 경우
                     if (true == structTile._isUpTile) 
                     {
-                        _tilemap_fogOfWar.SetColor(xy, fogColor);
+                        //_tilemap_fogOfWar.SetColor(xy, fogColor);
                         //SetTile(_tilemap_fogOfWar, xy, null);
-                        continue;
+                        //continue;
                     }
                 }
 
+                RuleTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleTile;
+                if (null != ruleTile)
+                { 
+                    ruleTile._tileDataMap.Set_DivisionNum(xy, 0);
+                }
                 float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
                 if(sqrDis <  Mathf.Pow(Movement.MeterToWorld * 4f,2))
                 {
-                    _tilemap_fogOfWar.SetColor(xy, fogColor);
+                    //_tilemap_fogOfWar.SetColor(xy, fogColor);
                     //SetTile(_tilemap_fogOfWar, xy, null);
+
+                    if(null != ruleTile)
+                    {
+                        //DebugWide.LogBlue(ruleTile._tileDataMap.Get_DivisionNum(xy));
+                        //분리번호를 지정한다
+                        ruleTile._tileDataMap.Set_DivisionNum(xy, 1);
+                        _tilemap_fogOfWar.RefreshTile(xy);
+                    }
                     continue;
                 }
 
-
             }
+
 
 		}
 
