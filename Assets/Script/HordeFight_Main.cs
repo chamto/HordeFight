@@ -56,7 +56,7 @@ namespace HordeFight
         {
             if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
             {
-                //RuleTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleTile>(new Vector3Int(0, 0, 0));
+                //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
 
                 SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
                 //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
@@ -606,12 +606,12 @@ namespace HordeFight
         public void UpdateDraw_FogOfWar_DivisionNum()
         {
             BoundsInt bounds = SingleO.gridManager.GetTileMap_FogOfWar().cellBounds;
-            RuleTile rule = null;
+            RuleExtraTile rule = null;
             byte divisionNum = 0;
             Vector3 pos3d = Vector3.zero;
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
-                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleTile>(xy);
+                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
                 if(null != rule)
                 {
                     pos3d = SingleO.gridManager.ToPosition3D(xy);
@@ -707,7 +707,7 @@ namespace HordeFight
 
             //UpdateDraw_StructTileDir();
 
-            UpdateDraw_FogOfWar_DivisionNum();
+            //UpdateDraw_FogOfWar_DivisionNum();
 
             //Update_DrawEdges(false);
         }
@@ -825,11 +825,11 @@ namespace HordeFight
 
             SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
             StructTile structTile = null;
-            RuleTile.TilingRule ruleInfo = null;
+            RuleExtraTile.TilingRule ruleInfo = null;
             int specifier = 0;
             foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
             {
-                RuleTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
                 ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
@@ -897,7 +897,7 @@ namespace HordeFight
                     }
                 }
 
-                RuleTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleTile;
+                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
                 if (null != ruleTile)
                 { 
                     ruleTile._tileDataMap.Set_DivisionNum(xy, 0);

@@ -8,7 +8,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
+  m_Script: {fileID: 11500000, guid: 54301df3c6d1e4bcb92b5c36d77adc39, type: 3}
   m_Name: fogOfWar_black
   m_EditorClassIdentifier: 
   _class_id: 1

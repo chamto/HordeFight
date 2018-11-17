@@ -8,18 +8,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
+  m_Script: {fileID: 11500000, guid: 54301df3c6d1e4bcb92b5c36d77adc39, type: 3}
   m_Name: dungeon_floor_s0
   m_EditorClassIdentifier: 
-  _classification: 0
+  _class_id: 1
+  _permit_rules: 1
   m_DefaultSprite: {fileID: 21300000, guid: a50480ef34ae1447bb402fc3ad5424d7, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000200000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -35,17 +36,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 8b6f82a0056a948039a2a2764bdb56f2, type: 3}
     - {fileID: 21300000, guid: 8e86c69b0d08f4f82a49f7b07fe30969, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000200000001000000000000000200000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -61,17 +65,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 0f14053900eef4a18a7a9a884af319a6, type: 3}
     - {fileID: 21300000, guid: 23433fa1858db496a858733993c1748e, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.55
     m_RuleTransform: 2
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000000000000000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -84,17 +91,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c0552964f78ce423b915e81c8db40bac, type: 3}
     - {fileID: 21300000, guid: d0c4cc550a11441e6bf76d2b143c8077, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.46
     m_RuleTransform: 3
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 2
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000000000000000000000200000001000000000000000000000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -108,17 +118,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: c465eee9703fa47798ae2516c278ffb0, type: 3}
     - {fileID: 21300000, guid: 63e8111c7eaff41d09525bc36e5b3b18, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.63
     m_RuleTransform: 2
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 3
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000100000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -130,10 +143,15 @@ MonoBehaviour:
     m_Sprites:
     - {fileID: 21300000, guid: b43603f00e73f4abfb14ccc9ad5e0cce, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 0
     m_Output: 0
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
+  _tilemap_this: {fileID: 0}
+  _tilemap_copy: {fileID: 0}

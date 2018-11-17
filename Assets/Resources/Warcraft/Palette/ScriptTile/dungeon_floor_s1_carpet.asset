@@ -8,18 +8,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d1514134bc4fbd41bb739b1b9a49231, type: 3}
+  m_Script: {fileID: 11500000, guid: 54301df3c6d1e4bcb92b5c36d77adc39, type: 3}
   m_Name: dungeon_floor_s1_carpet
   m_EditorClassIdentifier: 
-  _classification: 0
+  _class_id: 1
+  _permit_rules: 1
   m_DefaultSprite: {fileID: 21300000, guid: 07edf62558a23415f9f716ec0828453f, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
   m_TilingRules:
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000200000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -31,17 +32,20 @@ MonoBehaviour:
     m_Sprites:
     - {fileID: 21300000, guid: 07edf62558a23415f9f716ec0828453f, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 0
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000200000001000000000000000200000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -53,17 +57,20 @@ MonoBehaviour:
     m_Sprites:
     - {fileID: 21300000, guid: 863f29834d79943ad80b98deb54339f8, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.536
     m_RuleTransform: 2
     m_Output: 0
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0200000001000000000000000100000000000000000000000000000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -75,17 +82,20 @@ MonoBehaviour:
     m_Sprites:
     - {fileID: 21300000, guid: 2a00cc7554cdd49f1a6ced96e33b940f, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 0
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000000000000000000000100000000000000020000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -97,17 +107,20 @@ MonoBehaviour:
     m_Sprites:
     - {fileID: 21300000, guid: 5ad00784a595747fbbd3663ef137f38e, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 0
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000002000000000000000000000000000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -121,17 +134,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 73c7df691005a4247afe4bf8880a9498, type: 3}
     - {fileID: 21300000, guid: e85965a56d898487fa8171ae0a79331b, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.93
     m_RuleTransform: 3
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 2
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000000000000000000000200000001000000000000000000000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -145,17 +161,20 @@ MonoBehaviour:
     - {fileID: 21300000, guid: bd608eef91398439ab40f7d03795d218, type: 3}
     - {fileID: 21300000, guid: 2292f8fc30c774504bff6725c9c41c71, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.89
     m_RuleTransform: 2
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 3
-  - m_ID: 00
+  - m_specifier: 00
     m_Neighbors: 0000000001000000000000000100000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
-    m_Neighbors_ID:
+    m_Neighbors_Specifier:
     - 
     - 
     - 
@@ -168,10 +187,15 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 97fa27dd74d344d67a02a9880726b9f1, type: 3}
     - {fileID: 21300000, guid: 489fe971926d14998b7244a7499f54f4, type: 3}
     m_MultiLength: 1
+    _multi_copy: 01
+    _push_dir8: 0
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.51
     m_RuleTransform: 0
     m_Output: 2
+    _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 1
+  _tilemap_this: {fileID: 0}
+  _tilemap_copy: {fileID: 0}
