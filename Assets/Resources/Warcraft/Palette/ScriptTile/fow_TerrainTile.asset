@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e4e4fc705376343a3e65b25d94f0e2, type: 3}
+  m_Name: fow_TerrainTile
+  m_EditorClassIdentifier: 
+  _pos_dir8:
+  - {x: 0, y: 1, z: 0}
+  - {x: 1, y: 1, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 1, y: -1, z: 0}
+  - {x: 0, y: -1, z: 0}
+  - {x: -1, y: -1, z: 0}
+  - {x: -1, y: 0, z: 0}
+  - {x: -1, y: 1, z: 0}
+  m_Sprites:
+  - {fileID: 21300000, guid: 2f81d53fc9f89442bbbdfd322ce8be12, type: 3}
+  - {fileID: 21300000, guid: d10d8f9b114024b37bda987886652f87, type: 3}
+  - {fileID: 21300000, guid: 54673c293678d4f228aaf2a40b7699f8, type: 3}
+  - {fileID: 21300000, guid: 54673c293678d4f228aaf2a40b7699f8, type: 3}
+  - {fileID: 21300000, guid: 2885691fa3dcb437182b0b7ecae89a5a, type: 3}
+  - {fileID: 21300000, guid: 9cb9e4c440ea049428ecfae829f7046f, type: 3}
+  - {fileID: 21300000, guid: 9cb9e4c440ea049428ecfae829f7046f, type: 3}
+  - {fileID: 21300000, guid: 9cb9e4c440ea049428ecfae829f7046f, type: 3}
+  - {fileID: 21300000, guid: 9cb9e4c440ea049428ecfae829f7046f, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}
+  - {fileID: 21300000, guid: 251632380f49448e0a3b1ef62d22017a, type: 3}

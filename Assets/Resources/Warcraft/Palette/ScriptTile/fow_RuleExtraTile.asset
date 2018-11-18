@@ -9,10 +9,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 54301df3c6d1e4bcb92b5c36d77adc39, type: 3}
-  m_Name: fogOfWar_black
+  m_Name: fow_RuleExtraTile
   m_EditorClassIdentifier: 
-  _class_id: 1
-  _permit_rules: 1
+  _class_id: 512
+  _permit_rules: 512
   m_DefaultSprite: {fileID: 21300000, guid: ac02a5994e71e4bd4a447991267b842e, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1

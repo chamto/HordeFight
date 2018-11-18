@@ -859,99 +859,74 @@ namespace HordeFight
         public void SetTile(Tilemap tilemap, Vector3Int xy_2d , TileBase setTile)
         {
             TileBase getTile = tilemap.GetTile(xy_2d);
-            if(getTile != setTile)
+            if (getTile != setTile)
             {
                 tilemap.SetTile(xy_2d, setTile);        
             }
         }
 
 
-        int HashId_FogOfWarBlack = "fogOfWar_black".GetHashCode();
-        public void FullFill_FogOfWar(Vector3 tilePos)
-		{
-            Color baseColor = Color.white;
-            Color fogColor = new Color(1, 1, 1, 0.3f);
-            TileBase tileScript = SingleO.resourceManager.GetTileScript("fogOfWar_black".GetHashCode());
-            TileBase tileScript2 = SingleO.resourceManager.GetTileScript("dungeon_floor_s1_carpet".GetHashCode());
-            Vector3Int posXY_2d = this.ToPosition2D(tilePos);
-            //_tilemap_fogOfWar.BoxFill(posXY_2d, tileScript ,0,0,20,15);
-            BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14,11,0), new Vector3Int(27, 21, 1));
-
-            foreach (Vector3Int xy in bounds.allPositionsWithin)
-            {
-                _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
-                _tilemap_fogOfWar.SetColor(xy, baseColor);
-
-                //SetTile(_tilemap_fogOfWar, xy, tileScript);
-
-
-                StructTile structTile = null;
-                if (true == _structTileList.TryGetValue(xy, out structTile))
-                {
-                    //덮개타일인 경우
-                    if (true == structTile._isUpTile) 
-                    {
-                        //_tilemap_fogOfWar.SetColor(xy, fogColor);
-                        //SetTile(_tilemap_fogOfWar, xy, null);
-                        //continue;
-                    }
-                }
-
-                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
-                if (null != ruleTile)
-                { 
-                    ruleTile._tileDataMap.Set_DivisionNum(xy, 0);
-                }
-                float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
-                if(sqrDis <  Mathf.Pow(Movement.MeterToWorld * 4f,2))
-                {
-                    //_tilemap_fogOfWar.SetColor(xy, fogColor);
-                    //SetTile(_tilemap_fogOfWar, xy, null);
-
-                    if(null != ruleTile)
-                    {
-                        //DebugWide.LogBlue(ruleTile._tileDataMap.Get_DivisionNum(xy));
-                        //분리번호를 지정한다
-                        ruleTile._tileDataMap.Set_DivisionNum(xy, 1);
-                        _tilemap_fogOfWar.RefreshTile(xy);
-                    }
-                    continue;
-                }
-
-            }
-
-
-		}
-
+        //List<Vector3Int> _sightOfView = new List<Vector3Int>();
+        //List<TileBase> _sightOfView2 = new List<TileBase>();
 		public void Update_FogOfWar(Vector3 tilePos, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
-            FullFill_FogOfWar(tilePos);
-            return;
+            //_sightOfView.Clear();
+            //_sightOfView2.Clear();
 
+            Color baseColor = Color.white;
+            Color fogColor = new Color(1, 1, 1, 0.7f);
+            TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleExtraTile".GetHashCode());
+            TileBase tileScript2 = SingleO.resourceManager.GetTileScript("ocean".GetHashCode());
+            TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
+            TileBase tileScript4 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
             Vector3Int posXY_2d = this.ToPosition2D(tilePos);
-            Vector3Int calcPos = Vector3Int.zero;
-            TileBase tileScript = SingleO.resourceManager.GetTileScript(HashId_FogOfWarBlack);
 
-            foreach (Vector3Int xy in SingleO.gridManager._indexesNxN[7])
+            BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14, 11, 0), new Vector3Int(27, 21, 1));
+
+            foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
-                calcPos = posXY_2d + xy;
-                //if(3 <= Mathf.Abs(xy.x) || 3 <= Mathf.Abs(xy.y) )
-                //{
-                //    _tilemap_fogOfWar.SetTile(calcPos, tileScript);
-                //    continue;
-                //}
-                   
+                _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
+
                 StructTile structTile = null;
-                if(true == _structTileList.TryGetValue(calcPos , out structTile))
+                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
+                float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
+
+
+
+                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 5f, 2))
                 {
-                    //덮개 타일인 경우 안개타일을 지우지 않는다
-                    if (true == structTile._isUpTile) continue;
+
+                    if (true == _structTileList.TryGetValue(xy, out structTile))
+                    {
+                        //덮개타일인 경우
+                        if (true == structTile._isUpTile)
+                        {
+                            SetTile(_tilemap_fogOfWar, xy, tileScript4);
+                        }
+                        else
+                        {
+                            SetTile(_tilemap_fogOfWar, xy, null);
+                        }
+
+                    }else
+                    {
+                        SetTile(_tilemap_fogOfWar, xy, null);    
+                    }
+
+
+
+                }
+                else
+                {
+                    
+                    SetTile(_tilemap_fogOfWar, xy, tileScript4);
+
                 }
 
-                _tilemap_fogOfWar.SetTile(calcPos, null);        
             }
+
         }
 
         //원 반지름 길이를 포함하는 그리드범위 구하기
@@ -1426,6 +1401,8 @@ namespace HordeFight
             //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
+
+
         }
 
         //____________________________________________

@@ -109,6 +109,7 @@ namespace UnityEngine
             Dungeon_Structure   = 1 << 6,
             Dungeon_Floor       = 1 << 7,
             Dungeon_Floor_Ston  = 1 << 8,
+            FogOfWar            = 1 << 9,
 
             Forest              = 1 << 20,
 
@@ -1068,13 +1069,13 @@ namespace UnityEngine
 
             public TileBase[] _tiles;
             public string[] _specifierNames;
-            public byte[] _divideNums;
+            public byte[] _divisionNums;
 
             public Neighbors8_info(TileBase[] tiles , string[] names , byte[] divideNums)
             {
                 _tiles = tiles;
                 _specifierNames = names;
-                _divideNums = divideNums;
+                _divisionNums = divideNums;
             }
             
         }
@@ -1154,15 +1155,15 @@ namespace UnityEngine
                 //==================================================
 
                 //* 같은 규칙타일 인스턴스의 구분값(DivideNum)이 다른지 검사한다
-                //최대분리값 일때는 타일이 아직 추가되지 않은것이기 때문에 처리하지 않는다
+                //최대분리값 일때는 타일이 아직 추가되지 않은것이기 때문에 처리하지 않는다 (이미 있는 타일에 대해서만 처리한다)
                 //RuleTileExtra 이 아니면 neighbors8._divideNums[n] 값은 최대분리값이 들어가게 된다 
-                if (DIVISION_MAX_NUM != divisionNum)
+                if (DIVISION_MAX_NUM != divisionNum && DIVISION_MAX_NUM != neighbors8._divisionNums[trsIndex])
                 {
                     switch (rule.m_Neighbors[oriIndex])
                     {
                         case TilingRule.Neighbor.This:
                             {
-                                if (divisionNum != neighbors8._divideNums[trsIndex])
+                                if (divisionNum != neighbors8._divisionNums[trsIndex])
                                     return false;
                             }
                             break;
@@ -1174,7 +1175,7 @@ namespace UnityEngine
 
                                 //없는 조건이 맞았을때 타일주소값을 null로 만든다
                                 //타일주소가 있으면 다음판단에서 있는 조건이 된다
-                                if (divisionNum != neighbors8._divideNums[trsIndex])
+                                if (divisionNum != neighbors8._divisionNums[trsIndex])
                                     trsTile = null;
                             }
                             break;

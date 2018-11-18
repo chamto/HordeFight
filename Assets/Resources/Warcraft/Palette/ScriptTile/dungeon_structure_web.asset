@@ -40,7 +40,7 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 0
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_specifier: 00
@@ -66,7 +66,7 @@ MonoBehaviour:
     m_PerlinScale: 0.518
     m_RuleTransform: 0
     m_Output: 2
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 2
   - m_specifier: 07
@@ -207,7 +207,7 @@ MonoBehaviour:
     m_PerlinScale: 0.688
     m_RuleTransform: 2
     m_Output: 2
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_specifier: 00
@@ -232,7 +232,7 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 2
     m_Output: 1
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   - m_specifier: 00
@@ -257,7 +257,7 @@ MonoBehaviour:
     m_PerlinScale: 0.5
     m_RuleTransform: 0
     m_Output: 0
-    _isTilemapCopy: 0
+    _isTilemapCopy: 1
     m_ColliderType: 1
     m_RandomTransform: 0
   _tilemap_this: {fileID: 0}
