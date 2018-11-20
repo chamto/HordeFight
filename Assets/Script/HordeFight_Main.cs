@@ -57,13 +57,13 @@ namespace HordeFight
 
         void OnGUI()
         {
-            if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
-            {
-                //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
+            //if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
+            //{
+            //    //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
 
-                SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
-                //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
-            }
+            //    SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
+            //    //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+            //}
         }
 
 
@@ -605,7 +605,7 @@ namespace HordeFight
 
         public void UpdateDraw_IndexesNxN()
         {
-            
+#if UNITY_EDITOR
             Vector3Int prev = Vector3Int.zero;
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.up))
             foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up))
@@ -614,14 +614,18 @@ namespace HordeFight
                 //DebugWide.LogBlue(v);
                 Debug.DrawLine(cur - Vector3.one * 0.3f , cur + Vector3.one * 0.3f, Color.red);
                 Debug.DrawLine(prev, cur);
+
                 UnityEditor.Handles.Label(cur, "( "+cur.x + " , " + cur.z + " )");
+
                 prev = cur;
 
             }
+#endif
         }
 
         public void UpdateDraw_FogOfWar_DivisionNum()
         {
+#if UNITY_EDITOR
             BoundsInt bounds = SingleO.gridManager.GetTileMap_FogOfWar().cellBounds;
             RuleExtraTile rule = null;
             byte divisionNum = 0;
@@ -629,7 +633,7 @@ namespace HordeFight
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
                 rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
-                if(null != rule)
+                if (null != rule)
                 {
                     pos3d = SingleO.gridManager.ToPosition3D(xy);
                     pos3d.x += 0.08f;
@@ -639,12 +643,13 @@ namespace HordeFight
                         UnityEditor.Handles.color = Color.red;
                     else
                         UnityEditor.Handles.color = Color.white;
-                    
-                    UnityEditor.Handles.Label(pos3d, "" + divisionNum);    
+
+                    UnityEditor.Handles.Label(pos3d, "" + divisionNum);
                 }
 
 
             }
+#endif
         }
 
         public void UpdateDraw_StructTileDir()
@@ -715,8 +720,9 @@ namespace HordeFight
             }
         }
 
-        public void Update_IsVisible_SightOfView(Vector3 origin, Vector3 target , float length_interval)
+        public void Update_IsVisible_SightOfView(Vector3 origin, Vector3 target, float length_interval)
         {
+#if UNITY_EDITOR
             target = SingleO.gridManager.ToCenter3D_FromPosition3D(target);
 
             Vector3Int orgin_2d = SingleO.gridManager.ToPosition2D(origin);
@@ -743,22 +749,22 @@ namespace HordeFight
                 if (orgin_2d == SingleO.gridManager.ToPosition2D(origin_center + next))
                 {
                     keyword += "Eq";
-                    UnityEditor.Handles.Label(origin_center + next, keyword+":" + i); 
+                    UnityEditor.Handles.Label(origin_center + next, keyword + ":" + i);
                     continue;
                 }
 
 
-                if(true == SingleO.gridManager.HasStructTile(origin_center + next , out structTile))
+                if (true == SingleO.gridManager.HasStructTile(origin_center + next, out structTile))
                 {
                     keyword += "St";
 
-                    if(true == structTile._isUpTile)
+                    if (true == structTile._isUpTile)
                     {
                         //덮개타일인 경우
                         keyword += "Up";
                     }
 
-                    switch(SingleO.gridManager.IsIncluded_InDiagonalArea(origin_center + next))
+                    switch (SingleO.gridManager.IsIncluded_InDiagonalArea(origin_center + next))
                     {
                         case GridManager._ReturnMessage_NotIncluded_InDiagonalArea:
                             keyword += "AntiDg";
@@ -776,7 +782,8 @@ namespace HordeFight
             }
 
             Debug.DrawLine(origin_center, target, Color.green);
-            //return true;
+
+#endif
         }
 
        
@@ -999,7 +1006,7 @@ namespace HordeFight
         }
 
 
-        public bool IsVisible(Vector3 origin, Vector3 target , float length_interval)
+        public bool IsVisibleTile(Vector3 origin, Vector3 target , float length_interval)
         {
             //대상타일이 구조타일이면 볼수없다. 바로 끝 
             if (true == this.HasStructUpTile(target)) return false;
@@ -1105,7 +1112,7 @@ namespace HordeFight
                 {
                     
 
-                    if (true == IsVisible(standard_pos, ToPosition3D_Center(xy), 0.1f))
+                    if (true == IsVisibleTile(standard_pos, ToPosition3D_Center(xy), 0.1f))
                     {
                         
                         //대상과 정반대 방향이 아닐때 처리 
@@ -1702,33 +1709,43 @@ namespace HordeFight
                 selected.SetVisible(true);
 
                 //임시처리
-                foreach (Being src in _linearSearch_list)
+                foreach (Being dst in _linearSearch_list)
                 {
-                    if (src == selected) continue;
+                    if (dst == selected) continue;
 
-                    src.SetVisible(false);
+                    dst.SetVisible(false);
 
-                    Vector3 dirToSrc = src.transform.position - selected.transform.position;
-                    float sqrDis = dirToSrc.sqrMagnitude;
-                    if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
+                    if(true == IsVisibleArea(selected, dst.transform.position))
                     {
-                        
-                        //대상과 정반대 방향이 아닐때 처리 
-                        dirToSrc.Normalize();
-                        if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(selected._move._direction, dirToSrc))
-                        {
-                            src.SetVisible(true);
-                        }
-                        if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 2f, 2))
-                        {
-                            src.SetVisible(true);
-                        }
+                        dst.SetVisible(true);
                     }
-
 
                 }//end foreach
             }
 
+        }
+
+        //가시영역 검사 
+        public bool IsVisibleArea(Being src, Vector3 dstPos)
+        {
+            Vector3 dirToDst = dstPos - src.transform.position;
+            float sqrDis = dirToDst.sqrMagnitude;
+            if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
+            {
+
+                //대상과 정반대 방향이 아닐때 처리 
+                dirToDst.Normalize();
+                if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
+                    sqrDis < Mathf.Pow(Movement.MeterToWorld * 2f, 2))
+                {
+                    //보이는 위치의 타일인지 검사한다 
+                    if(true == SingleO.gridManager.IsVisibleTile(src.transform.position,dstPos, 0.1f))
+                        return true;
+                }
+
+            }
+
+            return false;
         }
 
         //____________________________________________
@@ -2531,6 +2548,14 @@ namespace HordeFight
 
                         }else
                         {
+                            //대상이 보이는 위치에 있는지 검사한다 
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _target.transform.position))
+                            {
+                                //대상이 안보이면 다시 배회하기 
+                                _state = eState.Roaming;
+                                break;
+                            }
+                                
 
                             //공격사거리 안에 들어오면 공격한다 
                             if (true == Situation_Is_InRange(Movement.ONE_METER * 1.2f))
@@ -2580,6 +2605,18 @@ namespace HordeFight
                         //일정 거리 안에 적이 있으면 추격한다
                         _target = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, Movement.ONE_METER * 5f);
                         //DebugWide.LogBlue("Roaming: " + _target);
+
+                        //대상이 보이는 위치에 있는지 검사한다 
+                        if(null != _target)
+                        {
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _target.transform.position))
+                            {
+                                //안보이는 위치면 대상을 해제한다 
+                                _target = null;
+                            }
+                        }
+
+
                         if (true == Situation_Is_Enemy())
                         {
                             _state = eState.Chase;
