@@ -389,12 +389,14 @@ namespace HordeFight
         public const float MeterToWorld = ONE_METER;
 
         public eDirection8 _eDir8 = eDirection8.down;
+        public Vector3 _direction = Vector3.back; //_eDir8과 같은 방향으로 설정한다  
+
         private float _speed_meterPerSecond = 1f;
 
         private bool _isNextMoving = false;
         private float _elapsedTime = 0f;
         private float _prevInterpolationTime = 0;
-        public Vector3 _direction = Vector3.zero;
+
         private Vector3 _startPos = Vector3.zero;
         private Vector3 _lastTargetPos = Vector3.zero;
         private Vector3 _nextTargetPos = Vector3.zero;
@@ -405,6 +407,7 @@ namespace HordeFight
 
         private void Start()
         {
+            _direction = Misc.GetDir8_Normal3D_AxisY(_eDir8);
         }
 
         //private void Update()
@@ -519,6 +522,7 @@ namespace HordeFight
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
             _isNextMoving = true;
+            _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
             _eDir8 = Misc.GetDir8_AxisY(dir);
 
             perSecond = 1f / perSecond;
@@ -674,7 +678,7 @@ namespace HordeFight
         private SpriteMask _sprMask = null;
 
         //이동 
-        private Movement _move = null;
+        public Movement _move = null;
         public CellInfo _cellInfo = null;
         public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
@@ -743,6 +747,15 @@ namespace HordeFight
             //DebugWide.LogRed(this.name);
 
             return _collider.radius;
+        }
+
+
+        public void SetVisible(bool onoff)
+        {
+            if(null != _sprRender)
+            {
+                _sprRender.enabled = onoff;
+            }
         }
 
         public bool isDeath()
@@ -1099,6 +1112,7 @@ namespace HordeFight
             {
                 //예약된 방향값 설정
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
+                _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
                 Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
             }
         }

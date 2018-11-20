@@ -87,6 +87,14 @@ namespace HordeFight
             }
         }
 
+        public static TouchControl touchControl
+        {
+            get
+            {
+                return CSingletonMono<TouchControl>.Instance;
+            }
+        }
+
         public static LineControl lineControl
         {
             get
@@ -1112,7 +1120,7 @@ namespace HordeFight
                         }
                         else if(sqrDis < Mathf.Pow(Movement.MeterToWorld * 1f, 2))
                         {
-                            //주변 시야 표현a
+                            //주변 시야 표현
                             SetTile(_tilemap_fogOfWar, xy, null);
                         }
                         else
@@ -1687,6 +1695,39 @@ namespace HordeFight
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
 
+            if(null != SingleO.touchControl._selected)
+            {
+                Being selected = SingleO.touchControl._selected;
+                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction, 0.1f);
+                selected.SetVisible(true);
+
+                //임시처리
+                foreach (Being src in _linearSearch_list)
+                {
+                    if (src == selected) continue;
+
+                    src.SetVisible(false);
+
+                    Vector3 dirToSrc = src.transform.position - selected.transform.position;
+                    float sqrDis = dirToSrc.sqrMagnitude;
+                    if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
+                    {
+                        
+                        //대상과 정반대 방향이 아닐때 처리 
+                        dirToSrc.Normalize();
+                        if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(selected._move._direction, dirToSrc))
+                        {
+                            src.SetVisible(true);
+                        }
+                        if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 2f, 2))
+                        {
+                            src.SetVisible(true);
+                        }
+                    }
+
+
+                }//end foreach
+            }
 
         }
 
@@ -2309,17 +2350,17 @@ namespace HordeFight
             camp_position = 0;
             being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             camp_position++;
-            //for (int i = 0; i < 6; i++)
-            //{ 
-            //    being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            //    being.GetComponent<AI>()._ai_running = true;
-            //    camp_position++;
-            //}
+            for (int i = 0; i < 6; i++)
+            { 
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+                being.GetComponent<AI>()._ai_running = true;
+                camp_position++;
+            }
 
             for (int i = 0; i < 10; i++)
             {
                 being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-                //being.GetComponent<AI>()._ai_running = true;
+                being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -2419,6 +2460,7 @@ namespace HordeFight
         private void Start()
         {
             _me = GetComponent<Being>();
+            _ai_Dir = Misc.GetDir8_Random_AxisY(); //초기 임의의 방향 설정
         }
 
 
@@ -2661,7 +2703,7 @@ namespace HordeFight
 
             }
 
-            SingleO.gridManager.Update_FogOfWar(_selected.transform.position, touchDir, 0.1f);
+            //SingleO.gridManager.Update_FogOfWar(_selected.transform.position, touchDir, 0.1f);
             //View_AnimatorState();
         }
         private void TouchEnded() 
