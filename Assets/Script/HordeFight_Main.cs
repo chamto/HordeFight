@@ -1072,7 +1072,7 @@ namespace HordeFight
 
         //List<Vector3Int> _sightOfView = new List<Vector3Int>();
         //List<TileBase> _sightOfView2 = new List<TileBase>();
-		public void Update_FogOfWar(Vector3 tilePos, float radius)
+        public void Update_FogOfWar(Vector3 standard_pos, Vector3 target_dir, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
@@ -1085,7 +1085,7 @@ namespace HordeFight
             TileBase tileScript2 = SingleO.resourceManager.GetTileScript("ocean".GetHashCode());
             TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
             TileBase tileScript4 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
-            Vector3Int posXY_2d = this.ToPosition2D(tilePos);
+            Vector3Int posXY_2d = this.ToPosition2D(standard_pos);
 
             BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14, 11, 0), new Vector3Int(28, 21, 1));
 
@@ -1095,33 +1095,29 @@ namespace HordeFight
 
                 //StructTile structTile = null;
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
-                float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
+                float sqrDis = (this.ToPosition3D_Center(xy) - standard_pos).sqrMagnitude;
 
 
 
                 if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 7f, 2))
                 {
-                    
-                    if(true == IsVisible(tilePos, ToPosition3D_Center(xy), 0.1f))
+                    //대상과 정반대 방향이 아닐때 처리 
+                    Vector3 tileDir = ToPosition3D(xy) - standard_pos;
+                    if(0 < Vector3.Dot(tileDir, target_dir))
                     {
-                        SetTile(_tilemap_fogOfWar, xy, null);
+                        if (true == IsVisible(standard_pos, ToPosition3D_Center(xy), 0.1f))
+                        {
+                            SetTile(_tilemap_fogOfWar, xy, null);
+                        }
+                        else
+                        {
+                            SetTile(_tilemap_fogOfWar, xy, tileScript3);
+                        }    
                     }
                     else
                     {
-                        //if (true == _structTileList.TryGetValue(xy, out structTile))
-                        //{
-                        //    if (false == structTile._isUpTile)
-                        //    {
-                        //        //동굴벽인 경우, 시야를 밝힌다
-                        //        SetTile(_tilemap_fogOfWar, xy, null);
-                        //    }
-                        //}else
-                        {
-                            SetTile(_tilemap_fogOfWar, xy, tileScript3);    
-                        }
-
+                        SetTile(_tilemap_fogOfWar, xy, tileScript3);
                     }
-                        
 
                 }
                 else
@@ -2636,13 +2632,14 @@ namespace HordeFight
         }
         private void TouchMoved() 
         {
-            RaycastHit hit = SingleO.touchEvent.GetHit3D();
-
             if (null == _selected) return;
+
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+            Vector3 touchDir = hit.point - _selected.transform.position;
 
             //_selected.Attack(hit.point - _selected.transform.position);
             //_selected.Block_Forward(hit.point - _selected.transform.position);
-            _selected.Move_Forward(hit.point - _selected.transform.position, 1f, true);  
+            _selected.Move_Forward(touchDir, 1f, true);  
 
             Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER * 1.2f);
             if (null != target)
@@ -2653,7 +2650,7 @@ namespace HordeFight
 
             }
 
-            SingleO.gridManager.Update_FogOfWar(_selected.transform.position, 0.1f);
+            SingleO.gridManager.Update_FogOfWar(_selected.transform.position, touchDir, 0.1f);
             //View_AnimatorState();
         }
         private void TouchEnded() 
