@@ -817,8 +817,8 @@ namespace HordeFight
 
             if(null != _origin && null != _target)
             {
-                Draw_Grid();
-                Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
+                //Draw_Grid();
+                //Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
             }
         }
 
@@ -1070,15 +1070,12 @@ namespace HordeFight
             }
         }
 
-        //List<Vector3Int> _sightOfView = new List<Vector3Int>();
-        //List<TileBase> _sightOfView2 = new List<TileBase>();
+
         public void Update_FogOfWar(Vector3 standard_pos, Vector3 target_dir, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
-            //_sightOfView.Clear();
-            //_sightOfView2.Clear();
-
+        
             Color baseColor = Color.white;
             Color fogColor = new Color(1, 1, 1, 0.7f);
             TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleExtraTile".GetHashCode());
@@ -1096,28 +1093,42 @@ namespace HordeFight
                 //StructTile structTile = null;
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
                 float sqrDis = (this.ToPosition3D_Center(xy) - standard_pos).sqrMagnitude;
-
-
-
-                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 7f, 2))
+                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
                 {
-                    //대상과 정반대 방향이 아닐때 처리 
-                    Vector3 tileDir = ToPosition3D(xy) - standard_pos;
-                    if(0 < Vector3.Dot(tileDir, target_dir))
+                    
+
+                    if (true == IsVisible(standard_pos, ToPosition3D_Center(xy), 0.1f))
                     {
-                        if (true == IsVisible(standard_pos, ToPosition3D_Center(xy), 0.1f))
+                        
+                        //대상과 정반대 방향이 아닐때 처리 
+                        Vector3 tileDir = ToPosition3D(xy) - standard_pos;
+                        tileDir.Normalize(); target_dir.Normalize();
+                        //tileDir = Misc.GetDir8_Normal3D(tileDir);
+                        //target_dir = Misc.GetDir8_Normal3D(target_dir);
+                        if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(tileDir, target_dir))
                         {
+                            //원거리 시야 표현
+                            SetTile(_tilemap_fogOfWar, xy, null);
+                        }
+                        else if(sqrDis < Mathf.Pow(Movement.MeterToWorld * 1f, 2))
+                        {
+                            //주변 시야 표현a
                             SetTile(_tilemap_fogOfWar, xy, null);
                         }
                         else
                         {
                             SetTile(_tilemap_fogOfWar, xy, tileScript3);
-                        }    
+                        }
+
+
+                        //SetTile(_tilemap_fogOfWar, xy, null);
                     }
                     else
                     {
                         SetTile(_tilemap_fogOfWar, xy, tileScript3);
-                    }
+                    }    
+
+
 
                 }
                 else
