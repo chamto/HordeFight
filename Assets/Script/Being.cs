@@ -671,6 +671,7 @@ namespace HordeFight
         private AnimatorOverrideController _overCtr = null;
         private SpriteRenderer _sprRender = null;
         private SphereCollider _collider = null;
+        private SpriteMask _sprMask = null;
 
         //이동 
         private Movement _move = null;
@@ -696,7 +697,7 @@ namespace HordeFight
             _sprRender = GetComponentInChildren<SpriteRenderer>();
             _collider = GetComponent<SphereCollider>();
             _move = GetComponent<Movement>();
-
+            _sprMask = GetComponentInChildren<SpriteMask>();
 
             //=====================================================
             //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
@@ -765,6 +766,14 @@ namespace HordeFight
 
         }
 
+        public void Update_SpriteMask()
+        {
+            if (null == _sprMask) return;
+
+            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
+            _sprMask.sprite = _sprRender.sprite;
+
+        }
 
         /// <summary>
         /// 그리드상 셀값이 변경되면 셀정보값을 갱신한다 
@@ -824,6 +833,7 @@ namespace HordeFight
 
             Update_Shot();
 
+            Update_SpriteMask();
 
             if (false == _move.IsMoving())
             {
