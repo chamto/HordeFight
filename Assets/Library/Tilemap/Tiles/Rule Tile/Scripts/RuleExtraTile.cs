@@ -284,9 +284,9 @@ namespace UnityEngine
 
                 //if (Utility.eDirection8.none != tilingRule._push_dir8) return;
 
-                Vector3 n = Utility.Misc.GetDir8Normal_AxisMZ(tilingRule._push_dir8);
+                Vector3 n = Utility.Misc.GetDir8_Normal3D_AxisMZ(tilingRule._push_dir8);
                 Vector3 tn = transform * n;
-                eTransDir = Utility.Misc.TransDirection8_AxisMZ(tn);
+                eTransDir = Utility.Misc.GetDir8_AxisMZ(tn);
 
                 //DebugWide.LogBlue(n + "   " + tn + "    " + eTransDir);
             }

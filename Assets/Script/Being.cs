@@ -442,7 +442,7 @@ namespace HordeFight
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
                 _direction = Quaternion.FromToRotation(_direction, _nextTargetPos - this.transform.position) * _direction;
-                _eDir8 = Misc.TransDirection8_AxisY(_direction);
+                _eDir8 = Misc.GetDir8_AxisY(_direction);
 
             }
             _elapsed_movingTime += Time.deltaTime;
@@ -493,8 +493,8 @@ namespace HordeFight
             _targetPath = SingleO.pathFinder.Search(this.transform.position, targetPos);
 
             //초기방향을 구한다
-            _eDir8 = Misc.TransDirection8_AxisY(_targetPath.First() - _startPos);
-            _direction = Misc.GetDir8Normal_AxisY(_eDir8);
+            _eDir8 = Misc.GetDir8_AxisY(_targetPath.First() - _startPos);
+            _direction = Misc.GetDir8_Normal3D_AxisY(_eDir8);
         }
 
 
@@ -519,7 +519,7 @@ namespace HordeFight
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
             _isNextMoving = true;
-            _eDir8 = Misc.TransDirection8_AxisY(dir);
+            _eDir8 = Misc.GetDir8_AxisY(dir);
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
@@ -1088,7 +1088,7 @@ namespace HordeFight
             if (hash_state == _hash_attack)
             {
                 //예약된 방향값 설정
-                _move._eDir8 = Misc.TransDirection8_AxisY(_appointmentDir);
+                _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
                 Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
             }
         }
@@ -1293,7 +1293,7 @@ namespace HordeFight
         {
             dir.y = 0;
 
-            _move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
             _behaviorKind = Behavior.eKind.Block;
             Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
@@ -1313,7 +1313,7 @@ namespace HordeFight
 
             //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
             if (false == forward)
-                eDirection = Misc.ReverseDir8_AxisY(eDirection);
+                eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
             _behaviorKind = Behavior.eKind.Move;
             Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);

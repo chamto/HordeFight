@@ -650,26 +650,9 @@ namespace Utility
         //==================      8방향 함수     ==================
         //========================================================
 
-        /// <summary>
-        ///  여덟 방향중 하나를 무작위로 반환한다. 
-        ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
-        /// </summary>
-        /// <returns> 정규벡터 방향값 </returns>
-        static public Vector3 RandomDir8_AxisY()
-        {
-            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
-            int rand = Misc.rand.Next(1, 9); //1~8
-            Vector3 dir = Vector3.zero;
-            rand -= 1;
-            dir.x = Mathf.Cos(ANG_RAD * rand);
-            dir.z = Mathf.Sin(ANG_RAD * rand);
-
-            return dir;
-        }
-
 
         //미리구한 정규화된 8방향값 
-        static private Vector3[] _Dir8_AxisY = new Vector3[]
+        static private Vector3[] _dir8_normal3D_AxisY = new Vector3[]
         {   new Vector3(0,0,0) ,                //    zero = 0, 
             new Vector3(1,0,0).normalized ,     //    right = 1, 
             new Vector3(1,0,1).normalized ,     //    rightUp = 2, 
@@ -682,7 +665,7 @@ namespace Utility
         };
 
         //-z축 기준 
-        static private Vector3[] _Dir8_AxisMZ = new Vector3[]
+        static private Vector3[] _dir8_normal3D_AxisMZ = new Vector3[]
         {   new Vector3(0,0,0) ,                //    zero = 0, 
             new Vector3(1,0,0).normalized ,     //    right = 1, 
             new Vector3(1,1,0).normalized ,     //    rightUp = 2, 
@@ -694,7 +677,7 @@ namespace Utility
             new Vector3(1,-1,0).normalized ,    //    rightDown = 8,
         };
 
-        static private Vector3Int[] _Dir8Int = new Vector3Int[]
+        static private Vector3Int[] _dir8_normal2D = new Vector3Int[]
         {   new Vector3Int(0,0,0) ,                //    zero = 0, 
             new Vector3Int(1,0,0) ,     //    right = 1, 
             new Vector3Int(1,1,0) ,     //    rightUp = 2, 
@@ -707,43 +690,59 @@ namespace Utility
         };
 
 
-        static public Vector3 GetDir8Normal_AxisY(eDirection8 eDirection)
+        /// <summary>
+        ///  여덟 방향중 하나를 무작위로 반환한다. 
+        ///  8방향 캐릭터의 방향을 무작위로 얻고 싶을때 사용 
+        /// </summary>
+        /// <returns> 정규벡터 방향값 </returns>
+        static public Vector3 GetDir8_Random_AxisY()
         {
-            return _Dir8_AxisY[(int)eDirection];
+            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
+            int rand = Misc.rand.Next(1, 9); //1~8
+            Vector3 dir = Vector3.zero;
+            rand -= 1;
+            dir.x = Mathf.Cos(ANG_RAD * rand);
+            dir.z = Mathf.Sin(ANG_RAD * rand);
+
+            return dir;
         }
 
-        static public Vector3 GetDir8Normal_AxisMZ(eDirection8 eDirection)
+        static public eDirection8 GetDir8_Reverse_AxisY(eDirection8 eDirection)
         {
-            return _Dir8_AxisMZ[(int)eDirection];
+            if (eDirection8.none == eDirection) return eDirection8.none;
+
+            int dir = (int)eDirection;
+            dir--; //0~7로 변경
+            dir += 4;
+            dir %= 8;
+            dir++; //1~8로 변경 
+            return (eDirection8)dir;
         }
 
-        static public Vector3Int GetDir8IntNormal(eDirection8 eDirection)
+        static public Vector3 GetDir8_Normal3D_AxisY(eDirection8 eDirection)
         {
-            return _Dir8Int[(int)eDirection];
+            return _dir8_normal3D_AxisY[(int)eDirection];
         }
 
-        static public Vector3Int GetDir8IntNormal(Vector3 dir)
+        static public Vector3Int GetDir8_Normal2D(eDirection8 eDirection)
         {
-            if (Vector3.zero.Equals(dir)) return Vector3Int.zero;
-
-            float rad = Mathf.Atan2(dir.z, dir.x);
-            float deg = Mathf.Rad2Deg * rad;
-
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
-
-            //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
-            quad++; //값의 범위를 0~7 에서 1~8로 변경 
-
-            return _Dir8Int[quad];
+            return _dir8_normal2D[(int)eDirection];
+        }
+        static public Vector3Int GetDir8_Normal2D(Vector3 dir)
+        {
+            int quad = (int)GetDir8_AxisY(dir);
+            return _dir8_normal2D[quad];
+        }
+        static public Vector3 GetDir8_Normal3D(Vector3 dir)
+        {
+            int quad = (int)GetDir8_AxisY(dir);
+            return _dir8_normal3D_AxisY[quad];
         }
 
         /// <summary>
         /// 방향값을 8방향 값으로 변환해 준다 
         /// </summary>
-        static public eDirection8 TransDirection8_AxisY(Vector3 dir)
+        static public eDirection8 GetDir8_AxisY(Vector3 dir)
         {
             if (Vector3.zero.Equals(dir)) return eDirection8.none;
 
@@ -761,7 +760,14 @@ namespace Utility
             return (eDirection8)quad;
         }
 
-        static public eDirection8 TransDirection8_AxisMZ(Vector3 dir)
+        //==========================  Axis munus Z ==============================
+
+        static public Vector3 GetDir8_Normal3D_AxisMZ(eDirection8 eDirection)
+        {
+            return _dir8_normal3D_AxisMZ[(int)eDirection];
+        }
+
+        static public eDirection8 GetDir8_AxisMZ(Vector3 dir)
         {
             if (Vector3.zero.Equals(dir)) return eDirection8.none;
 
@@ -779,28 +785,6 @@ namespace Utility
             return (eDirection8)quad;
         }
 
-
-        //none = 0,
-        //right = 1,
-        //rightUp = 2,
-        //up = 3,
-        //leftUp = 4,
-        //left = 5,
-        //leftDown = 6,
-        //down = 7,
-        //rightDown = 8,
-        //max,
-        static public eDirection8 ReverseDir8_AxisY(eDirection8 eDirection)
-        {
-            if (eDirection8.none == eDirection) return eDirection8.none;
-            
-            int dir = (int)eDirection;
-            dir--; //0~7로 변경
-            dir += 4;
-            dir %= 8;
-            dir++; //1~8로 변경 
-            return (eDirection8)dir;
-        }
 
         //========================================================
         //==================       비트연산        ==================
