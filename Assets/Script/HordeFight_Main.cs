@@ -28,12 +28,15 @@ namespace HordeFight
             gameObject.AddComponent<PathFinder>();
 
             gameObject.AddComponent<UI_Main>();
-            gameObject.AddComponent<DebugViewer>();
+            //gameObject.AddComponent<DebugViewer>();
             gameObject.AddComponent<CameraWalk>();
 
             gameObject.AddComponent<TouchEvent>();
             gameObject.AddComponent<TouchControl>();
 
+            SingleO.hierarchy.GetTransform("z_debug").gameObject.AddComponent<DebugViewer>();
+            SingleO.debugViewer._origin = SingleO.hierarchy.GetTransform("z_debug/origin");
+            SingleO.debugViewer._target = SingleO.hierarchy.GetTransform("z_debug/target");
             //===================
 
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
@@ -431,7 +434,8 @@ namespace HordeFight
             render.material = new Material(Shader.Find("Sprites/Default"));
             render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
             render.transform.parent = dst;
-            render.sortingOrder = -10; //나중에 그려지게 한다.
+            //render.sortingOrder = -10; //나중에 그려지게 한다.
+            render.sortingLayerName = "Effect";
             render.positionCount = 2;
             render.transform.localPosition = Vector3.zero;
 
@@ -469,7 +473,8 @@ namespace HordeFight
             render.material = new Material(Shader.Find("Sprites/Default"));
             render.useWorldSpace = false; //로컬좌표로 설정하면 부모객체 이동시 영향을 받는다. (변경정보에 따른 재갱싱 필요없음)
             render.transform.parent = parent;//부모객체 지정
-            render.sortingOrder = -10; //먼저그려지게 한다.
+            //render.sortingOrder = -10; //먼저그려지게 한다.
+            render.sortingLayerName = "Effect";
             render.positionCount = 20;
             render.loop = true; //처음과 끝을 연결한다 .
             render.transform.localPosition = Vector3.zero;
@@ -547,6 +552,9 @@ namespace HordeFight
 {
     public class DebugViewer : MonoBehaviour
     {
+        public Transform _origin = null;
+        public Transform _target = null;
+
         private Tilemap _tilemap = null;
         private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
 
@@ -698,6 +706,140 @@ namespace HordeFight
             }
         }
 
+        public void Update_IsVisible_SightOfView(Vector3 origin, Vector3 target , float length_interval)
+        {
+            target = SingleO.gridManager.ToCenter3D_FromPosition3D(target);
+
+            Vector3Int orgin_2d = SingleO.gridManager.ToPosition2D(origin);
+            Vector3 origin_center = SingleO.gridManager.ToPosition3D_Center(orgin_2d);
+            Vector3 line = target - origin_center;
+            Vector3 n = line.normalized;
+
+            StructTile structTile = null;
+            Vector3 next = Vector3.zero;
+            for (int i = 0; line.sqrMagnitude > next.sqrMagnitude; i++)
+            {
+                //========================================================================
+                Vector3 cr = Vector3.Cross(n, Vector3.up);
+                cr.Normalize();
+                Debug.DrawLine(origin_center + next - cr * 0.01f, origin_center + next + cr * 0.01f, Color.red);
+                //========================================================================
+
+
+                next = n * length_interval * i;
+
+
+                if (orgin_2d == SingleO.gridManager.ToPosition2D(origin_center + next))
+                {
+                    
+                    UnityEditor.Handles.Label(origin_center + next, " e:" + i); 
+                    continue;
+                }
+
+                //if (this.HasStructTile(orgin + next))
+                //{
+                //    return false;
+                //}
+
+                if (true == SingleO.gridManager._structTileList.TryGetValue(SingleO.gridManager.ToPosition2D(origin_center + next), out structTile))
+                {
+
+                    //if (true == structTile._isUpTile)
+                    {
+                        //덮개타일인 경우
+                        //return false;
+                    }
+                    UnityEditor.Handles.Label(origin_center + next, " s:" + i); 
+                }
+
+            }
+
+            Debug.DrawLine(origin_center, target, Color.green);
+            //return true;
+        }
+
+        //public bool IsVisible(Vector3 origin, Vector3 target, float length_interval)
+        //{
+        //    Vector3Int origin_2d = ToPosition2D(origin);
+        //    Vector3 origin_center = ToPosition3D_Center(origin_2d);
+
+        //    StructTile structTile = null;
+        //    //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
+        //    if (this.HasStructTile(origin, out structTile))
+        //    {
+        //        switch (structTile._dir)
+        //        {
+        //            case eDirection8.leftUp:
+        //            case eDirection8.leftDown:
+        //            case eDirection8.rightUp:
+        //            case eDirection8.rightDown:
+        //                {
+        //                    //모서리 값으로 설정 
+        //                    Vector3Int dir = Misc.GetDir8IntNormal(structTile._dir);
+        //                    origin_center.x += dir.x * cellSize_x * 0.5f;
+        //                    origin_center.z += dir.y * cellSize_z * 0.5f;
+
+        //                    //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
+        //                }
+        //                break;
+        //            default:
+        //                {
+        //                    origin_center = ToPosition3D_Center(origin_2d + Misc.GetDir8IntNormal(structTile._dir));
+        //                }
+        //                break;
+        //        }
+
+        //    }
+
+        //    Vector3 line = target - origin_center;
+        //    Vector3 n = line.normalized;
+        //    Vector3 next = Vector3.zero;
+        //    //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
+        //    for (int i = 1; line.sqrMagnitude > next.sqrMagnitude; i++)
+        //    {
+        //        next = n * length_interval * i;
+
+
+        //        if (this.HasStructUpTile_InPostion2D(ToPosition2D(origin_center + next)))
+        //        {
+        //            return false;
+        //        }
+
+        //    }
+
+
+        //    return true;
+        //}
+
+        public void Draw_Grid()
+        {
+            float size = SingleO.gridManager.cellSize_x;
+            Vector3 start = Vector3.zero;
+            Vector3 end = Vector3.zero;
+            Vector3 xz_length = new Vector3(6.5f, 0, 4f);
+
+            end.z = xz_length.z;
+            for (int x = 0; size * x < xz_length.x; x++)
+            {
+                start.x = size * x;
+                end.x = size * x;
+
+                Debug.DrawLine(start, end, Color.white);    
+            }
+
+            start = end = Vector3.zero;
+            end.x = xz_length.x;
+            for (int z = 0; size * z < xz_length.z; z++)
+            {
+                start.z = size * z;
+                end.z = size * z;
+
+                Debug.DrawLine(start, end, Color.white);    
+            }
+
+
+        }
+
         void OnDrawGizmos()
         {
             //UnityEditor.Handles.Label(Vector3.zero, "0,0");
@@ -710,6 +852,13 @@ namespace HordeFight
             //UpdateDraw_FogOfWar_DivisionNum();
 
             //Update_DrawEdges(false);
+
+
+            if(null != _origin && null != _target)
+            {
+                Draw_Grid();
+                Update_IsVisible_SightOfView(_origin.position, _target.position , 0.08f);
+            }
         }
 
   //      void FixedUpdate()
@@ -755,6 +904,7 @@ namespace HordeFight
 
         private Grid _grid = null;
         private Tilemap _tilemap_struct = null;
+        private Tilemap _tilemap_structUp = null;
         private Tilemap _tilemap_fogOfWar = null;
         public Dictionary<Vector3Int,CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>();
         public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>();
@@ -787,6 +937,11 @@ namespace HordeFight
             return _tilemap_struct;
         }
 
+        public Tilemap GetTileMap_StructUp()
+        {
+            return _tilemap_structUp;
+        }
+
         public Tilemap GetTileMap_FogOfWar()
         {
             return _tilemap_fogOfWar;
@@ -799,6 +954,11 @@ namespace HordeFight
             if(null != o)
             {
                 _tilemap_struct = o.GetComponent<Tilemap>();    
+            }
+            o = GameObject.Find("Tilemap_StructureUp");
+            if (null != o)
+            {
+                _tilemap_structUp = o.GetComponent<Tilemap>();
             }
             o = GameObject.Find("Tilemap_FogOfWar");
             if (null != o)
@@ -847,6 +1007,19 @@ namespace HordeFight
             }
 
             DebugWide.LogBlue("LoadTile : " + _structTileList.Count + "  -  TileMap_Struct RefreshAllTiles");
+
+            //덮개 타일 생성
+            TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
+            foreach (KeyValuePair<Vector3Int,StructTile> t in _structTileList)
+            { 
+                if(true == t.Value._isUpTile)
+                {
+                    _tilemap_structUp.SetTile(t.Key, tileScript);
+                }
+            }
+
+            DebugWide.LogBlue("덮개타일 생성 완료 : " + tileScript.name);
+
         }
 
 
@@ -854,6 +1027,60 @@ namespace HordeFight
         void FixedUpdate()
         {
 
+        }
+
+
+        public bool IsVisible(Vector3 origin, Vector3 target , float length_interval)
+        {
+            Vector3Int origin_2d = ToPosition2D(origin);
+            Vector3 origin_center = ToPosition3D_Center(origin_2d);
+
+            StructTile structTile = null;
+            //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
+            if (this.HasStructTile(origin , out structTile))
+            {
+                switch(structTile._dir)
+                {
+                    case eDirection8.leftUp:
+                    case eDirection8.leftDown:
+                    case eDirection8.rightUp:
+                    case eDirection8.rightDown:
+                        {
+                            //모서리 값으로 설정 
+                            Vector3Int dir = Misc.GetDir8IntNormal(structTile._dir);
+                            origin_center.x += dir.x * cellSize_x * 0.5f;
+                            origin_center.z += dir.y * cellSize_z * 0.5f;
+
+                            //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
+                        }
+                        break;
+                    default:
+                        {
+                            origin_center = ToPosition3D_Center(origin_2d + Misc.GetDir8IntNormal(structTile._dir));
+                        }
+                        break;
+                }
+
+            }
+                
+            Vector3 line = target - origin_center;
+            Vector3 n = line.normalized;
+            Vector3 next = Vector3.zero;
+            //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
+            for (int i=1; line.sqrMagnitude > next.sqrMagnitude ;i++ )
+            {
+                next = n * length_interval * i;
+
+                //if(this.HasStructTile(origin_center + next))
+                if (this.HasStructUpTile_InPostion2D(ToPosition2D(origin_center + next)))
+                {
+                    return false;
+                }
+
+            }
+
+
+            return true;
         }
 
         public void SetTile(Tilemap tilemap, Vector3Int xy_2d , TileBase setTile)
@@ -864,7 +1091,6 @@ namespace HordeFight
                 tilemap.SetTile(xy_2d, setTile);        
             }
         }
-
 
         //List<Vector3Int> _sightOfView = new List<Vector3Int>();
         //List<TileBase> _sightOfView2 = new List<TileBase>();
@@ -889,40 +1115,41 @@ namespace HordeFight
             {
                 _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
 
-                StructTile structTile = null;
+                //StructTile structTile = null;
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
                 float sqrDis = (this.ToPosition3D_Center(xy) - tilePos).sqrMagnitude;
 
 
 
-                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 5f, 2))
+                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 7f, 2))
                 {
-
-                    if (true == _structTileList.TryGetValue(xy, out structTile))
+                    
+                    if(true == IsVisible(tilePos, ToPosition3D_Center(xy), 0.08f))
                     {
-                        //덮개타일인 경우
-                        if (true == structTile._isUpTile)
-                        {
-                            SetTile(_tilemap_fogOfWar, xy, tileScript4);
-                        }
-                        else
-                        {
-                            SetTile(_tilemap_fogOfWar, xy, null);
-                        }
-
-                    }else
-                    {
-                        SetTile(_tilemap_fogOfWar, xy, null);    
+                        SetTile(_tilemap_fogOfWar, xy, null);
                     }
+                    else
+                    {
+                        //if (true == _structTileList.TryGetValue(xy, out structTile))
+                        //{
+                        //    if (false == structTile._isUpTile)
+                        //    {
+                        //        //동굴벽인 경우, 시야를 밝힌다
+                        //        SetTile(_tilemap_fogOfWar, xy, null);
+                        //    }
+                        //}else
+                        {
+                            SetTile(_tilemap_fogOfWar, xy, tileScript3);    
+                        }
 
-
+                    }
+                        
 
                 }
                 else
                 {
-                    
-                    SetTile(_tilemap_fogOfWar, xy, tileScript4);
-
+                    //안보이는 곳
+                    SetTile(_tilemap_fogOfWar, xy, tileScript3);
                 }
 
             }
@@ -1140,6 +1367,17 @@ namespace HordeFight
 
         }
 
+
+        public bool HasStructUpTile_InPostion2D(Vector3Int tileInt)
+        {
+            StructTile structTile = null;
+            if (true == _structTileList.TryGetValue(tileInt, out structTile))
+            {
+                return structTile._isUpTile;
+            }
+
+            return false;
+        }
 
         public bool HasStructTile_InPostion2D(Vector3Int tileInt)
         {

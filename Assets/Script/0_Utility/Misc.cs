@@ -694,6 +694,19 @@ namespace Utility
             new Vector3(1,-1,0).normalized ,    //    rightDown = 8,
         };
 
+        static private Vector3Int[] _Dir8Int = new Vector3Int[]
+        {   new Vector3Int(0,0,0) ,                //    zero = 0, 
+            new Vector3Int(1,0,0) ,     //    right = 1, 
+            new Vector3Int(1,1,0) ,     //    rightUp = 2, 
+            new Vector3Int(0,1,0) ,     //    up = 3,
+            new Vector3Int(-1,1,0) ,    //    leftUp = 4,
+            new Vector3Int(-1,0,0) ,    //    left = 5,
+            new Vector3Int(-1,-1,0) ,   //    leftDown = 6,
+            new Vector3Int(0,-1,0) ,    //    down = 7,
+            new Vector3Int(1,-1,0) ,    //    rightDown = 8,
+        };
+
+
         static public Vector3 GetDir8Normal_AxisY(eDirection8 eDirection)
         {
             return _Dir8_AxisY[(int)eDirection];
@@ -702,6 +715,29 @@ namespace Utility
         static public Vector3 GetDir8Normal_AxisMZ(eDirection8 eDirection)
         {
             return _Dir8_AxisMZ[(int)eDirection];
+        }
+
+        static public Vector3Int GetDir8IntNormal(eDirection8 eDirection)
+        {
+            return _Dir8Int[(int)eDirection];
+        }
+
+        static public Vector3Int GetDir8IntNormal(Vector3 dir)
+        {
+            if (Vector3.zero.Equals(dir)) return Vector3Int.zero;
+
+            float rad = Mathf.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = Mathf.RoundToInt(deg / 45f);
+            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            quad++; //값의 범위를 0~7 에서 1~8로 변경 
+
+            return _Dir8Int[quad];
         }
 
         /// <summary>
