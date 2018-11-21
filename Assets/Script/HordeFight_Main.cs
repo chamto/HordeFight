@@ -924,12 +924,12 @@ namespace HordeFight
             //Update_DrawEdges(false);
 
 
-            if(null != _origin && null != _target)
-            {
-                Draw_Grid();
-                Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
-                IsVisibleTile(_origin.position, _target.position, _length_interval);
-            }
+            //if(null != _origin && null != _target)
+            //{
+            //    Draw_Grid();
+            //    Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
+            //    IsVisibleTile(_origin.position, _target.position, _length_interval);
+            //}
         }
 
   //      void FixedUpdate()
@@ -2412,13 +2412,6 @@ namespace HordeFight
             _beings.Add(_id_sequence,cha);
             _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
 
-            if (Being.eKind.spearman == eKind)
-            {
-                Create_ShotSpear(obj.transform, 0);
-                //Create_ShotSpear(obj.transform, 1);
-                //Create_ShotSpear(obj.transform, 2);
-            }
-
             return cha;
         }
 
@@ -2495,19 +2488,19 @@ namespace HordeFight
             camp_position = 0;
             being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             camp_position++;
-            //for (int i = 0; i < 6; i++)
-            //{ 
-            //    being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            //    being.GetComponent<AI>()._ai_running = true;
-            //    camp_position++;
-            //}
+            for (int i = 0; i < 4; i++)
+            { 
+                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+                being.GetComponent<AI>()._ai_running = true;
+                camp_position++;
+            }
 
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            //    being.GetComponent<AI>()._ai_running = true;
-            //    camp_position++;
-            //}
+            for (int i = 0; i < 5; i++)
+            {
+                being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+                being.GetComponent<AI>()._ai_running = true;
+                camp_position++;
+            }
 
         }
 

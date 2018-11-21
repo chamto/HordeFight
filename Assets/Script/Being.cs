@@ -589,6 +589,47 @@ namespace HordeFight
 
     }
 
+    //========================================================
+
+    public class Shot : MonoBehaviour
+    {
+        private void Start()
+        {
+
+        }
+
+        private void FixedUpdate()
+        {
+
+        }
+    }
+
+    public class Obstacle : MonoBehaviour
+    {
+
+        private SpriteRenderer _sprRender = null;
+
+		private void Start()
+		{
+            _sprRender = GetComponent<SpriteRenderer>();
+		}
+
+		private void FixedUpdate()
+		{
+            Update_SortingOrder();
+		}
+
+        public void Update_SortingOrder()
+        {
+            if (null == _sprRender) return;
+
+            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+        }
+	}
+
+    //========================================================
 
     public class Being : MonoBehaviour
     {
@@ -653,7 +694,7 @@ namespace HordeFight
 
         //상태정보
         public ePhase _phase = ePhase.None;
-        private bool _death = false;
+        //private bool _death = false;
 
         //주시대상
         public Being _looking = null;
@@ -941,14 +982,17 @@ namespace HordeFight
             //이동정보에 따라 위치 갱신
             _move.UpdateNextPath();
 
-            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
 
+            Update_SortingOrder();
             //========================================
         }//end func
 
-
+        public void Update_SortingOrder()
+        {
+            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+        }
 
         //____________________________________________
         //                  충돌반응
@@ -1417,7 +1461,7 @@ namespace HordeFight
             {
                 //다시 살리기
                 _animator.Play("idle");
-                _death = false;
+                //_death = false;
                 _hp_cur = 10;
                 _behaviorKind = Behavior.eKind.Idle;
             }
