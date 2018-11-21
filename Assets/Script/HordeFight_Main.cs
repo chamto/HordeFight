@@ -720,9 +720,46 @@ namespace HordeFight
             }
         }
 
+
+        public void Draw_Grid()
+        {
+            float size = SingleO.gridManager.cellSize_x;
+            Vector3 start = Vector3.zero;
+            Vector3 end = Vector3.zero;
+            Vector3 xz_length = new Vector3(6.5f, 0, 4f);
+
+            end.z = xz_length.z;
+            for (int x = 0; size * x < xz_length.x; x++)
+            {
+                start.x = size * x;
+                end.x = size * x;
+
+                Debug.DrawLine(start, end, Color.white);
+            }
+
+            start = end = Vector3.zero;
+            end.x = xz_length.x;
+            for (int z = 0; size * z < xz_length.z; z++)
+            {
+                start.z = size * z;
+                end.z = size * z;
+
+                Debug.DrawLine(start, end, Color.white);
+            }
+
+        }
+
+
         public void Update_IsVisible_SightOfView(Vector3 origin, Vector3 target, float length_interval)
         {
 #if UNITY_EDITOR
+
+            //값이 너무 작으면 바로 종료 
+            if(0.01f >= length_interval)
+            {
+                return;
+            }
+
             target = SingleO.gridManager.ToCenter3D_FromPosition3D(target);
 
             Vector3Int orgin_2d = SingleO.gridManager.ToPosition2D(origin);
@@ -786,34 +823,91 @@ namespace HordeFight
 #endif
         }
 
-       
-        public void Draw_Grid()
+
+        public void IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
         {
-            float size = SingleO.gridManager.cellSize_x;
-            Vector3 start = Vector3.zero;
-            Vector3 end = Vector3.zero;
-            Vector3 xz_length = new Vector3(6.5f, 0, 4f);
-
-            end.z = xz_length.z;
-            for (int x = 0; size * x < xz_length.x; x++)
+#if UNITY_EDITOR
+            //interval 값이 너무 작으면 바로 종료 한다 
+            if (0.01f >= length_interval)
             {
-                start.x = size * x;
-                end.x = size * x;
-
-                Debug.DrawLine(start, end, Color.white);    
+                return;
             }
 
-            start = end = Vector3.zero;
-            end.x = xz_length.x;
-            for (int z = 0; size * z < xz_length.z; z++)
-            {
-                start.z = size * z;
-                end.z = size * z;
+            target_3d = SingleO.gridManager.ToCenter3D_FromPosition3D(target_3d);
 
-                Debug.DrawLine(start, end, Color.white);    
+            //대상타일이 구조덮개타일이면 볼수없다. 바로 끝 
+            //if (true == this.HasStructUpTile(target)) return false;
+
+            Vector3Int origin_2d = SingleO.gridManager.ToPosition2D(origin_3d);
+            Vector3 origin_3d_center = SingleO.gridManager.ToPosition3D_Center(origin_2d);
+
+            //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
+            StructTile structTile = null;
+            if (SingleO.gridManager.HasStructTile(origin_3d, out structTile))
+            {
+                switch (structTile._dir)
+                {
+                    case eDirection8.leftUp:
+                    case eDirection8.leftDown:
+                    case eDirection8.rightUp:
+                    case eDirection8.rightDown:
+                        {
+                            //모서리 값으로 설정 
+                            Vector3Int dir = Misc.GetDir8_Normal2D(structTile._dir);
+                            origin_3d_center.x += dir.x * SingleO.gridManager.cellSize_x * 0.5f;
+                            origin_3d_center.z += dir.y * SingleO.gridManager.cellSize_z * 0.5f;
+
+                            //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
+                        }
+                        break;
+                    default:
+                        {
+                            origin_3d_center = SingleO.gridManager.ToPosition3D_Center(origin_2d + Misc.GetDir8_Normal2D(structTile._dir));
+                        }
+                        break;
+                }
+
+                UnityEditor.Handles.Label(origin_3d_center, "__before:" + SingleO.gridManager.ToPosition3D_Center(origin_2d) + " after:" + origin_3d_center);
             }
 
 
+            Vector3 line = target_3d - origin_3d_center;
+            Vector3 n = line.normalized;
+
+            //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
+            int count = 1;
+            Vector3 next = n * length_interval * count;
+            while (line.sqrMagnitude > next.sqrMagnitude)
+            {
+                UnityEditor.Handles.Label(origin_3d_center + next, "__" + count);
+
+                if (SingleO.gridManager.HasStructTile(origin_3d_center + next, out structTile))
+                //if (this.HasStructUpTile(origin_center + next))
+                {
+                    if (true == structTile._isUpTile)
+                    {
+
+                        //return false;
+
+                        if (GridManager._ReturnMessage_NotIncluded_InDiagonalArea != SingleO.gridManager.IsIncluded_InDiagonalArea(origin_3d_center + next))
+                        {
+                            //return false;
+                            break;
+                        }
+                    }
+
+                }
+
+                count++;
+                next = n * length_interval * count;
+
+            }
+
+            UnityEditor.Handles.Label(origin_3d_center + next,  "_________end :" + count);
+
+            Debug.DrawLine(origin_3d_center, target_3d, Color.green);
+            //return true;
+#endif
         }
 
         void OnDrawGizmos()
@@ -832,8 +926,9 @@ namespace HordeFight
 
             if(null != _origin && null != _target)
             {
-                //Draw_Grid();
-                //Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
+                Draw_Grid();
+                Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
+                IsVisibleTile(_origin.position, _target.position, _length_interval);
             }
         }
 
@@ -1006,17 +1101,34 @@ namespace HordeFight
         }
 
 
-        public bool IsVisibleTile(Vector3 origin, Vector3 target , float length_interval)
+        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
         {
-            //대상타일이 구조타일이면 볼수없다. 바로 끝 
-            if (true == this.HasStructUpTile(target)) return false;
+            //interval 값이 너무 작으면 바로 종료 한다 
+            if(0.01f >= length_interval)
+            {
+                return false;
+            }
 
-            Vector3Int origin_2d = ToPosition2D(origin);
-            Vector3 origin_center = ToPosition3D_Center(origin_2d);
+            //if(ToPosition2D(origin_3d) == new Vector3Int(22,13,0) && 
+            //   ToPosition2D(target_3d) == new Vector3Int(22,9,0))
+            //{
+            //    DebugWide.LogBlue("오동작");
+
+            //}
+            //Vector3Int test = Vector3Int.zero;
+            //test = _tilemap_struct.WorldToCell(origin_3d);
+            //test = ToPosition2D(origin_3d);
+
+            //대상타일이 구조덮개타일이면 볼수없다. 바로 끝 
+            //if (true == this.HasStructUpTile(target)) return false;
+
+            Vector3Int origin_2d = ToPosition2D(origin_3d);
+            Vector3 origin_3d_center = ToPosition3D_Center(origin_2d);
+
 
             //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
             StructTile structTile = null;
-            if (this.HasStructTile(origin , out structTile))
+            if (this.HasStructTile(origin_3d , out structTile))
             {
                 switch(structTile._dir)
                 {
@@ -1027,22 +1139,22 @@ namespace HordeFight
                         {
                             //모서리 값으로 설정 
                             Vector3Int dir = Misc.GetDir8_Normal2D(structTile._dir);
-                            origin_center.x += dir.x * cellSize_x * 0.5f;
-                            origin_center.z += dir.y * cellSize_z * 0.5f;
+                            origin_3d_center.x += dir.x * cellSize_x * 0.5f;
+                            origin_3d_center.z += dir.y * cellSize_z * 0.5f;
 
                             //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
                         }
                         break;
                     default:
                         {
-                            origin_center = ToPosition3D_Center(origin_2d + Misc.GetDir8_Normal2D(structTile._dir));
+                            origin_3d_center = ToPosition3D_Center(origin_2d + Misc.GetDir8_Normal2D(structTile._dir));
                         }
                         break;
                 }
 
             }
                 
-            Vector3 line = target - origin_center;
+            Vector3 line = target_3d - origin_3d_center;
             Vector3 n = line.normalized;
 
             //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
@@ -1051,7 +1163,7 @@ namespace HordeFight
             while (line.sqrMagnitude > next.sqrMagnitude)
             {
                 
-                if(this.HasStructTile(origin_center + next, out structTile))
+                if(this.HasStructTile(origin_3d_center + next, out structTile))
                 //if (this.HasStructUpTile(origin_center + next))
                 {
                     if(true == structTile._isUpTile)
@@ -1059,7 +1171,7 @@ namespace HordeFight
 
                         //return false;
 
-                        if (GridManager._ReturnMessage_NotIncluded_InDiagonalArea != this.IsIncluded_InDiagonalArea(origin_center + next))
+                        if (GridManager._ReturnMessage_NotIncluded_InDiagonalArea != this.IsIncluded_InDiagonalArea(origin_3d_center + next))
                         {
                             return false;
                         }
@@ -1071,7 +1183,6 @@ namespace HordeFight
                 next = n * length_interval * count;
 
             }
-
 
             return true;
         }
@@ -1086,7 +1197,7 @@ namespace HordeFight
         }
 
 
-        public void Update_FogOfWar(Vector3 standard_pos, Vector3 target_dir, float radius)
+        public void Update_FogOfWar(Vector3 standard_3d, Vector3 target_dir, float radius)
         {
             if (null == _tilemap_fogOfWar) return;
 
@@ -1097,59 +1208,64 @@ namespace HordeFight
             TileBase tileScript2 = SingleO.resourceManager.GetTileScript("ocean".GetHashCode());
             TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
             TileBase tileScript4 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
-            Vector3Int posXY_2d = this.ToPosition2D(standard_pos);
+            Vector3Int posXY_2d = this.ToPosition2D(standard_3d);
+            Vector3 tile_3d_center = Vector3.zero;
+            //Vector3 standard_3d_center = this.ToCenter3D_FromPosition3D(standard_3d);
 
             BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14, 11, 0), new Vector3Int(28, 21, 1));
 
-            foreach (Vector3Int xy in bounds.allPositionsWithin)
+            foreach (Vector3Int tile_2d in bounds.allPositionsWithin)
             {
-                _tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
+                //_tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
+                tile_3d_center = this.ToPosition3D_Center(tile_2d);
 
-                //StructTile structTile = null;
-                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(xy) as RuleExtraTile;
-                float sqrDis = (this.ToPosition3D_Center(xy) - standard_pos).sqrMagnitude;
-                if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
+                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
+                float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
+                if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 6.2f, 2))
                 {
-                    
-
-                    if (true == IsVisibleTile(standard_pos, ToPosition3D_Center(xy), 0.1f))
+                    if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
                     {
-                        
+
                         //대상과 정반대 방향이 아닐때 처리 
-                        Vector3 tileDir = ToPosition3D(xy) - standard_pos;
+                        Vector3 tileDir = tile_3d_center - standard_3d;
                         tileDir.Normalize(); target_dir.Normalize();
                         //tileDir = Misc.GetDir8_Normal3D(tileDir);
                         //target_dir = Misc.GetDir8_Normal3D(target_dir);
-                        if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(tileDir, target_dir))
+
+
+                        if (true == this.HasStructUpTile(tile_3d_center))
+                        {
+                            //구조덮개타일인 경우 
+                            SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                        }
+                        else 
+                            if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, target_dir))
                         {
                             //원거리 시야 표현
-                            SetTile(_tilemap_fogOfWar, xy, null);
+                            SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
-                        else if(sqrDis < Mathf.Pow(Movement.MeterToWorld * 1f, 2))
+                        else if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 1.2f, 2))
                         {
                             //주변 시야 표현
-                            SetTile(_tilemap_fogOfWar, xy, null);
+                            SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
                         else
                         {
-                            SetTile(_tilemap_fogOfWar, xy, tileScript3);
+                            SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                         }
 
-
                         //SetTile(_tilemap_fogOfWar, xy, null);
+
                     }
                     else
                     {
-                        SetTile(_tilemap_fogOfWar, xy, tileScript3);
-                    }    
-
-
-
+                        SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                    }
                 }
                 else
                 {
                     //안보이는 곳
-                    SetTile(_tilemap_fogOfWar, xy, tileScript3);
+                    SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                 }
 
             }
@@ -1439,7 +1555,8 @@ namespace HordeFight
         }
         public bool HasStructUpTile(Vector3 xz_3d, out StructTile structTile)
         {
-            return HasStructUpTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
+            //return HasStructUpTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
+            return HasStructUpTile_InPostion2D(this.ToPosition2D(xz_3d), out structTile);
         }
         public bool HasStructUpTile_InPostion2D(Vector3Int xy_2d , out StructTile structTile)
         {
@@ -1459,7 +1576,8 @@ namespace HordeFight
         }
         public bool HasStructTile(Vector3 xz_3d, out StructTile structTile)
         {
-            return HasStructTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
+            //return HasStructTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
+            return HasStructTile_InPostion2D(this.ToPosition2D(xz_3d), out structTile);
         }
         public bool HasStructTile_InPostion2D(Vector3Int xy_2d)
         {
@@ -1558,34 +1676,44 @@ namespace HordeFight
         }
 
 
+
         //2d 좌표는 x,y만 사용한다. x,z좌표로의 변환은 허용 안한다 
         public Vector3Int ToPosition2D(Vector3 pos3d)
         {
 
             Vector3Int posXY_2d = Vector3Int.zero;
 
-            {
-                if(0 <= pos3d.x)
-                {
-                    //양수일때는 소수점을 버린다. 
-                    posXY_2d.x = (int)(pos3d.x / cellSize_x);
-                }
-                else
-                {
-                    //음수일때는 올림을 한다. 
-                    posXY_2d.x = (int)((pos3d.x / cellSize_x) - 0.9f);
-                }
+            //if (0 <= pos3d.x)
+            //{
+            //    //양수일때는 소수점을 버린다. 
+            //    posXY_2d.x = (int)(pos3d.x / cellSize_x);
+            //}
+            //else
+            //{
+            //    //음수일때는 올림을 한다. 
+            //    posXY_2d.x = (int)((pos3d.x / cellSize_x) - 0.9f);
+            //}
 
-                if (0 <= pos3d.z)
-                { 
-                    posXY_2d.y = (int)(pos3d.z / cellSize_z);
-                }
-                else
-                { 
-                    posXY_2d.y = (int)((pos3d.z / cellSize_z) - 0.9f);
-                }
-            }
 
+            //if (0 <= pos3d.z)
+            //{
+
+            //    //???? 부동소수점 때문에 생기는 이상한 계산 결과 : 버림 함수를 사용하여 비트쯔끄러기를 처리한다
+            //    //posXY_2d.y = (int)(pos3d.z / cellSize_z); //(int)(0.8 / 0.16) => 4 로 잘못계산됨. 5가 나와야 한다
+
+            //    posXY_2d.y = Mathf.FloorToInt(pos3d.z / cellSize_z);
+
+            //}
+            //else
+            //{
+            //    posXY_2d.y = (int)((pos3d.z / cellSize_z) - 0.9f);
+            //}
+
+            //부동소수점 처리 문제로 직접계산하지 않는다 
+            posXY_2d.x = Mathf.FloorToInt(pos3d.x / cellSize_x);
+            posXY_2d.y = Mathf.FloorToInt(pos3d.z / cellSize_z);
+
+            //posXY_2d = _tilemap_struct.WorldToCell(pos3d); //버림함수를 사용하여 계산하는 것과 결과가 달리 나온다 
 
             return posXY_2d;
         }
@@ -1730,7 +1858,7 @@ namespace HordeFight
         {
             Vector3 dirToDst = dstPos - src.transform.position;
             float sqrDis = dirToDst.sqrMagnitude;
-            if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 6f, 2))
+            if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 7f, 2))
             {
 
                 //대상과 정반대 방향이 아닐때 처리 
@@ -2367,19 +2495,19 @@ namespace HordeFight
             camp_position = 0;
             being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             camp_position++;
-            for (int i = 0; i < 6; i++)
-            { 
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-                being.GetComponent<AI>()._ai_running = true;
-                camp_position++;
-            }
+            //for (int i = 0; i < 6; i++)
+            //{ 
+            //    being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //    being.GetComponent<AI>()._ai_running = true;
+            //    camp_position++;
+            //}
 
-            for (int i = 0; i < 10; i++)
-            {
-                being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-                being.GetComponent<AI>()._ai_running = true;
-                camp_position++;
-            }
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //    being.GetComponent<AI>()._ai_running = true;
+            //    camp_position++;
+            //}
 
         }
 
