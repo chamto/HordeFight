@@ -606,6 +606,9 @@ namespace HordeFight
 
     public class Obstacle : MonoBehaviour
     {
+        //고유정보
+        public uint _id;
+        public Being.eKind _kind = Being.eKind.None;
 
         private SpriteRenderer _sprRender = null;
 
@@ -649,6 +652,8 @@ namespace HordeFight
         public enum eKind
         {
             None = 0,
+
+            ______Champ______,
             footman,
             lothar,
             skeleton,
@@ -665,6 +670,11 @@ namespace HordeFight
             waterElemental,
             fireElemental,
 
+            ______Obstacle______,
+            barrel, //숱통
+
+            ______Shot______,
+            spear, //창
         }
 
 
