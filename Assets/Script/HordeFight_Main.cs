@@ -2264,7 +2264,7 @@ namespace HordeFight
         /// 조건에 포함하는 가장 가까운 객체를 반환한다
         /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
         /// </summary>
-        public Being GetNearCharacter(Being src, Camp.eRelation vsRelation, float minRadius, float maxRadius)
+        public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float minRadius, float maxRadius)
         {
             float sqr_minRadius = 0;
             float sqr_maxRadius = 0;
@@ -2276,7 +2276,7 @@ namespace HordeFight
 
             //int count = 0;
             CellInfo cellInfo = null;
-            Being target = null;
+            ChampUnit target = null;
             foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[ NxN ])
             {
                 cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
@@ -2285,12 +2285,15 @@ namespace HordeFight
 
                 foreach (Being dst in cellInfo)
                 {
+                    ChampUnit champDst = dst as ChampUnit;
+                    if (null == champDst) continue;
                     if (src == dst) continue;
                     if (true == dst.isDeath()) continue; //쓰러진 객체는 처리하지 않는다 
 
-                    if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != dst._belongCamp)
+
+                    if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != champDst._belongCamp)
                     {
-                        Camp.eRelation getRelation = SingleO.campManager.GetRelation(src._belongCamp.campKind, dst._belongCamp.campKind);
+                        Camp.eRelation getRelation = SingleO.campManager.GetRelation(src._belongCamp.campKind, champDst._belongCamp.campKind);
 
                         //요청 관계가 아니면 처리하지 않는다 
                         if (vsRelation != getRelation)
@@ -2313,7 +2316,7 @@ namespace HordeFight
                         if (min_value > sqr_dis)
                         {
                             min_value = sqr_dis;
-                            target = dst;
+                            target = champDst;
                         }
                     }
                     //==========================================================v
@@ -2400,7 +2403,7 @@ namespace HordeFight
             _id_sequence++;
 
             GameObject obj = CreatePrefab(eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
-            Being cha = obj.AddComponent<Being>();
+            ChampUnit cha = obj.AddComponent<ChampUnit>();
             obj.AddComponent<Movement>();
             obj.AddComponent<AI>();
             cha._id = _id_sequence;
@@ -2415,13 +2418,32 @@ namespace HordeFight
             return cha;
         }
 
-        public GameObject Create_ShotSpear(Transform parent, int id)
+        public Shot Create_Shot(Transform parent, Being.eKind eKind,  Vector3 pos)
         {
-            GameObject obj = CreatePrefab("shot/spear", parent, id.ToString("000") + "_spear");
-            obj.transform.parent = parent;
-            obj.transform.localPosition = new Vector3(-0.15f, 0, 0.15f);
+            _id_sequence++;
 
-            return obj;
+            GameObject obj = CreatePrefab("Shot/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
+            Shot shot = obj.AddComponent<Shot>();
+            obj.AddComponent<Movement>();
+            shot._id = _id_sequence;
+            shot._kind = eKind;
+            shot.transform.localPosition = pos;
+
+            return shot;
+        }
+
+        public Obstacle Create_Obstacle(Transform parent, Being.eKind eKind, Vector3 pos)
+        {
+            _id_sequence++;
+
+            GameObject obj = CreatePrefab("Obstacle/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
+            Obstacle otc = obj.AddComponent<Obstacle>();
+            obj.AddComponent<Movement>();
+            otc._id = _id_sequence;
+            otc._kind = eKind;
+            otc.transform.localPosition = pos;
+
+            return otc;
         }
 
         private int __TestSkelCount = 9;
@@ -2587,7 +2609,7 @@ namespace HordeFight
             Roaming, //배회하기
         }
         private eState _state = eState.Roaming;
-        private Being _me = null;
+        private ChampUnit _me = null;
         private Being _target = null;
         private Vector3 _ai_Dir = Vector3.zero;
         private float _elapsedTime = 0f;
@@ -2597,7 +2619,7 @@ namespace HordeFight
 
         private void Start()
         {
-            _me = GetComponent<Being>();
+            _me = GetComponent<ChampUnit>();
             _ai_Dir = Misc.GetDir8_Random_AxisY(); //초기 임의의 방향 설정
         }
 
@@ -2615,10 +2637,13 @@ namespace HordeFight
 
         public bool Situation_Is_Enemy()
         {
-            //불확실한 대상
-            if (null == _target || null == _target._belongCamp || null == _me._belongCamp) return false;
+            ChampUnit champTarget = _target as ChampUnit;
+            if (null == champTarget ) return false;
 
-            Camp.eRelation relation = SingleO.campManager.GetRelation(_me._belongCamp.campKind, _target._belongCamp.campKind);
+            //불확실한 대상
+            if (null == _target || null == champTarget._belongCamp || null == _me._belongCamp) return false;
+
+            Camp.eRelation relation = SingleO.campManager.GetRelation(_me._belongCamp.campKind, champTarget._belongCamp.campKind);
 
             if (Camp.eRelation.Enemy == relation) return true;
 
@@ -2796,6 +2821,7 @@ namespace HordeFight
 		private Vector3 __startPos = Vector3.zero;
 		private void TouchBegan() 
         {
+            ChampUnit champ = null;
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
             __startPos = hit.point;
             __startPos.y = 0f;
@@ -2810,12 +2836,20 @@ namespace HordeFight
                 //전 객체 선택 해제 
                 if (null != _selected)
                 {
-                    SingleO.lineControl.SetActive(_selected._UIID_circle_collider, false);
+                    champ = _selected as ChampUnit;
+                    if(null != champ)
+                        SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
                 }
 
                 //새로운 객체 선택
                 _selected = getBeing;
-                SingleO.lineControl.SetActive(_selected._UIID_circle_collider, true);
+
+                champ = _selected as ChampUnit;
+                if (null != champ)
+                {
+                    SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
+                }
+
                 SingleO.cameraWalk.SetTarget(_selected.transform);
             }
             //else
@@ -2852,7 +2886,7 @@ namespace HordeFight
             //_selected.Block_Forward(hit.point - _selected.transform.position);
             _selected.Move_Forward(touchDir, 1f, true);  
 
-            Being target = SingleO.objectManager.GetNearCharacter(_selected, Camp.eRelation.Unknown, 0, Movement.ONE_METER * 1.2f);
+            Being target = SingleO.objectManager.GetNearCharacter(_selected as ChampUnit, Camp.eRelation.Unknown, 0, Movement.ONE_METER * 1.2f);
             if (null != target)
             {
                 //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 

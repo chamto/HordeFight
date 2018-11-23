@@ -362,25 +362,6 @@ namespace HordeFight
     //==================   캐릭터/구조물 정보   ==================
     //========================================================
 
-
-    /// <summary>
-    /// 존재
-    /// </summary>
-    //public class Being : MonoBehaviour
-    //{
-    //    //** 결합 기능들 **
-    //    //      이동 , 타기가능 , 탈것가능 , 던지기 , 마법 , 스킬   
-    //}
-
-    /// <summary>
-    /// 구조물 : 건물 , 배
-    /// </summary>
-    public class Structure : Being
-    {
-
-    }
-
-
     public class Movement : MonoBehaviour
     {
         public const float ONE_METER = 0.16f; //타일 한개의 가로길이 
@@ -552,6 +533,58 @@ namespace HordeFight
     }
     //========================================================
 
+
+
+    //========================================================
+
+    public class Shot : Being
+    {
+        
+        //private void Start()
+        //{
+            
+        //}
+
+        //private void FixedUpdate()
+        //{
+           
+        //}
+
+    }
+
+    public class Obstacle : Being
+    {
+
+        //private void Start()
+		//{
+            
+		//}
+
+		//private void FixedUpdate()
+		//{
+        //      base.Update_SortingOrder();
+		//}
+
+	}
+
+    /// <summary>
+    /// 구조물 : 건물 , 배
+    /// </summary>
+    public class Structure : Being
+    {
+        //private void Start()
+        //{
+
+        //}
+
+        //private void FixedUpdate()
+        //{
+
+        //}
+    }
+
+    //========================================================
+
     /// <summary>
     /// 뛰어난 존재 
     /// </summary>
@@ -587,49 +620,65 @@ namespace HordeFight
 
         public ushort _level = 1;
 
-    }
+        //능력치1 
+        public ushort _power = 1;
+        public float _range_min = 0.15f;
+        public float _range_max = 0.15f;
 
-    //========================================================
+        //보조정보 
+        //private Geo.Sphere _collider;
+        //private Vector3 _direction = Vector3.forward;
 
-    public class Shot : MonoBehaviour
-    {
-        private void Start()
-        {
 
-        }
+        //주시대상
+        public Being _looking = null;
 
-        private void FixedUpdate()
-        {
+        //소유아이템
+        public Inventory _inventory = null;
 
-        }
-    }
+        //전용UI
+        public int _UIID_circle_collider = -1;
+        public int _UIID_hp = -1;
+        //====================================
 
-    public class Obstacle : MonoBehaviour
-    {
-        //고유정보
-        public uint _id;
-        public Being.eKind _kind = Being.eKind.None;
+        //진영정보
+        public Camp _belongCamp = null; //소속 캠프
+        //public TacticsSphere _tacticsSphere = new TacticsSphere();
 
-        private SpriteRenderer _sprRender = null;
+        public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
 		private void Start()
 		{
-            _sprRender = GetComponent<SpriteRenderer>();
+            //DebugWide.LogBlue("ChampUnit");
+            this.Init();
 		}
 
-		private void FixedUpdate()
-		{
-            Update_SortingOrder();
-		}
-
-        public void Update_SortingOrder()
+        private void FixedUpdate()
         {
-            if (null == _sprRender) return;
-
-            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+            this.UpdateAll();
         }
+
+		public override void Init()
+		{
+            base.Init();
+
+            _activeRange.radius = 0.2f;
+
+            //=====================================================
+            // ui 설정 
+            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
+            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
+            SingleO.lineControl.SetActive(_UIID_hp, false);
+            //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
+		}
+
+		public override void UpdateAll()
+		{
+            base.UpdateAll();
+		}
+
+
 	}
 
     //========================================================
@@ -685,32 +734,8 @@ namespace HordeFight
         public uint _id;
         public eKind _kind = eKind.None;
 
-        //능력치1 
-        public ushort _power = 1;
         public int _hp_cur = 10;
         public int _hp_max = 10;
-        public float _range_min = 0.15f;
-        public float _range_max = 0.15f;
-
-        //보조정보 
-        //private Geo.Sphere _collider;
-        //private Vector3 _direction = Vector3.forward;
-
-
-        //동작정보
-        public Behavior.eKind _behaviorKind = Behavior.eKind.None;
-        public Behavior _behavior = null;
-        public float _timeDelta = 0f;  //시간변화량
-
-        //상태정보
-        public ePhase _phase = ePhase.None;
-        //private bool _death = false;
-
-        //주시대상
-        public Being _looking = null;
-
-        //소유아이템
-        public Inventory _inventory = null;
 
         //====================================
 
@@ -723,30 +748,36 @@ namespace HordeFight
 
         //애니
         public Animator _animator = null;
-        private AnimatorOverrideController _overCtr = null;
-        private SpriteRenderer _sprRender = null;
-        private SphereCollider _collider = null;
-        private SpriteMask _sprMask = null;
+        protected AnimatorOverrideController _overCtr = null;
+        protected SpriteRenderer _sprRender = null;
+        protected SphereCollider _collider = null;
+        protected SpriteMask _sprMask = null;
+
+        //동작정보
+        public Behavior.eKind _behaviorKind = Behavior.eKind.None;
+        public Behavior _behavior = null;
+        public float _timeDelta = 0f;  //시간변화량
+
+        //상태정보
+        public ePhase _phase = ePhase.None;
+        //private bool _death = false;
 
         //이동 
         public Movement _move = null;
         public CellInfo _cellInfo = null;
-        public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
+        //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
 
-        //전용UI
-        public int _UIID_circle_collider = -1;
-        public int _UIID_hp = -1;
-        //====================================
 
-        //진영정보
-        public Camp _belongCamp = null; //소속 캠프
-        //public TacticsSphere _tacticsSphere = new TacticsSphere();
-
-        public Geo.Sphere _activeRange = Geo.Sphere.Zero;
-        //====================================
 
         private void Start()
+        {
+            //DebugWide.LogBlue("Being");
+            //todo : test 필요 . 상속하면 누구 Start 가 호출되는 것인가 ? 
+            this.Init();
+        }
+
+        public virtual void Init()
         {
             //=====================================================
             _sprRender = GetComponentInChildren<SpriteRenderer>();
@@ -776,18 +807,14 @@ namespace HordeFight
             //=====================================================
             //초기 애니 설정 
             this.Idle();
-            _activeRange.radius = 0.2f;
-
-
-            //=====================================================
-            // ui 설정 
-            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
-            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
-            SingleO.lineControl.SetActive(_UIID_hp, false);
-            //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
-
         }
+
+        //private void Update()
+        void FixedUpdate()
+        {
+            this.UpdateAll();
+
+        }//end func
 
 
         public float GetCollider_Radius()
@@ -809,6 +836,7 @@ namespace HordeFight
             }
         }
 
+
         public bool isDeath()
         {
             if (0 == _hp_cur) return true;
@@ -826,9 +854,10 @@ namespace HordeFight
             if (_hp_max < _hp_cur)
                 _hp_cur = _hp_max;
 
-            SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
+            //SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
 
         }
+
 
         public void Update_SpriteMask()
         {
@@ -847,12 +876,12 @@ namespace HordeFight
             Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
 
             //충돌없는 마지막 타일 위치를 갱신한다 
-            StructTile structTile = null;
-            if (false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
-            {
-                _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(cur_posXY_2d);
-                //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
-            }
+            //StructTile structTile = null;
+            //if (false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
+            //{
+            //    _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(cur_posXY_2d);
+            //    //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
+            //}
 
 
             UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
@@ -873,12 +902,16 @@ namespace HordeFight
             }
         }
 
+        public void Update_SortingOrder()
+        {
+            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
+            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+        }
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
-        //private void Update()
-        void FixedUpdate()
+        public virtual void UpdateAll()
         {
-
             if (isDeath())
             {
                 FallDown();
@@ -995,14 +1028,8 @@ namespace HordeFight
 
             Update_SortingOrder();
             //========================================
-        }//end func
-
-        public void Update_SortingOrder()
-        {
-            //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
-            //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
         }
+
 
         //____________________________________________
         //                  충돌반응
@@ -1494,7 +1521,7 @@ namespace HordeFight
 
             if (eKind.spearman == _kind)
             {
-                Being target = SingleO.objectManager.GetNearCharacter(this, Camp.eRelation.Unknown, 0.5f, 2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this as ChampUnit, Camp.eRelation.Unknown, 0.5f, 2f);
 
                 if (null != target)
                 {
@@ -1526,7 +1553,7 @@ namespace HordeFight
                 //dir.Normalize();
                 //float dis = 0.16f * 1f;
 
-                Being target = SingleO.objectManager.GetNearCharacter(this, Camp.eRelation.Unknown, 0, 0.2f);
+                Being target = SingleO.objectManager.GetNearCharacter(this as ChampUnit, Camp.eRelation.Unknown, 0, 0.2f);
                 if (null != target)
                 {
                     _behaviorKind = Behavior.eKind.Attack;
