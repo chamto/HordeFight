@@ -2266,6 +2266,8 @@ namespace HordeFight
         /// </summary>
         public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float minRadius, float maxRadius)
         {
+            if (null == src) return null;
+
             float sqr_minRadius = 0;
             float sqr_maxRadius = 0;
             float min_value = maxRadius * maxRadius * 1000f; //최대 반경보다 큰 최대값 지정
@@ -2429,6 +2431,9 @@ namespace HordeFight
             shot._kind = eKind;
             shot.transform.localPosition = pos;
 
+            _beings.Add(_id_sequence, shot);
+            _linearSearch_list.Add(shot);
+
             return shot;
         }
 
@@ -2437,13 +2442,16 @@ namespace HordeFight
             _id_sequence++;
 
             GameObject obj = CreatePrefab("Obstacle/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
-            Obstacle otc = obj.AddComponent<Obstacle>();
+            Obstacle obst = obj.AddComponent<Obstacle>();
             obj.AddComponent<Movement>();
-            otc._id = _id_sequence;
-            otc._kind = eKind;
-            otc.transform.localPosition = pos;
+            obst._id = _id_sequence;
+            obst._kind = eKind;
+            obst.transform.localPosition = pos;
 
-            return otc;
+            _beings.Add(_id_sequence, obst);
+            _linearSearch_list.Add(obst);
+
+            return obst;
         }
 
         private int __TestSkelCount = 9;
@@ -2523,6 +2531,14 @@ namespace HordeFight
                 being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
+
+            //===================================================
+            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
+            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
+            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
+            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
+            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
+            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
 
         }
 

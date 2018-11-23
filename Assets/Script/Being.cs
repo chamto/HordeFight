@@ -540,30 +540,31 @@ namespace HordeFight
     public class Shot : Being
     {
         
-        //private void Start()
-        //{
-            
-        //}
+        private void Start()
+        {
+            base.Init();
+        }
 
-        //private void FixedUpdate()
-        //{
-           
-        //}
+        private void FixedUpdate()
+        {
+            base.UpdateAll();
+        }
 
     }
 
     public class Obstacle : Being
     {
 
-        //private void Start()
-		//{
-            
-		//}
+        private void Start()
+		{
+            base.Init();
+		}
 
-		//private void FixedUpdate()
-		//{
-        //      base.Update_SortingOrder();
-		//}
+		private void FixedUpdate()
+		{
+            base.UpdateAll();
+            //base.Update_SortingOrder();
+		}
 
 	}
 
@@ -770,32 +771,40 @@ namespace HordeFight
 
 
 
-        private void Start()
-        {
-            //DebugWide.LogBlue("Being");
-            //todo : test 필요 . 상속하면 누구 Start 가 호출되는 것인가 ? 
-            this.Init();
-        }
+        //private void Start()
+        //{
+        //    //DebugWide.LogBlue("Being");
+        //    //todo : test 필요 . 상속하면 누구 Start 가 호출되는 것인가 ? 
+        //    this.Init();
+        //}
+
+        ////private void Update()
+        //void FixedUpdate()
+        //{
+        //    this.UpdateAll();
+
+        //}//end func
 
         public virtual void Init()
         {
             //=====================================================
-            _sprRender = GetComponentInChildren<SpriteRenderer>();
             _collider = GetComponent<SphereCollider>();
             _move = GetComponent<Movement>();
+
+            _sprRender = GetComponentInChildren<SpriteRenderer>();
+            _animator = GetComponentInChildren<Animator>();
             _sprMask = GetComponentInChildren<SpriteMask>();
 
             //=====================================================
             //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             //오버라이트컨트롤러를 직접 생성해서 추가한다
-            _animator = GetComponentInChildren<Animator>();
-            //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
-            _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-            _overCtr.name = "divide_character_" + _id.ToString();
-            _animator.runtimeAnimatorController = _overCtr;
-
-
-
+            if(null != _animator)
+            {
+                //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
+                _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+                _overCtr.name = "divide_character_" + _id.ToString();
+                _animator.runtimeAnimatorController = _overCtr;
+            }
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
@@ -809,12 +818,7 @@ namespace HordeFight
             this.Idle();
         }
 
-        //private void Update()
-        void FixedUpdate()
-        {
-            this.UpdateAll();
 
-        }//end func
 
 
         public float GetCollider_Radius()
@@ -1073,6 +1077,7 @@ namespace HordeFight
 
         public void Switch_Ani(string aniKind, string aniName, eDirection8 dir)
         {
+            if (null == _overCtr) return;
 
             _sprRender.flipX = false;
             string aniNameSum = "";
@@ -1153,10 +1158,16 @@ namespace HordeFight
 
         public void Idle()
         {
+            
             _behaviorKind = Behavior.eKind.Idle;
-            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
-            _animator.SetInteger("state", (int)Behavior.eKind.Idle);
-            _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다
+
+            if (null != _animator) 
+            {
+                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+                _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다    
+            }
+
         }
 
         //public void Idle_LookAt()
@@ -1421,10 +1432,14 @@ namespace HordeFight
                 eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
             _behaviorKind = Behavior.eKind.Move;
-            Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
-            _animator.SetInteger("state", (int)Behavior.eKind.Move);
-            //int hash = Animator.StringToHash("move");
-            //_animator.SetTrigger(hash);
+
+            if(null != _animator)
+            {
+                Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
+                //int hash = Animator.StringToHash("move");
+                _animator.SetInteger("state", (int)Behavior.eKind.Move);    
+            }
+
         }
 
         public void Move_Push(Vector3 dir, float second)
@@ -1435,10 +1450,15 @@ namespace HordeFight
 
             //아이들 상태에서 밀려 이동하는 걸 표현
             _behaviorKind = Behavior.eKind.Idle;
-            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
-            _animator.SetInteger("state", (int)Behavior.eKind.Idle);
-            //int hash = Animator.StringToHash("move");
-            //_animator.SetTrigger(hash);
+
+            if (null != _animator)
+            {
+                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                
+                //int hash = Animator.StringToHash("move");
+                _animator.SetInteger("state", (int)Behavior.eKind.Idle);    
+            }
+
 
         }
 
