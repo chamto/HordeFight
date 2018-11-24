@@ -1043,6 +1043,7 @@ namespace HordeFight
             _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.back);
             _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.back);
             _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.back); //화면 세로길이를 벗어나지 않는 그리드 최소값
+            _indexesNxN[25] = CreateIndexesNxN_SquareCenter_Tornado(25, Vector3.back);
 
             this.LoadTilemap_Struct();
 
@@ -1197,10 +1198,14 @@ namespace HordeFight
         }
 
 
-        public void Update_FogOfWar(Vector3 standard_3d, Vector3 target_dir, float radius)
+        public void Update_FogOfWar(Vector3 standard_3d, Vector3 lookAt_dir)
         {
             if (null == _tilemap_fogOfWar) return;
 
+            //====================================================
+            StartCoroutine(DivideUpdate_FogOfWar(standard_3d, lookAt_dir));
+            return;
+            //====================================================
         
             Color baseColor = Color.white;
             Color fogColor = new Color(1, 1, 1, 0.7f);
@@ -1228,7 +1233,7 @@ namespace HordeFight
 
                         //대상과 정반대 방향이 아닐때 처리 
                         Vector3 tileDir = tile_3d_center - standard_3d;
-                        tileDir.Normalize(); target_dir.Normalize();
+                        tileDir.Normalize(); lookAt_dir.Normalize();
                         //tileDir = Misc.GetDir8_Normal3D(tileDir);
                         //target_dir = Misc.GetDir8_Normal3D(target_dir);
 
@@ -1239,7 +1244,7 @@ namespace HordeFight
                             SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                         }
                         else 
-                            if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, target_dir))
+                            if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
                         {
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
@@ -1269,6 +1274,101 @@ namespace HordeFight
                 }
 
             }
+
+        }
+
+        private bool __is_dividing = false;
+        public IEnumerator DivideUpdate_FogOfWar(Vector3 standard_3d, Vector3 lookAt_dir)
+        {
+
+            if (true == __is_dividing) yield break;
+            __is_dividing = true;
+
+            //TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
+            TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
+            Color baseColor = Color.white;
+            Color fogColor = new Color(1, 1, 1, 0.7f);
+            Vector3Int posXY_2d = this.ToPosition2D(standard_3d);
+            Vector3 tile_3d_center = Vector3.zero;
+            Vector3Int tile_2d = Vector3Int.zero;
+            int count = -1;
+            foreach(Vector3Int xy in _indexesNxN[25])
+            {
+                tile_2d = xy + posXY_2d;
+
+                //=====================================================
+
+                tile_3d_center = this.ToPosition3D_Center(tile_2d);
+
+                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
+                float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
+                if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 6.2f, 2))
+                {
+                    if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
+                    {
+
+                        //대상과 정반대 방향이 아닐때 처리 
+                        Vector3 tileDir = tile_3d_center - standard_3d;
+                        tileDir.Normalize(); lookAt_dir.Normalize();
+                        //tileDir = Misc.GetDir8_Normal3D(tileDir);
+                        //target_dir = Misc.GetDir8_Normal3D(target_dir);
+
+
+                        if (true == this.HasStructUpTile(tile_3d_center))
+                        {
+                            //구조덮개타일인 경우 
+                            SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                        }
+                        else
+                            if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
+                        {
+                            //원거리 시야 표현
+                            SetTile(_tilemap_fogOfWar, tile_2d, null);
+                        }
+                        else if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 1.2f, 2))
+                        {
+                            //주변 시야 표현
+                            SetTile(_tilemap_fogOfWar, tile_2d, null);
+                        }
+                        else
+                        {
+                            SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                        }
+
+                        //SetTile(_tilemap_fogOfWar, xy, null);
+
+                    }
+                    else
+                    {
+                        SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                    }
+                }
+                else
+                {
+                    //안보이는 곳
+                    SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
+                }
+
+                //_tilemap_fogOfWar.SetTileFlags(dst, TileFlags.None);
+                //if(_tilemap_fogOfWar.GetColor(dst).Equals(baseColor))
+                //{
+                //    _tilemap_fogOfWar.SetColor(dst, fogColor);    
+                //}else
+                //{
+                //    _tilemap_fogOfWar.SetColor(dst, baseColor);    
+                //}
+
+
+                //=====================================================
+                count++;
+
+
+                if(0 == count % 300)
+                    yield return new WaitForSeconds(0.001f);
+                
+                
+            }
+            __is_dividing = false;
 
         }
 
@@ -1833,12 +1933,13 @@ namespace HordeFight
             if(null != SingleO.touchControl._selected)
             {
                 Being selected = SingleO.touchControl._selected;
-                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction, 0.1f);
+                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
                 selected.SetVisible(true);
 
-                //임시처리
+                //챔프 시야에 없으면 안보이게 처리함 - 임시처리
                 foreach (Being dst in _linearSearch_list)
                 {
+                    if (Being.eKind.barrel == dst._kind) continue; //술통은 항상 보이게 한다 -  임시 처리
                     if (dst == selected) continue;
 
                     dst.SetVisible(false);
@@ -1969,11 +2070,11 @@ namespace HordeFight
                 }
 
                 //밀리는 처리 
-                //if(Being.eKind.skeleton !=  src._kind || Being.eKind.skeleton == dst._kind)
-                src.Move_Push(n, meterPersecond);
+                //if(Being.eKind.barrel !=  src._kind )
+                    src.Move_Push(n, meterPersecond);
 
-                //if (Being.eKind.skeleton != dst._kind  || Being.eKind.skeleton == src._kind)
-                dst.Move_Push(-n, meterPersecond);
+                //if (Being.eKind.barrel != dst._kind)
+                    dst.Move_Push(-n, meterPersecond);
 
             }
         }
@@ -2207,13 +2308,14 @@ namespace HordeFight
                     
                     //count++;
                     cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                    //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
                     if (null == cellInfo) continue;
 
                     foreach (Being dst in cellInfo)
                     {
                         //count++;
                         if (src == dst) continue;
-                        if (true == dst.isDeath()) continue;
+                        if (null == dst || true == dst.isDeath()) continue;
 
                         CollisionPush(src, dst);
                     }
@@ -2521,24 +2623,24 @@ namespace HordeFight
             for (int i = 0; i < 4; i++)
             { 
                 being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-                being.GetComponent<AI>()._ai_running = true;
+                //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
             for (int i = 0; i < 5; i++)
             {
                 being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-                being.GetComponent<AI>()._ai_running = true;
+                //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
             //===================================================
-            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
-            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
-            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
-            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
-            Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_WHITE.GetPosition(camp_position));
-            Create_Shot(SingleO.unitRoot, Being.eKind.spear, camp_WHITE.GetPosition(camp_position));
+            for (int i = 0; i < 10;i++)
+            {
+                Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, new Vector3(2.3f,0,1.22f));
+            }
+            //Create_Shot(SingleO.unitRoot, Being.eKind.spear, new Vector3(2.3f, 0, 1.22f));
+
 
         }
 

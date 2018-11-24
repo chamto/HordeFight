@@ -891,8 +891,8 @@ namespace HordeFight
             UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
             if (_cellInfo._index != cur_posXY_2d)
             {
-                SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this);
-                SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this);
+                SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
+                SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this); //새로운 위치 정보 추가
 
                 _cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
 

@@ -228,8 +228,10 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 6996dc885e5ea4da7be092e643c937cd, type: 3}
   - {fileID: 21300000, guid: 8c5206b3cd7ca4bfc80cfb04508e5455, type: 3}
   - {fileID: 21300000, guid: 5ce2e39b2c0504d4baa00ad69edc87fe, type: 3}
+  - {fileID: 21300000, guid: fafece1aed7e949f78f493c00072b7e9, type: 3}
   - {fileID: 21300000, guid: 3230408ca78394395925e5318d5c3cd8, type: 3}
   - {fileID: 21300000, guid: b16ab84db3b8747ed925691da1d9945c, type: 3}
+  - {fileID: 21300000, guid: b4a6d7a31a1f94cd9a682eadbad800f6, type: 3}
   - {fileID: 21300000, guid: 502b7acb1ba3c4cf79bea535e9f30e03, type: 3}
   - {fileID: 21300000, guid: 0582525dfccee4d8fb12b682dacaac18, type: 3}
   - {fileID: 21300000, guid: 02e6e3db4728c490d81a9e94a1072e73, type: 3}
@@ -485,8 +487,10 @@ SpriteAtlas:
   - d_s_w_1_1_0
   - d_s_w_1_1_1
   - dungeon_113
+  - tt_fog_13
   - d_s_w_1_0_1
   - d_s_w_1_0_0
+  - tt_fog_11
   - dungeon_5
   - d_s_s_1_0_0
   - d_s_4_2
