@@ -1909,9 +1909,12 @@ namespace HordeFight
     {
 
         private uint _id_sequence = 0;
+        private uint _id_shot_sequence = 0; //발사체 아이디 생성기
 
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
-        public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 사전정보와 동일한 객체를 리스트에 넣음 
+        public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 _beings 사전과 동일한 객체를 리스트에 넣음 
+
+        public Dictionary<uint, Shot> _shots = new Dictionary<uint, Shot>(); //발사체는 따로 관리한다
 
         private void Start()
         {
@@ -2537,17 +2540,16 @@ namespace HordeFight
 
         public Shot Create_Shot(Transform parent, Being.eKind eKind,  Vector3 pos)
         {
-            _id_sequence++;
+            _id_shot_sequence++;
 
-            GameObject obj = CreatePrefab("Shot/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
+            GameObject obj = CreatePrefab("Shot/" + eKind.ToString(), parent, _id_shot_sequence.ToString("000") + "_" + eKind.ToString());
             Shot shot = obj.AddComponent<Shot>();
             obj.AddComponent<Movement>();
-            shot._id = _id_sequence;
+            shot._id = _id_shot_sequence;
             shot._kind = eKind;
             shot.transform.localPosition = pos;
 
-            _beings.Add(_id_sequence, shot);
-            _linearSearch_list.Add(shot);
+            _shots.Add(_id_shot_sequence, shot);
 
             return shot;
         }
@@ -2668,7 +2670,16 @@ namespace HordeFight
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
-            //Create_Shot(SingleO.unitRoot, Being.eKind.spear, new Vector3(2.3f, 0, 1.22f));
+
+            //===================================================
+
+            // -- 발사체 미리 생성 --
+
+            for (int i = 0; i < 10;i++)
+            {
+                being = Create_Shot(SingleO.hierarchy.GetTransform("0_main/0_things/0_shot"), Being.eKind.spear, Vector3.zero);
+                being.gameObject.SetActive(false);
+            }
 
 
         }
@@ -2757,7 +2768,7 @@ namespace HordeFight
         }
         private eState _state = eState.Roaming;
         private ChampUnit _me = null;
-        private Being _target = null;
+        //private Being _target = null;
         private Vector3 _ai_Dir = Vector3.zero;
         private float _elapsedTime = 0f;
 
@@ -2784,11 +2795,11 @@ namespace HordeFight
 
         public bool Situation_Is_Enemy()
         {
-            ChampUnit champTarget = _target as ChampUnit;
+            ChampUnit champTarget = _me._looking as ChampUnit;
             if (null == champTarget ) return false;
 
             //불확실한 대상
-            if (null == _target || null == champTarget._belongCamp || null == _me._belongCamp) return false;
+            if (null == _me._looking || null == champTarget._belongCamp || null == _me._belongCamp) return false;
 
             Camp.eRelation relation = SingleO.campManager.GetRelation(_me._belongCamp.campKind, champTarget._belongCamp.campKind);
 
@@ -2800,9 +2811,9 @@ namespace HordeFight
 
         public bool Situation_Is_InRange(float range)
         {
-            if (null == _target) return false;
+            if (null == _me._looking) return false;
 
-            float sqrDis = (_me.transform.position - _target.transform.position).sqrMagnitude;
+            float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
 
             float sqrRange = Mathf.Pow(range, 2);
 
@@ -2842,7 +2853,7 @@ namespace HordeFight
                         }else
                         {
                             //대상이 보이는 위치에 있는지 검사한다 
-                            if (false == SingleO.objectManager.IsVisibleArea(_me, _target.transform.position))
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
                             {
                                 //대상이 안보이면 다시 배회하기 
                                 _state = eState.Roaming;
@@ -2853,14 +2864,14 @@ namespace HordeFight
                             //공격사거리 안에 들어오면 공격한다 
                             if (true == Situation_Is_InRange(Movement.ONE_METER * 1.2f))
                             {
-                                _me.Attack(_target.transform.position - _me.transform.position);
+                                _me.Attack(_me._looking.transform.position - _me.transform.position);
                                 //_state = eState.Attack;
                                 break;
                                 //DebugWide.LogBlue("attack");
                             }
 
 
-                            _me.Move_Forward(_target.transform.position - _me.transform.position, 0.4f, true);
+                            _me.Move_Forward(_me._looking.transform.position - _me.transform.position, 0.4f, true);
                         }
 
                     }
@@ -2896,16 +2907,16 @@ namespace HordeFight
                 case eState.Roaming:
                     {
                         //일정 거리 안에 적이 있으면 추격한다
-                        _target = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, Movement.ONE_METER * 5f);
+                        _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, Movement.ONE_METER * 5f);
                         //DebugWide.LogBlue("Roaming: " + _target);
 
                         //대상이 보이는 위치에 있는지 검사한다 
-                        if(null != _target)
+                        if(null != _me._looking)
                         {
-                            if (false == SingleO.objectManager.IsVisibleArea(_me, _target.transform.position))
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
                             {
                                 //안보이는 위치면 대상을 해제한다 
-                                _target = null;
+                                _me._looking = null;
                             }
                         }
 
