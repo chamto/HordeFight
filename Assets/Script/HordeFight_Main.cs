@@ -1079,6 +1079,7 @@ namespace HordeFight
 
             //덮개 타일 생성
             TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
+            //TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
             foreach (KeyValuePair<Vector3Int,StructTile> t in _structTileList)
             { 
                 if(true == t.Value._isUpTile)
