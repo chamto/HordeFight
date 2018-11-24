@@ -2088,11 +2088,11 @@ namespace HordeFight
                 //밀리는 처리 
                 //if(Being.eKind.barrel !=  src._kind )
                 //src.Move_Push(n, meterPersecond);
-                src.OnCollision_MovePush(n, meterPerSecond);
+                src.OnCollision_MovePush(dst, n, meterPerSecond);
 
                 //if (Being.eKind.barrel != dst._kind)
                     //dst.Move_Push(-n, meterPersecond);
-                dst.OnCollision_MovePush(-n, meterPerSecond);
+                dst.OnCollision_MovePush(src, -n, meterPerSecond);
 
             }
         }
@@ -2645,21 +2645,21 @@ namespace HordeFight
 
             // -- 블루 진형 --
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //being.GetComponent<AI>()._ai_running = true;
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //being.GetComponent<AI>()._ai_running = true;
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ._mt_range_min = 2f;
+            champ._mt_range_min = 0f;
             champ._mt_range_max = 5f;
-            //being.GetComponent<AI>()._ai_running = true;
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //being.GetComponent<AI>()._ai_running = true;
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //being.GetComponent<AI>()._ai_running = true;
+            champ.GetComponent<AI>()._ai_running = true;
 
             //===================================================
 
@@ -2668,17 +2668,19 @@ namespace HordeFight
             champ = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 6; i++)
             { 
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.RandPosition());
-                //being.GetComponent<AI>()._ai_running = true;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
+                champ._mt_range_min = 2f;
+                champ._mt_range_max = 8f;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.RandPosition());
-                //being.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -3152,7 +3154,7 @@ namespace HordeFight
     public class TouchEvent : MonoBehaviour
     {
 
-        private GameObject _TouchedObject = null;
+        //private GameObject _TouchedObject = null;
         private List<GameObject> _sendList = new List<GameObject>();
 
         private Vector2 _prevTouchMovedPos = Vector3.zero;

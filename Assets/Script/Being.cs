@@ -546,6 +546,7 @@ namespace HordeFight
 
     public class Shot : Being
     {
+        public Being _owner = null; //발사체를 소유한 객체
         public bool _on_theWay = false; //발사되어 날아가는 중
 
         private void Start()
@@ -555,8 +556,54 @@ namespace HordeFight
 
         private void FixedUpdate()
         {
-            base.UpdateAll();
+            this.UpdateAll();
         }
+
+		public void Reset()
+		{
+            if(null != _owner)
+            {
+                ChampUnit champ = _owner as ChampUnit;
+                if(null != champ)
+                {
+                    champ.__shot = null;
+                }
+            }
+            _owner = null;
+            _on_theWay = false;
+            this.gameObject.SetActive(false);
+            this.transform.position = Vector3.zero;
+		}
+
+		//____________________________________________
+		//                  충돌반응
+		//____________________________________________
+
+        public override void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
+        {
+            //무언가와 충돌했으면 투사체를 해제한다 (챔프 , 숥통 등)
+
+            //if(dst != _owner)
+                //Reset();
+        }
+
+        public override bool UpdateAll()
+        {
+            bool result = base.UpdateAll();
+
+            if (true == result)
+            {
+                if(true == SingleO.gridManager.HasStructUpTile(this.transform.position)) 
+                {
+                    //덮개구조물에 부딪혔으면 해제한다 
+                    //Reset();
+                    //DebugWide.LogBlue(this.name);
+                }
+            }
+
+            return result;
+        }
+
 
     }
 
@@ -577,12 +624,12 @@ namespace HordeFight
         //                  충돌반응
         //____________________________________________
 
-        public override void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+        public override void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
         {
             Move_Push(dir, meterPerSecond);
         }
 
-
+		
 	}
 
     /// <summary>
@@ -725,6 +772,16 @@ namespace HordeFight
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
             Update_AnimatorState(_hash_attack, 0.8f);
 
+            //임시코드 
+            if (eKind.spearman == _kind)
+            {
+                _appointmentDir.Normalize();
+                Vector3 targetPos = _appointmentDir * this._mt_range_max * Movement.ONE_METER + this.transform.position;
+                //if (null != _target)
+                    //targetPos = _target.transform.position;
+
+                ThrowThings(targetPos);
+            }
         }
 
         //임시처리
@@ -737,12 +794,7 @@ namespace HordeFight
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
                 Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
 
-                //임시코드 
-                if (eKind.spearman == _kind)
-                {
-                    if (null != _target)
-                        ThrowThings(_target.transform.position);
-                }
+
             }
         }
 
@@ -751,6 +803,7 @@ namespace HordeFight
         {
             if (hash_state == _hash_attack)
             {
+                
                 //목표에 피해를 준다
                 if (null != _target)
                 {
@@ -800,7 +853,7 @@ namespace HordeFight
 
 
         bool __launch = false;
-        Shot __shot = null;
+        public Shot __shot = null;
         Vector3 __targetPos = Vector3.zero;
         Vector3 __launchPos = Vector3.zero; //시작위치
         public void ThrowThings(Vector3 targetPos)
@@ -819,8 +872,9 @@ namespace HordeFight
                 __targetPos = targetPos;
                 eDirection8 eDirection8 = Misc.GetDir8_AxisY(targetPos - this.transform.position);
                 Vector3 angle = Vector3.zero;
-                angle.y = ((float)eDirection8-1f) * -45f;
-                //angle.y = ((float)_move._eDir8-1f) * -45f;
+                //angle.y = ((float)eDirection8-1f) * -45f;
+
+                angle.y = Vector3.SignedAngle(Vector3.right, targetPos - this.transform.position, Vector3.up);
                 //DebugWide.LogBlue(Misc.GetDir8_AxisY(targetPos - this.transform.position).ToString());
                 __shot.transform.localEulerAngles = angle;
                 __shot.transform.position = this.transform.position;
@@ -829,13 +883,14 @@ namespace HordeFight
                 __elapsedTime_2 = 0f;
                 __shot.gameObject.SetActive(true);
                 __shot._on_theWay = true;
+                __shot._owner = this;
 
             }
         }
         float __elapsedTime_2 = 0f;
         public void Update_Shot()
         {
-            if (null != __shot && true == __launch)
+            if (null != __shot && true == __launch && true == __shot._on_theWay)
             {
                 __elapsedTime_2 += Time.deltaTime;
                 //Vector3 dir = __targetPos - __things.transform.position;
@@ -844,8 +899,7 @@ namespace HordeFight
                 if (1f < __elapsedTime_2)
                 {
                     __launch = false;
-                    __shot.gameObject.SetActive(false);
-                    __shot._on_theWay = false;
+                    __shot.Reset();
                     __shot = null;
                 }
             }
@@ -855,7 +909,7 @@ namespace HordeFight
         //                  충돌반응
         //____________________________________________
 
-        public override void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+        public override void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
         {
             Move_Push(dir, meterPerSecond);
         }
@@ -1071,11 +1125,11 @@ namespace HordeFight
             }
         }
 
-        public void Update_SortingOrder()
+        public void Update_SortingOrder(int add)
         {
             //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
             //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(transform.position.z * 20f);
+            _sprRender.sortingOrder = -(int)(transform.position.z * 20f) + add;
         }
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
@@ -1085,7 +1139,8 @@ namespace HordeFight
             {
                 FallDown();
 
-                _sprRender.sortingOrder = -800; //바닥타일과 동굴벽 보다 위에 있게 하고 다른 챔프들 보다 아래에 있게 한다 
+                Update_SortingOrder(-400);
+                //_sprRender.sortingOrder = -800; //바닥타일과 동굴벽 보다 위에 있게 하고 다른 챔프들 보다 아래에 있게 한다 
                                                 //if(false == _death)
                                                 //{
                                                 //    FallDown();
@@ -1195,7 +1250,7 @@ namespace HordeFight
             _move.UpdateNextPath();
 
 
-            Update_SortingOrder();
+            Update_SortingOrder(0);
             //========================================
 
             return true;
@@ -1206,7 +1261,7 @@ namespace HordeFight
 		//                  충돌반응
 		//____________________________________________
 
-        public virtual void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+        public virtual void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
 		{
 			
 		}
