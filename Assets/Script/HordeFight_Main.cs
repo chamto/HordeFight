@@ -2070,7 +2070,7 @@ namespace HordeFight
 
                 Vector3 n = sqr_dis.normalized;
                 //Vector3 n = sqr_dis;
-                float meterPersecond = 2f;
+                float meterPerSecond = 2f;
 
                 //2.반지름 이상으로 겹쳐있는 경우
                 if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
@@ -2082,15 +2082,17 @@ namespace HordeFight
                         n = Misc.GetDir8_Random_AxisY();
                     }
 
-                    meterPersecond = 0.5f;
+                    meterPerSecond = 0.5f;
                 }
 
                 //밀리는 처리 
                 //if(Being.eKind.barrel !=  src._kind )
-                    src.Move_Push(n, meterPersecond);
+                //src.Move_Push(n, meterPersecond);
+                src.OnCollision_MovePush(n, meterPerSecond);
 
                 //if (Being.eKind.barrel != dst._kind)
-                    dst.Move_Push(-n, meterPersecond);
+                    //dst.Move_Push(-n, meterPersecond);
+                dst.OnCollision_MovePush(-n, meterPerSecond);
 
             }
         }
@@ -2947,7 +2949,7 @@ namespace HordeFight
                 case eState.Roaming:
                     {
                         //일정 거리 안에 적이 있으면 추격한다
-                        _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, Movement.ONE_METER * 5f);
+                        _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, 5f);
                         //DebugWide.LogBlue("Roaming: " + _target);
 
                         //대상이 보이는 위치에 있는지 검사한다 
@@ -3093,18 +3095,21 @@ namespace HordeFight
             ChampUnit champSelected = _selected as ChampUnit;
             if (null != champSelected )
             {
-                Being target = SingleO.objectManager.GetNearCharacter(_selected as ChampUnit, Camp.eRelation.Unknown, 
+                Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Unknown, 
                                                                       champSelected._mt_range_min, champSelected._mt_range_max);
                 if(null != target)
                 {
+                    if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
+                    {
+                        champSelected.Attack(target.transform.position - _selected.transform.position, target);
+                    }
+
                     //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
-                    champSelected.Attack(target.transform.position - _selected.transform.position, target);
-                    //target.AddHP(-1);    
+                        
                 }
 
             }
 
-            //SingleO.gridManager.Update_FogOfWar(_selected.transform.position, touchDir, 0.1f);
             //View_AnimatorState();
         }
         private void TouchEnded() 

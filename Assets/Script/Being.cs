@@ -573,6 +573,16 @@ namespace HordeFight
             base.UpdateAll();
 		}
 
+        //____________________________________________
+        //                  충돌반응
+        //____________________________________________
+
+        public override void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+        {
+            Move_Push(dir, meterPerSecond);
+        }
+
+
 	}
 
     /// <summary>
@@ -715,13 +725,6 @@ namespace HordeFight
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
             Update_AnimatorState(_hash_attack, 0.8f);
 
-
-            //임시코드 
-            if (eKind.spearman == _kind)
-            {
-                if (null != _target)
-                    ThrowThings(_target.transform.position);
-            }
         }
 
         //임시처리
@@ -733,6 +736,13 @@ namespace HordeFight
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
                 Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+
+                //임시코드 
+                if (eKind.spearman == _kind)
+                {
+                    if (null != _target)
+                        ThrowThings(_target.transform.position);
+                }
             }
         }
 
@@ -834,11 +844,20 @@ namespace HordeFight
                 if (1f < __elapsedTime_2)
                 {
                     __launch = false;
-                    //__shot.SetActive(false);
+                    __shot.gameObject.SetActive(false);
                     __shot._on_theWay = false;
                     __shot = null;
                 }
             }
+        }
+
+        //____________________________________________
+        //                  충돌반응
+        //____________________________________________
+
+        public override void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+        {
+            Move_Push(dir, meterPerSecond);
         }
 
 	}
@@ -1183,26 +1202,30 @@ namespace HordeFight
         }
 
 
-        //____________________________________________
-        //                  충돌반응
-        //____________________________________________
+		//____________________________________________
+		//                  충돌반응
+		//____________________________________________
 
-        //존재간에 부딪힌 경우
-        public void OnCollision_Beings(Being dst)
-        {
+        public virtual void OnCollision_MovePush(Vector3 dir, float meterPerSecond)
+		{
+			
+		}
 
 
-        }
+		//존재간에 부딪힌 경우
+		//public void OnCollision_Beings(Being dst)
+        //{
+        //}
 
-        //때렸을때
-        public void OnCollision_WhenHit(Being dst)
-        {
-        }
+        ////때렸을때
+        //public void OnCollision_WhenHit(Being dst)
+        //{
+        //}
 
-        //맞았을때
-        public void OnCollision_WhenBeHit(Being dst)
-        {
-        }
+        ////맞았을때
+        //public void OnCollision_WhenBeHit(Being dst)
+        //{
+        //}
 
 
 
