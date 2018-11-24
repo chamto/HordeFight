@@ -131,6 +131,8 @@ namespace HordeFight
             White,
             Black,
 
+            Obstacle, //구조물
+
             Max,
         }
 
@@ -189,6 +191,11 @@ namespace HordeFight
             return _placements[posNum]._localPos + _campPos;
         }
 
+        public Vector3 RandPosition()
+        {
+            int rnd = Misc.rand.Next(0, _placements.Count);
+            return GetPosition(rnd);
+        }
     }
 
     //캠프(분대)를 소대로 묶음 : 키값 : 문자열 해쉬
