@@ -696,12 +696,6 @@ namespace HordeFight
         {
             this.Attack(dir, null);
 
-            if (eKind.spearman == _kind)
-            {
-                if (null != _target)
-                    ThrowThings(_target.transform.position);
-            }
-
         }
 
 
@@ -721,6 +715,13 @@ namespace HordeFight
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
             Update_AnimatorState(_hash_attack, 0.8f);
 
+
+            //임시코드 
+            if (eKind.spearman == _kind)
+            {
+                if (null != _target)
+                    ThrowThings(_target.transform.position);
+            }
         }
 
         //임시처리
@@ -791,7 +792,7 @@ namespace HordeFight
         bool __launch = false;
         Shot __shot = null;
         Vector3 __targetPos = Vector3.zero;
-        Vector3 __launchPos = Vector3.zero;
+        Vector3 __launchPos = Vector3.zero; //시작위치
         public void ThrowThings(Vector3 targetPos)
         {
             //Vector3 dir = target - this.transform.position;
@@ -806,15 +807,18 @@ namespace HordeFight
             if (null != __shot && false == __launch)
             {
                 __targetPos = targetPos;
-
-                Vector3 angle = new Vector3(90f, 0, -120f);
-                angle.y += (float)_move._eDir8 * -45f;
+                eDirection8 eDirection8 = Misc.GetDir8_AxisY(targetPos - this.transform.position);
+                Vector3 angle = Vector3.zero;
+                angle.y = ((float)eDirection8-1f) * -45f;
+                //angle.y = ((float)_move._eDir8-1f) * -45f;
+                //DebugWide.LogBlue(Misc.GetDir8_AxisY(targetPos - this.transform.position).ToString());
                 __shot.transform.localEulerAngles = angle;
-                __shot.transform.localPosition = Vector3.zero;
+                __shot.transform.position = this.transform.position;
                 __launch = true;
-                __launchPos = __shot.transform.position;
+                __launchPos = this.transform.position;
                 __elapsedTime_2 = 0f;
                 __shot.gameObject.SetActive(true);
+                __shot._on_theWay = true;
 
             }
         }
@@ -831,6 +835,7 @@ namespace HordeFight
                 {
                     __launch = false;
                     //__shot.SetActive(false);
+                    __shot._on_theWay = false;
                     __shot = null;
                 }
             }
