@@ -608,7 +608,7 @@ namespace HordeFight
 #if UNITY_EDITOR
             Vector3Int prev = Vector3Int.zero;
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.up))
-            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.up))
+            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11,11, Vector3.up))
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.up))
             {
                 //DebugWide.LogBlue(v);
@@ -1038,12 +1038,12 @@ namespace HordeFight
             }
 
             //타일맵 좌표계 x-y에 해당하는 축값 back로 구한다 
-            _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3, Vector3.back);
-            _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5, Vector3.back);
-            _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7, Vector3.back);
-            _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9, Vector3.back);
-            _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11, Vector3.back); //화면 세로길이를 벗어나지 않는 그리드 최소값
-            _indexesNxN[25] = CreateIndexesNxN_SquareCenter_Tornado(25, Vector3.back);
+            _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3,3, Vector3.back);
+            _indexesNxN[5] = CreateIndexesNxN_SquareCenter_Tornado(5,5, Vector3.back);
+            _indexesNxN[7] = CreateIndexesNxN_SquareCenter_Tornado(7,7, Vector3.back);
+            _indexesNxN[9] = CreateIndexesNxN_SquareCenter_Tornado(9,9, Vector3.back);
+            _indexesNxN[11] = CreateIndexesNxN_SquareCenter_Tornado(11,11, Vector3.back); //화면 세로길이를 벗어나지 않는 그리드 최소값
+            _indexesNxN[29] = CreateIndexesNxN_SquareCenter_Tornado(29,19, Vector3.back);
 
             this.LoadTilemap_Struct();
 
@@ -1292,7 +1292,7 @@ namespace HordeFight
             Vector3 tile_3d_center = Vector3.zero;
             Vector3Int tile_2d = Vector3Int.zero;
             int count = -1;
-            foreach(Vector3Int xy in _indexesNxN[25])
+            foreach(Vector3Int xy in _indexesNxN[29])
             {
                 tile_2d = xy + posXY_2d;
 
@@ -1431,10 +1431,14 @@ namespace HordeFight
         }
 
         //중심좌표로부터 가까운 순으로 배열이 배치된다
-        public Vector3Int[] CreateIndexesNxN_SquareCenter_Tornado(ushort widthCenter, Vector3 axis)
+        public Vector3Int[] CreateIndexesNxN_SquareCenter_Tornado(ushort width,ushort height, Vector3 axis)
         {
             //NCount 는 홀수값을 넣어야 한다 
-            if (0 == widthCenter % 2) return null;
+            if (0 == width % 2 || 0 == height % 2) 
+            {
+                DebugWide.LogRed("CreateIndexesNxN_SquareCenter_Tornado : width , height : 홀수값을 넣어야 한다 ");
+                return null;   
+            }
             //DebugWide.LogBlue("_____________________" + widthCenter);
             //string debugStr = "";
             //int debugSum = 0;
@@ -1445,10 +1449,21 @@ namespace HordeFight
             Vector3Int prevMax = Vector3Int.zero;
             Vector3Int prediction = Vector3Int.zero;
             Vector3Int cur = Vector3Int.zero;
-            Vector3Int[] indexes = new Vector3Int[widthCenter * widthCenter];
-            for (int cnt = 0; cnt < indexes.Length; cnt++)
+            Vector3Int[] indexes = new Vector3Int[width * height];
+            int cnt = 0;
+            int max_cnt = width > height ? width : height; //큰값이 들어가게 한다 
+            max_cnt *= max_cnt;
+            //for (int cnt = 0; cnt < indexes.Length; cnt++)
+            for (int i = 0; i < max_cnt; i++)
             {
-                indexes[cnt] = cur;
+                if(Mathf.Abs(cur.x) < Mathf.Abs(width * 0.5f) &&
+                   Mathf.Abs(cur.y) < Mathf.Abs(height * 0.5f))
+                {
+                    //DebugWide.LogBlue(cnt + "  " + cur);
+                    indexes[cnt] = cur;
+                    cnt++;
+                }
+
 
                 prediction.x = (int)(dir.x * Tornado_Num); //소수점 버림
                 prediction.y = (int)(dir.y * Tornado_Num); //소수점 버림
