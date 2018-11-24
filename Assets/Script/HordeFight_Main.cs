@@ -2625,38 +2625,38 @@ namespace HordeFight
 
             // -- 블루 진형 --
             being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
 
             //===================================================
 
             // -- 휜색 진형 --
             camp_position = 0;
             being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            being.GetComponent<AI>()._ai_running = true;
+            //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             for (int i = 0; i < 4; i++)
             { 
                 being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.RandPosition());
-                being.GetComponent<AI>()._ai_running = true;
+                //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
             for (int i = 0; i < 5; i++)
             {
                 being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.RandPosition());
-                being.GetComponent<AI>()._ai_running = true;
+                //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -2984,17 +2984,21 @@ namespace HordeFight
                 {
                     champ = _selected as ChampUnit;
                     if(null != champ)
+                    {
+                        champ.GetComponent<AI>()._ai_running = true;
                         SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
-                    _selected.GetComponent<AI>()._ai_running = true;
+                    }
+                        
+
                 }
 
                 //새로운 객체 선택
                 _selected = getBeing;
-                _selected.GetComponent<AI>()._ai_running = false;
 
                 champ = _selected as ChampUnit;
                 if (null != champ)
                 {
+                    _selected.GetComponent<AI>()._ai_running = false;
                     SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
                 }
 
