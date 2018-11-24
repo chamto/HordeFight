@@ -546,7 +546,8 @@ namespace HordeFight
 
     public class Shot : Being
     {
-        
+        public bool _on_theWay = false; //발사되어 날아가는 중
+
         private void Start()
         {
             base.Init();
@@ -570,7 +571,6 @@ namespace HordeFight
 		private void FixedUpdate()
 		{
             base.UpdateAll();
-            //base.Update_SortingOrder();
 		}
 
 	}
@@ -630,8 +630,8 @@ namespace HordeFight
 
         //능력치1 
         public ushort _power = 1;
-        public float _range_min = 0.15f;
-        public float _range_max = 0.15f;
+        public float _mt_range_min = 0f;
+        public float _mt_range_max = 1.2f;
 
         //보조정보 
         //private Geo.Sphere _collider;
@@ -681,11 +681,160 @@ namespace HordeFight
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
 
-		public override void UpdateAll()
+		public override bool UpdateAll()
 		{
-            base.UpdateAll();
+            bool result = base.UpdateAll();
+            if(true == result)
+            {
+                Update_Shot();
+            }
+
+            return result;
 		}
 
+        public void Attack(Vector3 dir)
+        {
+            this.Attack(dir, null);
+
+            if (eKind.spearman == _kind)
+            {
+                if (null != _target)
+                    ThrowThings(_target.transform.position);
+            }
+
+        }
+
+
+        int _hash_attack = Animator.StringToHash("attack");
+        Vector3 _appointmentDir = Vector3.zero;
+        Being _target = null;
+        public void Attack(Vector3 dir, Being target)
+        {
+            _animator.SetInteger("state", (int)Behavior.eKind.Attack);
+            _behaviorKind = Behavior.eKind.Attack;
+
+            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
+            //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            _appointmentDir = dir;
+            _target = target;
+
+            //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
+            Update_AnimatorState(_hash_attack, 0.8f);
+
+        }
+
+        //임시처리
+        public override void OnAniState_Start(int hash_state)
+        {
+            if (hash_state == _hash_attack)
+            {
+                //예약된 방향값 설정
+                _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
+                _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
+                Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+            }
+        }
+
+        //임시처리
+        public override void OnAniState_End(int hash_state)
+        {
+            if (hash_state == _hash_attack)
+            {
+                //목표에 피해를 준다
+                if (null != _target)
+                {
+                    _target.AddHP(-1);
+                    ChampUnit champ = _target as ChampUnit;
+                    if(null != champ)
+                    {
+                        StartCoroutine(champ.Demage());    
+                    }
+
+                }
+
+            }
+        }
+
+        bool __in_corutin_Damage = false;
+        public IEnumerator Demage()
+        {
+            //같은 코루틴을 요청하면 빨강색으로 변경후 종료한다  
+            //if (true == __in_corutin_Damage)
+            //{
+            //    _sprRender.color = Color.red;
+            //    yield break;
+            //}
+
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    __in_corutin_Damage = true;
+
+            //    _sprRender.color = Color.Lerp(Color.red, Color.white, i / 10f);
+            //    //_sprRender.color = Color.red;
+            //    yield return new WaitForSeconds(0.05f);
+            //}
+
+            _sprRender.color = Color.red;
+
+            if (true == __in_corutin_Damage)
+                yield break;
+
+            __in_corutin_Damage = true;
+            yield return new WaitForSeconds(0.5f);
+            _sprRender.color = Color.white;
+            __in_corutin_Damage = false;
+
+            yield break;
+        }
+
+
+        bool __launch = false;
+        Shot __shot = null;
+        Vector3 __targetPos = Vector3.zero;
+        Vector3 __launchPos = Vector3.zero;
+        public void ThrowThings(Vector3 targetPos)
+        {
+            //Vector3 dir = target - this.transform.position;
+            //Attack(dir);
+
+            if (null == __shot)
+            {
+                __shot = SingleO.objectManager.GetNextShot();
+            }
+
+
+            if (null != __shot && false == __launch)
+            {
+                __targetPos = targetPos;
+
+                Vector3 angle = new Vector3(90f, 0, -120f);
+                angle.y += (float)_move._eDir8 * -45f;
+                __shot.transform.localEulerAngles = angle;
+                __shot.transform.localPosition = Vector3.zero;
+                __launch = true;
+                __launchPos = __shot.transform.position;
+                __elapsedTime_2 = 0f;
+                __shot.gameObject.SetActive(true);
+
+            }
+        }
+        float __elapsedTime_2 = 0f;
+        public void Update_Shot()
+        {
+            if (null != __shot && true == __launch)
+            {
+                __elapsedTime_2 += Time.deltaTime;
+                //Vector3 dir = __targetPos - __things.transform.position;
+                __shot.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+
+                if (1f < __elapsedTime_2)
+                {
+                    __launch = false;
+                    //__shot.SetActive(false);
+                    __shot = null;
+                }
+            }
+        }
 
 	}
 
@@ -776,21 +925,6 @@ namespace HordeFight
         //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
 
-
-
-        //private void Start()
-        //{
-        //    //DebugWide.LogBlue("Being");
-        //    //todo : test 필요 . 상속하면 누구 Start 가 호출되는 것인가 ? 
-        //    this.Init();
-        //}
-
-        ////private void Update()
-        //void FixedUpdate()
-        //{
-        //    this.UpdateAll();
-
-        //}//end func
 
         public virtual void Init()
         {
@@ -921,7 +1055,7 @@ namespace HordeFight
         }
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
-        public virtual void UpdateAll()
+        public virtual bool UpdateAll()
         {
             if (isDeath())
             {
@@ -934,12 +1068,12 @@ namespace HordeFight
                                                 //    _death = true;
                                                 //}
 
-                return;
+                return false;
             }
 
             Update_CellInfo();
 
-            Update_Shot();
+            //Update_Shot();
 
             Update_SpriteMask();
 
@@ -1039,6 +1173,8 @@ namespace HordeFight
 
             Update_SortingOrder();
             //========================================
+
+            return true;
         }
 
 
@@ -1047,19 +1183,19 @@ namespace HordeFight
         //____________________________________________
 
         //존재간에 부딪힌 경우
-        public void OnCollision_Beings(Being[] dsts)
+        public void OnCollision_Beings(Being dst)
         {
 
 
         }
 
         //때렸을때
-        public void OnCollision_WhenHit(Being[] dsts)
+        public void OnCollision_WhenHit(Being dst)
         {
         }
 
         //맞았을때
-        public void OnCollision_WhenBeHit(Being[] dsts)
+        public void OnCollision_WhenBeHit(Being dst)
         {
         }
 
@@ -1182,57 +1318,20 @@ namespace HordeFight
         //    //todo..
         //}
 
-        public void Attack(Vector3 dir)
+
+        public virtual void OnAniState_Start(int hash_state)
         {
-            this.Attack(dir, null);
-        }
-
-        Vector3 _appointmentDir = Vector3.zero;
-        Being _target = null;
-        public void Attack(Vector3 dir, Being target)
-        {
-            _animator.SetInteger("state", (int)Behavior.eKind.Attack);
-            _behaviorKind = Behavior.eKind.Attack;
-
-            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
-            //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
-            _appointmentDir = dir;
-            _target = target;
-
-            //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
-            Update_AnimatorState(_hash_attack, 0.8f);
-
-        }
-
-        //임시처리
-        public void OnAniState_Start(int hash_state)
-        {
-            if (hash_state == _hash_attack)
-            {
-                //예약된 방향값 설정
-                _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
-                _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
-                Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
-            }
-        }
-
-        //임시처리
-        public void OnAniState_End(int hash_state)
-        {
-            if (hash_state == _hash_attack)
-            {
-                //목표에 피해를 준다
-                if (null != _target)
-                {
-                    _target.AddHP(-1);
-                    StartCoroutine(_target.Demage());
-                }
-
-            }
+            
         }
 
 
-        int _hash_attack = Animator.StringToHash("attack");
+        public virtual void OnAniState_End(int hash_state)
+        {
+            
+        }
+
+
+
         bool _trans_start = false;
         int _prevCount = -1;
         int _curCount = 0;
@@ -1299,89 +1398,6 @@ namespace HordeFight
                 _nextCount = _curCount + 1; //동작카운트의 소수점을 올림한다
                 //DebugWide.LogGreen("애니동작 완료 " + normalTime +  "   cur: " + _curCount + "   next: " + _nextCount);
                 this.OnAniState_End(hash_state);
-            }
-        }
-
-
-
-        bool __in_corutin_Damage = false;
-        IEnumerator Demage()
-        {
-            //같은 코루틴을 요청하면 빨강색으로 변경후 종료한다  
-            //if (true == __in_corutin_Damage)
-            //{
-            //    _sprRender.color = Color.red;
-            //    yield break;
-            //}
-
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    __in_corutin_Damage = true;
-
-            //    _sprRender.color = Color.Lerp(Color.red, Color.white, i / 10f);
-            //    //_sprRender.color = Color.red;
-            //    yield return new WaitForSeconds(0.05f);
-            //}
-
-            _sprRender.color = Color.red;
-
-            if (true == __in_corutin_Damage)
-                yield break;
-
-            __in_corutin_Damage = true;
-            yield return new WaitForSeconds(0.5f);
-            _sprRender.color = Color.white;
-            __in_corutin_Damage = false;
-
-            yield break;
-        }
-
-
-        bool __launch = false;
-        GameObject __things = null;
-        Vector3 __targetPos = Vector3.zero;
-        Vector3 __launchPos = Vector3.zero;
-        public void ThrowThings(Vector3 target)
-        {
-            //Vector3 dir = target - this.transform.position;
-            //Attack(dir);
-
-
-            if (null == __things)
-            {
-                __things = GameObject.Find("000_spear");
-            }
-
-
-            if (null != __things && false == __launch)
-            {
-                __targetPos = target;
-
-                Vector3 angle = new Vector3(90f, 0, -120f);
-                angle.y += (float)_move._eDir8 * -45f;
-                __things.transform.localEulerAngles = angle;
-                __things.transform.localPosition = Vector3.zero;
-                __launch = true;
-                __launchPos = __things.transform.position;
-                __elapsedTime_2 = 0f;
-                __things.SetActive(true);
-
-            }
-        }
-        float __elapsedTime_2 = 0f;
-        public void Update_Shot()
-        {
-            if (null != __things && true == __launch)
-            {
-                __elapsedTime_2 += Time.deltaTime;
-                //Vector3 dir = __targetPos - __things.transform.position;
-                __things.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
-
-                if (1f < __elapsedTime_2)
-                {
-                    __launch = false;
-                    __things.SetActive(false);
-                }
             }
         }
 
@@ -1484,29 +1500,6 @@ namespace HordeFight
             //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
 
-        //____________________________________________
-        //               지정된 경로 이동   
-        //____________________________________________
-
-        //Queue<Vector3> __path_find = null;
-        //Vector3 __dstPos = Vector3.zero;
-        //float __elapsedTime_3 = 10f;
-        //public void UpdateNextPath()
-        //{
-        //    if (null == __path_find || 0 == __path_find.Count) return;
-
-
-        //    if (1f < __elapsedTime_3)
-        //    {
-        //        __elapsedTime_3 = 0f;
-        //        __dstPos = __path_find.Dequeue();
-        //    }else
-        //    {
-        //        __elapsedTime_3 += Time.deltaTime;
-        //        this.transform.position = Vector3.Lerp(this.transform.position, __dstPos, __elapsedTime_3);    
-        //    }
-        //}
-
 
         //____________________________________________
         //                  터치 이벤트   
@@ -1546,58 +1539,6 @@ namespace HordeFight
             dir.y = 0;
             //DebugWide.LogBlue("TouchMoved " + dir);
 
-            if (eKind.spearman == _kind)
-            {
-                Being target = SingleO.objectManager.GetNearCharacter(this as ChampUnit, Camp.eRelation.Unknown, 0.5f, 2f);
-
-                if (null != target)
-                {
-                    ThrowThings(target.transform.position);
-                    Vector3 things_dir = target.transform.position - this.transform.position;
-
-                    _behaviorKind = Behavior.eKind.Attack;
-                    Attack(things_dir);
-                }
-
-
-
-
-                _move.Move_Forward(dir, 2f, 1f); //chamto test
-                //DebugWide.LogRed(target.name); //chamto test
-            }
-            else
-            {
-
-                //Vector3[] lineTest = SingleO.objectManager.LineSegmentTest(transform.position, dir);
-                //foreach (Vector3 centerPos in lineTest)
-                //{
-                //    if(true == SingleO.gridManager.HasStructTile(centerPos))
-                //        return;
-
-                //    break; //첫번째 것만 검사한다 
-                //}
-
-                //dir.Normalize();
-                //float dis = 0.16f * 1f;
-
-                Being target = SingleO.objectManager.GetNearCharacter(this as ChampUnit, Camp.eRelation.Unknown, 0, 0.2f);
-                if (null != target)
-                {
-                    _behaviorKind = Behavior.eKind.Attack;
-                    Attack(dir);
-
-                    _move.Move_Forward(dir, 2f, 1f); //chamto test
-                }
-                else
-                {
-                    //_behaviorKind = Behavior.eKind.Move;
-                    Move_Forward(dir, 0.4f, true);
-                    //_move.MoveToTarget(hit.point, 1f);
-
-                    //DebugWide.LogBlue(dir + "  " + Misc.TransDirection8_AxisY(dir));
-                }
-            }
-
             SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
 
         }
@@ -1624,24 +1565,7 @@ namespace HordeFight
             _move.MoveToTarget(hit.point, 1f);
             //==========
 
-            //SingleO.debugViewer.ResetColor(); //타일 색정보 초기화  
-            //RaycastHit hit = SingleO.touchProcess.GetHit3D();
-            //Vector3 last = hit.point; last.y = 0;
-            //Color color = Color.black;
-            //foreach(Vector3 v3 in SingleO.objectManager.LineSegmentTest(__startPos, last))
-            //{
-            //    Vector3Int iv = SingleO.gridManager.grid.WorldToCell(v3);
-            //    float sqrL = (v3 - __startPos).sqrMagnitude;
 
-            //    color = Color.blue;
-            //    color.a = 0.2f;
-            //    SingleO.debugViewer.SetColor(v3, color);
-            //    //DebugWide.LogBlue(v3);
-
-            //    //DebugWide.LogBlue( iv + "  " + sqrL);
-            //}
-            ////DebugWide.LogBlue("++++++++++++++++++++++++++++++");
-            //SingleO.debugViewer.DrawLine(__startPos, last);
 
         }
 

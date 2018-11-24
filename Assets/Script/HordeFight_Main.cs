@@ -2382,17 +2382,20 @@ namespace HordeFight
         /// 조건에 포함하는 가장 가까운 객체를 반환한다
         /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
         /// </summary>
-        public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float minRadius, float maxRadius)
+        public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
         {
             if (null == src) return null;
 
+            float wrd_minRad = meter_minRadius * Movement.ONE_METER;
+            float wrd_maxRad = meter_maxRadius * Movement.ONE_METER;
             float sqr_minRadius = 0;
             float sqr_maxRadius = 0;
-            float min_value = maxRadius * maxRadius * 1000f; //최대 반경보다 큰 최대값 지정
+            float min_value = wrd_maxRad * wrd_maxRad * 1000f; //최대 반경보다 큰 최대값 지정
             float sqr_dis = 0f;
 
+
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-            uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(maxRadius);
+            uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(wrd_maxRad);
 
             //int count = 0;
             CellInfo cellInfo = null;
@@ -2422,8 +2425,8 @@ namespace HordeFight
 
                     //count++;
                     //==========================================================
-                    sqr_minRadius = Mathf.Pow(minRadius + dst.GetCollider_Radius(), 2);
-                    sqr_maxRadius = Mathf.Pow(maxRadius + dst.GetCollider_Radius(), 2);
+                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst.GetCollider_Radius(), 2);
+                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst.GetCollider_Radius(), 2);
                     sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
 
                     //최대 반경 이내일 경우
@@ -2498,7 +2501,18 @@ namespace HordeFight
             }
         }
 
+        public Shot GetNextShot()
+        {
+            foreach(Shot shot in _shots.Values)
+            {
+                if(false == shot._on_theWay)    
+                {
+                    return shot;
+                }
+            }
 
+            return null;
+        }
 
 
         //____________________________________________
@@ -2518,7 +2532,7 @@ namespace HordeFight
 
 
 
-        public Being Create_Character(Transform parent, Being.eKind eKind, Camp belongCamp, Vector3 pos)
+        public ChampUnit Create_Character(Transform parent, Being.eKind eKind, Camp belongCamp, Vector3 pos)
         {
             _id_sequence++;
 
@@ -2625,40 +2639,43 @@ namespace HordeFight
             Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
             Camp camp_Obstacle = SingleO.campManager.GetCamp(Camp.eKind.Obstacle, Obstacle_CampName.GetHashCode());
             Being being = null;
+            ChampUnit champ = null;
 
             // -- 블루 진형 --
-            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ._mt_range_min = 2f;
+            champ._mt_range_max = 5f;
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
 
             //===================================================
 
             // -- 휜색 진형 --
             camp_position = 0;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //being.GetComponent<AI>()._ai_running = true;
             camp_position++;
             for (int i = 0; i < 4; i++)
             { 
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_WHITE, camp_WHITE.RandPosition());
                 //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
             for (int i = 0; i < 5; i++)
             {
-                being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.RandPosition());
                 //being.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -2809,17 +2826,29 @@ namespace HordeFight
         }
 
 
-        public bool Situation_Is_InRange(float range)
+        private const int _FAILURE = -1;
+        private const int _OUT_RANGE_MIN = 0;
+        private const int _OUT_RANGE_MAX = 1;
+        private const int _IN_RANGE = 2;
+        public int Situation_Is_InRange(float meter_rangeMin, float meter_rangeMax)
         {
-            if (null == _me._looking) return false;
+            if (null == _me._looking) return _FAILURE;
 
             float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
 
-            float sqrRange = Mathf.Pow(range, 2);
+            float sqrRangeMax = Mathf.Pow(meter_rangeMax * Movement.ONE_METER, 2);
+            float sqrRangeMin = Mathf.Pow(meter_rangeMin * Movement.ONE_METER, 2);
 
-            if (sqrRange >= sqrDis) return true;
+            if (sqrRangeMin <= sqrDis)
+            {
+                if (sqrDis <= sqrRangeMax)
+                    return _IN_RANGE;
+                else
+                    return _OUT_RANGE_MAX;
+            }
+                
 
-            return false;
+            return _OUT_RANGE_MIN;
         }
 
         public void StateUpdate()
@@ -2845,7 +2874,8 @@ namespace HordeFight
                 case eState.Chase:
                     {
                         //DebugWide.LogBlue("Chase");
-                        if (false == Situation_Is_InRange(Movement.ONE_METER * 6f))
+                        int result = Situation_Is_InRange(0, 6f);
+                        if (_IN_RANGE != result)
                         {
                             //거리가 멀리 떨어져 있으면 다시 배회한다.
                             _state = eState.Roaming;
@@ -2859,10 +2889,11 @@ namespace HordeFight
                                 _state = eState.Roaming;
                                 break;
                             }
-                                
+
 
                             //공격사거리 안에 들어오면 공격한다 
-                            if (true == Situation_Is_InRange(Movement.ONE_METER * 1.2f))
+                            result = Situation_Is_InRange(_me._mt_range_min, _me._mt_range_max);
+                            if (_IN_RANGE == result)
                             {
                                 _me.Attack(_me._looking.transform.position - _me.transform.position);
                                 //_state = eState.Attack;
@@ -2870,8 +2901,17 @@ namespace HordeFight
                                 //DebugWide.LogBlue("attack");
                             }
 
+                            Vector3 moveDir = _me._looking.transform.position - _me.transform.position;
+                            bool foward = true;
+                            //상대와 너무 붙어 최소공격사거리 조건에 안맞는 경우 
+                            if(_OUT_RANGE_MIN == result)
+                            {
+                                moveDir *= -1f; //반대방향으로 바꾼다
+                                foward = false; //뒷걸음질 
+                            }
 
-                            _me.Move_Forward(_me._looking.transform.position - _me.transform.position, 0.4f, true);
+
+                            _me.Move_Forward(moveDir, 0.4f, foward);
                         }
 
                     }
@@ -3048,14 +3088,19 @@ namespace HordeFight
 
             //_selected.Attack(hit.point - _selected.transform.position);
             //_selected.Block_Forward(hit.point - _selected.transform.position);
-            _selected.Move_Forward(touchDir, 1f, true);  
+            _selected.Move_Forward(touchDir, 1f, true);
 
-            Being target = SingleO.objectManager.GetNearCharacter(_selected as ChampUnit, Camp.eRelation.Unknown, 0, Movement.ONE_METER * 1.2f);
-            if (null != target)
+            ChampUnit champSelected = _selected as ChampUnit;
+            if (null != champSelected )
             {
-                //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
-                _selected.Attack(target.transform.position - _selected.transform.position , target);
-                //target.AddHP(-1);
+                Being target = SingleO.objectManager.GetNearCharacter(_selected as ChampUnit, Camp.eRelation.Unknown, 
+                                                                      champSelected._mt_range_min, champSelected._mt_range_max);
+                if(null != target)
+                {
+                    //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
+                    champSelected.Attack(target.transform.position - _selected.transform.position, target);
+                    //target.AddHP(-1);    
+                }
 
             }
 
