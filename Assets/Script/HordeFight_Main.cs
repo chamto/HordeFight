@@ -2651,11 +2651,11 @@ namespace HordeFight
             champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ._mt_range_min = 0f;
+            champ._mt_range_min = 1f;
             champ._mt_range_max = 5f;
             champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.grunt, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
@@ -2665,8 +2665,8 @@ namespace HordeFight
 
             // -- 휜색 진형 --
             camp_position = 0;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.daemon, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            //being.GetComponent<AI>()._ai_running = true;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             for (int i = 0; i < 6; i++)
             { 
@@ -2679,7 +2679,7 @@ namespace HordeFight
 
             for (int i = 0; i < 3; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.brigand, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
