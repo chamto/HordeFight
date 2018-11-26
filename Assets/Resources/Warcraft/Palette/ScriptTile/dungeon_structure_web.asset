@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: dungeon_structure_web
   m_EditorClassIdentifier: 
   _class_id: 64
-  _permit_rules: 66
+  _permit_rules: 65
   m_DefaultSprite: {fileID: 21300000, guid: a96d0ef6cb2524b8aad190907891292d, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1

@@ -11,8 +11,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54301df3c6d1e4bcb92b5c36d77adc39, type: 3}
   m_Name: dungeon_floor_s2
   m_EditorClassIdentifier: 
-  _class_id: 1
-  _permit_rules: 1
+  _class_id: 128
+  _permit_rules: 129
   m_DefaultSprite: {fileID: 21300000, guid: 557d9c3d7bed54aa990c12914d319a12, type: 3}
   m_DefaultGameObject: {fileID: 0}
   m_DefaultColliderType: 1
