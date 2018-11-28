@@ -856,6 +856,8 @@ namespace HordeFight
         public Shot __shot = null;
         Vector3 __targetPos = Vector3.zero;
         Vector3 __launchPos = Vector3.zero; //시작위치
+        Vector3 __middlePos = Vector3.zero; //중간위치 
+        Vector3 __middleCrossN = Vector3.zero; //중간 직각노멀 
         public void ThrowThings(Vector3 targetPos)
         {
             //Vector3 dir = target - this.transform.position;
@@ -874,27 +876,86 @@ namespace HordeFight
                 Vector3 angle = Vector3.zero;
                 //angle.y = ((float)eDirection8-1f) * -45f;
 
-                angle.y = Vector3.SignedAngle(Vector3.right, targetPos - this.transform.position, Vector3.up);
+                angle.y = Vector3.SignedAngle(Vector3.forward, targetPos - this.transform.position, Vector3.up);
                 //DebugWide.LogBlue(Misc.GetDir8_AxisY(targetPos - this.transform.position).ToString());
                 __shot.transform.localEulerAngles = angle;
                 __shot.transform.position = this.transform.position;
                 __launch = true;
                 __launchPos = this.transform.position;
+                __middlePos = (__targetPos - __launchPos) * 0.5f + __launchPos;
+                __middleCrossN = Vector3.Cross(__targetPos - __launchPos, Vector3.up).normalized;
+
+
+                //캐릭터 방향이 위,아래가 아니면 포물선을 나타내기 위해 중앙노멀값을 적용한다
+                if(eDirection8.up != _move._eDir8 && 
+                   eDirection8.down != _move._eDir8)
+                {
+                    //왼쪽방향을 보고 있을 때, 중앙노멀값의 방향을 바꿔준다 
+                    if (_move._direction.x < 0)
+                    {
+                        __middleCrossN *= -1f;
+                    }
+
+                    __middlePos += __middleCrossN * 0.1f;
+                }
+
+
                 __elapsedTime_2 = 0f;
                 __shot.gameObject.SetActive(true);
                 __shot._on_theWay = true;
                 __shot._owner = this;
+                _prev_position_ = __launchPos; //!
+
+                TweenStart();
 
             }
         }
+
+        public void TweenStart()
+        {
+            Vector3[] list = {__launchPos , __middlePos, __targetPos };
+            iTween.MoveTo(__shot.gameObject, iTween.Hash(
+                "time", 0.8f
+                , "easetype", "easeOutBack"
+                , "path", list
+                //,"orienttopath",true
+                //,"axis","z"
+                , "islocal", true //로컬위치값을 사용하겠다는 옵션. 대상객체의 로컬위치값이 (0,0,0)이 되는 문제 있음. 직접 대상객체 로컬위치값을 더해주어야 한다.
+                , "movetopath", false //현재객체에서 첫번째 노드까지 자동으로 경로를 만들겠냐는 옵션. 경로 생성하는데 문제가 있음. 비활성으로 사용해야함
+                                      //"looktarget",new Vector3(5,-5,7)
+                , "onupdate", "Rotate_Towards_FrontGap"
+                , "onupdatetarget", gameObject
+                , "onupdateparams", __shot.transform
+            ));
+
+            //DebugWide.LogBlue("--------------TweenStart"); //chamto test
+        }
+
         float __elapsedTime_2 = 0f;
         public void Update_Shot()
         {
+            
+
             if (null != __shot && true == __launch && true == __shot._on_theWay)
             {
                 __elapsedTime_2 += Time.deltaTime;
-                //Vector3 dir = __targetPos - __things.transform.position;
-                __shot.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+
+                //Rotate_Towards_FrontGap(__shot.transform);
+                //float angle = Vector3.SignedAngle(Vector3.forward, __targetPos - __launchPos, Vector3.up);
+                //Vector3 euler = __shot.transform.localEulerAngles;
+                //euler.y = angle;
+                //__shot.transform.localEulerAngles = euler;
+
+
+                //__shot.transform.position = Vector3.Lerp(__launchPos, __targetPos, __elapsedTime_2);
+                //if(__elapsedTime_2 <= 0.5f)
+                //{
+                    
+                //    __shot.transform.position = Vector3.Slerp(__launchPos, __middlePos, __elapsedTime_2 / 0.5f);
+                //}else
+                //{
+                //    __shot.transform.position = Vector3.Slerp(__middlePos, __targetPos, (__elapsedTime_2-0.5f)/0.5f);
+                //}
 
                 if (1f < __elapsedTime_2)
                 {
@@ -902,7 +963,93 @@ namespace HordeFight
                     __shot.Reset();
                     __shot = null;
                 }
+
+                //debug test
+                Debug.DrawLine(__middlePos, __middlePos - __middleCrossN * 0.3f);
+                Debug.DrawLine(__launchPos, __targetPos);
             }
+        }
+
+        Vector3 _prev_position_ = Vector3.zero;
+        public void Rotate_Towards_FrontGap(Transform tr)
+        {
+            Vector3 dir = tr.localPosition - _prev_position_;
+
+            //목표지점의 반대방향일 경우는 처리하지 않는다 
+            if (0 > Vector3.Dot(__targetPos - __launchPos, dir))
+                return;
+            
+            if (dir.sqrMagnitude <= Mathf.Pow(0.16f, 2)) //타일 하나의 길이만큼 거리가 있어야 함a
+                return;
+            
+
+            Vector3 euler = tr.localEulerAngles;
+            float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            //아래 3가지 방법도 같은 표현이다
+            //float angle = Vector3.SignedAngle(Vector3.forward, dir, Vector3.up);
+            //tr.localRotation = Quaternion.LookRotation(dir, Vector3.up);
+            //tr.localRotation = Quaternion.FromToRotation(Vector3.forward, dir);
+
+            euler.y = angle;
+            tr.localEulerAngles = euler;
+
+            _prev_position_ = tr.localPosition;
+        }
+
+        public void Rotate_Towards_BehindGap(Transform tr)
+        {
+            Vector3 dir = _prev_position_ - tr.localPosition;
+
+            Vector3 euler = tr.localEulerAngles;
+            euler.y = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            tr.localEulerAngles = euler;
+
+            _prev_position_ = tr.localPosition;
+        }
+
+        //객체의 전진 방향을 반환한다.
+        public Vector3 GetForwardDirect()
+        {
+            return Quaternion.Euler(this.transform.localEulerAngles) * Vector3.forward;
+        }
+
+
+        //내방향을 기준으로 목표위치가 어디쪽에 있는지 반환한다.  
+        public eDirection8 DirectionalInspection(Vector3 targetPos)
+        {
+
+            Vector3 mainDir = GetForwardDirect();
+
+            Vector3 targetTo = targetPos - this.transform.localPosition;
+
+            //mainDir.Normalize();
+            //targetTo.Normalize();
+
+            Vector3 dir = Vector3.Cross(mainDir, targetTo);
+            //dir.Normalize();
+            //DebugWide.LogBlue("mainDir:" + mainDir + "  targetTo:" + targetTo + "   cross:" + dir.y);
+
+            float angle = Vector3.Angle(mainDir, targetTo);
+            angle = Mathf.Abs(angle);
+
+            if (angle < 3f) return eDirection8.center; //사이각이 3도 보다 작다면 중앙으로 여긴다 
+
+            //외적의 y축값이 음수는 왼쪽방향 , 양수는 오른쪽방향 
+            if (dir.y < 0)
+                return eDirection8.left;
+            else if (dir.y > 0)
+                return eDirection8.right;
+
+            return eDirection8.center;
+        }
+
+
+        //회전할 각도 구하기
+        public float CalcRotationAngle(Vector3 targetDir)
+        {
+            //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
+            return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
+
         }
 
         //____________________________________________
@@ -1056,6 +1203,14 @@ namespace HordeFight
             if(null != _sprRender)
             {
                 _sprRender.enabled = onoff;
+            }
+        }
+
+        public void SetColor(Color color)
+        {
+            if(null != _sprRender)
+            {
+                _sprRender.color = color; 
             }
         }
 

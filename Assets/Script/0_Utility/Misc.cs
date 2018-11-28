@@ -14,6 +14,7 @@ namespace Utility
     public enum eDirection8 : int
     {
         none = 0,
+        center = none,
         right = 1,
         rightUp = 2,
         up = 3,
