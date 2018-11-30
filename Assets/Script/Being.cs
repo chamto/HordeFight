@@ -371,10 +371,10 @@ namespace HordeFight
 
     public class Movement : MonoBehaviour
     {
-        public const float ONE_METER = 0.16f; //타일 한개의 가로길이 
-        public const float SQR_ONE_METER = ONE_METER * ONE_METER;
-        public const float WorldToMeter = 1f / ONE_METER;
-        public const float MeterToWorld = ONE_METER;
+        //public const float ONE_METER = 0.16f; //타일 한개의 가로길이 
+        //public const float SQR_ONE_METER = ONE_METER * ONE_METER;
+        //public const float WorldToMeter = 1f / ONE_METER;
+        //public const float MeterToWorld = ONE_METER;
 
         public eDirection8 _eDir8 = eDirection8.down;
         public Vector3 _direction = Vector3.back; //_eDir8과 같은 방향으로 설정한다  
@@ -425,7 +425,7 @@ namespace HordeFight
                 MoveToTarget(_lastTargetPos, _speed_meterPerSecond); //test
             }
             //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
-            else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= SQR_ONE_METER * 0.2f)
+            else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= GridManager.SQR_ONE_METER * 0.2f)
             {
                 _elapsed_movingTime = 0;
 
@@ -499,7 +499,7 @@ namespace HordeFight
 
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
-            this.transform.Translate(dir * (ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
 
             //보간 없는 기본형
             //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
@@ -509,13 +509,14 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
+            //dir.Normalize();
             _isNextMoving = true;
             _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
             _eDir8 = Misc.GetDir8_AxisY(dir);
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
+            this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
         }
 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
@@ -523,7 +524,7 @@ namespace HordeFight
             _isNextMoving = true;
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
+            this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
         }
 
         public void DebugVeiw_DrawPath_MoveToTarget()
@@ -687,8 +688,8 @@ namespace HordeFight
 
         //능력치1 
         public ushort _power = 1;
-        public float _mt_range_min = 0f;
-        public float _mt_range_max = 1.2f;
+        public float _mt_range_min = 0.2f;
+        public float _mt_range_max = 0.5f;
 
         //보조정보 
         //private Geo.Sphere _collider;
@@ -712,6 +713,15 @@ namespace HordeFight
 
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
+        public float attack_range_min
+        {
+            get { return this.GetCollider_Radius() + _mt_range_min * GridManager.MeterToWorld; }
+        }
+        public float attack_range_max
+        {
+            get { return this.GetCollider_Radius() + _mt_range_max * GridManager.MeterToWorld; }
+        }
+
 		private void Start()
 		{
             //DebugWide.LogBlue("ChampUnit");
@@ -727,7 +737,7 @@ namespace HordeFight
 		{
             base.Init();
 
-            _activeRange.radius = 0.2f;
+            _activeRange.radius = GridManager.ONE_METER * 1f; 
 
             //=====================================================
             // ui 설정 
@@ -776,7 +786,7 @@ namespace HordeFight
             if (eKind.spearman == _kind)
             {
                 _appointmentDir.Normalize();
-                Vector3 targetPos = _appointmentDir * this._mt_range_max * Movement.ONE_METER + this.transform.position;
+                Vector3 targetPos = _appointmentDir * this._mt_range_max * GridManager.ONE_METER + this.transform.position;
                 //if (null != _target)
                     //targetPos = _target.transform.position;
 
@@ -896,7 +906,7 @@ namespace HordeFight
                         __middleCrossN *= -1f;
                     }
 
-                    __middlePos += __middleCrossN * 0.1f;
+                    __middlePos += __middleCrossN * 1f;
                 }
 
 
@@ -965,7 +975,7 @@ namespace HordeFight
                 }
 
                 //debug test
-                Debug.DrawLine(__middlePos, __middlePos - __middleCrossN * 0.3f);
+                Debug.DrawLine(__middlePos, __middlePos - __middleCrossN * 1f);
                 Debug.DrawLine(__launchPos, __targetPos);
             }
         }
@@ -2085,12 +2095,16 @@ namespace HordeFight
 
     public class CameraWalk : MonoBehaviour
     {
-        public Camera _camera = null;
+        public bool _enable_PixelPerfect = false;
+        private Camera _camera = null;
         public Transform _target = null;
+        public float _PIXEL_LENGTH = 0.16f; //게임에서 사용하는 픽셀하나의 크기 
+        public int _PIXEL_PER_UNIT = 16; //ppu
 
 		private void Start()
 		{
             _camera = SingleO.mainCamera;
+
 		}
 
 		private void FixedUpdate()
@@ -2100,12 +2114,37 @@ namespace HordeFight
 
             Vector3 targetPos = _target.position;
             targetPos.y = _camera.transform.position.y;
-            _camera.transform.position = targetPos; 
+
+            if(true == _enable_PixelPerfect)
+            {
+                //픽셀퍼팩트 처리 : PIXEL_LENGTH 단위로 이동하게, 버림 처리한다 
+                _camera.transform.position = ToPixelPerfect(targetPos , _PIXEL_LENGTH); 
+            }else
+            {
+                _camera.transform.position = targetPos; 
+            }
+
+
 		}
 
         public void SetTarget(Transform target)
         {
             _target = target;
+        }
+
+        public Vector3 ToPixelPerfect(Vector3 pos3d , float pixel_length)
+        {
+
+            Vector3Int posXY_2d = new Vector3Int((int)pos3d.x, (int)pos3d.y, (int)pos3d.z);
+            Vector3 decimalPoint = pos3d - posXY_2d;
+
+            //예) 0.2341 => 0.0341
+            Vector3 remainder = new Vector3(decimalPoint.x % pixel_length,
+                                            decimalPoint.y % pixel_length,
+                                            decimalPoint.z % pixel_length);
+            
+
+            return pos3d - remainder;
         }
 	}
 }

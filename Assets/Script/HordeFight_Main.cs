@@ -445,17 +445,17 @@ namespace HordeFight
             render.transform.localPosition = Vector3.zero;
 
 
-            render.startWidth = 0.02f;
-            render.endWidth = 0.02f;
+            render.startWidth = 0.12f;
+            render.endWidth = 0.12f;
             render.startColor = Color.red;
             render.endColor = Color.red;
 
             _list.Add(_sequenceId, info); //추가
 
             Vector3 pos = Vector3.zero;
-            pos.x = -0.05f; pos.z = -0.15f;
+            pos.x = -0.5f; pos.z = -0.8f;
             render.SetPosition(0, pos);
-            pos.x += 0.1f;
+            pos.x += 0.8f;
             render.SetPosition(1, pos);
 
             return _sequenceId;
@@ -485,8 +485,8 @@ namespace HordeFight
             render.transform.localPosition = Vector3.zero;
 
             color.a = 0.4f; //흐리게 한다
-            render.startWidth = 0.01f;
-            render.endWidth = 0.01f;
+            render.startWidth = 0.1f;
+            render.endWidth = 0.1f;
             render.startColor = color;//Color.green;
             render.endColor = color;//Color.green;
 
@@ -966,8 +966,13 @@ namespace HordeFight
     {
         public const int NxN_MIN = 3;   //그리드 범위 최소크기
         public const int NxN_MAX = 11;  //그리드 범위 최대크기
-        public const float GridCell_Size = 0.16f;
-        public const float GridCell_HalfSize = GridCell_Size * 0.5f;
+        //public const float GridCell_Size = 0.16f;
+        //public const float GridCell_HalfSize = GridCell_Size * 0.5f;
+
+        public const float ONE_METER = 1f; //타일 한개의 가로길이 
+        public const float SQR_ONE_METER = ONE_METER * ONE_METER;
+        public const float WorldToMeter = 1f / ONE_METER;
+        public const float MeterToWorld = ONE_METER;
 
 
         private Grid _grid = null;
@@ -1224,7 +1229,7 @@ namespace HordeFight
 
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
                 float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
-                if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 6.2f, 2))
+                if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
                 {
                     if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
                     {
@@ -1247,7 +1252,7 @@ namespace HordeFight
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
-                        else if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 1.2f, 2))
+                            else if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 1.2f, 2))
                         {
                             //주변 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
@@ -1300,7 +1305,7 @@ namespace HordeFight
 
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
                 float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
-                if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 6.2f, 2))
+                if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
                 {
                     if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
                     {
@@ -1323,7 +1328,7 @@ namespace HordeFight
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
-                        else if (sqrDis <= Mathf.Pow(Movement.MeterToWorld * 1.2f, 2))
+                            else if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 1.2f, 2))
                         {
                             //주변 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
@@ -1975,13 +1980,13 @@ namespace HordeFight
         {
             Vector3 dirToDst = dstPos - src.transform.position;
             float sqrDis = dirToDst.sqrMagnitude;
-            if (sqrDis < Mathf.Pow(Movement.MeterToWorld * 7f, 2))
+            if (sqrDis < Mathf.Pow(GridManager.MeterToWorld * 7f, 2))
             {
 
                 //대상과 정반대 방향이 아닐때 처리 
                 dirToDst.Normalize();
                 if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
-                    sqrDis < Mathf.Pow(Movement.MeterToWorld * 2f, 2))
+                    sqrDis < Mathf.Pow(GridManager.MeterToWorld * 2f, 2))
                 {
                     //보이는 위치의 타일인지 검사한다 
                     if(true == SingleO.gridManager.IsVisibleTile(src.transform.position,dstPos, 0.1f))
@@ -2056,6 +2061,7 @@ namespace HordeFight
             
             Vector3 sqr_dis = Vector3.zero;
             float r_sum = 0f;
+            float max_radius = Mathf.Max(src.GetCollider_Radius(), dst.GetCollider_Radius());
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             sqr_dis = src.transform.localPosition - dst.transform.localPosition;
@@ -2072,10 +2078,10 @@ namespace HordeFight
                 //Vector3 n = sqr_dis;
                 float meterPerSecond = 2f;
 
-                //2.반지름 이상으로 겹쳐있는 경우
-                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+                //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
+                if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
                 {
-                    //3.완전 겹쳐있는 경우
+                    //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
                     if (n == Vector3.zero)
                     {
                         //방향값이 없기 때문에 임의로 지정해 준다. 
@@ -2083,6 +2089,9 @@ namespace HordeFight
                     }
 
                     meterPerSecond = 0.5f;
+
+                    //if(Being.eKind.spear != dst._kind)
+                        //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
                 }
 
                 //밀리는 처리 
@@ -2174,7 +2183,7 @@ namespace HordeFight
             Vector3 centerToSrc_dir = srcPos - structTile._center_3d;
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
-            float size = GridManager.GridCell_HalfSize;
+            float size = SingleO.gridManager.cellSize_x * 0.5f;
             Vector3 center = Vector3.zero;
             LineSegment3 line3 = new LineSegment3();
             //8방향별 축값 고정  
@@ -2388,8 +2397,8 @@ namespace HordeFight
         {
             if (null == src) return null;
 
-            float wrd_minRad = meter_minRadius * Movement.ONE_METER;
-            float wrd_maxRad = meter_maxRadius * Movement.ONE_METER;
+            float wrd_minRad = meter_minRadius * GridManager.ONE_METER;
+            float wrd_maxRad = meter_maxRadius * GridManager.ONE_METER;
             float sqr_minRadius = 0;
             float sqr_maxRadius = 0;
             float min_value = wrd_maxRad * wrd_maxRad * 1000f; //최대 반경보다 큰 최대값 지정
@@ -2644,30 +2653,30 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ._mt_range_min = 1f;
-            //champ._mt_range_max = 5f;
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            for (int i = 0; i < 10; i++)
-            {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
-                champ._mt_range_min = 2f;
-                champ._mt_range_max = 8f;
-                champ.GetComponent<AI>()._ai_running = true;
-                camp_position++;
-            }
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ._mt_range_min = 1f;
+            champ._mt_range_max = 8f;
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
+            //    champ._mt_range_min = 2f;
+            //    champ._mt_range_max = 8f;
+            //    champ.GetComponent<AI>()._ai_running = true;
+            //    camp_position++;
+            //}
 
             //===================================================
 
@@ -2851,8 +2860,8 @@ namespace HordeFight
 
             float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
 
-            float sqrRangeMax = Mathf.Pow(meter_rangeMax * Movement.ONE_METER, 2);
-            float sqrRangeMin = Mathf.Pow(meter_rangeMin * Movement.ONE_METER, 2);
+            float sqrRangeMax = Mathf.Pow(meter_rangeMax * GridManager.ONE_METER , 2);
+            float sqrRangeMin = Mathf.Pow(meter_rangeMin * GridManager.ONE_METER , 2);
 
             if (sqrRangeMin <= sqrDis)
             {
@@ -2862,6 +2871,27 @@ namespace HordeFight
                     return _OUT_RANGE_MAX;
             }
                 
+
+            return _OUT_RANGE_MIN;
+        }
+
+        public int Situation_Is_AttackInRange()
+        {
+            if (null == _me._looking) return _FAILURE;
+
+            float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
+
+            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking.GetCollider_Radius() , 2);
+            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking.GetCollider_Radius() , 2);
+
+            if (sqrRangeMin <= sqrDis)
+            {
+                if (sqrDis <= sqrRangeMax)
+                    return _IN_RANGE;
+                else
+                    return _OUT_RANGE_MAX;
+            }
+
 
             return _OUT_RANGE_MIN;
         }
@@ -2907,7 +2937,7 @@ namespace HordeFight
 
 
                             //공격사거리 안에 들어오면 공격한다 
-                            result = Situation_Is_InRange(_me._mt_range_min, _me._mt_range_max);
+                            result = Situation_Is_AttackInRange();
                             if (_IN_RANGE == result)
                             {
                                 _me.Attack(_me._looking.transform.position - _me.transform.position);
@@ -2917,16 +2947,18 @@ namespace HordeFight
                             }
 
                             Vector3 moveDir = _me._looking.transform.position - _me.transform.position;
+                            float second = 0.7f;
                             bool foward = true;
                             //상대와 너무 붙어 최소공격사거리 조건에 안맞는 경우 
                             if(_OUT_RANGE_MIN == result)
                             {
                                 moveDir *= -1f; //반대방향으로 바꾼다
+                                second = 2f;
                                 foward = false; //뒷걸음질 
                             }
 
 
-                            _me.Move_Forward(moveDir, 0.4f, foward);
+                            _me.Move_Forward(moveDir, second, foward);
                         }
 
                     }
@@ -3108,8 +3140,9 @@ namespace HordeFight
             ChampUnit champSelected = _selected as ChampUnit;
             if (null != champSelected )
             {
+                //임시처리
                 Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Unknown, 
-                                                                      champSelected._mt_range_min, champSelected._mt_range_max);
+                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
                 if(null != target)
                 {
                     if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
