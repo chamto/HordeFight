@@ -28,7 +28,8 @@ namespace HordeFight
             gameObject.AddComponent<PathFinder>();
 
             gameObject.AddComponent<UI_Main>();
-            //gameObject.AddComponent<DebugViewer>();
+
+            //SingleO.mainCamera.gameObject.AddComponent<CameraWalk>();
             gameObject.AddComponent<CameraWalk>();
 
             gameObject.AddComponent<TouchEvent>();
