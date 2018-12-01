@@ -34,19 +34,28 @@ public class HierarchyPreLoader
     //해쉬값으로 tr값을 얻는다
     public Transform GetTransform(int hash_key)
     {
-        return this._hashMap[hash_key];
+        Transform getTr = null;
+        if (true == _hashMap.TryGetValue(hash_key, out getTr))
+        {
+            return this._hashMap[hash_key];    
+        }
+
+        return null;
     }
 
     public Transform GetTransform(string full_path)
     {
         int hash_key = full_path.GetHashCode();
-        Transform getTr = null;
-        if (true == _hashMap.TryGetValue(hash_key, out getTr))
+        Transform getTr = GetTransform(hash_key);
+
+        //해쉬맵에는 없고 계층도에는 있는 경우 , 경로 추가처리 한다 
+        getTr = this.Find<Transform>(full_path);
+        if(null != getTr)
         {
-            return this._hashMap[hash_key];
+            this.Add(getTr);
         }
 
-        return null;
+        return getTr;
     }
 
     public GameObject GetGameObject(string full_path)
@@ -168,7 +177,7 @@ public class HierarchyPreLoader
 	//=================================================
 	//        유니티 함수를 다시 렙핑한 것임 . 속도 장점없음
 	//=================================================
-	private TaaT Find<TaaT>(string fullPath) where TaaT : class
+    private TaaT Find<TaaT>(string fullPath) where TaaT : class
 	{
 		//ref : http://answers.unity3d.com/questions/8500/how-can-i-get-the-full-path-to-a-gameobject.html
 		Transform f = Resources.FindObjectsOfTypeAll<Transform>().Where(tr => this.GetFullPath (tr) == fullPath).First();
@@ -188,7 +197,7 @@ public class HierarchyPreLoader
 	//=================================================
 	//        유니티 함수를 다시 렙핑한 것임 . 속도 장없음
 	//=================================================
-	private TaaT FindOnlyActive<TaaT>(string fullPath) where TaaT : class
+    private TaaT FindOnlyActive<TaaT>(string fullPath) where TaaT : class
 	{
 		//ref : http://answers.unity3d.com/questions/8500/how-can-i-get-the-full-path-to-a-gameobject.html
 		Transform f =  Resources.FindObjectsOfTypeAll<Transform> ().Where (

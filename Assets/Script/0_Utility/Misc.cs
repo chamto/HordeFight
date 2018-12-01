@@ -872,7 +872,37 @@ namespace Utility
             float r_length = 1f / Misc.Sqrt_Quick_7(v3.sqrMagnitude);
             return v3 * r_length;
         }
+
+        //========================================================
+        //==================       곡  선       ==================
+        //========================================================
     
+        //선형 베지어 곡선
+        static public Vector3 BezierCurve(Vector3 p0, Vector3 p1, float t)
+        {
+            return (1f - t) * p0 + t * p1;
+        }
+
+        //2차 베지어 곡선 (Quadratic)
+        static public Vector3 BezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, float t)
+        {
+            float o1Mt = 1f - t;
+
+            return (o1Mt * o1Mt * p0) + (2 * t * o1Mt * p1) + (t * t * p2);
+
+            //Vector3 p0p1 = Misc.BezierCurve(p0, p1, t);
+            //Vector3 p1p2 = Misc.BezierCurve(p1, p2, t);
+            //return Misc.BezierCurve(p0p1, p1p2, t);
+        }
+
+        //3차 베지어 곡선 (Cubic)
+        static public Vector3 BezierCurve(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3, float t)
+        {
+            Vector3 p0p1p2 = Misc.BezierCurve(p0, p1, p2, t);
+            Vector3 p1p2p3 = Misc.BezierCurve(p1, p2, p3, t);
+
+            return Misc.BezierCurve(p0p1p2, p1p2p3, t);
+        }
 
     }
 

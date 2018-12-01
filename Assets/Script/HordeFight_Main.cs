@@ -1920,7 +1920,8 @@ namespace HordeFight
         public Dictionary<uint, Being> _beings = new Dictionary<uint, Being>();
         public List<Being> _linearSearch_list = new List<Being>(); //충돌처리시 선형검색 속도를 높이기 위해 _beings 사전과 동일한 객체를 리스트에 넣음 
 
-        public Dictionary<uint, Shot> _shots = new Dictionary<uint, Shot>(); //발사체는 따로 관리한다
+        //public Dictionary<uint, Shot> _shots = new Dictionary<uint, Shot>(); //발사체는 따로 관리한다
+        public List<Shot> _shots = new List<Shot>();
 
         private void Start()
         {
@@ -2513,17 +2514,35 @@ namespace HordeFight
             }
         }
 
+        int __shotNextCount = -1;
         public Shot GetNextShot()
         {
-            foreach(Shot shot in _shots.Values)
+
+            //최대 샷 개수만큼만 사용안하는 샷을 찾는다
+            for (int i = 0; i < _shots.Count; i++)
             {
-                if(false == shot._on_theWay)    
+                __shotNextCount++;
+                __shotNextCount %= _shots.Count;
+
+                if (false == _shots[__shotNextCount]._on_theWay)
                 {
-                    return shot;
+                    //사용안하면 바로 반환한다 
+                    return _shots[__shotNextCount];
                 }
             }
 
             return null;
+
+
+
+            //foreach(Shot shot in _shots.Values)
+            //{
+            //    if(false == shot._on_theWay)    
+            //    {
+            //        return shot;
+            //    }
+            //}
+            //return null;
         }
 
 
@@ -2575,7 +2594,8 @@ namespace HordeFight
             shot._kind = eKind;
             shot.transform.localPosition = pos;
 
-            _shots.Add(_id_shot_sequence, shot);
+            //_shots.Add(_id_shot_sequence, shot);
+            _shots.Add(shot);
 
             return shot;
         }
@@ -2654,22 +2674,22 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ._mt_range_min = 1f;
-            champ._mt_range_max = 8f;
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ._mt_range_min = 1f;
+            //champ._mt_range_max = 8f;
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
             //for (int i = 0; i < 10; i++)
             //{
             //    champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
@@ -2683,25 +2703,25 @@ namespace HordeFight
 
             // -- 휜색 진형 --
             camp_position = 0;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            for (int i = 0; i < 10; i++)
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            for (int i = 0; i < 1; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
                 champ._mt_range_max = 8f;
-                champ.GetComponent<AI>()._ai_running = true;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }
 
-            for (int i = 0; i < 1; i++)
-            {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
-                champ.GetComponent<AI>()._ai_running = true;
-                camp_position++;
-            }
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
+            //    champ.GetComponent<AI>()._ai_running = true;
+            //    camp_position++;
+            //}
 
             //===================================================
 
@@ -2825,7 +2845,7 @@ namespace HordeFight
 
         private void FixedUpdate()
         {
-            //_me.Attack(_me._move._direction); //chamto test
+            _me.Attack(_me._move._direction); //chamto test
 
             if (false == _ai_running) return;
 
