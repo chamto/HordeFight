@@ -572,9 +572,20 @@ namespace HordeFight
             Update_Shot();
             Update_CellInfo();
 
+            //덮개 타일과 충돌하면 동작을 종료한다 
+            int result = SingleO.gridManager.IsIncluded_InDiagonalArea(this.transform.position);
+            if(GridManager._ReturnMessage_Included_InStructTile == result ||
+               GridManager._ReturnMessage_Included_InDiagonalArea == result)
+            {
+                
+                End();
+            }
+               
+
         }
 
-		public void Reset()
+        //샷의 움직임을 종료한다 
+        public void End()
 		{
             if(null != _owner)
             {
@@ -589,6 +600,7 @@ namespace HordeFight
             //this.gameObject.SetActive(false);
             //_shader.transform.localPosition = Vector3.zero;
             //_sprRender.transform.localPosition = Vector3.zero;
+            this.transform.position = _sprParent.position;
             _sprParent.localPosition = Vector3.zero;
 
 		}
@@ -601,8 +613,8 @@ namespace HordeFight
         {
             //무언가와 충돌했으면 투사체를 해제한다 (챔프 , 숥통 등)
 
-            //if(dst != _owner)
-                //Reset();
+            if(dst != _owner)
+                End();
         }
 
 
@@ -615,6 +627,7 @@ namespace HordeFight
         Vector3 _maxHeight_pos = Vector3.zero; //곡선의 최고점이 되는 위치 
         Vector3 _perpNormal = Vector3.zero; //target - launch 벡터의 수직노멀 
         Vector3 _prev_pos = Vector3.zero;
+        float _shotMoveTime = 1f; //샷 이동 시간 
 
         float _elapsedTime = 0f;
         public float _maxHeight_length = 2f; //곡선의 최고점 높이 길이
@@ -634,7 +647,12 @@ namespace HordeFight
                 _launchPos = launchPos;
                 _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
 
-                _perpNormal = Vector3.Cross(_targetPos - _launchPos, Vector3.up).normalized;
+                //기준값 : 7미터 당 1초
+                _shotMoveTime = (_targetPos - _launchPos).magnitude / (GridManager.MeterToWorld * 7f);
+                //DebugWide.LogBlue((_targetPos - _launchPos).magnitude + "  " + _shotMoveTime);
+
+                //_perpNormal = Vector3.Cross(_targetPos - _launchPos, Vector3.up).normalized;
+                _perpNormal = Misc.GetDir8_Normal3D(Vector3.Cross(_targetPos - _launchPos, Vector3.up));
                 _elapsedTime = 0f;
                 _owner = owner;
                 _prev_pos = _launchPos; //!
@@ -713,29 +731,32 @@ namespace HordeFight
                 //euler.y = angle;
                 //__shot.transform.localEulerAngles = euler;
 
+                float zeroOneRate = _elapsedTime / _shotMoveTime;
+
                 //* 화살 중간비율값 위치에 최대크기 비율값 계산
                 //중간비율값 위치에 최고비율로 값변형 : [ 0 ~ 0.7 ~ 1 ] => [ 0 ~ 1 ~ 0 ]
                 float scaleMaxRate = 0f;
-                if(_elapsedTime < _maxHeight_posRate)
+                if(zeroOneRate < _maxHeight_posRate)
                 {
-                    scaleMaxRate = _elapsedTime / _maxHeight_posRate;
+                    scaleMaxRate = zeroOneRate / _maxHeight_posRate;
                 }
                 else
                 {
-                    scaleMaxRate = 1f - (_elapsedTime - _maxHeight_posRate) / ( 1f - _maxHeight_posRate);
+                    scaleMaxRate = 1f - (zeroOneRate - _maxHeight_posRate) / ( 1f - _maxHeight_posRate);
                 }
                 _sprParent.localScale = _ori_scale + (Vector3.one * scaleMaxRate * 0.5f); //최고점에서 1.5배
                 _shader.transform.localScale = (_ori_scale * 0.7f) + (Vector3.one * scaleMaxRate * 0.5f); //시작과 끝위치점에서 0.7배. 최고점에서 1.2배
 
                 //* 이동 , 회전 
-                this.transform.position = Vector3.Lerp(_launchPos, _targetPos, _elapsedTime); //그림자 위치 설정 
-                _sprParent.position = Misc.BezierCurve(_launchPos, _maxHeight_pos, _targetPos, _elapsedTime);
+                this.transform.position = Vector3.Lerp(_launchPos, _targetPos, zeroOneRate); //그림자 위치 설정 
+                _sprParent.position = Misc.BezierCurve(_launchPos, _maxHeight_pos, _targetPos, zeroOneRate);
                 Rotate_Towards_FrontGap(_sprParent);
 
 
-                if (1f < _elapsedTime)
+                if (_shotMoveTime < _elapsedTime)
                 {
-                    this.Reset();
+                    //Update_CellInfo();
+                    this.End();
                 }
 
                 //debug test
