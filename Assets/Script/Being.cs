@@ -549,13 +549,15 @@ namespace HordeFight
     {
         public Being _owner = null; //발사체를 소유한 객체
         public bool _on_theWay = false; //발사되어 날아가는 중
+        private Transform _sprParent = null;
         private Transform _shader = null;
 
         private void Start()
         {
             base.Init();
-
+            _sprParent = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/pos");
             _shader = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/shader");
+            this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
         }
 
         private void FixedUpdate()
@@ -586,6 +588,8 @@ namespace HordeFight
             _on_theWay = false;
             //this.gameObject.SetActive(false);
             //_shader.transform.localPosition = Vector3.zero;
+            //_sprRender.transform.localPosition = Vector3.zero;
+            _sprParent.localPosition = Vector3.zero;
 
 		}
 
@@ -608,24 +612,29 @@ namespace HordeFight
 
         Vector3 _launchPos = Vector3.zero; //시작위치
         Vector3 _targetPos = Vector3.zero;
-        Vector3 _middlePos = Vector3.zero; //중간위치 
-        Vector3 _middleCrossN = Vector3.zero; //중간 직각노멀 
+        Vector3 _maxHeight_pos = Vector3.zero; //곡선의 최고점이 되는 위치 
+        Vector3 _perpNormal = Vector3.zero; //target - launch 벡터의 수직노멀 
         Vector3 _prev_pos = Vector3.zero;
+
         float _elapsedTime = 0f;
-        public float __shotHeight = 2f; //test
-        public float __middleRate = 0.5f;
+        public float _maxHeight_length = 2f; //곡선의 최고점 높이 길이
+        public float _maxHeight_posRate = 0.5f; //곡선의 최고점이 되는 위치 비율
         public void ThrowThings(Being owner, Vector3 launchPos, Vector3 targetPos)
         {
             
+            if (null == _sprRender) 
+                return; //Start 함수 수행전에 호출된 경우 
+
+
             if (false == _on_theWay && null != owner)
             {
                 this.transform.position = launchPos;
                 _on_theWay = true;
-
+                float shake = (float)Misc.RandInRange(0f, 0.2f); //흔들림 정도
                 _launchPos = launchPos;
-                _targetPos = targetPos;
-                _middlePos = (_targetPos - _launchPos) * __middleRate + _launchPos;
-                _middleCrossN = Vector3.Cross(_targetPos - _launchPos, Vector3.up).normalized;
+                _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
+
+                _perpNormal = Vector3.Cross(_targetPos - _launchPos, Vector3.up).normalized;
                 _elapsedTime = 0f;
                 _owner = owner;
                 _prev_pos = _launchPos; //!
@@ -638,28 +647,57 @@ namespace HordeFight
                 this.transform.localEulerAngles = angle;
 
 
-
-                //캐릭터 방향이 위,아래가 아니면 포물선을 나타내기 위해 중앙노멀값을 적용한다
-                if (eDirection8.up !=  owner._move._eDir8 &&
-                    eDirection8.down != owner._move._eDir8)
+                float posRateVert = 0f;
+                Vector3 posHori = Vector3.zero;
+                if(eDirection8.up == owner._move._eDir8)
                 {
-                    //왼쪽방향을 보고 있을 때, 중앙노멀값의 방향을 바꿔준다 
+                    //그림자를 참 뒤에 보이게 함
+                    posRateVert = 0.8f;
+                }
+                else if(eDirection8.down == owner._move._eDir8)
+                {
+                    //그림자를 창 앞에 보이게 함 
+                    posRateVert = 0.3f;
+                }
+                else
+                {
+                    //* 캐릭터 방향이 위,아래가 아니면 포물선을 나타내기 위해 중앙노멀값을 적용한다
                     if (owner._move._direction.x < 0)
                     {
-                        _middleCrossN *= -1f;
+                        //왼쪽방향을 보고 있을 때, 중앙노멀값의 방향을 바꿔준다 
+                        _perpNormal *= -1f;
                     }
-
-                    _middlePos += _middleCrossN * __shotHeight;
+                    posRateVert = _maxHeight_posRate + shake;
+                    posHori = _perpNormal * _maxHeight_length;
                 }
+                _maxHeight_pos = (_targetPos - _launchPos) * (posRateVert) + _launchPos;
+                _maxHeight_pos += posHori;
 
-                 _ori_scale = Vector3.one;
-                //_ori_scale = _sprRender.transform.localScale; //chamto test
+
                 //TweenStart();
 
             }
         }
 
-
+        //public Vector3 ClosestPoint_ToBezPos(Vector3 bezPos)
+        //{
+        //    Vector3 direction = _targetPos - _launchPos;
+        //    Vector3 w = bezPos - _launchPos;
+        //    float proj = Vector3.Dot(w, direction);
+        //    // endpoint 0 is closest point
+        //    if (proj <= 0.0f)
+        //        return _launchPos;
+        //    else
+        //    {
+        //        float vsq = Vector3.Dot(direction, direction);
+        //        // endpoint 1 is closest point
+        //        if (proj >= vsq)
+        //            return _launchPos + direction;
+        //        // else somewhere else in segment
+        //        else
+        //            return bezPos - (_launchPos + (proj / vsq) * direction);
+        //    }
+        //}
 
         Vector3 _ori_scale = Vector3.one;
         public void Update_Shot()
@@ -669,7 +707,7 @@ namespace HordeFight
             {
                 _elapsedTime += Time.deltaTime;
 
-                Rotate_Towards_FrontGap(this.transform);
+                //Rotate_Towards_FrontGap(this.transform);
                 //float angle = Vector3.SignedAngle(Vector3.forward, __targetPos - __launchPos, Vector3.up);
                 //Vector3 euler = __shot.transform.localEulerAngles;
                 //euler.y = angle;
@@ -678,25 +716,22 @@ namespace HordeFight
                 //* 화살 중간비율값 위치에 최대크기 비율값 계산
                 //중간비율값 위치에 최고비율로 값변형 : [ 0 ~ 0.7 ~ 1 ] => [ 0 ~ 1 ~ 0 ]
                 float scaleMaxRate = 0f;
-                if(_elapsedTime < __middleRate)
+                if(_elapsedTime < _maxHeight_posRate)
                 {
-                    scaleMaxRate = _elapsedTime / __middleRate;
+                    scaleMaxRate = _elapsedTime / _maxHeight_posRate;
                 }
                 else
                 {
-                    scaleMaxRate = 1f - (_elapsedTime - __middleRate) / ( 1f - __middleRate);
+                    scaleMaxRate = 1f - (_elapsedTime - _maxHeight_posRate) / ( 1f - _maxHeight_posRate);
                 }
-                _sprRender.transform.localScale = _ori_scale + (Vector3.one * scaleMaxRate * 1f);
-                this.transform.position = Misc.BezierCurve(_launchPos, _middlePos, _targetPos, _elapsedTime);
-                _shader.transform.position = Vector3.Lerp(_launchPos, _targetPos, _elapsedTime);
-                //if(__elapsedTime_2 <= 0.5f)
-                //{
+                _sprParent.localScale = _ori_scale + (Vector3.one * scaleMaxRate * 0.5f); //최고점에서 1.5배
+                _shader.transform.localScale = (_ori_scale * 0.7f) + (Vector3.one * scaleMaxRate * 0.5f); //시작과 끝위치점에서 0.7배. 최고점에서 1.2배
 
-                //    __shot.transform.position = Vector3.Slerp(__launchPos, __middlePos, __elapsedTime_2 / 0.5f);
-                //}else
-                //{
-                //    __shot.transform.position = Vector3.Slerp(__middlePos, __targetPos, (__elapsedTime_2-0.5f)/0.5f);
-                //}
+                //* 이동 , 회전 
+                this.transform.position = Vector3.Lerp(_launchPos, _targetPos, _elapsedTime); //그림자 위치 설정 
+                _sprParent.position = Misc.BezierCurve(_launchPos, _maxHeight_pos, _targetPos, _elapsedTime);
+                Rotate_Towards_FrontGap(_sprParent);
+
 
                 if (1f < _elapsedTime)
                 {
@@ -704,7 +739,7 @@ namespace HordeFight
                 }
 
                 //debug test
-                Debug.DrawLine(_middlePos, _middlePos - _middleCrossN * __shotHeight);
+                Debug.DrawLine(_maxHeight_pos, _maxHeight_pos - _perpNormal * _maxHeight_length);
                 Debug.DrawLine(_launchPos, _targetPos);
             }
         }
@@ -712,7 +747,7 @@ namespace HordeFight
 
         public void Rotate_Towards_FrontGap(Transform tr)
         {
-            Vector3 dir = tr.localPosition - _prev_pos;
+            Vector3 dir = tr.position - _prev_pos;
 
             //목표지점의 반대방향일 경우는 처리하지 않는다 
             if (0 > Vector3.Dot(_targetPos - _launchPos, dir))
@@ -722,33 +757,25 @@ namespace HordeFight
                 return;
 
 
-            Vector3 euler = tr.localEulerAngles;
+            Vector3 euler = tr.eulerAngles;
             float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
             //아래 3가지 방법도 같은 표현이다
             //float angle = Vector3.SignedAngle(Vector3.forward, dir, Vector3.up);
             //tr.localRotation = Quaternion.LookRotation(dir, Vector3.up);
             //tr.localRotation = Quaternion.FromToRotation(Vector3.forward, dir);
 
+            //euler.x = 90f; euler.z = -30f;//euler.z = -30f;
             euler.y = angle;
-            tr.localEulerAngles = euler;
+            tr.eulerAngles = euler;
 
-            _prev_pos = tr.localPosition;
+            _prev_pos = tr.position;
         }
 
-        public void Rotate_Towards_BehindGap(Transform tr)
-        {
-            Vector3 dir = _prev_pos - tr.localPosition;
 
-            Vector3 euler = tr.localEulerAngles;
-            euler.y = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
-            tr.localEulerAngles = euler;
-
-            _prev_pos = tr.localPosition;
-        }
 
         public void TweenStart()
         {
-            Vector3[] list = { _launchPos, _middlePos, _targetPos };
+            Vector3[] list = { _launchPos, _maxHeight_pos, _targetPos };
             iTween.MoveTo(this.gameObject, iTween.Hash(
                 "time", 0.8f
                 , "easetype", "easeOutBack"
@@ -764,51 +791,6 @@ namespace HordeFight
             ));
 
             //DebugWide.LogBlue("--------------TweenStart"); //chamto test
-        }
-
-        //객체의 전진 방향을 반환한다.
-        public Vector3 GetForwardDirect()
-        {
-            return Quaternion.Euler(this.transform.localEulerAngles) * Vector3.forward;
-        }
-
-
-        //내방향을 기준으로 목표위치가 어디쪽에 있는지 반환한다.  
-        public eDirection8 DirectionalInspection(Vector3 targetPos)
-        {
-
-            Vector3 mainDir = GetForwardDirect();
-
-            Vector3 targetTo = targetPos - this.transform.localPosition;
-
-            //mainDir.Normalize();
-            //targetTo.Normalize();
-
-            Vector3 dir = Vector3.Cross(mainDir, targetTo);
-            //dir.Normalize();
-            //DebugWide.LogBlue("mainDir:" + mainDir + "  targetTo:" + targetTo + "   cross:" + dir.y);
-
-            float angle = Vector3.Angle(mainDir, targetTo);
-            angle = Mathf.Abs(angle);
-
-            if (angle < 3f) return eDirection8.center; //사이각이 3도 보다 작다면 중앙으로 여긴다 
-
-            //외적의 y축값이 음수는 왼쪽방향 , 양수는 오른쪽방향 
-            if (dir.y < 0)
-                return eDirection8.left;
-            else if (dir.y > 0)
-                return eDirection8.right;
-
-            return eDirection8.center;
-        }
-
-
-        //회전할 각도 구하기
-        public float CalcRotationAngle(Vector3 targetDir)
-        {
-            //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
-            return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
-
         }
 
     }

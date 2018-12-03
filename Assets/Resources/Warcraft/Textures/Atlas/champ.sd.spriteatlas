@@ -1183,6 +1183,7 @@ SpriteAtlas:
   - {fileID: 21300130, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
   - {fileID: 21300252, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
   - {fileID: 21300106, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
+  - {fileID: 21300344, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300066, guid: c6df2f4cdb43a4076b8a45a0238b8990, type: 3}
   - {fileID: 21300080, guid: 70b147e7fd2224f2884f66719fd5ea3c, type: 3}
   - {fileID: 21300102, guid: fd14cc9e8ac2d45c49d43223d16dc665, type: 3}
@@ -1580,6 +1581,7 @@ SpriteAtlas:
   - {fileID: 21300170, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
   - {fileID: 21300038, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300112, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
+  - {fileID: 21300340, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300116, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
   - {fileID: 21300002, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
   - {fileID: 21300014, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
@@ -1612,6 +1614,7 @@ SpriteAtlas:
   - {fileID: 21300014, guid: fd14cc9e8ac2d45c49d43223d16dc665, type: 3}
   - {fileID: 21300004, guid: fd14cc9e8ac2d45c49d43223d16dc665, type: 3}
   - {fileID: 21300004, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
+  - {fileID: 21300342, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300004, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
   - {fileID: 21300058, guid: 32bae2e7d4c1d4f99b9f770d3f03390a, type: 3}
   - {fileID: 21300054, guid: 32bae2e7d4c1d4f99b9f770d3f03390a, type: 3}
@@ -2823,6 +2826,7 @@ SpriteAtlas:
   - Peon_65
   - Peon_126
   - Peon_53
+  - spear_0
   - Conjurer_3_2
   - Spearman_2_2
   - Cleric_51
@@ -2833,7 +2837,7 @@ SpriteAtlas:
   - Garona_4_4
   - Garona_4_3
   - Garona_4_2
-  - spear_0
+  - spear_1
   - Spearman_2_1
   - Skeleton_50
   - Skeleton_49
@@ -3220,6 +3224,7 @@ SpriteAtlas:
   - Skeleton_9_4
   - effect_19
   - Peon_56
+  - arrow_0
   - Skeleton_1_3
   - Skeleton_1_0
   - Skeleton_7_0
@@ -3252,6 +3257,7 @@ SpriteAtlas:
   - Cleric_7
   - Cleric_2
   - Peon_2
+  - arrow_1
   - Skeleton_2_0
   - Warlock_29
   - Warlock_27

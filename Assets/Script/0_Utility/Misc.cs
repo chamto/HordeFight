@@ -589,12 +589,12 @@ namespace Utility
 
         //.NextDouble() 과 같은 함수이다.
         //returns a random double between zero and 1
-        static public double RandFloat()
+        static public float RandFloat()
         {
             //https://docs.microsoft.com/ko-kr/dotnet/api/system.random.next?view=netframework-4.7.2#System_Random_Next
             //MaxValue 는 rand.Next 가 나올수 있는 값보다 1 큰 값이다. 
             //1 큰값으로 나누기 때문에 1.0 에 결코 도달하지 못한다 
-            return (rand.Next() / (int.MaxValue));
+            return ((float)rand.Next() / (float)(int.MaxValue));
         }
 
         //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 

@@ -2522,6 +2522,7 @@ namespace HordeFight
             for (int i = 0; i < _shots.Count; i++)
             {
                 __shotNextCount++;
+                //__shotNextCount = 0; //chamto test
                 __shotNextCount %= _shots.Count;
 
                 if (false == _shots[__shotNextCount]._on_theWay)
@@ -2710,7 +2711,7 @@ namespace HordeFight
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
-                champ._mt_range_max = 8f;
+                champ._mt_range_max = 4f;
                 //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
@@ -2738,7 +2739,7 @@ namespace HordeFight
             for (int i = 0; i < 20;i++)
             {
                 being = Create_Shot(SingleO.hierarchy.GetTransform("0_main/0_things/0_shot"), Being.eKind.spear, Vector3.zero);
-                being.gameObject.SetActive(false);
+                //being.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다 
             }
 
 
@@ -3175,7 +3176,11 @@ namespace HordeFight
                         
                 }
 
+                //.Attack(champSelected._move._direction); //chamto test
+
             }
+
+
 
             //View_AnimatorState();
         }
