@@ -554,23 +554,24 @@ namespace HordeFight
 
         private void Start()
         {
+            //base.Init();
+
+        }
+
+		public override void Init()
+		{
             base.Init();
             _sprParent = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/pos");
             _shader = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/shader");
-            this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
-        }
+            //this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
 
-        private void FixedUpdate()
+		}
+
+		private void FixedUpdate()
         {
-            if (true == SingleO.gridManager.HasStructUpTile(this.transform.position))
-            {
-                //덮개구조물에 부딪혔으면 해제한다 
-                //Reset();
-                //DebugWide.LogBlue(this.name);
-            }
-
+            
             Update_Shot();
-            Update_CellInfo();
+            //Update_CellInfo(); //매프레임 마다 충돌검사의 대상이 된다
 
             //덮개 타일과 충돌하면 동작을 종료한다 
             int result = SingleO.gridManager.IsIncluded_InDiagonalArea(this.transform.position);
@@ -580,7 +581,6 @@ namespace HordeFight
                 
                 End();
             }
-               
 
         }
 
@@ -597,9 +597,8 @@ namespace HordeFight
             }
             _owner = null;
             _on_theWay = false;
-            //this.gameObject.SetActive(false);
-            //_shader.transform.localPosition = Vector3.zero;
-            //_sprRender.transform.localPosition = Vector3.zero;
+
+            //spr 위치를 현재위치로 적용
             this.transform.position = _sprParent.position;
             _sprParent.localPosition = Vector3.zero;
 
@@ -755,13 +754,13 @@ namespace HordeFight
 
                 if (_shotMoveTime < _elapsedTime)
                 {
-                    //Update_CellInfo();
+                    Update_CellInfo(); //마지막 위치 등록 - 등록된 객체만 충돌처리대상이 된다 
                     this.End();
                 }
 
                 //debug test
-                Debug.DrawLine(_maxHeight_pos, _maxHeight_pos - _perpNormal * _maxHeight_length);
-                Debug.DrawLine(_launchPos, _targetPos);
+                //Debug.DrawLine(_maxHeight_pos, _maxHeight_pos - _perpNormal * _maxHeight_length);
+                //Debug.DrawLine(_launchPos, _targetPos);
             }
         }
 
@@ -818,15 +817,11 @@ namespace HordeFight
 
     public class Obstacle : Being
     {
-
-        private void Start()
-		{
-            base.Init();
-		}
-
+        
 		private void FixedUpdate()
 		{
             base.UpdateAll();
+
 		}
 
         //____________________________________________
@@ -933,7 +928,7 @@ namespace HordeFight
 		private void Start()
 		{
             //DebugWide.LogBlue("ChampUnit");
-            this.Init();
+            //this.Init();
 		}
 
         private void FixedUpdate()
@@ -1338,7 +1333,6 @@ namespace HordeFight
 
             Update_CellInfo();
 
-            //Update_Shot();
 
             Update_SpriteMask();
 

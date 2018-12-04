@@ -41,7 +41,7 @@ namespace HordeFight
             //===================
 
             //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
-            SingleO.objectManager.Create_ChampCamp();
+            //SingleO.objectManager.Create_ChampCamp();
 
 
         }
@@ -1937,6 +1937,9 @@ namespace HordeFight
             SingleO.hashMap.Add(Animator.StringToHash("idle -> attack"),"idle -> attack");
             SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"),"attack -> idle");
 
+            Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            DebugWide.LogBlue("Start_ObjectManager !! ");
+
         }
 
 
@@ -1949,9 +1952,9 @@ namespace HordeFight
             //UpdateCollision_UseDictElementAt(); //obj100 : fps10
             //UpdateCollision_UseDictForeach(); //obj100 : fps60
 
-            //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
+            UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
-            UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
+            //UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
 
             if(null != SingleO.touchControl._selected)
             {
@@ -1975,6 +1978,88 @@ namespace HordeFight
                 }//end foreach
             }
 
+        }
+
+        public void UpdateCollision_UseDirectGrid3x3()
+        {
+            //return; //chamto test
+
+            //int count = 0;
+            Vector3 collisionCellPos_center = Vector3.zero;
+            CellInfo cellInfo = null;
+            StructTile structTile = null;
+            foreach (Being src in _linearSearch_list)
+            {
+                if (null == src._cellInfo) continue;
+                if (true == src.isDeath()) continue;
+
+                //1. 3x3그리드 정보를 가져온다
+                foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
+                {
+
+                    //count++;
+                    cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                    //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
+                    if (null == cellInfo) continue;
+
+                    foreach (Being dst in cellInfo)
+                    {
+                        //count++;
+                        if (src == dst) continue;
+                        if (null == dst || true == dst.isDeath()) continue;
+
+                        CollisionPush(src, dst);
+                    }
+                }
+
+
+                //동굴벽과 캐릭터 충돌처리 
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                {
+                    CollisionPush_StructTile(src, structTile);
+                    //CollisionPush_Rigid(src, structTile);
+                }
+
+            }
+
+            //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
+        }
+
+        //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
+        public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
+        {
+            CellInfo cellInfo = null;
+            foreach (Being src in _linearSearch_list)
+            {
+
+                //1. 3x3그리드 정보를 가져온다
+                cellInfo = SingleO.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
+
+                foreach (Being dst in cellInfo)
+                {
+                    if (src == dst) continue;
+                    CollisionPush(src, dst);
+                }
+            }
+        }
+
+        //딕셔너리 보다 인덱싱 속도가 빠르다. 안정적 객체수 : 500
+        public void UpdateCollision_UseList()
+        {
+
+            Being src, dst;
+            //한집합의 원소로 중복되지 않는 한쌍 만들기  
+            for (int i = 0; i < _linearSearch_list.Count - 1; i++)
+            {
+                for (int j = i + 1; j < _linearSearch_list.Count; j++)
+                {
+                    //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+                    src = _linearSearch_list[i];
+                    dst = _linearSearch_list[j];
+
+                    CollisionPush(src, dst);
+                }
+            }
         }
 
         //가시영역 검사 
@@ -2060,7 +2145,8 @@ namespace HordeFight
 
         public void CollisionPush(Being src , Being dst)
         {
-            
+            if (null == src || null == dst) return;
+
             Vector3 sqr_dis = Vector3.zero;
             float r_sum = 0f;
             float max_radius = Mathf.Max(src.GetCollider_Radius(), dst.GetCollider_Radius());
@@ -2105,24 +2191,6 @@ namespace HordeFight
                     //dst.Move_Push(-n, meterPersecond);
                 dst.OnCollision_MovePush(src, -n, meterPerSecond);
 
-            }
-        }
-
-        //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
-        public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
-        {
-            CellInfo cellInfo = null;
-            foreach(Being src in _linearSearch_list)
-            {
-
-                //1. 3x3그리드 정보를 가져온다
-                cellInfo = SingleO.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
-
-                foreach (Being dst in cellInfo)
-                {
-                    if (src == dst) continue;
-                    CollisionPush(src, dst);
-                }
             }
         }
 
@@ -2319,50 +2387,6 @@ namespace HordeFight
             src.transform.position = srcPos;
 
         }
-
-        public void UpdateCollision_UseDirectGrid3x3()
-        {
-            //int count = 0;
-            Vector3 collisionCellPos_center = Vector3.zero;
-            CellInfo cellInfo = null;
-            StructTile structTile = null;
-            foreach (Being src in _linearSearch_list)
-            {
-                if (null == src._cellInfo) continue;
-                if (true == src.isDeath()) continue;
-
-                //1. 3x3그리드 정보를 가져온다
-                foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
-                {
-                    
-                    //count++;
-                    cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
-                    //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
-                    if (null == cellInfo) continue;
-
-                    foreach (Being dst in cellInfo)
-                    {
-                        //count++;
-                        if (src == dst) continue;
-                        if (null == dst || true == dst.isDeath()) continue;
-
-                        CollisionPush(src, dst);
-                    }
-                }
-
-
-                //동굴벽과 캐릭터 충돌처리 
-                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-                {
-                    CollisionPush_StructTile(src, structTile);
-                    //CollisionPush_Rigid(src, structTile);
-                }
-
-            }
-
-            //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
-        }
-
 
 
         public void ClearAll()
@@ -2576,7 +2600,7 @@ namespace HordeFight
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
             cha.transform.localPosition = pos;
-            //cha.Init_Create();
+            cha.Init();
 
             _beings.Add(_id_sequence,cha);
             _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
@@ -2594,6 +2618,7 @@ namespace HordeFight
             shot._id = _id_shot_sequence;
             shot._kind = eKind;
             shot.transform.localPosition = pos;
+            shot.Init();
 
             //_shots.Add(_id_shot_sequence, shot);
             _shots.Add(shot);
@@ -2611,6 +2636,7 @@ namespace HordeFight
             obst._id = _id_sequence;
             obst._kind = eKind;
             obst.transform.localPosition = pos;
+            obst.Init();
 
             _beings.Add(_id_sequence, obst);
             _linearSearch_list.Add(obst);
@@ -2675,22 +2701,22 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ._mt_range_min = 1f;
-            champ._mt_range_max = 8f;
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ._mt_range_min = 1f;
+            //champ._mt_range_max = 8f;
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
             //for (int i = 0; i < 10; i++)
             //{
             //    champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
@@ -2707,7 +2733,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 0; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
@@ -2717,7 +2743,7 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 0; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
@@ -2727,7 +2753,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 10;i++)
+            for (int i = 0; i < 100;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -2736,7 +2762,7 @@ namespace HordeFight
 
             // -- 발사체 미리 생성 --
 
-            for (int i = 0; i < 30;i++)
+            for (int i = 0; i < 0;i++)
             {
                 being = Create_Shot(SingleO.hierarchy.GetTransform("0_main/0_things/0_shot"), Being.eKind.spear, Vector3.zero);
             }
