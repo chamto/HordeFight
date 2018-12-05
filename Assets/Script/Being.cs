@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using UnityEngine.Assertions;
+//using UnityEngine.Assertions;
 using Utility;
 
 
@@ -1158,8 +1158,9 @@ namespace HordeFight
         public Animator _animator = null;
         protected AnimatorOverrideController _overCtr = null;
         protected SpriteRenderer _sprRender = null;
-        protected SphereCollider _collider = null;
+        public SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
+
 
         //동작정보
         public Behavior.eKind _behaviorKind = Behavior.eKind.None;
@@ -1176,11 +1177,18 @@ namespace HordeFight
         //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
         //====================================
 
+        //속도차이 때문에 직접 호출해 사용한다. 프로퍼티나 함수로 한번 감싸서 사용하면, 충돌처리에서 5프레임 정도 성능이 떨어진다 
+        //_collider.radius 를 바로 호출하면 직접 호출보다 살짝 떨어진다 
+        //성능순서 : _colliderRadius > _collider.radius > GetCollider_Radius()
+        public float _colliderRadius = 0f;
+
 
         public virtual void Init()
         {
             //=====================================================
             _collider = GetComponent<SphereCollider>();
+            _colliderRadius = _collider.radius;
+
             _move = GetComponent<Movement>();
 
             _sprRender = GetComponentInChildren<SpriteRenderer>();
@@ -1215,7 +1223,8 @@ namespace HordeFight
 
         public float GetCollider_Radius()
         {
-            Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
+            //Assert를 쓰면 심각할정도로 프레임 드랍현상이 발생함. 앞으로 절대 쓰지 말기 - chamto 20181205
+            //Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
 
             //if (null == _collider)
             //DebugWide.LogRed(this.name);
@@ -1443,7 +1452,7 @@ namespace HordeFight
 
         public virtual void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
 		{
-			
+            Move_Push(dir, meterPerSecond);
 		}
 
 
