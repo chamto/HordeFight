@@ -1970,9 +1970,9 @@ namespace HordeFight
             //UpdateCollision_UseDictElementAt(); //obj100 : fps10
             //UpdateCollision_UseDictForeach(); //obj100 : fps60
 
-            UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
+            //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
-            //UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
+            UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
 
             if(null != SingleO.touchControl._selected)
             {
@@ -2079,62 +2079,8 @@ namespace HordeFight
                 }
             }
 
-            //for (int i = 0; i < _transformList.Count - 1; i++)
-            //{
-            //    for (int j = i + 1; j < _transformList.Count; j++)
-            //    {
-                    
-            //        CollisionPush(_transformList[i], _transformList[j]);
-            //    }
-            //}
-
         }
 
-        public void CollisionPush(Transform src, Transform dst)
-        {
-            if (null == src || null == dst) return;
-
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
-            float max_radius = Mathf.Max(0.5f, 0.5f);
-
-            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            sqr_dis = src.position - dst.position;
-            r_sum = 0.5f + 0.5f;
-
-            //1.두 캐릭터가 겹친상태 
-            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-            {
-                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                //todo : 최적화 필요 
-
-                Vector3 n = sqr_dis.normalized;
-                //Vector3 n = sqr_dis;
-                float meterPerSecond = 2f;
-
-                //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-                if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
-                {
-                    //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-                    if (n == Vector3.zero)
-                    {
-                        //방향값이 없기 때문에 임의로 지정해 준다. 
-                        n = Misc.GetDir8_Random_AxisY();
-                    }
-
-                    meterPerSecond = 0.5f;
-
-                    //if(Being.eKind.spear != dst._kind)
-                    //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
-                }
-
-
-                src.Translate(n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f/meterPerSecond)));
-                dst.Translate(-n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f / meterPerSecond)));
-
-            }
-        }
 
         //가시영역 검사 
         public bool IsVisibleArea(Being src, Vector3 dstPos)
@@ -2216,38 +2162,75 @@ namespace HordeFight
         //                  충돌 검사   
         //____________________________________________
        
+        //public void CollisionPush(Transform src, Transform dst)
+        //{
+        //    if (null == src || null == dst) return;
+
+        //    Vector3 sqr_dis = Vector3.zero;
+        //    float r_sum = 0f;
+        //    float max_radius = Mathf.Max(0.5f, 0.5f);
+
+        //    //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+        //    sqr_dis = src.position - dst.position;
+        //    r_sum = 0.5f + 0.5f;
+
+        //    //1.두 캐릭터가 겹친상태 
+        //    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+        //    {
+        //        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+
+        //        //todo : 최적화 필요 
+
+        //        Vector3 n = sqr_dis.normalized;
+        //        //Vector3 n = sqr_dis;
+        //        float meterPerSecond = 2f;
+
+        //        //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
+        //        if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
+        //        {
+        //            //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
+        //            if (n == Vector3.zero)
+        //            {
+        //                //방향값이 없기 때문에 임의로 지정해 준다. 
+        //                n = Misc.GetDir8_Random_AxisY();
+        //            }
+
+        //            meterPerSecond = 0.5f;
+
+        //            //if(Being.eKind.spear != dst._kind)
+        //            //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
+        //        }
+
+
+        //        src.Translate(n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f/meterPerSecond)));
+        //        dst.Translate(-n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f / meterPerSecond)));
+
+        //    }
+        //}
 
         public void CollisionPush(Being src , Being dst)
         {
             if (null == src || null == dst) return;
 
-            Vector3 sqr_dis = Vector3.zero;
-            float r_sum = 0f;
-            //float max_radius = Mathf.Max(src.GetCollider_Radius(), dst.GetCollider_Radius());
-            //float max_radius =  src._collider.radius > dst._collider.radius ? src._collider.radius : dst._collider.radius;
-            //float max_radius = Mathf.Max(src._collider.radius, dst._collider.radius);
-            //float max_radius = Mathf.Max(src.colliderRadius, dst.colliderRadius);
             float max_radius = Mathf.Max(src._colliderRadius, dst._colliderRadius);
-            //float max_radius = Mathf.Max(0.5f, 0.3f);
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            sqr_dis = src.transform.localPosition - dst.transform.localPosition;
-            //r_sum = src.GetCollider_Radius() + dst.GetCollider_Radius();
-            r_sum = src._colliderRadius + dst._colliderRadius;
+            Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
+            float r_sum = src._colliderRadius + dst._colliderRadius;
 
             //1.두 캐릭터가 겹친상태 
-            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+            if (dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
             {
                 //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
 
                 //todo : 최적화 필요 
 
-                Vector3 n = sqr_dis.normalized;
+                Vector3 n = dis.normalized;
                 //Vector3 n = sqr_dis;
                 float meterPerSecond = 2f;
 
                 //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-                if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
+                if (dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
                 {
                     //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
                     if (n == Vector3.zero)
@@ -2272,9 +2255,6 @@ namespace HordeFight
                 src.OnCollision_MovePush(dst, n, meterPerSecond);
                 dst.OnCollision_MovePush(src, -n, meterPerSecond);
 
-                //src.transform.Translate(n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f / meterPerSecond)));
-                //dst.transform.Translate(-n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f / meterPerSecond)));
-
             }
         }
 
@@ -2292,7 +2272,7 @@ namespace HordeFight
             const float Tile_Radius = 0.08f;
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             Vector3 sqr_dis = src.transform.localPosition - structTile._center_3d;
-            float r_sum = src.GetCollider_Radius() + Tile_Radius;
+            float r_sum = src._colliderRadius + Tile_Radius;
 
             //1.두 캐릭터가 겹친상태 
             if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
@@ -2546,8 +2526,8 @@ namespace HordeFight
 
                     //count++;
                     //==========================================================
-                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst.GetCollider_Radius(), 2);
-                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst.GetCollider_Radius(), 2);
+                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst._colliderRadius, 2);
+                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst._colliderRadius, 2);
                     sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
 
                     //최대 반경 이내일 경우
@@ -2729,33 +2709,33 @@ namespace HordeFight
         }
 
 
-        List<Transform> _transformList = new List<Transform>();
-        public Transform Create_Test(Transform parent, Vector3 pos , bool manager)
-        {
+        //List<Transform> _transformList = new List<Transform>();
+        //public Transform Create_Test(Transform parent, Vector3 pos , bool manager)
+        //{
             
-            GameObject obj = CreatePrefab("test", parent,"test");
-            obj.transform.localPosition = pos;
+        //    GameObject obj = CreatePrefab("test", parent,"test");
+        //    obj.transform.localPosition = pos;
 
-            if(true == manager)
-                _transformList.Add(obj.transform);
+        //    if(true == manager)
+        //        _transformList.Add(obj.transform);
 
-            return obj.transform;
-        }
-        public Transform Create_Test2(Transform parent, Vector3 pos)
-        {
+        //    return obj.transform;
+        //}
+        //public Transform Create_Test2(Transform parent, Vector3 pos)
+        //{
 
-            GameObject obj = CreatePrefab("test", parent, "test");
-            Being being = obj.AddComponent<Being>();
-            obj.AddComponent<Movement>();
-            being.transform.localPosition = pos;
-            being._id = _id_sequence;
-            being.Init();
+        //    GameObject obj = CreatePrefab("test", parent, "test");
+        //    Being being = obj.AddComponent<Being>();
+        //    obj.AddComponent<Movement>();
+        //    being.transform.localPosition = pos;
+        //    being._id = _id_sequence;
+        //    being.Init();
 
 
-            _linearSearch_list.Add(being);
+        //    _linearSearch_list.Add(being);
 
-            return obj.transform;
-        }
+        //    return obj.transform;
+        //}
 
 
         private int __TestSkelCount = 9;
@@ -2867,7 +2847,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 0;i++)
+            for (int i = 0; i < 200;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -2882,12 +2862,7 @@ namespace HordeFight
             }
 
             //===================================================
-            // -- 테스트 객체 생성 --
-            for (int i = 0; i < 100;i++)
-            {
-                Create_Test2(SingleO.unitRoot, camp_Obstacle.RandPosition());
-                //Create_Test(SingleO.shotRoot, camp_Obstacle.RandPosition(), false);
-            }
+
 
         }
 
@@ -3049,8 +3024,8 @@ namespace HordeFight
 
             float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
 
-            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking.GetCollider_Radius() , 2);
-            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking.GetCollider_Radius() , 2);
+            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking._colliderRadius , 2);
+            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking._colliderRadius , 2);
 
             if (sqrRangeMin <= sqrDis)
             {

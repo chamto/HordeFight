@@ -918,11 +918,11 @@ namespace HordeFight
 
         public float attack_range_min
         {
-            get { return this.GetCollider_Radius() + _mt_range_min * GridManager.MeterToWorld; }
+            get { return this._colliderRadius + _mt_range_min * GridManager.MeterToWorld; }
         }
         public float attack_range_max
         {
-            get { return this.GetCollider_Radius() + _mt_range_max * GridManager.MeterToWorld; }
+            get { return this._colliderRadius + _mt_range_max * GridManager.MeterToWorld; }
         }
 
 		private void Start()
@@ -1158,7 +1158,7 @@ namespace HordeFight
         public Animator _animator = null;
         protected AnimatorOverrideController _overCtr = null;
         protected SpriteRenderer _sprRender = null;
-        public SphereCollider _collider = null;
+        protected SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
 
 
@@ -1221,16 +1221,16 @@ namespace HordeFight
 
 
 
-        public float GetCollider_Radius()
-        {
-            //Assert를 쓰면 심각할정도로 프레임 드랍현상이 발생함. 앞으로 절대 쓰지 말기 - chamto 20181205
-            //Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
+        //public float GetCollider_Radius()
+        //{
+        //    //Assert를 쓰면 심각할정도로 프레임 드랍현상이 발생함. 앞으로 절대 쓰지 말기 - chamto 20181205
+        //    //Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
 
-            //if (null == _collider)
-            //DebugWide.LogRed(this.name);
+        //    //if (null == _collider)
+        //    //DebugWide.LogRed(this.name);
 
-            return _collider.radius;
-        }
+        //    return _collider.radius;
+        //}
 
 
         public void SetVisible(bool onoff)
@@ -1297,7 +1297,7 @@ namespace HordeFight
             //}
 
 
-            UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다");
+            //UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다"); //절대 쓰지 말기!! 성능하락폭이 엄청나다.
             if (_cellInfo._index != cur_posXY_2d)
             {
                 SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
@@ -1452,7 +1452,7 @@ namespace HordeFight
 
         public virtual void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
 		{
-            Move_Push(dir, meterPerSecond);
+            
 		}
 
 
