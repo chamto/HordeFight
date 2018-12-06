@@ -918,11 +918,11 @@ namespace HordeFight
 
         public float attack_range_min
         {
-            get { return this._colliderRadius + _mt_range_min * GridManager.MeterToWorld; }
+            get { return this._collider_radius + _mt_range_min * GridManager.MeterToWorld; }
         }
         public float attack_range_max
         {
-            get { return this._colliderRadius + _mt_range_max * GridManager.MeterToWorld; }
+            get { return this._collider_radius + _mt_range_max * GridManager.MeterToWorld; }
         }
 
 		private void Start()
@@ -1179,15 +1179,18 @@ namespace HordeFight
 
         //속도차이 때문에 직접 호출해 사용한다. 프로퍼티나 함수로 한번 감싸서 사용하면, 충돌처리에서 5프레임 정도 성능이 떨어진다 
         //_collider.radius 를 바로 호출하면 직접 호출보다 살짝 떨어진다 
-        //성능순서 : _colliderRadius > _collider.radius > GetCollider_Radius()
-        public float _colliderRadius = 0f;
-
+        //성능순서 : _collider_radius > _collider.radius > GetCollider_Radius()
+        public float _collider_radius = 0f;
+        public float _collider_sqrRadius = 0f;
+        //public Vector3 _prevLocalPos = Vector3.zero;
 
         public virtual void Init()
         {
             //=====================================================
             _collider = GetComponent<SphereCollider>();
-            _colliderRadius = _collider.radius;
+            _collider_radius = _collider.radius;
+            _collider_sqrRadius = _collider_radius * _collider_radius;
+            //_prevLocalPos = transform.localPosition;
 
             _move = GetComponent<Movement>();
 
@@ -1322,9 +1325,43 @@ namespace HordeFight
             _sprRender.sortingOrder = -(int)(transform.position.z * 20f) + add;
         }
 
+        //public void Update_Collision()
+        //{
+        //    CellInfo cellInfo = null;
+        //    StructTile structTile = null;
+
+        //    //1. 3x3그리드 정보를 가져온다
+        //    foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
+        //    {
+
+        //        //count++;
+        //        cellInfo = SingleO.gridManager.GetCellInfo(ix + this._cellInfo._index);
+        //        //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
+        //        if (null == cellInfo) continue;
+
+        //        foreach (Being dst in cellInfo)
+        //        {
+        //            //count++;
+        //            if (this == dst) continue;
+        //            if (null == dst || true == dst.isDeath()) continue;
+
+        //            SingleO.objectManager.CollisionPush(this, dst);
+        //        }
+        //    }
+
+
+        //    //동굴벽과 캐릭터 충돌처리 
+        //    if (SingleO.gridManager.HasStructTile(this.transform.position, out structTile))
+        //    {
+        //        SingleO.objectManager.CollisionPush_StructTile(this, structTile);
+        //        //CollisionPush_Rigid(src, structTile);
+        //    }
+        //}
+
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         public virtual bool UpdateAll()
         {
+
             if (isDeath())
             {
                 FallDown();
@@ -1344,6 +1381,8 @@ namespace HordeFight
 
 
             Update_SpriteMask();
+
+            //Update_Collision(); //성능테스트 : objectManager 에서 일괄적으로 전체 객체의 충돌처리 하는게 약간 더 빠르다 
 
             if (false == _move.IsMoving())
             {
