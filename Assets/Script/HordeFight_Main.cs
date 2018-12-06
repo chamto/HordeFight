@@ -1964,6 +1964,7 @@ namespace HordeFight
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
         //private void Update()
         private void FixedUpdate()
+        //private void LateUpdate()
         {
             //UpdateCollision();
 
@@ -1998,6 +1999,13 @@ namespace HordeFight
 
         }
 
+
+        //중복되는 영역을 제외한 검사영역 : 기존 9개의 영역에서 6개의 영역으로 줄였다
+        Vector3Int[] __cellIndexes_6 = new Vector3Int[] {
+            new Vector3Int(-1, 1, 0), new Vector3Int(0, 1, 0), new Vector3Int(1, 1, 0), 
+            new Vector3Int(-1, 0, 0), new Vector3Int(0, 0, 0),
+        };
+
         public void UpdateCollision_UseDirectGrid3x3()
         {
             //return; //chamto test
@@ -2008,11 +2016,14 @@ namespace HordeFight
             StructTile structTile = null;
             foreach (Being src in _linearSearch_list)
             {
+
+                if (false == src.gameObject.activeInHierarchy) continue;
                 if (null == src._cellInfo) continue;
                 if (true == src.isDeath()) continue;
 
                 //1. 3x3그리드 정보를 가져온다
-                foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
+                //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
+                foreach (Vector3Int ix in __cellIndexes_6) //6개의 영역 (중복되는 3개의 영역 제거) : 객체200 fps80
                 {
 
                     //count++;
@@ -2037,6 +2048,8 @@ namespace HordeFight
                     CollisionPush_StructTile(src, structTile);
                     //CollisionPush_Rigid(src, structTile);
                 }
+
+
 
             }
 
@@ -2212,11 +2225,12 @@ namespace HordeFight
         {
             if (null == src || null == dst) return;
 
-            float max_radius = Mathf.Max(src._colliderRadius, dst._colliderRadius);
+            float max_sqrRadius = Mathf.Max(src._collider_sqrRadius, dst._collider_sqrRadius);
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
-            float r_sum = src._colliderRadius + dst._colliderRadius;
+            //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
+            float r_sum = src._collider_radius + dst._collider_radius;
 
             //1.두 캐릭터가 겹친상태 
             if (dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
@@ -2230,7 +2244,7 @@ namespace HordeFight
                 float meterPerSecond = 2f;
 
                 //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-                if (dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
+                if (dis.sqrMagnitude < max_sqrRadius)
                 {
                     //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
                     if (n == Vector3.zero)
@@ -2272,7 +2286,7 @@ namespace HordeFight
             const float Tile_Radius = 0.08f;
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             Vector3 sqr_dis = src.transform.localPosition - structTile._center_3d;
-            float r_sum = src._colliderRadius + Tile_Radius;
+            float r_sum = src._collider_radius + Tile_Radius;
 
             //1.두 캐릭터가 겹친상태 
             if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
@@ -2526,8 +2540,8 @@ namespace HordeFight
 
                     //count++;
                     //==========================================================
-                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst._colliderRadius, 2);
-                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst._colliderRadius, 2);
+                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst._collider_radius, 2);
+                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst._collider_radius, 2);
                     sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
 
                     //최대 반경 이내일 경우
@@ -3024,8 +3038,8 @@ namespace HordeFight
 
             float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
 
-            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking._colliderRadius , 2);
-            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking._colliderRadius , 2);
+            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking._collider_radius , 2);
+            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking._collider_radius , 2);
 
             if (sqrRangeMin <= sqrDis)
             {
