@@ -2000,11 +2000,44 @@ namespace HordeFight
         }
 
 
-        //중복되는 영역을 제외한 검사영역 : 기존 9개의 영역에서 6개의 영역으로 줄였다
-        Vector3Int[] __cellIndexes_6 = new Vector3Int[] {
+        //중복되는 영역을 제외한 검사영역 : 기존 9개의 영역에서 5개의 영역으로 줄였다
+        Vector3Int[] __cellIndexes_5 = new Vector3Int[] {
             new Vector3Int(-1, 1, 0), new Vector3Int(0, 1, 0), new Vector3Int(1, 1, 0), 
             new Vector3Int(-1, 0, 0), new Vector3Int(0, 0, 0),
         };
+
+
+        //충돌원이 셀을 벗어나는 상황별 검사영역 
+        //가정 : 셀보다 충돌원이 작아야 한다. 
+        List<Vector3Int[]> __cellIndexes_Max4 = new List<Vector3Int[]> {
+            new Vector3Int[] { new Vector3Int(0, 0, 0), }, //center = 0,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(1, 0, 0), }, //right = 1,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(1, 1, 0), new Vector3Int(0, 1, 0),}, //rightUp = 2
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(0, 1, 0),}, //up = 3,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(-1, 1, 0), new Vector3Int(0, 1, 0),}, //leftUp = 4,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(-1, 0, 0),}, //left = 5,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(-1, 0, 0), new Vector3Int(-1, -1, 0), new Vector3Int(0, -1, 0),}, //leftDown = 6,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(0, -1, 0),}, //down = 7,
+            new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(1, -1, 0), new Vector3Int(0, -1, 0),}, //rightDown = 8
+        };
+
+        //충돌원이 셀에 겹친 영역을 구함
+        public int GetOverlapCellSpace(Being being)
+        {
+
+            Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
+            Vector3 rate = being.transform.position - center;
+            float cellHalfSize = SingleO.gridManager.cellSize_x * 0.5f;
+
+            //return 8;
+
+            if(Mathf.Abs(rate.x) + being._collider_radius <= cellHalfSize && Mathf.Abs(rate.z) + being._collider_radius <= cellHalfSize)
+            {
+                return 0;
+            }
+
+            return (int)Misc.GetDir8_AxisY(rate);
+        }
 
         public void UpdateCollision_UseDirectGrid3x3()
         {
@@ -2023,7 +2056,8 @@ namespace HordeFight
 
                 //1. 3x3그리드 정보를 가져온다
                 //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
-                foreach (Vector3Int ix in __cellIndexes_6) //6개의 영역 (중복되는 3개의 영역 제거) : 객체200 fps80
+                //foreach (Vector3Int ix in __cellIndexes_5) //5개의 영역 (중복되는 4개의 영역 제거) : 객체200 fps80
+                foreach(Vector3Int ix in __cellIndexes_Max4[this.GetOverlapCellSpace(src)]) //충돌원이 셀에 겹친 영역만 가져옴 (최대 4개 영역) : 객체 200 fps90
                 {
 
                     //count++;
@@ -2034,6 +2068,7 @@ namespace HordeFight
                     foreach (Being dst in cellInfo)
                     {
                         //count++;
+                        if (false == dst.gameObject.activeInHierarchy) continue;
                         if (src == dst) continue;
                         if (null == dst || true == dst.isDeath()) continue;
 
