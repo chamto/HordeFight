@@ -1756,6 +1756,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
+
             dir.y = 0;
             _move.SetNextMoving(false);
             _move.Move_Forward(dir, 2f, second);

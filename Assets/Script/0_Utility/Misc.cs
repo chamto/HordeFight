@@ -505,6 +505,13 @@ namespace Utility
     ///////////////////////////////////////////////////////////////////////
     public class Misc
     {
+
+        //초기화
+        static public void Init()
+        {
+            _dir64_normal3D_AxisY = Misc.Create_DirNormal(64);
+        }
+
         //========================================================
         //==================       애셋 경로       ==================
         //========================================================
@@ -690,6 +697,32 @@ namespace Utility
             new Vector3Int(1,-1,0) ,    //    rightDown = 8,
         };
 
+        static private Vector3[] _dir64_normal3D_AxisY = null;
+        static public Vector3[] Create_DirNormal(ushort equal_division)
+        {
+            Vector3[] dirN = new Vector3[equal_division+1];
+            float angle = 360f / (float)equal_division;
+            dirN[0] = Vector3.zero;
+            for (ushort i = 0; i < equal_division;i++)
+            {
+                dirN[i+1] = Quaternion.AngleAxis(-angle * i, Vector3.up) * Vector3.right;
+                dirN[i+1].Normalize();
+                //DebugWide.LogBlue((i+1) + "  : " + dirN[i + 1] + "  : " + angle * i); //chamto test
+
+            }
+
+            return dirN;
+        }
+
+        static public void DrawDirN()
+        {
+            int count = 0;
+            foreach(Vector3 xz in _dir64_normal3D_AxisY)
+            {
+                Debug.DrawLine(Vector3.zero, xz);
+                UnityEditor.Handles.Label(xz, ":"+count++);
+            }
+        }
 
         /// <summary>
         ///  여덟 방향중 하나를 무작위로 반환한다. 
@@ -754,11 +787,36 @@ namespace Utility
             if (deg < 0) deg += 360f;
 
             //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f);
-            quad %= 8; //8 => 0 , 8을 0으로 변경  
+            int quad = Mathf.RoundToInt(deg / 45f); //0~8
+            quad %= 8; //8을 0으로 변경 : 0~7,0 
             quad++; //값의 범위를 0~7 에서 1~8로 변경 
 
             return (eDirection8)quad;
+        }
+
+        static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
+        {
+            if (Vector3.zero.Equals(dir)) return 0;
+
+            float rad = Mathf.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 11.25 = 32
+            float angle_division = 360f / (float)equal_division;
+            int quad = Mathf.RoundToInt(deg / angle_division); //0~32
+            quad %= equal_division; //32 => 0 : 0~31,0
+            quad++; //값의 범위를 0~31 에서 1~32로 변경 
+
+            return quad;
+        }
+        //==========================  equal_division 32 ==============================
+        static public Vector3 GetDir64_Normal3D(Vector3 dir)
+        {
+            int quad = GetDirN_AxisY(64,dir);
+            return _dir64_normal3D_AxisY[quad];
         }
 
         //==========================  Axis munus Z ==============================

@@ -16,6 +16,7 @@ namespace HordeFight
         // Use this for initialization
         void Start()
         {
+            Misc.Init();
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
             SingleO.hierarchy.Init(); //계층도 읽어들이기 
             SingleO.resourceManager.Init(); //스프라이트 로드 
@@ -928,6 +929,7 @@ namespace HordeFight
 
         void OnDrawGizmos()
         {
+            //Misc.DrawDirN();
             //UnityEditor.Handles.Label(Vector3.zero, "0,0");
             //UpdateDraw_IndexesNxN();
 
@@ -2054,6 +2056,9 @@ namespace HordeFight
                 if (null == src._cellInfo) continue;
                 if (true == src.isDeath()) continue;
 
+                //src._move._direction = Misc.GetDir64_Normal3D(src._move._direction);
+                //src._move._direction = src._move._direction.normalized; //성능상의 차이가 없음 
+
                 //1. 3x3그리드 정보를 가져온다
                 //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
                 //foreach (Vector3Int ix in __cellIndexes_5) //5개의 영역 (중복되는 4개의 영역 제거) : 객체200 fps80
@@ -2274,8 +2279,9 @@ namespace HordeFight
 
                 //todo : 최적화 필요 
 
-                Vector3 n = dis.normalized;
-                //Vector3 n = sqr_dis;
+                //Vector3 n = dis.normalized;
+                Vector3 n = Misc.GetDir64_Normal3D(dis);
+                //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
 
                 //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
@@ -3021,6 +3027,7 @@ namespace HordeFight
             if (false == _ai_running) return;
 
             if (true == _me.isDeath()) return;
+
 
             this.StateUpdate();
         }
