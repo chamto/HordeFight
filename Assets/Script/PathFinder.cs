@@ -40,9 +40,8 @@ namespace HordeFight
 
         }
 
-
-        //void Update()
-        void FixedUpdate()
+      
+        void Update()
         {
             
 

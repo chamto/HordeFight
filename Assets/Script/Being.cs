@@ -43,7 +43,6 @@ namespace HordeFight
         float __deltaTime = 0.0f;
         float __msec, __fps;
         private void Update()
-        //void FixedUpdate()
         {
             __deltaTime += (Time.unscaledDeltaTime - __deltaTime) * 0.1f;
 
@@ -399,7 +398,6 @@ namespace HordeFight
         }
 
         //private void Update()
-        //void FixedUpdate()
         //{
         //    //UpdateNextPath();
         //}
@@ -567,7 +565,7 @@ namespace HordeFight
 
 		}
 
-		private void FixedUpdate()
+		private void Update()
         {
             
             Update_Shot();
@@ -818,7 +816,7 @@ namespace HordeFight
     public class Obstacle : Being
     {
         
-		private void FixedUpdate()
+		private void Update()
 		{
             base.UpdateAll();
 
@@ -846,7 +844,7 @@ namespace HordeFight
 
         //}
 
-        //private void FixedUpdate()
+        //private void Update()
         //{
 
         //}
@@ -931,7 +929,7 @@ namespace HordeFight
             //this.Init();
 		}
 
-        private void FixedUpdate()
+        private void Update()
         {
             this.UpdateAll();
         }
@@ -2173,7 +2171,7 @@ namespace HordeFight
 
 		}
 
-		private void FixedUpdate()
+		private void Update()
 		{
             if (null == _target || null == _camera) return;
 

@@ -48,11 +48,11 @@ namespace HordeFight
         }
 
         // Update is called once per frame
-        //void Update()
-        void FixedUpdate()
+        void Update()
         {
-
+            
         }
+
 
         void OnGUI()
         {
@@ -430,8 +430,7 @@ namespace HordeFight
 			
 		}
 
-		//private void Update()
-        void FixedUpdate()
+		private void Update()
 		{
             //foreach(LineInfo info in _list.Values)
             //{
@@ -950,7 +949,7 @@ namespace HordeFight
             //}
         }
 
-  //      void FixedUpdate()
+  //      void Update()
 		//{
 		//}
 	}
@@ -1119,8 +1118,7 @@ namespace HordeFight
         }
 
 
-        //private void Update()
-        void FixedUpdate()
+        private void Update()
         {
 
         }
@@ -1964,8 +1962,7 @@ namespace HordeFight
 
 
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
-        //private void Update()
-        private void FixedUpdate()
+        private void Update()
         //private void LateUpdate()
         {
             //UpdateCollision();
@@ -2138,6 +2135,8 @@ namespace HordeFight
         //가시영역 검사 
         public bool IsVisibleArea(Being src, Vector3 dstPos)
         {
+            //return true; //chamto test
+            
             Vector3 dirToDst = dstPos - src.transform.position;
             float sqrDis = dirToDst.sqrMagnitude;
             if (sqrDis < Mathf.Pow(GridManager.MeterToWorld * 7f, 2))
@@ -2279,8 +2278,8 @@ namespace HordeFight
 
                 //todo : 최적화 필요 
 
-                //Vector3 n = dis.normalized;
-                Vector3 n = Misc.GetDir64_Normal3D(dis);
+                Vector3 n = dis.normalized;
+                //Vector3 n = Misc.GetDir64_Normal3D(dis);
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
 
@@ -2887,7 +2886,7 @@ namespace HordeFight
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
                 champ._mt_range_max = 6f;
-                champ.GetComponent<AI>()._ai_running = true;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }
@@ -3020,7 +3019,7 @@ namespace HordeFight
 
 
 
-        private void FixedUpdate()
+        private void Update()
         {
             //_me.Attack(_me._move._direction); //chamto test
 
@@ -3431,8 +3430,7 @@ namespace HordeFight
         }
 
 
-        //void Update()
-        void FixedUpdate()
+        void Update()
         {
             //화면상 ui를 터치했을 경우 터치이벤트를 보내지 않는다 
             if (null != EventSystem.current && null != EventSystem.current.currentSelectedGameObject)
