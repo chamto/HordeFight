@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Text;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,6 +41,7 @@ namespace HordeFight
 
         }
 
+        //StringBuilder __sb = new StringBuilder(32);
         float __deltaTime = 0.0f;
         float __msec, __fps;
         private void Update()
@@ -49,6 +51,11 @@ namespace HordeFight
             __msec = __deltaTime * 1000.0f;
             __fps = 1.0f / __deltaTime;
             _fpsText.text = string.Format("{0:0.0} ms ({1:0.} fps)", __msec, __fps);
+
+
+            //StringBuilder 를 사용해도 GC가 발생함. 
+            //__sb.Length = 0; //clear
+            //_fpsText.text = __sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", __msec, __fps).ToString();
         }
 
         public void SelectLeader(string name)
@@ -1239,7 +1246,18 @@ namespace HordeFight
             if(null != _sprRender)
             {
                 _sprRender.enabled = onoff;
+                //_sprRender.gameObject.SetActive(onoff);
             }
+            if(null != _animator)
+            {
+                _animator.enabled = onoff;
+            }
+            if(null != _sprMask)
+            {
+                //_sprMask.enabled = onoff;
+                _sprMask.gameObject.SetActive(onoff);
+            }
+
         }
 
         public void SetColor(Color color)
@@ -1613,13 +1631,21 @@ namespace HordeFight
             
             _behaviorKind = Behavior.eKind.Idle;
 
-            if (null != _animator) 
+            if (true == IsActive_Animator()) 
             {
                 Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
                 _animator.SetInteger("state", (int)Behavior.eKind.Idle);
                 _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다    
             }
 
+        }
+
+        public bool IsActive_Animator()
+        {
+            if (null != _animator && true == _animator.gameObject.activeInHierarchy)
+                return true;
+            
+            return false;
         }
 
         //public void Idle_LookAt()
@@ -1653,7 +1679,7 @@ namespace HordeFight
             float normalTime = 0;
 
             //* 상태전이 없고, 요청 상태값이 아닌 경우
-            if (0 == aniTrans.nameHash && hash_state != aniState.shortNameHash)
+            if (true == IsActive_Animator()) 
             {
                 //요청 전 동작일 때 값을 초기화 해준다 
                 _prevCount = -1;
@@ -1766,7 +1792,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Move;
 
-            if(null != _animator)
+            if (true == IsActive_Animator()) 
             {
                 Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
                 //int hash = Animator.StringToHash("move");
@@ -1784,7 +1810,7 @@ namespace HordeFight
             //아이들 상태에서 밀려 이동하는 걸 표현
             _behaviorKind = Behavior.eKind.Idle;
 
-            if (null != _animator)
+            if (true == IsActive_Animator()) 
             {
                 Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
                 
@@ -2175,6 +2201,7 @@ namespace HordeFight
 		{
             if (null == _target || null == _camera) return;
 
+            //_camera.cullingMask = 0;
 
             Vector3 targetPos = _target.position;
             targetPos.y = _camera.transform.position.y;

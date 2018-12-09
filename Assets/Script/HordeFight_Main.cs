@@ -1363,13 +1363,12 @@ namespace HordeFight
                             //구조덮개타일인 경우 
                             SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                         }
-                        else
-                            if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
+                        else if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
                         {
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
-                            else if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 1.2f, 2))
+                        else if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 1.2f, 2))
                         {
                             //주변 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
@@ -1406,7 +1405,7 @@ namespace HordeFight
                 //=====================================================
                 count++;
 
-
+                //타일 300개 처리했으면 0.001초 뒤에 다시 처리한다
                 if(0 == count % 300)
                     yield return new WaitForSeconds(0.001f);
                 
@@ -1982,9 +1981,43 @@ namespace HordeFight
 
         }
 
+		//private void OnDrawGizmos()
+		//{
+  //          Bounds bounds = GetBounds_CameraView();
+  //          Gizmos.DrawWireCube(bounds.center, bounds.size);
+		//}
 
-        //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
-        private void Update()
+		public Bounds GetBounds_CameraView()
+		{
+            float dis = 0f;
+            float height_half = 0f;
+            float width_half = 0f;
+            Vector3 landPos = SingleO.mainCamera.transform.position;
+            landPos.y = 0;
+            Bounds bounds = new Bounds();
+            bounds.center = landPos;
+            if (true == SingleO.mainCamera.orthographic)
+            {
+                //직교투영
+                height_half = SingleO.mainCamera.orthographicSize;
+                width_half = SingleO.mainCamera.aspect * height_half;
+                bounds.size = new Vector3(width_half * 2f, 0, height_half * 2f);
+
+            }else
+            {
+                //원근투영
+                //땅바닥이 항상 y축 0이라 가정한다
+                dis = SingleO.mainCamera.transform.position.y - 0f;
+                height_half = dis * Mathf.Tan(SingleO.mainCamera.fieldOfView * 0.5f * Mathf.Deg2Rad);
+                width_half = SingleO.mainCamera.aspect * height_half;
+                bounds.size = new Vector3(width_half * 2f, 0, height_half * 2f);
+            }
+
+            return bounds;
+		}
+
+		//객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
+		private void Update()
         //private void LateUpdate()
         {
             //UpdateCollision();
@@ -1996,27 +2029,42 @@ namespace HordeFight
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
 
-            if(null != SingleO.touchControl._selected)
-            {
-                Being selected = SingleO.touchControl._selected;
-                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
-                selected.SetVisible(true);
+            //Bounds cViewBounds = GetBounds_CameraView();
+            //int cnt = _linearSearch_list.Count;
+            //for (int i = 0; i < cnt; i++)
+            //{
+            //    Being dst = _linearSearch_list[i];
 
-                //챔프 시야에 없으면 안보이게 처리함 - 임시처리
-                foreach (Being dst in _linearSearch_list)
-                {
-                    if (Being.eKind.barrel == dst._kind) continue; //술통은 항상 보이게 한다 -  임시 처리
-                    if (dst == selected) continue;
+            //    if(true == cViewBounds.Contains(dst.transform.position))
+            //    {
+            //        dst.SetVisible(true);
+            //    }else
+            //    {
+            //        dst.SetVisible(false);
+            //    }
+            //}
 
-                    dst.SetVisible(false);
 
-                    if(true == IsVisibleArea(selected, dst.transform.position))
-                    {
-                        dst.SetVisible(true);
-                    }
 
-                }//end foreach
-            }
+            //if(null != SingleO.touchControl._selected)
+            //{
+            //    Being selected = SingleO.touchControl._selected;
+            //    SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
+            //    selected.SetVisible(true);
+
+            //    //챔프 시야에 없으면 안보이게 처리함 - 임시처리
+            //    foreach (Being dst in _linearSearch_list)
+            //    {
+            //        if (Being.eKind.barrel == dst._kind) continue; //술통은 항상 보이게 한다 -  임시 처리
+            //        if (dst == selected) continue;
+
+            //        dst.SetVisible(false);
+            //        if(true == IsVisibleArea(selected, dst.transform.position))
+            //        {
+            //            dst.SetVisible(true);
+            //        }
+            //    }//end foreach
+            //}
 
         }
 
@@ -2064,6 +2112,15 @@ namespace HordeFight
         public void UpdateCollision_UseDirectGrid3x3()
         {
             //return; //chamto test
+
+            Bounds cameraViewBounds = GetBounds_CameraView();
+            Being selected = SingleO.touchControl._selected;
+            if (null != selected)
+            {
+                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
+                selected.SetVisible(true);
+            }
+
 
             Vector3 collisionCellPos_center = ConstV.v3_zero;
             CellInfo cellInfo = null;
@@ -2120,11 +2177,57 @@ namespace HordeFight
                     //CollisionPush_Rigid(src, structTile);
                 }
 
-
+                //객체 컬링 처리
+                if(null != selected)
+                {
+                    Culling_SightOfView(selected, src);
+                }else
+                {
+                    Culling_ViewFrustum(cameraViewBounds, src);
+                }
 
             }
 
             //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
+        }
+
+
+
+        public void Culling_SightOfView(Being selected , Being target)
+        {
+            
+            bool onOff = false;
+            //챔프 시야에 없으면 안보이게 처리함
+            if (true == IsVisibleArea(selected, target.transform.position))
+            {
+                onOff = true;
+            }else
+            {
+                onOff = false;
+            }
+
+            //술통은 항상 보이게 한다 -  임시 처리
+            if (target == selected || Being.eKind.barrel == target._kind)  
+            {
+                onOff = true;
+            }
+            target.SetVisible(onOff);
+
+        }
+
+
+        public void Culling_ViewFrustum(Bounds viewBounds, Being target)
+        {
+            
+            if (true == viewBounds.Contains(target.transform.position))
+            {
+                target.SetVisible(true);
+            }
+            else
+            {
+                target.SetVisible(false);
+            }
+
         }
 
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
@@ -2915,7 +3018,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 100; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
@@ -2935,7 +3038,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 200;i++)
+            for (int i = 0; i < 0 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
