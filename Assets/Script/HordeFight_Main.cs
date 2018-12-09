@@ -1118,10 +1118,10 @@ namespace HordeFight
         }
 
 
-        private void Update()
-        {
+        //private void Update()
+        //{
 
-        }
+        //}
 
 
         public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
@@ -2008,7 +2008,8 @@ namespace HordeFight
 
         //충돌원이 셀을 벗어나는 상황별 검사영역 
         //가정 : 셀보다 충돌원이 작아야 한다. 
-        List<Vector3Int[]> __cellIndexes_Max4 = new List<Vector3Int[]> {
+        //List<Vector3Int[]> __cellIndexes_Max4 = new List<Vector3Int[]> {
+        Vector3Int[][] __cellIndexes_Max4 = new Vector3Int[][] {
             new Vector3Int[] { new Vector3Int(0, 0, 0), }, //center = 0,
             new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(1, 0, 0), }, //right = 1,
             new Vector3Int[] { new Vector3Int(0, 0, 0), new Vector3Int(1, 0, 0), new Vector3Int(1, 1, 0), new Vector3Int(0, 1, 0),}, //rightUp = 2
@@ -2023,7 +2024,7 @@ namespace HordeFight
         //충돌원이 셀에 겹친 영역을 구함
         public int GetOverlapCellSpace(Being being)
         {
-
+            
             Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
             Vector3 rate = being.transform.position - center;
             float cellHalfSize = SingleO.gridManager.cellSize_x * 0.5f;
@@ -2042,13 +2043,19 @@ namespace HordeFight
         {
             //return; //chamto test
 
-            //int count = 0;
             Vector3 collisionCellPos_center = Vector3.zero;
             CellInfo cellInfo = null;
             StructTile structTile = null;
-            foreach (Being src in _linearSearch_list)
-            {
 
+            //foreach (Being src in _linearSearch_list)
+            Being src = null, dst = null;
+            Vector3Int[] cellIndexes = null;
+            Vector3Int ix = Vector3Int.zero;
+            int src_count = _linearSearch_list.Count;
+            int cell_count = 0;
+            for (int sc = 0; sc < src_count;sc++)
+            {
+                src = _linearSearch_list[sc];
                 if (false == src.gameObject.activeInHierarchy) continue;
                 if (null == src._cellInfo) continue;
                 if (true == src.isDeath()) continue;
@@ -2059,17 +2066,22 @@ namespace HordeFight
                 //1. 3x3그리드 정보를 가져온다
                 //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
                 //foreach (Vector3Int ix in __cellIndexes_5) //5개의 영역 (중복되는 4개의 영역 제거) : 객체200 fps80
-                foreach(Vector3Int ix in __cellIndexes_Max4[this.GetOverlapCellSpace(src)]) //충돌원이 셀에 겹친 영역만 가져옴 (최대 4개 영역) : 객체 200 fps90
+                //foreach(Vector3Int ix in __cellIndexes_Max4[this.GetOverlapCellSpace(src)]) //충돌원이 셀에 겹친 영역만 가져옴 (최대 4개 영역) : 객체 200 fps90
+                cellIndexes = __cellIndexes_Max4[this.GetOverlapCellSpace(src)];
+                cell_count = cellIndexes.Length;
+                for (int cc = 0; cc < cell_count;cc++ )
                 {
+                    ix = cellIndexes[cc];
 
-                    //count++;
                     cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
                     //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
                     if (null == cellInfo) continue;
 
-                    foreach (Being dst in cellInfo)
+                    //foreach (Being dst in cellInfo)
+                    for (LinkedListNode<Being> curNode = cellInfo.First; null != curNode; curNode = curNode.Next)
                     {
-                        //count++;
+                        dst = curNode.Value;
+
                         if (false == dst.gameObject.activeInHierarchy) continue;
                         if (src == dst) continue;
                         if (null == dst || true == dst.isDeath()) continue;

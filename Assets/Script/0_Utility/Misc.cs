@@ -773,12 +773,52 @@ namespace Utility
             return _dir8_normal3D_AxisY[quad];
         }
 
+
+        static public int RoundToInt(float value)
+        {
+
+            //반올림
+            if (0 <= value)
+            {
+                //양수일때
+                value += 0.5f;
+            }
+            else
+            {
+                //음수일때
+                value -= 0.5f;
+            }
+            
+            return (int)value;
+        }
+
+        static public bool IsZero(float value)
+        {
+            if (0 > value) value *= -1f;
+            if (Vector3.kEpsilon < value)
+                return false;
+            
+            return true;
+        }
+
+        static public bool IsZero(Vector3 v3)
+        {
+            float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z;
+            if (0 > value) value *= -1f;
+            if (Vector3.kEpsilon < value)
+                return false;
+
+            //return Misc.IsZero(v3.x * v3.x + v3.y * v3.y + v3.z * v3.z);
+            return true;
+        }
+
         /// <summary>
         /// 방향값을 8방향 값으로 변환해 준다 
         /// </summary>
         static public eDirection8 GetDir8_AxisY(Vector3 dir)
         {
-            if (Vector3.zero.Equals(dir)) return eDirection8.none;
+            //if (Misc.IsZero(dir.x*dir.x+dir.y*dir.y+dir.z*dir.z)) return eDirection8.none;
+            if (Misc.IsZero(dir)) return eDirection8.none;
 
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
@@ -787,16 +827,18 @@ namespace Utility
             if (deg < 0) deg += 360f;
 
             //360 / 45 = 8
-            int quad = Mathf.RoundToInt(deg / 45f); //0~8
+            //int quad = Mathf.RoundToInt(deg / 45f); //0~8
+            int quad = Misc.RoundToInt(deg / 45f); //0~8
             quad %= 8; //8을 0으로 변경 : 0~7,0 
             quad++; //값의 범위를 0~7 에서 1~8로 변경 
 
             return (eDirection8)quad;
         }
 
+
         static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
         {
-            if (Vector3.zero.Equals(dir)) return 0;
+            if (Misc.IsZero(dir)) return 0;
 
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
@@ -828,7 +870,7 @@ namespace Utility
 
         static public eDirection8 GetDir8_AxisMZ(Vector3 dir)
         {
-            if (Vector3.zero.Equals(dir)) return eDirection8.none;
+            if (Misc.IsZero(dir)) return eDirection8.none;
 
             float rad = Mathf.Atan2(dir.y, dir.x);
             float deg = Mathf.Rad2Deg * rad;
