@@ -414,7 +414,7 @@ namespace HordeFight
 
             //    float deg = 360f / renderer.positionCount;
             //    float radius = renderer.transform.parent.GetComponent<CircleCollider2D>().radius;
-            //    Vector3 pos = Vector3.right;
+            //    Vector3 pos = ConstV.v3_right;
             //    for (int i = 0; i < renderer.positionCount; i++)
             //    {
             //        pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
@@ -461,7 +461,7 @@ namespace HordeFight
             //render.sortingOrder = -10; //나중에 그려지게 한다.
             render.sortingLayerName = "Effect";
             render.positionCount = 2;
-            render.transform.localPosition = Vector3.zero;
+            render.transform.localPosition = ConstV.v3_zero;
 
 
             render.startWidth = 0.12f;
@@ -471,7 +471,7 @@ namespace HordeFight
 
             _list.Add(_sequenceId, info); //추가
 
-            Vector3 pos = Vector3.zero;
+            Vector3 pos = ConstV.v3_zero;
             pos.x = -0.5f; pos.z = -0.8f;
             render.SetPosition(0, pos);
             pos.x += 0.8f;
@@ -501,7 +501,7 @@ namespace HordeFight
             render.sortingLayerName = "Effect";
             render.positionCount = 20;
             render.loop = true; //처음과 끝을 연결한다 .
-            render.transform.localPosition = Vector3.zero;
+            render.transform.localPosition = ConstV.v3_zero;
 
             color.a = 0.4f; //흐리게 한다
             render.startWidth = 0.1f;
@@ -514,7 +514,7 @@ namespace HordeFight
             //info.Update_Circle(); //값설정
             float deg = 360f / render.positionCount;
             //float radius = render.transform.parent.GetComponent<SphereCollider>().radius;
-            Vector3 pos = Vector3.right;
+            Vector3 pos = ConstV.v3_right;
             for (int i = 0; i < render.positionCount; i++)
             {
                 pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
@@ -558,7 +558,7 @@ namespace HordeFight
             if (1f < rate) rate = 1f;
 
             LineRenderer render = _list[id].render;
-            Vector3 pos = Vector3.zero;
+            Vector3 pos = ConstV.v3_zero;
             pos.x = -0.05f; pos.z = -0.15f;
             render.SetPosition(0, pos);
             pos.x += (0.1f * rate) ;
@@ -611,8 +611,8 @@ namespace HordeFight
         }
 
 
-        private Vector3 _start = Vector3.zero;
-        private Vector3 _end = Vector3.right;
+        private Vector3 _start = ConstV.v3_zero;
+        private Vector3 _end = ConstV.v3_right;
         public void DrawLine(Vector3 start, Vector3 end)
         {
             _start = start;
@@ -623,9 +623,9 @@ namespace HordeFight
         {
 #if UNITY_EDITOR
             Vector3Int prev = Vector3Int.zero;
-            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, Vector3.up))
-            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11,11, Vector3.up))
-            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, Vector3.up))
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_RhombusCenter(7, ConstV.v3_up))
+            foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter_Tornado(11,11, ConstV.v3_up))
+            //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, ConstV.v3_up))
             {
                 //DebugWide.LogBlue(v);
                 Debug.DrawLine(cur - Vector3.one * 0.3f , cur + Vector3.one * 0.3f, Color.red);
@@ -645,7 +645,7 @@ namespace HordeFight
             BoundsInt bounds = SingleO.gridManager.GetTileMap_FogOfWar().cellBounds;
             RuleExtraTile rule = null;
             byte divisionNum = 0;
-            Vector3 pos3d = Vector3.zero;
+            Vector3 pos3d = ConstV.v3_zero;
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
                 rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
@@ -740,8 +740,8 @@ namespace HordeFight
         public void Draw_Grid()
         {
             float size = SingleO.gridManager._cellSize_x;
-            Vector3 start = Vector3.zero;
-            Vector3 end = Vector3.zero;
+            Vector3 start = ConstV.v3_zero;
+            Vector3 end = ConstV.v3_zero;
             Vector3 xz_length = new Vector3(6.5f, 0, 4f);
 
             end.z = xz_length.z;
@@ -753,7 +753,7 @@ namespace HordeFight
                 Debug.DrawLine(start, end, Color.white);
             }
 
-            start = end = Vector3.zero;
+            start = end = ConstV.v3_zero;
             end.x = xz_length.x;
             for (int z = 0; size * z < xz_length.z; z++)
             {
@@ -784,12 +784,12 @@ namespace HordeFight
             Vector3 n = line.normalized;
 
             StructTile structTile = null;
-            Vector3 next = Vector3.zero;
+            Vector3 next = ConstV.v3_zero;
             string keyword = "";
             for (int i = 0; line.sqrMagnitude > next.sqrMagnitude; i++)
             {
                 //========================================================================
-                Vector3 cr = Vector3.Cross(n, Vector3.up);
+                Vector3 cr = Vector3.Cross(n, ConstV.v3_up);
                 cr.Normalize();
                 Debug.DrawLine(origin_center + next - cr * 0.01f, origin_center + next + cr * 0.01f, Color.red);
                 //========================================================================
@@ -929,7 +929,7 @@ namespace HordeFight
         void OnDrawGizmos()
         {
             //Misc.DrawDirN();
-            //UnityEditor.Handles.Label(Vector3.zero, "0,0");
+            //UnityEditor.Handles.Label(ConstV.v3_zero, "0,0");
             //UpdateDraw_IndexesNxN();
 
             //Debug.DrawLine(_start, _end);
@@ -977,7 +977,7 @@ namespace HordeFight
 
         public int _specifier = 0;
         public eDirection8 _dir = eDirection8.none;
-        public Vector3 _center_3d = Vector3.zero;    //타일의 중앙 월드위치
+        public Vector3 _center_3d = ConstV.v3_zero;    //타일의 중앙 월드위치
         public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
     }
 
@@ -1239,7 +1239,7 @@ namespace HordeFight
             TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
             TileBase tileScript4 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
             Vector3Int posXY_2d = this.ToPosition2D(standard_3d);
-            Vector3 tile_3d_center = Vector3.zero;
+            Vector3 tile_3d_center = ConstV.v3_zero;
             //Vector3 standard_3d_center = this.ToCenter3D_FromPosition3D(standard_3d);
 
             BoundsInt bounds = new BoundsInt(posXY_2d - new Vector3Int(14, 11, 0), new Vector3Int(28, 21, 1));
@@ -1314,7 +1314,7 @@ namespace HordeFight
             Color baseColor = Color.white;
             Color fogColor = new Color(1, 1, 1, 0.7f);
             Vector3Int posXY_2d = this.ToPosition2D(standard_3d);
-            Vector3 tile_3d_center = Vector3.zero;
+            Vector3 tile_3d_center = ConstV.v3_zero;
             Vector3Int tile_2d = Vector3Int.zero;
             int count = -1;
             foreach(Vector3Int xy in _indexesNxN[29])
@@ -1431,7 +1431,7 @@ namespace HordeFight
                 {
                     //temp1 += "(" + i + ", "+ j +")  "; 
 
-                    if (Vector3.up == axis)
+                    if (ConstV.v3_up == axis)
                     {
                         //y축 중심 : 3d용 좌표
                         index.x = j;
@@ -1470,7 +1470,7 @@ namespace HordeFight
 
             int Tornado_Num = 1; 
             int Tornado_Count = 0;
-            Vector3 dir = Vector3.right;
+            Vector3 dir = ConstV.v3_right;
             Vector3Int prevMax = Vector3Int.zero;
             Vector3Int prediction = Vector3Int.zero;
             Vector3Int cur = Vector3Int.zero;
@@ -1507,7 +1507,7 @@ namespace HordeFight
                     //debugSum += Tornado_Num; 
 
                     //반시계방향으로 회전하도록 한다 
-                    if (Vector3.up == axis)
+                    if (ConstV.v3_up == axis)
                     {
                         //y축 중심 : 3d용 좌표
                         dir = Quaternion.Euler(0, -90f, 0) * dir;
@@ -1559,8 +1559,8 @@ namespace HordeFight
             int Tornado_Num = 1;
             int Tornado_Count = 0;
             float angle = 0f;
-            Vector3 dir = Vector3.zero;
-            Vector3 prevMax = Vector3.zero;
+            Vector3 dir = ConstV.v3_zero;
+            Vector3 prevMax = ConstV.v3_zero;
             Vector3Int curMax = Vector3Int.zero;
             Vector3Int cur = Vector3Int.zero;
             Vector3Int[] indexes = new Vector3Int[Length];
@@ -1589,7 +1589,7 @@ namespace HordeFight
                         angle = -135f;
 
                         //오른쪽으로 한칸더 간다
-                        dir = Vector3.right;
+                        dir = ConstV.v3_right;
                         cur.x += (int)Mathf.Round(dir.x);
                         cur.y += (int)Mathf.Round(dir.y);
                         cur.z += (int)Mathf.Round(dir.z);
@@ -1599,7 +1599,7 @@ namespace HordeFight
                         angle = -90f;
                     }
 
-                    if (Vector3.up == axis)
+                    if (ConstV.v3_up == axis)
                     {
                         //y축 중심 : 3d용 좌표
                         dir = Quaternion.Euler(0, angle, 0) * dir;
@@ -1860,8 +1860,8 @@ namespace HordeFight
 
         public Vector3 ToCenter3D_FromPosition3D(Vector3 pos3d)
         {
-            Vector3 pos = Vector3.zero;
-            Vector3 cellSize = Vector3.zero;
+            Vector3 pos = ConstV.v3_zero;
+            Vector3 cellSize = ConstV.v3_zero;
 
             Vector3Int cellPos = this.ToPosition2D(pos3d);
 
@@ -1872,7 +1872,7 @@ namespace HordeFight
         //grid 와 호환 안되는 함수 
         public Vector3 ToPosition3D_Center(Vector3Int posXY_2d)
         {
-            Vector3 pos3d = Vector3.zero;
+            Vector3 pos3d = ConstV.v3_zero;
 
             {
                 pos3d.x = (float)posXY_2d.x * _cellSize_x;
@@ -1888,7 +1888,7 @@ namespace HordeFight
 
         public Vector3 ToPosition3D(Vector3Int posXY_2d)
         {
-            Vector3 pos3d = Vector3.zero;
+            Vector3 pos3d = ConstV.v3_zero;
 
             {
                 pos3d.x = (float)posXY_2d.x * _cellSize_x;
@@ -2046,7 +2046,7 @@ namespace HordeFight
         {
             //return; //chamto test
 
-            Vector3 collisionCellPos_center = Vector3.zero;
+            Vector3 collisionCellPos_center = ConstV.v3_zero;
             CellInfo cellInfo = null;
             StructTile structTile = null;
 
@@ -2191,7 +2191,7 @@ namespace HordeFight
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
             Vector3Int originToGridInt = SingleO.gridManager.ToPosition2D(origin);
             Vector3 originToPos = SingleO.gridManager.ToPosition3D(originToGridInt);
-            Vector3 worldCellCenterPos = Vector3.zero;
+            Vector3 worldCellCenterPos = ConstV.v3_zero;
             foreach (Vector3Int cellLBPos in SingleO.gridManager._indexesNxN[7])
             {
                 //셀의 중심좌표로 변환 
@@ -2233,7 +2233,7 @@ namespace HordeFight
         //{
         //    if (null == src || null == dst) return;
 
-        //    Vector3 sqr_dis = Vector3.zero;
+        //    Vector3 sqr_dis = ConstV.v3_zero;
         //    float r_sum = 0f;
         //    float max_radius = Mathf.Max(0.5f, 0.5f);
 
@@ -2256,7 +2256,7 @@ namespace HordeFight
         //        if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
         //        {
         //            //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-        //            if (n == Vector3.zero)
+        //            if (n == ConstV.v3_zero)
         //            {
         //                //방향값이 없기 때문에 임의로 지정해 준다. 
         //                n = Misc.GetDir8_Random_AxisY();
@@ -2302,7 +2302,7 @@ namespace HordeFight
                 if (dis.sqrMagnitude < max_sqrRadius)
                 {
                     //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-                    if (n == Vector3.zero)
+                    if (n == ConstV.v3_zero)
                     {
                         //방향값이 없기 때문에 임의로 지정해 준다. 
                         n = Misc.GetDir8_Random_AxisY();
@@ -2359,7 +2359,7 @@ namespace HordeFight
                 if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
                 {
                     //3.완전 겹쳐있는 경우
-                    if (n == Vector3.zero)
+                    if (n == ConstV.v3_zero)
                     {
                         //방향값이 없기 때문에 임의로 지정해 준다. 
                         n = Misc.GetDir8_Random_AxisY();
@@ -2371,7 +2371,7 @@ namespace HordeFight
                 //src.transform.position = collisionCellPos_center + n * 0.16f;
                 //src._move.Move_Forward(n, 2f, div_dis);
                 src.Move_Forward(n, div_dis, true);
-                //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, Vector3.up) + "   " + src.transform.position);
+                //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, ConstV.v3_up) + "   " + src.transform.position);
                 
 
             }
@@ -2387,7 +2387,7 @@ namespace HordeFight
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
             float size = SingleO.gridManager._cellSize_x * 0.5f;
-            Vector3 center = Vector3.zero;
+            Vector3 center = ConstV.v3_zero;
             LineSegment3 line3 = new LineSegment3();
             //8방향별 축값 고정  
             switch (structTile._dir)
@@ -2629,7 +2629,7 @@ namespace HordeFight
         public void LookAtTarget(Being src , uint gridRange_NxN)
         {
             
-            Vector3 dir = Vector3.zero;
+            Vector3 dir = ConstV.v3_zero;
             CellInfo cellInfo = null;
             foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[gridRange_NxN])
             {
@@ -2927,7 +2927,7 @@ namespace HordeFight
 
             for (int i = 0; i < 0;i++)
             {
-                being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, Vector3.zero);
+                being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
             }
 
             //===================================================
@@ -2993,7 +2993,7 @@ namespace HordeFight
         //public float CalcRotationAngle(Vector3 targetDir)
         //{
         //    //atan2로 각도 구하는 것과 같음. -180 ~ 180 사이의 값을 반환
-        //    return Vector3.SignedAngle(GetForwardDirect(), targetDir, Vector3.up);
+        //    return Vector3.SignedAngle(GetForwardDirect(), targetDir, ConstV.v3_up);
 
         //}
     //}
@@ -3020,7 +3020,7 @@ namespace HordeFight
         private eState _state = eState.Roaming;
         private ChampUnit _me = null;
         //private Being _target = null;
-        private Vector3 _ai_Dir = Vector3.zero;
+        private Vector3 _ai_Dir = ConstV.v3_zero;
         private float _elapsedTime = 0f;
 
 
@@ -3276,7 +3276,7 @@ namespace HordeFight
 
 		}
 
-		private Vector3 __startPos = Vector3.zero;
+		private Vector3 __startPos = ConstV.v3_zero;
 		private void TouchBegan() 
         {
             ChampUnit champ = null;
@@ -3418,7 +3418,7 @@ namespace HordeFight
         //private GameObject _TouchedObject = null;
         private List<GameObject> _sendList = new List<GameObject>();
 
-        private Vector2 _prevTouchMovedPos = Vector3.zero;
+        private Vector2 _prevTouchMovedPos = ConstV.v3_zero;
         public Vector2 prevTouchMovedPos
         {
             get

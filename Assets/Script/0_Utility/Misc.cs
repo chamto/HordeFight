@@ -25,8 +25,15 @@ namespace Utility
         rightDown = 8,
         max,
 
-
     }
+
+    public class ConstV
+    {
+        static public readonly Vector3 v3_zero = Vector3.zero;
+        static public readonly Vector3 v3_up = Vector3.up;
+        static public readonly Vector3 v3_right = Vector3.right;
+    }
+
 }
 
 

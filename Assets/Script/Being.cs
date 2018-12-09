@@ -94,10 +94,10 @@ namespace HordeFight
     public class TacticsSphere
     {
         //public uint _leaderId = 0; //연결된 리더ID
-        //public Vector3 _local_initPosition = Vector3.zero; //리더중심으로 부터의 초기 위치 
-        //public Vector3 _local_calcPosition = Vector3.zero; //리더중심으로 부터의 계산된 위치 (초기위치가 이동 할 수 없는 위치에 있는 경우, 이동 할 수 있는 위치로 계산한다)
+        //public Vector3 _local_initPosition = ConstV.v3_zero; //리더중심으로 부터의 초기 위치 
+        //public Vector3 _local_calcPosition = ConstV.v3_zero; //리더중심으로 부터의 계산된 위치 (초기위치가 이동 할 수 없는 위치에 있는 경우, 이동 할 수 있는 위치로 계산한다)
 
-        //public Vector3 _position = Vector3.zero; //전술원의 월드 위치
+        //public Vector3 _position = ConstV.v3_zero; //전술원의 월드 위치
         public float _min_radius = 0;
         public float _max_radius = 0;
         public Geo.Sphere _sphere = Geo.Sphere.Zero;
@@ -149,7 +149,7 @@ namespace HordeFight
         public class Placement
         {
             public Being _champUnit = null;
-            public Vector3 _localPos = Vector3.zero; //캠프 위치로부터의 상대적 위치
+            public Vector3 _localPos = ConstV.v3_zero; //캠프 위치로부터의 상대적 위치
 
             public Placement(Vector3 localPos)
             {
@@ -166,7 +166,7 @@ namespace HordeFight
         //====================================
 
         public uint _leaderId = 0;
-        public Vector3 _campPos = Vector3.zero; //캠프의 위치
+        public Vector3 _campPos = ConstV.v3_zero; //캠프의 위치
         public TacticsSphere _tacticsSphere = new TacticsSphere(); //캠프 전술원 크기
         public List<Placement> _placements = new List<Placement>(); //배치 위치-객체 정보 
 
@@ -384,9 +384,9 @@ namespace HordeFight
         private float _elapsedTime = 0f;
         private float _prevInterpolationTime = 0;
 
-        private Vector3 _startPos = Vector3.zero;
-        private Vector3 _lastTargetPos = Vector3.zero;
-        private Vector3 _nextTargetPos = Vector3.zero;
+        private Vector3 _startPos = ConstV.v3_zero;
+        private Vector3 _lastTargetPos = ConstV.v3_zero;
+        private Vector3 _nextTargetPos = ConstV.v3_zero;
         private Queue<Vector3> _targetPath = null;
 
         private float _oneMeter_movingTime = 0.8f; //임시처리
@@ -598,7 +598,7 @@ namespace HordeFight
 
             //spr 위치를 현재위치로 적용
             this.transform.position = _sprParent.position;
-            _sprParent.localPosition = Vector3.zero;
+            _sprParent.localPosition = ConstV.v3_zero;
 
 		}
 
@@ -619,11 +619,11 @@ namespace HordeFight
         //                  갱신 처리 
         //____________________________________________
 
-        Vector3 _launchPos = Vector3.zero; //시작위치
-        Vector3 _targetPos = Vector3.zero;
-        Vector3 _maxHeight_pos = Vector3.zero; //곡선의 최고점이 되는 위치 
-        Vector3 _perpNormal = Vector3.zero; //target - launch 벡터의 수직노멀 
-        Vector3 _prev_pos = Vector3.zero;
+        Vector3 _launchPos = ConstV.v3_zero; //시작위치
+        Vector3 _targetPos = ConstV.v3_zero;
+        Vector3 _maxHeight_pos = ConstV.v3_zero; //곡선의 최고점이 되는 위치 
+        Vector3 _perpNormal = ConstV.v3_zero; //target - launch 벡터의 수직노멀 
+        Vector3 _prev_pos = ConstV.v3_zero;
         float _shotMoveTime = 1f; //샷 이동 시간 
 
         float _elapsedTime = 0f;
@@ -657,13 +657,13 @@ namespace HordeFight
 
 
                 //초기 방향 설정 
-                Vector3 angle = Vector3.zero;
+                Vector3 angle = ConstV.v3_zero;
                 angle.y = Vector3.SignedAngle(Vector3.forward, _targetPos - _launchPos, Vector3.up);
                 this.transform.localEulerAngles = angle;
 
 
                 float posRateVert = 0f;
-                Vector3 posHori = Vector3.zero;
+                Vector3 posHori = ConstV.v3_zero;
                 if(eDirection8.up == owner._move._eDir8)
                 {
                     //그림자를 참 뒤에 보이게 함
@@ -968,7 +968,7 @@ namespace HordeFight
 
         public Shot _shot = null;
         int _hash_attack = Animator.StringToHash("attack");
-        Vector3 _appointmentDir = Vector3.zero;
+        Vector3 _appointmentDir = ConstV.v3_zero;
         Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
@@ -992,7 +992,7 @@ namespace HordeFight
                     _shot = SingleO.objectManager.GetNextShot();
                     if(null != _shot)
                     {
-                        Vector3 targetPos = Vector3.zero;
+                        Vector3 targetPos = ConstV.v3_zero;
                         if(null != target)
                         {
                             targetPos = target.transform.position;
@@ -1180,7 +1180,7 @@ namespace HordeFight
         //성능순서 : _collider_radius > _collider.radius > GetCollider_Radius()
         public float _collider_radius = 0f;
         public float _collider_sqrRadius = 0f;
-        //public Vector3 _prevLocalPos = Vector3.zero;
+        //public Vector3 _prevLocalPos = ConstV.v3_zero;
 
         public virtual void Init()
         {
@@ -1815,7 +1815,7 @@ namespace HordeFight
         //                  터치 이벤트   
         //____________________________________________
 
-        private Vector3 __startPos = Vector3.zero;
+        private Vector3 __startPos = ConstV.v3_zero;
         private LineSegment3 __lineSeg = LineSegment3.zero;
         private void TouchBegan()
         {
@@ -2214,4 +2214,5 @@ namespace HordeFight
 
 	}
 
-}
+}    
+
