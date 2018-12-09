@@ -739,7 +739,7 @@ namespace HordeFight
 
         public void Draw_Grid()
         {
-            float size = SingleO.gridManager.cellSize_x;
+            float size = SingleO.gridManager._cellSize_x;
             Vector3 start = Vector3.zero;
             Vector3 end = Vector3.zero;
             Vector3 xz_length = new Vector3(6.5f, 0, 4f);
@@ -870,8 +870,8 @@ namespace HordeFight
                         {
                             //모서리 값으로 설정 
                             Vector3Int dir = Misc.GetDir8_Normal2D(structTile._dir);
-                            origin_3d_center.x += dir.x * SingleO.gridManager.cellSize_x * 0.5f;
-                            origin_3d_center.z += dir.y * SingleO.gridManager.cellSize_z * 0.5f;
+                            origin_3d_center.x += dir.x * SingleO.gridManager._cellSize_x * 0.5f;
+                            origin_3d_center.z += dir.y * SingleO.gridManager._cellSize_z * 0.5f;
 
                             //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
                         }
@@ -1010,20 +1010,20 @@ namespace HordeFight
         {
             get { return _grid; }
         }
-        public float cellSize_x
-        {
-            get
-            {
-                return (_grid.cellSize.x * _grid.transform.localScale.x);
-            }
-        }
-        public float cellSize_z
-        {
-            get
-            {
-                return (_grid.cellSize.y * _grid.transform.localScale.z);
-            }
-        }
+        public float _cellSize_x = 1f;
+        //{
+        //    get
+        //    {
+        //        return (_grid.cellSize.x * _grid.transform.localScale.x);
+        //    }
+        //}
+        public float _cellSize_z = 1f;
+        //{
+        //    get
+        //    {
+        //        return (_grid.cellSize.y * _grid.transform.localScale.z);
+        //    }
+        //}
 
         public Tilemap GetTileMap_Struct()
         {
@@ -1058,6 +1058,9 @@ namespace HordeFight
             {
                 _tilemap_fogOfWar = o.GetComponent<Tilemap>();
             }
+
+            _cellSize_x = _grid.cellSize.x * _grid.transform.localScale.x;
+            _cellSize_z = _grid.cellSize.y * _grid.transform.localScale.z;
 
             //타일맵 좌표계 x-y에 해당하는 축값 back로 구한다 
             _indexesNxN[3] = CreateIndexesNxN_SquareCenter_Tornado(3,3, Vector3.back);
@@ -1162,8 +1165,8 @@ namespace HordeFight
                         {
                             //모서리 값으로 설정 
                             Vector3Int dir = Misc.GetDir8_Normal2D(structTile._dir);
-                            origin_3d_center.x += dir.x * cellSize_x * 0.5f;
-                            origin_3d_center.z += dir.y * cellSize_z * 0.5f;
+                            origin_3d_center.x += dir.x * _cellSize_x * 0.5f;
+                            origin_3d_center.z += dir.y * _cellSize_z * 0.5f;
 
                             //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
                         }
@@ -1398,7 +1401,7 @@ namespace HordeFight
         public uint GetNxNIncluded_CircleRadius(float maxRadius)
         {
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-            uint nxn = (uint)((maxRadius * 2) / this.cellSize_x); //소수점 버림을 한다 
+            uint nxn = (uint)((maxRadius * 2) / this._cellSize_x); //소수점 버림을 한다 
             if (0 == nxn % 2) nxn -= 1; //짝수라면 홀수로 변환한다
             if (nxn > GridManager.NxN_MAX) nxn = GridManager.NxN_MAX;
             if (nxn < GridManager.NxN_MIN) nxn = GridManager.NxN_MIN;
@@ -1847,8 +1850,8 @@ namespace HordeFight
             //}
 
             //부동소수점 처리 문제로 직접계산하지 않는다 
-            posXY_2d.x = Mathf.FloorToInt(pos3d.x / cellSize_x);
-            posXY_2d.y = Mathf.FloorToInt(pos3d.z / cellSize_z);
+            posXY_2d.x = Mathf.FloorToInt(pos3d.x / _cellSize_x);
+            posXY_2d.y = Mathf.FloorToInt(pos3d.z / _cellSize_z);
 
             //posXY_2d = _tilemap_struct.WorldToCell(pos3d); //버림함수를 사용하여 계산하는 것과 결과가 달리 나온다 
 
@@ -1872,12 +1875,12 @@ namespace HordeFight
             Vector3 pos3d = Vector3.zero;
 
             {
-                pos3d.x = (float)posXY_2d.x * cellSize_x;
-                pos3d.z = (float)posXY_2d.y * cellSize_z;
+                pos3d.x = (float)posXY_2d.x * _cellSize_x;
+                pos3d.z = (float)posXY_2d.y * _cellSize_z;
 
                 //셀의 중간에 위치하도록 한다
-                pos3d.x += cellSize_x * 0.5f;
-                pos3d.z += cellSize_z * 0.5f;
+                pos3d.x += _cellSize_x * 0.5f;
+                pos3d.z += _cellSize_z * 0.5f;
             }
 
             return pos3d;
@@ -1888,8 +1891,8 @@ namespace HordeFight
             Vector3 pos3d = Vector3.zero;
 
             {
-                pos3d.x = (float)posXY_2d.x * cellSize_x;
-                pos3d.z = (float)posXY_2d.y * cellSize_z;
+                pos3d.x = (float)posXY_2d.x * _cellSize_x;
+                pos3d.z = (float)posXY_2d.y * _cellSize_z;
             }
 
             return pos3d;
@@ -2027,7 +2030,7 @@ namespace HordeFight
             
             Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
             Vector3 rate = being.transform.position - center;
-            float cellHalfSize = SingleO.gridManager.cellSize_x * 0.5f;
+            float cellHalfSize = SingleO.gridManager._cellSize_x * 0.5f;
 
             //return 8;
 
@@ -2180,7 +2183,7 @@ namespace HordeFight
             lineSeg.last = last;
 
             LinkedList<Vector3> cellList = new LinkedList<Vector3>();
-            float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
+            float CELL_HARF_SIZE = SingleO.gridManager._cellSize_x * 0.5f;
             float CELL_SQUARED_RADIUS = Mathf.Pow(CELL_HARF_SIZE, 2f);
             float sqrDis = 0f;
             float t_c = 0;
@@ -2383,7 +2386,7 @@ namespace HordeFight
             Vector3 centerToSrc_dir = srcPos - structTile._center_3d;
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
-            float size = SingleO.gridManager.cellSize_x * 0.5f;
+            float size = SingleO.gridManager._cellSize_x * 0.5f;
             Vector3 center = Vector3.zero;
             LineSegment3 line3 = new LineSegment3();
             //8방향별 축값 고정  
@@ -2644,7 +2647,7 @@ namespace HordeFight
                         //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
                         //==============================
                         float sqr_radius = (float)(gridRange_NxN) / 2f; //반지름으로 변환
-                        sqr_radius *= SingleO.gridManager.cellSize_x; //셀크기로 변환
+                        sqr_radius *= SingleO.gridManager._cellSize_x; //셀크기로 변환
                         sqr_radius *= sqr_radius; //제곱으로 변환
                         if(sqr_radius < dir.sqrMagnitude)
                             continue;

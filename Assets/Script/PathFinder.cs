@@ -135,7 +135,7 @@ namespace HordeFight
             lineSeg.origin = srcPos;
             lineSeg.last = destPos;
 
-            float CELL_HARF_SIZE = SingleO.gridManager.cellSize_x * 0.5f;
+            float CELL_HARF_SIZE = SingleO.gridManager._cellSize_x * 0.5f;
             float CELL_SQUARED_RADIUS = Mathf.Pow(CELL_HARF_SIZE, 2f);
             float sqrDis = 0f;
             float t_c = 0;
