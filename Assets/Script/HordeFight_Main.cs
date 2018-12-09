@@ -981,6 +981,25 @@ namespace HordeFight
         public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
     }
 
+    public class Vector3IntComparer : IEqualityComparer<Vector3Int>
+    {
+
+        public bool Equals(Vector3Int a, Vector3Int b)
+        {
+            if (a.x == b.x && a.y == b.y && a.z == b.z)
+                return true;
+            return false;
+
+        }
+
+        public int GetHashCode(Vector3Int a)
+        {
+
+            return a.GetHashCode();
+
+        }
+
+    }
 
     public class GridManager : MonoBehaviour
     {
@@ -999,8 +1018,8 @@ namespace HordeFight
         private Tilemap _tilemap_struct = null;
         private Tilemap _tilemap_structUp = null;
         private Tilemap _tilemap_fogOfWar = null;
-        public Dictionary<Vector3Int,CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>();
-        public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>();
+        public Dictionary<Vector3Int,CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
+        public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>(new Vector3IntComparer());
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
         public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
