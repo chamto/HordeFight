@@ -33,12 +33,6 @@ SpriteAtlas:
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: 21300100, guid: d1124ede6f6c345ccae39e9531556e87, type: 3}
-  - {fileID: 21300130, guid: c64873ae698c64702ad6a54b3c8a9521, type: 3}
-  - {fileID: 21300162, guid: 7465daad97a124da3a1c17e5130f6b45, type: 3}
-  - {fileID: 21300130, guid: 4bcda8c7c71044860a33b4b0e16184a6, type: 3}
-  - {fileID: 21300150, guid: eb6a9767f507a4579b48be7fa874ae46, type: 3}
-  - {fileID: 21300026, guid: 06bc64a0c216d4016ac38807531f5ce8, type: 3}
-  - {fileID: 21300408, guid: 0dcdeb8a93b7f4247aec6422dfc337dd, type: 3}
   - {fileID: 21300132, guid: fd14cc9e8ac2d45c49d43223d16dc665, type: 3}
   - {fileID: 21300200, guid: 736303c5287474dafa1c36959793fe77, type: 3}
   - {fileID: 21300160, guid: 59de5cc3506154a6d9739be9d358d555, type: 3}
@@ -47,9 +41,6 @@ SpriteAtlas:
   - {fileID: 21300100, guid: 2aadb7e00f8d6493ebf4f60310a6640f, type: 3}
   - {fileID: 21300120, guid: d727421eff3fb4cf99e16f9f4af4dbe1, type: 3}
   - {fileID: 21300138, guid: c6df2f4cdb43a4076b8a45a0238b8990, type: 3}
-  - {fileID: 21300200, guid: 6ae601b87faa84222bbafd4fb13452e1, type: 3}
-  - {fileID: 21300132, guid: c64873ae698c64702ad6a54b3c8a9521, type: 3}
-  - {fileID: 21300134, guid: c64873ae698c64702ad6a54b3c8a9521, type: 3}
   - {fileID: 21300160, guid: 736303c5287474dafa1c36959793fe77, type: 3}
   - {fileID: 21300026, guid: f6b877c994b9242dbad8ff81cff7adaf, type: 3}
   - {fileID: 21300058, guid: f6b877c994b9242dbad8ff81cff7adaf, type: 3}
@@ -120,14 +111,6 @@ SpriteAtlas:
   - {fileID: 21300016, guid: 59de5cc3506154a6d9739be9d358d555, type: 3}
   - {fileID: 21300100, guid: eb6a9767f507a4579b48be7fa874ae46, type: 3}
   - {fileID: 21300008, guid: 59de5cc3506154a6d9739be9d358d555, type: 3}
-  - {fileID: 21300080, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300082, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300084, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300086, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300088, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300092, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300094, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
-  - {fileID: 21300096, guid: 7922a5debae7f4a96b4e6108a51718cb, type: 3}
   - {fileID: 21300074, guid: 736303c5287474dafa1c36959793fe77, type: 3}
   - {fileID: 21300056, guid: 736303c5287474dafa1c36959793fe77, type: 3}
   - {fileID: 21300046, guid: eb6a9767f507a4579b48be7fa874ae46, type: 3}
@@ -1516,12 +1499,6 @@ SpriteAtlas:
   - {fileID: 21300116, guid: c6df2f4cdb43a4076b8a45a0238b8990, type: 3}
   m_PackedSpriteNamesToIndex:
   - Archer_50
-  - Footman_65
-  - Knight_76
-  - Grunt_65
-  - Raider_0
-  - Lothar_13
-  - Peon_204
   - Cleric_66
   - WaterElemental_100
   - Daemon_80
@@ -1530,9 +1507,6 @@ SpriteAtlas:
   - Catapult_50
   - FireElemental_60
   - Conjurer_4
-  - Skeleton_6
-  - Footman_66
-  - Footman_67
   - WaterElemental_9_3
   - Ogre_13
   - Ogre_29
@@ -1603,14 +1577,6 @@ SpriteAtlas:
   - Daemon_8_0
   - Raider_5_3
   - Daemon_4_0
-  - Garona_40
-  - Garona_41
-  - Garona_42
-  - Garona_43
-  - Garona_44
-  - Garona_46
-  - Garona_47
-  - Garona_48
   - WaterElemental_0_1
   - WaterElemental_4_1
   - Raider_8_1
