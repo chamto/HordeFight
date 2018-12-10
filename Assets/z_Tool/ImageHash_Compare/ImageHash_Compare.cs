@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using System.Security.Cryptography;
 using System.Xml;
+using UtilGS9;
 
 //md5를 이용한 텍스쳐 해쉬값 생성
 //http://www.vcskicks.com/image-hash2.php
@@ -593,14 +594,14 @@ namespace Tool
                         {
                             case "cellPos":
                                 {
-                                    Vector2Int v2Int =  Utility.Misc.StringToVector2Int(n.Value);
+                                    Vector2Int v2Int =  Misc.StringToVector2Int(n.Value);
                                     item.rect.x = v2Int.x;
                                     item.rect.y = v2Int.y;
                                 }    
                                 break;
                             case "cellSize":
                                 {
-                                    Vector2Int v2Int = Utility.Misc.StringToVector2Int(n.Value);
+                                    Vector2Int v2Int = Misc.StringToVector2Int(n.Value);
                                     item.rect.width = v2Int.x;
                                     item.rect.height = v2Int.y;
                                 }
@@ -686,13 +687,13 @@ namespace Tool
             //DebugWide.LogBlue(GlobalConstants.ASSET_PATH + m_strFileName); //chamto test
             MemoryStream stream = null;
             //IEnumerator irator = this.FileLoading(GlobalConstants.ASSET_PATH + m_strFileName, value => stream = value);
-            IEnumerator irator = this.FileLoading(Utility.Misc.ASSET_PATH + fileName, null);
+            IEnumerator irator = this.FileLoading(Misc.ASSET_PATH + fileName, null);
             yield return irator;
 
             stream = irator.Current as MemoryStream; //이뮬레이터의 양보반환값을 가져온다
             if (null == stream)
             {
-                DebugWide.Log("error : failed LoadFromFile : " + Utility.Misc.ASSET_PATH + fileName);
+                DebugWide.Log("error : failed LoadFromFile : " + Misc.ASSET_PATH + fileName);
                 yield break;
             }
             this.Parse_MemoryStream(stream);

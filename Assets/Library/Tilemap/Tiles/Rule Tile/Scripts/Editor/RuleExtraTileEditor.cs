@@ -209,14 +209,14 @@ namespace UnityEditor
 
             //DebugWide.LogBlue(tilingRule._push_dir8 + "  " + tr.Length);
 
-            if ((int)tilingRule._push_dir8 < 0) tilingRule._push_dir8 = Utility.eDirection8.none;
+            if ((int)tilingRule._push_dir8 < 0) tilingRule._push_dir8 = UtilGS9.eDirection8.none;
 
             GUI.DrawTexture(r, RuleExtraTile.arrows[tr[(int)tilingRule._push_dir8]]);
 
 
             if (Event.current.type == EventType.MouseDown && r.Contains(Event.current.mousePosition))
             {
-                tilingRule._push_dir8 = (Utility.eDirection8)((((int)tilingRule._push_dir8 + 1) % 9));
+                tilingRule._push_dir8 = (UtilGS9.eDirection8)((((int)tilingRule._push_dir8 + 1) % 9));
                 GUI.changed = true;
                 Event.current.Use();
             }

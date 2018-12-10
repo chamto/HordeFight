@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 using System;
 using System.Text.RegularExpressions;
 
-namespace Utility
+namespace UtilGS9
 {
     /// <summary>
     /// 데카르트좌표계 사분면을 8방향으로 나누어 숫자 지정
@@ -38,8 +38,9 @@ namespace Utility
 
 
 
-namespace Utility
+namespace UtilGS9
 {
+    
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
     /// 해쉬값과 문자열을 쌍으로 묶어 관리하는 객체
@@ -723,12 +724,14 @@ namespace Utility
 
         static public void DrawDirN()
         {
+#if UNITY_EDITOR
             int count = 0;
-            foreach(Vector3 xz in _dir64_normal3D_AxisY)
+            foreach (Vector3 xz in _dir64_normal3D_AxisY)
             {
                 Debug.DrawLine(Vector3.zero, xz);
-                UnityEditor.Handles.Label(xz, ":"+count++);
+                UnityEditor.Handles.Label(xz, ":" + count++);
             }
+#endif
         }
 
         /// <summary>

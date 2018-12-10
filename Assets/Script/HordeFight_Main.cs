@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 //using UnityEngine.Assertions;
 
-using Utility;
+using UtilGS9;
 
 namespace HordeFight
 {
@@ -1148,6 +1148,8 @@ namespace HordeFight
 
         public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
         {
+            //return true; //test
+
             //interval 값이 너무 작으면 바로 종료 한다 
             if(0.01f >= length_interval)
             {
@@ -2029,42 +2031,6 @@ namespace HordeFight
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
             UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
 
-            //Bounds cViewBounds = GetBounds_CameraView();
-            //int cnt = _linearSearch_list.Count;
-            //for (int i = 0; i < cnt; i++)
-            //{
-            //    Being dst = _linearSearch_list[i];
-
-            //    if(true == cViewBounds.Contains(dst.transform.position))
-            //    {
-            //        dst.SetVisible(true);
-            //    }else
-            //    {
-            //        dst.SetVisible(false);
-            //    }
-            //}
-
-
-
-            //if(null != SingleO.touchControl._selected)
-            //{
-            //    Being selected = SingleO.touchControl._selected;
-            //    SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
-            //    selected.SetVisible(true);
-
-            //    //챔프 시야에 없으면 안보이게 처리함 - 임시처리
-            //    foreach (Being dst in _linearSearch_list)
-            //    {
-            //        if (Being.eKind.barrel == dst._kind) continue; //술통은 항상 보이게 한다 -  임시 처리
-            //        if (dst == selected) continue;
-
-            //        dst.SetVisible(false);
-            //        if(true == IsVisibleArea(selected, dst.transform.position))
-            //        {
-            //            dst.SetVisible(true);
-            //        }
-            //    }//end foreach
-            //}
 
         }
 
@@ -3018,7 +2984,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
@@ -3475,19 +3441,20 @@ namespace HordeFight
             ChampUnit champSelected = _selected as ChampUnit;
             if (null != champSelected )
             {
-                //임시처리
-                Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Unknown, 
-                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
-                if(null != target)
-                {
-                    if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
-                    {
-                        champSelected.Attack(target.transform.position - _selected.transform.position, target);
-                    }
+                //임시처리 
+                //최적화를 위해 주석처리 
+                //Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Unknown, 
+                //                                                      champSelected.attack_range_min, champSelected.attack_range_max);
+                //if(null != target)
+                //{
+                //    if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
+                //    {
+                //        champSelected.Attack(target.transform.position - _selected.transform.position, target);
+                //    }
 
-                    //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
+                //    //_selected.Move_Forward(hit.point - _selected.transform.position, 3f, true); 
                         
-                }
+                //}
 
                 //.Attack(champSelected._move._direction); //chamto test
 

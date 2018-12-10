@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 using System;
 
 
-namespace Utility
+namespace UtilGS9
 {
     /// <summary>
     /// 선분 , 매개변수가 곱해진 방향값(direction) 을 사용한다.
@@ -60,7 +60,7 @@ namespace Utility
         {
             get
             {
-                Utility.LineSegment3 l = new Utility.LineSegment3();
+                LineSegment3 l = new LineSegment3();
                 l.direction = Vector3.zero;
                 l.origin = Vector3.zero;
                 return l;

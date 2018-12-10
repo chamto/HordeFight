@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Utility
+namespace UtilGS9
 {
 	public class Interpolation
 	{
