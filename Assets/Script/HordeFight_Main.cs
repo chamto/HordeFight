@@ -48,22 +48,20 @@ namespace HordeFight
         }
 
         // Update is called once per frame
-        void Update()
-        {
-            
-        }
+        //void Update()
+        //{
+        //}
 
 
-        void OnGUI()
-        {
-            //if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
-            //{
-            //    //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
-
-            //    SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
-            //    //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
-            //}
-        }
+        //void OnGUI()
+        //{
+        //    //if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
+        //    //{
+        //    //    //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
+        //    //    SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
+        //    //    //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+        //    //}
+        //}
 
 
     }
@@ -2079,6 +2077,17 @@ namespace HordeFight
         {
             //return; //chamto test
 
+            //====================================
+            // 발사체 갱신 
+            //====================================
+            int shot_count = _shots.Count;
+            for (int si = 0; si < shot_count;si++)
+            {
+                _shots[si].Update_Shot();  
+            }
+            //====================================
+
+
             Bounds cameraViewBounds = GetBounds_CameraView();
             Being selected = SingleO.touchControl._selected;
             if (null != selected)
@@ -2101,6 +2110,11 @@ namespace HordeFight
             for (int sc = 0; sc < src_count;sc++)
             {
                 src = _linearSearch_list[sc];
+
+                //============================
+                src.UpdateAll(); //객체 갱신
+                //============================
+
                 if (false == src.gameObject.activeInHierarchy) continue;
                 if (null == src._cellInfo) continue;
                 if (true == src.isDeath()) continue;
@@ -2984,11 +2998,11 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 100; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
-                champ._mt_range_max = 6f;
+                champ._mt_range_max = 5f;
                 //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
@@ -3013,7 +3027,7 @@ namespace HordeFight
 
             // -- 발사체 미리 생성 --
 
-            for (int i = 0; i < 0;i++)
+            for (int i = 0; i < 300;i++)
             {
                 being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
             }
@@ -3114,7 +3128,7 @@ namespace HordeFight
 
         public bool _ai_running = false;
 
-        private void Start()
+        public void Init()
         {
             _me = GetComponent<ChampUnit>();
             _ai_Dir = Misc.GetDir8_Random_AxisY(); //초기 임의의 방향 설정
@@ -3122,13 +3136,13 @@ namespace HordeFight
 
 
 
-        private void Update()
+        public void UpdateAI()
         {
             //_me.Attack(_me._move._direction); //chamto test
 
             if (false == _ai_running) return;
 
-            if (true == _me.isDeath()) return;
+            //if (true == _me.isDeath()) return;
 
 
             this.StateUpdate();

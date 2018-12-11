@@ -557,11 +557,11 @@ namespace HordeFight
         private Transform _sprParent = null;
         private Transform _shader = null;
 
-        private void Start()
-        {
-            //base.Init();
+        //private void Start()
+        //{
+        //    //base.Init();
 
-        }
+        //}
 
 		public override void Init()
 		{
@@ -572,22 +572,22 @@ namespace HordeFight
 
 		}
 
-		private void Update()
-        {
+		//private void Update()
+        //{
             
-            Update_Shot();
-            //Update_CellInfo(); //매프레임 마다 충돌검사의 대상이 된다
+        //    Update_Shot();
+        //    //Update_CellInfo(); //매프레임 마다 충돌검사의 대상이 된다
 
-            //덮개 타일과 충돌하면 동작을 종료한다 
-            int result = SingleO.gridManager.IsIncluded_InDiagonalArea(this.transform.position);
-            if(GridManager._ReturnMessage_Included_InStructTile == result ||
-               GridManager._ReturnMessage_Included_InDiagonalArea == result)
-            {
+        //    //덮개 타일과 충돌하면 동작을 종료한다 
+        //    int result = SingleO.gridManager.IsIncluded_InDiagonalArea(this.transform.position);
+        //    if(GridManager._ReturnMessage_Included_InStructTile == result ||
+        //       GridManager._ReturnMessage_Included_InDiagonalArea == result)
+        //    {
                 
-                End();
-            }
+        //        End();
+        //    }
 
-        }
+        //}
 
         //샷의 움직임을 종료한다 
         public void End()
@@ -763,6 +763,19 @@ namespace HordeFight
                     this.End();
                 }
 
+
+                //================================================
+                //Update_CellInfo(); //매프레임 마다 충돌검사의 대상이 된다
+
+                //덮개 타일과 충돌하면 동작을 종료한다 
+                int result = SingleO.gridManager.IsIncluded_InDiagonalArea(this.transform.position);
+                if (GridManager._ReturnMessage_Included_InStructTile == result ||
+                   GridManager._ReturnMessage_Included_InDiagonalArea == result)
+                {
+
+                    End();
+                }
+                //================================================
                 //debug test
                 //Debug.DrawLine(_maxHeight_pos, _maxHeight_pos - _perpNormal * _maxHeight_length);
                 //Debug.DrawLine(_launchPos, _targetPos);
@@ -823,11 +836,11 @@ namespace HordeFight
     public class Obstacle : Being
     {
         
-		private void Update()
-		{
-            base.UpdateAll();
+		//private void Update()
+		//{
+  //          base.UpdateAll();
 
-		}
+		//}
 
         //____________________________________________
         //                  충돌반응
@@ -918,7 +931,7 @@ namespace HordeFight
         //진영정보
         public Camp _belongCamp = null; //소속 캠프
         //public TacticsSphere _tacticsSphere = new TacticsSphere();
-
+       
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
         public float attack_range_min
@@ -930,16 +943,16 @@ namespace HordeFight
             get { return this._collider_radius + _mt_range_max * GridManager.MeterToWorld; }
         }
 
-		private void Start()
-		{
-            //DebugWide.LogBlue("ChampUnit");
-            //this.Init();
-		}
+		//private void Start()
+		//{
+  //          //DebugWide.LogBlue("ChampUnit");
+  //          //this.Init();
+		//}
 
-        private void Update()
-        {
-            this.UpdateAll();
-        }
+        //private void Update()
+        //{
+        //    this.UpdateAll();
+        //}
 
 		public override void Init()
 		{
@@ -956,15 +969,16 @@ namespace HordeFight
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
 
-		public override bool UpdateAll()
-		{
-            bool result = base.UpdateAll();
-            //if(true == result)
-            //{
-            //}
+		//public override bool UpdateAll()
+		//{
+  //          bool result = base.UpdateAll();
+  //          //if(true == result)
+  //          //{
+               
+  //          //}
 
-            return result;
-		}
+  //          return result;
+		//}
 
         public void Attack(Vector3 dir)
         {
@@ -1180,6 +1194,9 @@ namespace HordeFight
         public Movement _move = null;
         public CellInfo _cellInfo = null;
         //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
+
+        //ai
+        public AI _ai = null;
         //====================================
 
         //속도차이 때문에 직접 호출해 사용한다. 프로퍼티나 함수로 한번 감싸서 사용하면, 충돌처리에서 5프레임 정도 성능이 떨어진다 
@@ -1198,6 +1215,11 @@ namespace HordeFight
             //_prevLocalPos = transform.localPosition;
 
             _move = GetComponent<Movement>();
+            _ai = GetComponent<AI>();
+            if(null != _ai)
+            {
+                _ai.Init();
+            }
 
             _sprRender = GetComponentInChildren<SpriteRenderer>();
             _animator = GetComponentInChildren<Animator>();
@@ -1493,6 +1515,8 @@ namespace HordeFight
             //이동정보에 따라 위치 갱신
             _move.UpdateNextPath();
 
+            //인공지능 갱신
+            _ai.UpdateAI();
 
             Update_SortingOrder(0);
             //========================================
