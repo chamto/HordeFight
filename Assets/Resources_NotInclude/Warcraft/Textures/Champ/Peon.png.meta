@@ -2,7 +2,7 @@ fileFormatVersion: 2
 guid: 0dcdeb8a93b7f4247aec6422dfc337dd
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Peon_0
+    21300000: Peon_a_0_0
     21300002: Peon_1
     21300004: Peon_2
     21300006: Peon_3
@@ -67,7 +67,7 @@ TextureImporter:
     21300124: Peon_62
     21300126: Peon_63
     21300128: Peon_64
-    21300130: Peon_65
+    21300130: Peon_b_0_0
     21300132: Peon_66
     21300134: Peon_67
     21300136: Peon_68
@@ -141,26 +141,26 @@ TextureImporter:
     21300272: Peon_136
     21300274: Peon_137
     21300276: Peon_138
-    21300278: Peon_139
-    21300280: Peon_140
-    21300282: Peon_141
-    21300284: Peon_142
-    21300286: Peon_143
-    21300288: Peon_144
-    21300290: Peon_145
-    21300292: Peon_146
-    21300294: Peon_147
-    21300296: Peon_148
-    21300298: Peon_149
+    21300278: Peon_c_0_0
+    21300280: Peon_c_1_0
+    21300282: Peon_c_2_0
+    21300284: Peon_c_3_0
+    21300286: Peon_c_4_0
+    21300288: Peon_c_5_0
+    21300290: Peon_c_6_0
+    21300292: Peon_c_7_0
+    21300294: Peon_c_8_0
+    21300296: Peon_c_9_0
+    21300298: Peon_c_10_0
     21300300: Peon_150
-    21300302: Peon_151
+    21300302: Peon_c_11_0
     21300304: Peon_152
     21300306: Peon_153
-    21300308: Peon_154
-    21300310: Peon_155
-    21300312: Peon_156
-    21300314: Peon_157
-    21300316: Peon_158
+    21300308: Peon_c_0_1
+    21300310: Peon_c_1_1
+    21300312: Peon_c_2_1
+    21300314: Peon_c_3_1
+    21300316: Peon_c_4_1
     21300318: Peon_159
     21300320: Peon_160
     21300322: Peon_161
@@ -171,11 +171,11 @@ TextureImporter:
     21300332: Peon_166
     21300334: Peon_167
     21300336: Peon_168
-    21300338: Peon_169
-    21300340: Peon_170
-    21300342: Peon_171
-    21300344: Peon_172
-    21300346: Peon_173
+    21300338: Peon_c_0_2
+    21300340: Peon_c_1_2
+    21300342: Peon_c_2_2
+    21300344: Peon_c_3_2
+    21300346: Peon_c_4_2
     21300348: Peon_174
     21300350: Peon_175
     21300352: Peon_176
@@ -186,21 +186,21 @@ TextureImporter:
     21300362: Peon_181
     21300364: Peon_182
     21300366: Peon_183
-    21300368: Peon_184
-    21300370: Peon_185
-    21300372: Peon_186
-    21300374: Peon_187
-    21300376: Peon_188
+    21300368: Peon_c_0_3
+    21300370: Peon_c_1_3
+    21300372: Peon_c_2_3
+    21300374: Peon_c_3_3
+    21300376: Peon_c_4_3
     21300378: Peon_189
     21300380: Peon_190
     21300382: Peon_191
     21300384: Peon_192
     21300386: Peon_193
-    21300388: Peon_194
-    21300390: Peon_195
-    21300392: Peon_196
-    21300394: Peon_197
-    21300396: Peon_198
+    21300388: Peon_c_0_4
+    21300390: Peon_c_1_4
+    21300392: Peon_c_2_4
+    21300394: Peon_c_3_4
+    21300396: Peon_c_4_4
     21300398: Peon_199
     21300400: Peon_200
     21300402: Peon_201
@@ -309,7 +309,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Peon_0
+      name: Peon_a_0_0
       rect:
         serializedVersion: 2
         x: 11
@@ -1609,7 +1609,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_65
+      name: Peon_b_0_0
       rect:
         serializedVersion: 2
         x: 9
@@ -3089,7 +3089,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_139
+      name: Peon_c_0_0
       rect:
         serializedVersion: 2
         x: 11
@@ -3109,7 +3109,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_140
+      name: Peon_c_1_0
       rect:
         serializedVersion: 2
         x: 43
@@ -3129,7 +3129,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_141
+      name: Peon_c_2_0
       rect:
         serializedVersion: 2
         x: 75
@@ -3149,7 +3149,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_142
+      name: Peon_c_3_0
       rect:
         serializedVersion: 2
         x: 108
@@ -3169,7 +3169,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_143
+      name: Peon_c_4_0
       rect:
         serializedVersion: 2
         x: 140
@@ -3189,10 +3189,10 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_144
+      name: Peon_c_5_0
       rect:
         serializedVersion: 2
-        x: 170
+        x: 171
         y: 137
         width: 15
         height: 14
@@ -3209,7 +3209,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_145
+      name: Peon_c_6_0
       rect:
         serializedVersion: 2
         x: 202
@@ -3229,7 +3229,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_146
+      name: Peon_c_7_0
       rect:
         serializedVersion: 2
         x: 234
@@ -3249,7 +3249,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_147
+      name: Peon_c_8_0
       rect:
         serializedVersion: 2
         x: 265
@@ -3269,7 +3269,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_148
+      name: Peon_c_9_0
       rect:
         serializedVersion: 2
         x: 297
@@ -3289,7 +3289,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_149
+      name: Peon_c_10_0
       rect:
         serializedVersion: 2
         x: 327
@@ -3329,7 +3329,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_151
+      name: Peon_c_11_0
       rect:
         serializedVersion: 2
         x: 395
@@ -3389,7 +3389,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_154
+      name: Peon_c_0_1
       rect:
         serializedVersion: 2
         x: 10
@@ -3409,7 +3409,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_155
+      name: Peon_c_1_1
       rect:
         serializedVersion: 2
         x: 43
@@ -3429,7 +3429,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_156
+      name: Peon_c_2_1
       rect:
         serializedVersion: 2
         x: 74
@@ -3449,7 +3449,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_157
+      name: Peon_c_3_1
       rect:
         serializedVersion: 2
         x: 107
@@ -3469,7 +3469,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_158
+      name: Peon_c_4_1
       rect:
         serializedVersion: 2
         x: 139
@@ -3689,7 +3689,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_169
+      name: Peon_c_0_2
       rect:
         serializedVersion: 2
         x: 9
@@ -3709,7 +3709,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_170
+      name: Peon_c_1_2
       rect:
         serializedVersion: 2
         x: 42
@@ -3729,7 +3729,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_171
+      name: Peon_c_2_2
       rect:
         serializedVersion: 2
         x: 73
@@ -3749,7 +3749,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_172
+      name: Peon_c_3_2
       rect:
         serializedVersion: 2
         x: 106
@@ -3769,7 +3769,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_173
+      name: Peon_c_4_2
       rect:
         serializedVersion: 2
         x: 137
@@ -3989,7 +3989,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_184
+      name: Peon_c_0_3
       rect:
         serializedVersion: 2
         x: 8
@@ -4009,7 +4009,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_185
+      name: Peon_c_1_3
       rect:
         serializedVersion: 2
         x: 40
@@ -4029,7 +4029,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_186
+      name: Peon_c_2_3
       rect:
         serializedVersion: 2
         x: 73
@@ -4049,7 +4049,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_187
+      name: Peon_c_3_3
       rect:
         serializedVersion: 2
         x: 106
@@ -4069,7 +4069,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_188
+      name: Peon_c_4_3
       rect:
         serializedVersion: 2
         x: 140
@@ -4189,7 +4189,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_194
+      name: Peon_c_0_4
       rect:
         serializedVersion: 2
         x: 10
@@ -4209,7 +4209,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_195
+      name: Peon_c_1_4
       rect:
         serializedVersion: 2
         x: 42
@@ -4229,7 +4229,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_196
+      name: Peon_c_2_4
       rect:
         serializedVersion: 2
         x: 74
@@ -4249,7 +4249,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_197
+      name: Peon_c_3_4
       rect:
         serializedVersion: 2
         x: 107
@@ -4269,7 +4269,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peon_198
+      name: Peon_c_4_4
       rect:
         serializedVersion: 2
         x: 140

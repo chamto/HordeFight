@@ -1145,7 +1145,14 @@ namespace HordeFight
             daemon,
             waterElemental,
             fireElemental,
-
+            peon,
+            archer,
+            necrolyte,
+            peasant,
+            scorpion,
+            skeleton_W,
+            spider,
+            catapult,
             ______Obstacle______,
             barrel, //숱통
 
@@ -1513,10 +1520,12 @@ namespace HordeFight
             //========================================
 
             //이동정보에 따라 위치 갱신
-            _move.UpdateNextPath();
+            if(null != _move)
+                _move.UpdateNextPath();
 
             //인공지능 갱신
-            _ai.UpdateAI();
+            if(null != _ai)
+                _ai.UpdateAI();
 
             Update_SortingOrder(0);
             //========================================
