@@ -590,7 +590,7 @@ namespace UtilGS9
         //returns a random integer between x and y
         static public int RandInt(int x, int y)
         {
-            Assert.IsTrue((y >= x), "<RandInt>: y is less than x");
+            //Assert.IsTrue((y >= x), "<RandInt>: y is less than x");
 
             return rand.Next() % (y - x + 1) + x;
         }
@@ -610,6 +610,11 @@ namespace UtilGS9
             //MaxValue 는 rand.Next 가 나올수 있는 값보다 1 큰 값이다. 
             //1 큰값으로 나누기 때문에 1.0 에 결코 도달하지 못한다 
             return ((float)rand.Next() / (float)(int.MaxValue));
+        }
+
+        static public float RandFloat(float x, float y)
+        {
+            return x + RandFloat() * (y - x);
         }
 
         //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 
@@ -911,6 +916,27 @@ namespace UtilGS9
         public static unsafe float Int32BitsToSingle(int value)
         {
             return *(float*)(&value);
+        }
+
+
+        //========================================================
+        //==================       컬러연산        ==================
+        //========================================================
+
+        //ref : https://answers.unity.com/questions/1161444/convert-int-to-color.html
+        public static Color32 Hex_ToColor32(uint aCol)
+        {
+            Color32 c = new Color32();
+            c.b = (byte)((aCol) & 0xFF);
+            c.g = (byte)((aCol >> 8) & 0xFF);
+            c.r = (byte)((aCol >> 16) & 0xFF);
+            c.a = (byte)((aCol >> 24) & 0xFF);
+            return c;
+        }
+
+        static public Color Color32_ToColor(Color32 c32)
+        {
+            return new Color(c32.r / 255.0f, c32.g / 255.0f, c32.b / 255.0f, 1f);
         }
 
         //========================================================

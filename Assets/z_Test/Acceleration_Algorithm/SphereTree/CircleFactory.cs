@@ -52,25 +52,9 @@ public class DefineO
     }
 
 
-    //ref : https://answers.unity.com/questions/1161444/convert-int-to-color.html
-    public static Color32 HexToColor(uint aCol)
-    {
-        Color32 c = new Color32();
-        c.b = (byte)((aCol) & 0xFF);
-        c.g = (byte)((aCol >> 8) & 0xFF);
-        c.r = (byte)((aCol >> 16) & 0xFF);
-        c.a = (byte)((aCol >> 24) & 0xFF);
-        return c;
-    }
-
-    static public Color Color32_ToColor(Color32 c32)
-    {
-        return new Color(c32.r / 255.0f, c32.g / 255.0f, c32.b / 255.0f, 1f);
-    }
-
     static public void DrawLine(float x1, float y1, float x2, float y2, uint color)
     {
-        Color cc = DefineO.Color32_ToColor(DefineO.HexToColor(color));
+        Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
         //DebugWide.LogBlue(cc);
         //cc.a = 1f;
 
@@ -81,7 +65,7 @@ public class DefineO
 
     static public void DrawCircle(float locx, float locy, float radius, uint color)
     {
-        Color cc = DefineO.Color32_ToColor(DefineO.HexToColor(color));
+        Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
         //DebugWide.LogBlue(cc + "    " + DefineO.HexToColor(color) + "    " + color);
         //cc.a = 1f;
 
@@ -92,7 +76,7 @@ public class DefineO
 
     static public void PrintText(float x, float y, uint color, string text)
     {
-        UnityEditor.Handles.color = DefineO.Color32_ToColor(DefineO.HexToColor(color));
+        UnityEditor.Handles.color = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
 
         UnityEditor.Handles.Label(new Vector3(x, y, 0), text);
     }
