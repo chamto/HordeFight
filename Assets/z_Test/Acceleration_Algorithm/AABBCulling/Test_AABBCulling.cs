@@ -6,7 +6,7 @@ using UtilGS9;
 public class Test_AABBCulling : MonoBehaviour 
 {
     List<Bounds> mRectangles = null;
-    AABBCulling mManager = null;
+    RectangleManager mManager = null;
     const float WIDTH_MAX = 20f;
     readonly Vector3 V3_ZERO = Vector3.zero;
 
@@ -68,7 +68,7 @@ public class Test_AABBCulling : MonoBehaviour
             mRectangles.Add(bounds);
         }
 
-        mManager = new AABBCulling(mRectangles);
+        mManager = new RectangleManager(mRectangles);
 
     }
 
@@ -179,7 +179,7 @@ public class Test_AABBCulling : MonoBehaviour
 
         //int overlap_count = mManager.GetOverlap().Count;
 
-        foreach (AABBCulling.UnOrderedEdgeKey overlap in mManager.GetOverlap())
+        foreach (RectangleManager.UnOrderedEdgeKey overlap in mManager.GetOverlap())
         {
             int i0 = overlap._V0, i1 = overlap._V1;
             //if(mRectangles[i0].Intersects(mRectangles[i1]))
