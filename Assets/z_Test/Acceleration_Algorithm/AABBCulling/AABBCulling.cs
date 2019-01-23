@@ -118,7 +118,7 @@ public class AABBCulling
     }
 
     private List<Bounds> mRectangles = null;
-    private List<Endpoint> mXEndpoints = null, mYEndpoints = null;
+    private List<Endpoint> mXEndpoints = null, mYEndpoints = null, mZEndpoints = null; 
     private HashSet<UnOrderedEdgeKey> mOverlap = null;
 
     // The intervals are indexed 0 <= i < n.  The endpoint array has 2*n
@@ -130,7 +130,7 @@ public class AABBCulling
     // table of 2*n entries.  The value mLookup[2*i] is the index of b[i]
     // in the endpoint array.  The value mLookup[2*i+1] is the index of
     // e[i] in the endpoint array.
-    private List<int> mXLookup = null, mYLookup = null;
+    private List<int> mXLookup = null, mYLookup = null, mZLookup = null;
 
 
     // Construction.
@@ -154,15 +154,19 @@ public class AABBCulling
         //mYEndpoints.resize(endpSize);
         mXEndpoints = new List<Endpoint>(endpSize);
         mYEndpoints = new List<Endpoint>(endpSize);
+        mZEndpoints = new List<Endpoint>(endpSize);
         mXLookup = new List<int>(endpSize);
         mYLookup = new List<int>(endpSize);
+        mZLookup = new List<int>(endpSize);
 
         for (int i = 0; i < endpSize;i++)
         {
             mXEndpoints.Add(new Endpoint());
             mYEndpoints.Add(new Endpoint());
+            mZEndpoints.Add(new Endpoint());
             mXLookup.Add(-1);
             mYLookup.Add(-1);
+            mZLookup.Add(-1);
         }
         DebugWide.LogBlue("  x_endpoint count : "+mXEndpoints.Count);
 
@@ -176,12 +180,14 @@ public class AABBCulling
             //mYEndpoints[j] = new Endpoint(Endpoint.BEGIN, mRectangles[i].min.y, i);
             mXEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.x, i);
             mYEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.y, i);
+            mZEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.z, i);
             ++j;
 
             //mXEndpoints[j] = new Endpoint(Endpoint.END, mRectangles[i].max.x, i);
             //mYEndpoints[j] = new Endpoint(Endpoint.END, mRectangles[i].max.y, i);
             mXEndpoints[j].Init(Endpoint.END, mRectangles[i].max.x, i);
             mYEndpoints[j].Init(Endpoint.END, mRectangles[i].max.y, i);
+            mZEndpoints[j].Init(Endpoint.END, mRectangles[i].max.z, i);
             ++j;
 
         }
@@ -196,7 +202,7 @@ public class AABBCulling
         //std::sort(mYEndpoints.begin(), mYEndpoints.end());
         mXEndpoints.Sort();
         mYEndpoints.Sort();
-
+        mZEndpoints.Sort();
 
         //foreach (Endpoint x in mXEndpoints)
         //{
@@ -212,6 +218,7 @@ public class AABBCulling
         {
             mXLookup[2 * mXEndpoints[j].index + mXEndpoints[j].type] = j;
             mYLookup[2 * mYEndpoints[j].index + mYEndpoints[j].type] = j;
+            mZLookup[2 * mZEndpoints[j].index + mZEndpoints[j].type] = j;
         }
 
         //foreach(int lk in mXLookup)
@@ -230,6 +237,7 @@ public class AABBCulling
         //mOverlap.clear();
         mOverlap = new HashSet<UnOrderedEdgeKey>(new EdgeKeyComparer());
 
+
         // Sweep through the endpoints to determine overlapping x-intervals.
         for (int i = 0; i < endpSize; ++i)
         {
@@ -243,9 +251,11 @@ public class AABBCulling
                 {
                     // Rectangles activeIndex and index overlap in the
                     // x-dimension.  Test for overlap in the y-dimension.
-                    Bounds r0 = mRectangles[activeIndex];
-                    Bounds r1 = mRectangles[index];
-                    if (r0.max.y >= r1.min.y && r0.min.y <= r1.max.y)
+                    Bounds b0 = mRectangles[activeIndex];
+                    Bounds b1 = mRectangles[index];
+                    //if (r0.max.y >= r1.min.y && r0.min.y <= r1.max.y)
+                    if (b0.max.y >= b1.min.y && b0.min.y <= b1.max.y
+                        && b0.max.z >= b1.min.z && b0.min.z <= b1.max.z)
                     {
                         if (activeIndex < index)
                         {
@@ -270,17 +280,19 @@ public class AABBCulling
     // function.  It is not enough to modify the input array of rectangles
     // since the endpoint values stored internally by this class must also
     // change.  You can also retrieve the current rectangles information.
-    public void SetRectangle(int i, Bounds rectangle)
+    public void SetRectangle(int i, Bounds box)
     {
-        mRectangles[i] = rectangle;
+        mRectangles[i] = box;
 
 
         //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
 
-        mXEndpoints[mXLookup[2 * i]].value = rectangle.min.x;
-        mXEndpoints[mXLookup[2 * i + 1]].value = rectangle.max.x;
-        mYEndpoints[mYLookup[2 * i]].value = rectangle.min.y;
-        mYEndpoints[mYLookup[2 * i + 1]].value = rectangle.max.y;
+        mXEndpoints[mXLookup[2 * i]].value = box.min.x;
+        mXEndpoints[mXLookup[2 * i + 1]].value = box.max.x;
+        mYEndpoints[mYLookup[2 * i]].value = box.min.y;
+        mYEndpoints[mYLookup[2 * i + 1]].value = box.max.y;
+        mZEndpoints[mZLookup[2 * i]].value = box.min.z;
+        mZEndpoints[mZLookup[2 * i + 1]].value = box.max.z;
 
         //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
     }
@@ -297,6 +309,7 @@ public class AABBCulling
     {
         InsertionSort(mXEndpoints, mXLookup);
         InsertionSort(mYEndpoints, mYLookup);
+        InsertionSort(mZEndpoints, mZLookup);
     }
 
     // If (i,j) is in the overlap set, then rectangle i and rectangle j are
