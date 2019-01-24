@@ -1215,6 +1215,7 @@ namespace HordeFight
 
         public virtual void Init()
         {
+
             //=====================================================
             _collider = GetComponent<SphereCollider>();
             _collider_radius = _collider.radius;
@@ -1256,7 +1257,11 @@ namespace HordeFight
         }
 
 
-
+        public Bounds GetBounds()
+        {
+            float diameter = _collider_radius * 2f;
+            return  new Bounds(transform.position, new Vector3(diameter, 0, diameter));
+        }
 
         //public float GetCollider_Radius()
         //{

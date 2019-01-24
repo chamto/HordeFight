@@ -1,16 +1,9 @@
-﻿// David Eberly, Geometric Tools, Redmond WA 98052
-// Copyright (c) 1998-2018
-// Distributed under the Boost Software License, Version 1.0.
-// http://www.boost.org/LICENSE_1_0.txt
-// http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-// File Version: 3.0.0 (2016/06/19)
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RectangleManager
+public class AABBCulling
 {
 
     public struct UnOrderedEdgeKey : IComparable<UnOrderedEdgeKey>
@@ -21,13 +14,11 @@ public class RectangleManager
         {
             if (v0 < v1)
             {
-                // v0 is minimum
                 _V0 = v0;
                 _V1 = v1;
             }
             else
             {
-                // v1 is minimum
                 _V0 = v1;
                 _V1 = v0;
             }
@@ -79,15 +70,15 @@ public class RectangleManager
 
         public Endpoint()
         {
-            type = NONE; value = 0f; index = -1;
+            type = NONE; value = 0f; index = NONE;
         }
 
-        public Endpoint(int ty , float va , int idx)
+        public Endpoint(int ty, float va, int idx)
         {
-            Init(ty, va, idx);
+            Set(ty, va, idx);
         }
 
-        public void Init(int ty, float va, int idx)
+        public void Set(int ty, float va, int idx)
         {
             type = ty; value = va; index = idx;
         }
@@ -98,12 +89,12 @@ public class RectangleManager
             return value.CompareTo(part.value);
         }
 
-		public override string ToString()
-		{
+        public override string ToString()
+        {
             return value + "   type: " + type + "   idx: " + index;
-		}
+        }
 
-	}
+    }
 
     public class EdgeKeyComparer : IEqualityComparer<UnOrderedEdgeKey>
     {
@@ -117,41 +108,27 @@ public class RectangleManager
         }
     }
 
-    private List<Bounds> mRectangles = null;
-    private List<Endpoint> mXEndpoints = null, mYEndpoints = null, mZEndpoints = null; 
+    private List<HordeFight.Being> mRectangles = null;
     private HashSet<UnOrderedEdgeKey> mOverlap = null;
 
-    // The intervals are indexed 0 <= i < n.  The endpoint array has 2*n
-    // entries.  The original 2*n interval values are ordered as b[0], e[0],
-    // b[1], e[1], ..., b[n-1], e[n-1].  When the endpoint array is sorted,
-    // the mapping between interval values and endpoints is lost.  In order
-    // to modify interval values that are stored in the endpoint array, we
-    // need to maintain the mapping.  This is done by the following lookup
-    // table of 2*n entries.  The value mLookup[2*i] is the index of b[i]
-    // in the endpoint array.  The value mLookup[2*i+1] is the index of
-    // e[i] in the endpoint array.
+    private List<Endpoint> mXEndpoints = null, mYEndpoints = null, mZEndpoints = null;
     private List<int> mXLookup = null, mYLookup = null, mZLookup = null;
 
-
-    // Construction.
-    public RectangleManager(List<Bounds> rectangles)
+  
+    public AABBCulling()
     {
-        mRectangles = rectangles;
-        Initialize();
+        //Initialize();
     }
 
-    // This function is called by the constructor and does the sort-and-sweep
-    // to initialize the update system.  However, if you add or remove items
-    // from the array of rectangles after the constructor call, you will need
-    // to call this function once before you start the multiple calls of the
-    // update function.
-    public void Initialize()
+
+    public void Initialize(List<HordeFight.Being> rectangles)
     {
+        mRectangles = rectangles;
+        
         // Get the rectangle endpoints.
         int intrSize = mRectangles.Count;
         int endpSize = (2 * intrSize);
-        //mXEndpoints.resize(endpSize);
-        //mYEndpoints.resize(endpSize);
+
         mXEndpoints = new List<Endpoint>(endpSize);
         mYEndpoints = new List<Endpoint>(endpSize);
         mZEndpoints = new List<Endpoint>(endpSize);
@@ -159,7 +136,7 @@ public class RectangleManager
         mYLookup = new List<int>(endpSize);
         mZLookup = new List<int>(endpSize);
 
-        for (int i = 0; i < endpSize;i++)
+        for (int i = 0; i < endpSize; i++)
         {
             mXEndpoints.Add(new Endpoint());
             mYEndpoints.Add(new Endpoint());
@@ -168,7 +145,7 @@ public class RectangleManager
             mYLookup.Add(-1);
             mZLookup.Add(-1);
         }
-        DebugWide.LogBlue("  x_endpoint count : "+mXEndpoints.Count);
+        DebugWide.LogBlue("init  x_endpoint count : " + mXEndpoints.Count);
 
 
 
@@ -176,18 +153,17 @@ public class RectangleManager
         {
             //DebugWide.LogBlue(j); //chamto test
 
-            //mXEndpoints[j] = new Endpoint(Endpoint.BEGIN, mRectangles[i].min.x, i);
-            //mYEndpoints[j] = new Endpoint(Endpoint.BEGIN, mRectangles[i].min.y, i);
-            mXEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.x, i);
-            mYEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.y, i);
-            mZEndpoints[j].Init(Endpoint.BEGIN, mRectangles[i].min.z, i);
+            Bounds bb = mRectangles[i].GetBounds();
+
+            mXEndpoints[j].Set(Endpoint.BEGIN, bb.min.x, i);
+            mYEndpoints[j].Set(Endpoint.BEGIN, bb.min.y, i);
+            mZEndpoints[j].Set(Endpoint.BEGIN, bb.min.z, i);
             ++j;
 
-            //mXEndpoints[j] = new Endpoint(Endpoint.END, mRectangles[i].max.x, i);
-            //mYEndpoints[j] = new Endpoint(Endpoint.END, mRectangles[i].max.y, i);
-            mXEndpoints[j].Init(Endpoint.END, mRectangles[i].max.x, i);
-            mYEndpoints[j].Init(Endpoint.END, mRectangles[i].max.y, i);
-            mZEndpoints[j].Init(Endpoint.END, mRectangles[i].max.z, i);
+
+            mXEndpoints[j].Set(Endpoint.END, bb.max.x, i);
+            mYEndpoints[j].Set(Endpoint.END, bb.max.y, i);
+            mZEndpoints[j].Set(Endpoint.END, bb.max.z, i);
             ++j;
 
         }
@@ -198,8 +174,6 @@ public class RectangleManager
         //}
 
         // Sort the rectangle endpoints.
-        //std::sort(mXEndpoints.begin(), mXEndpoints.end());
-        //std::sort(mYEndpoints.begin(), mYEndpoints.end());
         mXEndpoints.Sort();
         mYEndpoints.Sort();
         mZEndpoints.Sort();
@@ -210,9 +184,6 @@ public class RectangleManager
         //}
 
         // Create the interval-to-endpoint lookup tables.
-        //mXLookup.resize(endpSize);
-        //mYLookup.resize(endpSize);
-
 
         for (int j = 0; j < endpSize; ++j)
         {
@@ -234,7 +205,6 @@ public class RectangleManager
         HashSet<int> active = new HashSet<int>();
 
         // Set of overlapping rectangles (stored by pairs of indices in array).
-        //mOverlap.clear();
         mOverlap = new HashSet<UnOrderedEdgeKey>(new EdgeKeyComparer());
 
 
@@ -245,15 +215,12 @@ public class RectangleManager
             int index = endpoint.index;
             if (endpoint.type == Endpoint.BEGIN)  // an interval 'begin' value
             {
-                // In the 1D problem, the current interval overlaps with all the
-                // active intervals.  In 2D we also need to check for y-overlap.
+                
                 foreach (int activeIndex in active)
                 {
-                    // Rectangles activeIndex and index overlap in the
-                    // x-dimension.  Test for overlap in the y-dimension.
-                    Bounds b0 = mRectangles[activeIndex];
-                    Bounds b1 = mRectangles[index];
-                    //if (r0.max.y >= r1.min.y && r0.min.y <= r1.max.y)
+                    
+                    Bounds b0 = mRectangles[activeIndex].GetBounds();
+                    Bounds b1 = mRectangles[index].GetBounds();
                     if (b0.max.y >= b1.min.y && b0.min.y <= b1.max.y
                         && b0.max.z >= b1.min.z && b0.min.z <= b1.max.z)
                     {
@@ -276,15 +243,30 @@ public class RectangleManager
         }
     }
 
-    // After the system is initialized, you can move the rectangles using this
-    // function.  It is not enough to modify the input array of rectangles
-    // since the endpoint values stored internally by this class must also
-    // change.  You can also retrieve the current rectangles information.
-    public void SetRectangle(int i, Bounds box)
+    //public void UpdateEndPoints()
+    //{
+        
+    //    for (int i = 0, j = 0; i < mRectangles.Count; ++i)
+    //    {
+            
+    //        Bounds bb = mRectangles[i].GetBounds();
+
+
+    //        mXEndpoints[mXLookup[2 * i]].value = bb.min.x;
+    //        mXEndpoints[mXLookup[2 * i + 1]].value = bb.max.x;
+    //        mYEndpoints[mYLookup[2 * i]].value = bb.min.y;
+    //        mYEndpoints[mYLookup[2 * i + 1]].value = bb.max.y;
+    //        mZEndpoints[mZLookup[2 * i]].value = bb.min.z;
+    //        mZEndpoints[mZLookup[2 * i + 1]].value = bb.max.z;
+
+    //    }
+
+    //}
+
+
+    public void SetEndPoint(int i, Bounds box)
     {
-        mRectangles[i] = box;
-
-
+        
         //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
 
         mXEndpoints[mXLookup[2 * i]].value = box.min.x;
@@ -297,24 +279,24 @@ public class RectangleManager
         //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
     }
 
-    public Bounds GetRectangle(int i)
-    {
-        return mRectangles[i];
-    }
+    //public Bounds GetRectangle(int i)
+    //{
+    //    return mRectangles[i];
+    //}
 
-    // When you are finished moving rectangles, call this function to
-    // determine the overlapping rectangles.  An incremental update is applied
-    // to determine the new set of overlapping rectangles.
+
     public void Update()
     {
+        if (null == mRectangles) return;
+
+        //UpdateEndPoints();
+
         InsertionSort(mXEndpoints, mXLookup);
         InsertionSort(mYEndpoints, mYLookup);
         InsertionSort(mZEndpoints, mZLookup);
     }
 
-    // If (i,j) is in the overlap set, then rectangle i and rectangle j are
-    // overlapping.  The indices are those for the the input array.  The
-    // set elements (i,j) are stored so that i < j.
+
     public HashSet<UnOrderedEdgeKey> GetOverlap()
     {
         return mOverlap;
@@ -323,17 +305,15 @@ public class RectangleManager
 
     private void InsertionSort(List<Endpoint> endpoint, List<int> lookup)
     {
-        // Apply an insertion sort.  Under the assumption that the rectangles
-        // have not changed much since the last call, the endpoints are nearly
-        // sorted.  The insertion sort should be very fast in this case.
-
+        
         int endpSize = endpoint.Count;
         for (int j = 1; j < endpSize; ++j)
         {
             Endpoint key = endpoint[j];
             int i = j - 1;
             //while (i >= 0 && key < endpoint[i])
-            while (i >= 0 && key.CompareTo(endpoint[i]) < 0)
+            //while (i >= 0 && key.CompareTo(endpoint[i]) < 0)
+            while (i >= 0 && key.value < endpoint[i].value)
             {
                 Endpoint e0 = endpoint[i];
                 Endpoint e1 = endpoint[i + 1];
@@ -343,15 +323,6 @@ public class RectangleManager
                 {
                     if (e1.type == Endpoint.END)
                     {
-                        // The 'b' of interval E0.index was smaller than the 'e'
-                        // of interval E1.index, and the intervals *might have
-                        // been* overlapping.  Now 'b' and 'e' are swapped, and
-                        // the intervals cannot overlap.  Remove the pair from
-                        // the overlap set.  The removal operation needs to find
-                        // the pair and erase it if it exists.  Finding the pair
-                        // is the expensive part of the operation, so there is no
-                        // real time savings in testing for existence first, then
-                        // deleting if it does.
                         mOverlap.Remove(new UnOrderedEdgeKey(e0.index, e1.index));
                     }
                 }
@@ -359,12 +330,8 @@ public class RectangleManager
                 {
                     if (e1.type == Endpoint.BEGIN)
                     {
-                        // The 'b' of interval E1.index was larger than the 'e'
-                        // of interval E0.index, and the intervals were not
-                        // overlapping.  Now 'b' and 'e' are swapped, and the
-                        // intervals *might be* overlapping.  Determine if they
-                        // are overlapping and then insert.
-                        if(mRectangles[e0.index].Intersects(mRectangles[e1.index]))
+                        
+                        if (mRectangles[e0.index].GetBounds().Intersects(mRectangles[e1.index].GetBounds()))
                         {
                             mOverlap.Add(new UnOrderedEdgeKey(e0.index, e1.index));
                         }

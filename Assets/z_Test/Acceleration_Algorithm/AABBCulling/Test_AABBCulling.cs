@@ -7,6 +7,7 @@ public class Test_AABBCulling : MonoBehaviour
 {
     List<Bounds> mRectangles = null;
     RectangleManager mManager = null;
+
     const float WIDTH_MAX = 20f;
     readonly Vector3 V3_ZERO = Vector3.zero;
 
@@ -53,7 +54,7 @@ public class Test_AABBCulling : MonoBehaviour
     public void Init()
     {
 
-        int OBJECT_COUNT = 100;
+        int OBJECT_COUNT = 300;
 
         mRectangles = new List<Bounds>();
         for (int i = 0; i < OBJECT_COUNT; ++i)

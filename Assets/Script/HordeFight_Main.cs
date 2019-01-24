@@ -1962,7 +1962,7 @@ namespace HordeFight
         //public Dictionary<uint, Shot> _shots = new Dictionary<uint, Shot>(); //발사체는 따로 관리한다
         public List<Shot> _shots = new List<Shot>();
 
-        //private AABBCulling _aabbCulling = new AABBCulling(null);
+        private AABBCulling _aabbCulling = new AABBCulling();
 
         private void Start()
         {
@@ -1979,6 +1979,7 @@ namespace HordeFight
             SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"),"attack -> idle");
 
             Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            _aabbCulling.Initialize(_linearSearch_list); //aabb 컬링 초기화 
             DebugWide.LogBlue("Start_ObjectManager !! ");
 
         }
@@ -2029,8 +2030,9 @@ namespace HordeFight
 
             //UpdateCollision_UseList(); //obj100 : fps80 , obj200 : fps40 , obj400 : fps15
             //UpdateCollision_UseGrid3x3(); //obj100 : fps65 , obj200 : fps40
-            UpdateCollision_UseDirectGrid3x3(); //obj100 : fps70 , obj200 : fps45 , obj400 : fps20
+            //UpdateCollision_UseDirectGrid3x3(); //obj100 : fps100 , obj200 : fps75 , obj400 : fps55
 
+            UpdateCollision_AABBCulling(); //obj110 : fps100 , obj200 : fps77 , obj400 : fps58
 
         }
 
@@ -2075,7 +2077,117 @@ namespace HordeFight
             return (int)Misc.GetDir8_AxisY(rate);
         }
 
-        public void UpdateCollision_UseDirectGrid3x3()
+
+        //테스트용으로 임시 사용 
+		//public void OnDrawGizmos()
+		//{
+  //          int src_count = _linearSearch_list.Count;
+  //          //int cell_count = 0;
+  //          for (int sc = 0; sc < src_count; sc++)
+  //          {
+  //              Bounds bb = _linearSearch_list[sc].GetBounds();
+  //              Gizmos.DrawWireCube(bb.center, bb.size); 
+  //          }
+		//}
+
+		public void UpdateCollision_AABBCulling()
+		{
+            
+            //====================================
+            // 발사체 갱신 
+            //====================================
+            int shot_count = _shots.Count;
+            for (int si = 0; si < shot_count; si++)
+            {
+                _shots[si].Update_Shot();
+            }
+            //====================================
+
+
+            Bounds cameraViewBounds = GetBounds_CameraView();
+            Being selected = SingleO.touchControl._selected;
+            if (null != selected)
+            {
+                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
+                selected.SetVisible(true);
+            }
+
+
+            Vector3 collisionCellPos_center = ConstV.v3_zero;
+            //CellInfo cellInfo = null;
+            StructTile structTile = null;
+
+
+            Being src = null, dst = null;
+            //Vector3Int[] cellIndexes = null;
+            Vector3Int ix = Vector3Int.zero;
+            int src_count = _linearSearch_list.Count;
+            //int cell_count = 0;
+            for (int sc = 0; sc < src_count; sc++)
+            {
+                src = _linearSearch_list[sc];
+
+                //============================
+                src.UpdateAll(); //객체 갱신
+                //============================
+
+                if (false == src.gameObject.activeInHierarchy) continue;
+                if (null == src._cellInfo) continue;
+                if (true == src.isDeath()) continue;
+
+
+                //===============================================================================
+
+                //동굴벽과 캐릭터 충돌처리 
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                {
+                    CollisionPush_StructTile(src, structTile);
+                    //CollisionPush_Rigid(src, structTile);
+                }
+
+                //============================
+                _aabbCulling.SetEndPoint(sc, src.GetBounds()); //aabb 갱신 
+                //============================
+
+                //객체 컬링 처리
+                if (null != selected)
+                {
+                    Culling_SightOfView(selected, src);
+                }
+                else
+                {
+                    Culling_ViewFrustum(cameraViewBounds, src);
+                }
+
+            }
+
+
+            //====================================
+            //AABB 삽입정렬 
+            _aabbCulling.Update();
+
+            //===============================================================================
+
+            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            {
+                
+                src = _linearSearch_list[key._V0];
+                dst = _linearSearch_list[key._V1];
+
+                //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
+
+                if (false == dst.gameObject.activeInHierarchy) continue;
+                if (src == dst) continue;
+                if (null == dst || true == dst.isDeath()) continue;
+
+                CollisionPush(src, dst);
+            }
+            //===============================================================================
+
+
+		}
+
+		public void UpdateCollision_UseDirectGrid3x3()
         {
             //return; //chamto test
 
