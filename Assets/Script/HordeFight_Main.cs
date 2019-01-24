@@ -1962,6 +1962,8 @@ namespace HordeFight
         //public Dictionary<uint, Shot> _shots = new Dictionary<uint, Shot>(); //발사체는 따로 관리한다
         public List<Shot> _shots = new List<Shot>();
 
+        //private AABBCulling _aabbCulling = new AABBCulling(null);
+
         private void Start()
         {
             //===============
@@ -3561,7 +3563,7 @@ namespace HordeFight
                 //SendTouchEvent_Device_Target();
                 SendTouchEvent_Device_NonTarget();
             }
-            else if (Application.platform == RuntimePlatform.OSXEditor)
+            else //if (Application.platform == RuntimePlatform.OSXEditor )
             {
                 //SendMouseEvent_Editor_Target();
                 SendMouseEvent_Editor_NonTarget();
@@ -3594,7 +3596,7 @@ namespace HordeFight
             {
                 return Input.GetTouch(0).position;
             }
-            else if (Application.platform == RuntimePlatform.OSXEditor)
+            else //if (Application.platform == RuntimePlatform.OSXEditor)
             {
                 return Input.mousePosition;
             }
