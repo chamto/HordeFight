@@ -2,39 +2,40 @@ fileFormatVersion: 2
 guid: 894dde33715de47b699f66850d269ca7
 TextureImporter:
   fileIDToRecycleName:
-    21300000: d_s_5_0
-    21300002: d_s_3_0
-    21300004: d_s_4_0
-    21300006: d_s_0
-    21300008: d_s_4_1
-    21300010: d_s_2_0_2
-    21300012: d_s_2_0_1
-    21300014: d_s_1_0_1
-    21300016: d_s_2_0_0
-    21300018: d_s_1_0_0
-    21300020: d_s_5_1
-    21300022: d_f_si_b0_5
-    21300024: d_f_si_b0_4
-    21300026: d_f_si_b0_2
-    21300028: d_f_si_b0_3
-    21300030: d_f_si_b0_0
-    21300032: d_f_st_b1_5
-    21300034: d_f_st_b1_3
-    21300036: d_f_st_b1_4
-    21300038: d_f_st_b1_0_0
-    21300040: d_f_st_b1_2
-    21300042: d_f_si_b2_5
-    21300044: d_f_si_b2_3
-    21300046: d_f_si_b2_4
-    21300048: d_f_si_b2_0
-    21300050: d_f_si_b2_2
-    21300052: d_f_si_b3_5
-    21300054: d_f_si_b3_3
-    21300056: d_f_si_b3_4
-    21300058: d_f_si_b3_0
-    21300060: d_f_si_b3_2
-    21300062: d_f_si_b1_0
-    21300064: d_f_st_b1_0_1
+    21300000: su_d_s_5_0
+    21300002: su_d_s_3_0
+    21300004: su_d_s_4_0
+    21300006: su_d_s_0
+    21300008: su_d_s_4_1
+    21300010: su_d_s_2_0_2
+    21300012: su_d_s_2_0_1
+    21300014: su_d_s_1_0_1
+    21300016: su_d_s_2_0_0
+    21300018: su_d_s_1_0_0
+    21300020: su_d_s_5_1
+    21300022: su_d_f_si_b0_5
+    21300024: su_d_f_si_b0_4
+    21300026: su_d_f_si_b0_2
+    21300028: su_d_f_si_b0_3
+    21300030: su_d_f_si_b0_0
+    21300032: su_d_f_st_b1_5
+    21300034: su_d_f_st_b1_3
+    21300036: su_d_f_st_b1_4
+    21300038: su_d_f_st_b1_0_0
+    21300040: su_d_f_st_b1_2
+    21300042: su_d_f_si_b2_5
+    21300044: su_d_f_si_b2_3
+    21300046: su_d_f_si_b2_4
+    21300048: su_d_f_si_b2_0
+    21300050: su_d_f_si_b2_2
+    21300052: su_d_f_si_b3_5
+    21300054: su_d_f_si_b3_3
+    21300056: su_d_f_si_b3_4
+    21300058: su_d_f_si_b3_0
+    21300060: su_d_f_si_b3_2
+    21300062: su_d_f_si_b1_0
+    21300064: su_d_f_st_b1_0_1
+    21300066: su_d_s_4_2
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -91,10 +92,10 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 2
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -102,10 +103,10 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Standalone
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,10 +114,10 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: iPhone
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -124,10 +125,10 @@ TextureImporter:
     androidETC2FallbackOverride: 0
   - serializedVersion: 2
     buildTarget: Android
-    maxTextureSize: 2048
+    maxTextureSize: 1024
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -137,7 +138,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: d_s_5_0
+      name: su_d_s_5_0
       rect:
         serializedVersion: 2
         x: 0
@@ -157,7 +158,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_3_0
+      name: su_d_s_3_0
       rect:
         serializedVersion: 2
         x: 16
@@ -177,7 +178,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_4_0
+      name: su_d_s_4_0
       rect:
         serializedVersion: 2
         x: 0
@@ -197,7 +198,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_0
+      name: su_d_s_0
       rect:
         serializedVersion: 2
         x: 16
@@ -217,7 +218,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_4_1
+      name: su_d_s_4_1
       rect:
         serializedVersion: 2
         x: 0
@@ -237,7 +238,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_2_0_2
+      name: su_d_s_2_0_2
       rect:
         serializedVersion: 2
         x: 0
@@ -257,7 +258,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_2_0_1
+      name: su_d_s_2_0_1
       rect:
         serializedVersion: 2
         x: 0
@@ -277,7 +278,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_1_0_1
+      name: su_d_s_1_0_1
       rect:
         serializedVersion: 2
         x: 16
@@ -297,7 +298,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_2_0_0
+      name: su_d_s_2_0_0
       rect:
         serializedVersion: 2
         x: 0
@@ -317,7 +318,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_1_0_0
+      name: su_d_s_1_0_0
       rect:
         serializedVersion: 2
         x: 16
@@ -337,7 +338,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_s_5_1
+      name: su_d_s_5_1
       rect:
         serializedVersion: 2
         x: 32
@@ -357,7 +358,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b0_5
+      name: su_d_f_si_b0_5
       rect:
         serializedVersion: 2
         x: 48
@@ -377,7 +378,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b0_4
+      name: su_d_f_si_b0_4
       rect:
         serializedVersion: 2
         x: 48
@@ -397,7 +398,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b0_2
+      name: su_d_f_si_b0_2
       rect:
         serializedVersion: 2
         x: 48
@@ -417,7 +418,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b0_3
+      name: su_d_f_si_b0_3
       rect:
         serializedVersion: 2
         x: 64
@@ -437,7 +438,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b0_0
+      name: su_d_f_si_b0_0
       rect:
         serializedVersion: 2
         x: 64
@@ -457,7 +458,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_5
+      name: su_d_f_st_b1_5
       rect:
         serializedVersion: 2
         x: 96
@@ -477,7 +478,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_3
+      name: su_d_f_st_b1_3
       rect:
         serializedVersion: 2
         x: 112
@@ -497,7 +498,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_4
+      name: su_d_f_st_b1_4
       rect:
         serializedVersion: 2
         x: 96
@@ -517,7 +518,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_0_0
+      name: su_d_f_st_b1_0_0
       rect:
         serializedVersion: 2
         x: 112
@@ -537,7 +538,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_2
+      name: su_d_f_st_b1_2
       rect:
         serializedVersion: 2
         x: 96
@@ -557,7 +558,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b2_5
+      name: su_d_f_si_b2_5
       rect:
         serializedVersion: 2
         x: 144
@@ -577,7 +578,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b2_3
+      name: su_d_f_si_b2_3
       rect:
         serializedVersion: 2
         x: 160
@@ -597,7 +598,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b2_4
+      name: su_d_f_si_b2_4
       rect:
         serializedVersion: 2
         x: 144
@@ -617,7 +618,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b2_0
+      name: su_d_f_si_b2_0
       rect:
         serializedVersion: 2
         x: 160
@@ -637,7 +638,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b2_2
+      name: su_d_f_si_b2_2
       rect:
         serializedVersion: 2
         x: 144
@@ -657,7 +658,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b3_5
+      name: su_d_f_si_b3_5
       rect:
         serializedVersion: 2
         x: 192
@@ -677,7 +678,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b3_3
+      name: su_d_f_si_b3_3
       rect:
         serializedVersion: 2
         x: 208
@@ -697,7 +698,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b3_4
+      name: su_d_f_si_b3_4
       rect:
         serializedVersion: 2
         x: 192
@@ -717,7 +718,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b3_0
+      name: su_d_f_si_b3_0
       rect:
         serializedVersion: 2
         x: 208
@@ -737,7 +738,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b3_2
+      name: su_d_f_si_b3_2
       rect:
         serializedVersion: 2
         x: 192
@@ -757,7 +758,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_si_b1_0
+      name: su_d_f_si_b1_0
       rect:
         serializedVersion: 2
         x: 96
@@ -777,7 +778,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: d_f_st_b1_0_1
+      name: su_d_f_st_b1_0_1
       rect:
         serializedVersion: 2
         x: 112
@@ -792,6 +793,26 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 847143b6f03ca4cd88114276d8429e32
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: su_d_s_4_2
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 960
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7e4cc952274274875841617d9f4fd6e6
       vertices: []
       indices: 
       edges: []
