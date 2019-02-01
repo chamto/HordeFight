@@ -918,6 +918,22 @@ namespace UtilGS9
             return *(float*)(&value);
         }
 
+        //ref : https://davidzych.com/converting-an-int-to-a-binary-string-in-c/
+        public static string IntToBinaryString(int number)
+        {
+            if (0 == number) return "0";
+
+            const int mask = 1; //첫번째 1비트만 걸러내는 마스크 
+            string binary = string.Empty;
+            while (number > 0)
+            {
+                // Logical AND the number and prepend it to the result string
+                binary = (number & mask) + binary;
+                number = number >> 1;
+            }
+
+            return binary;
+        }
 
         //========================================================
         //==================       컬러연산        ==================

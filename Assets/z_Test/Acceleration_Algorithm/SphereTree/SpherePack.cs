@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 
+
+//UserData 대상이 되는 객체는 이 인터페이스를 상속받아야 한다 
 public interface IUserData
 {
     //void Available_UserData();
@@ -8,21 +10,22 @@ public interface IUserData
 
 public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 {
-
-    public enum SpherePackFlag
+    //enum을 비트연산의 대상으로 하고자 할때 [FlagsAttribute]를 넣어준다 
+    //ref : https://docs.microsoft.com/en-us/dotnet/api/system.flagsattribute?redirectedfrom=MSDN&view=netframework-4.7.2
+    [FlagsAttribute]
+    public enum Flag
     {
-
-        SPF_SUPERSPHERE = (1 << 0), // this is a supersphere, allocated and deleted by us
-        SPF_ROOT_TREE = (1 << 1), // member of the root tree
-        SPF_LEAF_TREE = (1 << 2), // member of the leaf node tree
-        SPF_ROOTNODE = (1 << 3), // this is the root node
-        SPF_RECOMPUTE = (1 << 4), // needs recomputed bounding sphere
-        SPF_INTEGRATE = (1 << 5), // needs to be reintegrated into tree
+        SUPERSPHERE = (1 << 0), // this is a supersphere, allocated and deleted by us
+        ROOT_TREE = (1 << 1), // member of the root tree
+        LEAF_TREE = (1 << 2), // member of the leaf node tree
+        ROOTNODE = (1 << 3), // this is the root node
+        RECOMPUTE = (1 << 4), // needs recomputed bounding sphere
+        INTEGRATE = (1 << 5), // needs to be reintegrated into tree
                                   // Frame-to-frame view frustum status.  Only does callbacks when a
                                   // state change occurs.
-        SPF_HIDDEN = (1 << 6), // outside of view frustum
-        SPF_PARTIAL = (1 << 7), // partially inside view frustum
-        SPF_INSIDE = (1 << 8)  // completely inside view frustum
+        HIDDEN = (1 << 6), // outside of view frustum
+        PARTIAL = (1 << 7), // partially inside view frustum
+        INSIDE = (1 << 8)  // completely inside view frustum
     }
 
     private SpherePack mNext = null; // linked list pointers
@@ -49,19 +52,21 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                                                 //#if DEMO
     private uint mColor;
 
-    public SpherePack() : base()
-    {
+    //public SpherePack() : base()
+    //{
         
-        //base.SetRadius(0);          // default radius
-        //base.mCenter = Vector3.zero;
-    }
+    //    //base.SetRadius(0);          // default radius
+    //    //base.mCenter = Vector3.zero;
+    //}
 
     //factory: factory we belong to
     //pos: center of sphere
     //radius: radius of sphere
-    public void Init(SpherePackFactory factory, Vector3 pos, float radius, IUserData userdata)
+    //public void Init(SpherePackFactory factory, Vector3 pos, float radius, IUserData userdata)
+    public void Init(SpherePackFactory factory, Vector3 pos, float radius)
     {
-        mUserData = userdata;
+        mUserData = null;
+        //mUserData = userdata;
         mParent = null;
         mNextSibling = null;
         mPrevSibling = null;
@@ -75,9 +80,9 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
     // Access to SpherePack bit flags.
     public void SetSpherePackFlag(int flag) { mFlags |= flag; }
-    public void SetSpherePackFlag(SpherePackFlag flag) { mFlags |= (int)flag; }
+    public void SetSpherePackFlag(Flag flag) { mFlags |= (int)flag; }
     public void ClearSpherePackFlag(int flag) { mFlags &= ~flag; }
-    public bool HasSpherePackFlag(SpherePackFlag flag)
+    public bool HasSpherePackFlag(Flag flag)
     {
         if (0 != (mFlags & (int)flag)) return true;
         return false;
@@ -95,7 +100,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
         // is we have a parent (meaning we are a valid leaf node) and we have not already been flagged for re-integration, then.....
 
-        if (null != mParent && !HasSpherePackFlag(SpherePackFlag.SPF_INTEGRATE))
+        if (null != mParent && !HasSpherePackFlag(Flag.INTEGRATE))
         {
 
             float dist = DistanceSquared(mParent);  // compute squared distance to our parent.
@@ -103,7 +108,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
             if (dist >= mBindingDistance) // if that exceeds our binding distance...
             {
 
-                if (!mParent.HasSpherePackFlag(SpherePackFlag.SPF_RECOMPUTE))
+                if (!mParent.HasSpherePackFlag(Flag.RECOMPUTE))
                 {
                     // If our parent, is not already marked to be recomputed (rebalance the sphere), then add him to the recomputation fifo.
                     mFactory.AddRecompute(mParent);
@@ -123,10 +128,11 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
         mCenter = pos;
 
-        if (null != mParent && !HasSpherePackFlag(SpherePackFlag.SPF_INTEGRATE))
+        if (null != mParent && !HasSpherePackFlag(Flag.INTEGRATE))
         {
 
-            if (radius != GetRadius())
+            //if (radius != GetRadius())
+            if(Mathf.Epsilon < Mathf.Abs(radius - mRadius))
             {
                 SetRadius(radius);
                 ComputeBindingDistance(mParent);
@@ -136,13 +142,13 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
             if (dist >= mBindingDistance)
             {
-                if (!mParent.HasSpherePackFlag(SpherePackFlag.SPF_RECOMPUTE)) mFactory.AddRecompute(mParent);
+                if (!mParent.HasSpherePackFlag(Flag.RECOMPUTE)) mFactory.AddRecompute(mParent);
                 Unlink();
                 mFactory.AddIntegrate(this);
             }
             else
             {
-                if (!mParent.HasSpherePackFlag(SpherePackFlag.SPF_RECOMPUTE)) mFactory.AddRecompute(mParent);
+                if (!mParent.HasSpherePackFlag(Flag.RECOMPUTE)) mFactory.AddRecompute(mParent);
             }
         }
     }
@@ -161,7 +167,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         {
             //*mFifo2 = null;
             mFifo2.Unlink();
-            mFifo2.Init();;
+            mFifo2.Init();
         }
 
         if (null != mParent) mParent.LostChild(this);
@@ -216,7 +222,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     public void SetUserData<T>(T data) where T : IUserData { mUserData = (IUserData)data; }
     //public IUserData GetUserData() { return mUserData; }
     //public void SetUserData(IUserData data) { mUserData = data; }
-
+    //=====================================================
 
 
     public float DistanceSquared(SpherePack pack) { return (mCenter - pack.mCenter).sqrMagnitude; }
@@ -230,13 +236,13 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         //#ifdef _DEBUG  // debug validation code.
 
         SpherePack pack = mChildren;
-        bool found = false;
+        //bool found = false;
         while (null != pack)
         {
             if (pack == t)
             {
                 //assert(!found);
-                found = true;
+                //found = true;
             }
             pack = pack.GetNextSibling();
         }
@@ -264,7 +270,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         mChildCount--;
 
         //if (!mChildCount && HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
-        if (0 == mChildCount && HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+        if (0 == mChildCount && HasSpherePackFlag(Flag.SUPERSPHERE))
         {
             mFactory.Remove(this);
         }
@@ -276,23 +282,23 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     public void Render(uint color)
     {
         //#if DEMO
-        if (!HasSpherePackFlag(SpherePackFlag.SPF_ROOTNODE))
+        if (!HasSpherePackFlag(Flag.ROOTNODE))
         {
 
-            if (HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
             {
                 color = mColor;
             }
             else
             {
-                if (mParent.HasSpherePackFlag(SpherePackFlag.SPF_ROOTNODE)) color = 0x00FFFFFF;
+                if (mParent.HasSpherePackFlag(Flag.ROOTNODE)) color = 0x00FFFFFF;
             }
             //#if DEMO
             DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
             //#endif
-            if (HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
             {
-                if (HasSpherePackFlag(SpherePackFlag.SPF_LEAF_TREE))
+                if (HasSpherePackFlag(Flag.LEAF_TREE))
                 {
 
                     //#if DEMO
@@ -300,9 +306,10 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                     //#endif
                     SpherePack link = GetUserData<SpherePack>();
 
-                    link = link.GetParent();
+                    if (null != link)
+                        link = link.GetParent();
 
-                    if (null != link && !link.HasSpherePackFlag(SpherePackFlag.SPF_ROOTNODE))
+                    if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
                     {
                         DefineO.DrawLine(mCenter.x, mCenter.y,
                                   link.mCenter.x, link.mCenter.y,
@@ -337,9 +344,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //inline
     public bool Recompute(float gravy)
     {
-        //if (!mChildren) return true; // kill it!
         if (null == mChildren) return true; // kill it!
-        if (HasSpherePackFlag(SpherePackFlag.SPF_ROOTNODE)) return false; // don't recompute root nodes!
+        if (HasSpherePackFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
 
         //#if 1
         // recompute bounding sphere!
@@ -375,7 +381,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                     if ((maxradius + gravy) >= GetRadius())
                     {
                         mCenter = oldpos;
-                        ClearSpherePackFlag((int)SpherePackFlag.SPF_RECOMPUTE);
+                        ClearSpherePackFlag((int)Flag.RECOMPUTE);
                         return false;
                     }
                 }
@@ -399,7 +405,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
         //#endif
 
-        ClearSpherePackFlag((int)SpherePackFlag.SPF_RECOMPUTE);
+        ClearSpherePackFlag((int)Flag.RECOMPUTE);
 
         return false;
     }
@@ -441,41 +447,41 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
             mBindingDistance *= mBindingDistance;
     }
 
-    public void VisibilityTest(ref Frustum f, SpherePackCallback callback, DefineO.ViewState state)
+    public void VisibilityTest(ref Frustum f, SpherePackCallback callback, Frustum.ViewState state)
     {
-        if (state == DefineO.ViewState.VS_PARTIAL)
+        if (state == Frustum.ViewState.PARTIAL)
         {
             state = f.ViewVolumeTest(ref mCenter, GetRadius());
             //#if DEMO
-            if (state != DefineO.ViewState.VS_OUTSIDE)
+            if (state != Frustum.ViewState.OUTSIDE)
             {
                 DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), 0x404040);
             }
             //#endif
         }
 
-        if (HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
         {
 
 
-            if (state == DefineO.ViewState.VS_OUTSIDE)
+            if (state == Frustum.ViewState.OUTSIDE)
             {
-                if (HasSpherePackFlag(SpherePackFlag.SPF_HIDDEN)) return; // no state change
-                ClearSpherePackFlag((int)(SpherePackFlag.SPF_INSIDE | SpherePackFlag.SPF_PARTIAL));
-                SetSpherePackFlag(SpherePackFlag.SPF_HIDDEN);
+                if (HasSpherePackFlag(Flag.HIDDEN)) return; // no state change
+                ClearSpherePackFlag((int)(Flag.INSIDE | Flag.PARTIAL));
+                SetSpherePackFlag(Flag.HIDDEN);
             }
             else
             {
-                if (state == DefineO.ViewState.VS_INSIDE)
+                if (state == Frustum.ViewState.INSIDE)
                 {
-                    if (HasSpherePackFlag(SpherePackFlag.SPF_INSIDE)) return; // no state change
-                    ClearSpherePackFlag((int)(SpherePackFlag.SPF_PARTIAL | SpherePackFlag.SPF_HIDDEN));
-                    SetSpherePackFlag(SpherePackFlag.SPF_INSIDE);
+                    if (HasSpherePackFlag(Flag.INSIDE)) return; // no state change
+                    ClearSpherePackFlag((int)(Flag.PARTIAL | Flag.HIDDEN));
+                    SetSpherePackFlag(Flag.INSIDE);
                 }
                 else
                 {
-                    ClearSpherePackFlag((int)(SpherePackFlag.SPF_HIDDEN | SpherePackFlag.SPF_INSIDE));
-                    SetSpherePackFlag(SpherePackFlag.SPF_PARTIAL);
+                    ClearSpherePackFlag((int)(Flag.HIDDEN | Flag.INSIDE));
+                    SetSpherePackFlag(Flag.PARTIAL);
                 }
             }
 
@@ -492,27 +498,27 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         {
             switch (state)
             {
-                case DefineO.ViewState.VS_INSIDE:
-                    if (!HasSpherePackFlag(SpherePackFlag.SPF_INSIDE))
+                case Frustum.ViewState.INSIDE:
+                    if (!HasSpherePackFlag(Flag.INSIDE))
                     {
-                        ClearSpherePackFlag((int)(SpherePackFlag.SPF_HIDDEN | SpherePackFlag.SPF_PARTIAL));
-                        SetSpherePackFlag(SpherePackFlag.SPF_INSIDE);
+                        ClearSpherePackFlag((int)(Flag.HIDDEN | Flag.PARTIAL));
+                        SetSpherePackFlag(Flag.INSIDE);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
-                case DefineO.ViewState.VS_OUTSIDE:
-                    if (!HasSpherePackFlag(SpherePackFlag.SPF_HIDDEN))
+                case Frustum.ViewState.OUTSIDE:
+                    if (!HasSpherePackFlag(Flag.HIDDEN))
                     {
-                        ClearSpherePackFlag((int)(SpherePackFlag.SPF_INSIDE | SpherePackFlag.SPF_PARTIAL));
-                        SetSpherePackFlag(SpherePackFlag.SPF_HIDDEN);
+                        ClearSpherePackFlag((int)(Flag.INSIDE | Flag.PARTIAL));
+                        SetSpherePackFlag(Flag.HIDDEN);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
-                case DefineO.ViewState.VS_PARTIAL:
-                    if (!HasSpherePackFlag(SpherePackFlag.SPF_PARTIAL))
+                case Frustum.ViewState.PARTIAL:
+                    if (!HasSpherePackFlag(Flag.PARTIAL))
                     {
-                        ClearSpherePackFlag((int)(SpherePackFlag.SPF_INSIDE | SpherePackFlag.SPF_HIDDEN));
-                        SetSpherePackFlag(SpherePackFlag.SPF_PARTIAL);
+                        ClearSpherePackFlag((int)(Flag.INSIDE | Flag.HIDDEN));
+                        SetSpherePackFlag(Flag.PARTIAL);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
@@ -529,7 +535,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         bool hit = false;
         Vector3 sect;
 
-        if (HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
         {
 
             hit = RayIntersectionInFront(ref p1, ref dir, out sect);
@@ -560,21 +566,21 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     }
 
 
-    public void RangeTest(ref Vector3 p, float distance, SpherePackCallback callback, DefineO.ViewState state)
+    public void RangeTest(ref Vector3 p, float distance, SpherePackCallback callback, Frustum.ViewState state)
     {
-        if (state == DefineO.ViewState.VS_PARTIAL)
+        if (state == Frustum.ViewState.PARTIAL)
         {
             
             //float d = p.Distance(mCenter);
             float d = (p - mCenter).magnitude;
-            if ((d - distance) > GetRadius()) return; ;
-            if ((GetRadius() + d) < distance) state = DefineO.ViewState.VS_INSIDE;
+            if ((d - distance) > GetRadius()) return;
+            if ((GetRadius() + d) < distance) state = Frustum.ViewState.INSIDE;
         }
 
-        if (HasSpherePackFlag(SpherePackFlag.SPF_SUPERSPHERE))
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
         {
             //#if DEMO
-            if (state == DefineO.ViewState.VS_PARTIAL)
+            if (state == Frustum.ViewState.PARTIAL)
             {
                 DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), 0x404040);
             }
@@ -593,14 +599,14 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         }
     }
 
-    public void Reset()
+    public void ResetFlag()
     {
-        ClearSpherePackFlag((int)(SpherePackFlag.SPF_HIDDEN | SpherePackFlag.SPF_PARTIAL | SpherePackFlag.SPF_INSIDE));
+        ClearSpherePackFlag((int)(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE));
 
         SpherePack pack = mChildren;
         while (null != pack)
         {
-            pack.Reset();
+            pack.ResetFlag();
             pack = pack.GetNextSibling();
         }
     }

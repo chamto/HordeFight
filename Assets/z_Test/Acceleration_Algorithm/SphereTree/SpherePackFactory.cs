@@ -22,7 +22,7 @@ public class SpherePackFactory : SpherePackCallback
 
     private float mMaxRootSize;              // maximum size of a root node supersphere
     private float mMaxLeafSize;              // maximum size of the leaf node supersphere
-    private float mSuperSphereGravy;         // binding distance gravy.
+    private float mSuperSphereGravy;         // binding distance gravy. //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
 
 
     public SpherePackFactory(int maxspheres, float rootsize, float leafsize, float gravy)
@@ -31,25 +31,25 @@ public class SpherePackFactory : SpherePackCallback
         mMaxRootSize = rootsize;
         mMaxLeafSize = leafsize;
         mSuperSphereGravy = gravy;
-        mSpheres = new Pool<SpherePack>();
+
         mIntegrate = new SpherePackFifo(maxspheres);
         mRecompute = new SpherePackFifo(maxspheres);
-
-        mSpheres.Set(maxspheres);       // init pool to hold all possible SpherePack instances.
+        mSpheres = new Pool<SpherePack>();
+        mSpheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
 
         Vector3 p = Vector3.zero;
 
         mRoot = mSpheres.GetFreeLink(); // initially empty
-        mRoot.Init(this, p, 65536, null);
-        mRoot.SetSpherePackFlag((int)(SpherePack.SpherePackFlag.SPF_SUPERSPHERE | SpherePack.SpherePackFlag.SPF_ROOTNODE | SpherePack.SpherePackFlag.SPF_ROOT_TREE));
+        mRoot.Init(this, p, 65536);
+        mRoot.SetSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
 
         //#if DEMO
         mRoot.SetColor(0x00FFFFFF);
         //#endif
 
-        mLeaf = mSpheres.GetFreeLink(); ; // initially empty
-        mLeaf.Init(this, p, 16384, null);
-        mLeaf.SetSpherePackFlag((int)(SpherePack.SpherePackFlag.SPF_SUPERSPHERE | SpherePack.SpherePackFlag.SPF_ROOTNODE | SpherePack.SpherePackFlag.SPF_LEAF_TREE));
+        mLeaf = mSpheres.GetFreeLink();  // initially empty
+        mLeaf.Init(this, p, 16384);
+        mLeaf.SetSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.LEAF_TREE));
 
         //#if DEMO
         mColors = new uint[MAXCOLORS];
@@ -112,7 +112,7 @@ public class SpherePackFactory : SpherePackCallback
                 //pack.SetFifo2(null);
                 pack.InitFifo2();
 
-                if (pack.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOT_TREE))
+                if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
                     Integrate(pack, mRoot, mMaxRootSize); // integrate this one single dude against the root node.
                 else
                     Integrate(pack, mLeaf, mMaxLeafSize); // integrate this one single dude against the root node.
@@ -123,8 +123,9 @@ public class SpherePackFactory : SpherePackCallback
 
 
 
-    public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, USERDATA userdata, int flags) where USERDATA : IUserData
+    //public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, USERDATA userdata, int flags) where USERDATA : IUserData
         //int flags = (int)(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
+    public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, SpherePack.Flag flag) where USERDATA : IUserData
 
     {
 
@@ -134,16 +135,17 @@ public class SpherePackFactory : SpherePackCallback
 
         if (null != pack)
         {
-            if (0 != (flags & (int)(SpherePack.SpherePackFlag.SPF_ROOT_TREE)))
+            //if (0 != (flags & (int)(SpherePack.Flag.ROOT_TREE))) //루트트리가 들어 있다면 
+            if (flag == SpherePack.Flag.ROOT_TREE) //루트트리 라면 
             {
-                pack.Init(this, pos, radius, userdata);
-                pack.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOT_TREE); // member of the leaf node tree!
+                pack.Init(this, pos, radius);
+                pack.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
                 AddIntegrate(pack); // add to integration list.
             }
             else
             {
-                pack.Init(this, pos, radius, userdata);
-                pack.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE); // member of the leaf node tree!
+                pack.Init(this, pos, radius);
+                pack.SetSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
                 AddIntegrate(pack); // add to integration list.
             }
         }
@@ -154,23 +156,23 @@ public class SpherePackFactory : SpherePackCallback
     public void AddIntegrate(SpherePack pack)          // add to the integration FIFO
     {
 
-        if (pack.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOT_TREE))
+        if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
             mRoot.AddChild(pack);
         else
             mLeaf.AddChild(pack);
 
-        pack.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_INTEGRATE); // still needs to be integrated!
+        pack.SetSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
         SpherePackFifo.Out_Push fifo = mIntegrate.Push(pack); // add it to the integration stack.
         pack.SetFifo2(fifo);
     }
 
     public void AddRecompute(SpherePack recompute)     // add to the recomputation (balancing) FIFO.
     {
-        if (!recompute.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_RECOMPUTE))
+        if (!recompute.HasSpherePackFlag(SpherePack.Flag.RECOMPUTE))
         {
             if (0 != recompute.GetChildCount())
             {
-                recompute.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_RECOMPUTE); // needs to be recalculated!
+                recompute.SetSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
                 SpherePackFifo.Out_Push fifo = mRecompute.Push(recompute);
                 recompute.SetFifo1(fifo);
             }
@@ -194,12 +196,12 @@ public class SpherePackFactory : SpherePackCallback
         SpherePack nearest2 = null; // supersphere we must grow the least to
         float neardist2 = 1e9f;    // add ourselves to.
 
-        int scount = 1;
+        //int scount = 1;
 
         while (null != search)
         {
-            if (search.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_SUPERSPHERE) &&
-                !search.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOTNODE) && 0 != search.GetChildCount())
+            if (search.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) &&
+                !search.HasSpherePackFlag(SpherePack.Flag.ROOTNODE) && 0 != search.GetChildCount())
             {
 
                 float dist = pack.DistanceSquared(search);
@@ -252,7 +254,7 @@ public class SpherePackFactory : SpherePackCallback
             pack.ComputeBindingDistance(nearest1);
             nearest1.Recompute(mSuperSphereGravy);
 
-            if (nearest1.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
+            if (nearest1.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
             {
                 SpherePack link = nearest1.GetUserData<SpherePack>();
                 link.NewPosRadius(nearest1.GetPos(), nearest1.GetRadius());
@@ -276,7 +278,7 @@ public class SpherePackFactory : SpherePackCallback
                     nearest2.Recompute(mSuperSphereGravy);
                     pack.ComputeBindingDistance(nearest2);
 
-                    if (nearest2.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
+                    if (nearest2.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                     {
                         SpherePack link = nearest2.GetUserData<SpherePack>();
                         link.NewPosRadius(nearest2.GetPos(), nearest2.GetRadius());
@@ -296,14 +298,14 @@ public class SpherePackFactory : SpherePackCallback
 
                 SpherePack parent = mSpheres.GetFreeLink();
                 //assert(parent);
-                parent.Init(this, pack.GetPos(), pack.GetRadius() + mSuperSphereGravy, null);
+                parent.Init(this, pack.GetPos(), pack.GetRadius() + mSuperSphereGravy);
 
-                if (supersphere.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOT_TREE))
-                    parent.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOT_TREE);
+                if (supersphere.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
+                    parent.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE);
                 else
-                    parent.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE);
+                    parent.SetSpherePackFlag(SpherePack.Flag.LEAF_TREE);
 
-                parent.SetSpherePackFlag(SpherePack.SpherePackFlag.SPF_SUPERSPHERE);
+                parent.SetSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
                 //#if DEMO
                 parent.SetColor(GetColor());
                 //#endif
@@ -314,17 +316,18 @@ public class SpherePackFactory : SpherePackCallback
                 parent.Recompute(mSuperSphereGravy);
                 pack.ComputeBindingDistance(parent);
 
-                if (parent.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
+                if (parent.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                 {
                     // need to create parent association!
-                    SpherePack link = AddSphere<SpherePack>(parent.GetPos(), parent.GetRadius(), parent, (int)SpherePack.SpherePackFlag.SPF_ROOT_TREE);
+                    SpherePack link = AddSphere<SpherePack>(parent.GetPos(), parent.GetRadius(), SpherePack.Flag.ROOT_TREE);
+                    link.SetUserData<SpherePack>(parent);
                     parent.SetUserData<SpherePack>(link); // hook him up!!
                 }
 
             }
         }
 
-        pack.ClearSpherePackFlag((int)SpherePack.SpherePackFlag.SPF_INTEGRATE); // we've been integrated!
+        pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
     }
 
     public void Render()
@@ -338,9 +341,9 @@ public class SpherePackFactory : SpherePackCallback
     public void Remove(SpherePack pack)
     {
 
-        if (pack.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
+        if (pack.HasSpherePackFlag(SpherePack.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
-        if (pack.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_SUPERSPHERE) && pack.HasSpherePackFlag(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
+        if (pack.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
         {
 
             SpherePack link = pack.GetUserData<SpherePack>();
@@ -370,7 +373,7 @@ public class SpherePackFactory : SpherePackCallback
     {
         // test case here, just traverse children.
         mCallback = callback;
-        mRoot.VisibilityTest(ref f, this, DefineO.ViewState.VS_PARTIAL);
+        mRoot.VisibilityTest(ref f, this, Frustum.ViewState.PARTIAL);
     }
 
     //p1: source
@@ -389,13 +392,13 @@ public class SpherePackFactory : SpherePackCallback
     public void RangeTest(ref Vector3 center, float radius, SpherePackCallback callback)
     {
         mCallback = callback;
-        mRoot.RangeTest(ref center, radius, this, DefineO.ViewState.VS_PARTIAL);
+        mRoot.RangeTest(ref center, radius, this, Frustum.ViewState.PARTIAL);
     }
 
-    public void Reset()
+    public void ResetFlag()
     {
-        mRoot.Reset();
-        mLeaf.Reset();
+        mRoot.ResetFlag();
+        mLeaf.ResetFlag();
     }
 
 
@@ -409,14 +412,14 @@ public class SpherePackFactory : SpherePackCallback
         if (null != link) link.RayTrace(ref p1, ref dir, distance, mCallback);
     }
 
-    public override void RangeTestCallback(ref Vector3 p, float distance, SpherePack sphere, DefineO.ViewState state)
+    public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
     {
         SpherePack link = sphere.GetUserData<SpherePack>();
-        if (null != link) link.RangeTest(ref p, distance, mCallback, state);
+        if (null != link) link.RangeTest(ref searchpos, distance, mCallback, state);
     }
 
 
-    public override void VisibilityCallback(Frustum f, SpherePack sphere, DefineO.ViewState state)
+    public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
     {
         SpherePack link = sphere.GetUserData<SpherePack>();
         if (null != link) link.VisibilityTest(ref f, mCallback, state);

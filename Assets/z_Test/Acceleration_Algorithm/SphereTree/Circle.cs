@@ -1,6 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UtilGS9;
 
+//끌어당기는 것 
 public class Attractor
 {
     private int mAcount;
@@ -14,14 +15,19 @@ public class Attractor
 
     public Attractor()
     {
-        mX = Misc.rand.Next() % DefineO.SWID;
-        mY = Misc.rand.Next() % DefineO.SHIT;
+        InitRandom();
+    }
 
-        mDx = (Misc.rand.Next() & 7) - 4;
+    public void InitRandom()
+    {
+        mX = Misc.rand.Next() % DefineO.SW_ID;
+        mY = Misc.rand.Next() % DefineO.SH_IT;
+
+        mDx = (Misc.rand.Next() & 7) - 4; //7 => 0111 , (0 ~ 7)-4 => (-4 ~ 3) 
         mDy = (Misc.rand.Next() & 7) - 4;
 
 
-        mAcount = (Misc.rand.Next() % 127) + 16;
+        mAcount = (Misc.rand.Next() % 127) + 16; //(0 ~ 126)+16 => (16 ~ 142) 
     }
 
     public int Cap(int v)
@@ -37,15 +43,15 @@ public class Attractor
         return v;
     }
 
-    public void AdjustXY(int x, int y, ref int dx, ref int dy)
+    public void AdjustXY(int loc_x, int loc_y, ref int delta_x, ref int delta_y)
     {
-        if (mX < x) dx--;
-        if (mX > x) dx++;
-        if (mY < y) dy--;
-        if (mY > x) dy++;
+        if (mX < loc_x) delta_x--;
+        if (mX > loc_x) delta_x++;
+        if (mY < loc_y) delta_y--;
+        if (mY > loc_y) delta_y++;
 
-        dx = Cap(dx);
-        dy = Cap(dy);
+        delta_x = Cap(delta_x);
+        delta_y = Cap(delta_y);
     }
 
     public void ResetTest()
@@ -54,17 +60,13 @@ public class Attractor
 
         if (mAcount < 0)
         {
-            mX = Misc.rand.Next() % DefineO.SWID;
-            mY = Misc.rand.Next() % DefineO.SHIT;
-            mDx = (Misc.rand.Next() & 7) - 4;
-            mDy = (Misc.rand.Next() & 7) - 4;
-            mAcount = (Misc.rand.Next() % 127) + 16;
+            InitRandom();
         }
 
         mX += mDx;
         mY += mDy;
 
-        if (mX > DefineO.SWID)
+        if (mX > DefineO.SW_ID)
         {
             mDx *= -1;
         }
@@ -74,7 +76,7 @@ public class Attractor
             mDx *= -1;
         }
 
-        if (mY > DefineO.SHIT)
+        if (mY > DefineO.SH_IT)
         {
             mDy *= -1;
         }
@@ -112,42 +114,47 @@ public class CircleItem : IPoolConnector<CircleItem>
 
 public class Circle : IUserData
 {
-    public enum CircleState
+    public enum State
     {
-        CS_SHOW_ALL,
-        CS_SHOW_FRUSTUM,
-        CS_SHOW_RAYTRACE,
-        CS_SHOW_RANGE_TEST,
-        CS_LAST
+        SHOW_ALL,
+        SHOW_FRUSTUM,
+        SHOW_RAYTRACE,
+        SHOW_RANGE_TEST,
+
+        MAX
     }
 
+
+    public const int JUMP_TIME = 128;
+
     private int mJumpCounter;
-    private int mLocX;
-    private int mLocY;
-    private int mRadius;
+    private float mLocX;
+    private float mLocY;
+    private float mRadius;
 
     private int mDeltaX;
     private int mDeltaY;
     private SpherePack mSphere = null;
-    private Attractor mAttractor = null;
+    private Attractor _ref_Attractor = null;
+    private Frustum.ViewState mViewState;
+
     private CircleItem mItem = null;
-    private DefineO.ViewState mViewState;
 
 
     //public Circle(int x, int y, int radius, SpherePackFactory* factory, Attractor* attractor)
-    public Circle(int x, int y, int radius, SpherePackFactory factory, Attractor attractor)
+    //public Circle(int x, int y, int radius, SpherePackFactory factory, Attractor attractor)
+    public Circle(Vector3 pos, float radius, SpherePack spherePack, Attractor attractor)
     {
         mItem = null;
-        mLocX = x;
-        mLocY = y;
+        mLocX = pos.x;
+        mLocY = pos.y;
         mRadius = radius;
-        mAttractor = attractor;
+        _ref_Attractor = attractor;
+        mJumpCounter = (Misc.rand.Next() % JUMP_TIME) + JUMP_TIME / 4;
 
-        mJumpCounter = (Misc.rand.Next() % DefineO.JUMP_TIME) + DefineO.JUMP_TIME / 4;
-
-        if (null != mAttractor)
+        if (null != _ref_Attractor)
         {
-            mDeltaX = (Misc.rand.Next() & 7) - 3;
+            mDeltaX = (Misc.rand.Next() & 7) - 3; //7 => 0111 , (0 ~ 7) -3 => (-3 ~ 4)
             mDeltaY = (Misc.rand.Next() & 7) - 3;
         }
         else
@@ -157,24 +164,26 @@ public class Circle : IUserData
         }
 
 
-        Vector3 pos = new Vector3(x, y, 0);
+        //Vector3 pos = new Vector3(x, y, 0);
 
         pos.x = (float)mLocX * (1.0f / DefineO.FIXED);
         pos.y = (float)mLocY * (1.0f / DefineO.FIXED);
         pos.z = 0;
 
-        mSphere = factory.AddSphere<Circle>(pos, mRadius, this, (int)(SpherePack.SpherePackFlag.SPF_LEAF_TREE));
+        //mSphere = factory.AddSphere<Circle>(pos, mRadius, this, (int)(SpherePack.Flag.LEAF_TREE));
+        mSphere = spherePack;
+        mSphere.NewPos(ref pos); //위치값 다시 갱신
     }
 
 
     public int Process()
     {
-        if (null != mAttractor)
+        if (null != _ref_Attractor)
         {
 
-            mAttractor.AdjustXY(mLocX, mLocY, ref mDeltaX, ref mDeltaY);
+            _ref_Attractor.AdjustXY((int)mLocX, (int)mLocY, ref mDeltaX, ref mDeltaY); 
 
-            if ((mLocX + mDeltaX) > DefineO.SWID)
+            if ((mLocX + mDeltaX) > DefineO.SW_ID)
             {
                 mDeltaX *= -1;
             }
@@ -182,7 +191,7 @@ public class Circle : IUserData
             {
                 mDeltaX *= -1;
             }
-            if ((mLocY + mDeltaY) > DefineO.SHIT)
+            if ((mLocY + mDeltaY) > DefineO.SH_IT)
             {
                 mDeltaY *= -1;
             }
@@ -198,8 +207,8 @@ public class Circle : IUserData
 
             Vector3 pos;
 
-            pos.x = (float)(mLocX) * (1.0f / DefineO.FIXED);
-            pos.y = (float)(mLocY) * (1.0f / DefineO.FIXED);
+            pos.x = (float)(mLocX)* (1.0f / DefineO.FIXED);
+            pos.y = (float)(mLocY)* (1.0f / DefineO.FIXED);
             pos.z = 0;
 
             mSphere.NewPos(ref pos);
@@ -208,30 +217,31 @@ public class Circle : IUserData
 
 
         mJumpCounter--;
+        mJumpCounter = 1; //chamto test
 
         if (mJumpCounter <= 0)
         {
             Vector3 pos;
 
-            if (null == mAttractor)
+            if (null == _ref_Attractor)
             {
-                int wx = DefineO.SWID / 4;
-                int wy = DefineO.SHIT / 4;
-                mLocX = (Misc.rand.Next() % wx) - (wx / 2) + DefineO.gCenterX;
-                mLocY = (Misc.rand.Next() % wy) - (wy / 2) + DefineO.gCenterY;
+                int wx = DefineO.SW_ID / 4;
+                int wy = DefineO.SH_IT / 4;
+                mLocX = (Misc.rand.Next() % wx) - (wx / 2) + DefineO.G_CENTER_X;
+                mLocY = (Misc.rand.Next() % wy) - (wy / 2) + DefineO.G_CENTER_Y;
 
                 if (mLocX < 0) mLocX = 0;
-                if (mLocX > DefineO.SWID) mLocX = DefineO.SWID;
+                if (mLocX > DefineO.SW_ID) mLocX = DefineO.SW_ID;
                 if (mLocY < 0) mLocY = 0;
-                if (mLocY > DefineO.SHIT) mLocY = DefineO.SHIT;
+                if (mLocY > DefineO.SH_IT) mLocY = DefineO.SH_IT;
 
             }
 
-            pos.x = (float)(mLocX) * (1.0f / DefineO.FIXED);
+            pos.x = (float)(mLocX)* (1.0f / DefineO.FIXED);
             pos.y = (float)(mLocY) * (1.0f / DefineO.FIXED);
             pos.z = 0;
 
-            mJumpCounter = Misc.rand.Next() % DefineO.JUMP_TIME;
+            mJumpCounter = Misc.rand.Next() % JUMP_TIME;
 
             //rand AND 31 (5bit) 연산하여 ( 0 ~ 31 ) 사이의 값을 구함. 구한 값에 16을 뺌. 최종범위 (-16 ~ 15)
             mDeltaX = (Misc.rand.Next() & 31) - 16; //1 + 2 + 4 + 8 + 16 = 31 : 5bit
@@ -254,8 +264,8 @@ public class Circle : IUserData
 
     public SpherePack GetSpherePack() { return mSphere; }
 
-    public DefineO.ViewState GetViewState() { return mViewState; }
-    public void SetViewState(DefineO.ViewState state) { mViewState = state; }
+    public Frustum.ViewState GetViewState() { return mViewState; }
+    public void SetViewState(Frustum.ViewState state) { mViewState = state; }
 
     //=====================================================
     //interface 구현 

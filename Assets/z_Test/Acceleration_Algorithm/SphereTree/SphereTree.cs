@@ -23,51 +23,16 @@ public class SphereTree : MonoBehaviour
 public class DefineO
 {
 
+
     public static int SCREEN_WIDTH = 1024;
     public static int SCREEN_HEIGHT = 768;
-    public static int MAX_ATTRACTORS = 16;
 
-    public static int JUMP_TIME = 128;
-    public static int FIXED = 16;
-    public static int SWID = (SCREEN_WIDTH * FIXED);
-    public static int SHIT = (SCREEN_HEIGHT * FIXED);
+    public static int FIXED = 16;//16;
+    public static int SW_ID = (SCREEN_WIDTH * FIXED); //1024 * 16 = 16384
+    public static int SH_IT = (SCREEN_HEIGHT * FIXED); //768 * 16 = 12288
 
-    public static int gCenterX = SWID / 2;
-    public static int gCenterY = SHIT / 2;
-
-
-
-    public enum SpherePackFlag
-    {
-
-        SPF_SUPERSPHERE = (1 << 0), // this is a supersphere, allocated and deleted by us
-        SPF_ROOT_TREE = (1 << 1), // member of the root tree
-        SPF_LEAF_TREE = (1 << 2), // member of the leaf node tree
-        SPF_ROOTNODE = (1 << 3), // this is the root node
-        SPF_RECOMPUTE = (1 << 4), // needs recomputed bounding sphere
-        SPF_INTEGRATE = (1 << 5), // needs to be reintegrated into tree
-                                  // Frame-to-frame view frustum status.  Only does callbacks when a
-                                  // state change occurs.
-        SPF_HIDDEN = (1 << 6), // outside of view frustum
-        SPF_PARTIAL = (1 << 7), // partially inside view frustum
-        SPF_INSIDE = (1 << 8)  // completely inside view frustum
-    }
-
-    public enum ViewState
-    {
-        VS_INSIDE,   // completely inside the frustum.
-        VS_PARTIAL,  // partially inside and partially outside the frustum.
-        VS_OUTSIDE   // completely outside the frustum
-    }
-
-
-    public enum CohenSutherland
-    {
-        CS_LEFT = (1 << 0),
-        CS_RIGHT = (1 << 1),
-        CS_TOP = (1 << 2),
-        CS_BOTTOM = (1 << 3)
-    }
+    public static int G_CENTER_X = SW_ID / 2; //16384 / 2 = 8192
+    public static int G_CENTER_Y = SH_IT / 2; //12288 / 2 = 6144
 
 
     static public void DrawLine(float x1, float y1, float x2, float y2, uint color)

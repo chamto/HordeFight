@@ -5,14 +5,15 @@ using UtilGS9;
 
 public class CircleFactory : SpherePackCallback
 {
+    public const int MAX_ATTRACTORS = 16;
 
-    private Circle.CircleState mState;
+    private Circle.State mState;
     private int mHitCount;
 
     private Circle[] mCircles = null;
-
     private SpherePackFactory mFactory = null;
     private Attractor[] mAttractors = null;
+
     private Pool<CircleItem> mVisible = null;
     private int mCircleCount;
 
@@ -20,44 +21,60 @@ public class CircleFactory : SpherePackCallback
 
     public CircleFactory(int circlecount)
     {
-        mState = Circle.CircleState.CS_SHOW_ALL;
+        mState = Circle.State.SHOW_ALL;
         mCircleCount = circlecount;
         mCircles = new Circle[mCircleCount];
-        mAttractors = new Attractor[DefineO.MAX_ATTRACTORS];
+        mAttractors = new Attractor[MAX_ATTRACTORS];
+        mVisible = new Pool<CircleItem>();
+
+        //==============================
+        //   초기화 
+        //==============================
+        mVisible.Init(mCircleCount); 
 
         //포인트배열에 들어가는 객체 생성
-        for (int i = 0; i < DefineO.MAX_ATTRACTORS; i++)
+        for (int i = 0; i < MAX_ATTRACTORS; i++)
         {
             mAttractors[i] = new Attractor();
         }
 
-        mVisible = new Pool<CircleItem>();
-        mVisible.Set(mCircleCount); // visiblelist
 
-        mFactory = new SpherePackFactory(mCircleCount, 256, 64, 8);
+        //rootsize, leafsize, gravy
+        mFactory = new SpherePackFactory(mCircleCount, 256,64,8);//256, 64, 8);
 
         for (int i = 0; i != mCircleCount; i++)
         {
 
-            int a = Misc.rand.Next() % DefineO.MAX_ATTRACTORS;
+            int a = Misc.rand.Next() % MAX_ATTRACTORS; // [ 0 ~ 15 ]
 
             Attractor at = mAttractors[a];
-            //todo : 아래 구문 0~100 까지 비트연산하여 출력해보기 - 정확한 의도를 모르겠음 
-            if ((i & 3) == 0) at = null; // 1 of 4 are non moving. 
 
-            mCircles[i] = new Circle(Misc.rand.Next() % DefineO.SWID,
-                                     Misc.rand.Next() % DefineO.SHIT,
-                                     (Misc.rand.Next() % 4) + 1,
-                                     mFactory,
-                                 at);
+
+            if ((i & 3) == 0) at = null; // 1 of 4are non moving. 
+            //if ((i % 4) == 0) at = null; DebugWide.LogRed((i % 4)); //위와 같은 표현
+
+            //비트에 대한 AND연산 결과
+            //011(3),0111(7) 같은 밑에서 부터 채워진 비트 : 3 => 0 1 2 3 0 1 2 3 ...   , 7 => 0 ~ 7 0 ~ 7 .... 
+            //100(4), 010(2) 같은 하나의 비트 : 4 => 0 0 0 0 4 4 4 4 .... , 2 => 0 0 2 2 0 0 2 2 .... 
+            //int rBit = 3; 
+            //DebugWide.LogBlue(i + " & " + rBit + " = " + (i & rBit) + "  ----  " + "bit: " + Misc.IntToBinaryString(i) + " & "+Misc.IntToBinaryString(rBit) + "   =  " + Misc.IntToBinaryString(i & rBit)); //chamto test
+
+
+            Vector3 pos = new Vector3(Misc.rand.Next() % DefineO.SW_ID, Misc.rand.Next() % DefineO.SH_IT, 0);
+            float radius = (Misc.rand.Next() % 4) + 1;
+            SpherePack spherePack = mFactory.AddSphere<Circle>(pos, radius, SpherePack.Flag.LEAF_TREE);
+            mCircles[i] = new Circle(pos, radius, spherePack, at);
+            spherePack.SetUserData<Circle>(mCircles[i]);
+
         }
     }
 
 
 
-    public void SetState(Circle.CircleState s) { mState = s; }
+    public void SetState(Circle.State s) { mState = s; }
 
     private int __gCount = 0;
+    //private Circle.State __gLastState = Circle.State.SHOW_ALL;
     public int Process()
     {
         if (true)
@@ -67,31 +84,31 @@ public class CircleFactory : SpherePackCallback
             if (__gCount == 128)
             {
                 __gCount = 0;
-                DefineO.gCenterX = Misc.rand.Next() % DefineO.SWID;
-                DefineO.gCenterY = Misc.rand.Next() % DefineO.SHIT;
+                DefineO.G_CENTER_X = Misc.rand.Next() % DefineO.SW_ID;
+                DefineO.G_CENTER_Y = Misc.rand.Next() % DefineO.SH_IT;
             }
         }
 
         if (true)
         {
-            for (int i = 0; i < DefineO.MAX_ATTRACTORS; i++) mAttractors[i].ResetTest();
+            for (int i = 0; i < MAX_ATTRACTORS; i++) mAttractors[i].ResetTest();
         }
 
         // Perform 'physics' on all circles.
         for (int i = 0; i != mCircleCount; i++)
         {
-            mCircles[i].Process();
+            mCircles[i].Process(); //spherePack 의 newPos 호출
         }
 
-        Circle.CircleState gLastState = Circle.CircleState.CS_SHOW_ALL;
+        Circle.State __gLastState = Circle.State.SHOW_ALL;
 
-        if (mState != gLastState)
+        if (mState != __gLastState)
         {
             // Frustum culling in this example presumes frame to frame coherency.
             // If we change modes we need to reset the visibility status of the
             // sphere tree to a null state.
-            gLastState = mState;
-            mFactory.Reset(); // reset visibility state
+            __gLastState = mState;
+            mFactory.ResetFlag(); // reset visibility state
         }
 
         mFactory.Process(); // controls how much CPU to give up to reintegration and recomputation fifos
@@ -130,11 +147,11 @@ public class CircleFactory : SpherePackCallback
 
         switch (mState)
         {
-            case Circle.CircleState.CS_SHOW_ALL:
+            case Circle.State.SHOW_ALL:
                 mFactory.Render();
                 color1 = (uint)0x00FFFF;
                 break;
-            case Circle.CircleState.CS_SHOW_FRUSTUM:
+            case Circle.State.SHOW_FRUSTUM:
                 color2 = (uint)0x00FFFF;
                 if (true)
                 {
@@ -183,7 +200,7 @@ public class CircleFactory : SpherePackCallback
                         SpherePack sphere = circle.GetSpherePack();
                         Vector3 pos = sphere.GetCenter();
                         int color = 0x00FF00;
-                        if (circle.GetViewState() == DefineO.ViewState.VS_PARTIAL) color = 0x00FFFF;
+                        if (circle.GetViewState() == Frustum.ViewState.PARTIAL) color = 0x00FFFF;
                         DefineO.DrawCircle(pos.x, pos.y, sphere.GetRadius(), (uint)color);
                     }
 
@@ -191,7 +208,7 @@ public class CircleFactory : SpherePackCallback
 
                 }
                 break;
-            case Circle.CircleState.CS_SHOW_RAYTRACE:
+            case Circle.State.SHOW_RAYTRACE:
                 color3 = 0x00FFFF;
                 if (true)
                 {
@@ -213,7 +230,7 @@ public class CircleFactory : SpherePackCallback
                     RayTest(SR_x1, SR_y1, SR_x2, SR_y2);
                 }
                 break;
-            case Circle.CircleState.CS_SHOW_RANGE_TEST:
+            case Circle.State.SHOW_RANGE_TEST:
                 color4 = 0x00FFFF;
                 if (true)
                 {
@@ -241,8 +258,8 @@ public class CircleFactory : SpherePackCallback
         DefineO.PrintText(900, 20, color2, "(F) Frustum Culling");
         DefineO.PrintText(900, 40, color3, "(T) Ray Tracing");
         DefineO.PrintText(900, 60, color4, "(R) Range Testing");
-        DefineO.PrintText(900, 80, 0xFFFFFF, "(SPACE) Pause");
-        DefineO.PrintText(900, 100, 0xFFFFFF, "(ENTER) UnPause");
+        DefineO.PrintText(900, 80, 0xFFFFFF, "(P) Pause");
+
 
         return 0;
     }
@@ -310,11 +327,11 @@ public class CircleFactory : SpherePackCallback
 
     }
 
-    public override void VisibilityCallback(Frustum f, SpherePack sphere, DefineO.ViewState state)
+    public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
     {
         Circle circle = sphere.GetUserData<Circle>();
 
-        if (state == DefineO.ViewState.VS_OUTSIDE) // it is not visible!
+        if (state == Frustum.ViewState.OUTSIDE) // it is not visible!
         {
             CircleItem item = circle.GetCircleItem();
 
@@ -345,7 +362,7 @@ public class CircleFactory : SpherePackCallback
         }
     }
 
-    public override void RangeTestCallback(ref Vector3 p, float distance, SpherePack sphere, DefineO.ViewState state)
+    public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
     {
         Vector3 pos = sphere.GetPos();
 

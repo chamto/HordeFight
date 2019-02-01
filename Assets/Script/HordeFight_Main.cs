@@ -1251,8 +1251,8 @@ namespace HordeFight
             return;
             //====================================================
         
-            Color baseColor = Color.white;
-            Color fogColor = new Color(1, 1, 1, 0.7f);
+            //Color baseColor = Color.white;
+            //Color fogColor = new Color(1, 1, 1, 0.7f);
             TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleExtraTile".GetHashCode());
             TileBase tileScript2 = SingleO.resourceManager.GetTileScript("ocean".GetHashCode());
             TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());

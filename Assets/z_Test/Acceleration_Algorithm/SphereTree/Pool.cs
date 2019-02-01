@@ -13,7 +13,7 @@ public interface IPoolConnector<Type> where Type : class , new()
     Type GetPrevious();
 }
 
-public class Pool<Type> where Type : class , IPoolConnector<Type> , new()
+public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
 {
 
     private int mMaxItems = 0;
@@ -47,8 +47,8 @@ public class Pool<Type> where Type : class , IPoolConnector<Type> , new()
         mFreeCount = 0;
     }
 
-    //여기서부터 수정하기 
-    public void Set(int maxitems)
+
+    public void Init(int maxitems)
     {
         //delete mData; // delete any previous incarnation. //todo : GC 대상에 넣기
         Release();
@@ -81,7 +81,7 @@ public class Pool<Type> where Type : class , IPoolConnector<Type> , new()
     }
 
 
-    //사용안하는 함수 추정. 사용처가 없으면 제거하기 
+
     public Type GetNext(ref bool looped)
     {
 
@@ -112,14 +112,22 @@ public class Pool<Type> where Type : class , IPoolConnector<Type> , new()
         return false;
     }
 
+    public int GetUsedCount() { return mUsedCount; }
+    public int GetFreeCount() { return mFreeCount; }
+
+
+    //Begin() 사용법. GetNext()와 짝으로 사용된다 
+    //int count = mVisible.Begin();
+    //for (int i = 0; i<count; i++)
+    //{
+    //    CircleItem item = mVisible.GetNext();
+    //}
     public int Begin()
     {
         mCurrent = mHead;
         return mUsedCount;
     }
 
-    public int GetUsedCount() { return mUsedCount; }
-    public int GetFreeCount() { return mFreeCount; }
 
     public Type GetNext()
     {
@@ -143,6 +151,7 @@ public class Pool<Type> where Type : class , IPoolConnector<Type> , new()
         return ret;
     }
 
+    //해제처리가 아닌 연결을 끊는 처리이다 
     public void Release(Type t)
     {
 

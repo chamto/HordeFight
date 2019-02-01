@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-public interface SphereInterface
+public interface ISphereInterface
 {
     int GetVertexCount();
 
@@ -13,12 +13,10 @@ public interface SphereInterface
 
 public class Sphere
 {
-    const float BIGNUMBER = 100000000.0f;     /* hundred million */
-
-    //protected Vector3d<float> mCenter;
+    
     protected Vector3 mCenter;
-    private float mRadius;
-    private float mRadius2; // radius squared.
+    protected float mRadius;
+    protected float mRadius2; // radius squared.
 
     public Sphere()
     {
@@ -48,6 +46,7 @@ public class Sphere
     from "Graphics Gems", Academic Press, 1990
     */
 
+
     /* Routine to calculate tight bounding sphere over    */
     /* a set of points in 3D */
     /* This contains the routine find_bounding_sphere(), */
@@ -55,8 +54,10 @@ public class Sphere
     /* The abs() of all coordinates must be < BIGNUMBER */
     /* Code written by Jack Ritter and Lyle Rains. */
     //void Compute(const SphereInterface &source);
-    public void Compute(ref SphereInterface source)
+    public void Compute(ref ISphereInterface source)
     {
+        const float BIGNUMBER = 100000000.0f;     /* hundred million */
+
         Vector3 xmin, xmax, ymin, ymax, zmin, zmax, dia1, dia2;
 
         /* FIRST PASS: find 6 minima/maxima points */
@@ -251,7 +252,7 @@ public class Sphere
         return false;
     }
 
-    public void Report() { }
+    //public void Report() { }
 
     public void SetRadius(float radius)
     {
