@@ -148,7 +148,7 @@ public class CircleFactory : SpherePackCallback
         switch (mState)
         {
             case Circle.State.SHOW_ALL:
-                mFactory.Render();
+                mFactory.Render_Debug();
                 color1 = (uint)0x00FFFF;
                 break;
             case Circle.State.SHOW_FRUSTUM:
@@ -303,7 +303,7 @@ public class CircleFactory : SpherePackCallback
 
 
     //========================================================
-    //==================    재정의/구현 함수     ==================
+    //==================    재정의/구현 함수    ==================
     //========================================================
 
     //p1: source pos of ray

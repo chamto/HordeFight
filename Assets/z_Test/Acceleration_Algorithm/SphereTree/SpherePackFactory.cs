@@ -44,7 +44,7 @@ public class SpherePackFactory : SpherePackCallback
         mRoot.SetSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
 
         //#if DEMO
-        mRoot.SetColor(0x00FFFFFF);
+        mRoot.SetColor_Debug(0x00FFFFFF);
         //#endif
 
         mLeaf = mSpheres.GetFreeLink();  // initially empty
@@ -53,7 +53,7 @@ public class SpherePackFactory : SpherePackCallback
 
         //#if DEMO
         mColors = new uint[MAXCOLORS];
-        mLeaf.SetColor(0x00FFFFFF);
+        mLeaf.SetColor_Debug(0x00FFFFFF);
         mColorCount = 0;
 
         mColors[0] = 0x00FF0000;
@@ -123,10 +123,7 @@ public class SpherePackFactory : SpherePackCallback
 
 
 
-    //public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, USERDATA userdata, int flags) where USERDATA : IUserData
-        //int flags = (int)(SpherePack.SpherePackFlag.SPF_LEAF_TREE))
     public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, SpherePack.Flag flag) where USERDATA : IUserData
-
     {
 
         SpherePack pack = mSpheres.GetFreeLink();
@@ -135,19 +132,20 @@ public class SpherePackFactory : SpherePackCallback
 
         if (null != pack)
         {
-            //if (0 != (flags & (int)(SpherePack.Flag.ROOT_TREE))) //루트트리가 들어 있다면 
+
+            pack.Init(this, pos, radius); //SetSpherePackFlag 함수 보다 먼저 호출되어야 한다. mFlag 정보를 초기화 하기 때문이다. 
+
+            //if (SpherePack.Flag.NONE != (flags & SpherePack.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
             if (flag == SpherePack.Flag.ROOT_TREE) //루트트리 라면 
             {
-                pack.Init(this, pos, radius);
                 pack.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
-                AddIntegrate(pack); // add to integration list.
             }
             else
             {
-                pack.Init(this, pos, radius);
                 pack.SetSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
-                AddIntegrate(pack); // add to integration list.
             }
+
+            AddIntegrate(pack); // add to integration list.
         }
 
         return pack;
@@ -307,7 +305,7 @@ public class SpherePackFactory : SpherePackCallback
 
                 parent.SetSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
                 //#if DEMO
-                parent.SetColor(GetColor());
+                parent.SetColor_Debug(GetColor_Debug());
                 //#endif
                 parent.AddChild(pack);
 
@@ -330,13 +328,6 @@ public class SpherePackFactory : SpherePackCallback
         pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
     }
 
-    public void Render()
-    {
-        //#if DEMO
-        mRoot.Render(mRoot.GetColor());
-        mLeaf.Render(mLeaf.GetColor());
-        //#endif
-    }
 
     public void Remove(SpherePack pack)
     {
@@ -356,18 +347,11 @@ public class SpherePackFactory : SpherePackCallback
         mSpheres.Release(pack);
     }
 
-
-    // see if any other spheres are contained within this one, if so
-    // collapse them and inherit their children.
-    //#if DEMO
-    public uint GetColor()
+    public void ResetFlag()
     {
-        uint ret = mColors[mColorCount];
-        mColorCount++;
-        if (mColorCount == MAXCOLORS) mColorCount = 0;
-        return ret;
+        mRoot.ResetFlag();
+        mLeaf.ResetFlag();
     }
-    //#endif
 
     public void FrustumTest(Frustum f, SpherePackCallback callback)
     {
@@ -395,12 +379,10 @@ public class SpherePackFactory : SpherePackCallback
         mRoot.RangeTest(ref center, radius, this, Frustum.ViewState.PARTIAL);
     }
 
-    public void ResetFlag()
-    {
-        mRoot.ResetFlag();
-        mLeaf.ResetFlag();
-    }
 
+    //========================================================
+    //==================    재정의/구현 함수    ==================
+    //========================================================
 
     //p1: source pos of ray
     //dir: direction of ray
@@ -424,6 +406,31 @@ public class SpherePackFactory : SpherePackCallback
         SpherePack link = sphere.GetUserData<SpherePack>();
         if (null != link) link.VisibilityTest(ref f, mCallback, state);
     }
+
+
+    //========================================================
+    //==================    테스트 출력 함수    ==================
+    //========================================================
+    public void Render_Debug()
+    {
+        //#if DEMO
+        mRoot.Render_Debug(mRoot.GetColor_Debug());
+        mLeaf.Render_Debug(mLeaf.GetColor_Debug());
+        //#endif
+    }
+
+    // see if any other spheres are contained within this one, if so
+    // collapse them and inherit their children.
+    //#if DEMO
+    public uint GetColor_Debug()
+    {
+        uint ret = mColors[mColorCount];
+        mColorCount++;
+        if (mColorCount == MAXCOLORS) mColorCount = 0;
+        return ret;
+    }
+    //#endif
+
 
 
 }

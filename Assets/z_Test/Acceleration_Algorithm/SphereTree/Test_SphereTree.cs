@@ -44,8 +44,10 @@ public class Test_SphereTree : MonoBehaviour
                 break;
         }
 
-        //_circleFactory.Process();
-        //_circleFactory.Render();
+        if (null == _circleFactory) return;
+
+        if (false == _pause)
+            _circleFactory.Process();
 	}
 
 	private void OnDrawGizmos()
@@ -54,8 +56,8 @@ public class Test_SphereTree : MonoBehaviour
 
         if (null == _circleFactory) return;
 
-        if(false == _pause)
-            _circleFactory.Process();
+        //if(false == _pause)
+            //_circleFactory.Process();
         
         _circleFactory.Render();
 	}

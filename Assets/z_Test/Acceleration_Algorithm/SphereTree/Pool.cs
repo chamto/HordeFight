@@ -217,7 +217,7 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         // Add 'item' after 'e'
         if (null != e)
         {
-            Type eprev = e.GetPrevious();
+            //Type eprev = e.GetPrevious();
             Type enext = e.GetNext();
             e.SetNext(item);
             item.SetNext(enext);
@@ -237,7 +237,7 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
     {
         // Add 'item' before 'e'
         Type eprev = e.GetPrevious();
-        Type enext = e.GetNext();
+        //Type enext = e.GetNext();
 
         if (null == eprev)
             mHead = item;

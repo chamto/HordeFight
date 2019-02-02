@@ -217,7 +217,7 @@ public class Circle : IUserData
 
 
         mJumpCounter--;
-        mJumpCounter = 1; //chamto test
+        //mJumpCounter = 1; //chamto test
 
         if (mJumpCounter <= 0)
         {

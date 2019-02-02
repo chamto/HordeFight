@@ -62,7 +62,7 @@ public class SpherePackFifo
                 
         mCount++;
         //SpherePack **ret = &mFifo[mSP]; //chamto 20190115: (mFifo + mSP) == &mFifo[mSP] : 1차원 포인터'배열'공간의 주소값
-        SpherePack ret = mFifo[_SI_push];
+        //SpherePack ret = mFifo[_SI_push];
 
         mFifo[_SI_push] = sphere;
         _SI_push++;

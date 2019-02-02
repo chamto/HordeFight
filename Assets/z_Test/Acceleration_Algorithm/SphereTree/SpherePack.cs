@@ -15,6 +15,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     [FlagsAttribute]
     public enum Flag
     {
+        NONE = 0,
+        
         SUPERSPHERE = (1 << 0), // this is a supersphere, allocated and deleted by us
         ROOT_TREE = (1 << 1), // member of the root tree
         LEAF_TREE = (1 << 2), // member of the leaf node tree
@@ -224,6 +226,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //public void SetUserData(IUserData data) { mUserData = data; }
     //=====================================================
 
+    public Vector3 GetPos() { return mCenter; }
+
 
     public float DistanceSquared(SpherePack pack) { return (mCenter - pack.mCenter).sqrMagnitude; }
 
@@ -274,70 +278,6 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         {
             mFactory.Remove(this);
         }
-    }
-
-    public Vector3 GetPos() { return mCenter; }
-
-    //inline
-    public void Render(uint color)
-    {
-        //#if DEMO
-        if (!HasSpherePackFlag(Flag.ROOTNODE))
-        {
-
-            if (HasSpherePackFlag(Flag.SUPERSPHERE))
-            {
-                color = mColor;
-            }
-            else
-            {
-                if (mParent.HasSpherePackFlag(Flag.ROOTNODE)) color = 0x00FFFFFF;
-            }
-            //#if DEMO
-            DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
-            //#endif
-            if (HasSpherePackFlag(Flag.SUPERSPHERE))
-            {
-                if (HasSpherePackFlag(Flag.LEAF_TREE))
-                {
-
-                    //#if DEMO
-                    DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
-                    //#endif
-                    SpherePack link = GetUserData<SpherePack>();
-
-                    if (null != link)
-                        link = link.GetParent();
-
-                    if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
-                    {
-                        DefineO.DrawLine(mCenter.x, mCenter.y,
-                                  link.mCenter.x, link.mCenter.y,
-                                  link.GetColor());
-                    }
-                }
-                else
-                {
-                    //#if DEMO
-                    DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius() + 3, color);
-                    //#endif
-                }
-
-            }
-
-        }
-
-        if (null != mChildren)
-        {
-            SpherePack pack = mChildren;
-
-            while (null != pack)
-            {
-                pack.Render(color);
-                pack = pack.GetNextSibling();
-            }
-        }
-        //#endif
     }
 
 
@@ -411,11 +351,6 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     }
 
     public int GetChildCount() { return mChildCount; }
-
-    //#if DEMO
-    public void SetColor(uint color) { mColor = color; }
-    public uint GetColor() { return mColor; }
-    //#endif
 
 
     public void SetFifo1(SpherePackFifo.Out_Push fifo)
@@ -609,6 +544,82 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
             pack.ResetFlag();
             pack = pack.GetNextSibling();
         }
+    }
+
+
+
+
+    //========================================================
+    //==================    테스트 출력 함수    ==================
+    //========================================================
+
+    //#if DEMO
+    public void SetColor_Debug(uint color) { mColor = color; }
+    public uint GetColor_Debug() { return mColor; }
+    //#endif
+
+    //inline
+    public void Render_Debug(uint color)
+    {
+        //#if DEMO
+        if (!HasSpherePackFlag(Flag.ROOTNODE))
+        {
+
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
+            {
+                color = mColor;
+            }
+            else
+            {
+                if (mParent.HasSpherePackFlag(Flag.ROOTNODE)) color = 0x00FFFFFF;
+            }
+            //#if DEMO
+            DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
+            //#endif
+
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
+            {
+                if (HasSpherePackFlag(Flag.LEAF_TREE))
+                {
+
+                    //#if DEMO
+                    DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
+                    //#endif
+                    SpherePack link = GetUserData<SpherePack>();
+
+                    if (null != link)
+                        link = link.GetParent();
+
+                    if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
+                    {
+                        DefineO.DrawLine(mCenter.x, mCenter.y,
+                                  link.mCenter.x, link.mCenter.y,
+                                  link.GetColor_Debug());
+                    }
+                }
+                else
+                {
+                    //#if DEMO
+                    DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius() + 3, color);
+                    DefineO.PrintText(mCenter.x, mCenter.y, 0x00FFFFFF, ((Flag)mFlags).ToString()); //chamto test
+                    //#endif
+                }
+
+            }
+
+        }
+
+        if (null != mChildren)
+        {
+            SpherePack pack = mChildren;
+
+            while (null != pack)
+            {
+                pack.Render_Debug(color);
+                pack = pack.GetNextSibling();
+            }
+        }
+        //#endif
     }
 
 
