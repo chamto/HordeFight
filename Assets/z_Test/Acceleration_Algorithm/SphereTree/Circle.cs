@@ -104,11 +104,11 @@ public class CircleItem : IPoolConnector<CircleItem>
     //=====================================================
     //interface 구현 
     //=====================================================
-    public CircleItem GetNext() { return mNext; }
-    public CircleItem GetPrevious() { return mPrevious; }
+    public CircleItem GetPoolNext() { return mNext; }
+    public CircleItem GetPoolPrevious() { return mPrevious; }
 
-    public void SetNext(CircleItem item) { mNext = item; }
-    public void SetPrevious(CircleItem item) { mPrevious = item; }
+    public void SetPoolNext(CircleItem item) { mNext = item; }
+    public void SetPoolPrevious(CircleItem item) { mPrevious = item; }
     //=====================================================
 }
 

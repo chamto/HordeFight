@@ -5,15 +5,16 @@
 /**               Written by John W. Ratcliff jratcliff@att.net        */
 /***********************************************************************/
 
-public interface IPoolConnector<Type> where Type : class , new()
+public interface IPoolConnector<Type> where Type : class, new()
 {
-    void SetNext(Type obj);
-    Type GetNext();
-    void SetPrevious(Type obj);
-    Type GetPrevious();
+    
+    void SetPoolNext(Type obj);
+    Type GetPoolNext();
+    void SetPoolPrevious(Type obj);
+    Type GetPoolPrevious();
 }
 
-public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
+public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
 {
 
     private int mMaxItems = 0;
@@ -65,15 +66,15 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         mHead = null;
         for (int i = 0; i < (mMaxItems - 1); i++)
         {
-            mData[i].SetNext(mData[i + 1]);
+            mData[i].SetPoolNext(mData[i + 1]);
             if (i == 0)
-                mData[i].SetPrevious(null);
+                mData[i].SetPoolPrevious(null);
             else
-                mData[i].SetPrevious(mData[i - 1]);
+                mData[i].SetPoolPrevious(mData[i - 1]);
         }
         //마지막 배열값 설정
-        mData[mMaxItems - 1].SetNext(null);
-        mData[mMaxItems - 1].SetPrevious(mData[mMaxItems - 2]);
+        mData[mMaxItems - 1].SetPoolNext(null);
+        mData[mMaxItems - 1].SetPoolPrevious(mData[mMaxItems - 2]);
 
         mCurrent = null; // there is no current, currently. <g>
         mFreeCount = maxitems;
@@ -100,7 +101,7 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
             ret = mCurrent;
         }
 
-        if (null != ret) mCurrent = ret.GetNext();
+        if (null != ret) mCurrent = ret.GetPoolNext();
 
 
         return ret;
@@ -145,7 +146,7 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         }
 
         //현재것에 다음것을 넣음 
-        if (null != ret) mCurrent = ret.GetNext();
+        if (null != ret) mCurrent = ret.GetPoolNext();
 
 
         return ret;
@@ -155,29 +156,29 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
     public void Release(Type t)
     {
 
-        if (t == mCurrent) mCurrent = t.GetNext();
+        if (t == mCurrent) mCurrent = t.GetPoolNext();
 
         // first patch old linked list.. his previous now points to his next
-        Type prev = t.GetPrevious();
+        Type prev = t.GetPoolPrevious();
 
         if (null != prev)
         {
-            Type next = t.GetNext();
-            prev.SetNext(next); // my previous now points to my next
-            if (null != next) next.SetPrevious(prev);
+            Type next = t.GetPoolNext();
+            prev.SetPoolNext(next); // my previous now points to my next
+            if (null != next) next.SetPoolPrevious(prev);
             // list is patched!
         }
         else
         {
-            Type next = t.GetNext();
+            Type next = t.GetPoolNext();
             mHead = next;
-            if (null != mHead) mHead.SetPrevious(null);
+            if (null != mHead) mHead.SetPoolPrevious(null);
         }
 
         Type temp = mFree; // old head of free list.
         mFree = t; // new head of linked list.
-        t.SetPrevious(null);
-        t.SetNext(temp);
+        t.SetPoolPrevious(null);
+        t.SetPoolNext(temp);
 
         mUsedCount--;
         mFreeCount++;
@@ -188,11 +189,11 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         // Free allocated items are always added to the head of the list
         if (null == mFree) return null;
         Type ret = mFree;
-        mFree = ret.GetNext(); // new head of free list
+        mFree = ret.GetPoolNext(); // new head of free list
         mUsedCount++;
         mFreeCount--;
-        ret.SetNext(null);
-        ret.SetPrevious(null);
+        ret.SetPoolNext(null);
+        ret.SetPoolPrevious(null);
         return ret;
     }
 
@@ -201,12 +202,12 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         // Free allocated items are always added to the head of the list
         if (null == mFree) return null;
         Type ret = mFree;
-        mFree = ret.GetNext(); // new head of free list
+        mFree = ret.GetPoolNext(); // new head of free list
         Type temp = mHead; // current head of list
         mHead = ret;        // new head of list is this free one
-        if (null != temp) temp.SetPrevious(ret);
-        mHead.SetNext(temp);
-        mHead.SetPrevious(null);
+        if (null != temp) temp.SetPoolPrevious(ret);
+        mHead.SetPoolNext(temp);
+        mHead.SetPoolPrevious(null);
         mUsedCount++;
         mFreeCount--;
         return ret;
@@ -218,17 +219,17 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
         if (null != e)
         {
             //Type eprev = e.GetPrevious();
-            Type enext = e.GetNext();
-            e.SetNext(item);
-            item.SetNext(enext);
-            item.SetPrevious(e);
-            if (null != enext) enext.SetPrevious(item);
+            Type enext = e.GetPoolNext();
+            e.SetPoolNext(item);
+            item.SetPoolNext(enext);
+            item.SetPoolPrevious(e);
+            if (null != enext) enext.SetPoolPrevious(item);
         }
         else
         {
             mHead = item;
-            item.SetPrevious(null);
-            item.SetNext(null);
+            item.SetPoolPrevious(null);
+            item.SetPoolNext(null);
         }
 
     }
@@ -236,18 +237,18 @@ public class Pool<Type> where Type : class, IPoolConnector<Type>, new()
     public void AddBefore(Type e, Type item)
     {
         // Add 'item' before 'e'
-        Type eprev = e.GetPrevious();
+        Type eprev = e.GetPoolPrevious();
         //Type enext = e.GetNext();
 
         if (null == eprev)
             mHead = item;
         else
-            eprev.SetNext(item);
+            eprev.SetPoolNext(item);
 
-        item.SetPrevious(eprev);
-        item.SetNext(e);
+        item.SetPoolPrevious(eprev);
+        item.SetPoolNext(e);
 
-        e.SetPrevious(item);
+        e.SetPoolPrevious(item);
 
     }
 

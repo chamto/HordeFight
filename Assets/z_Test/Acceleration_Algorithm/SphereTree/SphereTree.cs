@@ -59,9 +59,14 @@ public class DefineO
 
     static public void PrintText(float x, float y, uint color, string text)
     {
-        UnityEditor.Handles.color = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
+        //UnityEditor.Handles.color = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
 
-        UnityEditor.Handles.Label(new Vector3(x, y, 0), text);
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
+
+        UnityEditor.Handles.BeginGUI();
+        UnityEditor.Handles.Label(new Vector3(x, y, 0), text, style);
+        UnityEditor.Handles.EndGUI();
     }
 }
 //===================================================

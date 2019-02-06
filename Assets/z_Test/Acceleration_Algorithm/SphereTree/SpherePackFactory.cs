@@ -6,7 +6,7 @@ public class SpherePackFactory : SpherePackCallback
 
     private SpherePack mRoot = null;     // 1024x1024 root node of all active spheres.
     private SpherePack mLeaf = null;     // 1024x1024 root node of all active spheres.
-    private SpherePackCallback mCallback = null;
+    private SpherePackCallback mCircleFactory_Callback = null;
 
     private Pool<SpherePack> mSpheres = null;  // all spheres possibly represented.
 
@@ -353,29 +353,29 @@ public class SpherePackFactory : SpherePackCallback
         mLeaf.ResetFlag();
     }
 
-    public void FrustumTest(Frustum f, SpherePackCallback callback)
+    public void FrustumTest(Frustum f, SpherePackCallback circleFactory_callback)
     {
         // test case here, just traverse children.
-        mCallback = callback;
+        mCircleFactory_Callback = circleFactory_callback;
         mRoot.VisibilityTest(ref f, this, Frustum.ViewState.PARTIAL);
     }
 
     //p1: source
     //p2: dest
-    public void RayTrace(ref Vector3 p1, ref Vector3 p2, SpherePackCallback callback)
+    public void RayTrace(ref Vector3 p1, ref Vector3 p2, SpherePackCallback circleFactory_callback)
     {
         // test case here, just traverse children.
         Vector3 dir = p2 - p1;
         float dist = dir.magnitude;
         dir.Normalize();
-        mCallback = callback;
+        mCircleFactory_Callback = circleFactory_callback;
         mRoot.RayTrace(ref p1, ref dir, dist, this);
     }
 
 
-    public void RangeTest(ref Vector3 center, float radius, SpherePackCallback callback)
+    public void RangeTest(ref Vector3 center, float radius, SpherePackCallback circleFactory_callback)
     {
-        mCallback = callback;
+        mCircleFactory_Callback = circleFactory_callback;
         mRoot.RangeTest(ref center, radius, this, Frustum.ViewState.PARTIAL);
     }
 
@@ -391,20 +391,20 @@ public class SpherePackFactory : SpherePackCallback
     public override void RayTraceCallback(ref Vector3 p1, ref Vector3 dir, float distance, ref Vector3 sect, SpherePack sphere)
     {
         SpherePack link = sphere.GetUserData<SpherePack>();
-        if (null != link) link.RayTrace(ref p1, ref dir, distance, mCallback);
+        if (null != link) link.RayTrace(ref p1, ref dir, distance, mCircleFactory_Callback);
     }
 
     public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
     {
         SpherePack link = sphere.GetUserData<SpherePack>();
-        if (null != link) link.RangeTest(ref searchpos, distance, mCallback, state);
+        if (null != link) link.RangeTest(ref searchpos, distance, mCircleFactory_Callback, state);
     }
 
 
     public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
     {
         SpherePack link = sphere.GetUserData<SpherePack>();
-        if (null != link) link.VisibilityTest(ref f, mCallback, state);
+        if (null != link) link.VisibilityTest(ref f, mCircleFactory_Callback, state);
     }
 
 

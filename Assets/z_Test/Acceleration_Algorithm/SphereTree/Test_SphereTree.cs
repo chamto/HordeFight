@@ -7,6 +7,7 @@ public class Test_SphereTree : MonoBehaviour
 
     public CircleFactory _circleFactory = null;
     public bool _pause = false;
+    public float _sphereRadius = 10;
 
 	// Use this for initialization
 	void Start () 
@@ -53,6 +54,8 @@ public class Test_SphereTree : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 
+        DefineO.DrawCircle(0, 0, _sphereRadius, 0x00ffffff);
+        //return;
 
         if (null == _circleFactory) return;
 

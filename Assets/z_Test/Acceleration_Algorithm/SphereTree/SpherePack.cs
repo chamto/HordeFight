@@ -30,14 +30,18 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         INSIDE = (1 << 8)  // completely inside view frustum
     }
 
-    private SpherePack mNext = null; // linked list pointers
-    private SpherePack mPrevious = null; // used by pool memory management linked list code
+    //======================================================
+    //                   메모리풀 전용 변수
+    //======================================================
+    private SpherePack _pool_next = null; // linked list pointers
+    private SpherePack _pool_previous = null; // used by pool memory management linked list code
+    //======================================================
 
-    private SpherePack mParent = null;
-    private SpherePack mChildren = null;  // *my* children
+    private SpherePack mParent = null; //트리 깊이 위로
+    private SpherePack mChildren = null;  //트리 깊이 아래로 
+    private SpherePack mNextSibling = null; //트리 같은 차수 왼쪽으로
+    private SpherePack mPrevSibling = null; //트리 같은 차수 오른쪽으로 
 
-    private SpherePack mNextSibling = null; // doubly linked list of my brothers // our brothers and sisters at this level.
-    private SpherePack mPrevSibling = null; // and sisters
 
     private SpherePackFifo.Out_Push mFifo1; // address of location inside of fifo1
     private SpherePackFifo.Out_Push mFifo2; // address of location inside of fifo2
@@ -211,11 +215,11 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //=====================================================
     //interface 구현 
     //=====================================================
-    public SpherePack GetNext() { return mNext; }
-    public SpherePack GetPrevious() { return mPrevious; }
+    public SpherePack GetPoolNext() { return _pool_next; }
+    public SpherePack GetPoolPrevious() { return _pool_previous; }
 
-    public void SetNext(SpherePack pack) { mNext = pack; }
-    public void SetPrevious(SpherePack pack) { mPrevious = pack; }
+    public void SetPoolNext(SpherePack pack) { _pool_next = pack; }
+    public void SetPoolPrevious(SpherePack pack) { _pool_previous = pack; }
 
     //public void Available_UserData(){}
     //=====================================================
@@ -561,6 +565,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //inline
     public void Render_Debug(uint color)
     {
+        int lineInteval = 6;
         //#if DEMO
         if (!HasSpherePackFlag(Flag.ROOTNODE))
         {
@@ -571,10 +576,13 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
             }
             else
             {
-                if (mParent.HasSpherePackFlag(Flag.ROOTNODE)) color = 0x00FFFFFF;
+                lineInteval = 3;
+                if (mParent.HasSpherePackFlag(Flag.ROOTNODE)) { color = 0x00FFFFFF; lineInteval = 0; }
             }
             //#if DEMO
             DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
+            DefineO.PrintText(mCenter.x, mCenter.y+lineInteval, color, ((Flag)mFlags).ToString() + " r:" +GetRadius()); //chamto test
+
             //#endif
 
             if (HasSpherePackFlag(Flag.SUPERSPHERE))
@@ -584,6 +592,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
                     //#if DEMO
                     DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
+                    //DefineO.PrintText(mCenter.x, mCenter.y, color, ((Flag)mFlags).ToString()); //chamto test
                     //#endif
                     SpherePack link = GetUserData<SpherePack>();
 
@@ -601,7 +610,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                 {
                     //#if DEMO
                     DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius() + 3, color);
-                    DefineO.PrintText(mCenter.x, mCenter.y, 0x00FFFFFF, ((Flag)mFlags).ToString()); //chamto test
+                    //DefineO.PrintText(mCenter.x, mCenter.y, 0x00FFFFFF, ((Flag)mFlags).ToString()); //chamto test
                     //#endif
                 }
 
