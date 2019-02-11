@@ -161,7 +161,7 @@ public class SpherePackFactory : SpherePackCallback
 
         pack.SetSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
         SpherePackFifo.Out_Push fifo = mIntegrate.Push(pack); // add it to the integration stack.
-        pack.SetFifo2(fifo);
+        pack.SetFifoOut2(fifo);
     }
 
     public void AddRecompute(SpherePack recompute)     // add to the recomputation (balancing) FIFO.
@@ -172,7 +172,7 @@ public class SpherePackFactory : SpherePackCallback
             {
                 recompute.SetSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
                 SpherePackFifo.Out_Push fifo = mRecompute.Push(recompute);
-                recompute.SetFifo1(fifo);
+                recompute.SetFifoOut1(fifo);
             }
             else
             {
@@ -181,7 +181,7 @@ public class SpherePackFactory : SpherePackCallback
         }
     }
 
-    public void Integrate(SpherePack pack, SpherePack supersphere, float node_size)
+    public void Integrate(SpherePack src_pack, SpherePack supersphere, float node_size)
     {
         // ok..time to integrate this sphere with the tree
         // first find which supersphere we are closest to the center of
@@ -189,10 +189,10 @@ public class SpherePackFactory : SpherePackCallback
         SpherePack search = supersphere.GetChildren();
 
         SpherePack nearest1 = null;  // nearest supersphere we are completely
-        float neardist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
+        float nearSqrDist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
 
         SpherePack nearest2 = null; // supersphere we must grow the least to
-        float neardist2 = 1e9f;    // add ourselves to.
+        float nearDist2 = 1e9f;    // add ourselves to.
 
         //int scount = 1;
 
@@ -202,18 +202,18 @@ public class SpherePackFactory : SpherePackCallback
                 !search.HasSpherePackFlag(SpherePack.Flag.ROOTNODE) && 0 != search.GetChildCount())
             {
 
-                float dist = pack.DistanceSquared(search);
+                float sqrDist = src_pack.ToDistanceSquared(search);
 
                 if (null != nearest1)
                 {
-                    if (dist < neardist1)
+                    if (sqrDist < nearSqrDist1)
                     {
 
-                        float d = Mathf.Sqrt(dist) + pack.GetRadius();
+                        float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
 
-                        if (d <= search.GetRadius())
+                        if (dist <= search.GetRadius())
                         {
-                            neardist1 = dist;
+                            nearSqrDist1 = sqrDist;
                             nearest1 = search;
                         }
                     }
@@ -221,18 +221,18 @@ public class SpherePackFactory : SpherePackCallback
                 else
                 {
 
-                    float d = (Mathf.Sqrt(dist) + pack.GetRadius()) - search.GetRadius();
+                    float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
 
-                    if (d < neardist2)
+                    if (dist < nearDist2)
                     {
-                        if (d < 0)
+                        if (dist < 0)
                         {
-                            neardist1 = dist;
+                            nearSqrDist1 = sqrDist;
                             nearest1 = search;
                         }
                         else
                         {
-                            neardist2 = d;
+                            nearDist2 = dist;
                             nearest2 = search;
                         }
                     }
@@ -247,9 +247,9 @@ public class SpherePackFactory : SpherePackCallback
             // if we are inside an existing supersphere, we are all good!
             // we need to detach item from wherever it is, and then add it to
             // this supersphere as a child.
-            pack.Unlink();
-            nearest1.AddChild(pack);
-            pack.ComputeBindingDistance(nearest1);
+            src_pack.Unlink();
+            nearest1.AddChild(src_pack);
+            src_pack.ComputeBindingDistance(nearest1);
             nearest1.Recompute(mSuperSphereGravy);
 
             if (nearest1.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
@@ -265,16 +265,16 @@ public class SpherePackFactory : SpherePackCallback
 
             if (null != nearest2)
             {
-                float newsize = neardist2 + nearest2.GetRadius() + mSuperSphereGravy;
+                float newsize = nearDist2 + nearest2.GetRadius() + mSuperSphereGravy;
 
                 if (newsize <= node_size)
                 {
-                    pack.Unlink();
+                    src_pack.Unlink();
 
                     nearest2.SetRadius(newsize);
-                    nearest2.AddChild(pack);
+                    nearest2.AddChild(src_pack);
                     nearest2.Recompute(mSuperSphereGravy);
-                    pack.ComputeBindingDistance(nearest2);
+                    src_pack.ComputeBindingDistance(nearest2);
 
                     if (nearest2.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                     {
@@ -292,11 +292,11 @@ public class SpherePackFactory : SpherePackCallback
             {
                 //assert(supersphere->HasSpherePackFlag(SPF_ROOTNODE));
                 // we are going to create a new superesphere around this guy!
-                pack.Unlink();
+                src_pack.Unlink();
 
                 SpherePack parent = mSpheres.GetFreeLink();
                 //assert(parent);
-                parent.Init(this, pack.GetPos(), pack.GetRadius() + mSuperSphereGravy);
+                parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + mSuperSphereGravy);
 
                 if (supersphere.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
                     parent.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE);
@@ -307,12 +307,12 @@ public class SpherePackFactory : SpherePackCallback
                 //#if DEMO
                 parent.SetColor_Debug(GetColor_Debug());
                 //#endif
-                parent.AddChild(pack);
+                parent.AddChild(src_pack);
 
                 supersphere.AddChild(parent);
 
                 parent.Recompute(mSuperSphereGravy);
-                pack.ComputeBindingDistance(parent);
+                src_pack.ComputeBindingDistance(parent);
 
                 if (parent.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                 {
@@ -325,7 +325,7 @@ public class SpherePackFactory : SpherePackCallback
             }
         }
 
-        pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
+        src_pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
     }
 
 

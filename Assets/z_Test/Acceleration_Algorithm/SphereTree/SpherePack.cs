@@ -43,8 +43,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     private SpherePack mPrevSibling = null; //트리 같은 차수 오른쪽으로 
 
 
-    private SpherePackFifo.Out_Push mFifo1; // address of location inside of fifo1
-    private SpherePackFifo.Out_Push mFifo2; // address of location inside of fifo2
+    private SpherePackFifo.Out_Push mFifoOut1; // address of location inside of fifo1
+    private SpherePackFifo.Out_Push mFifoOut2; // address of location inside of fifo2
 
     private int mFlags; // my bit flags.
     private int mChildCount = 0; // number of children
@@ -77,8 +77,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         mNextSibling = null;
         mPrevSibling = null;
         mFlags = 0;
-        mFifo1.Init();
-        mFifo2.Init();
+        mFifoOut1.Init();
+        mFifoOut2.Init();
         mFactory = factory;
         mCenter = pos;
         SetRadius(radius);
@@ -109,7 +109,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         if (null != mParent && !HasSpherePackFlag(Flag.INTEGRATE))
         {
 
-            float dist = DistanceSquared(mParent);  // compute squared distance to our parent.
+            float dist = ToDistanceSquared(mParent);  // compute squared distance to our parent.
 
             if (dist >= mBindingDistance) // if that exceeds our binding distance...
             {
@@ -144,7 +144,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                 ComputeBindingDistance(mParent);
             }
 
-            float dist = DistanceSquared(mParent);
+            float dist = ToDistanceSquared(mParent);
 
             if (dist >= mBindingDistance)
             {
@@ -162,18 +162,18 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
     public void Unlink()
     {
-        if (false == mFifo1.IsNull()) // if we belong to fifo1, null us out
+        if (false == mFifoOut1.IsNull()) // if we belong to fifo1, null us out
         {
             //*mFifo1 = null;
-            mFifo1.Unlink();
-            mFifo1.Init();
+            mFifoOut1.Unlink();
+            mFifoOut1.Init();
         }
 
-        if (false == mFifo2.IsNull()) // if we belong to fifo2, null us out
+        if (false == mFifoOut2.IsNull()) // if we belong to fifo2, null us out
         {
             //*mFifo2 = null;
-            mFifo2.Unlink();
-            mFifo2.Init();
+            mFifoOut2.Unlink();
+            mFifoOut2.Init();
         }
 
         if (null != mParent) mParent.LostChild(this);
@@ -198,7 +198,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
         mChildCount++;
 
-        float dist = DistanceSquared(pack);
+        float dist = ToDistanceSquared(pack);
         float radius = Mathf.Sqrt(dist) + pack.GetRadius();
 
         //assert(radius <= GetRadius());
@@ -233,7 +233,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     public Vector3 GetPos() { return mCenter; }
 
 
-    public float DistanceSquared(SpherePack pack) { return (mCenter - pack.mCenter).sqrMagnitude; }
+    public float ToDistanceSquared(SpherePack pack) { return (mCenter - pack.mCenter).sqrMagnitude; }
 
     //inline
     public void LostChild(SpherePack t)
@@ -317,7 +317,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
             while (null != pack)
             {
-                float dist = DistanceSquared(pack);
+                float dist = ToDistanceSquared(pack);
                 float radius = Mathf.Sqrt(dist) + pack.GetRadius();
                 if (radius > maxradius)
                 {
@@ -357,24 +357,24 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     public int GetChildCount() { return mChildCount; }
 
 
-    public void SetFifo1(SpherePackFifo.Out_Push fifo)
+    public void SetFifoOut1(SpherePackFifo.Out_Push fifo_out)
     {
-        mFifo1 = fifo;
+        mFifoOut1 = fifo_out;
     }
 
-    public void SetFifo2(SpherePackFifo.Out_Push fifo)
+    public void SetFifoOut2(SpherePackFifo.Out_Push fifo_out)
     {
-        mFifo2 = fifo;
+        mFifoOut2 = fifo_out;
     }
 
     public void InitFifo1()
     {
-        mFifo1.Init();
+        mFifoOut1.Init();
     }
 
     public void InitFifo2()
     {
-        mFifo2.Init();
+        mFifoOut2.Init();
     }
 
     public void ComputeBindingDistance(SpherePack parent)
@@ -383,7 +383,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         if (mBindingDistance <= 0)
             mBindingDistance = 0;
         else
-            mBindingDistance *= mBindingDistance;
+            mBindingDistance = mBindingDistance * mBindingDistance;
     }
 
     public void VisibilityTest(ref Frustum f, SpherePackCallback callback, Frustum.ViewState state)
