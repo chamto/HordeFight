@@ -43,8 +43,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     private SpherePack mPrevSibling = null; //트리 같은 차수 오른쪽으로 
 
 
-    private SpherePackFifo.Out_Push mFifoOut1; // address of location inside of fifo1
-    private SpherePackFifo.Out_Push mFifoOut2; // address of location inside of fifo2
+    private SpherePackFifo.Out_Point _recompute_fifoOut; // address of location inside of fifo1
+    private SpherePackFifo.Out_Point _intergrate_fifoOut; // address of location inside of fifo2
 
     private int mFlags; // my bit flags.
     private int mChildCount = 0; // number of children
@@ -77,8 +77,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
         mNextSibling = null;
         mPrevSibling = null;
         mFlags = 0;
-        mFifoOut1.Init();
-        mFifoOut2.Init();
+        _recompute_fifoOut.Init();
+        _intergrate_fifoOut.Init();
         mFactory = factory;
         mCenter = pos;
         SetRadius(radius);
@@ -162,18 +162,18 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
 
     public void Unlink()
     {
-        if (false == mFifoOut1.IsNull()) // if we belong to fifo1, null us out
+        if (false == _recompute_fifoOut.IsNull()) // if we belong to fifo1, null us out
         {
             //*mFifo1 = null;
-            mFifoOut1.Unlink();
-            mFifoOut1.Init();
+            _recompute_fifoOut.Unlink();
+            _recompute_fifoOut.Init();
         }
 
-        if (false == mFifoOut2.IsNull()) // if we belong to fifo2, null us out
+        if (false == _intergrate_fifoOut.IsNull()) // if we belong to fifo2, null us out
         {
             //*mFifo2 = null;
-            mFifoOut2.Unlink();
-            mFifoOut2.Init();
+            _intergrate_fifoOut.Unlink();
+            _intergrate_fifoOut.Init();
         }
 
         if (null != mParent) mParent.LostChild(this);
@@ -357,24 +357,24 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     public int GetChildCount() { return mChildCount; }
 
 
-    public void SetFifoOut1(SpherePackFifo.Out_Push fifo_out)
+    public void SetRecompute_FifoOut(SpherePackFifo.Out_Point fifo_out)
     {
-        mFifoOut1 = fifo_out;
+        _recompute_fifoOut = fifo_out;
     }
 
-    public void SetFifoOut2(SpherePackFifo.Out_Push fifo_out)
+    public void SetIntergrate_FifoOut(SpherePackFifo.Out_Point fifo_out)
     {
-        mFifoOut2 = fifo_out;
+        _intergrate_fifoOut = fifo_out;
     }
 
-    public void InitFifo1()
+    public void InitRecompute_FifoOut()
     {
-        mFifoOut1.Init();
+        _recompute_fifoOut.Init();
     }
 
-    public void InitFifo2()
+    public void InitIntergrate_FifoOut()
     {
-        mFifoOut2.Init();
+        _intergrate_fifoOut.Init();
     }
 
     public void ComputeBindingDistance(SpherePack parent)

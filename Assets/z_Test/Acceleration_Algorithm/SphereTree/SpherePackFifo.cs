@@ -9,7 +9,7 @@ public class SpherePackFifo
 
     private SpherePack[] mFifo = null;
 
-    public struct Out_Push
+    public struct Out_Point
     {
         public int queueIndex;
         public SpherePackFifo packFifo;
@@ -54,22 +54,27 @@ public class SpherePackFifo
 
 
     //public SpherePack ** Push(SpherePack *sphere)
-    public Out_Push Push(SpherePack sphere)
+    public Out_Point Push(SpherePack sphere)
     {
-        Out_Push out_Push;
-        out_Push.packFifo = this;
-        out_Push.queueIndex = _tail; //큐 위치를 반환한다 
+        Out_Point out_point;
+        out_point.packFifo = this;
+        out_point.queueIndex = _tail; //큐 위치를 반환한다 
                 
         mCount++;
         //SpherePack **ret = &mFifo[mSP]; //chamto 20190115: (mFifo + mSP) == &mFifo[mSP] : 1차원 포인터'배열'공간의 주소값
-        //SpherePack ret = mFifo[_SI_push];
+        // &*(mFifo + mSP) == &mFifo[mSP] == (mFifo + mSP)
 
         mFifo[_tail] = sphere;
         _tail++;
         if (_tail == mFifoSize) _tail = 0;
 
-        return out_Push;
+        return out_point;
     }
+
+    // 큐 구조 : [ head o o o o tail x x x x ]
+    //head 에서 값을 꺼내고 , tail 에 값을 넣는다 
+    // 큐 구조 : [ head == tail x x x x ]
+    //head 와 tail 이 같은 경우는 , 큐가 비어 있다는 의미이다  
 
     //public SpherePack * Pop(void)
     public SpherePack Pop()

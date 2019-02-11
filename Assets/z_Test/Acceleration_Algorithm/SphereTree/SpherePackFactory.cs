@@ -93,7 +93,7 @@ public class SpherePackFactory : SpherePackCallback
                 SpherePack pack = mRecompute.Pop();
                 if (null == pack) break;
                 //pack.SetFifo1(null); // no longer on the fifo!!
-                pack.InitFifo1();
+                pack.InitRecompute_FifoOut();
                 bool kill = pack.Recompute(mSuperSphereGravy);
                 if (kill) Remove(pack);
             }
@@ -110,7 +110,7 @@ public class SpherePackFactory : SpherePackCallback
                 SpherePack pack = mIntegrate.Pop();
                 if (null == pack) break;
                 //pack.SetFifo2(null);
-                pack.InitFifo2();
+                pack.InitIntergrate_FifoOut();
 
                 if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
                     Integrate(pack, mRoot, mMaxRootSize); // integrate this one single dude against the root node.
@@ -160,23 +160,23 @@ public class SpherePackFactory : SpherePackCallback
             mLeaf.AddChild(pack);
 
         pack.SetSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
-        SpherePackFifo.Out_Push fifo = mIntegrate.Push(pack); // add it to the integration stack.
-        pack.SetFifoOut2(fifo);
+        SpherePackFifo.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
+        pack.SetIntergrate_FifoOut(fifo);
     }
 
-    public void AddRecompute(SpherePack recompute)     // add to the recomputation (balancing) FIFO.
+    public void AddRecompute(SpherePack pack)     // add to the recomputation (balancing) FIFO.
     {
-        if (!recompute.HasSpherePackFlag(SpherePack.Flag.RECOMPUTE))
+        if (!pack.HasSpherePackFlag(SpherePack.Flag.RECOMPUTE))
         {
-            if (0 != recompute.GetChildCount())
+            if (0 != pack.GetChildCount())
             {
-                recompute.SetSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
-                SpherePackFifo.Out_Push fifo = mRecompute.Push(recompute);
-                recompute.SetFifoOut1(fifo);
+                pack.SetSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
+                SpherePackFifo.Out_Point fifo = mRecompute.Push(pack);
+                pack.SetRecompute_FifoOut(fifo);
             }
             else
             {
-                Remove(recompute);
+                Remove(pack);
             }
         }
     }
