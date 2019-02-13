@@ -62,9 +62,9 @@ public class CircleFactory : SpherePackCallback
 
             Vector3 pos = new Vector3(Misc.rand.Next() % DefineO.SW_ID, Misc.rand.Next() % DefineO.SH_IT, 0);
             float radius = (Misc.rand.Next() % 4) + 1;
-            SpherePack spherePack = mFactory.AddSphere<Circle>(pos, radius, SpherePack.Flag.LEAF_TREE);
+            SpherePack spherePack = mFactory.AddSphere(pos, radius, SpherePack.Flag.LEAF_TREE);
             mCircles[i] = new Circle(pos, radius, spherePack, at);
-            spherePack.SetUserData<Circle>(mCircles[i]);
+            spherePack.SetData_LeafTree<Circle>(mCircles[i]);
 
         }
     }
@@ -329,7 +329,7 @@ public class CircleFactory : SpherePackCallback
 
     public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
     {
-        Circle circle = sphere.GetUserData<Circle>();
+        Circle circle = sphere.GetData_LeafTree<Circle>();
 
         if (state == Frustum.ViewState.OUTSIDE) // it is not visible!
         {

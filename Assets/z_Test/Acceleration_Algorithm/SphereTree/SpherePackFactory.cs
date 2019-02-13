@@ -123,7 +123,7 @@ public class SpherePackFactory : SpherePackCallback
 
 
 
-    public SpherePack AddSphere<USERDATA>(Vector3 pos, float radius, SpherePack.Flag flag) where USERDATA : IUserData
+    public SpherePack AddSphere(Vector3 pos, float radius, SpherePack.Flag flag)
     {
 
         SpherePack pack = mSpheres.GetFreeLink();
@@ -254,7 +254,7 @@ public class SpherePackFactory : SpherePackCallback
 
             if (nearest1.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
             {
-                SpherePack link = nearest1.GetUserData<SpherePack>();
+                SpherePack link = nearest1.GetData_RootTree();
                 link.NewPosRadius(nearest1.GetPos(), nearest1.GetRadius());
             }
 
@@ -278,7 +278,7 @@ public class SpherePackFactory : SpherePackCallback
 
                     if (nearest2.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                     {
-                        SpherePack link = nearest2.GetUserData<SpherePack>();
+                        SpherePack link = nearest2.GetData_RootTree();
                         link.NewPosRadius(nearest2.GetPos(), nearest2.GetRadius());
                     }
 
@@ -317,9 +317,9 @@ public class SpherePackFactory : SpherePackCallback
                 if (parent.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                 {
                     // need to create parent association!
-                    SpherePack link = AddSphere<SpherePack>(parent.GetPos(), parent.GetRadius(), SpherePack.Flag.ROOT_TREE);
-                    link.SetUserData<SpherePack>(parent);
-                    parent.SetUserData<SpherePack>(link); // hook him up!!
+                    SpherePack link = AddSphere(parent.GetPos(), parent.GetRadius(), SpherePack.Flag.ROOT_TREE);
+                    link.SetData_RootTree(parent);
+                    parent.SetData_RootTree(link); // hook him up!!
                 }
 
             }
@@ -337,7 +337,7 @@ public class SpherePackFactory : SpherePackCallback
         if (pack.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
         {
 
-            SpherePack link = pack.GetUserData<SpherePack>();
+            SpherePack link = pack.GetData_RootTree();
 
             Remove(link);
         }
@@ -390,20 +390,20 @@ public class SpherePackFactory : SpherePackCallback
     //sect: intersection location
     public override void RayTraceCallback(ref Vector3 p1, ref Vector3 dir, float distance, ref Vector3 sect, SpherePack sphere)
     {
-        SpherePack link = sphere.GetUserData<SpherePack>();
+        SpherePack link = sphere.GetData_RootTree();
         if (null != link) link.RayTrace(ref p1, ref dir, distance, mCircleFactory_Callback);
     }
 
     public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
     {
-        SpherePack link = sphere.GetUserData<SpherePack>();
+        SpherePack link = sphere.GetData_RootTree();
         if (null != link) link.RangeTest(ref searchpos, distance, mCircleFactory_Callback, state);
     }
 
 
     public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
     {
-        SpherePack link = sphere.GetUserData<SpherePack>();
+        SpherePack link = sphere.GetData_RootTree();
         if (null != link) link.VisibilityTest(ref f, mCircleFactory_Callback, state);
     }
 

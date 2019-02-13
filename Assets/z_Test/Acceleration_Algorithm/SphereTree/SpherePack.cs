@@ -8,7 +8,7 @@ public interface IUserData
     //void Available_UserData();
 }
 
-public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
+public class SpherePack : Sphere , IPoolConnector<SpherePack>
 {
     //enum을 비트연산의 대상으로 하고자 할때 [FlagsAttribute]를 넣어준다 
     //ref : https://docs.microsoft.com/en-us/dotnet/api/system.flagsattribute?redirectedfrom=MSDN&view=netframework-4.7.2
@@ -52,7 +52,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     private float mBindingDistance;
 
     //private void* mUserData = null;
-    private IUserData mUserData = null;
+    private SpherePack _data_rootTree = null;
+    private IUserData _data_leafTree = null;
 
     private SpherePackFactory mFactory = null; // the factory we are a member of.
                                                 //#if DEMO
@@ -71,7 +72,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //public void Init(SpherePackFactory factory, Vector3 pos, float radius, IUserData userdata)
     public void Init(SpherePackFactory factory, Vector3 pos, float radius)
     {
-        mUserData = null;
+        _data_rootTree = null;
         //mUserData = userdata;
         mParent = null;
         mNextSibling = null;
@@ -224,8 +225,12 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
     //public void Available_UserData(){}
     //=====================================================
 
-    public T GetUserData<T>() where T : IUserData { return (T)mUserData; }
-    public void SetUserData<T>(T data) where T : IUserData { mUserData = (IUserData)data; }
+
+    public T GetData_LeafTree<T>() where T : IUserData { return (T)_data_leafTree; }
+    public void SetData_LeafTree<T>(T data) where T : IUserData { _data_leafTree = (IUserData)data; }
+
+    public SpherePack GetData_RootTree()  { return _data_rootTree; }
+    public void SetData_RootTree(SpherePack data) { _data_rootTree = data; }
     //public IUserData GetUserData() { return mUserData; }
     //public void SetUserData(IUserData data) { mUserData = data; }
     //=====================================================
@@ -594,7 +599,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack> , IUserData
                     DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
                     //DefineO.PrintText(mCenter.x, mCenter.y, color, ((Flag)mFlags).ToString()); //chamto test
                     //#endif
-                    SpherePack link = GetUserData<SpherePack>();
+                    SpherePack link = GetData_RootTree();
 
                     if (null != link)
                         link = link.GetParent();
