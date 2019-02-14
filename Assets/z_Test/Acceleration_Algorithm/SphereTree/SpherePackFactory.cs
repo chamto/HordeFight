@@ -41,7 +41,7 @@ public class SpherePackFactory : SpherePackCallback
 
         mRoot = mSpheres.GetFreeLink(); // initially empty
         mRoot.Init(this, p, 65536);
-        mRoot.SetSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
+        mRoot.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
 
         //#if DEMO
         mRoot.SetColor_Debug(0x00FFFFFF);
@@ -49,7 +49,7 @@ public class SpherePackFactory : SpherePackCallback
 
         mLeaf = mSpheres.GetFreeLink();  // initially empty
         mLeaf.Init(this, p, 16384);
-        mLeaf.SetSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.LEAF_TREE));
+        mLeaf.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.LEAF_TREE));
 
         //#if DEMO
         mColors = new uint[MAXCOLORS];
@@ -138,11 +138,11 @@ public class SpherePackFactory : SpherePackCallback
             //if (SpherePack.Flag.NONE != (flags & SpherePack.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
             if (flag == SpherePack.Flag.ROOT_TREE) //루트트리 라면 
             {
-                pack.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
+                pack.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
             }
             else
             {
-                pack.SetSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
+                pack.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
             }
 
             AddIntegrate(pack); // add to integration list.
@@ -159,7 +159,7 @@ public class SpherePackFactory : SpherePackCallback
         else
             mLeaf.AddChild(pack);
 
-        pack.SetSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
+        pack.AddSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
         SpherePackFifo.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
         pack.SetIntergrate_FifoOut(fifo);
     }
@@ -170,7 +170,7 @@ public class SpherePackFactory : SpherePackCallback
         {
             if (0 != pack.GetChildCount())
             {
-                pack.SetSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
+                pack.AddSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
                 SpherePackFifo.Out_Point fifo = mRecompute.Push(pack);
                 pack.SetRecompute_FifoOut(fifo);
             }
@@ -299,11 +299,11 @@ public class SpherePackFactory : SpherePackCallback
                 parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + mSuperSphereGravy);
 
                 if (supersphere.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
-                    parent.SetSpherePackFlag(SpherePack.Flag.ROOT_TREE);
+                    parent.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE);
                 else
-                    parent.SetSpherePackFlag(SpherePack.Flag.LEAF_TREE);
+                    parent.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE);
 
-                parent.SetSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
+                parent.AddSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
                 //#if DEMO
                 parent.SetColor_Debug(GetColor_Debug());
                 //#endif
@@ -411,12 +411,16 @@ public class SpherePackFactory : SpherePackCallback
     //========================================================
     //==================    테스트 출력 함수    ==================
     //========================================================
-    public void Render_Debug()
+    public void Render_Debug(eRender_Tree opt)
     {
-        //#if DEMO
-        mRoot.Render_Debug(mRoot.GetColor_Debug());
-        mLeaf.Render_Debug(mLeaf.GetColor_Debug());
-        //#endif
+        
+        bool textOn = (eRender_Tree.NONE != (eRender_Tree.TEXT & opt));
+
+        if(eRender_Tree.NONE != (eRender_Tree.ROOT & opt))
+            mRoot.Render_Debug(mRoot.GetColor_Debug(), textOn );
+        if(eRender_Tree.NONE != (eRender_Tree.LEAF & opt))
+            mLeaf.Render_Debug(mLeaf.GetColor_Debug(), textOn );
+
     }
 
     // see if any other spheres are contained within this one, if so

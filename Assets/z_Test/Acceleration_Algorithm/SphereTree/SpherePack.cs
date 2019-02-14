@@ -86,8 +86,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     }
 
     // Access to SpherePack bit flags.
-    public void SetSpherePackFlag(int flag) { mFlags |= flag; }
-    public void SetSpherePackFlag(Flag flag) { mFlags |= (int)flag; }
+    public void AddSpherePackFlag(int flag) { mFlags |= flag; }
+    public void AddSpherePackFlag(Flag flag) { mFlags |= (int)flag; }
     public void ClearSpherePackFlag(int flag) { mFlags &= ~flag; }
     public bool HasSpherePackFlag(Flag flag)
     {
@@ -412,7 +412,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
             {
                 if (HasSpherePackFlag(Flag.HIDDEN)) return; // no state change
                 ClearSpherePackFlag((int)(Flag.INSIDE | Flag.PARTIAL));
-                SetSpherePackFlag(Flag.HIDDEN);
+                AddSpherePackFlag(Flag.HIDDEN);
             }
             else
             {
@@ -420,12 +420,12 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
                 {
                     if (HasSpherePackFlag(Flag.INSIDE)) return; // no state change
                     ClearSpherePackFlag((int)(Flag.PARTIAL | Flag.HIDDEN));
-                    SetSpherePackFlag(Flag.INSIDE);
+                    AddSpherePackFlag(Flag.INSIDE);
                 }
                 else
                 {
                     ClearSpherePackFlag((int)(Flag.HIDDEN | Flag.INSIDE));
-                    SetSpherePackFlag(Flag.PARTIAL);
+                    AddSpherePackFlag(Flag.PARTIAL);
                 }
             }
 
@@ -446,7 +446,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
                     if (!HasSpherePackFlag(Flag.INSIDE))
                     {
                         ClearSpherePackFlag((int)(Flag.HIDDEN | Flag.PARTIAL));
-                        SetSpherePackFlag(Flag.INSIDE);
+                        AddSpherePackFlag(Flag.INSIDE);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
@@ -454,7 +454,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
                     if (!HasSpherePackFlag(Flag.HIDDEN))
                     {
                         ClearSpherePackFlag((int)(Flag.INSIDE | Flag.PARTIAL));
-                        SetSpherePackFlag(Flag.HIDDEN);
+                        AddSpherePackFlag(Flag.HIDDEN);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
@@ -462,7 +462,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
                     if (!HasSpherePackFlag(Flag.PARTIAL))
                     {
                         ClearSpherePackFlag((int)(Flag.INSIDE | Flag.HIDDEN));
-                        SetSpherePackFlag(Flag.PARTIAL);
+                        AddSpherePackFlag(Flag.PARTIAL);
                         callback.VisibilityCallback(f, this, state);
                     }
                     break;
@@ -568,7 +568,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     //#endif
 
     //inline
-    public void Render_Debug(uint color)
+    public void Render_Debug(uint color , bool renderText)
     {
         int lineInteval = 6;
         //#if DEMO
@@ -586,7 +586,9 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
             }
             //#if DEMO
             DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
-            DefineO.PrintText(mCenter.x, mCenter.y+lineInteval, color, ((Flag)mFlags).ToString() + " r:" +GetRadius()); //chamto test
+
+            if(renderText)
+                DefineO.PrintText(mCenter.x, mCenter.y+lineInteval, color, ((Flag)mFlags).ToString() + " r:" +GetRadius()); //chamto test
 
             //#endif
 
@@ -629,7 +631,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
 
             while (null != pack)
             {
-                pack.Render_Debug(color);
+                pack.Render_Debug(color, renderText);
                 pack = pack.GetNextSibling();
             }
         }

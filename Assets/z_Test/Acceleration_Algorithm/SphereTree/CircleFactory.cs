@@ -1,8 +1,18 @@
+
+using System;
 using UnityEngine;
-using System.Collections;
 using UtilGS9;
 
-
+[FlagsAttribute]
+public enum eRender_Tree
+{
+    NONE = 0,
+    ROOT = 1 << 0,
+    LEAF = 1 << 1,
+    TEXT = 1 << 2,
+    ALL1 = ROOT + LEAF,
+    ALL2 = ROOT + LEAF + TEXT,
+}
 public class CircleFactory : SpherePackCallback
 {
     public const int MAX_ATTRACTORS = 16;
@@ -17,7 +27,7 @@ public class CircleFactory : SpherePackCallback
     private Pool<CircleItem> mVisible = null;
     private int mCircleCount;
 
-
+    private eRender_Tree _render_tree = eRender_Tree.ALL1;
 
     public CircleFactory(int circlecount)
     {
@@ -70,6 +80,8 @@ public class CircleFactory : SpherePackCallback
     }
 
 
+    public void SetRenderMode(eRender_Tree opt) { _render_tree = opt; }
+
 
     public void SetState(Circle.State s) { mState = s; }
 
@@ -117,6 +129,7 @@ public class CircleFactory : SpherePackCallback
     }
 
 
+
     private int __fcount = 0;
     private Frustum __f = new Frustum();
 
@@ -136,8 +149,7 @@ public class CircleFactory : SpherePackCallback
 
     public int Render()
     {
-        //static int fcount = 0;
-
+        
         __fcount++;
 
         uint color1 = (uint)0xFFFFFF;
@@ -148,7 +160,7 @@ public class CircleFactory : SpherePackCallback
         switch (mState)
         {
             case Circle.State.SHOW_ALL:
-                mFactory.Render_Debug();
+                mFactory.Render_Debug(_render_tree);
                 color1 = (uint)0x00FFFF;
                 break;
             case Circle.State.SHOW_FRUSTUM:
@@ -259,6 +271,7 @@ public class CircleFactory : SpherePackCallback
         DefineO.PrintText(900, 40, color3, "(T) Ray Tracing");
         DefineO.PrintText(900, 60, color4, "(R) Range Testing");
         DefineO.PrintText(900, 80, 0xFFFFFF, "(P) Pause");
+        DefineO.PrintText(900, 100, 0xFFFFFF, "(1, 2, 3, 4) Render Tree Mode");
 
 
         return 0;
