@@ -43,8 +43,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     private SpherePack mPrevSibling = null; //트리 같은 차수 오른쪽으로 
 
 
-    private SpherePackFifo.Out_Point _recompute_fifoOut; // address of location inside of fifo1
-    private SpherePackFifo.Out_Point _intergrate_fifoOut; // address of location inside of fifo2
+    private QFifo<SpherePack>.Out_Point _recompute_fifoOut; // address of location inside of fifo1
+    private QFifo<SpherePack>.Out_Point _intergrate_fifoOut; // address of location inside of fifo2
 
     private int mFlags; // my bit flags.
     private int mChildCount = 0; // number of children
@@ -362,12 +362,12 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     public int GetChildCount() { return mChildCount; }
 
 
-    public void SetRecompute_FifoOut(SpherePackFifo.Out_Point fifo_out)
+    public void SetRecompute_FifoOut(QFifo<SpherePack>.Out_Point fifo_out)
     {
         _recompute_fifoOut = fifo_out;
     }
 
-    public void SetIntergrate_FifoOut(SpherePackFifo.Out_Point fifo_out)
+    public void SetIntergrate_FifoOut(QFifo<SpherePack>.Out_Point fifo_out)
     {
         _intergrate_fifoOut = fifo_out;
     }

@@ -10,8 +10,8 @@ public class SpherePackFactory : SpherePackCallback
 
     private Pool<SpherePack> mSpheres = null;  // all spheres possibly represented.
 
-    private SpherePackFifo mIntegrate = null; // integration fifo
-    private SpherePackFifo mRecompute = null; // recomputation fifo
+    private QFifo<SpherePack> mIntegrate = null; // integration fifo
+    private QFifo<SpherePack> mRecompute = null; // recomputation fifo
 
     //#if DEMO
     //#define MAXCOLORS 12
@@ -32,8 +32,8 @@ public class SpherePackFactory : SpherePackCallback
         mMaxLeafSize = leafsize;
         mSuperSphereGravy = gravy;
 
-        mIntegrate = new SpherePackFifo(maxspheres);
-        mRecompute = new SpherePackFifo(maxspheres);
+        mIntegrate = new QFifo<SpherePack>(maxspheres);
+        mRecompute = new QFifo<SpherePack>(maxspheres);
         mSpheres = new Pool<SpherePack>();
         mSpheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
 
@@ -160,7 +160,7 @@ public class SpherePackFactory : SpherePackCallback
             mLeaf.AddChild(pack);
 
         pack.AddSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
-        SpherePackFifo.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
+        QFifo<SpherePack>.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
         pack.SetIntergrate_FifoOut(fifo);
     }
 
@@ -171,7 +171,7 @@ public class SpherePackFactory : SpherePackCallback
             if (0 != pack.GetChildCount())
             {
                 pack.AddSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
-                SpherePackFifo.Out_Point fifo = mRecompute.Push(pack);
+                QFifo<SpherePack>.Out_Point fifo = mRecompute.Push(pack);
                 pack.SetRecompute_FifoOut(fifo);
             }
             else

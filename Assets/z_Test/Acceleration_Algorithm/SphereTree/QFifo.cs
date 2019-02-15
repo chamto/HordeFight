@@ -1,18 +1,18 @@
 
 
-public class SpherePackFifo
+public class QFifo<MODEL> where MODEL : class
 {
     private int mCount; //현재 들어있는 데이터갯수 (flush 한 데이터도 포함한다)
     private int _tail; //Push queue index. 새로 넣을 위치점
     private int _head; //Pop queue index. 꺼낼 위치점 
     private int mFifoSize; //최대 fifo 사이즈 
 
-    private SpherePack[] mFifo = null;
+    private MODEL[] mFifo = null;
 
     public struct Out_Point
     {
         public int queueIndex;
-        public SpherePackFifo packFifo;
+        public QFifo<MODEL> packFifo;
 
         public void Init()
         {
@@ -25,7 +25,7 @@ public class SpherePackFifo
             return packFifo == null;
         }
 
-        public SpherePack Unlink()
+        public MODEL Unlink()
         {
             if(null != packFifo)
             {
@@ -35,14 +35,14 @@ public class SpherePackFifo
         }
     }
 
-    public SpherePackFifo(int fifosize)
+    public QFifo(int fifosize)
     {
         mCount = 0;
         _tail = 0;
         _head = 0;
         mFifoSize = fifosize;
 
-        mFifo = new SpherePack[mFifoSize];
+        mFifo = new MODEL[mFifoSize];
     }
 
     // ~SpherePackFifo(void)
@@ -54,7 +54,7 @@ public class SpherePackFifo
 
 
     //public SpherePack ** Push(SpherePack *sphere)
-    public Out_Point Push(SpherePack sphere)
+    public Out_Point Push(MODEL sphere)
     {
         Out_Point out_point;
         out_point.packFifo = this;
@@ -77,13 +77,13 @@ public class SpherePackFifo
     //head 와 tail 이 같은 경우는 , 큐가 비어 있다는 의미이다  
 
     //public SpherePack * Pop(void)
-    public SpherePack Pop()
+    public MODEL Pop()
     {
         while (_tail != _head) //데이터가 있다면 
         {
             mCount--;
             //SpherePack *ret = mFifo[mBottom];
-            SpherePack ret = mFifo[_head];
+            MODEL ret = mFifo[_head];
             _head++;
             if (_head == mFifoSize) _head = 0;
             if (null != ret) return ret;
@@ -92,9 +92,9 @@ public class SpherePackFifo
     }
 
     //Out_Push 객체에서 사용하는 전용함수 
-    private SpherePack Unlink(int queueIndex)
+    private MODEL Unlink(int queueIndex)
     {
-        SpherePack pack = mFifo[queueIndex];
+        MODEL pack = mFifo[queueIndex];
         mFifo[queueIndex] = null;
 
         return pack;
@@ -102,7 +102,7 @@ public class SpherePackFifo
 
     //사용처가 없는 함수 
     //데이터의 갯수는 변경하지 않고, 데이터만 날린다 
-    private bool Flush(SpherePack pack)
+    private bool Flush(MODEL pack)
     {
         if (_tail == _head) return false; //push 와 pop 이 값다면 데이터가 없는 상태이다. 한번도 넣고 빼기를 안했거나, 같은 횟수로 넣거나 뺀경우이다. 
         int i = _head;
