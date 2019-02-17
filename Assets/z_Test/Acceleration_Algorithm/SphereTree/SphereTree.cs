@@ -28,15 +28,15 @@ public class SphereModel : IPoolConnector<SphereModel>
     protected float _radius;
     protected float _radius_sqr;
 
-    //======================================================
+    //------------------------------------------------------
     //                   메모리풀 전용 변수
-    //======================================================
+    //------------------------------------------------------
     private SphereModel _pool_next = null; 
     private SphereModel _pool_prev = null; 
 
-    //======================================================
+    //------------------------------------------------------
     //                    트리 링크 변수
-    //======================================================
+    //------------------------------------------------------
     private SphereModel _parent = null; //트리 깊이 위로
     private SphereModel _children = null;  //트리 깊이 아래로 
     private SphereModel _sibling_next = null; //트리 같은 차수 왼쪽으로
@@ -49,9 +49,15 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     private SphereModel _data_rootTree = null;
 
-    //======================================================
+
+    //------------------------------------------------------
+
     private int _childCount = 0;
-    private float _bindingDistance = 0f;
+    private float _binding_distance_sqr = 0f;
+
+    private SphereTree _treeController = null;
+
+    //______________________________________________________________________________________________________
 
     //=====================================================
     //interface 구현 
@@ -65,6 +71,7 @@ public class SphereModel : IPoolConnector<SphereModel>
     //=====================================================
     //구 정보 다루는 함수 
     //=====================================================
+    public Vector3 GetPos() { return _center; }
     public void SetRadius(float radius)
     {
         _radius = radius;
@@ -110,7 +117,7 @@ public class SphereModel : IPoolConnector<SphereModel>
     //=====================================================
     //초기화 
     //=====================================================
-    public void Init(Vector3 pos, float radius)
+    public void Init(SphereTree controller, Vector3 pos, float radius)
     {
         _center = pos;
         SetRadius(radius);
@@ -124,9 +131,10 @@ public class SphereModel : IPoolConnector<SphereModel>
         _recompute_fifoOut.Init();
         _intergrate_fifoOut.Init();
         _childCount = 0;
-        _bindingDistance = 0f;
+        _binding_distance_sqr = 0f;
         _data_rootTree = null;
 
+        _treeController = controller;
     }
 
 
@@ -136,20 +144,18 @@ public class SphereModel : IPoolConnector<SphereModel>
 
         if (null != _parent && false == HasSpherePackFlag(Flag.INTEGRATE))
         {
+            float sqrDist = ToDistanceSquared(_parent);
 
-            float sqrDist = (_center - _parent._center).sqrMagnitude;
-
-            if (sqrDist >= _bindingDistance) 
+            if (sqrDist >= _binding_distance_sqr) 
             {
 
                 if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE))
                 {
-                    
-                    //mFactory.AddRecompute(mParent); //todo fixme
+                    _treeController.AddRecomputeQ(_parent); 
                 }
 
-                //Unlink(); //todo fixme
-                //mFactory.AddIntegrate(this); //todo fixme
+                Unlink();
+                _treeController.AddIntegrateQ(this); 
             }
         }
 
@@ -167,25 +173,25 @@ public class SphereModel : IPoolConnector<SphereModel>
             if (Mathf.Epsilon < Mathf.Abs(radius - _radius))
             {
                 SetRadius(radius);
-                //ComputeBindingDistance(_parent); //todo fixme
+                Compute_BindingDistanceSquared(_parent);
             }
 
-            float sqrDist = (_center - _parent._center).sqrMagnitude;
+            float sqrDist = ToDistanceSquared(_parent);
 
-            if (sqrDist >= _bindingDistance)
+            if (sqrDist >= _binding_distance_sqr)
             {
                 if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE)) 
                 {
-                    //mFactory.AddRecompute(mParent);   //todo fixme 
+                    _treeController.AddRecomputeQ(_parent);
                 }
-                //Unlink(); //todo fixme
-                //mFactory.AddIntegrate(this); //todo fixme
+                Unlink();
+                _treeController.AddIntegrateQ(this);
             }
             else
             {
                 if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE)) 
                 {
-                    //mFactory.AddRecompute(mParent);  //todo fixme   
+                    _treeController.AddRecomputeQ(_parent);
                 }
             }
         }
@@ -205,7 +211,7 @@ public class SphereModel : IPoolConnector<SphereModel>
 
         _childCount++;
 
-        //#ifdef _DEBUG  //////////////////////////////////////////////
+        //#ifdef _DEBUG  //____________________________________________________________
         //에러검출 테스트 : 테스트 필요 
         float dist = ToDistanceSquared(pack);
         float radius = Mathf.Sqrt(dist) + pack.GetRadius();
@@ -213,7 +219,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         {
             DebugWide.LogError("newRadius > GetRadius()"); //assert
         }
-        //#endif //////////////////////////////////////////////
+        //#endif //____________________________________________________________
     }
 
     public void Unlink()
@@ -240,22 +246,25 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     public void LostChild(SphereModel model)
     {
+        //#ifdef _DEBUG  //____________________________________________________________
         if (null == _children || 0 == _childCount) DebugWide.LogError("null == _children || 0 == _childCount"); //assert
 
-        //#ifdef _DEBUG  //////////////////////////////////////////////
         SphereModel pack = _children;
         bool found = false;
         while (null != pack)
         {
             if (pack == model)
             {
+                //model 이 두개이상 있다
                 if (true == found) DebugWide.LogError("true == found"); //assert
                 found = true;
             }
             pack = pack.GetNextSibling();
         }
+
+        //내 없는 자식을 지울려고 했다 
         if (false == found) DebugWide.LogError("false == found"); //assert
-        //#endif //////////////////////////////////////////////
+        //#endif //____________________________________________________________________
 
         // first patch old linked list.. his previous now points to his next
         SphereModel prev = model.GetPrevSibling();
@@ -279,8 +288,86 @@ public class SphereModel : IPoolConnector<SphereModel>
         //자식없는 슈퍼구는 제거한다 
         if (0 == _childCount && HasSpherePackFlag(Flag.SUPERSPHERE))
         {
-            //mFactory.Remove(this); //todo fixme
+            _treeController.Remove_SuperSphereOfLeafTree(this); 
         }
+    }
+
+    //fixme
+    //제약조건이 없으나, 인자값은 부모가 와야 한다. 의도에 맞게 함수를 수정할 필요가 있음 
+    public void Compute_BindingDistanceSquared(SphereModel parent)
+    {
+        _binding_distance_sqr = parent.GetRadius() - GetRadius();
+        if (_binding_distance_sqr <= 0) _binding_distance_sqr = 0;
+        
+        _binding_distance_sqr = _binding_distance_sqr * _binding_distance_sqr;
+    }
+
+    public bool Recompute(float gravy)
+    {
+        if (null == _children) return true; // kill it!
+        if (HasSpherePackFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
+
+        //#if 1
+        // recompute bounding sphere!
+        Vector3 total = Vector3.zero;
+        int count = 0;
+        SphereModel pack = _children;
+        while (null != pack)
+        {
+            total += pack._center;
+            count++;
+            pack = pack.GetNextSibling();
+        }
+
+        if (0 != count)
+        {
+            float recip = 1.0f / (float)(count);
+            total *= recip;
+
+            Vector3 oldpos = _center;
+
+            _center = total; // new origin!
+            float maxradius = 0;
+
+            pack = _children;
+
+            while (null != pack)
+            {
+                float dist = ToDistanceSquared(pack);
+                float radius = Mathf.Sqrt(dist) + pack.GetRadius();
+                if (radius > maxradius)
+                {
+                    maxradius = radius;
+                    if ((maxradius + gravy) >= GetRadius())
+                    {
+                        _center = oldpos;
+                        ClearSpherePackFlag(Flag.RECOMPUTE);
+                        return false;
+                    }
+                }
+                pack = pack.GetNextSibling();
+            }
+
+            maxradius += gravy;
+
+            SetRadius(maxradius);
+
+            // now all children have to recompute binding distance!!
+            pack = _children;
+
+            while (null != pack)
+            {
+                pack.Compute_BindingDistanceSquared(this);
+                pack = pack.GetNextSibling();
+            }
+
+        }
+
+        //#endif
+
+        ClearSpherePackFlag(Flag.RECOMPUTE);
+
+        return false;
     }
 
 
@@ -293,8 +380,8 @@ public class SphereTree
 
     private Pool<SphereModel> _spheres = null;  
 
-    private QFifo<SphereModel> _integrate = null; 
-    private QFifo<SphereModel> _recompute = null; 
+    private QFifo<SphereModel> _integrateQ = null; 
+    private QFifo<SphereModel> _recomputeQ = null; 
 
     private float _maxRootSize;              
     private float _maxLeafSize;              
@@ -309,20 +396,20 @@ public class SphereTree
         _maxLeafSize = leafsize;
         _superSphereGravy = gravy;
 
-        _integrate = new QFifo<SphereModel>(maxspheres);
-        _recompute = new QFifo<SphereModel>(maxspheres);
+        _integrateQ = new QFifo<SphereModel>(maxspheres);
+        _recomputeQ = new QFifo<SphereModel>(maxspheres);
         _spheres = new Pool<SphereModel>();
         _spheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
 
         Vector3 pos = Vector3.zero;
 
         _root = _spheres.GetFreeLink(); // initially empty
-        _root.Init(pos, 65536);
+        _root.Init(this, pos, 65536);
         _root.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.ROOT_TREE);
 
 
         _leaf = _spheres.GetFreeLink();  // initially empty
-        _leaf.Init(pos, 16384);
+        _leaf.Init(this, pos, 16384);
         _leaf.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.LEAF_TREE);
 
     }
@@ -340,7 +427,7 @@ public class SphereTree
             return null;
         }
 
-        pack.Init(pos, radius); //AddSpherePackFlag 함수 보다 먼저 호출되어야 한다. _flags 정보가 초기화 되기 때문이다. 
+        pack.Init(this, pos, radius); //AddSpherePackFlag 함수 보다 먼저 호출되어야 한다. _flags 정보가 초기화 되기 때문이다. 
 
         if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
         {
@@ -367,7 +454,7 @@ public class SphereTree
             _leaf.AddChild(pack);
 
         pack.AddSpherePackFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
-        QFifo<SphereModel>.Out_Point fifo = _integrate.Push(pack); // add it to the integration stack.
+        QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); // add it to the integration stack.
         pack.SetIntergrate_FifoOut(fifo);
     }
 
@@ -378,7 +465,7 @@ public class SphereTree
             if (0 != pack.GetChildCount())
             {
                 pack.AddSpherePackFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
-                QFifo<SphereModel>.Out_Point fifo = _recompute.Push(pack);
+                QFifo<SphereModel>.Out_Point fifo = _recomputeQ.Push(pack);
                 pack.SetRecompute_FifoOut(fifo);
             }
             else
@@ -388,6 +475,7 @@ public class SphereTree
         }
     }
 
+    //LeafTree 의 슈퍼구만 지운다 
     public void Remove_SuperSphereOfLeafTree(SphereModel pack)
     {
 
@@ -404,6 +492,194 @@ public class SphereTree
         pack.Unlink();
 
         _spheres.Release(pack);
+    }
+
+    public void Process()
+    {
+        if (true)
+        {
+            // First recompute anybody that needs to be recomputed!!
+            // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
+            // need to be removed.
+            // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
+            int maxrecompute = _recomputeQ.GetCount();
+            for (int i = 0; i < maxrecompute; i++)
+            {
+                SphereModel pack = _recomputeQ.Pop();
+                if (null == pack) break;
+                //pack.SetFifo1(null); // no longer on the fifo!!
+                pack.InitRecompute_FifoOut();
+                bool kill = pack.Recompute(_superSphereGravy);
+                if (kill) Remove_SuperSphereOfLeafTree(pack);
+            }
+        }
+
+        if (true)
+        {
+            // Now, process the integration step.
+
+            int maxintegrate = _integrateQ.GetCount();
+
+            for (int i = 0; i < maxintegrate; i++)
+            {
+                SphereModel pack = _integrateQ.Pop();
+                if (null == pack) break;
+                //pack.SetFifo2(null);
+                pack.InitIntergrate_FifoOut();
+
+                if (pack.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
+                    Integrate(pack, _root, _maxRootSize); // integrate this one single dude against the root node.
+                else
+                    Integrate(pack, _leaf, _maxLeafSize); // integrate this one single dude against the root node.
+            }
+        }
+
+    }
+
+    public void Integrate(SphereModel src_pack, SphereModel supersphere, float node_size)
+    {
+        // ok..time to integrate this sphere with the tree
+        // first find which supersphere we are closest to the center of
+
+        SphereModel search = supersphere.GetChildren();
+
+        SphereModel nearest1 = null;  // nearest supersphere we are completely
+        float nearSqrDist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
+
+        SphereModel nearest2 = null; // supersphere we must grow the least to
+        float nearDist2 = 1e9f;    // add ourselves to.
+
+        //int scount = 1;
+
+        while (null != search)
+        {
+            if (search.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) &&
+                false == search.HasSpherePackFlag(SphereModel.Flag.ROOTNODE) && 0 != search.GetChildCount())
+            {
+
+                float sqrDist = src_pack.ToDistanceSquared(search);
+
+                if (null != nearest1)
+                {
+                    if (sqrDist < nearSqrDist1)
+                    {
+
+                        float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
+
+                        if (dist <= search.GetRadius())
+                        {
+                            nearSqrDist1 = sqrDist;
+                            nearest1 = search;
+                        }
+                    }
+                }
+                else
+                {
+
+                    float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
+
+                    if (dist < nearDist2)
+                    {
+                        if (dist < 0)
+                        {
+                            nearSqrDist1 = sqrDist;
+                            nearest1 = search;
+                        }
+                        else
+                        {
+                            nearDist2 = dist;
+                            nearest2 = search;
+                        }
+                    }
+                }
+            }
+            search = search.GetNextSibling();
+        }
+
+        // ok...now..on exit let's see what we got.
+        if (null != nearest1)
+        {
+            // if we are inside an existing supersphere, we are all good!
+            // we need to detach item from wherever it is, and then add it to
+            // this supersphere as a child.
+            src_pack.Unlink();
+            nearest1.AddChild(src_pack);
+            src_pack.Compute_BindingDistanceSquared(nearest1);
+            nearest1.Recompute(_superSphereGravy);
+
+            if (nearest1.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+            {
+                SphereModel link = nearest1.GetData_RootTree();
+                link.SetPosRadius(nearest1.GetPos(), nearest1.GetRadius());
+            }
+
+        }
+        else
+        {
+            bool newsphere = true;
+
+            if (null != nearest2)
+            {
+                float newsize = nearDist2 + nearest2.GetRadius() + _superSphereGravy;
+
+                if (newsize <= node_size)
+                {
+                    src_pack.Unlink();
+
+                    nearest2.SetRadius(newsize);
+                    nearest2.AddChild(src_pack);
+                    nearest2.Recompute(_superSphereGravy);
+                    src_pack.Compute_BindingDistanceSquared(nearest2);
+
+                    if (nearest2.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+                    {
+                        SphereModel link = nearest2.GetData_RootTree();
+                        link.SetPosRadius(nearest2.GetPos(), nearest2.GetRadius());
+                    }
+
+                    newsphere = false;
+
+                }
+
+            }
+
+            if (newsphere)
+            {
+                //assert(supersphere->HasSpherePackFlag(SPF_ROOTNODE));
+                // we are going to create a new superesphere around this guy!
+                src_pack.Unlink();
+
+                SphereModel parent = _spheres.GetFreeLink();
+                //assert(parent);
+                parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + _superSphereGravy);
+
+                if (supersphere.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
+                    parent.AddSpherePackFlag(SphereModel.Flag.ROOT_TREE);
+                else
+                    parent.AddSpherePackFlag(SphereModel.Flag.LEAF_TREE);
+
+                parent.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE);
+
+
+                parent.AddChild(src_pack);
+
+                supersphere.AddChild(parent);
+
+                parent.Recompute(_superSphereGravy);
+                src_pack.Compute_BindingDistanceSquared(parent);
+
+                if (parent.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+                {
+                    // need to create parent association!
+                    SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), SphereModel.Flag.ROOT_TREE);
+                    link.SetData_RootTree(parent);
+                    parent.SetData_RootTree(link); // hook him up!!
+                }
+
+            }
+        }
+
+        src_pack.ClearSpherePackFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
     }
 }
 
