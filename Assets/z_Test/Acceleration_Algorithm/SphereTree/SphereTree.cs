@@ -524,7 +524,7 @@ public class SphereTree
             {
                 SphereModel pack = _integrateQ.Pop();
                 if (null == pack) break;
-                //pack.SetFifo2(null);
+
                 pack.InitIntergrate_FifoOut();
 
                 if (pack.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
@@ -549,8 +549,8 @@ public class SphereTree
         SphereModel nearest2 = null; // supersphere we must grow the least to
         float nearDist2 = 1e9f;    // add ourselves to.
 
-        //int scount = 1;
 
+        //=====================================================================================
         while (null != search)
         {
             if (search.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) &&
@@ -595,6 +595,7 @@ public class SphereTree
             }
             search = search.GetNextSibling();
         }
+        //=====================================================================================
 
         // ok...now..on exit let's see what we got.
         if (null != nearest1)

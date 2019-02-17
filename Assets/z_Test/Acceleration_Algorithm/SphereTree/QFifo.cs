@@ -76,7 +76,8 @@ public class QFifo<MODEL> where MODEL : class
     // 큐 구조 : [ head == tail x x x x ]
     //head 와 tail 이 같은 경우는 , 큐가 비어 있다는 의미이다  
 
-    //public SpherePack * Pop(void)
+
+    //Unlink함수에 의해 데이터가 null인 것들이 항목으로 포함되어 있다. 이런 항목을 _head 증가로 간단히 걸러낸다.
     public MODEL Pop()
     {
         while (_tail != _head) //데이터가 있다면 
@@ -86,11 +87,12 @@ public class QFifo<MODEL> where MODEL : class
             MODEL ret = mFifo[_head];
             _head++;
             if (_head == mFifoSize) _head = 0;
-            if (null != ret) return ret;
+            if (null != ret) return ret; //큐에서 가져온 데이터가 null 일 경우, 다음 데이터를 가져온다. 
         }
         return null;
     }
 
+    //데이터의 개수는 변경하지 않고 데이터만 날린다
     //Out_Push 객체에서 사용하는 전용함수 
     private MODEL Unlink(int queueIndex)
     {
@@ -100,9 +102,10 @@ public class QFifo<MODEL> where MODEL : class
         return pack;
     }
 
+    //Unlink와 같은 기능을 하는 함수. 이름을 동일하게 해야 함 
     //사용처가 없는 함수 
-    //데이터의 갯수는 변경하지 않고, 데이터만 날린다 
-    private bool Flush(MODEL pack)
+    //데이터의 개수는 변경하지 않고, 데이터만 날린다 
+    private bool Unlink(MODEL pack)
     {
         if (_tail == _head) return false; //push 와 pop 이 값다면 데이터가 없는 상태이다. 한번도 넣고 빼기를 안했거나, 같은 횟수로 넣거나 뺀경우이다. 
         int i = _head;
