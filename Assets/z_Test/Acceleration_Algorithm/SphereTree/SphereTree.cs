@@ -383,8 +383,8 @@ public class SphereTree
     private QFifo<SphereModel> _integrateQ = null; 
     private QFifo<SphereModel> _recomputeQ = null; 
 
-    private float _maxRootSize;              
-    private float _maxLeafSize;              
+    private float _maxRadius_supersphere_root;   //루트트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)          
+    private float _maxRadius_supersphere_leaf;   //리프트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)             
     private float _superSphereGravy;         //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
 
 
@@ -392,8 +392,8 @@ public class SphereTree
     public SphereTree(int maxspheres, float rootsize, float leafsize, float gravy)
     {
         maxspheres *= 4; // include room for both trees, the root node and leaf node tree, and the supersheres
-        _maxRootSize = rootsize;
-        _maxLeafSize = leafsize;
+        _maxRadius_supersphere_root = rootsize;
+        _maxRadius_supersphere_leaf = leafsize;
         _superSphereGravy = gravy;
 
         _integrateQ = new QFifo<SphereModel>(maxspheres);
@@ -507,10 +507,11 @@ public class SphereTree
             {
                 SphereModel pack = _recomputeQ.Pop();
                 if (null == pack) break;
-                //pack.SetFifo1(null); // no longer on the fifo!!
-                pack.InitRecompute_FifoOut();
-                bool kill = pack.Recompute(_superSphereGravy);
-                if (kill) Remove_SuperSphereOfLeafTree(pack);
+
+                pack.InitRecompute_FifoOut(); //큐 연결정보를 초기화 한다 
+
+                bool isRemove = pack.Recompute(_superSphereGravy); //fixme
+                if (isRemove) Remove_SuperSphereOfLeafTree(pack); //fixme
             }
         }
 
@@ -523,33 +524,32 @@ public class SphereTree
             for (int i = 0; i < maxintegrate; i++)
             {
                 SphereModel pack = _integrateQ.Pop();
-                if (null == pack) break;
+                if (null == pack) break; //큐가 비어있을 때만 null을 반환한다. Unlink 에 의해 데이터가 null인 항목은 반환되지 않는다  
 
-                pack.InitIntergrate_FifoOut();
+                pack.InitIntergrate_FifoOut(); //큐 연결정보를 초기화 한다 
 
                 if (pack.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
-                    Integrate(pack, _root, _maxRootSize); // integrate this one single dude against the root node.
+                    Integrate(pack, _root, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
                 else
-                    Integrate(pack, _leaf, _maxLeafSize); // integrate this one single dude against the root node.
+                    Integrate(pack, _leaf, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
             }
         }
 
     }
 
-    public void Integrate(SphereModel src_pack, SphereModel supersphere, float node_size)
+    public void Integrate(SphereModel src_pack, SphereModel supersphere, float maxRadius_supersphere)
     {
-        // ok..time to integrate this sphere with the tree
-        // first find which supersphere we are closest to the center of
-
+        
         SphereModel search = supersphere.GetChildren();
 
-        SphereModel nearest1 = null;  // nearest supersphere we are completely
-        float nearSqrDist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
+        SphereModel containing_supersphere = null;  //src_pack를 포함하는 슈퍼구 
+        float includedSqrDist = 1e9f;     // enclosed within. 10의9승. 1000000000.0
 
-        SphereModel nearest2 = null; // supersphere we must grow the least to
-        float nearDist2 = 1e9f;    // add ourselves to.
+        SphereModel nearest_supersphere = null; //src_pack와 가까이에 있는 슈퍼구
+        float nearDist = 1e9f;    // add ourselves to.
 
 
+        // 1 **** src 와 가장 가까운 슈퍼구 구하기 : src를 포함하는 슈퍼구를 먼저 구함. 없으면 src와 가장 가까운 슈퍼구를 구한다.
         //=====================================================================================
         while (null != search)
         {
@@ -559,36 +559,41 @@ public class SphereTree
 
                 float sqrDist = src_pack.ToDistanceSquared(search);
 
-                if (null != nearest1)
+                //조건1 - src구가 완저 포함 
+                if (null != containing_supersphere)
                 {
-                    if (sqrDist < nearSqrDist1)
+                    if (sqrDist < includedSqrDist)
                     {
 
                         float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
 
-                        if (dist <= search.GetRadius())
+                        //조건1 전용 처리
+                        if (dist <= search.GetRadius()) //슈퍼구에 src구가 완저 포함 
                         {
-                            nearSqrDist1 = sqrDist;
-                            nearest1 = search;
+                            includedSqrDist = sqrDist;
+                            containing_supersphere = search;
                         }
                     }
                 }
+                //조건2 - 슈퍼구에 걸쳐 있거나 포함되지 않음
                 else
                 {
 
                     float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
 
-                    if (dist < nearDist2)
+                    if (dist < nearDist)
                     {
-                        if (dist < 0)
+                        //조건1에 들어가기 위하여, 최대1번 수행된다 
+                        if (dist < 0) //슈퍼구에 src구가 완전 포함
                         {
-                            nearSqrDist1 = sqrDist;
-                            nearest1 = search;
+                            includedSqrDist = sqrDist;
+                            containing_supersphere = search;
                         }
-                        else
+                        //조건2 전용 처리
+                        else //슈퍼구에 걸쳐 있거나 포함되지 않음 
                         {
-                            nearDist2 = dist;
-                            nearest2 = search;
+                            nearDist = dist;
+                            nearest_supersphere = search;
                         }
                     }
                 }
@@ -597,45 +602,47 @@ public class SphereTree
         }
         //=====================================================================================
 
-        // ok...now..on exit let's see what we got.
-        if (null != nearest1)
+        //조건1 - src구가 완저 포함 
+        if (null != containing_supersphere)
         {
-            // if we are inside an existing supersphere, we are all good!
-            // we need to detach item from wherever it is, and then add it to
-            // this supersphere as a child.
-            src_pack.Unlink();
-            nearest1.AddChild(src_pack);
-            src_pack.Compute_BindingDistanceSquared(nearest1);
-            nearest1.Recompute(_superSphereGravy);
+            
+            src_pack.Unlink(); //큐 연결정보를 Process 에서 해제 했기 때문에, 내부에서 LostChild만 수행된다 
+            containing_supersphere.AddChild(src_pack); //src_pack 의 트리정보를 설정
+            src_pack.Compute_BindingDistanceSquared(containing_supersphere);
+            containing_supersphere.Recompute(_superSphereGravy);
 
-            if (nearest1.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+            if (containing_supersphere.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
             {
-                SphereModel link = nearest1.GetData_RootTree();
-                link.SetPosRadius(nearest1.GetPos(), nearest1.GetRadius());
+                //슈퍼구 전용 함수 : GetData_RootTree
+                SphereModel link = containing_supersphere.GetData_RootTree();
+                link.SetPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
             }
 
         }
+        //조건2 - 슈퍼구에 걸쳐 있거나 포함되지 않음
         else
         {
             bool newsphere = true;
 
-            if (null != nearest2)
+            //가까운 거리에 슈퍼구가 있다
+            if (null != nearest_supersphere)
             {
-                float newsize = nearDist2 + nearest2.GetRadius() + _superSphereGravy;
+                float newRadius = nearDist + nearest_supersphere.GetRadius() + _superSphereGravy;
 
-                if (newsize <= node_size)
+                //!!슈퍼구 최대크기 보다 작을 경우, 포함할 수 있는 크기로 변경한다 
+                if (newRadius <= maxRadius_supersphere)
                 {
                     src_pack.Unlink();
 
-                    nearest2.SetRadius(newsize);
-                    nearest2.AddChild(src_pack);
-                    nearest2.Recompute(_superSphereGravy);
-                    src_pack.Compute_BindingDistanceSquared(nearest2);
+                    nearest_supersphere.SetRadius(newRadius);
+                    nearest_supersphere.AddChild(src_pack);
+                    nearest_supersphere.Recompute(_superSphereGravy);
+                    src_pack.Compute_BindingDistanceSquared(nearest_supersphere);
 
-                    if (nearest2.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+                    if (nearest_supersphere.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
                     {
-                        SphereModel link = nearest2.GetData_RootTree();
-                        link.SetPosRadius(nearest2.GetPos(), nearest2.GetRadius());
+                        SphereModel link = nearest_supersphere.GetData_RootTree();
+                        link.SetPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
                     }
 
                     newsphere = false;
@@ -644,6 +651,7 @@ public class SphereTree
 
             }
 
+            //조건3 - 포함될 슈퍼구가 하나도 없는 경우 , !!슈퍼구 최대크기 보다 큰 경우
             if (newsphere)
             {
                 //assert(supersphere->HasSpherePackFlag(SPF_ROOTNODE));
