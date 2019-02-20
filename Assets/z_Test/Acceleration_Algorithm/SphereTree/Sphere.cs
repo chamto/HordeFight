@@ -173,7 +173,7 @@ public class Sphere
     //public Vector3d<float>& GetCenter(void) { return mCenter; }
     public Vector3 GetCenter() { return mCenter; }
 
-    //public bool RayIntersection(Vector3d<float> &rayOrigin, Vector3d<float> &V, float distance, Vector3d<float>* intersect)
+
     public bool RayIntersection(ref Vector3 rayOrigin, ref Vector3 V, float distance, out Vector3 intersect)
     {
         Vector3 sect;
@@ -195,34 +195,34 @@ public class Sphere
     // **NOTE** There is a bug in this Graphics Gem.  If the origin
     // of the ray is *inside* the sphere being tested, it reports the
     // wrong intersection location.  This code has a fix for the bug.
-    //public bool RayIntersection(Vector3d<float> &rayOrigin, Vector3d<float> &rayDirection, Vector3d<float>* intersect)
-    public bool RayIntersection(ref Vector3 rayOrigin, ref Vector3 rayDirection, out Vector3 intersect)
-    {
-        //notation:
-        //point E  = rayOrigin
-        //point O  = sphere center
 
-        Vector3 EO = mCenter - rayOrigin;
-        Vector3 V = rayDirection;
-        float dist2 = EO.x * EO.x + EO.y * EO.y + EO.z * EO.z;
+    //intersect : 반직선이 원과 충돌한 첫번째 위치 
+    public bool RayIntersection(ref Vector3 rayOrigin, ref Vector3 rayDirection, out Vector3 intersect_firstPoint)
+    {
+        
+        Vector3 w = mCenter - rayOrigin;
+        Vector3 v = rayDirection;
+        float rsq = mRadius2;
+        float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
+
         // Bug Fix For Gem, if origin is *inside* the sphere, invert the
         // direction vector so that we get a valid intersection location.
-        if (dist2 < mRadius2) V *= -1;
+        if (wsq < mRadius2) v *= -1; //반직선의 시작점이 원안에 있는 경우 : 충돌점을 계산하기 위한 예외처리 같음. InFront 함수에서는 시작점이 원 바깥에 있는지 검사하는데 사용됨   
 
-        float v = Vector3.Dot(EO, V);
+        float proj = Vector3.Dot(w, v);
+        float dsq = rsq - (wsq - proj * proj); //rayDirection 이 정규화 되어 있어야 성립한다 
 
-        float disc = mRadius2 - (EO.sqrMagnitude - v * v);
-
-        intersect = Vector3.zero;
-        if (disc > 0.0f)
+        intersect_firstPoint = Vector3.zero;
+        if (dsq > 0.0f)
         {
+            float d = Mathf.Sqrt(dsq);
 
-            float d = Mathf.Sqrt(disc);
+            //테스트 필요
+            //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
+            //if(wsq < mRadius2) length = proj + d; //선분 시작점이 원 안에 있는 경우
+            //intersect_firstPoint = rayOrigin + v * length;
 
-            //float dist2 = (rayOrigin - mCenter).sqrMagnitude;
-
-            intersect = rayOrigin + V * (v - d);
-
+            intersect_firstPoint = rayOrigin + v * (proj - d);
 
             return true;
         }
@@ -230,22 +230,22 @@ public class Sphere
     }
 
 
-    //public bool RayIntersectionInFront(Vector3d<float> &rayOrigin, Vector3d<float> &rayDirection, Vector3d<float>* intersect)
+    //반직선의 시작점이 원 바깥에 있는 경우만 처리
     public bool RayIntersectionInFront(ref Vector3 rayOrigin, ref Vector3 rayDirection, out Vector3 intersect)
     {
-        Vector3 sect;
-        bool hit = RayIntersection(ref rayOrigin, ref rayDirection, out sect);
+        Vector3 intersect_firstPoint;
+        bool hit = RayIntersection(ref rayOrigin, ref rayDirection, out intersect_firstPoint);
 
         intersect = Vector3.zero;
         if (hit)
         {
-            Vector3 dir = sect - rayOrigin;
+            Vector3 dir = intersect_firstPoint - rayOrigin;
 
             float dot = Vector3.Dot(dir, rayDirection);
 
             if (dot >= 0) // then it's in front!
             {
-                intersect = sect;
+                intersect = intersect_firstPoint;
                 return true;
             }
         }
