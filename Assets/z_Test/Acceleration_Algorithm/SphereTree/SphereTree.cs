@@ -217,7 +217,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         float radius = Mathf.Sqrt(dist) + pack.GetRadius();
         if(radius > GetRadius())
         {
-            DebugWide.LogError("newRadius > GetRadius()"); //assert
+            //DebugWide.LogError("newRadius > GetRadius()"); //assert //테스트 필요 
         }
         //#endif //____________________________________________________________
     }
@@ -239,7 +239,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         if (null != _parent) _parent.LostChild(this);
 
 
-        if (null == _children) DebugWide.LogError("null == _children"); //assert
+        //if (null == _children) DebugWide.LogError("null == _children"); //assert요 //테스트 필요 
 
         _parent = null; 
     }
@@ -371,6 +371,58 @@ public class SphereModel : IPoolConnector<SphereModel>
     }
 
 
+    public void Render_Debug()
+    {
+        
+        if (!HasSpherePackFlag(Flag.ROOTNODE))
+        {
+            
+            DefineI.DrawCircle(_center, GetRadius(), Color.black);
+
+            //if (renderText)
+                //DefineO.PrintText(mCenter.x, mCenter.y + lineInteval, color, ((Flag)mFlags).ToString() + " r:" + GetRadius()); //chamto test
+
+
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
+            {
+                if (HasSpherePackFlag(Flag.LEAF_TREE))
+                {
+
+                    DefineI.DrawCircle(_center, GetRadius(), Color.black);
+
+                    SphereModel link = GetData_RootTree();
+
+                    if (null != link)
+                        link = link.GetParent();
+
+                    if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
+                    {
+                        DefineI.DrawLine(_center, link._center, Color.black);
+                    }
+                }
+                else
+                {
+                    
+                    DefineI.DrawCircle(_center, GetRadius() + 3, Color.black);
+
+                }
+
+            }
+
+        }
+
+        if (null != _children)
+        {
+            SphereModel pack = _children;
+
+            while (null != pack)
+            {
+                pack.Render_Debug();
+                pack = pack.GetNextSibling();
+            }
+        }
+        //#endif
+    }
 }
 
 public class SphereTree
@@ -689,6 +741,12 @@ public class SphereTree
         }
 
         src_pack.ClearSpherePackFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
+    }
+
+    public void Render_Debug()
+    {
+        _root.Render_Debug();
+        _leaf.Render_Debug();
     }
 }
 
