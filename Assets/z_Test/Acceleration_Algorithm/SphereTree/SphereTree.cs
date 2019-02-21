@@ -370,6 +370,177 @@ public class SphereModel : IPoolConnector<SphereModel>
         return false;
     }
 
+    public void ResetFlag()
+    {
+        ClearSpherePackFlag(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE);
+
+        SphereModel pack = _children;
+        while (null != pack)
+        {
+            pack.ResetFlag();
+            pack = pack.GetNextSibling();
+        }
+    }
+
+    public void RayTrace(Vector3 p1, Vector3 dir, float distance)
+    {
+        bool hit = false;
+        Vector3 sect;
+
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        {
+
+            hit = DefineI.RayIntersectionInFront(_center, _radius, p1,  dir, out sect);
+            if (hit)
+            {
+                //#if DEMO
+                DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+                //#endif
+                SphereModel pack = _children;
+
+                while (null != pack)
+                {
+                    pack.RayTrace(p1, dir, distance);
+                    pack = pack.GetNextSibling();
+                }
+            }
+
+        }
+        else
+        {
+
+            hit = DefineI.LineSegmentIntersection(_center, _radius, p1, dir, distance, out sect);
+            if (hit)
+            {
+                SphereModel link = this.GetData_RootTree();
+                if (null != link) link.RayTrace(p1, dir, distance); //테스트 필요 
+                DefineI.DrawCircle(_center, GetRadius(), Color.red);
+            }
+        }
+    }
+
+    public void RangeTest(Vector3 p, float distance, Frustum.ViewState state)
+    {
+        if (state == Frustum.ViewState.PARTIAL)
+        {
+
+            float d = (p - _center).magnitude;
+            if ((d - distance) > GetRadius()) return;
+            if ((GetRadius() + d) < distance) state = Frustum.ViewState.INSIDE;
+        }
+
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        {
+            //#if DEMO
+            if (state == Frustum.ViewState.PARTIAL)
+            {
+                DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+            }
+            //#endif
+            SphereModel pack = _children;
+            while (null != pack)
+            {
+                pack.RangeTest(p, distance, state);
+                pack = pack.GetNextSibling();
+            }
+
+        }
+        else
+        {
+            SphereModel link = this.GetData_RootTree();
+            if (null != link) link.RangeTest(p, distance, state); //테스트 필요 
+            DefineI.DrawCircle(_center, GetRadius(), Color.red);
+        }
+    }
+
+    public void VisibilityTest(Frustum f, Frustum.ViewState state)
+    {
+        if (state == Frustum.ViewState.PARTIAL) 
+        {
+            state = f.ViewVolumeTest(ref _center, GetRadius());
+            //#if DEMO
+            if (state != Frustum.ViewState.OUTSIDE)
+            {
+                DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+            }
+            //#endif
+        }
+
+        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        {
+
+            if (state == Frustum.ViewState.OUTSIDE)
+            {
+                if (HasSpherePackFlag(Flag.HIDDEN)) return; // no state change
+                ClearSpherePackFlag(Flag.INSIDE | Flag.PARTIAL);
+                AddSpherePackFlag(Flag.HIDDEN);
+            }
+            else
+            {
+                if (state == Frustum.ViewState.INSIDE)
+                {
+                    if (HasSpherePackFlag(Flag.INSIDE)) return; // no state change
+                    ClearSpherePackFlag(Flag.PARTIAL | Flag.HIDDEN);
+                    AddSpherePackFlag(Flag.INSIDE);
+                }
+                else
+                {
+                    ClearSpherePackFlag(Flag.HIDDEN | Flag.INSIDE);
+                    AddSpherePackFlag(Flag.PARTIAL);
+                }
+            }
+
+            SphereModel pack = _children;
+
+            while (null != pack)
+            {
+                pack.VisibilityTest(f, state);
+                pack = pack.GetNextSibling();
+            }
+
+        }
+        else
+        {
+            SphereModel link = this.GetData_RootTree();
+            switch (state)
+            {
+                case Frustum.ViewState.INSIDE:
+                    if (!HasSpherePackFlag(Flag.INSIDE))
+                    {
+                        ClearSpherePackFlag(Flag.HIDDEN | Flag.PARTIAL);
+                        AddSpherePackFlag(Flag.INSIDE);
+                        //callback.VisibilityCallback(f, this, state);
+
+                        if (null != link) link.VisibilityTest(f, state); //테스트 필요 
+                        DefineI.DrawCircle(_center, GetRadius(), Color.red);
+                    }
+                    break;
+                case Frustum.ViewState.OUTSIDE:
+                    if (!HasSpherePackFlag(Flag.HIDDEN))
+                    {
+                        ClearSpherePackFlag(Flag.INSIDE | Flag.PARTIAL);
+                        AddSpherePackFlag(Flag.HIDDEN);
+                        //callback.VisibilityCallback(f, this, state);
+
+                        if (null != link) link.VisibilityTest(f, state); //테스트 필요 
+                        DefineI.DrawCircle(_center, GetRadius(), Color.black);
+                    }
+                    break;
+                case Frustum.ViewState.PARTIAL:
+                    if (!HasSpherePackFlag(Flag.PARTIAL))
+                    {
+                        ClearSpherePackFlag(Flag.INSIDE | Flag.HIDDEN);
+                        AddSpherePackFlag(Flag.PARTIAL);
+                        //callback.VisibilityCallback(f, this, state);
+
+                        if (null != link) link.VisibilityTest(f, state); //테스트 필요 
+                        DefineI.DrawCircle(_center, GetRadius(), Color.blue);
+                    }
+                    break;
+            }
+
+        }
+    }
 
     public void Render_Debug()
     {
@@ -377,18 +548,13 @@ public class SphereModel : IPoolConnector<SphereModel>
         if (!HasSpherePackFlag(Flag.ROOTNODE))
         {
             
-            DefineI.DrawCircle(_center, GetRadius(), Color.black);
-
-            //if (renderText)
-                //DefineO.PrintText(mCenter.x, mCenter.y + lineInteval, color, ((Flag)mFlags).ToString() + " r:" + GetRadius()); //chamto test
-
+            //DefineO.PrintText(_center.x, _center.y, 0x00ffffff, ((Flag)_flags).ToString() ); //chamto test
 
             if (HasSpherePackFlag(Flag.SUPERSPHERE))
             {
                 if (HasSpherePackFlag(Flag.LEAF_TREE))
                 {
 
-                    DefineI.DrawCircle(_center, GetRadius(), Color.black);
 
                     SphereModel link = GetData_RootTree();
 
@@ -400,13 +566,11 @@ public class SphereModel : IPoolConnector<SphereModel>
                         DefineI.DrawLine(_center, link._center, Color.black);
                     }
                 }
-                else
-                {
-                    
-                    DefineI.DrawCircle(_center, GetRadius() + 3, Color.black);
 
-                }
-
+                DefineI.DrawCircle(_center, GetRadius(), Color.black);
+            }else
+            {
+                DefineI.DrawCircle(_center, GetRadius(), Color.gray);
             }
 
         }
@@ -544,6 +708,12 @@ public class SphereTree
         pack.Unlink();
 
         _spheres.Release(pack);
+    }
+
+    public void ResetFlag()
+    {
+        _root.ResetFlag();
+        _leaf.ResetFlag();
     }
 
     public void Process()
@@ -743,10 +913,32 @@ public class SphereTree
         src_pack.ClearSpherePackFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
     }
 
-    public void Render_Debug()
+
+    public void Render_RayTrace(Vector3 start, Vector3 end)
     {
-        _root.Render_Debug();
-        _leaf.Render_Debug();
+        Vector3 dir = end - start;
+
+        _root.RayTrace(start, dir.normalized, dir.magnitude);
+    }
+
+    public void Render_RangeTest(Vector3 pos, float range)
+    {
+
+        _root.RangeTest(pos, range, Frustum.ViewState.PARTIAL);
+    }
+
+    public void Render_FrustumTest(Frustum f , Frustum.ViewState state)
+    {
+        
+        _root.VisibilityTest(f, state);
+    }
+
+    public void Render_Debug(int mode)
+    {
+        if(1 == mode || 3 == mode)
+            _root.Render_Debug();
+        if(2 == mode || 3 == mode)
+            _leaf.Render_Debug();
     }
 }
 

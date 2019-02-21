@@ -474,7 +474,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     //p1: origin of Ray
     //dir1: direction of Ray
     //distance: length of ray.
-    public void RayTrace(ref Vector3 p1, ref Vector3 dir, float distance, SpherePackCallback callback)
+    public void RayTrace_Pack(ref Vector3 p1, ref Vector3 dir, float distance, SpherePackCallback callback)
     {
         bool hit = false;
         Vector3 sect;
@@ -492,7 +492,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
 
                 while (null != pack)
                 {
-                    pack.RayTrace(ref p1, ref dir, distance, callback);
+                    pack.RayTrace_Pack(ref p1, ref dir, distance, callback);
                     pack = pack.GetNextSibling();
                 }
             }

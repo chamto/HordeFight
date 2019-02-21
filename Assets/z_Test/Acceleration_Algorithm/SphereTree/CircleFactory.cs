@@ -287,7 +287,7 @@ public class CircleFactory : SpherePackCallback
 
         mHitCount = 0;
 
-        mFactory.RayTrace(ref p1, ref p2, this);
+        mFactory.RayTrace_Factory(ref p1, ref p2, this);
 
         DefineO.PrintText(0, 24, 0xFFFFFF, mHitCount+" Spheres Intersected Ray.");
 

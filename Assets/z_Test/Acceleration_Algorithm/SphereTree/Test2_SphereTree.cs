@@ -5,41 +5,88 @@ using UtilGS9;
 
 public class Test2_SphereTree : MonoBehaviour 
 {
+    public enum RenderMode
+    {
+        None,
+        Root,
+        Leaf,
+        All,
+    }
+
+
     private SphereTree _sphereTree = null;
 
-    public int _count = 100;
     public Transform _sphere = null;
     public Transform _lineStart = null;
     public Transform _lineEnd = null;
+
+    public RenderMode _mode = RenderMode.All;
+    public int _count = 100;
+    public int _radius_root = 25;
+    public int _radius_leaf = 4;
+    public int _radius_gravy = 1;
 
 
 	// Use this for initialization
 	void Start () 
     {
         
-        _sphereTree = new SphereTree(_count, 256, 64, 8);
+        _sphereTree = new SphereTree(_count, _radius_root, _radius_leaf, _radius_gravy);
 
         for (int i = 0; i < _count;i++)
         {
-            Vector3 pos = new Vector3(Misc.rand.Next() % 1000, Misc.rand.Next() % 600, 0);
+            Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
             float radius = (Misc.rand.Next() % 4) + 1;
             SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.LEAF_TREE);    
         }
 
 	}
 	
-	// Update is called once per frame
+
 	void Update () 
     {
+        if (null == _sphereTree) return;
+
+        _sphereTree.ResetFlag();
         _sphereTree.Process();
 
 	}
 
+
+    private Frustum __f = new Frustum();
     private void OnDrawGizmos()
     {
         if (null == _sphereTree) return;
-        _sphereTree.Render_Debug();
 
+        _sphereTree.Render_Debug((int)_mode);
+
+        //==================================================
+        //선분 테스트
+        _sphereTree.Render_RayTrace(_lineStart.position, _lineEnd.position);
+
+        //==================================================
+        //거리 테스트
+        //float rangeRadius = (_lineEnd.position - _lineStart.position).magnitude;
+        //_sphereTree.Render_RangeTest(_lineStart.position, rangeRadius);
+        //DefineI.DrawCircle(_lineStart.position, rangeRadius, Color.yellow);
+
+        //==================================================
+        //플러스텀 테스트
+        Vector3Int leftDown = new Vector3Int((int)_lineStart.position.x, (int)_lineStart.position.y, (int)_lineStart.position.z); 
+        Vector3Int rightUp = new Vector3Int((int)_lineEnd.position.x, (int)_lineEnd.position.y, (int)_lineEnd.position.z);
+        Vector3Int leftUp = new Vector3Int(leftDown.x, rightUp.y ,0);
+        Vector3Int rightDown = new Vector3Int(rightUp.x, leftDown.y, 0);
+        __f.Set(leftDown.x, leftDown.y, rightUp.x, rightUp.y);
+
+        DefineI.DrawLine(leftDown, leftUp, Color.yellow);
+        DefineI.DrawLine(rightDown, rightUp, Color.yellow);
+        DefineI.DrawLine(leftDown, rightDown, Color.yellow);
+        DefineI.DrawLine(rightUp, leftUp, Color.yellow);
+
+        _sphereTree.Render_FrustumTest(__f , Frustum.ViewState.PARTIAL);
+
+        //==================================================
+        //원과 반직선 교차 테스트
         Vector3 pointIts = Vector3.zero;
         Vector3 dir = _lineEnd.position - _lineStart.position;
         dir.Normalize();
@@ -49,6 +96,8 @@ public class Test2_SphereTree : MonoBehaviour
         DefineI.RayIntersectionInFront(_sphere.position, 10, _lineStart.position, dir, out pointIts);
 
         DefineI.DrawCircle(pointIts, 1, Color.blue);
+
+        //==================================================
     }
 }
 
@@ -103,7 +152,22 @@ public class DefineI
         return false;
     }
 
+    //선분과 원이 교차하는지 검사하는 함수 : !반직선이 아닌 선분이기 때문에 Ray => LineSegment 가 맞는 표현임 
+    static public bool LineSegmentIntersection(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, float distance, out Vector3 intersect)
+    {
+        Vector3 sect;
+        bool hit = RayIntersectionInFront(sphereCenter, sphereRadius, rayOrigin,  rayDirection, out sect);
 
+        intersect = Vector3.zero;
+        if (hit)
+        {
+            float d = (rayOrigin - sect).sqrMagnitude;
+            if (d > (distance * distance)) return false;
+            intersect = sect;
+            return true;
+        }
+        return false;
+    }
    
     static public bool RayIntersectionInFront(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, out Vector3 intersect)
     {

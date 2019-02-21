@@ -362,14 +362,14 @@ public class SpherePackFactory : SpherePackCallback
 
     //p1: source
     //p2: dest
-    public void RayTrace(ref Vector3 p1, ref Vector3 p2, SpherePackCallback circleFactory_callback)
+    public void RayTrace_Factory(ref Vector3 p1, ref Vector3 p2, SpherePackCallback circleFactory_callback)
     {
         // test case here, just traverse children.
         Vector3 dir = p2 - p1;
         float dist = dir.magnitude;
         dir.Normalize();
         mCircleFactory_Callback = circleFactory_callback;
-        mRoot.RayTrace(ref p1, ref dir, dist, this);
+        mRoot.RayTrace_Pack(ref p1, ref dir, dist, this);
     }
 
 
@@ -391,7 +391,7 @@ public class SpherePackFactory : SpherePackCallback
     public override void RayTraceCallback(ref Vector3 p1, ref Vector3 dir, float distance, ref Vector3 sect, SpherePack sphere)
     {
         SpherePack link = sphere.GetData_RootTree();
-        if (null != link) link.RayTrace(ref p1, ref dir, distance, mCircleFactory_Callback);
+        if (null != link) link.RayTrace_Pack(ref p1, ref dir, distance, mCircleFactory_Callback);
     }
 
     public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
