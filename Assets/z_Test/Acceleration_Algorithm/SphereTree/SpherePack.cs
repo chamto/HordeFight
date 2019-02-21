@@ -501,7 +501,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
         else
         {
 
-            hit = RayIntersection(ref p1, ref dir, distance, out sect);
+            hit = LineSegmentIntersection(ref p1, ref dir, distance, out sect);
             if (hit)
             {
                 callback.RayTraceCallback(ref p1, ref dir, distance, ref sect, this);

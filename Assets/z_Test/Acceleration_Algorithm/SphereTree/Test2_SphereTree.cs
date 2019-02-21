@@ -45,7 +45,8 @@ public class Test2_SphereTree : MonoBehaviour
         dir.Normalize();
         DefineI.DrawCircle(_sphere.position, 10, Color.red);
         DefineI.DrawLine(_lineStart.position, _lineEnd.position, Color.red);
-        DefineI.RayIntersection(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+        //DefineI.RayIntersection(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+        DefineI.RayIntersectionInFront(_sphere.position, 10, _lineStart.position, dir, out pointIts);
 
         DefineI.DrawCircle(pointIts, 1, Color.blue);
     }
@@ -73,25 +74,26 @@ public class DefineI
     {
 
         Vector3 w = sphereCenter - rayOrigin;
-        Vector3 v = rayDirection;
+        Vector3 v = rayDirection; //rayDirection 이 정규화 되어 있어야 올바르게 계산할 수 있다 
         float rsq = sphereRadius * sphereRadius;
         float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
 
         // Bug Fix For Gem, if origin is *inside* the sphere, invert the
         // direction vector so that we get a valid intersection location.
-        if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 : 충돌점을 계산하기 위한 예외처리 같음. InFront 함수에서는 시작점이 원 바깥에 있는지 검사하는데 사용됨   
+        if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
 
         float proj = Vector3.Dot(w, v);
-        float dsq = rsq - (wsq - proj * proj); //rayDirection 이 정규화 되어 있어야 성립한다 
+        float ssq = (wsq - proj * proj);
+        float dsq = rsq - ssq; 
 
         intersect_firstPoint = Vector3.zero;
         if (dsq > 0.0f)
         {
             float d = Mathf.Sqrt(dsq);
 
-            //테스트 필요
+            //반직선의 시작점이 원안에 있는 경우 - 방법2
             //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
-            //if(wsq < mRadius2) length = proj + d; //선분 시작점이 원 안에 있는 경우
+            //if(wsq < rsq) length = proj + d; //선분 시작점이 원 안에 있는 경우
             //intersect_firstPoint = rayOrigin + v * length;
 
             intersect_firstPoint = rayOrigin + v * (proj - d);
@@ -102,7 +104,7 @@ public class DefineI
     }
 
 
-    //반직선의 시작점이 원 바깥에 있는 경우만 처리
+   
     static public bool RayIntersectionInFront(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, out Vector3 intersect)
     {
         Vector3 intersect_firstPoint;

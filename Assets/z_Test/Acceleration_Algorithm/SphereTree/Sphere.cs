@@ -173,8 +173,8 @@ public class Sphere
     //public Vector3d<float>& GetCenter(void) { return mCenter; }
     public Vector3 GetCenter() { return mCenter; }
 
-
-    public bool RayIntersection(ref Vector3 rayOrigin, ref Vector3 V, float distance, out Vector3 intersect)
+    //선분과 원이 교차하는지 검사하는 함수 : !반직선이 아닌 선분이기 때문에 Ray => LineSegment 가 맞는 표현임 
+    public bool LineSegmentIntersection(ref Vector3 rayOrigin, ref Vector3 V, float distance, out Vector3 intersect)
     {
         Vector3 sect;
         bool hit = RayIntersectionInFront(ref rayOrigin, ref V, out sect);
@@ -207,7 +207,7 @@ public class Sphere
 
         // Bug Fix For Gem, if origin is *inside* the sphere, invert the
         // direction vector so that we get a valid intersection location.
-        if (wsq < mRadius2) v *= -1; //반직선의 시작점이 원안에 있는 경우 : 충돌점을 계산하기 위한 예외처리 같음. InFront 함수에서는 시작점이 원 바깥에 있는지 검사하는데 사용됨   
+        if (wsq < mRadius2) v *= -1; //반직선의 시작점이 원안에 있는 경우    
 
         float proj = Vector3.Dot(w, v);
         float dsq = rsq - (wsq - proj * proj); //rayDirection 이 정규화 되어 있어야 성립한다 
@@ -217,7 +217,7 @@ public class Sphere
         {
             float d = Mathf.Sqrt(dsq);
 
-            //테스트 필요
+            //테스트 완료
             //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
             //if(wsq < mRadius2) length = proj + d; //선분 시작점이 원 안에 있는 경우
             //intersect_firstPoint = rayOrigin + v * length;
@@ -230,7 +230,7 @@ public class Sphere
     }
 
 
-    //반직선의 시작점이 원 바깥에 있는 경우만 처리
+    //의도를 알 수 없는 함수 
     public bool RayIntersectionInFront(ref Vector3 rayOrigin, ref Vector3 rayDirection, out Vector3 intersect)
     {
         Vector3 intersect_firstPoint;
@@ -243,6 +243,7 @@ public class Sphere
 
             float dot = Vector3.Dot(dir, rayDirection);
 
+            //아래 조건은 항상 성립한다. dir과 rayDir은 방향이 항상 같을 수 밖에 없다. RayIntersection 함수의 버그 때문에 시작점이 원 바깥에 있는 경우만 처리하기 위해서 만들었던 것일까???
             if (dot >= 0) // then it's in front!
             {
                 intersect = intersect_firstPoint;
@@ -252,7 +253,7 @@ public class Sphere
         return false;
     }
 
-    //public void Report() { }
+
 
     public void SetRadius(float radius)
     {
