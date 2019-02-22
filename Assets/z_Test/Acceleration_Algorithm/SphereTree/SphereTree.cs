@@ -563,14 +563,14 @@ public class SphereModel : IPoolConnector<SphereModel>
 
                     if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
                     {
-                        DefineI.DrawLine(_center, link._center, Color.black);
+                        DefineI.DrawLine(_center, link._center, Color.green);
                     }
                 }
 
-                DefineI.DrawCircle(_center, GetRadius(), Color.black);
+                DefineI.DrawCircle(_center, GetRadius(), Color.green);
             }else
             {
-                DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+                DefineI.DrawCircle(_center, GetRadius(), Color.white);
             }
 
         }

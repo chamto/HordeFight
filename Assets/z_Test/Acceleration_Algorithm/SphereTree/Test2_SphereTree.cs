@@ -5,7 +5,7 @@ using UtilGS9;
 
 public class Test2_SphereTree : MonoBehaviour 
 {
-    public enum RenderMode
+    public enum TreeMode
     {
         None,
         Root,
@@ -13,6 +13,14 @@ public class Test2_SphereTree : MonoBehaviour
         All,
     }
 
+    public enum TestMode
+    {
+        None,
+        RayTrace,
+        RangeTest,
+        FrustumTest,
+        SphereInterstion, //원과 반직선 교차검사 
+    }
 
     private SphereTree _sphereTree = null;
 
@@ -20,7 +28,8 @@ public class Test2_SphereTree : MonoBehaviour
     public Transform _lineStart = null;
     public Transform _lineEnd = null;
 
-    public RenderMode _mode = RenderMode.All;
+    public TreeMode _treeMode = TreeMode.All;
+    public TestMode _testMode = TestMode.None;
     public int _count = 100;
     public int _radius_root = 25;
     public int _radius_leaf = 4;
@@ -58,44 +67,57 @@ public class Test2_SphereTree : MonoBehaviour
     {
         if (null == _sphereTree) return;
 
-        _sphereTree.Render_Debug((int)_mode);
+        _sphereTree.Render_Debug((int)_treeMode);
 
         //==================================================
-        //선분 테스트
-        _sphereTree.Render_RayTrace(_lineStart.position, _lineEnd.position);
-
+        //광선추적 테스트
+        if(TestMode.RayTrace ==  _testMode)
+        {
+            _sphereTree.Render_RayTrace(_lineStart.position, _lineEnd.position);
+        }
+            
         //==================================================
         //거리 테스트
-        //float rangeRadius = (_lineEnd.position - _lineStart.position).magnitude;
-        //_sphereTree.Render_RangeTest(_lineStart.position, rangeRadius);
-        //DefineI.DrawCircle(_lineStart.position, rangeRadius, Color.yellow);
+        if (TestMode.RangeTest == _testMode)
+        {
+            float rangeRadius = (_lineEnd.position - _lineStart.position).magnitude;
+            _sphereTree.Render_RangeTest(_lineStart.position, rangeRadius);
+            DefineI.DrawCircle(_lineStart.position, rangeRadius, Color.yellow);    
+        }
 
         //==================================================
         //플러스텀 테스트
-        Vector3Int leftDown = new Vector3Int((int)_lineStart.position.x, (int)_lineStart.position.y, (int)_lineStart.position.z); 
-        Vector3Int rightUp = new Vector3Int((int)_lineEnd.position.x, (int)_lineEnd.position.y, (int)_lineEnd.position.z);
-        Vector3Int leftUp = new Vector3Int(leftDown.x, rightUp.y ,0);
-        Vector3Int rightDown = new Vector3Int(rightUp.x, leftDown.y, 0);
-        __f.Set(leftDown.x, leftDown.y, rightUp.x, rightUp.y);
+        if (TestMode.FrustumTest == _testMode)
+        {
+            Vector3Int leftDown = new Vector3Int((int)_lineStart.position.x, (int)_lineStart.position.y, (int)_lineStart.position.z); 
+            Vector3Int rightUp = new Vector3Int((int)_lineEnd.position.x, (int)_lineEnd.position.y, (int)_lineEnd.position.z);
+            Vector3Int leftUp = new Vector3Int(leftDown.x, rightUp.y ,0);
+            Vector3Int rightDown = new Vector3Int(rightUp.x, leftDown.y, 0);
+            __f.Set(leftDown.x, leftDown.y, rightUp.x, rightUp.y);
 
-        DefineI.DrawLine(leftDown, leftUp, Color.yellow);
-        DefineI.DrawLine(rightDown, rightUp, Color.yellow);
-        DefineI.DrawLine(leftDown, rightDown, Color.yellow);
-        DefineI.DrawLine(rightUp, leftUp, Color.yellow);
-
-        _sphereTree.Render_FrustumTest(__f , Frustum.ViewState.PARTIAL);
+            DefineI.DrawLine(leftDown, leftUp, Color.yellow);
+            DefineI.DrawLine(rightDown, rightUp, Color.yellow);
+            DefineI.DrawLine(leftDown, rightDown, Color.yellow);
+            DefineI.DrawLine(rightUp, leftUp, Color.yellow);
+            _sphereTree.Render_FrustumTest(__f , Frustum.ViewState.PARTIAL);
+        }
 
         //==================================================
         //원과 반직선 교차 테스트
-        Vector3 pointIts = Vector3.zero;
-        Vector3 dir = _lineEnd.position - _lineStart.position;
-        dir.Normalize();
-        DefineI.DrawCircle(_sphere.position, 10, Color.red);
-        DefineI.DrawLine(_lineStart.position, _lineEnd.position, Color.red);
-        //DefineI.RayIntersection(_sphere.position, 10, _lineStart.position, dir, out pointIts);
-        DefineI.RayIntersectionInFront(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+        if (TestMode.SphereInterstion == _testMode)
+        {
+            Vector3 pointIts = Vector3.zero;
+            Vector3 dir = _lineEnd.position - _lineStart.position;
+            dir.Normalize();
+            DefineI.DrawCircle(_sphere.position, 10, Color.red);
+            DefineI.RayIntersection(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+            //DefineI.RayIntersectionInFront(_sphere.position, 10, _lineStart.position, dir, out pointIts);
 
-        DefineI.DrawCircle(pointIts, 1, Color.blue);
+            DefineI.DrawCircle(pointIts, 1, Color.white);
+        }
+
+        DefineI.DrawLine(_lineStart.position, _lineEnd.position, Color.red);
+
 
         //==================================================
     }
