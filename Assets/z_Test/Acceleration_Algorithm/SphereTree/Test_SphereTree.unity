@@ -392,9 +392,9 @@ MonoBehaviour:
   _treeMode: 3
   _testMode: 0
   _count: 30
-  _radius_root: 25
-  _radius_leaf: 4
-  _radius_gravy: 1
+  _radius_root: 50
+  _radius_leaf: 20
+  _radius_gravy: 2
 --- !u!1 &1557174330
 GameObject:
   m_ObjectHideFlags: 0

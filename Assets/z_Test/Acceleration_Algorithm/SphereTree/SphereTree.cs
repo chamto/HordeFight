@@ -11,14 +11,15 @@ public class SphereModel : IPoolConnector<SphereModel>
     {
         NONE = 0,
 
-        SUPERSPHERE = (1 << 0), // this is a supersphere, allocated and deleted by us
-        ROOT_TREE = (1 << 1), // member of the root tree
-        LEAF_TREE = (1 << 2), // member of the leaf node tree
-        ROOTNODE = (1 << 3), // this is the root node
-        RECOMPUTE = (1 << 4), // needs recomputed bounding sphere
-        INTEGRATE = (1 << 5), // needs to be reintegrated into tree
-                              // Frame-to-frame view frustum status.  Only does callbacks when a
-                              // state change occurs.
+        SUPERSPHERE = (1 << 0), //슈퍼구 : 다른 자식구를 포한한다 
+        TREE_LEVEL_1 = (1 << 1),   //전체트리의 Level_1 을 구성하는 분리된 트리 
+        TREE_LEVEL_2 = (1 << 2),   //전체트리의 Level_2 을 구성하는 분리된 트리 
+        ROOTNODE = (1 << 3),    //트리의 최상위 노드 
+        RECOMPUTE = (1 << 4),   //경계구를 다시 계산
+        INTEGRATE = (1 << 5),   //대상구를 트리에 통합시킨다. 
+                                //  Level_2 트리의 슈퍼구일 경우 Level_1의 자식구로 똑같이 생성시킨다. 
+                                //  이 자식구를 Level_2의 슈퍼구에 연결시킨다  
+                              
         HIDDEN = (1 << 6), // outside of view frustum
         PARTIAL = (1 << 7), // partially inside view frustum
         INSIDE = (1 << 8)  // completely inside view frustum
@@ -47,7 +48,8 @@ public class SphereModel : IPoolConnector<SphereModel>
     private QFifo<SphereModel>.Out_Point _recompute_fifoOut; 
     private QFifo<SphereModel>.Out_Point _intergrate_fifoOut; 
 
-    private SphereModel _data_rootTree = null;
+    private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
+    private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
 
 
     //------------------------------------------------------
@@ -108,8 +110,10 @@ public class SphereModel : IPoolConnector<SphereModel>
     public void InitRecompute_FifoOut(){_recompute_fifoOut.Init(); }
     public void InitIntergrate_FifoOut() { _intergrate_fifoOut.Init(); }
 
-    public void SetData_RootTree(SphereModel data) { _data_rootTree = data; }
-    public SphereModel GetData_RootTree() { return _data_rootTree; }
+    public void SetLink_UpLevelTree(SphereModel data) { _link_upLevelTree = data; }
+    public SphereModel GetLink_UpLevelTree() { return _link_upLevelTree; }
+    public void SetLink_DownLevelTree(SphereModel data) { _link_downLevelTree = data; }
+    public SphereModel GetLink_DownLevelTree() { return _link_downLevelTree; }
 
     //======================================================
     public int GetChildCount() { return _childCount; }
@@ -132,7 +136,8 @@ public class SphereModel : IPoolConnector<SphereModel>
         _intergrate_fifoOut.Init();
         _childCount = 0;
         _binding_distance_sqr = 0f;
-        _data_rootTree = null;
+        _link_upLevelTree = null;
+        _link_downLevelTree = null;
 
         _treeController = controller;
     }
@@ -288,7 +293,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         //자식없는 슈퍼구는 제거한다 
         if (0 == _childCount && HasSpherePackFlag(Flag.SUPERSPHERE))
         {
-            _treeController.Remove_SuperSphereOfLeafTree(this); 
+            _treeController.Remove_SuperSphereAndLinkSphere(this); 
         }
     }
 
@@ -412,7 +417,7 @@ public class SphereModel : IPoolConnector<SphereModel>
             hit = DefineI.LineSegmentIntersection(_center, _radius, p1, dir, distance, out sect);
             if (hit)
             {
-                SphereModel link = this.GetData_RootTree();
+                SphereModel link = this.GetLink_DownLevelTree();
                 if (null != link) link.RayTrace(p1, dir, distance); //테스트 필요 
                 DefineI.DrawCircle(_center, GetRadius(), Color.red);
             }
@@ -447,7 +452,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         }
         else
         {
-            SphereModel link = this.GetData_RootTree();
+            SphereModel link = this.GetLink_DownLevelTree();
             if (null != link) link.RangeTest(p, distance, state); //테스트 필요 
             DefineI.DrawCircle(_center, GetRadius(), Color.red);
         }
@@ -501,7 +506,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         }
         else
         {
-            SphereModel link = this.GetData_RootTree();
+            SphereModel link = this.GetLink_DownLevelTree();
             switch (state)
             {
                 case Frustum.ViewState.INSIDE:
@@ -544,36 +549,6 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     public void Render_Debug()
     {
-        
-        if (!HasSpherePackFlag(Flag.ROOTNODE))
-        {
-            
-            //DefineO.PrintText(_center.x, _center.y, 0x00ffffff, ((Flag)_flags).ToString() ); //chamto test
-
-            if (HasSpherePackFlag(Flag.SUPERSPHERE))
-            {
-                if (HasSpherePackFlag(Flag.LEAF_TREE))
-                {
-
-
-                    SphereModel link = GetData_RootTree();
-
-                    if (null != link)
-                        link = link.GetParent();
-
-                    if (null != link && !link.HasSpherePackFlag(Flag.ROOTNODE))
-                    {
-                        DefineI.DrawLine(_center, link._center, Color.green);
-                    }
-                }
-
-                DefineI.DrawCircle(_center, GetRadius(), Color.green);
-            }else
-            {
-                DefineI.DrawCircle(_center, GetRadius(), Color.white);
-            }
-
-        }
 
         if (null != _children)
         {
@@ -585,14 +560,48 @@ public class SphereModel : IPoolConnector<SphereModel>
                 pack = pack.GetNextSibling();
             }
         }
-        //#endif
+
+        if (false == HasSpherePackFlag(Flag.ROOTNODE))
+        {
+            
+            //DefineO.PrintText(_center.x, _center.y, 0x00ffffff, ((Flag)_flags).ToString() ); //chamto test
+
+            if (HasSpherePackFlag(Flag.SUPERSPHERE))
+            {
+                DefineI.DrawCircle(_center, GetRadius(), Color.green);
+
+                if (HasSpherePackFlag(Flag.TREE_LEVEL_2))
+                {
+                    
+                    SphereModel link = GetLink_UpLevelTree();
+
+                    if (null != link)
+                        link = link.GetParent(); //level_1 트리의 슈퍼구노드를 의미한다 
+
+                    if (null != link && false == link.HasSpherePackFlag(Flag.ROOTNODE))
+                    {
+                        DefineI.DrawLine(_center, link._center, Color.cyan);
+                    }
+                }
+
+
+            }else
+            {
+                DefineI.DrawCircle(_center, GetRadius(), Color.white);
+            }
+
+        }
+
     }
 }
 
 public class SphereTree
 {
-    private SphereModel _root = null;     
-    private SphereModel _leaf = null;     
+    //총 거리3 (루트 -> 자식1 -> 자식2)의 전체적인 트리를 구성한다 
+    //트리의 거리별로 독립적인 트리를 구성한다. _level1 트리 한개 , _level2 트리 한개
+    //_level1 의 자식구와 _level2 트리의 슈퍼구를 연결하여 외부에서는 하나의 트리인것 처럼 보이게 한다
+    private SphereModel _level_1 = null; //root : 트리의 거리(level) 1. 루트노드를 의미한다 
+    private SphereModel _level_2 = null; //leaf : 트리의 거리(level) 2. 루트노드 바로 아래의 자식노드를 의미한다   
 
     private Pool<SphereModel> _spheres = null;  
 
@@ -619,14 +628,14 @@ public class SphereTree
 
         Vector3 pos = Vector3.zero;
 
-        _root = _spheres.GetFreeLink(); // initially empty
-        _root.Init(this, pos, 65536);
-        _root.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.ROOT_TREE);
+        _level_1 = _spheres.GetFreeLink(); // initially empty
+        _level_1.Init(this, pos, 65536);
+        _level_1.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_1);
 
 
-        _leaf = _spheres.GetFreeLink();  // initially empty
-        _leaf.Init(this, pos, 16384);
-        _leaf.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.LEAF_TREE);
+        _level_2 = _spheres.GetFreeLink();  // initially empty
+        _level_2.Init(this, pos, 16384);
+        _level_2.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
 
     }
 
@@ -645,13 +654,13 @@ public class SphereTree
 
         pack.Init(this, pos, radius); //AddSpherePackFlag 함수 보다 먼저 호출되어야 한다. _flags 정보가 초기화 되기 때문이다. 
 
-        if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
+        if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_1)) //루트트리가 들어 있다면 
         {
-            pack.AddSpherePackFlag(SphereModel.Flag.ROOT_TREE);
+            pack.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1);
         }
         else
         {
-            pack.AddSpherePackFlag(SphereModel.Flag.LEAF_TREE);
+            pack.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2);
         }
 
         AddIntegrateQ(pack); // add to integration list.
@@ -664,10 +673,10 @@ public class SphereTree
     public void AddIntegrateQ(SphereModel pack)      
     {
 
-        if (pack.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
-            _root.AddChild(pack);
+        if (pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
+            _level_1.AddChild(pack);
         else
-            _leaf.AddChild(pack);
+            _level_2.AddChild(pack);
 
         pack.AddSpherePackFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
         QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); // add it to the integration stack.
@@ -686,23 +695,23 @@ public class SphereTree
             }
             else
             {
-                Remove_SuperSphereOfLeafTree(pack);
+                Remove_SuperSphereAndLinkSphere(pack);
             }
         }
     }
 
     //LeafTree 의 슈퍼구만 지운다 
-    public void Remove_SuperSphereOfLeafTree(SphereModel pack)
+    public void Remove_SuperSphereAndLinkSphere(SphereModel pack)
     {
-
+        if (null == pack) return;
         if (pack.HasSpherePackFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
-        if (pack.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+        if (pack.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
         {
 
-            SphereModel link = pack.GetData_RootTree();
+            SphereModel link = pack.GetLink_UpLevelTree();
 
-            Remove_SuperSphereOfLeafTree(link);
+            Remove_SuperSphereAndLinkSphere(link);
         }
 
         pack.Unlink();
@@ -712,8 +721,8 @@ public class SphereTree
 
     public void ResetFlag()
     {
-        _root.ResetFlag();
-        _leaf.ResetFlag();
+        _level_1.ResetFlag();
+        _level_2.ResetFlag();
     }
 
     public void Process()
@@ -733,7 +742,7 @@ public class SphereTree
                 pack.InitRecompute_FifoOut(); //큐 연결정보를 초기화 한다 
 
                 bool isRemove = pack.Recompute(_gravy_supersphere); //fixme
-                if (isRemove) Remove_SuperSphereOfLeafTree(pack); //fixme
+                if (isRemove) Remove_SuperSphereAndLinkSphere(pack); //fixme
             }
         }
 
@@ -750,10 +759,10 @@ public class SphereTree
 
                 pack.InitIntergrate_FifoOut(); //큐 연결정보를 초기화 한다 
 
-                if (pack.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
-                    Integrate(pack, _root, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
+                if (pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
+                    Integrate(pack, _level_1, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
                 else
-                    Integrate(pack, _leaf, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
+                    Integrate(pack, _level_2, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
             }
         }
 
@@ -833,10 +842,11 @@ public class SphereTree
             src_pack.Compute_BindingDistanceSquared(containing_supersphere);
             containing_supersphere.Recompute(_gravy_supersphere);
 
-            if (containing_supersphere.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+            if (containing_supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
             {
-                //슈퍼구 전용 함수 : GetData_RootTree
-                SphereModel link = containing_supersphere.GetData_RootTree();
+                //연결된 상위 레벨트리의 자식노드를 갱신한다 
+                SphereModel link = containing_supersphere.GetLink_UpLevelTree();
+                //.LogBlue("1 "+link); //chamto test
                 link.SetPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
             }
 
@@ -861,9 +871,11 @@ public class SphereTree
                     nearest_supersphere.Recompute(_gravy_supersphere);
                     src_pack.Compute_BindingDistanceSquared(nearest_supersphere);
 
-                    if (nearest_supersphere.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+                    if (nearest_supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
                     {
-                        SphereModel link = nearest_supersphere.GetData_RootTree();
+                        //연결된 상위 레벨트리의 자식노드를 갱신한다 
+                        SphereModel link = nearest_supersphere.GetLink_UpLevelTree();
+                        //DebugWide.LogBlue("2 "+link); //chamto test
                         link.SetPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
                     }
 
@@ -884,10 +896,10 @@ public class SphereTree
                 //assert(parent);
                 parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere);
 
-                if (supersphere.HasSpherePackFlag(SphereModel.Flag.ROOT_TREE))
-                    parent.AddSpherePackFlag(SphereModel.Flag.ROOT_TREE);
+                if (supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
+                    parent.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1);
                 else
-                    parent.AddSpherePackFlag(SphereModel.Flag.LEAF_TREE);
+                    parent.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2);
 
                 parent.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE);
 
@@ -899,12 +911,12 @@ public class SphereTree
                 parent.Recompute(_gravy_supersphere);
                 src_pack.Compute_BindingDistanceSquared(parent);
 
-                if (parent.HasSpherePackFlag(SphereModel.Flag.LEAF_TREE))
+                if (parent.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
                 {
                     // need to create parent association!
-                    SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), SphereModel.Flag.ROOT_TREE);
-                    link.SetData_RootTree(parent);
-                    parent.SetData_RootTree(link); // hook him up!!
+                    SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), SphereModel.Flag.TREE_LEVEL_1);
+                    link.SetLink_DownLevelTree(parent);
+                    parent.SetLink_UpLevelTree(link); 
                 }
 
             }
@@ -918,27 +930,27 @@ public class SphereTree
     {
         Vector3 dir = end - start;
 
-        _root.RayTrace(start, dir.normalized, dir.magnitude);
+        _level_1.RayTrace(start, dir.normalized, dir.magnitude);
     }
 
     public void Render_RangeTest(Vector3 pos, float range)
     {
 
-        _root.RangeTest(pos, range, Frustum.ViewState.PARTIAL);
+        _level_1.RangeTest(pos, range, Frustum.ViewState.PARTIAL);
     }
 
     public void Render_FrustumTest(Frustum f , Frustum.ViewState state)
     {
         
-        _root.VisibilityTest(f, state);
+        _level_1.VisibilityTest(f, state);
     }
 
     public void Render_Debug(int mode)
     {
         if(1 == mode || 3 == mode)
-            _root.Render_Debug();
+            _level_1.Render_Debug();
         if(2 == mode || 3 == mode)
-            _leaf.Render_Debug();
+            _level_2.Render_Debug();
     }
 }
 

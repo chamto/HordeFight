@@ -46,7 +46,7 @@ public class Test2_SphereTree : MonoBehaviour
         {
             Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
             float radius = (Misc.rand.Next() % 4) + 1;
-            SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.LEAF_TREE);    
+            SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.TREE_LEVEL_2);    
         }
 
 	}
