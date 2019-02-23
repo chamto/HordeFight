@@ -391,10 +391,13 @@ MonoBehaviour:
   _lineEnd: {fileID: 1349567283}
   _treeMode: 3
   _testMode: 0
-  _count: 5
+  _count: 20
   _radius_root: 50
   _radius_leaf: 20
   _radius_gravy: 2
+  __radius: 3
+  __speed: 10
+  __p: {x: 0, y: 0, z: 0}
 --- !u!1 &1557174330
 GameObject:
   m_ObjectHideFlags: 0

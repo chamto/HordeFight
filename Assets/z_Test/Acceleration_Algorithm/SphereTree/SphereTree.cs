@@ -185,7 +185,7 @@ public class SphereModel : IPoolConnector<SphereModel>
 
         if (null != _parent && false == HasFlag(Flag.INTEGRATE)) //첫번째 통합요청이 선점. 두번째 이상의 통합요청은 무시된다  
         {
-            DebugWide.LogBlue(GetID());
+            //DebugWide.LogBlue(GetID());
             if (Mathf.Epsilon < Mathf.Abs(radius - _radius))
             {
                 SetRadius(radius);

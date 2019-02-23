@@ -35,6 +35,7 @@ public class Test2_SphereTree : MonoBehaviour
     public int _radius_leaf = 4;
     public int _radius_gravy = 1;
 
+    private SphereModel _control = null;
 
 	// Use this for initialization
 	void Start () 
@@ -48,14 +49,39 @@ public class Test2_SphereTree : MonoBehaviour
             float radius = (Misc.rand.Next() % 4) + 1;
             SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.TREE_LEVEL_2);
             _sphereTree.AddIntegrateQ(model);
+
+            _control = model;
         }
 
-	}
-	
 
+	}
+
+    public float __radius = 3;
+    public float __speed = 10f;
+    public Vector3 __p = Vector3.zero;
 	void Update () 
     {
         if (null == _sphereTree) return;
+
+        __p = _control.GetPos();
+
+        switch (Input.inputString)
+        {
+            case "a": //left
+                __p.x = __p.x + Time.deltaTime * -1f * __speed;
+                break;
+            case "s": //down
+                __p.y = __p.y + Time.deltaTime * -1f * __speed;
+                break;
+            case "d": //right
+                __p.x = __p.x + Time.deltaTime * 1f * __speed;
+                break;
+            case "w": //up
+                __p.y = __p.y + Time.deltaTime * 1f * __speed;
+                break;
+            
+        }
+        _control.SetPosRadius(__p, __radius);
 
         _sphereTree.ResetFlag();
         _sphereTree.Process();
