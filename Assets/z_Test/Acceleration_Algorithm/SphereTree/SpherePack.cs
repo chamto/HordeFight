@@ -606,7 +606,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
 
                     //#if DEMO
                     DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius(), color);
-                    //DefineO.PrintText(mCenter.x, mCenter.y, color, ((Flag)mFlags).ToString()); //chamto test
+
                     //#endif
                     SpherePack link = GetData_RootTree();
 
@@ -624,7 +624,7 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
                 {
                     //#if DEMO
                     DefineO.DrawCircle(mCenter.x, mCenter.y, GetRadius() + 3, color);
-                    //DefineO.PrintText(mCenter.x, mCenter.y, 0x00FFFFFF, ((Flag)mFlags).ToString()); //chamto test
+
                     //#endif
                 }
 

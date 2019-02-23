@@ -166,11 +166,11 @@ public class SphereModel : IPoolConnector<SphereModel>
 
                 if (false == _parent.HasFlag(Flag.RECOMPUTE))
                 {
-                    _treeController.AddRecomputeQ(_parent); 
+                    _treeController.AddRecomputeQ(_parent); //슈퍼구를 넣어야 한다
                 }
 
                 Unlink();
-                _treeController.AddIntegrateQ(this); 
+                _treeController.AddIntegrateQ(this); //자식구를 넣어야 한다
             }
         }
 
@@ -179,11 +179,11 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     public void SetPosRadius(Vector3 pos, float radius)
     {
-        string temp = "1 -- " + pos + "  " + radius + "  == " + _flags.ToString()+" ==  ";
+        //string temp = "1 -- " + pos + "  " + radius + "  == " + _flags.ToString()+" ==  ";
 
         _center = pos;
 
-        if (null != _parent && false == HasFlag(Flag.INTEGRATE))
+        if (null != _parent && false == HasFlag(Flag.INTEGRATE)) //첫번째 통합요청이 선점. 두번째 이상의 통합요청은 무시된다  
         {
             DebugWide.LogBlue(GetID());
             if (Mathf.Epsilon < Mathf.Abs(radius - _radius))
@@ -198,10 +198,10 @@ public class SphereModel : IPoolConnector<SphereModel>
             {
                 if (false == _parent.HasFlag(Flag.RECOMPUTE)) 
                 {
-                    _treeController.AddRecomputeQ(_parent);
+                    _treeController.AddRecomputeQ(_parent); //슈퍼구를 넣어야 한다
                 }
                 Unlink();
-                _treeController.AddIntegrateQ(this);
+                _treeController.AddIntegrateQ(this); //자식구를 넣어야 한다
             }
             else
             {
@@ -212,8 +212,8 @@ public class SphereModel : IPoolConnector<SphereModel>
             }
         }
 
-        temp += "  | 2 -- " + _center + "  " + _radius + "   id:" + GetID(); //chamto test
-        DebugWide.LogBlue(temp);
+        //temp += "  | 2 -- " + _center + "  " + _radius + "   id:" + GetID(); //chamto test
+        //DebugWide.LogBlue(temp);
     }
 
     public void AddChild(SphereModel pack)
@@ -321,6 +321,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         _binding_distance_sqr = _binding_distance_sqr * _binding_distance_sqr;
     }
 
+    //슈퍼구만 계산의 대상이 된다
     public bool Recompute(float gravy)
     {
         if (null == _children) return true; // kill it!
@@ -697,7 +698,8 @@ public class SphereTree
         return pack;
     }
 
-
+    //!!자식구만 통합의 대상이 된다. 함수에 슈퍼구를 넣으면 안됨 
+    //대상구를 어떤 슈퍼구에 포함하거나 , 포함 할 슈퍼구가 없으면 새로 만든다 
     public void AddIntegrateQ(SphereModel pack)      
     {
 
@@ -711,6 +713,8 @@ public class SphereTree
         pack.SetIntergrate_FifoOut(fifo);
     }
 
+    //!!자식이 있는 구, 즉 슈퍼구만 재계산의 대상이 된다. 
+    //슈퍼구의 위치,반지름이 자식들의 정보에 따라 재계산 된다.
     public void AddRecomputeQ(SphereModel pack)     // add to the recomputation (balancing) FIFO.
     {
         if (false == pack.HasFlag(SphereModel.Flag.RECOMPUTE))
@@ -728,7 +732,7 @@ public class SphereTree
         }
     }
 
-    //LeafTree 의 슈퍼구만 지운다 
+    //LeafTree 의 슈퍼구와 연결된 레벨1 자식구를 지운다 
     public void Remove_SuperSphereAndLinkSphere(SphereModel pack)
     {
         if (null == pack) return;
@@ -755,6 +759,7 @@ public class SphereTree
 
     public void Process()
     {
+        //슈퍼구 재계산
         if (true)
         {
             // First recompute anybody that needs to be recomputed!!
@@ -769,11 +774,12 @@ public class SphereTree
 
                 pack.InitRecompute_FifoOut(); //큐 연결정보를 초기화 한다 
 
-                bool isRemove = pack.Recompute(_gravy_supersphere); //fixme
-                if (isRemove) Remove_SuperSphereAndLinkSphere(pack); //fixme
+                bool isRemove = pack.Recompute(_gravy_supersphere); 
+                if (isRemove) Remove_SuperSphereAndLinkSphere(pack); 
             }
         }
 
+        //자식구 통합
         if (true)
         {
             // Now, process the integration step.
@@ -796,6 +802,7 @@ public class SphereTree
 
     }
 
+    //src_pack에는 자식구만 들어가야 한다 
     public void Integrate(SphereModel src_pack, SphereModel supersphere, float maxRadius_supersphere)
     {
         
@@ -867,15 +874,25 @@ public class SphereTree
             
             src_pack.Unlink(); //큐 연결정보를 Process 에서 해제 했기 때문에, 내부에서 LostChild만 수행된다 
             containing_supersphere.AddChild(src_pack); //src_pack 의 트리정보를 설정
+
             src_pack.Compute_BindingDistanceSquared(containing_supersphere);
             containing_supersphere.Recompute(_gravy_supersphere);
 
+            //반드시 상위레벨트리의 구와 크기와 위치를 같게 맞추어야 한다
+            //자식구는 Recompute 의 대상이 아니다. 
             if (containing_supersphere.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
             {
                 //연결된 상위 레벨트리의 자식노드를 갱신한다 
                 SphereModel link = containing_supersphere.GetLink_UpLevelTree();
-                //.LogBlue("1 "+link); //chamto test
                 link.SetPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
+
+                //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
+                //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
+                if (link.HasFlag(SphereModel.Flag.INTEGRATE))
+                {
+                    link.SetRadius(containing_supersphere.GetRadius());
+                }
             }
 
         }
@@ -896,15 +913,25 @@ public class SphereTree
 
                     nearest_supersphere.SetRadius(newRadius);
                     nearest_supersphere.AddChild(src_pack);
+
                     nearest_supersphere.Recompute(_gravy_supersphere);
                     src_pack.Compute_BindingDistanceSquared(nearest_supersphere);
 
+                    //반드시 상위레벨트리의 구와 크기와 위치를 같게 맞추어야 한다
                     if (nearest_supersphere.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
                     {
                         //연결된 상위 레벨트리의 자식노드를 갱신한다 
                         SphereModel link = nearest_supersphere.GetLink_UpLevelTree();
-                        //DebugWide.LogBlue("2 "+link); //chamto test
                         link.SetPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
+
+                        //SetPosRadius 함수에서 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                        //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때는 갱신이 실패가 된다
+                        //따로 통합처리중일때 반지름을 갱신해 주어야 한다 
+                        if(link.HasFlag(SphereModel.Flag.INTEGRATE))
+                        {
+                            link.SetRadius(nearest_supersphere.GetRadius());    
+                        }
+
                     }
 
                     newsphere = false;
@@ -928,6 +955,7 @@ public class SphereTree
                 //    parent.AddFlag(SphereModel.Flag.TREE_LEVEL_1);
                 //else
                     //parent.AddFlag(SphereModel.Flag.TREE_LEVEL_2);
+
                 SphereModel parent = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, supersphere.GetFlag());
                 parent.AddFlag(SphereModel.Flag.SUPERSPHERE);
                 parent.AddChild(src_pack);

@@ -256,6 +256,14 @@ public class SpherePackFactory : SpherePackCallback
             {
                 SpherePack link = nearest1.GetData_RootTree();
                 link.NewPosRadius(nearest1.GetPos(), nearest1.GetRadius());
+
+                //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
+                //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
+                if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
+                {
+                    link.SetRadius(nearest1.GetRadius());
+                }
             }
 
         }
@@ -280,6 +288,14 @@ public class SpherePackFactory : SpherePackCallback
                     {
                         SpherePack link = nearest2.GetData_RootTree();
                         link.NewPosRadius(nearest2.GetPos(), nearest2.GetRadius());
+
+                        //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                        //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
+                        //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
+                        if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
+                        {
+                            link.SetRadius(nearest2.GetRadius());
+                        }
                     }
 
                     newsphere = false;
