@@ -95,9 +95,10 @@ public class SphereModel : IPoolConnector<SphereModel>
     //=====================================================
     //Flag 열거값 다루는 함수
     //=====================================================
-    public void AddSpherePackFlag(Flag flag) { _flags |= flag; }
-    public void ClearSpherePackFlag(Flag flag) { _flags &= ~flag; }
-    public bool HasSpherePackFlag(Flag flag)
+    public Flag GetFlag() { return _flags;  }
+    public void AddFlag(Flag flag) { _flags |= flag; }
+    public void ClearFlag(Flag flag) { _flags &= ~flag; }
+    public bool HasFlag(Flag flag)
     {
         if (0 != (_flags & flag)) return true;
         return false;
@@ -156,14 +157,14 @@ public class SphereModel : IPoolConnector<SphereModel>
     {
         _center = pos; 
 
-        if (null != _parent && false == HasSpherePackFlag(Flag.INTEGRATE))
+        if (null != _parent && false == HasFlag(Flag.INTEGRATE))
         {
             float sqrDist = ToDistanceSquared(_parent);
 
             if (sqrDist >= _binding_distance_sqr) 
             {
 
-                if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE))
+                if (false == _parent.HasFlag(Flag.RECOMPUTE))
                 {
                     _treeController.AddRecomputeQ(_parent); 
                 }
@@ -178,13 +179,13 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     public void SetPosRadius(Vector3 pos, float radius)
     {
-        string temp = "1 -- " + pos + "  " + radius + "  ";
+        string temp = "1 -- " + pos + "  " + radius + "  == " + _flags.ToString()+" ==  ";
 
         _center = pos;
 
-        if (null != _parent && false == HasSpherePackFlag(Flag.INTEGRATE))
+        if (null != _parent && false == HasFlag(Flag.INTEGRATE))
         {
-            
+            DebugWide.LogBlue(GetID());
             if (Mathf.Epsilon < Mathf.Abs(radius - _radius))
             {
                 SetRadius(radius);
@@ -195,7 +196,7 @@ public class SphereModel : IPoolConnector<SphereModel>
 
             if (sqrDist >= _binding_distance_sqr)
             {
-                if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE)) 
+                if (false == _parent.HasFlag(Flag.RECOMPUTE)) 
                 {
                     _treeController.AddRecomputeQ(_parent);
                 }
@@ -204,14 +205,14 @@ public class SphereModel : IPoolConnector<SphereModel>
             }
             else
             {
-                if (false == _parent.HasSpherePackFlag(Flag.RECOMPUTE)) 
+                if (false == _parent.HasFlag(Flag.RECOMPUTE)) 
                 {
                     _treeController.AddRecomputeQ(_parent);
                 }
             }
         }
 
-        temp += "2 -- " + pos + "  " + radius + "   id:" + GetID(); //chamto test
+        temp += "  | 2 -- " + _center + "  " + _radius + "   id:" + GetID(); //chamto test
         DebugWide.LogBlue(temp);
     }
 
@@ -304,7 +305,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         _childCount--;
 
         //자식없는 슈퍼구는 제거한다 
-        if (0 == _childCount && HasSpherePackFlag(Flag.SUPERSPHERE))
+        if (0 == _childCount && HasFlag(Flag.SUPERSPHERE))
         {
             _treeController.Remove_SuperSphereAndLinkSphere(this); 
         }
@@ -323,7 +324,7 @@ public class SphereModel : IPoolConnector<SphereModel>
     public bool Recompute(float gravy)
     {
         if (null == _children) return true; // kill it!
-        if (HasSpherePackFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
+        if (HasFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
 
         //#if 1
         // recompute bounding sphere!
@@ -359,7 +360,7 @@ public class SphereModel : IPoolConnector<SphereModel>
                     if ((maxradius + gravy) >= GetRadius())
                     {
                         _center = oldpos;
-                        ClearSpherePackFlag(Flag.RECOMPUTE);
+                        ClearFlag(Flag.RECOMPUTE);
                         return false;
                     }
                 }
@@ -383,14 +384,14 @@ public class SphereModel : IPoolConnector<SphereModel>
 
         //#endif
 
-        ClearSpherePackFlag(Flag.RECOMPUTE);
+        ClearFlag(Flag.RECOMPUTE);
 
         return false;
     }
 
     public void ResetFlag()
     {
-        ClearSpherePackFlag(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE);
+        ClearFlag(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE);
 
         SphereModel pack = _children;
         while (null != pack)
@@ -405,7 +406,7 @@ public class SphereModel : IPoolConnector<SphereModel>
         bool hit = false;
         Vector3 sect;
 
-        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        if (HasFlag(Flag.SUPERSPHERE))
         {
 
             hit = DefineI.RayIntersectionInFront(_center, _radius, p1,  dir, out sect);
@@ -447,7 +448,7 @@ public class SphereModel : IPoolConnector<SphereModel>
             if ((GetRadius() + d) < distance) state = Frustum.ViewState.INSIDE;
         }
 
-        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        if (HasFlag(Flag.SUPERSPHERE))
         {
             //#if DEMO
             if (state == Frustum.ViewState.PARTIAL)
@@ -484,27 +485,27 @@ public class SphereModel : IPoolConnector<SphereModel>
             //#endif
         }
 
-        if (HasSpherePackFlag(Flag.SUPERSPHERE))
+        if (HasFlag(Flag.SUPERSPHERE))
         {
 
             if (state == Frustum.ViewState.OUTSIDE)
             {
-                if (HasSpherePackFlag(Flag.HIDDEN)) return; // no state change
-                ClearSpherePackFlag(Flag.INSIDE | Flag.PARTIAL);
-                AddSpherePackFlag(Flag.HIDDEN);
+                if (HasFlag(Flag.HIDDEN)) return; // no state change
+                ClearFlag(Flag.INSIDE | Flag.PARTIAL);
+                AddFlag(Flag.HIDDEN);
             }
             else
             {
                 if (state == Frustum.ViewState.INSIDE)
                 {
-                    if (HasSpherePackFlag(Flag.INSIDE)) return; // no state change
-                    ClearSpherePackFlag(Flag.PARTIAL | Flag.HIDDEN);
-                    AddSpherePackFlag(Flag.INSIDE);
+                    if (HasFlag(Flag.INSIDE)) return; // no state change
+                    ClearFlag(Flag.PARTIAL | Flag.HIDDEN);
+                    AddFlag(Flag.INSIDE);
                 }
                 else
                 {
-                    ClearSpherePackFlag(Flag.HIDDEN | Flag.INSIDE);
-                    AddSpherePackFlag(Flag.PARTIAL);
+                    ClearFlag(Flag.HIDDEN | Flag.INSIDE);
+                    AddFlag(Flag.PARTIAL);
                 }
             }
 
@@ -523,10 +524,10 @@ public class SphereModel : IPoolConnector<SphereModel>
             switch (state)
             {
                 case Frustum.ViewState.INSIDE:
-                    if (!HasSpherePackFlag(Flag.INSIDE))
+                    if (!HasFlag(Flag.INSIDE))
                     {
-                        ClearSpherePackFlag(Flag.HIDDEN | Flag.PARTIAL);
-                        AddSpherePackFlag(Flag.INSIDE);
+                        ClearFlag(Flag.HIDDEN | Flag.PARTIAL);
+                        AddFlag(Flag.INSIDE);
                         //callback.VisibilityCallback(f, this, state);
 
                         if (null != link) link.VisibilityTest(f, state); //테스트 필요 
@@ -534,10 +535,10 @@ public class SphereModel : IPoolConnector<SphereModel>
                     }
                     break;
                 case Frustum.ViewState.OUTSIDE:
-                    if (!HasSpherePackFlag(Flag.HIDDEN))
+                    if (!HasFlag(Flag.HIDDEN))
                     {
-                        ClearSpherePackFlag(Flag.INSIDE | Flag.PARTIAL);
-                        AddSpherePackFlag(Flag.HIDDEN);
+                        ClearFlag(Flag.INSIDE | Flag.PARTIAL);
+                        AddFlag(Flag.HIDDEN);
                         //callback.VisibilityCallback(f, this, state);
 
                         if (null != link) link.VisibilityTest(f, state); //테스트 필요 
@@ -545,10 +546,10 @@ public class SphereModel : IPoolConnector<SphereModel>
                     }
                     break;
                 case Frustum.ViewState.PARTIAL:
-                    if (!HasSpherePackFlag(Flag.PARTIAL))
+                    if (!HasFlag(Flag.PARTIAL))
                     {
-                        ClearSpherePackFlag(Flag.INSIDE | Flag.HIDDEN);
-                        AddSpherePackFlag(Flag.PARTIAL);
+                        ClearFlag(Flag.INSIDE | Flag.HIDDEN);
+                        AddFlag(Flag.PARTIAL);
                         //callback.VisibilityCallback(f, this, state);
 
                         if (null != link) link.VisibilityTest(f, state); //테스트 필요 
@@ -574,17 +575,17 @@ public class SphereModel : IPoolConnector<SphereModel>
             }
         }
 
-        if (false == HasSpherePackFlag(Flag.ROOTNODE))
+        if (false == HasFlag(Flag.ROOTNODE))
         {
             string temp = string.Empty;
             Color color = Color.green;
 
-            if (HasSpherePackFlag(Flag.SUPERSPHERE))
+            if (HasFlag(Flag.SUPERSPHERE))
             {
                 
                 DefineI.DrawCircle(_center, GetRadius(), Color.green);
 
-                if (HasSpherePackFlag(Flag.TREE_LEVEL_2))
+                if (HasFlag(Flag.TREE_LEVEL_2))
                 {
                     
                     SphereModel link = GetLink_UpLevelTree();
@@ -592,7 +593,7 @@ public class SphereModel : IPoolConnector<SphereModel>
                     if (null != link)
                         link = link.GetParent(); //level_1 트리의 슈퍼구노드를 의미한다 
 
-                    if (null != link && false == link.HasSpherePackFlag(Flag.ROOTNODE))
+                    if (null != link && false == link.HasFlag(Flag.ROOTNODE))
                     {
                         DefineI.DrawLine(_center, link._center, Color.cyan);
                     }
@@ -606,9 +607,9 @@ public class SphereModel : IPoolConnector<SphereModel>
             }
 
 
-            if (HasSpherePackFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
-            if (HasSpherePackFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
-            if (HasSpherePackFlag(Flag.SUPERSPHERE)) { temp += "s"; }
+            if (HasFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
+            if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
+            if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
             DefineI.PrintText(_center, color, temp+ GetID());
             //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );
@@ -657,12 +658,12 @@ public class SphereTree
 
         _level_1 = _spheres.GetFreeLink(); // initially empty
         _level_1.Init(this, pos, 65536);
-        _level_1.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_1);
+        _level_1.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_1);
 
 
         _level_2 = _spheres.GetFreeLink();  // initially empty
         _level_2.Init(this, pos, 16384);
-        _level_2.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
+        _level_2.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
 
     }
 
@@ -683,14 +684,14 @@ public class SphereTree
 
         if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_1)) //루트트리가 들어 있다면 
         {
-            pack.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1);
+            pack.AddFlag(SphereModel.Flag.TREE_LEVEL_1);
         }
         else
         {
-            pack.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2);
+            pack.AddFlag(SphereModel.Flag.TREE_LEVEL_2);
         }
 
-        AddIntegrateQ(pack); // add to integration list.
+        //AddIntegrateQ(pack); // add to integration list.
 
 
         return pack;
@@ -700,23 +701,23 @@ public class SphereTree
     public void AddIntegrateQ(SphereModel pack)      
     {
 
-        if (pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
+        if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
             _level_1.AddChild(pack);
         else
             _level_2.AddChild(pack);
 
-        pack.AddSpherePackFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
+        pack.AddFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
         QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); // add it to the integration stack.
         pack.SetIntergrate_FifoOut(fifo);
     }
 
     public void AddRecomputeQ(SphereModel pack)     // add to the recomputation (balancing) FIFO.
     {
-        if (false == pack.HasSpherePackFlag(SphereModel.Flag.RECOMPUTE))
+        if (false == pack.HasFlag(SphereModel.Flag.RECOMPUTE))
         {
             if (0 != pack.GetChildCount())
             {
-                pack.AddSpherePackFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
+                pack.AddFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
                 QFifo<SphereModel>.Out_Point fifo = _recomputeQ.Push(pack);
                 pack.SetRecompute_FifoOut(fifo);
             }
@@ -731,9 +732,9 @@ public class SphereTree
     public void Remove_SuperSphereAndLinkSphere(SphereModel pack)
     {
         if (null == pack) return;
-        if (pack.HasSpherePackFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
+        if (pack.HasFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
-        if (pack.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
+        if (pack.HasFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
         {
 
             SphereModel link = pack.GetLink_UpLevelTree();
@@ -786,7 +787,7 @@ public class SphereTree
 
                 pack.InitIntergrate_FifoOut(); //큐 연결정보를 초기화 한다 
 
-                if (pack.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
+                if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
                     Integrate(pack, _level_1, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
                 else
                     Integrate(pack, _level_2, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
@@ -811,8 +812,8 @@ public class SphereTree
         //=====================================================================================
         while (null != search)
         {
-            if (search.HasSpherePackFlag(SphereModel.Flag.SUPERSPHERE) &&
-                false == search.HasSpherePackFlag(SphereModel.Flag.ROOTNODE) && 0 != search.GetChildCount())
+            if (search.HasFlag(SphereModel.Flag.SUPERSPHERE) &&
+                false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 != search.GetChildCount())
             {
 
                 float sqrDist = src_pack.ToDistanceSquared(search);
@@ -869,7 +870,7 @@ public class SphereTree
             src_pack.Compute_BindingDistanceSquared(containing_supersphere);
             containing_supersphere.Recompute(_gravy_supersphere);
 
-            if (containing_supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
+            if (containing_supersphere.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
             {
                 //연결된 상위 레벨트리의 자식노드를 갱신한다 
                 SphereModel link = containing_supersphere.GetLink_UpLevelTree();
@@ -898,7 +899,7 @@ public class SphereTree
                     nearest_supersphere.Recompute(_gravy_supersphere);
                     src_pack.Compute_BindingDistanceSquared(nearest_supersphere);
 
-                    if (nearest_supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
+                    if (nearest_supersphere.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
                     {
                         //연결된 상위 레벨트리의 자식노드를 갱신한다 
                         SphereModel link = nearest_supersphere.GetLink_UpLevelTree();
@@ -919,29 +920,27 @@ public class SphereTree
 
                 src_pack.Unlink();
 
-                SphereModel parent = _spheres.GetFreeLink();
-                //assert(parent);
-                parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere);
 
-                if (supersphere.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1))
-                    parent.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_1);
-                else
-                    parent.AddSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2);
+                //SphereModel parent = _spheres.GetFreeLink();
+                //parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere);
 
-                parent.AddSpherePackFlag(SphereModel.Flag.SUPERSPHERE);
-
-
+                //if (supersphere.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
+                //    parent.AddFlag(SphereModel.Flag.TREE_LEVEL_1);
+                //else
+                    //parent.AddFlag(SphereModel.Flag.TREE_LEVEL_2);
+                SphereModel parent = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, supersphere.GetFlag());
+                parent.AddFlag(SphereModel.Flag.SUPERSPHERE);
                 parent.AddChild(src_pack);
-
                 supersphere.AddChild(parent);
 
                 parent.Recompute(_gravy_supersphere);
                 src_pack.Compute_BindingDistanceSquared(parent);
 
-                if (parent.HasSpherePackFlag(SphereModel.Flag.TREE_LEVEL_2))
+                if (parent.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
                 {
                     // need to create parent association!
                     SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), SphereModel.Flag.TREE_LEVEL_1);
+                    AddIntegrateQ(link);
                     link.SetLink_DownLevelTree(parent);
                     parent.SetLink_UpLevelTree(link); 
                 }
@@ -949,7 +948,7 @@ public class SphereTree
             }
         }
 
-        src_pack.ClearSpherePackFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
+        src_pack.ClearFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
     }
 
 

@@ -391,7 +391,7 @@ MonoBehaviour:
   _lineEnd: {fileID: 1349567283}
   _treeMode: 3
   _testMode: 0
-  _count: 30
+  _count: 5
   _radius_root: 50
   _radius_leaf: 20
   _radius_gravy: 2
