@@ -396,7 +396,7 @@ MonoBehaviour:
   _radius_leaf: 20
   _radius_gravy: 2
   __radius: 3
-  __speed: 10
+  __speed: 50
   __p: {x: 0, y: 0, z: 0}
 --- !u!1 &1557174330
 GameObject:
