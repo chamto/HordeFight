@@ -1,456 +1,459 @@
 using UnityEngine;
 
-
-public class SpherePackFactory : SpherePackCallback
+namespace Test_003
 {
-
-    private SpherePack mRoot = null;     // 1024x1024 root node of all active spheres.
-    private SpherePack mLeaf = null;     // 1024x1024 root node of all active spheres.
-    private SpherePackCallback mCircleFactory_Callback = null;
-
-    private Pool<SpherePack> mSpheres = null;  // all spheres possibly represented.
-
-    private QFifo<SpherePack> mIntegrate = null; // integration fifo
-    private QFifo<SpherePack> mRecompute = null; // recomputation fifo
-
-    //#if DEMO
-    //#define MAXCOLORS 12
-    const int MAXCOLORS = 12;
-    private int mColorCount;
-    private uint[] mColors = null;
-    //#endif
-
-    private float mMaxRootSize;              // maximum size of a root node supersphere
-    private float mMaxLeafSize;              // maximum size of the leaf node supersphere
-    private float mSuperSphereGravy;         // binding distance gravy. //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
-
-
-    public SpherePackFactory(int maxspheres, float rootsize, float leafsize, float gravy)
+    public class SpherePackFactory : SpherePackCallback
     {
-        maxspheres *= 4; // include room for both trees, the root node and leaf node tree, and the supersheres
-        mMaxRootSize = rootsize;
-        mMaxLeafSize = leafsize;
-        mSuperSphereGravy = gravy;
 
-        mIntegrate = new QFifo<SpherePack>(maxspheres);
-        mRecompute = new QFifo<SpherePack>(maxspheres);
-        mSpheres = new Pool<SpherePack>();
-        mSpheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
+        private SpherePack mRoot = null;     // 1024x1024 root node of all active spheres.
+        private SpherePack mLeaf = null;     // 1024x1024 root node of all active spheres.
+        private SpherePackCallback mCircleFactory_Callback = null;
 
-        Vector3 p = Vector3.zero;
+        private Pool<SpherePack> mSpheres = null;  // all spheres possibly represented.
 
-        mRoot = mSpheres.GetFreeLink(); // initially empty
-        mRoot.Init(this, p, 65536);
-        mRoot.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
+        private QFifo<SpherePack> mIntegrate = null; // integration fifo
+        private QFifo<SpherePack> mRecompute = null; // recomputation fifo
 
         //#if DEMO
-        mRoot.SetColor_Debug(0x00FFFFFF);
+        //#define MAXCOLORS 12
+        const int MAXCOLORS = 12;
+        private int mColorCount;
+        private uint[] mColors = null;
         //#endif
 
-        mLeaf = mSpheres.GetFreeLink();  // initially empty
-        mLeaf.Init(this, p, 16384);
-        mLeaf.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.LEAF_TREE));
-
-        //#if DEMO
-        mColors = new uint[MAXCOLORS];
-        mLeaf.SetColor_Debug(0x00FFFFFF);
-        mColorCount = 0;
-
-        mColors[0] = 0x00FF0000;
-        mColors[1] = 0x0000FF00;
-        mColors[2] = 0x000000FF;
-        mColors[3] = 0x00FFFF00;
-        mColors[4] = 0x00FF00FF;
-        mColors[5] = 0x0000FFFF;
-        mColors[6] = 0x00FF8080;
-        mColors[7] = 0x0000FF80;
-        mColors[8] = 0x000080FF;
-        mColors[9] = 0x00FFFF80;
-        mColors[10] = 0x00FF80FF;
-        mColors[11] = 0x0080FFFF;
-
-        //#endif
-    }
-
-    // ~SpherePackFactory(void)
-    // {
-    //   delete mIntegrate;  // free up integration fifo
-    //   delete mRecompute;  // free up recomputation fifo.
-    // }
+        private float mMaxRootSize;              // maximum size of a root node supersphere
+        private float mMaxLeafSize;              // maximum size of the leaf node supersphere
+        private float mSuperSphereGravy;         // binding distance gravy. //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
 
 
-    public void Process()
-    {
-        if (true)
+        public SpherePackFactory(int maxspheres, float rootsize, float leafsize, float gravy)
         {
-            // First recompute anybody that needs to be recomputed!!
-            // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
-            // need to be removed.
-            // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
-            int maxrecompute = mRecompute.GetCount();
-            for (int i = 0; i < maxrecompute; i++)
-            {
-                SpherePack pack = mRecompute.Pop();
-                if (null == pack) break;
-                //pack.SetFifo1(null); // no longer on the fifo!!
-                pack.InitRecompute_FifoOut();
-                bool kill = pack.Recompute(mSuperSphereGravy);
-                if (kill) Remove(pack);
-            }
+            maxspheres *= 4; // include room for both trees, the root node and leaf node tree, and the supersheres
+            mMaxRootSize = rootsize;
+            mMaxLeafSize = leafsize;
+            mSuperSphereGravy = gravy;
+
+            mIntegrate = new QFifo<SpherePack>(maxspheres);
+            mRecompute = new QFifo<SpherePack>(maxspheres);
+            mSpheres = new Pool<SpherePack>();
+            mSpheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
+
+            Vector3 p = Vector3.zero;
+
+            mRoot = mSpheres.GetFreeLink(); // initially empty
+            mRoot.Init(this, p, 65536);
+            mRoot.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.ROOT_TREE));
+
+            //#if DEMO
+            mRoot.SetColor_Debug(0x00FFFFFF);
+            //#endif
+
+            mLeaf = mSpheres.GetFreeLink();  // initially empty
+            mLeaf.Init(this, p, 16384);
+            mLeaf.AddSpherePackFlag((int)(SpherePack.Flag.SUPERSPHERE | SpherePack.Flag.ROOTNODE | SpherePack.Flag.LEAF_TREE));
+
+            //#if DEMO
+            mColors = new uint[MAXCOLORS];
+            mLeaf.SetColor_Debug(0x00FFFFFF);
+            mColorCount = 0;
+
+            mColors[0] = 0x00FF0000;
+            mColors[1] = 0x0000FF00;
+            mColors[2] = 0x000000FF;
+            mColors[3] = 0x00FFFF00;
+            mColors[4] = 0x00FF00FF;
+            mColors[5] = 0x0000FFFF;
+            mColors[6] = 0x00FF8080;
+            mColors[7] = 0x0000FF80;
+            mColors[8] = 0x000080FF;
+            mColors[9] = 0x00FFFF80;
+            mColors[10] = 0x00FF80FF;
+            mColors[11] = 0x0080FFFF;
+
+            //#endif
         }
 
-        if (true)
+        // ~SpherePackFactory(void)
+        // {
+        //   delete mIntegrate;  // free up integration fifo
+        //   delete mRecompute;  // free up recomputation fifo.
+        // }
+
+
+        public void Process()
         {
-            // Now, process the integration step.
-
-            int maxintegrate = mIntegrate.GetCount();
-
-            for (int i = 0; i < maxintegrate; i++)
+            if (true)
             {
-                SpherePack pack = mIntegrate.Pop();
-                if (null == pack) break;
-                //pack.SetFifo2(null);
-                pack.InitIntergrate_FifoOut();
-
-                if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
-                    Integrate(pack, mRoot, mMaxRootSize); // integrate this one single dude against the root node.
-                else
-                    Integrate(pack, mLeaf, mMaxLeafSize); // integrate this one single dude against the root node.
-            }
-        }
-
-    }
-
-
-
-    public SpherePack AddSphere(Vector3 pos, float radius, SpherePack.Flag flag)
-    {
-
-        SpherePack pack = mSpheres.GetFreeLink();
-
-        //assert(pack);
-
-        if (null != pack)
-        {
-
-            pack.Init(this, pos, radius); //SetSpherePackFlag 함수 보다 먼저 호출되어야 한다. mFlag 정보를 초기화 하기 때문이다. 
-
-            //if (SpherePack.Flag.NONE != (flags & SpherePack.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
-            if (flag == SpherePack.Flag.ROOT_TREE) //루트트리 라면 
-            {
-                pack.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
-            }
-            else
-            {
-                pack.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
-            }
-
-            AddIntegrate(pack); // add to integration list.
-        }
-
-        return pack;
-    }
-
-    public void AddIntegrate(SpherePack pack)          // add to the integration FIFO
-    {
-
-        if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
-            mRoot.AddChild(pack);
-        else
-            mLeaf.AddChild(pack);
-
-        pack.AddSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
-        QFifo<SpherePack>.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
-        pack.SetIntergrate_FifoOut(fifo);
-    }
-
-    public void AddRecompute(SpherePack pack)     // add to the recomputation (balancing) FIFO.
-    {
-        if (!pack.HasSpherePackFlag(SpherePack.Flag.RECOMPUTE))
-        {
-            if (0 != pack.GetChildCount())
-            {
-                pack.AddSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
-                QFifo<SpherePack>.Out_Point fifo = mRecompute.Push(pack);
-                pack.SetRecompute_FifoOut(fifo);
-            }
-            else
-            {
-                Remove(pack);
-            }
-        }
-    }
-
-    public void Integrate(SpherePack src_pack, SpherePack supersphere, float node_size)
-    {
-        // ok..time to integrate this sphere with the tree
-        // first find which supersphere we are closest to the center of
-
-        SpherePack search = supersphere.GetChildren();
-
-        SpherePack nearest1 = null;  // nearest supersphere we are completely
-        float nearSqrDist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
-
-        SpherePack nearest2 = null; // supersphere we must grow the least to
-        float nearDist2 = 1e9f;    // add ourselves to.
-
-        //int scount = 1;
-
-        while (null != search)
-        {
-            if (search.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) &&
-                !search.HasSpherePackFlag(SpherePack.Flag.ROOTNODE) && 0 != search.GetChildCount())
-            {
-
-                float sqrDist = src_pack.ToDistanceSquared(search);
-
-                if (null != nearest1)
+                // First recompute anybody that needs to be recomputed!!
+                // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
+                // need to be removed.
+                // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
+                int maxrecompute = mRecompute.GetCount();
+                for (int i = 0; i < maxrecompute; i++)
                 {
-                    if (sqrDist < nearSqrDist1)
-                    {
+                    SpherePack pack = mRecompute.Pop();
+                    if (null == pack) break;
+                    //pack.SetFifo1(null); // no longer on the fifo!!
+                    pack.InitRecompute_FifoOut();
+                    bool kill = pack.Recompute(mSuperSphereGravy);
+                    if (kill) Remove(pack);
+                }
+            }
 
-                        float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
+            if (true)
+            {
+                // Now, process the integration step.
 
-                        if (dist <= search.GetRadius())
-                        {
-                            nearSqrDist1 = sqrDist;
-                            nearest1 = search;
-                        }
-                    }
+                int maxintegrate = mIntegrate.GetCount();
+
+                for (int i = 0; i < maxintegrate; i++)
+                {
+                    SpherePack pack = mIntegrate.Pop();
+                    if (null == pack) break;
+                    //pack.SetFifo2(null);
+                    pack.InitIntergrate_FifoOut();
+
+                    if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
+                        Integrate(pack, mRoot, mMaxRootSize); // integrate this one single dude against the root node.
+                    else
+                        Integrate(pack, mLeaf, mMaxLeafSize); // integrate this one single dude against the root node.
+                }
+            }
+
+        }
+
+
+
+        public SpherePack AddSphere(Vector3 pos, float radius, SpherePack.Flag flag)
+        {
+
+            SpherePack pack = mSpheres.GetFreeLink();
+
+            //assert(pack);
+
+            if (null != pack)
+            {
+
+                pack.Init(this, pos, radius); //SetSpherePackFlag 함수 보다 먼저 호출되어야 한다. mFlag 정보를 초기화 하기 때문이다. 
+
+                //if (SpherePack.Flag.NONE != (flags & SpherePack.Flag.ROOT_TREE)) //루트트리가 들어 있다면 
+                if (flag == SpherePack.Flag.ROOT_TREE) //루트트리 라면 
+                {
+                    pack.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE); // member of the leaf node tree!
                 }
                 else
                 {
+                    pack.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE); // member of the leaf node tree!
+                }
 
-                    float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
+                AddIntegrate(pack); // add to integration list.
+            }
 
-                    if (dist < nearDist2)
+            return pack;
+        }
+
+        public void AddIntegrate(SpherePack pack)          // add to the integration FIFO
+        {
+
+            if (pack.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
+                mRoot.AddChild(pack);
+            else
+                mLeaf.AddChild(pack);
+
+            pack.AddSpherePackFlag(SpherePack.Flag.INTEGRATE); // still needs to be integrated!
+            QFifo<SpherePack>.Out_Point fifo = mIntegrate.Push(pack); // add it to the integration stack.
+            pack.SetIntergrate_FifoOut(fifo);
+        }
+
+        public void AddRecompute(SpherePack pack)     // add to the recomputation (balancing) FIFO.
+        {
+            if (!pack.HasSpherePackFlag(SpherePack.Flag.RECOMPUTE))
+            {
+                if (0 != pack.GetChildCount())
+                {
+                    pack.AddSpherePackFlag(SpherePack.Flag.RECOMPUTE); // needs to be recalculated!
+                    QFifo<SpherePack>.Out_Point fifo = mRecompute.Push(pack);
+                    pack.SetRecompute_FifoOut(fifo);
+                }
+                else
+                {
+                    Remove(pack);
+                }
+            }
+        }
+
+        public void Integrate(SpherePack src_pack, SpherePack supersphere, float node_size)
+        {
+            // ok..time to integrate this sphere with the tree
+            // first find which supersphere we are closest to the center of
+
+            SpherePack search = supersphere.GetChildren();
+
+            SpherePack nearest1 = null;  // nearest supersphere we are completely
+            float nearSqrDist1 = 1e9f;     // enclosed within. 10의9승. 1000000000.0
+
+            SpherePack nearest2 = null; // supersphere we must grow the least to
+            float nearDist2 = 1e9f;    // add ourselves to.
+
+            //int scount = 1;
+
+            while (null != search)
+            {
+                if (search.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) &&
+                    !search.HasSpherePackFlag(SpherePack.Flag.ROOTNODE) && 0 != search.GetChildCount())
+                {
+
+                    float sqrDist = src_pack.ToDistanceSquared(search);
+
+                    if (null != nearest1)
                     {
-                        if (dist < 0)
+                        if (sqrDist < nearSqrDist1)
                         {
-                            nearSqrDist1 = sqrDist;
-                            nearest1 = search;
+
+                            float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
+
+                            if (dist <= search.GetRadius())
+                            {
+                                nearSqrDist1 = sqrDist;
+                                nearest1 = search;
+                            }
                         }
-                        else
+                    }
+                    else
+                    {
+
+                        float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
+
+                        if (dist < nearDist2)
                         {
-                            nearDist2 = dist;
-                            nearest2 = search;
+                            if (dist < 0)
+                            {
+                                nearSqrDist1 = sqrDist;
+                                nearest1 = search;
+                            }
+                            else
+                            {
+                                nearDist2 = dist;
+                                nearest2 = search;
+                            }
                         }
                     }
                 }
+                search = search.GetNextSibling();
             }
-            search = search.GetNextSibling();
-        }
 
-        // ok...now..on exit let's see what we got.
-        if (null != nearest1)
-        {
-            // if we are inside an existing supersphere, we are all good!
-            // we need to detach item from wherever it is, and then add it to
-            // this supersphere as a child.
-            src_pack.Unlink();
-            nearest1.AddChild(src_pack);
-            src_pack.ComputeBindingDistance(nearest1);
-            nearest1.Recompute(mSuperSphereGravy);
-
-            if (nearest1.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
+            // ok...now..on exit let's see what we got.
+            if (null != nearest1)
             {
-                SpherePack link = nearest1.GetData_RootTree();
-                link.NewPosRadius(nearest1.GetPos(), nearest1.GetRadius());
+                // if we are inside an existing supersphere, we are all good!
+                // we need to detach item from wherever it is, and then add it to
+                // this supersphere as a child.
+                src_pack.Unlink();
+                nearest1.AddChild(src_pack);
+                src_pack.ComputeBindingDistance(nearest1);
+                nearest1.Recompute(mSuperSphereGravy);
 
-                //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
-                //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
-                //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
-                if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
+                if (nearest1.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                 {
-                    link.SetRadius(nearest1.GetRadius());
+                    SpherePack link = nearest1.GetData_RootTree();
+                    link.NewPosRadius(nearest1.GetPos(), nearest1.GetRadius());
+
+                    //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                    //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
+                    //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
+                    if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
+                    {
+                        link.SetRadius(nearest1.GetRadius());
+                    }
                 }
+
             }
-
-        }
-        else
-        {
-            bool newsphere = true;
-
-            if (null != nearest2)
+            else
             {
-                float newsize = nearDist2 + nearest2.GetRadius() + mSuperSphereGravy;
+                bool newsphere = true;
 
-                if (newsize <= node_size)
+                if (null != nearest2)
                 {
+                    float newsize = nearDist2 + nearest2.GetRadius() + mSuperSphereGravy;
+
+                    if (newsize <= node_size)
+                    {
+                        src_pack.Unlink();
+
+                        nearest2.SetRadius(newsize);
+                        nearest2.AddChild(src_pack);
+                        nearest2.Recompute(mSuperSphereGravy);
+                        src_pack.ComputeBindingDistance(nearest2);
+
+                        if (nearest2.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
+                        {
+                            SpherePack link = nearest2.GetData_RootTree();
+                            link.NewPosRadius(nearest2.GetPos(), nearest2.GetRadius());
+
+                            //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
+                            //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
+                            //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
+                            if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
+                            {
+                                link.SetRadius(nearest2.GetRadius());
+                            }
+                        }
+
+                        newsphere = false;
+
+                    }
+
+                }
+
+                if (newsphere)
+                {
+                    //assert(supersphere->HasSpherePackFlag(SPF_ROOTNODE));
+                    // we are going to create a new superesphere around this guy!
                     src_pack.Unlink();
 
-                    nearest2.SetRadius(newsize);
-                    nearest2.AddChild(src_pack);
-                    nearest2.Recompute(mSuperSphereGravy);
-                    src_pack.ComputeBindingDistance(nearest2);
+                    SpherePack parent = mSpheres.GetFreeLink();
+                    //assert(parent);
+                    parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + mSuperSphereGravy);
 
-                    if (nearest2.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
+                    if (supersphere.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
+                        parent.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE);
+                    else
+                        parent.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE);
+
+                    parent.AddSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
+                    //#if DEMO
+                    parent.SetColor_Debug(GetColor_Debug());
+                    //#endif
+                    parent.AddChild(src_pack);
+
+                    supersphere.AddChild(parent);
+
+                    parent.Recompute(mSuperSphereGravy);
+                    src_pack.ComputeBindingDistance(parent);
+
+                    if (parent.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
                     {
-                        SpherePack link = nearest2.GetData_RootTree();
-                        link.NewPosRadius(nearest2.GetPos(), nearest2.GetRadius());
-
-                        //SetPosRadius 함수는 통합 플래그가 있을 경우 반지름 갱신을 안한다 
-                        //바로 생성된 레벨1의 자식구는 통합처리가 안되었을 때, SetPosRadius 를 호출하면 반지름 갱신에 실패한다 
-                        //통합처리중일때는 따로 반지름을 갱신해 주어야 한다 
-                        if (link.HasSpherePackFlag(SpherePack.Flag.INTEGRATE))
-                        {
-                            link.SetRadius(nearest2.GetRadius());
-                        }
+                        // need to create parent association!
+                        SpherePack link = AddSphere(parent.GetPos(), parent.GetRadius(), SpherePack.Flag.ROOT_TREE);
+                        link.SetData_RootTree(parent);
+                        parent.SetData_RootTree(link); // hook him up!!
                     }
 
-                    newsphere = false;
-
                 }
-
             }
 
-            if (newsphere)
-            {
-                //assert(supersphere->HasSpherePackFlag(SPF_ROOTNODE));
-                // we are going to create a new superesphere around this guy!
-                src_pack.Unlink();
-
-                SpherePack parent = mSpheres.GetFreeLink();
-                //assert(parent);
-                parent.Init(this, src_pack.GetPos(), src_pack.GetRadius() + mSuperSphereGravy);
-
-                if (supersphere.HasSpherePackFlag(SpherePack.Flag.ROOT_TREE))
-                    parent.AddSpherePackFlag(SpherePack.Flag.ROOT_TREE);
-                else
-                    parent.AddSpherePackFlag(SpherePack.Flag.LEAF_TREE);
-
-                parent.AddSpherePackFlag(SpherePack.Flag.SUPERSPHERE);
-                //#if DEMO
-                parent.SetColor_Debug(GetColor_Debug());
-                //#endif
-                parent.AddChild(src_pack);
-
-                supersphere.AddChild(parent);
-
-                parent.Recompute(mSuperSphereGravy);
-                src_pack.ComputeBindingDistance(parent);
-
-                if (parent.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
-                {
-                    // need to create parent association!
-                    SpherePack link = AddSphere(parent.GetPos(), parent.GetRadius(), SpherePack.Flag.ROOT_TREE);
-                    link.SetData_RootTree(parent);
-                    parent.SetData_RootTree(link); // hook him up!!
-                }
-
-            }
+            src_pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
         }
 
-        src_pack.ClearSpherePackFlag((int)SpherePack.Flag.INTEGRATE); // we've been integrated!
-    }
 
-
-    public void Remove(SpherePack pack)
-    {
-
-        if (pack.HasSpherePackFlag(SpherePack.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
-
-        if (pack.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
+        public void Remove(SpherePack pack)
         {
 
-            SpherePack link = pack.GetData_RootTree();
+            if (pack.HasSpherePackFlag(SpherePack.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
-            Remove(link);
+            if (pack.HasSpherePackFlag(SpherePack.Flag.SUPERSPHERE) && pack.HasSpherePackFlag(SpherePack.Flag.LEAF_TREE))
+            {
+
+                SpherePack link = pack.GetData_RootTree();
+
+                Remove(link);
+            }
+
+            pack.Unlink();
+
+            mSpheres.Release(pack);
         }
 
-        pack.Unlink();
+        public void ResetFlag()
+        {
+            mRoot.ResetFlag();
+            mLeaf.ResetFlag();
+        }
 
-        mSpheres.Release(pack);
+        public void FrustumTest(Frustum f, SpherePackCallback circleFactory_callback)
+        {
+            // test case here, just traverse children.
+            mCircleFactory_Callback = circleFactory_callback;
+            mRoot.VisibilityTest(ref f, this, Frustum.ViewState.PARTIAL);
+        }
+
+        //p1: source
+        //p2: dest
+        public void RayTrace_Factory(ref Vector3 p1, ref Vector3 p2, SpherePackCallback circleFactory_callback)
+        {
+            // test case here, just traverse children.
+            Vector3 dir = p2 - p1;
+            float dist = dir.magnitude;
+            dir.Normalize();
+            mCircleFactory_Callback = circleFactory_callback;
+            mRoot.RayTrace_Pack(ref p1, ref dir, dist, this);
+        }
+
+
+        public void RangeTest(ref Vector3 center, float radius, SpherePackCallback circleFactory_callback)
+        {
+            mCircleFactory_Callback = circleFactory_callback;
+            mRoot.RangeTest(ref center, radius, this, Frustum.ViewState.PARTIAL);
+        }
+
+
+        //========================================================
+        //==================    재정의/구현 함수    ==================
+        //========================================================
+
+        //p1: source pos of ray
+        //dir: direction of ray
+        //distance: distance of ray
+        //sect: intersection location
+        public override void RayTraceCallback(ref Vector3 p1, ref Vector3 dir, float distance, ref Vector3 sect, SpherePack sphere)
+        {
+            SpherePack link = sphere.GetData_RootTree();
+            if (null != link) link.RayTrace_Pack(ref p1, ref dir, distance, mCircleFactory_Callback);
+        }
+
+        public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
+        {
+            SpherePack link = sphere.GetData_RootTree();
+            if (null != link) link.RangeTest(ref searchpos, distance, mCircleFactory_Callback, state);
+        }
+
+
+        public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
+        {
+            SpherePack link = sphere.GetData_RootTree();
+            if (null != link) link.VisibilityTest(ref f, mCircleFactory_Callback, state);
+        }
+
+
+        //========================================================
+        //==================    테스트 출력 함수    ==================
+        //========================================================
+        public void Render_Debug(eRender_Tree opt)
+        {
+
+            bool textOn = (eRender_Tree.NONE != (eRender_Tree.TEXT & opt));
+
+            if (eRender_Tree.NONE != (eRender_Tree.ROOT & opt))
+                mRoot.Render_Debug(mRoot.GetColor_Debug(), textOn);
+            if (eRender_Tree.NONE != (eRender_Tree.LEAF & opt))
+                mLeaf.Render_Debug(mLeaf.GetColor_Debug(), textOn);
+
+        }
+
+        // see if any other spheres are contained within this one, if so
+        // collapse them and inherit their children.
+        //#if DEMO
+        public uint GetColor_Debug()
+        {
+            uint ret = mColors[mColorCount];
+            mColorCount++;
+            if (mColorCount == MAXCOLORS) mColorCount = 0;
+            return ret;
+        }
+        //#endif
+
+
+
     }
-
-    public void ResetFlag()
-    {
-        mRoot.ResetFlag();
-        mLeaf.ResetFlag();
-    }
-
-    public void FrustumTest(Frustum f, SpherePackCallback circleFactory_callback)
-    {
-        // test case here, just traverse children.
-        mCircleFactory_Callback = circleFactory_callback;
-        mRoot.VisibilityTest(ref f, this, Frustum.ViewState.PARTIAL);
-    }
-
-    //p1: source
-    //p2: dest
-    public void RayTrace_Factory(ref Vector3 p1, ref Vector3 p2, SpherePackCallback circleFactory_callback)
-    {
-        // test case here, just traverse children.
-        Vector3 dir = p2 - p1;
-        float dist = dir.magnitude;
-        dir.Normalize();
-        mCircleFactory_Callback = circleFactory_callback;
-        mRoot.RayTrace_Pack(ref p1, ref dir, dist, this);
-    }
-
-
-    public void RangeTest(ref Vector3 center, float radius, SpherePackCallback circleFactory_callback)
-    {
-        mCircleFactory_Callback = circleFactory_callback;
-        mRoot.RangeTest(ref center, radius, this, Frustum.ViewState.PARTIAL);
-    }
-
-
-    //========================================================
-    //==================    재정의/구현 함수    ==================
-    //========================================================
-
-    //p1: source pos of ray
-    //dir: direction of ray
-    //distance: distance of ray
-    //sect: intersection location
-    public override void RayTraceCallback(ref Vector3 p1, ref Vector3 dir, float distance, ref Vector3 sect, SpherePack sphere)
-    {
-        SpherePack link = sphere.GetData_RootTree();
-        if (null != link) link.RayTrace_Pack(ref p1, ref dir, distance, mCircleFactory_Callback);
-    }
-
-    public override void RangeTestCallback(ref Vector3 searchpos, float distance, SpherePack sphere, Frustum.ViewState state)
-    {
-        SpherePack link = sphere.GetData_RootTree();
-        if (null != link) link.RangeTest(ref searchpos, distance, mCircleFactory_Callback, state);
-    }
-
-
-    public override void VisibilityCallback(Frustum f, SpherePack sphere, Frustum.ViewState state)
-    {
-        SpherePack link = sphere.GetData_RootTree();
-        if (null != link) link.VisibilityTest(ref f, mCircleFactory_Callback, state);
-    }
-
-
-    //========================================================
-    //==================    테스트 출력 함수    ==================
-    //========================================================
-    public void Render_Debug(eRender_Tree opt)
-    {
-        
-        bool textOn = (eRender_Tree.NONE != (eRender_Tree.TEXT & opt));
-
-        if(eRender_Tree.NONE != (eRender_Tree.ROOT & opt))
-            mRoot.Render_Debug(mRoot.GetColor_Debug(), textOn );
-        if(eRender_Tree.NONE != (eRender_Tree.LEAF & opt))
-            mLeaf.Render_Debug(mLeaf.GetColor_Debug(), textOn );
-
-    }
-
-    // see if any other spheres are contained within this one, if so
-    // collapse them and inherit their children.
-    //#if DEMO
-    public uint GetColor_Debug()
-    {
-        uint ret = mColors[mColorCount];
-        mColorCount++;
-        if (mColorCount == MAXCOLORS) mColorCount = 0;
-        return ret;
-    }
-    //#endif
-
-
-
 }
+
