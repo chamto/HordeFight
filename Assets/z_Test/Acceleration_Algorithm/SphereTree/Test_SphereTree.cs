@@ -5,131 +5,248 @@ using UtilGS9;
 
 public class Test_SphereTree : MonoBehaviour 
 {
+    public enum TreeMode
+    {
+        None,
+        Root,
+        Leaf,
+        All,
+    }
 
-    public CircleFactory _circleFactory = null;
-    public bool _pause = false;
-    public float _sphereRadius = 10;
-    public eRender_Tree _render_tree = eRender_Tree.ALL1;
+    public enum TestMode
+    {
+        None,
+        RayTrace,
+        RangeTest,
+        FrustumTest,
+        SphereInterstion, //원과 반직선 교차검사 
+    }
+
+    private SphereTree _sphereTree = null;
+
+    public Transform _sphere = null;
+    public Transform _lineStart = null;
+    public Transform _lineEnd = null;
+
+    public TreeMode _treeMode = TreeMode.All;
+    public TestMode _testMode = TestMode.None;
+    public int _count = 100;
+    public int _radius_root = 25;
+    public int _radius_leaf = 4;
+    public int _radius_gravy = 1;
+
+    private SphereModel _control = null;
 
 	// Use this for initialization
 	void Start () 
     {
-        _circleFactory = new CircleFactory(20);
-        _circleFactory.SetState(Circle.State.SHOW_ALL); //CS_SHOW_RAYTRACE , CS_SHOW_FRUSTUM , CS_SHOW_RANGE_TEST
-		
-	}
-	
-	// Update is called once per frame
-	void Update () 
-    {
         
-        switch (Input.inputString)
+        _sphereTree = new SphereTree(_count, _radius_root, _radius_leaf, _radius_gravy);
+
+        for (int i = 0; i < _count;i++)
         {
-            case "a":
-            case "A":
-                _circleFactory.SetState(Circle.State.SHOW_ALL);
-                break;
-            case "t":
-            case "T":
-                _circleFactory.SetState(Circle.State.SHOW_RAYTRACE);
-                break;
-            case "f":
-            case "F":
-                _circleFactory.SetState(Circle.State.SHOW_FRUSTUM);
-                break;
-            case "r":
-            case "R":
-                _circleFactory.SetState(Circle.State.SHOW_RANGE_TEST);
-                break;
-            case "p":
-            case "P":
-                _pause = !_pause;
-                break;
-            case "1":
-                _render_tree = _render_tree ^ eRender_Tree.ROOT;
-                break;
-            case "2":
-                _render_tree ^= eRender_Tree.LEAF;
-                break;
-            case "3":
-                _render_tree ^= eRender_Tree.TEXT;
-                break;
-            case "4": 
-                _render_tree = eRender_Tree.ALL1;
-                break;
+            Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
+            float radius = (Misc.rand.Next() % 4) + 1;
+            SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.TREE_LEVEL_2);
+            _sphereTree.AddIntegrateQ(model);
+
+            _control = model;
         }
 
-        if (null == _circleFactory) return;
 
-        _circleFactory.SetRenderMode(_render_tree);
-        if (false == _pause)
-            _circleFactory.Process();
 	}
 
-	private void OnDrawGizmos()
-	{
+    public float __radius = 3;
+    public float __speed = 10f;
+    public Vector3 __p = Vector3.zero;
+	void Update () 
+    {
+        if (null == _sphereTree) return;
 
-        DefineO.DrawCircle(0, 0, _sphereRadius, 0x00ffffff);
-        //return;
+        __p = _control.GetPos();
 
-        if (null == _circleFactory) return;
+        switch (Input.inputString)
+        {
+            case "a": //left
+                __p.x = __p.x + Time.deltaTime * -1f * __speed;
+                break;
+            case "s": //down
+                __p.y = __p.y + Time.deltaTime * -1f * __speed;
+                break;
+            case "d": //right
+                __p.x = __p.x + Time.deltaTime * 1f * __speed;
+                break;
+            case "w": //up
+                __p.y = __p.y + Time.deltaTime * 1f * __speed;
+                break;
+            
+        }
+        _control.SetPosRadius(__p, __radius);
 
-        //if(false == _pause)
-            //_circleFactory.Process();
-        
-        _circleFactory.Render();
+        _sphereTree.ResetFlag();
+        _sphereTree.Process();
+
 	}
 
+
+    private Frustum __f = new Frustum();
+    private void OnDrawGizmos()
+    {
+        if (null == _sphereTree) return;
+
+        _sphereTree.Render_Debug((int)_treeMode);
+
+        //==================================================
+        //광선추적 테스트
+        if(TestMode.RayTrace ==  _testMode)
+        {
+            _sphereTree.Render_RayTrace(_lineStart.position, _lineEnd.position);
+        }
+            
+        //==================================================
+        //거리 테스트
+        if (TestMode.RangeTest == _testMode)
+        {
+            float rangeRadius = (_lineEnd.position - _lineStart.position).magnitude;
+            _sphereTree.Render_RangeTest(_lineStart.position, rangeRadius);
+            DefineI.DrawCircle(_lineStart.position, rangeRadius, Color.yellow);    
+        }
+
+        //==================================================
+        //플러스텀 테스트
+        if (TestMode.FrustumTest == _testMode)
+        {
+            Vector3Int leftDown = new Vector3Int((int)_lineStart.position.x, (int)_lineStart.position.y, (int)_lineStart.position.z); 
+            Vector3Int rightUp = new Vector3Int((int)_lineEnd.position.x, (int)_lineEnd.position.y, (int)_lineEnd.position.z);
+            Vector3Int leftUp = new Vector3Int(leftDown.x, rightUp.y ,0);
+            Vector3Int rightDown = new Vector3Int(rightUp.x, leftDown.y, 0);
+            __f.Set(leftDown.x, leftDown.y, rightUp.x, rightUp.y);
+
+            DefineI.DrawLine(leftDown, leftUp, Color.yellow);
+            DefineI.DrawLine(rightDown, rightUp, Color.yellow);
+            DefineI.DrawLine(leftDown, rightDown, Color.yellow);
+            DefineI.DrawLine(rightUp, leftUp, Color.yellow);
+            _sphereTree.Render_FrustumTest(__f , Frustum.ViewState.PARTIAL);
+        }
+
+        //==================================================
+        //원과 반직선 교차 테스트
+        if (TestMode.SphereInterstion == _testMode)
+        {
+            Vector3 pointIts = Vector3.zero;
+            Vector3 dir = _lineEnd.position - _lineStart.position;
+            dir.Normalize();
+            DefineI.DrawCircle(_sphere.position, 10, Color.red);
+            DefineI.RayIntersection(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+            //DefineI.RayIntersectionInFront(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+
+            DefineI.DrawCircle(pointIts, 1, Color.white);
+        }
+
+        DefineI.DrawLine(_lineStart.position, _lineEnd.position, Color.red);
+
+
+        //==================================================
+    }
 }
 
+//=======================================================
 
-//=============================================================
-
-public class DefineO
+public class DefineI
 {
-
-    public static int SCREEN_WIDTH = 1024;
-    public static int SCREEN_HEIGHT = 768;
-
-    public static int FIXED = 16;//16;
-    public static int SW_ID = (SCREEN_WIDTH * FIXED); //1024 * 16 = 16384
-    public static int SH_IT = (SCREEN_HEIGHT * FIXED); //768 * 16 = 12288
-
-    public static int G_CENTER_X = SW_ID / 2; //16384 / 2 = 8192
-    public static int G_CENTER_Y = SH_IT / 2; //12288 / 2 = 6144
-
-
-    static public void DrawLine(float x1, float y1, float x2, float y2, uint color)
+    static public void DrawLine(Vector3 start, Vector3 end, Color cc)
     {
-        Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
-        //DebugWide.LogBlue(cc);
-        //cc.a = 1f;
-
-
+        
         Gizmos.color = cc;
-        Gizmos.DrawLine(new Vector3(x1, y1, 0), new Vector3(x2, y2, 0));
+        Gizmos.DrawLine(start, end);
     }
 
-    static public void DrawCircle(float locx, float locy, float radius, uint color)
+    static public void DrawCircle(Vector3 pos, float radius, Color cc)
     {
-        Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
-        //DebugWide.LogBlue(cc + "    " + DefineO.HexToColor(color) + "    " + color);
-        //cc.a = 1f;
-
-        //UnityEditor.Handles.color = Color.red;
         Gizmos.color = cc;
-        Gizmos.DrawWireSphere(new Vector3(locx, locy, 0), radius);
+        Gizmos.DrawWireSphere(pos, radius);
     }
 
-    static public void PrintText(float x, float y, uint color, string text)
+    static public void PrintText(Vector3 pos, Color cc, string text)
     {
-        //UnityEditor.Handles.color = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
-
+        
         GUIStyle style = new GUIStyle();
-        style.normal.textColor = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
+        style.normal.textColor = cc;
 
         UnityEditor.Handles.BeginGUI();
-        UnityEditor.Handles.Label(new Vector3(x, y, 0), text, style);
+        UnityEditor.Handles.Label(pos, text, style);
         UnityEditor.Handles.EndGUI();
+    }
+
+    //intersect : 반직선이 원과 충돌한 첫번째 위치 
+    static public bool RayIntersection(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, out Vector3 intersect_firstPoint)
+    {
+
+        Vector3 w = sphereCenter - rayOrigin;
+        Vector3 v = rayDirection; //rayDirection 이 정규화 되어 있어야 올바르게 계산할 수 있다 
+        float rsq = sphereRadius * sphereRadius;
+        float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
+
+        // Bug Fix For Gem, if origin is *inside* the sphere, invert the
+        // direction vector so that we get a valid intersection location.
+        if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
+
+        float proj = Vector3.Dot(w, v);
+        float ssq = (wsq - proj * proj);
+        float dsq = rsq - ssq; 
+
+        intersect_firstPoint = Vector3.zero;
+        if (dsq > 0.0f)
+        {
+            float d = Mathf.Sqrt(dsq);
+
+            //반직선의 시작점이 원안에 있는 경우 - 방법2
+            //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
+            //if(wsq < rsq) length = proj + d; //선분 시작점이 원 안에 있는 경우
+            //intersect_firstPoint = rayOrigin + v * length;
+
+            intersect_firstPoint = rayOrigin + v * (proj - d);
+
+            return true;
+        }
+        return false;
+    }
+
+    //선분과 원이 교차하는지 검사하는 함수 : !반직선이 아닌 선분이기 때문에 Ray => LineSegment 가 맞는 표현임 
+    static public bool LineSegmentIntersection(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, float distance, out Vector3 intersect)
+    {
+        Vector3 sect;
+        bool hit = RayIntersectionInFront(sphereCenter, sphereRadius, rayOrigin,  rayDirection, out sect);
+
+        intersect = Vector3.zero;
+        if (hit)
+        {
+            float d = (rayOrigin - sect).sqrMagnitude;
+            if (d > (distance * distance)) return false;
+            intersect = sect;
+            return true;
+        }
+        return false;
+    }
+   
+    static public bool RayIntersectionInFront(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, out Vector3 intersect)
+    {
+        Vector3 intersect_firstPoint;
+        bool hit = RayIntersection(sphereCenter, sphereRadius, rayOrigin, rayDirection, out intersect_firstPoint);
+
+        intersect = Vector3.zero;
+        if (hit)
+        {
+            Vector3 dir = intersect_firstPoint - rayOrigin;
+
+            float dot = Vector3.Dot(dir, rayDirection);
+
+            if (dot >= 0) // then it's in front!
+            {
+                intersect = intersect_firstPoint;
+                return true;
+            }
+        }
+        return false;
     }
 }
