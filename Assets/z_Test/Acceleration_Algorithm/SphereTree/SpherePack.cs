@@ -33,6 +33,8 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     //======================================================
     //                   메모리풀 전용 변수
     //======================================================
+    private int _id = -1;
+    private bool _isUsed = false; 
     private SpherePack _pool_next = null; // linked list pointers
     private SpherePack _pool_previous = null; // used by pool memory management linked list code
     //======================================================
@@ -216,6 +218,11 @@ public class SpherePack : Sphere , IPoolConnector<SpherePack>
     //=====================================================
     //interface 구현 
     //=====================================================
+    public void InitID(int id) { _id = id; }
+    public int GetID() { return _id; }
+    public void SetUsed(bool used) { _isUsed = used; }
+    public bool IsUsed() { return _isUsed; }
+
     public SpherePack GetPoolNext() { return _pool_next; }
     public SpherePack GetPoolPrevious() { return _pool_previous; }
 

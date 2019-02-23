@@ -7,11 +7,24 @@
 
 public interface IPoolConnector<Type> where Type : class, new()
 {
-    
+    //숨겨야되는 인터페이스 
+    //=====================================================
+    //아래 인터페이스는 Pool 객체에서만 사용하는 전용 메소드이다
+    //상속 방식으로 인터페이스를 만들면 아래 인터페이스를 숨길수 있으나, 
+    //확장성이 떨어져 공개된 인터페이스 방식을 사용한다 
+    void InitID(int id);
+    void SetUsed(bool used);
+
     void SetPoolNext(Type obj);
     Type GetPoolNext();
     void SetPoolPrevious(Type obj);
     Type GetPoolPrevious();
+
+
+    //공개된 인터페이스
+    //=====================================================
+    int GetID();
+    bool IsUsed();
 }
 
 public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
@@ -34,7 +47,7 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
     // }
 
 
-    public void Release()
+    public void RemoveAll()
     {
         mHead = null;
         mFree = null;
@@ -52,7 +65,7 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
     public void Init(int maxitems)
     {
         //delete mData; // delete any previous incarnation. //todo : GC 대상에 넣기
-        Release();
+        RemoveAll();
 
         mMaxItems = maxitems;
         mData = new Type[mMaxItems]; //같은코드 다른 의미. c++ : Type 객체로 된 배열을 생성. c# : Type 주소공간을 가지는 배열을 생성. c#은 포인터배열이 되므로 따로 객체를 생성해 주소를 넣어주어야 함.
@@ -60,6 +73,8 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         {
             //포인터배열에 객체를 생성해 넣는다  
             mData[i] = new Type();
+            mData[i].InitID(i);
+            mData[i].SetUsed(false);
         }
 
         mFree = mData[0];
@@ -81,6 +96,16 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         mUsedCount = 0;
     }
 
+    public Type GetData(int id)
+    {
+        if (0 > id || id >= mMaxItems)
+            return null; //잘못된 인덱스 
+
+        if (false == mData[id].IsUsed())
+            return null; //해제된 데이터
+
+        return mData[id];
+    }
 
 
     public Type GetNext(ref bool looped)
@@ -152,7 +177,8 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         return ret;
     }
 
-    //해제처리가 아닌 연결을 끊는 처리이다 
+
+    //사용하지 않는 데이터를 메모리풀로 반환한다
     public void Release(Type t)
     {
 
@@ -179,6 +205,7 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         mFree = t; // new head of linked list.
         t.SetPoolPrevious(null);
         t.SetPoolNext(temp);
+        t.SetUsed(false); //사용안됨 설정 
 
         mUsedCount--;
         mFreeCount++;
@@ -194,6 +221,9 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         mFreeCount--;
         ret.SetPoolNext(null);
         ret.SetPoolPrevious(null);
+
+        ret.SetUsed(true); //사용됨 설정 
+
         return ret;
     }
 
@@ -210,6 +240,9 @@ public class Pool<Type>  where Type : class, IPoolConnector<Type>, new()
         mHead.SetPoolPrevious(null);
         mUsedCount++;
         mFreeCount--;
+
+        ret.SetUsed(true); //사용됨 설정 
+
         return ret;
     }
 

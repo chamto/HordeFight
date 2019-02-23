@@ -93,8 +93,16 @@ public class Attractor
 
 public class CircleItem : IPoolConnector<CircleItem>
 {
+    //------------------------------------------------------
+    //                   메모리풀 전용 변수
+    //------------------------------------------------------
+    private int _id = -1;
+    private bool _isUsed = false; 
     private CircleItem mNext = null;
     private CircleItem mPrevious = null;
+
+    //------------------------------------------------------
+
     private Circle mCircle = null;
 
     public void SetCircle(Circle circle) { mCircle = circle; }
@@ -104,6 +112,11 @@ public class CircleItem : IPoolConnector<CircleItem>
     //=====================================================
     //interface 구현 
     //=====================================================
+    public void InitID(int id) { _id = id; }
+    public int GetID() { return _id; }
+    public void SetUsed(bool used) { _isUsed = used; }
+    public bool IsUsed() { return _isUsed; }
+
     public CircleItem GetPoolNext() { return mNext; }
     public CircleItem GetPoolPrevious() { return mPrevious; }
 

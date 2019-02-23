@@ -29,9 +29,13 @@ public class SphereModel : IPoolConnector<SphereModel>
     protected float _radius;
     protected float _radius_sqr;
 
+
+
     //------------------------------------------------------
     //                   메모리풀 전용 변수
     //------------------------------------------------------
+    private int _id = -1;
+    private bool _isUsed = false; 
     private SphereModel _pool_next = null; 
     private SphereModel _pool_prev = null; 
 
@@ -64,6 +68,11 @@ public class SphereModel : IPoolConnector<SphereModel>
     //=====================================================
     //interface 구현 
     //=====================================================
+    public void InitID(int id) { _id = id; }
+    public int GetID() { return _id; }
+    public void SetUsed(bool used) { _isUsed = used; }
+    public bool IsUsed() { return _isUsed; }
+
     public SphereModel GetPoolNext() { return _pool_next; }
     public SphereModel GetPoolPrevious() { return _pool_prev; }
 
@@ -169,7 +178,8 @@ public class SphereModel : IPoolConnector<SphereModel>
 
     public void SetPosRadius(Vector3 pos, float radius)
     {
-        
+        string temp = "1 -- " + pos + "  " + radius + "  ";
+
         _center = pos;
 
         if (null != _parent && false == HasSpherePackFlag(Flag.INTEGRATE))
@@ -200,6 +210,9 @@ public class SphereModel : IPoolConnector<SphereModel>
                 }
             }
         }
+
+        temp += "2 -- " + pos + "  " + radius + "   id:" + GetID(); //chamto test
+        DebugWide.LogBlue(temp);
     }
 
     public void AddChild(SphereModel pack)
@@ -563,11 +576,12 @@ public class SphereModel : IPoolConnector<SphereModel>
 
         if (false == HasSpherePackFlag(Flag.ROOTNODE))
         {
-            
-            //DefineO.PrintText(_center.x, _center.y, 0x00ffffff, ((Flag)_flags).ToString() ); //chamto test
+            string temp = string.Empty;
+            Color color = Color.green;
 
             if (HasSpherePackFlag(Flag.SUPERSPHERE))
             {
+                
                 DefineI.DrawCircle(_center, GetRadius(), Color.green);
 
                 if (HasSpherePackFlag(Flag.TREE_LEVEL_2))
@@ -587,8 +601,17 @@ public class SphereModel : IPoolConnector<SphereModel>
 
             }else
             {
+                temp += "\n";
                 DefineI.DrawCircle(_center, GetRadius(), Color.white);
             }
+
+
+            if (HasSpherePackFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
+            if (HasSpherePackFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
+            if (HasSpherePackFlag(Flag.SUPERSPHERE)) { temp += "s"; }
+
+            DefineI.PrintText(_center, color, temp+ GetID());
+            //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );
 
         }
 
@@ -616,7 +639,11 @@ public class SphereTree
 
     public SphereTree(int maxspheres, float rootsize, float leafsize, float gravy)
     {
-        maxspheres *= 4; // include room for both trees, the root node and leaf node tree, and the supersheres
+        //메모리풀 크기를 4배 하는 이유 : 각각의 레벨트리는 자식구에 대해 1개의 슈퍼구를 각각 만든다. 레벨트리 1개당 최대개수 *2 의 크기를 가져야 한다. 
+        //레벨트리가 2개 이므로 *2*2 가 된다.
+        //구의 최대개수가 5일때의 최대 메모리 사용량 : 레벨2트리 구5개 + 슈퍼구5개 , 레벨1트리 슈퍼구5개 + 복제된슈퍼구5개 
+        maxspheres *= 4;
+
         _maxRadius_supersphere_root = rootsize;
         _maxRadius_supersphere_leaf = leafsize;
         _gravy_supersphere = gravy;

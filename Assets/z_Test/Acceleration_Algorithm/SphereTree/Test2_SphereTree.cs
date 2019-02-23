@@ -140,6 +140,17 @@ public class DefineI
         Gizmos.DrawWireSphere(pos, radius);
     }
 
+    static public void PrintText(Vector3 pos, Color cc, string text)
+    {
+        
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = cc;
+
+        UnityEditor.Handles.BeginGUI();
+        UnityEditor.Handles.Label(pos, text, style);
+        UnityEditor.Handles.EndGUI();
+    }
+
     //intersect : 반직선이 원과 충돌한 첫번째 위치 
     static public bool RayIntersection(Vector3 sphereCenter, float sphereRadius, Vector3 rayOrigin, Vector3 rayDirection, out Vector3 intersect_firstPoint)
     {
