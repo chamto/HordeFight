@@ -392,7 +392,7 @@ MonoBehaviour:
   _treeMode: 3
   _isText: 0
   _testMode: 0
-  _count: 20
+  _count: 30
   _radius_root: 25
   _radius_leaf: 5
   _radius_gravy: 1
