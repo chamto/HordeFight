@@ -1178,33 +1178,43 @@ namespace HordeFight
         public List<CallBack_State> _onStates_Start = new List<CallBack_State>();
         public List<CallBack_State> _onStates_End = new List<CallBack_State>();
 
-        //====================================
 
+        //==================================================
         //애니
+        //==================================================
         public Animator _animator = null;
         protected AnimatorOverrideController _overCtr = null;
         protected SpriteRenderer _sprRender = null;
         protected SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
 
-
+        //==================================================
         //동작정보
+        //==================================================
         public Behavior.eKind _behaviorKind = Behavior.eKind.None;
         public Behavior _behavior = null;
         public float _timeDelta = 0f;  //시간변화량
 
+        //==================================================
         //상태정보
+        //==================================================
         public ePhase _phase = ePhase.None;
         //private bool _death = false;
 
+        //==================================================
         //이동 
+        //==================================================
         public Movement _move = null;
         public CellInfo _cellInfo = null;
         //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
 
+        //==================================================
         //ai
+        //==================================================
         public AI _ai = null;
-        //====================================
+
+
+        //==================================================
 
         //속도차이 때문에 직접 호출해 사용한다. 프로퍼티나 함수로 한번 감싸서 사용하면, 충돌처리에서 5프레임 정도 성능이 떨어진다 
         //_collider.radius 를 바로 호출하면 직접 호출보다 살짝 떨어진다 
@@ -1212,6 +1222,13 @@ namespace HordeFight
         public float _collider_radius = 0f;
         public float _collider_sqrRadius = 0f;
         //public Vector3 _prevLocalPos = ConstV.v3_zero;
+
+        //==================================================
+        // 구트리 모델 
+        //==================================================
+        public SphereModel _sphereModel = null;
+
+        //==================================================
 
         public virtual void Init()
         {
@@ -1837,6 +1854,11 @@ namespace HordeFight
                 _animator.SetInteger("state", (int)Behavior.eKind.Move);    
             }
 
+            //==============================================
+            //구트리 위치 갱신 
+            _sphereModel.SetPos(this.transform.position);
+            //==============================================
+
         }
 
         public void Move_Push(Vector3 dir, float second)
@@ -1856,7 +1878,10 @@ namespace HordeFight
                 _animator.SetInteger("state", (int)Behavior.eKind.Idle);    
             }
 
-
+            //==============================================
+            //구트리 위치 갱신 
+            _sphereModel.SetPos(this.transform.position);
+            //==============================================
         }
 
         public void MoveToTarget(Vector3 targetPos, float speed)

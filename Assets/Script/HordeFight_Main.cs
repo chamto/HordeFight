@@ -1963,6 +1963,7 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
+        private SphereTree _sphereTree = new SphereTree(2000, 5, 2f, 0.2f);
 
         private void Start()
         {
@@ -2023,6 +2024,7 @@ namespace HordeFight
 		private void Update()
         //private void LateUpdate()
         {
+            
             //UpdateCollision();
 
             //UpdateCollision_UseDictElementAt(); //obj100 : fps10
@@ -2034,6 +2036,8 @@ namespace HordeFight
 
             UpdateCollision_AABBCulling(); //obj110 : fps100 , obj200 : fps77 , obj400 : fps58
 
+
+            _sphereTree.Process();
         }
 
 
@@ -2079,16 +2083,24 @@ namespace HordeFight
 
 
         //테스트용으로 임시 사용 
-		//public void OnDrawGizmos()
-		//{
-  //          int src_count = _linearSearch_list.Count;
-  //          //int cell_count = 0;
-  //          for (int sc = 0; sc < src_count; sc++)
-  //          {
-  //              Bounds bb = _linearSearch_list[sc].GetBounds();
-  //              Gizmos.DrawWireCube(bb.center, bb.size); 
-  //          }
-		//}
+		public void OnDrawGizmos()
+		{
+            //          int src_count = _linearSearch_list.Count;
+            //          //int cell_count = 0;
+            //          for (int sc = 0; sc < src_count; sc++)
+            //          {
+            //              Bounds bb = _linearSearch_list[sc].GetBounds();
+            //              Gizmos.DrawWireCube(bb.center, bb.size); 
+            //          }
+
+
+            //    None = 0,
+            //    Root = 1,
+            //    Leaf = 2,
+            //    All = 3,
+            _sphereTree.Render_Debug(1, false); //chamto test
+
+		}
 
 		public void UpdateCollision_AABBCulling()
 		{
@@ -2162,11 +2174,10 @@ namespace HordeFight
             }
 
 
-            //====================================
-            //AABB 삽입정렬 
+            //==============================================
+            //AABB 삽입정렬 및 충돌처리
+            //==============================================
             _aabbCulling.Update();
-
-            //===============================================================================
 
             foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
             {
@@ -2182,7 +2193,7 @@ namespace HordeFight
 
                 CollisionPush(src, dst);
             }
-            //===============================================================================
+            //==============================================
 
 
 		}
@@ -2954,6 +2965,13 @@ namespace HordeFight
             _beings.Add(_id_sequence,cha);
             _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
 
+            //==============================================
+            //구트리 등록 
+            SphereModel model = _sphereTree.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            _sphereTree.AddIntegrateQ(model);
+            cha._sphereModel = model;
+            //==============================================
+
             return cha;
         }
 
@@ -2972,6 +2990,13 @@ namespace HordeFight
             //_shots.Add(_id_shot_sequence, shot);
             _shots.Add(shot);
 
+            //==============================================
+            //구트리 등록 
+            SphereModel model = _sphereTree.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            _sphereTree.AddIntegrateQ(model);
+            shot._sphereModel = model;
+            //==============================================
+
             return shot;
         }
 
@@ -2989,6 +3014,13 @@ namespace HordeFight
 
             _beings.Add(_id_sequence, obst);
             _linearSearch_list.Add(obst);
+
+            //==============================================
+            //구트리 등록 
+            SphereModel model = _sphereTree.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            _sphereTree.AddIntegrateQ(model);
+            obst._sphereModel = model;
+            //==============================================
 
             return obst;
         }
