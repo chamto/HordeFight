@@ -154,5 +154,36 @@ public class DebugWide
         _BaseLog(message, context,null, eDebugLogMode._Waring);
     }
 
+
+    //==================================================================
+    //==================================================================
+    //==================================================================
+    //==================================================================
+
+
+    static public void DrawLine(Vector3 start, Vector3 end, Color cc)
+    {
+
+        Gizmos.color = cc;
+        Gizmos.DrawLine(start, end);
+    }
+
+    static public void DrawCircle(Vector3 pos, float radius, Color cc)
+    {
+        Gizmos.color = cc;
+        Gizmos.DrawWireSphere(pos, radius);
+    }
+
+    static public void PrintText(Vector3 pos, Color cc, string text)
+    {
+
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = cc;
+
+        UnityEditor.Handles.BeginGUI();
+        UnityEditor.Handles.Label(pos, text, style);
+        UnityEditor.Handles.EndGUI();
+    }
+
 }
 

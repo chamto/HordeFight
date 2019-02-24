@@ -41,7 +41,7 @@ namespace Test_003
         public int _MaxRecompute = 0;
         public int _MaxIntegrate = 0;
 
-        private SphereModel _control = null;
+        private PT_SphereModel _control = null;
 
         // Use this for initialization
         void Start()
@@ -53,7 +53,7 @@ namespace Test_003
             {
                 Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
                 float radius = (Misc.rand.Next() % 4) + 1;
-                SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.TREE_LEVEL_2);
+                PT_SphereModel model = _sphereTree.AddSphere(pos, radius, PT_SphereModel.Flag.TREE_LEVEL_2);
                 _sphereTree.AddIntegrateQ(model);
 
                 _control = model;
