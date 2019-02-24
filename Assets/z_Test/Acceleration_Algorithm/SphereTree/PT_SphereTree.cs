@@ -91,6 +91,7 @@ namespace Test_003
         }
 
         public float GetRadius() { return _radius; }
+        public float GetRadiusSqr() { return _radius_sqr; }
         public float ToDistanceSquared(SphereModel pack) { return (_center - pack._center).sqrMagnitude; }
 
         //=====================================================
@@ -416,15 +417,16 @@ namespace Test_003
             }
         }
 
-        public void RayTrace(Vector3 p1, Vector3 dir, float distance)
+        public void RayTrace(Vector3 line_origin, Vector3 line_last)
         {
             bool hit = false;
-            Vector3 sect;
+            //Vector3 sect;
 
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = DefineI.RayIntersectionInFront(_center, _radius, p1, dir, out sect);
+                //hit = DefineI.IntersectRay(_center, _radius, line_origin, dir, out sect);
+                hit = DefineI.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
                 if (hit)
                 {
                     //#if DEMO
@@ -434,7 +436,8 @@ namespace Test_003
 
                     while (null != pack)
                     {
-                        pack.RayTrace(p1, dir, distance);
+                        //pack.RayTrace(p1, dir, distance);
+                        pack.RayTrace(line_origin, line_last);
                         pack = pack.GetNextSibling();
                     }
                 }
@@ -443,12 +446,14 @@ namespace Test_003
             else
             {
 
-                hit = DefineI.LineSegmentIntersection(_center, _radius, p1, dir, distance, out sect);
+                //hit = DefineI.IntersectLineSegment(_center, _radius, line_origin, dir, distance, out sect);
+                hit = DefineI.IntersectLineSegment(_center, _radius, line_origin, line_last);
                 if (hit)
                 {
                     SphereModel upLink = this.GetLink_UpLevelTree();
                     SphereModel downLink = this.GetLink_DownLevelTree();
-                    if (null != downLink) downLink.RayTrace(p1, dir, distance);
+                    //if (null != downLink) downLink.RayTrace(line_origin, dir, distance);
+                    if (null != downLink) downLink.RayTrace(line_origin, line_last);
 
                     Color cc = Color.gray;
                     if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
@@ -457,14 +462,27 @@ namespace Test_003
             }
         }
 
-        public void RangeTest(Vector3 p, float distance, Frustum.ViewState state)
+        public void RangeTest(Vector3 dstCenter, float dstRadius, Frustum.ViewState state)
         {
             if (state == Frustum.ViewState.PARTIAL)
             {
+                float between_sqr = (dstCenter - _center).sqrMagnitude;
 
-                float d = (p - _center).magnitude;
-                if ((d - distance) > GetRadius()) return;
-                if ((GetRadius() + d) < distance) state = Frustum.ViewState.INSIDE;
+                //완전비포함 검사
+                float sqrSumRd = (_radius + dstRadius) * (_radius + dstRadius);
+                if (between_sqr  > sqrSumRd) return;
+
+                //완전포함 검사 
+                if(dstRadius >= _radius)
+                {
+                    float sqrSubRd = (dstRadius - _radius) * (dstRadius - _radius);
+                    if (between_sqr <= sqrSubRd) state = Frustum.ViewState.INSIDE; //슈퍼구가 포함되면 자식구까지 모두 포함되므로, 계산할 필요가 없어진다     
+                }
+
+                //제곱근 계산 방식은 사용안함 
+                //float d = (dstCenter - _center).magnitude;
+                //if ((d - dstRadius) > GetRadius()) return;
+                //if ((GetRadius() + d) < dstRadius) state = Frustum.ViewState.INSIDE;
             }
 
             if (HasFlag(Flag.SUPERSPHERE))
@@ -478,7 +496,7 @@ namespace Test_003
                 SphereModel pack = _children;
                 while (null != pack)
                 {
-                    pack.RangeTest(p, distance, state);
+                    pack.RangeTest(dstCenter, dstRadius, state);
                     pack = pack.GetNextSibling();
                 }
 
@@ -487,7 +505,7 @@ namespace Test_003
             {
                 SphereModel upLink = this.GetLink_UpLevelTree();
                 SphereModel downLink = this.GetLink_DownLevelTree();
-                if (null != downLink) downLink.RangeTest(p, distance, state);
+                if (null != downLink) downLink.RangeTest(dstCenter, dstRadius, state);
 
                 Color cc = Color.gray;
                 if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
@@ -584,7 +602,7 @@ namespace Test_003
             }
         }
 
-        public void Render_Debug()
+        public void Render_Debug(bool isText)
         {
 
             if (null != _children)
@@ -593,7 +611,7 @@ namespace Test_003
 
                 while (null != pack)
                 {
-                    pack.Render_Debug();
+                    pack.Render_Debug(isText);
                     pack = pack.GetNextSibling();
                 }
             }
@@ -630,13 +648,15 @@ namespace Test_003
                     DefineI.DrawCircle(_center, GetRadius(), Color.white);
                 }
 
+                if(true == isText)
+                {
+                    if (HasFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
+                    if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
+                    if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
-                if (HasFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
-                if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
-                if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
-
-                DefineI.PrintText(_center, color, temp + GetID());
-                //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );
+                    DefineI.PrintText(_center, color, temp + GetID());
+                    //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );    
+                }
 
             }
 
@@ -789,7 +809,7 @@ namespace Test_003
             _level_2.ResetFlag();
         }
 
-        public void Process()
+        public void Process(out int maxrecompute , out int maxintegrate)
         {
             //슈퍼구 재계산
             if (true)
@@ -798,7 +818,7 @@ namespace Test_003
                 // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
                 // need to be removed.
                 // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
-                int maxrecompute = _recomputeQ.GetCount();
+                maxrecompute = _recomputeQ.GetCount();
                 for (int i = 0; i < maxrecompute; i++)
                 {
                     SphereModel pack = _recomputeQ.Pop();
@@ -815,9 +835,7 @@ namespace Test_003
             if (true)
             {
                 // Now, process the integration step.
-
-                int maxintegrate = _integrateQ.GetCount();
-
+                maxintegrate = _integrateQ.GetCount();
                 for (int i = 0; i < maxintegrate; i++)
                 {
                     SphereModel pack = _integrateQ.Pop();
@@ -1013,9 +1031,7 @@ namespace Test_003
 
         public void Render_RayTrace(Vector3 start, Vector3 end)
         {
-            Vector3 dir = end - start;
-
-            _level_1.RayTrace(start, dir.normalized, dir.magnitude);
+            _level_1.RayTrace(start, end);
         }
 
         public void Render_RangeTest(Vector3 pos, float range)
@@ -1030,12 +1046,12 @@ namespace Test_003
             _level_1.VisibilityTest(f, state);
         }
 
-        public void Render_Debug(int mode)
+        public void Render_Debug(int mode , bool isText)
         {
             if (1 == mode || 3 == mode)
-                _level_1.Render_Debug();
+                _level_1.Render_Debug(isText);
             if (2 == mode || 3 == mode)
-                _level_2.Render_Debug();
+                _level_2.Render_Debug(isText);
         }
     }
 }

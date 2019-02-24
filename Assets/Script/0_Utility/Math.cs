@@ -22,6 +22,13 @@ namespace UtilGS9
         /// 
         public Vector3 direction;
         public Vector3 origin;
+
+        public LineSegment3(Vector3 in_origin, Vector3 in_last)
+        {
+            origin = in_origin;
+            direction = in_last - in_origin;
+        }
+
         public Vector3 last
         {
             get

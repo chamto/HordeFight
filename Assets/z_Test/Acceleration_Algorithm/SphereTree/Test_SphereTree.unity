@@ -390,11 +390,14 @@ MonoBehaviour:
   _lineStart: {fileID: 95269852}
   _lineEnd: {fileID: 1349567283}
   _treeMode: 3
+  _isText: 0
   _testMode: 0
   _count: 20
   _radius_root: 25
   _radius_leaf: 5
   _radius_gravy: 1
+  _MaxRecompute: 0
+  _MaxIntegrate: 0
   __radius: 3
   __speed: 50
   __p: {x: 0, y: 0, z: 0}
