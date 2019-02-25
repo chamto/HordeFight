@@ -406,6 +406,55 @@ namespace UtilGS9
         }
 
         //==================================================
+
+        public SphereModel RayTrace_FirstReturn(Vector3 line_origin, Vector3 line_last , SphereModel exceptModel)
+        {
+            bool hit = false;
+            SphereModel sm = null;
+            if (HasFlag(Flag.SUPERSPHERE))
+            {
+
+                hit = Geo.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
+                if (hit)
+                {
+                    
+                    SphereModel pack = _children;
+                    while (null != pack)
+                    {
+                        sm = pack.RayTrace_FirstReturn(line_origin, line_last, exceptModel);
+                        if (null != sm) return sm;
+
+
+                        pack = pack.GetNextSibling();
+                    }
+                }
+
+            }
+            else
+            {
+                
+                hit = Geo.IntersectLineSegment(_center, _radius, line_origin, line_last);
+                if (hit)
+                {
+                    SphereModel upLink = this.GetLink_UpLevelTree();
+                    SphereModel downLink = this.GetLink_DownLevelTree();
+
+
+                    //전체트리의 최하위 자식노드
+                    if (null == upLink && null == downLink) 
+                    {
+                        if(this != exceptModel)
+                            return this;
+                    }
+                    //하위 레벨트리 검사
+                    else if (null != downLink) 
+                            return downLink.RayTrace_FirstReturn(line_origin, line_last, exceptModel);
+                }
+            }
+            return null;
+        }
+
+        //==================================================
         // debug용
         //==================================================
 
@@ -1023,7 +1072,12 @@ namespace UtilGS9
             src_pack.ClearFlag(SphereModel.Flag.INTEGRATE); // we've been integrated!
         }
 
-
+        //==================================================
+        //첫번째 충돌체를 반환한다 (start 거리에서 가까운 것일 수도 아닐 수도 있음)
+        public SphereModel RayTrace_FirstReturn(Vector3 start, Vector3 end, SphereModel exceptModel)
+        {
+            return _levels[0].RayTrace_FirstReturn(start, end, exceptModel);
+        }
 
         //==================================================
         // debug 용 

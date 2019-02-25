@@ -608,6 +608,12 @@ namespace HordeFight
                 _colorMap.Add(i3, c);
         }
 
+        public void SetPos(Vector3 origin, Vector3 target)
+        {
+            _origin.position = origin;
+            _target.position = target;
+        }
+
 
         private Vector3 _start = ConstV.v3_zero;
         private Vector3 _end = ConstV.v3_right;
@@ -945,6 +951,16 @@ namespace HordeFight
             //    Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
             //    IsVisibleTile(_origin.position, _target.position, _length_interval);
             //}
+
+
+            //==============================================
+            //구트리 테스트 
+            //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(false); 
+            //SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
+            SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
+            //float radius = (_origin.position - _target.position).magnitude;
+            //SingleO.objectManager.GetSphereTree().Render_RangeTest(_origin.position,radius);
+            //==============================================
         }
 
   //      void Update()
@@ -1349,6 +1365,8 @@ namespace HordeFight
                 if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
                 {
                     if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
+                    //SphereModel model = SingleO.objectManager.GetSphereTree_Struct().RayTrace_FirstReturn(standard_3d, tile_3d_center, null);
+                    //if(null == model)
                     {
 
                         //대상과 정반대 방향이 아닐때 처리 
@@ -1963,7 +1981,8 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
-        private SphereTree _sphereTree = new SphereTree(2000, new float[]{16,10,4}, 1f);
+        private SphereTree _sphereTree_being = new SphereTree(2000, new float[]{ 16, 10, 4 }, 1f);
+        private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
         private void Start()
         {
@@ -1983,13 +2002,21 @@ namespace HordeFight
             _aabbCulling.Initialize(_linearSearch_list); //aabb 컬링 초기화 
             DebugWide.LogBlue("Start_ObjectManager !! ");
 
+            //임시로 여기서 처리
+            //구조타일 정보로 구트리정보를 만든다 
+            foreach (KeyValuePair<Vector3Int, StructTile> t in SingleO.gridManager._structTileList)
+            {
+                //if (true == t.Value._isUpTile)
+                {
+                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._center_3d, 0.6f, SphereModel.Flag.TREE_LEVEL_LAST);
+                    _sphereTree_struct.AddIntegrateQ(model);
+                }
+            }
+
         }
 
-		//private void OnDrawGizmos()
-		//{
-  //          Bounds bounds = GetBounds_CameraView();
-  //          Gizmos.DrawWireCube(bounds.center, bounds.size);
-		//}
+        public SphereTree GetSphereTree_Being() { return _sphereTree_being; }
+        public SphereTree GetSphereTree_Struct() { return _sphereTree_struct; }
 
 		public Bounds GetBounds_CameraView()
 		{
@@ -2037,7 +2064,8 @@ namespace HordeFight
             UpdateCollision_AABBCulling(); //obj110 : fps100 , obj200 : fps77 , obj400 : fps58
 
 
-            _sphereTree.Process();
+            _sphereTree_being.Process();
+            _sphereTree_struct.Process();
         }
 
 
@@ -2082,25 +2110,24 @@ namespace HordeFight
         }
 
 
+        //private void OnDrawGizmos()
+        //{
+        //          Bounds bounds = GetBounds_CameraView();
+        //          Gizmos.DrawWireCube(bounds.center, bounds.size);
+        //}
+
         //테스트용으로 임시 사용 
-		public void OnDrawGizmos()
-		{
-            //          int src_count = _linearSearch_list.Count;
-            //          //int cell_count = 0;
-            //          for (int sc = 0; sc < src_count; sc++)
-            //          {
-            //              Bounds bb = _linearSearch_list[sc].GetBounds();
-            //              Gizmos.DrawWireCube(bb.center, bb.size); 
-            //          }
+		//public void OnDrawGizmos()
+		//{
+  //          //          int src_count = _linearSearch_list.Count;
+  //          //          //int cell_count = 0;
+  //          //          for (int sc = 0; sc < src_count; sc++)
+  //          //          {
+  //          //              Bounds bb = _linearSearch_list[sc].GetBounds();
+  //          //              Gizmos.DrawWireCube(bb.center, bb.size); 
+  //          //          }
 
-
-            //    None = 0,
-            //    Root = 1,
-            //    Leaf = 2,
-            //    All = 3,
-            _sphereTree.Render_Debug(false); //chamto test
-
-		}
+		//}
 
 		public void UpdateCollision_AABBCulling()
 		{
@@ -2306,9 +2333,6 @@ namespace HordeFight
             if (true == IsVisibleArea(selected, target.transform.position))
             {
                 onOff = true;
-            }else
-            {
-                onOff = false;
             }
 
             //술통은 항상 보이게 한다 -  임시 처리
@@ -2374,21 +2398,29 @@ namespace HordeFight
         }
 
 
+
         //가시영역 검사 
         public bool IsVisibleArea(Being src, Vector3 dstPos)
         {
             //return true; //chamto test
             
             Vector3 dirToDst = dstPos - src.transform.position;
-            float sqrDis = dirToDst.sqrMagnitude;
-            if (sqrDis < Mathf.Pow(GridManager.MeterToWorld * 7f, 2))
+            float dirToDstsq = dirToDst.sqrMagnitude;
+            if (dirToDstsq < Mathf.Pow(GridManager.MeterToWorld * 7f, 2)) //목표와의 거리가 7미터 안
             {
 
                 //대상과 정반대 방향이 아닐때 처리 
                 dirToDst.Normalize();
                 if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
-                    sqrDis < Mathf.Pow(GridManager.MeterToWorld * 2f, 2))
+                    dirToDstsq < Mathf.Pow(GridManager.MeterToWorld * 2f, 2))
                 {
+
+                    //여기까지 오면 캐릭터 검사는 통과된것이다
+
+                    //구조물 검사 
+                    //SphereModel model = _sphereTree_struct.RayTrace_FirstReturn(src.transform.position, dstPos, null); 
+                    //if (null == model) return true;
+
                     //보이는 위치의 타일인지 검사한다 
                     if(true == SingleO.gridManager.IsVisibleTile(src.transform.position,dstPos, 0.1f))
                         return true;
@@ -2967,8 +2999,8 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
-            _sphereTree.AddIntegrateQ(model);
+            SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            _sphereTree_being.AddIntegrateQ(model);
             cha._sphereModel = model;
             //==============================================
 
@@ -2992,8 +3024,8 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
-            _sphereTree.AddIntegrateQ(model);
+            SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            _sphereTree_being.AddIntegrateQ(model);
             shot._sphereModel = model;
             //==============================================
 
@@ -3017,8 +3049,8 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
-            _sphereTree.AddIntegrateQ(model);
+            SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            _sphereTree_being.AddIntegrateQ(model);
             obst._sphereModel = model;
             //==============================================
 
