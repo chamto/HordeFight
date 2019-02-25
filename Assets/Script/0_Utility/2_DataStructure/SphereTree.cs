@@ -11,18 +11,26 @@ namespace UtilGS9
         {
             NONE = 0,
 
-            SUPERSPHERE = (1 << 0), //슈퍼구 : 다른 자식구를 포한한다 
-            TREE_LEVEL_1 = (1 << 1),   //전체트리의 Level_1 을 구성하는 분리된 트리 
-            TREE_LEVEL_2 = (1 << 2),   //전체트리의 Level_2 을 구성하는 분리된 트리 
-            ROOTNODE = (1 << 3),    //트리의 최상위 노드 
-            RECOMPUTE = (1 << 4),   //경계구를 다시 계산
-            INTEGRATE = (1 << 5),   //대상구를 트리에 통합시킨다. 
+            ROOTNODE = (1 << 0),    //트리의 최상위 노드 
+            SUPERSPHERE = (1 << 1), //슈퍼구 : 다른 자식구를 포한한다 
+            RECOMPUTE = (1 << 2),   //경계구를 다시 계산
+            INTEGRATE = (1 << 3),   //대상구를 트리에 통합시킨다. 
                                     //  Level_2 트리의 슈퍼구일 경우 Level_1의 자식구로 똑같이 생성시킨다. 
                                     //  이 자식구를 Level_2의 슈퍼구에 연결시킨다  
 
-            HIDDEN = (1 << 6), // outside of view frustum
-            PARTIAL = (1 << 7), // partially inside view frustum
-            INSIDE = (1 << 8)  // completely inside view frustum
+            HIDDEN = (1 << 4), // outside of view frustum
+            PARTIAL = (1 << 5), // partially inside view frustum
+            INSIDE = (1 << 6),  // completely inside view frustum
+
+            TREE_LEVEL_1 = (1 << 7),   //전체트리의 Level_1 을 구성하는 분리된 트리 
+            TREE_LEVEL_2 = (1 << 8),   //전체트리의 Level_2 을 구성하는 분리된 트리 
+            TREE_LEVEL_3 = (1 << 9),   //전체트리의 Level_3 을 구성하는 분리된 트리 
+            TREE_LEVEL_4 = (1 << 10),   //전체트리의 Level_4 을 구성하는 분리된 트리 
+            TREE_LEVEL_LAST = (1 << 11),
+
+            TREE_LEVEL_ROOT = TREE_LEVEL_1,
+            TREE_LEVEL_1234 = TREE_LEVEL_1 | TREE_LEVEL_2 | TREE_LEVEL_3 | TREE_LEVEL_4,
+
         }
 
         protected Vector3 _center;
@@ -102,6 +110,15 @@ namespace UtilGS9
         {
             if (0 != (_flags & flag)) return true;
             return false;
+        }
+        public int GetLevelIndex()
+        {
+            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_1)) return 0;
+            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_2)) return 1;
+            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_3)) return 2;
+            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_4)) return 3;
+
+            return -1;
         }
 
         //=====================================================
@@ -594,7 +611,7 @@ namespace UtilGS9
 
                     DebugWide.DrawCircle(_center, GetRadius(), Color.green);
 
-                    if (HasFlag(Flag.TREE_LEVEL_2))
+                    //if (HasFlag(Flag.TREE_LEVEL_2))
                     {
 
                         SphereModel link = GetLink_UpLevelTree();
@@ -620,6 +637,8 @@ namespace UtilGS9
                 {
                     if (HasFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
                     if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
+                    if (HasFlag(Flag.TREE_LEVEL_3)) { temp += "\n                "; }
+                    if (HasFlag(Flag.TREE_LEVEL_4)) { temp += "\n                        "; }
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
                     DebugWide.PrintText(_center, color, temp + GetID());
@@ -643,46 +662,71 @@ namespace UtilGS9
         //총 거리3 (루트 -> 자식1 -> 자식2)의 전체적인 트리를 구성한다 
         //트리의 거리별로 독립적인 트리를 구성한다. _level1 트리 한개 , _level2 트리 한개
         //_level1 의 자식구와 _level2 트리의 슈퍼구를 연결하여 외부에서는 하나의 트리인것 처럼 보이게 한다
-        private SphereModel _level_1 = null; //root : 트리의 거리(level) 1. 루트노드를 의미한다 
-        private SphereModel _level_2 = null; //leaf : 트리의 거리(level) 2. 루트노드 바로 아래의 자식노드를 의미한다   
+        //private SphereModel _level_1 = null; //root : 트리의 거리(level) 1. 루트노드를 의미한다 
+        //private SphereModel _level_2 = null; //leaf : 트리의 거리(level) 2. 루트노드 바로 아래의 자식노드를 의미한다   
+        private SphereModel[] _levels = null;
 
         private Pool<SphereModel> _spheres = null;
 
         private QFifo<SphereModel> _integrateQ = null;
         private QFifo<SphereModel> _recomputeQ = null;
 
-        private float _maxRadius_supersphere_root;   //루트트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)          
-        private float _maxRadius_supersphere_leaf;   //리프트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)             
+        //private float _maxRadius_supersphere_root;   //루트트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)          
+        //private float _maxRadius_supersphere_leaf;   //리프트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임) 
+        private float[] _maxRadius_supersphere = null;
         private float _gravy_supersphere;         //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
 
 
 
-        public SphereTree(int maxspheres, float rootsize, float leafsize, float gravy)
+        //public SphereTree(int maxspheres, float rootsize, float leafsize, float gravy)
+        public SphereTree(int maxspheres, float[] list_maxRadius, float gravy)
         {
+            //최대 4개까지만 만들 수 있게 한다 
+            int maxLevel = list_maxRadius.Length;
+            if (4 < maxLevel) maxLevel = 4; 
+            _levels = new SphereModel[maxLevel];
+            _maxRadius_supersphere = new float[maxLevel];
+            for (int i = 0; i < maxLevel;i++)
+            {
+                _maxRadius_supersphere[i] = list_maxRadius[i];
+            }
+            _gravy_supersphere = gravy;
+
             //메모리풀 크기를 4배 하는 이유 : 각각의 레벨트리는 자식구에 대해 1개의 슈퍼구를 각각 만든다. 레벨트리 1개당 최대개수 *2 의 크기를 가져야 한다. 
             //레벨트리가 2개 이므로 *2*2 가 된다.
             //구의 최대개수가 5일때의 최대 메모리 사용량 : 레벨2트리 구5개 + 슈퍼구5개 , 레벨1트리 슈퍼구5개 + 복제된슈퍼구5개 
-            maxspheres *= 4;
+            maxspheres *= 2 * maxLevel;
 
-            _maxRadius_supersphere_root = rootsize;
-            _maxRadius_supersphere_leaf = leafsize;
-            _gravy_supersphere = gravy;
+            //_maxRadius_supersphere_root = rootsize;
+            //_maxRadius_supersphere_leaf = leafsize;
+            //_gravy_supersphere = gravy;
 
             _integrateQ = new QFifo<SphereModel>(maxspheres);
             _recomputeQ = new QFifo<SphereModel>(maxspheres);
             _spheres = new Pool<SphereModel>();
             _spheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
 
-            Vector3 pos = Vector3.zero;
+            //Vector3 pos = Vector3.zero;
+            //_level_1 = _spheres.GetFreeLink(); // initially empty
+            //_level_1.Init(this, pos, 65536);
+            //_level_1.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_1);
+            ////
+            //_level_2 = _spheres.GetFreeLink();  // initially empty
+            //_level_2.Init(this, pos, 16384);
+            //_level_2.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
 
-            _level_1 = _spheres.GetFreeLink(); // initially empty
-            _level_1.Init(this, pos, 65536);
-            _level_1.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_1);
 
 
-            _level_2 = _spheres.GetFreeLink();  // initially empty
-            _level_2.Init(this, pos, 16384);
-            _level_2.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
+            for (int i = 0; i < maxLevel;i++)
+            {
+                int level_flag = (int)(SphereModel.Flag.TREE_LEVEL_ROOT) << i;
+
+                _levels[i] = _spheres.GetFreeLink(); // initially empty
+                _levels[i].Init(this, Vector3.zero, 65536);
+                _levels[i].AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | (SphereModel.Flag)level_flag);    
+            }
+
+
 
         }
 
@@ -701,14 +745,30 @@ namespace UtilGS9
 
             pack.Init(this, pos, radius); //AddSpherePackFlag 함수 보다 먼저 호출되어야 한다. _flags 정보가 초기화 되기 때문이다. 
 
-            if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_1)) //루트트리가 들어 있다면 
+            //TREE_LEVEL_LAST 요청이 들어올 경우 마지막 레벨트리의 인덱스를 찾아 넣어준다 
+            if(SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_LAST))
             {
-                pack.AddFlag(SphereModel.Flag.TREE_LEVEL_1);
+                int last_level_idx = _levels.Length - 1;
+                flags = (SphereModel.Flag)((int)(SphereModel.Flag.TREE_LEVEL_ROOT) << last_level_idx);
+                //DebugWide.LogBlue(flags);
             }
-            else
+
+            if (SphereModel.Flag.NONE == (flags & SphereModel.Flag.TREE_LEVEL_1234))
             {
-                pack.AddFlag(SphereModel.Flag.TREE_LEVEL_2);
+                DebugWide.LogError("AddSphere : TREE_LEVEL is None !!  " + flags);
+                return null;
             }
+                
+            pack.AddFlag(flags & SphereModel.Flag.TREE_LEVEL_1234); //level 1~4 flag 만 통과시킨다 
+
+            //if (SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_1)) //루트트리가 들어 있다면 
+            //{
+            //    pack.AddFlag(SphereModel.Flag.TREE_LEVEL_1);
+            //}
+            //else
+            //{
+            //    pack.AddFlag(SphereModel.Flag.TREE_LEVEL_2);
+            //}
 
 
             return pack;
@@ -719,10 +779,13 @@ namespace UtilGS9
         public void AddIntegrateQ(SphereModel pack)
         {
 
-            if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
-                _level_1.AddChild(pack);
-            else
-                _level_2.AddChild(pack);
+            int level_idx = pack.GetLevelIndex();
+            _levels[level_idx].AddChild(pack); 
+
+            //if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
+            //    _level_1.AddChild(pack);
+            //else
+                //_level_2.AddChild(pack);
 
             pack.AddFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
             QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); // add it to the integration stack.
@@ -754,9 +817,9 @@ namespace UtilGS9
             if (null == pack) return;
             if (pack.HasFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
-            if (pack.HasFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
+            //if (pack.HasFlag(SphereModel.Flag.SUPERSPHERE) && pack.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
+            if (pack.HasFlag(SphereModel.Flag.SUPERSPHERE))
             {
-
                 SphereModel link = pack.GetLink_UpLevelTree();
 
                 Remove_SuperSphereAndLinkSphere(link);
@@ -769,8 +832,13 @@ namespace UtilGS9
 
         public void ResetFlag()
         {
-            _level_1.ResetFlag();
-            _level_2.ResetFlag();
+            //_level_1.ResetFlag();
+            //_level_2.ResetFlag();
+
+            for (int i = 0; i < _levels.Length; i++)
+            {
+                _levels[i].ResetFlag();
+            }
         }
 
         public void Process()
@@ -807,10 +875,13 @@ namespace UtilGS9
 
                     pack.InitIntergrate_FifoOut(); //큐 연결정보를 초기화 한다 
 
-                    if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
-                        Integrate(pack, _level_1, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
-                    else
-                        Integrate(pack, _level_2, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
+                    //if (pack.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
+                    //    Integrate(pack, _level_1, _maxRadius_supersphere_root); // integrate this one single dude against the root node.
+                    //else
+                        //Integrate(pack, _level_2, _maxRadius_supersphere_leaf); // integrate this one single dude against the root node.
+
+                    int level_idx = pack.GetLevelIndex();
+                    Integrate(pack, _levels[level_idx], _maxRadius_supersphere[level_idx]); 
                 }
             }
 
@@ -932,10 +1003,15 @@ namespace UtilGS9
                     parent.Recompute(_gravy_supersphere);
                     src_pack.Compute_BindingDistanceSquared(parent);
 
-                    if (parent.HasFlag(SphereModel.Flag.TREE_LEVEL_2))
+                    if (false == parent.HasFlag(SphereModel.Flag.TREE_LEVEL_ROOT))
                     {
+                        //parent 가 level2 이라면, 생성하는 구는 level1 이어야 한다
+                        //level2 => level1 , level3 => level2 ... 
+                        int up_level_idx = parent.GetLevelIndex() - 1;
+                        int up_flag = (int)(SphereModel.Flag.TREE_LEVEL_ROOT) << up_level_idx;
+
                         // need to create parent association!
-                        SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), SphereModel.Flag.TREE_LEVEL_1);
+                        SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), (SphereModel.Flag)up_flag);
                         AddIntegrateQ(link);
                         link.SetLink_DownLevelTree(parent);
                         parent.SetLink_UpLevelTree(link);
@@ -955,27 +1031,28 @@ namespace UtilGS9
 
         public void Render_RayTrace(Vector3 start, Vector3 end)
         {
-            _level_1.Debug_RayTrace(start, end);
+            _levels[0].Debug_RayTrace(start, end);
         }
 
         public void Render_RangeTest(Vector3 pos, float range)
         {
 
-            _level_1.Debug_RangeTest(pos, range, Frustum.ViewState.PARTIAL);
+            _levels[0].Debug_RangeTest(pos, range, Frustum.ViewState.PARTIAL);
         }
 
         public void Render_FrustumTest(Frustum f, Frustum.ViewState state)
         {
 
-            _level_1.Debug_VisibilityTest(f, state);
+            _levels[0].Debug_VisibilityTest(f, state);
         }
 
-        public void Render_Debug(int mode, bool isText)
+        public void Render_Debug(bool isText)
         {
-            if (1 == mode || 3 == mode)
-                _level_1.Debug_Render(isText);
-            if (2 == mode || 3 == mode)
-                _level_2.Debug_Render(isText);
+            
+            for (int i = 0; i < _levels.Length; i++)
+            {
+                _levels[i].Debug_Render(isText);
+            }
         }
     }
 }

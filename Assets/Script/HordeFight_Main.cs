@@ -1963,7 +1963,7 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
-        private SphereTree _sphereTree = new SphereTree(2000, 5, 2f, 0.2f);
+        private SphereTree _sphereTree = new SphereTree(2000, new float[]{16,10,4}, 1f);
 
         private void Start()
         {
@@ -2098,7 +2098,7 @@ namespace HordeFight
             //    Root = 1,
             //    Leaf = 2,
             //    All = 3,
-            _sphereTree.Render_Debug(1, false); //chamto test
+            _sphereTree.Render_Debug(false); //chamto test
 
 		}
 
@@ -2967,7 +2967,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            SphereModel model = _sphereTree.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
             cha._sphereModel = model;
             //==============================================
@@ -2992,7 +2992,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            SphereModel model = _sphereTree.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
             shot._sphereModel = model;
             //==============================================
@@ -3017,7 +3017,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_2);
+            SphereModel model = _sphereTree.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
             obst._sphereModel = model;
             //==============================================
