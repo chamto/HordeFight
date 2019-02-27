@@ -31,35 +31,65 @@ namespace UtilGS9
 
     }
 
+    //열거형 이름 바꾸면 안됨. 애니파일 파싱할때 문자열로 변환하여 사용한다 
     public enum eAniBaseKind
     {
         idle = 0,
         move,
         attack,
         fallDown,
+        MAX,
     }
+
     public partial class ConstV
     {
         public static readonly string STRING_EMPTY = string.Empty;
-        public static readonly string base_idle = "base_idle";
-        public static readonly string base_move = "base_move";
-        public static readonly string base_attack = "base_attack";
-        public static readonly string base_fallDown = "base_fallDown";
-
+        //public static readonly string base_idle = "base_idle";
+        //public static readonly string base_move = "base_move";
+        //public static readonly string base_attack = "base_attack";
+        //public static readonly string base_fallDown = "base_fallDown";
+        //public static readonly string[] base_anis = new string[]
+        //{
+        //    "base_idle",
+        //    "base_move",
+        //    "base_attack",
+        //    "base_fallDown",
+        //};
+        //public static readonly KeyValuePair<eAniBaseKind, string>[] base_anis = new KeyValuePair<eAniBaseKind, string>[]
+        //{
+        //    new KeyValuePair<eAniBaseKind, string>(eAniBaseKind.idle, "base_idle"),
+        //    new KeyValuePair<eAniBaseKind, string>(eAniBaseKind.move, "base_move"),
+        //    new KeyValuePair<eAniBaseKind, string>(eAniBaseKind.attack, "base_attack"),
+        //    new KeyValuePair<eAniBaseKind, string>(eAniBaseKind.fallDown, "base_fallDown"),
+        //};
+        public static readonly string[] base_anis = new string[(int)eAniBaseKind.MAX];
+        public static void InitConst_BaseAni()
+        {
+            base_anis[(int)eAniBaseKind.idle] = "base_idle";
+            base_anis[(int)eAniBaseKind.move] = "base_move";
+            base_anis[(int)eAniBaseKind.attack] = "base_attack";
+            base_anis[(int)eAniBaseKind.fallDown] = "base_fallDown";
+        }
         public static string GetAniBaseKind(eAniBaseKind kind)
         {
-            switch(kind)
+            return base_anis[(int)kind];
+        }
+
+        public static AnimationClip[] FindAniBaseClips(AnimationClip[] clips_all)
+        {
+            AnimationClip[] clips_base = new AnimationClip[(int)eAniBaseKind.MAX];
+            foreach(AnimationClip cl in clips_all)
             {
-                case eAniBaseKind.idle:
-                    return base_idle;
-                case eAniBaseKind.move:
-                    return base_move;
-                case eAniBaseKind.attack:
-                    return base_attack;
-                case eAniBaseKind.fallDown:
-                    return base_fallDown;
+                for (int i = 0; i < (int)eAniBaseKind.MAX; i++)
+                {
+                    if (cl.name == base_anis[i])
+                    {
+                        clips_base[i] = cl;
+                    }    
+                }
             }
-            return STRING_EMPTY;
+
+            return clips_base;
         }
     }
 
@@ -658,9 +688,11 @@ namespace UtilGS9
     public class Misc
     {
 
-        //초기화
+        //!!!! 초기화
         static public void Init()
         {
+            ConstV.InitConst_BaseAni();
+
             _dir64_normal3D_AxisY = Misc.Create_DirNormal(64);
         }
 

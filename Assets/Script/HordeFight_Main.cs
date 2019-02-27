@@ -307,6 +307,8 @@ namespace HordeFight
         //Being.eKind, eAniBaseKind, eDirection8 : 3가지 값으로 키를 생성
         private Dictionary<uint, AnimationClip> _multiKeyClips = new Dictionary<uint, AnimationClip>();
 
+        //기본 동작 AniClip 목록 : base_idle , base_move , base_attack , base_fallDown
+        private AnimationClip[] _baseAniClips = null;
 
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
         public Dictionary<int, TileBase> _tileScripts = new Dictionary<int, TileBase>();
@@ -314,6 +316,12 @@ namespace HordeFight
 
         //==================== Get / Set ====================
 
+        public AnimationClip GetBaseAniClip(eAniBaseKind baseKind)
+        {
+            if (eAniBaseKind.MAX <= baseKind) return null;
+
+            return _baseAniClips[(int)baseKind];
+        }
 
         //==================== <Method> ====================
 
@@ -353,8 +361,9 @@ namespace HordeFight
                 //    DebugWide.LogBlue(ac.name); //chamto test
                 //}
 
-
             }
+            _baseAniClips = ConstV.FindAniBaseClips(loaded);
+
 
             Sprite[] spres = Resources.LoadAll<Sprite>("Warcraft/Textures/Icons");
             foreach(Sprite spr in spres)
@@ -1839,12 +1848,14 @@ namespace HordeFight
         public bool HasStructTile(Vector3 xz_3d)
         {
             StructTile structTile = null;
-            return HasStructTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
+            Vector3Int xy_2d = _tilemap_struct.WorldToCell(xz_3d);
+            return HasStructTile_InPostion2D(xy_2d, out structTile);
         }
         public bool HasStructTile(Vector3 xz_3d, out StructTile structTile)
         {
             //return HasStructTile_InPostion2D(_tilemap_struct.WorldToCell(xz_3d), out structTile);
-            return HasStructTile_InPostion2D(this.ToPosition2D(xz_3d), out structTile);
+            Vector3Int xy_2d = ToPosition2D(xz_3d);
+            return HasStructTile_InPostion2D(xy_2d, out structTile);
         }
         public bool HasStructTile_InPostion2D(Vector3Int xy_2d)
         {
@@ -2497,13 +2508,15 @@ namespace HordeFight
             
             Vector3 dirToDst = dstPos - src.transform.position;
             float dirToDstsq = dirToDst.sqrMagnitude;
-            if (dirToDstsq < Mathf.Pow(GridManager.MeterToWorld * 7f, 2)) //목표와의 거리가 7미터 안
+            float DIS = GridManager.MeterToWorld * 7f;
+            if (dirToDstsq < DIS*DIS) //목표와의 거리가 7미터 안
             {
 
                 //대상과 정반대 방향이 아닐때 처리 
                 dirToDst.Normalize();
+                DIS = GridManager.MeterToWorld * 2f;
                 if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
-                    dirToDstsq < Mathf.Pow(GridManager.MeterToWorld * 2f, 2))
+                    dirToDstsq < DIS*DIS)
                 {
 
                     //여기까지 오면 캐릭터 검사는 통과된것이다

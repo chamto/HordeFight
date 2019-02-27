@@ -1168,16 +1168,23 @@ namespace HordeFight
 
         //public enum AniOverKey
         //{
-        //    base_attack = 0,
-        //    base_fallDown,
-        //    base_idle,
-        //    base_move,
-        //    MAX,
-        //}
+        //    base_attack = 2,
+        //    base_fallDown=1,
+        //    base_idle=3,
+        //    base_move=0,
 
+        //}
         //public class AniClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>>
         //{
         //    public AniClipOverrides(int capacity) : base(capacity) { }
+        //    //public void Init()
+        //    //{
+        //    //    DebugWide.LogBlue("-----------------"); //chamto test
+        //    //    foreach(KeyValuePair<AnimationClip, AnimationClip> pair in this)
+        //    //    {
+        //    //        DebugWide.LogBlue(pair.Key.name + "  ");
+        //    //    }
+        //    //}
         //    public void SetOverAni(AniOverKey base_key, AnimationClip over_clip)
         //    {
         //        //KeyValuePair 구조체는 멤버변수를 수정 할 수 없기 떄문에, 다시 생성해서 넣어줘야 한다.
@@ -1288,6 +1295,7 @@ namespace HordeFight
                 //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
                 //_clipOverrides = new AniClipOverrides(_overCtr.overridesCount);
                 //_overCtr.GetOverrides(_clipOverrides);
+                //_clipOverrides.Init(); //chamto test
                 //ApplyOverrides 이 함수는 내부적으로 값을 복사하는 것 같음. 프레임이 급격히 떨어짐. 이 방식 사용하지 말기 
                 //_overCtr.ApplyOverrides(_clipOverrides);
             }
@@ -1583,6 +1591,9 @@ namespace HordeFight
             Update_SortingOrder(0);
             //==============================================
 
+            //_overCtr.ApplyOverrides(_clipOverrides);
+
+            //==============================================
 
             return true;
         }
@@ -1649,7 +1660,12 @@ namespace HordeFight
 
             }
 
-            _overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
+            //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir));
+
+            //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
+
+            AnimationClip clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
+            _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
 
         }
 
