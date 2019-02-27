@@ -1609,8 +1609,8 @@ namespace HordeFight
 		}
 
 
-		//존재간에 부딪힌 경우
-		//public void OnCollision_Beings(Being dst)
+        //존재간에 부딪힌 경우
+        //public void OnCollision_Beings(Being dst)
         //{
         //}
 
@@ -1630,6 +1630,7 @@ namespace HordeFight
         //                  애니메이션  
         //____________________________________________
 
+        uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
         public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
         {
             if (null == _overCtr) return;
@@ -1660,59 +1661,63 @@ namespace HordeFight
 
             }
 
-            //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir));
+            //현재상태와 같은 요청이 들어오면 갱신하지 않는다 
+            uint next_aniMultiKey = SingleO.resourceManager.ComputeAniMultiKey(being_kind, ani_kind, dir);
+            if (next_aniMultiKey == __cache_cur_aniMultiKey[(int)ani_kind]) return;
 
-            //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
+            //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir)); //느려서 못씀 
+            //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); 
 
             AnimationClip clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
-            _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
+            _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
+            __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
 
         }
 
-        public void non_Switch_Ani(string aniKind, string aniName, eDirection8 dir)
-        {
-            if (null == _overCtr) return;
+        //public void non_Switch_Ani(string aniKind, string aniName, eDirection8 dir)
+        //{
+        //    if (null == _overCtr) return;
 
-            _sprRender.flipX = false;
-            string aniNameSum = "";
-            switch (dir)
-            {
-                //case eDirection8.none:
-                //{
-                //    DebugWide.LogRed("Switch_Ani : "+dir  + "값은 처리 할 수 없다 ");
-                //}
-                //break;
-                case eDirection8.leftUp:
-                    {
-                        aniNameSum = aniName + eDirection8.rightUp.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.left:
-                    {
-                        aniNameSum = aniName + eDirection8.right.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.leftDown:
-                    {
-                        aniNameSum = aniName + eDirection8.rightDown.ToString();
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                default:
-                    {
-                        aniNameSum = aniName + dir.ToString();
-                        _sprRender.flipX = false;
-                    }
-                    break;
+        //    _sprRender.flipX = false;
+        //    string aniNameSum = "";
+        //    switch (dir)
+        //    {
+        //        //case eDirection8.none:
+        //        //{
+        //        //    DebugWide.LogRed("Switch_Ani : "+dir  + "값은 처리 할 수 없다 ");
+        //        //}
+        //        //break;
+        //        case eDirection8.leftUp:
+        //            {
+        //                aniNameSum = aniName + eDirection8.rightUp.ToString();
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
+        //        case eDirection8.left:
+        //            {
+        //                aniNameSum = aniName + eDirection8.right.ToString();
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
+        //        case eDirection8.leftDown:
+        //            {
+        //                aniNameSum = aniName + eDirection8.rightDown.ToString();
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
+        //        default:
+        //            {
+        //                aniNameSum = aniName + dir.ToString();
+        //                _sprRender.flipX = false;
+        //            }
+        //            break;
 
-            }
+        //    }
 
-            //DebugWide.LogBlue(aniNameSum + "  " + dir); //chamto test
+        //    //DebugWide.LogBlue(aniNameSum + "  " + dir); //chamto test
 
-            _overCtr[aniKind] = SingleO.resourceManager.GetClip(aniNameSum.GetHashCode()); //chamto test
-        }
+        //    _overCtr[aniKind] = SingleO.resourceManager.GetClip(aniNameSum.GetHashCode()); //chamto test
+        //}
 
 
         private float __elapsedTime_1 = 0f;
