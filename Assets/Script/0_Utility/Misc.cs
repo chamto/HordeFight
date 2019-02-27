@@ -8,6 +8,10 @@ using System.Text.RegularExpressions;
 
 namespace UtilGS9
 {
+    //========================================================
+    //==================      전역  상수      ==================
+    //========================================================
+
     /// <summary>
     /// 데카르트좌표계 사분면을 8방향으로 나누어 숫자 지정
     /// </summary>
@@ -27,7 +31,39 @@ namespace UtilGS9
 
     }
 
-    public class ConstV
+    public enum eAniBaseKind
+    {
+        idle = 0,
+        move,
+        attack,
+        fallDown,
+    }
+    public partial class ConstV
+    {
+        public static readonly string STRING_EMPTY = string.Empty;
+        public static readonly string base_idle = "base_idle";
+        public static readonly string base_move = "base_move";
+        public static readonly string base_attack = "base_attack";
+        public static readonly string base_fallDown = "base_fallDown";
+
+        public static string GetAniBaseKind(eAniBaseKind kind)
+        {
+            switch(kind)
+            {
+                case eAniBaseKind.idle:
+                    return base_idle;
+                case eAniBaseKind.move:
+                    return base_move;
+                case eAniBaseKind.attack:
+                    return base_attack;
+                case eAniBaseKind.fallDown:
+                    return base_fallDown;
+            }
+            return STRING_EMPTY;
+        }
+    }
+
+    public partial class ConstV
     {
         static public readonly Vector3 v3_zero = Vector3.zero;
         static public readonly Vector3 v3_up = Vector3.up;

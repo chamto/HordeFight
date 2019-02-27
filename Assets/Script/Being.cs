@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -1037,7 +1037,7 @@ namespace HordeFight
                 //예약된 방향값 설정
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
-                Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
+                Switch_Ani(_kind, eAniBaseKind.attack , _move._eDir8);
 
 
             }
@@ -1108,7 +1108,9 @@ namespace HordeFight
 
 	}
 
-    //========================================================
+    //======================================================
+
+
 
     public class Being : MonoBehaviour
     {
@@ -1125,6 +1127,8 @@ namespace HordeFight
             Max,
         }
 
+
+        //객체이름에 '_' 가 들어가면 안된다. 전체 애니이름의 문자열을 분리할 때 '_' 기준으로 자르기 때문임 
         public enum eKind
         {
             None = 0,
@@ -1150,7 +1154,7 @@ namespace HordeFight
             necrolyte,
             peasant,
             scorpion,
-            skeleton_W,
+            skeletonW,
             spider,
             catapult,
             ______Obstacle______,
@@ -1160,9 +1164,28 @@ namespace HordeFight
             spear, //창
         }
 
+        //==================================================
 
-        //====================================
+        //public enum AniOverKey
+        //{
+        //    base_attack = 0,
+        //    base_fallDown,
+        //    base_idle,
+        //    base_move,
+        //    MAX,
+        //}
 
+        //public class AniClipOverrides : List<KeyValuePair<AnimationClip, AnimationClip>>
+        //{
+        //    public AniClipOverrides(int capacity) : base(capacity) { }
+        //    public void SetOverAni(AniOverKey base_key, AnimationClip over_clip)
+        //    {
+        //        //KeyValuePair 구조체는 멤버변수를 수정 할 수 없기 떄문에, 다시 생성해서 넣어줘야 한다.
+        //        this[(int)base_key] = new KeyValuePair<AnimationClip, AnimationClip>(this[(int)base_key].Key, over_clip);
+        //    }
+        //}
+
+        //==================================================
 
         //고유정보
         public uint _id;
@@ -1184,6 +1207,8 @@ namespace HordeFight
         //==================================================
         public Animator _animator = null;
         protected AnimatorOverrideController _overCtr = null;
+        //protected AniClipOverrides _clipOverrides = null;
+
         protected SpriteRenderer _sprRender = null;
         protected SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
@@ -1259,6 +1284,12 @@ namespace HordeFight
                 _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
                 _overCtr.name = "divide_character_" + _id.ToString();
                 _animator.runtimeAnimatorController = _overCtr;
+
+                //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+                //_clipOverrides = new AniClipOverrides(_overCtr.overridesCount);
+                //_overCtr.GetOverrides(_clipOverrides);
+                //ApplyOverrides 이 함수는 내부적으로 값을 복사하는 것 같음. 프레임이 급격히 떨어짐. 이 방식 사용하지 말기 
+                //_overCtr.ApplyOverrides(_clipOverrides);
             }
 
             //=====================================================
@@ -1550,7 +1581,8 @@ namespace HordeFight
                 _ai.UpdateAI();
 
             Update_SortingOrder(0);
-            //========================================
+            //==============================================
+
 
             return true;
         }
@@ -1587,20 +1619,41 @@ namespace HordeFight
         //                  애니메이션  
         //____________________________________________
 
-        //todo optimization : 애니메이션 찾는 방식 최적화 필요. 해쉬로 변경하기 
-        public AnimationClip GetClip(int nameToHash)
+        public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
         {
-            AnimationClip animationClip = null;
-            SingleO.resourceManager._aniClips.TryGetValue(nameToHash, out animationClip);
+            if (null == _overCtr) return;
 
-            //DebugWide.LogRed(animationClip + "   " + Single.resourceManager._aniClips.Count); //chamto test
+            _sprRender.flipX = false;
 
+            switch (dir)
+            {
+                
+                case eDirection8.leftUp:
+                    {
+                        dir = eDirection8.rightUp;
+                        _sprRender.flipX = true;
+                    }
+                    break;
+                case eDirection8.left:
+                    {
+                        dir = eDirection8.right;
+                        _sprRender.flipX = true;
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        dir = eDirection8.rightDown;
+                        _sprRender.flipX = true;
+                    }
+                    break;
 
-            return animationClip;
+            }
+
+            _overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir);
+
         }
 
-
-        public void Switch_Ani(string aniKind, string aniName, eDirection8 dir)
+        public void non_Switch_Ani(string aniKind, string aniName, eDirection8 dir)
         {
             if (null == _overCtr) return;
 
@@ -1642,8 +1695,7 @@ namespace HordeFight
 
             //DebugWide.LogBlue(aniNameSum + "  " + dir); //chamto test
 
-
-            _overCtr[aniKind] = GetClip(aniNameSum.GetHashCode());
+            _overCtr[aniKind] = SingleO.resourceManager.GetClip(aniNameSum.GetHashCode()); //chamto test
         }
 
 
@@ -1668,7 +1720,7 @@ namespace HordeFight
                     if (8 < num) num = 1;
                     _move._eDir8 = (eDirection8)num;
 
-                    Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                    Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
                     _animator.SetInteger("state", (int)Behavior.eKind.Idle);
 
                     __elapsedTime_1 = 0f;
@@ -1688,7 +1740,7 @@ namespace HordeFight
 
             if (true == IsActive_Animator()) 
             {
-                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
                 _animator.SetInteger("state", (int)Behavior.eKind.Idle);
                 _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다    
             }
@@ -1812,7 +1864,7 @@ namespace HordeFight
             }
 
             _behaviorKind = Behavior.eKind.FallDown;
-            Switch_Ani("base_fallDown", _kind.ToString() + "_fallDown_", _move._eDir8);
+            Switch_Ani(_kind, eAniBaseKind.fallDown, _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
             //int hash = Animator.StringToHash("fallDown");
             //_animator.SetTrigger(hash);
@@ -1825,7 +1877,7 @@ namespace HordeFight
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
             _behaviorKind = Behavior.eKind.Block;
-            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
+            Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
             //Switch_Ani("base_move", _kind.ToString() + "_attack_", _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.Block);
 
@@ -1849,7 +1901,7 @@ namespace HordeFight
 
             if (true == IsActive_Animator()) 
             {
-                Switch_Ani("base_move", _kind.ToString() + "_move_", eDirection);
+                Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
                 //int hash = Animator.StringToHash("move");
                 _animator.SetInteger("state", (int)Behavior.eKind.Move);    
             }
@@ -1872,7 +1924,7 @@ namespace HordeFight
 
             if (true == IsActive_Animator()) 
             {
-                Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
                 
                 //int hash = Animator.StringToHash("move");
                 _animator.SetInteger("state", (int)Behavior.eKind.Idle);    
@@ -1891,7 +1943,7 @@ namespace HordeFight
             _move.MoveToTarget(targetPos, speed);
 
             _behaviorKind = Behavior.eKind.Move;
-            Switch_Ani("base_move", _kind.ToString() + "_move_", _move._eDir8);
+            Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
             _animator.SetInteger("state", (int)Behavior.eKind.Move);
             //int hash = Animator.StringToHash("move");
             //_animator.SetTrigger(hash);
@@ -1951,9 +2003,10 @@ namespace HordeFight
             //_move.MoveToTarget(transform.position, 1f); //이동종료
             _move.SetNextMoving(false);
 
-            Switch_Ani("base_idle", _kind.ToString() + "_idle_", _move._eDir8);
+            Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);
             _animator.Play("idle");
+
 
             _behaviorKind = Behavior.eKind.Idle_Random;
             SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
