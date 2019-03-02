@@ -558,11 +558,14 @@ namespace UtilGS9
             return Geo.Collision_Sphere(src, dst, eInclude);
         }
 
-        //!!test 필요
         //value 보다 target 값이 작으면 True 를 반환한다.
-        static public bool Distance_LessThan(float Value, Vector3 target)
+        static public bool Distance_LessThan(float srcDis, Vector3 dstV3)
         {
-            if (Mathf.Exp(Value * 0.5f) >= Vector3.SqrMagnitude(target))
+            //거듭제곱 함수를 써야하는데 지수함수를 잘못사용함. 최적화를 위해 함수를 사용하지 않고 직접 계산한다 
+            //if(Mathf.Pow(Value , 2) >=  Vector3.SqrMagnitude( target ))
+            //if(Mathf.Exp(Value * 0.5f) >=  Vector3.SqrMagnitude( target ))
+
+            if (srcDis * srcDis >= Vector3.SqrMagnitude(dstV3))
             {
                 return true;
             }
@@ -654,9 +657,10 @@ namespace UtilGS9
             Vector3 w = sphere_center - segment_origin;
             float proj = Vector3.Dot(w, v);
 
+            //ipt : 원의 중심점과 선분이 가장 가까운 선분위의 점. 원의 중점과 선분이 직각으로 만나는 점.
             //oi = ipt - segment_origin
             //cos||w||||v|| / vsq = cos||w|| / ||v|| => ||oi|| / ||v||
-            //전체선분 길이에 대하여, 선분 시작점에서 "반지름과 선분이 직각으로 만나는 점" 까지의 길이의 비율을 구한다 
+            //전체선분 길이에 대하여, 원의 중심점에서 ipt 까지의 길이의 비율을 구한다 
             float percAlongLine = proj / vsq; //0~1 사이의 비율값으로 변환한다
 
             if (percAlongLine < 0.0f)
