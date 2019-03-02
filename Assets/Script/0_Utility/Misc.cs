@@ -573,6 +573,51 @@ namespace UtilGS9
             return false;
         }
 
+        //** 정규화 Normalize 한번 보다 초월함수 atan2 두번 호출하는 것이 빠르다 
+        //Vector3.SignedAngle 와 내부 알고리즘 동일. 속도가 조금더 빠르다 
+        public static float GetSignedAngle(Vector3 v0, Vector3 v1, Vector3 axis)
+        {
+            v0.Normalize();
+            v1.Normalize();
+            float proj = Vector3.Dot(v0, v1);
+            Vector3 vxw = Vector3.Cross(v0, v1);
+
+            //스칼라삼중적을 이용하여 최단회전방향을 구한다 
+            //float sign = 1f;
+            if (Vector3.Dot(axis, vxw) < 0)
+                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+
+            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+        }
+
+
+        //속도가 가장 빠름. 월드축에서만 사용 할 수 있다 
+        public static float GetSignedAngle_AxisZ(Vector3 v0, Vector3 v1)
+        {
+            float at0 = Mathf.Atan2(v0.y, v0.x);
+            float at1 = Mathf.Atan2(v1.y, v1.x);
+
+            return (at0 - at1) * Mathf.Rad2Deg;
+        }
+
+        public static float GetSignedAngle_AxisY(Vector3 v0, Vector3 v1)
+        {
+            float at0 = Mathf.Atan2(v0.z, v0.x);
+            float at1 = Mathf.Atan2(v1.z, v1.x);
+
+            return (at0 - at1) * Mathf.Rad2Deg;
+        }
+
+        public static float GetAngle_AxisY(Vector3 v0, Vector3 v1)
+        {
+            float at0 = Mathf.Atan2(v0.z, v0.x);
+            float at1 = Mathf.Atan2(v1.z, v1.x);
+            float rad = at0 - at1;
+
+            if (rad < 0) rad *= -1; //부호를 없앤다 
+
+            return rad * Mathf.Rad2Deg;
+        }
 
         //ray_dir : 정규화된 값을 넣어야 한다 
         //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환
@@ -679,6 +724,8 @@ namespace UtilGS9
             float rsq = sphere_radius * sphere_radius;
             return (ssq <= rsq);
         }
+
+
 
 
     }//end geo

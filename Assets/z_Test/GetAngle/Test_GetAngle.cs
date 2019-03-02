@@ -47,7 +47,7 @@ public class Test_GetAngle : MonoBehaviour
         DebugWide.DrawLine(ConstV.v3_zero, _line_1.position, Color.blue);
         DebugWide.PrintText(_line_1.position, Color.blue, temp);
 
-        temp = ConstV.STRING_EMPTY + GetSignedAngle_Normalize(_line_0.position, _line_1.position , Vector3.back);
+        temp = ConstV.STRING_EMPTY + GetAngle_Atan2_AxisY(_line_0.position, _line_1.position );
         DebugWide.PrintText(ConstV.v3_zero, Color.blue, temp);
 
 
@@ -79,6 +79,25 @@ public class Test_GetAngle : MonoBehaviour
         float at1 = Mathf.Atan2(v1.y, v1.x);
 
         return (at0 - at1) * Mathf.Rad2Deg;
+    }
+
+    public static float GetSignedAngle_Atan2_AxisY(Vector3 v0, Vector3 v1)
+    {
+        float at0 = Mathf.Atan2(v0.z, v0.x);
+        float at1 = Mathf.Atan2(v1.z, v1.x);
+
+        return (at0 - at1) * Mathf.Rad2Deg;
+    }
+
+    public static float GetAngle_Atan2_AxisY(Vector3 v0, Vector3 v1)
+    {
+        float at0 = Mathf.Atan2(v0.z, v0.x);
+        float at1 = Mathf.Atan2(v1.z, v1.x);
+        float rad = at0 - at1;
+
+        if (rad < 0) rad *= -1; //부호를 없앤다 
+
+        return rad * Mathf.Rad2Deg;
     }
 
 
