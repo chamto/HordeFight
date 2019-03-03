@@ -1057,7 +1057,7 @@ namespace HordeFight
             //구트리 테스트 
             //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(false); 
             //SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
-            SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
+            //SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
             //float radius = (_origin.position - _target.position).magnitude;
             //SingleO.objectManager.GetSphereTree().Render_RangeTest(_origin.position,radius);
             //==============================================
@@ -1095,6 +1095,7 @@ namespace HordeFight
         public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
     }
 
+
     public class Vector3IntComparer : IEqualityComparer<Vector3Int>
     {
 
@@ -1115,6 +1116,343 @@ namespace HordeFight
 
     }
 
+
+    //public class CellSpace : LinkedList<Being>
+    //{
+        
+    //}
+    public class CellSpacePartition
+    {
+        public const float ONE_METER = 1f; //타일 한개의 가로길이 , 월드 크기 
+
+        private float _tileSize_w = ONE_METER * 1; //월드 크기 
+        private float _tileSize_h = ONE_METER * 1; //월드 크기
+        private int _tileMapSize_x = 64;
+        private int _tileMapSize_y = 64;
+        //private Vector2Int _tileMapSize = new Vector2Int(64, 64); //64*64 타일 갯수까지 사용한다 
+        private StructTile[] _cellInfo2Map = null;
+
+
+        public void Init(Vector2Int tileMapSize)
+        {
+            _tileMapSize_x = tileMapSize.x;
+            _tileMapSize_y = tileMapSize.y;
+            _cellInfo2Map = new StructTile[_tileMapSize_x * _tileMapSize_y];
+
+            CreateCellIfoMap_FromStructUpTile();
+        }
+
+
+        private void CreateCellIfoMap_FromStructUpTile()
+        {
+            int count = 0;
+            for (int y = 0; y < _tileMapSize_y;y++)
+            {
+                for (int x = 0; x < _tileMapSize_x; x++)
+                {
+                    StructTile structTile = null;
+                    SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile);
+                    _cellInfo2Map[count] = structTile;
+
+                    count++;
+                }   
+            }
+
+        }
+
+        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
+        {
+            
+            //interval 값이 너무 작으면 바로 종료 한다 
+            if (0.01f >= length_interval)
+            {
+                return false;
+            }
+
+
+            Vector2Int origin_2d = ToPosition2D(origin_3d);
+            Vector3 origin_3d_center = ToPosition3D_Center(origin_2d);
+
+
+            //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
+            StructTile structTile = GetStructTile(origin_3d);
+            if (null != structTile)
+            {
+                switch (structTile._dir)
+                {
+                    case eDirection8.leftUp:
+                    case eDirection8.leftDown:
+                    case eDirection8.rightUp:
+                    case eDirection8.rightDown:
+                        {
+                            //모서리 값으로 설정 
+                            Vector3Int dir = Misc.GetDir8_Normal2D(structTile._dir);
+                            origin_3d_center.x += dir.x * _tileSize_w * 0.5f;
+                            origin_3d_center.z += dir.y * _tileSize_h * 0.5f;
+
+                            //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
+                        }
+                        break;
+                    default:
+                        {
+                            Vector3Int vd = Misc.GetDir8_Normal2D(structTile._dir);
+                            origin_2d.x += vd.x; 
+                            origin_2d.y += vd.y;
+                            origin_3d_center = ToPosition3D_Center(origin_2d);
+                        }
+                        break;
+                }
+
+            }
+
+            Vector3 line = target_3d - origin_3d_center;
+            Vector3 n = line.normalized;
+            n *= length_interval; //미리 곱해 놓는다 
+
+            //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
+            int count = 1;
+            Vector3 next = n * count;
+            float lineSqr = line.sqrMagnitude;
+            while (lineSqr > next.sqrMagnitude)
+            {
+                next = origin_3d_center + next;
+                structTile = GetStructTile(next);
+                if (null != structTile)
+                {
+                    if (true == structTile._isUpTile)
+                    {
+                        
+                        if (_ReturnMessage_NotIncluded_InDiagonalArea != this.IsIncluded_InDiagonalArea(next))
+                        {
+                            return false;
+                        }
+                    }
+
+                }
+
+                count++;
+                next = n * count;
+
+            }
+
+            return true;
+        }
+
+
+        /// <summary>
+        /// 구조타일 영역에 미포함
+        /// </summary>
+        public const int _ReturnMessage_NotIncluded_InStructTile = 0;
+
+        /// <summary>
+        /// 구조타일 영역에 포함. 구조대각타일이 아니다
+        /// </summary>
+        public const int _ReturnMessage_Included_InStructTile = 1;
+
+        /// <summary>
+        /// 구조대각타일이며 , 대각타일 영역에 미포함
+        /// </summary>
+        public const int _ReturnMessage_NotIncluded_InDiagonalArea = 2;
+
+        /// <summary>
+        /// 구조대각타일이며 , 대각타일 영역에 포함
+        /// </summary>
+        public const int _ReturnMessage_Included_InDiagonalArea = 3;
+
+
+        //구조타일의 대각타일 영역에 포함하는지 검사 
+        public int IsIncluded_InDiagonalArea(Vector3 xz_3d)
+        {
+            
+            StructTile structTile = GetStructTile(xz_3d);
+            if (null != structTile)
+            {
+                switch (structTile._dir)
+                {
+                    case eDirection8.leftUp:
+                    case eDirection8.leftDown:
+                    case eDirection8.rightUp:
+                    case eDirection8.rightDown:
+                        {
+                            //특수고정대각 타일은 일반구조 타일처럼 처리한다 
+                            if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
+                                return _ReturnMessage_Included_InStructTile;
+
+                            //타일 중앙점 o , 검사할 점 p 가 있을 때
+                            //대각타일 영역에서 점 p를 포함하는지 내적을 이용해서 검사 
+                            Vector3 oDir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
+                            //Vector3 pDir = xz_3d - structTile._center_3d; //실수값 부정확성 때문에 같은 위치에서도 다른 결과가 나옴.
+                            Vector3 pDir = Misc.GetDir8_Normal3D(xz_3d - structTile._center_3d); //정규화된8 방향값으로 변환해서 부정확성을 최소로 줄인다.
+                            if (0 > Vector3.Dot(oDir, pDir))
+                                return _ReturnMessage_Included_InDiagonalArea; //대각타일 영역에 포함
+                            else
+                                return _ReturnMessage_NotIncluded_InDiagonalArea; //구조타일 영역에 포함 , 대각타일 영역에 미포함
+                        }
+
+                    default:
+                        {
+                            return _ReturnMessage_Included_InStructTile; //구조타일 영역에 포함
+                        }
+
+                }
+
+            }
+
+            return _ReturnMessage_NotIncluded_InStructTile; //구조타일 영역에 미포함
+        }
+
+        public StructTile GetStructTile(Vector3 pos3d)
+        {
+            int pos1d = ToPosition1D(pos3d);
+            if (0 > pos1d) return null; //타일맵을 벗어나는 범위 
+
+            return _cellInfo2Map[pos1d];
+
+        }
+
+
+        public Vector2Int ToPosition2D(Vector3 pos3d)
+        {
+            
+            //부동소수점 처리 문제로 직접계산하지 않는다 
+            //int pos2d_x = Mathf.FloorToInt(pos3d.x / _tileSize_w);
+            //int pos2d_y = Mathf.FloorToInt(pos3d.z / _tileSize_h);
+
+
+            //직접계산
+            //==============================================
+            int pos2d_x = 0;
+            int pos2d_y = 0;
+            if (0 <= pos3d.x)
+            {
+                //양수일때는 소수점을 버린다. 
+                pos2d_x = (int)(pos3d.x / _tileSize_w);
+            }
+            else
+            {
+                //음수일때는 올림을 한다. 
+                pos2d_x = (int)((pos3d.x / _tileSize_w) - 0.9f);
+            }
+
+            if (0 <= pos3d.z)
+            {
+                //???? 부동소수점 때문에 생기는 이상한 계산 결과 : 버림 함수를 사용하여 비트쯔끄러기를 처리한다
+                pos2d_y = (int)(pos3d.z / _tileSize_h); //(int)(0.8 / 0.16) => 4 로 잘못계산됨. 5가 나와야 한다
+            }
+            else
+            {
+                pos2d_y = (int)((pos3d.z / _tileSize_h) - 0.9f);
+            }
+            //==============================================
+
+
+            return new Vector2Int(pos2d_x,pos2d_y);
+        }
+
+        public Vector3 ToCenter3D_FromPosition3D(Vector3 pos3d)
+        {
+            
+            return this.ToPosition3D_Center(ToPosition2D(pos3d));
+        }
+
+
+        public Vector3 ToPosition3D_Center(Vector2Int posXY_2d)
+        {
+            
+            //2d => 3d
+            float pos3d_x = (float)posXY_2d.x * _tileSize_w;
+            float pos3d_z = (float)posXY_2d.y * _tileSize_h;
+
+            //셀의 중간에 위치하도록 한다
+            pos3d_x += _tileSize_w * 0.5f;
+            pos3d_z += _tileSize_h * 0.5f;
+
+            return new Vector3(pos3d_x, 0, pos3d_z);
+        }
+
+        public Vector3 ToPosition3D(Vector2Int posXY_2d)
+        {
+            
+            return new Vector3((float)posXY_2d.x * _tileSize_w, 0,  (float)posXY_2d.y * _tileSize_h);
+        }
+
+        public int ToPosition1D(Vector2Int posXY_2d, int tileMapSize_x)
+        {
+            //Assert.IsFalse(0 > posXY_2d.x || 0 > posXY_2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
+            if (0 > posXY_2d.x || 0 > posXY_2d.y || _tileMapSize_x <= posXY_2d.x || _tileMapSize_y <= posXY_2d.y) return -1;
+
+            return (posXY_2d.x + posXY_2d.y * tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+
+        }
+
+        public Vector2Int ToPosition2D(int pos1d, int tileMapSize_x)
+        {
+            //Assert.IsFalse(0 > pos1d, "음수좌표값은 2차원값으로 변환 할 수 없다");
+            if (0 > pos1d) return ConstV.v2Int_zero;
+
+            return new Vector2Int(pos1d % tileMapSize_x, pos1d / tileMapSize_x);
+        }
+
+        public int ToPosition1D(Vector3 pos3d)
+        {
+            //3d => 2d
+            //부동소수점 처리 문제로 직접계산하지 않는다 
+            //int pos2d_x = Mathf.FloorToInt(pos3d.x / _tileSize_w);
+            //int pos2d_y = Mathf.FloorToInt(pos3d.z / _tileSize_h);
+
+            //직접계산
+            //==============================================
+            int pos2d_x = 0;
+            int pos2d_y = 0;
+            if (0 <= pos3d.x)
+            {
+                //양수일때는 소수점을 버린다. 
+                pos2d_x = (int)(pos3d.x / _tileSize_w);
+            }
+            else
+            {
+                //음수일때는 올림을 한다. 
+                pos2d_x = (int)((pos3d.x / _tileSize_w) - 0.9f);
+            }
+
+            if (0 <= pos3d.z)
+            {
+                //???? 부동소수점 때문에 생기는 이상한 계산 결과 : 버림 함수를 사용하여 비트쯔끄러기를 처리한다
+                pos2d_y = (int)(pos3d.z / _tileSize_h); //(int)(0.8 / 0.16) => 4 로 잘못계산됨. 5가 나와야 한다
+            }
+            else
+            {
+                pos2d_y = (int)((pos3d.z / _tileSize_h) - 0.9f);
+            }
+            //==============================================
+
+            if (0 > pos2d_x || 0 > pos2d_y || _tileMapSize_x <= pos2d_x || _tileMapSize_y <= pos2d_y) return -1;
+
+            //2d => 1d
+            return (pos2d_x + pos2d_y * _tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+
+        }
+
+        public Vector3 ToPosition3D_Center(int pos1d)
+        {
+            if (0 > pos1d || _tileMapSize_x * _tileMapSize_y <= pos1d) return ConstV.v3_zero;
+
+            //1d => 2d
+            int pos2d_x = pos1d % _tileMapSize_x;
+            int pos2d_y = pos1d / _tileMapSize_x;
+
+            //2d => 3d
+            float pos3d_x = (float)pos2d_x * _tileSize_w;
+            float pos3d_z = (float)pos2d_y * _tileSize_h;
+
+            //셀의 중간에 위치하도록 한다
+            pos3d_x += _tileSize_w * 0.5f;
+            pos3d_z += _tileSize_h * 0.5f;
+
+            return new Vector3(pos3d_x,0,pos3d_z);
+        }
+    }
+
     public class GridManager : MonoBehaviour
     {
         public const int NxN_MIN = 3;   //그리드 범위 최소크기
@@ -1132,8 +1470,10 @@ namespace HordeFight
         private Tilemap _tilemap_struct = null;
         private Tilemap _tilemap_structUp = null;
         private Tilemap _tilemap_fogOfWar = null;
-        public Dictionary<Vector3Int,CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
+        public Dictionary<Vector3Int, CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
         public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>(new Vector3IntComparer());
+
+        public CellSpacePartition _cellSpacePartition = new CellSpacePartition();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
         public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
@@ -1205,6 +1545,7 @@ namespace HordeFight
 
             this.LoadTilemap_Struct();
 
+            _cellSpacePartition.Init(new Vector2Int(64, 64)); //chamto test
 		}
 
 
@@ -1259,8 +1600,13 @@ namespace HordeFight
 
         //}
 
+        //chamto test
+        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
+        {
+            return _cellSpacePartition.IsVisibleTile(origin_3d, target_3d, length_interval);
+        }
 
-        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
+        public bool old_IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
         {
             //return true; //test
 
@@ -2243,7 +2589,6 @@ namespace HordeFight
                 _shots[si].Update_Shot();
             }
             //====================================
-
 
             Bounds cameraViewBounds = GetBounds_CameraView();
             Being selected = SingleO.touchControl._selected;
