@@ -12,6 +12,7 @@ namespace UtilGS9
         {
             public int _V0, _V1;
 
+            //4byte 해쉬키가 중복되지 않게 할려면 2byte 값까지만 넣어야 한다.
             public UnOrderedEdgeKey(int v0, int v1)
             {
                 if (v0 < v1)
@@ -106,7 +107,10 @@ namespace UtilGS9
             }
             public int GetHashCode(UnOrderedEdgeKey x)
             {
-                return x.GetHashCode();
+                //return x.GetHashCode();
+                //ref : https://code.i-harness.com/ko-kr/q/dff7e9
+                //v0 과 v1 이 2byte 크기만 사용해야지 고유해시 범위에 들 수 있다. 즉 65535 이상의 인덱스값을 넣으면 안된다는 것임 
+                return (x._V0 << 16) + x._V1; //0 ~ 2 ^ 16-1 (0 ~ 65535) 사이의 키에 대한 고유 해시를 반환
             }
         }
 

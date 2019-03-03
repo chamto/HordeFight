@@ -222,6 +222,10 @@ namespace HordeFight
     public class CampRelation : Dictionary<Camp.eKind, Camp.eRelation>
     {
 
+        public CampRelation() : base(new EnumCampKindComparer())
+        {
+        }
+
         public void SetRelation(Camp.eKind camp, Camp.eRelation relat)
         {
 
@@ -246,10 +250,31 @@ namespace HordeFight
         }
     }
 
+
+    public class EnumCampKindComparer : IEqualityComparer<Camp.eKind>
+    {
+
+        public bool Equals(Camp.eKind a, Camp.eKind b)
+        {
+            if (a == b)
+                return true;
+            return false;
+
+        }
+
+        public int GetHashCode(Camp.eKind a)
+        {
+
+            return (int)a;
+
+        }
+
+    }
+
     public class CampManager : MonoBehaviour
     {
-        private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>();
-        private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(); //전체소대를 포함하는 사단
+        private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>(new EnumCampKindComparer());
+        private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(new EnumCampKindComparer()); //전체소대를 포함하는 사단
 
         //캠프의 초기 배치정보 
 
@@ -323,6 +348,7 @@ namespace HordeFight
 
         public Camp.eRelation GetRelation(Camp.eKind camp_1, Camp.eKind camp_2)
         {
+            //DebugWide.LogBlue(camp_1.ToString() + "   " + camp_2.ToString()); //chamto test
             return GetCampRelation(camp_1).GetRelation(camp_2);
         }
 

@@ -450,6 +450,7 @@ namespace HordeFight
             catch (ArgumentException e)
             {
                 //Enum.Parse 수행시 들어온 문자열 값에 해당하는 열거형 값이 없을 경우, 이 예외가 발생한다 
+                //DebugWide.LogException(e);
                 return 0;
             }
 
