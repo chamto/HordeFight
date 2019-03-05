@@ -1198,7 +1198,7 @@ namespace HordeFight
 
 
 
-    public class Being : MonoBehaviour
+    public class Being : MonoBehaviour , SphereModel.IUserData
     {
         //단계
         public enum ePhase

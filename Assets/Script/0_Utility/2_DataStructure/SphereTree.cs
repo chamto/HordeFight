@@ -4,8 +4,13 @@ using UnityEngine;
 
 namespace UtilGS9
 {
+    
     public class SphereModel : IPoolConnector<SphereModel>
     {
+        //UserData 대상이 되는 객체는 이 인터페이스를 상속받아야 한다 
+        public interface IUserData
+        { }
+
         [FlagsAttribute]
         public enum Flag
         {
@@ -62,6 +67,7 @@ namespace UtilGS9
         private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
         private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
 
+        private IUserData _link_userData = null;
 
         //------------------------------------------------------
 
@@ -141,6 +147,10 @@ namespace UtilGS9
         public SphereModel GetLink_UpLevelTree() { return _link_upLevelTree; }
         public void SetLink_DownLevelTree(SphereModel data) { _link_downLevelTree = data; }
         public SphereModel GetLink_DownLevelTree() { return _link_downLevelTree; }
+
+
+        public T GetLink_UserData<T>() where T : IUserData { return (T)_link_userData; }
+        public void SetLink_UserData<T>(T data) where T : IUserData { _link_userData = (IUserData)data; }
 
         //======================================================
         public int GetChildCount() { return _childCount; }
@@ -451,6 +461,96 @@ namespace UtilGS9
                             return downLink.RayTrace_FirstReturn(line_origin, line_last, exceptModel);
                 }
             }
+            return null;
+        }
+
+
+        public SphereModel RangeTest_MinDisReturn(Frustum.ViewState state, ref HordeFight.ObjectManager.Param_RangeTest param)
+        {
+            
+            float between_sqr = (param.src_pos - _center).sqrMagnitude;
+
+            if (state == Frustum.ViewState.PARTIAL)
+            {
+                //float between_sqr = (dstCenter - _center).sqrMagnitude;
+
+                //완전비포함 검사
+                float sqrSumRd = (_radius + param.maxRadius) * (_radius + param.maxRadius);
+                if (between_sqr > sqrSumRd) return null;
+
+                //완전포함 검사 
+                if (param.maxRadius >= _radius)
+                {
+                    float sqrSubRd = (param.maxRadius - _radius) * (param.maxRadius - _radius);
+                    if (between_sqr <= sqrSubRd) state = Frustum.ViewState.INSIDE; //슈퍼구가 포함되면 자식구까지 모두 포함되므로, 계산할 필요가 없어진다     
+                }
+
+            }
+
+            if (HasFlag(Flag.SUPERSPHERE))
+            {
+                
+                SphereModel min_sm = null;
+                float min_sqr = param.maxRadiusSqr;
+
+                SphereModel cur_sm = null;
+                float cur_sqr = 0f;
+
+                SphereModel pack = _children;
+                while (null != pack)
+                {
+                    
+                    cur_sm = pack.RangeTest_MinDisReturn(state,ref param);
+                    pack = pack.GetNextSibling();
+                    if (null == cur_sm) continue;
+
+                    cur_sqr = (param.src_pos - cur_sm.GetPos()).sqrMagnitude; //중복 계산a
+
+                    //기존 모델보다 더 가까운 경우
+                    if (null != cur_sm && min_sqr > cur_sqr)
+                    {
+                        min_sm = cur_sm;
+                        min_sqr = cur_sqr;
+                    }
+
+                }
+
+                //최소거리 모델을 반환 
+                return min_sm;
+            }
+            else
+            {
+                SphereModel upLink = this.GetLink_UpLevelTree();
+                SphereModel downLink = this.GetLink_DownLevelTree();
+
+                //전체트리의 최하위 자식노드 
+                if (null == upLink && null == downLink) 
+                {
+                    //최소반지름 밖에 있어야 한다
+                    float sqrSumRd = (_radius + param.minRadius) * (_radius + param.minRadius);
+                    if (between_sqr > sqrSumRd)
+                    {
+                        //등록된 검사용 콜백함수 호출
+                        if(null != param.callback )
+                        {
+                            //검사용 콜백함수를 통과하면 최하위 노드인 자기자신을 반환한다.
+                            if(true == param.callback(ref param, this))
+                                return this;    
+                        }else
+                        {
+                            //검사함수가 없으면 자기자신을 반환한다 
+                            return this;
+                        }
+
+                    }
+                }
+
+                //자식노드에 연결된 하위레벨 슈퍼구 
+                if (null != downLink) 
+                    return downLink.RangeTest_MinDisReturn(state,ref param);
+
+            }
+
             return null;
         }
 
@@ -1079,6 +1179,11 @@ namespace UtilGS9
             return _levels[0].RayTrace_FirstReturn(start, end, exceptModel);
         }
 
+        public SphereModel RangeTest_MinDisReturn(ref HordeFight.ObjectManager.Param_RangeTest param)
+        {
+            return _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
+        }
+
         //==================================================
         // debug 용 
         //==================================================
@@ -1107,6 +1212,13 @@ namespace UtilGS9
             {
                 _levels[i].Debug_Render(isText);
             }
+        }
+
+        public void Render_Debug(int treeLevel, bool isText)
+        {
+            if(0 <= treeLevel && treeLevel < _levels.Length)
+                _levels[treeLevel].Debug_Render(isText);
+            
         }
     }
 }

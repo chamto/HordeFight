@@ -1034,6 +1034,40 @@ namespace HordeFight
 #endif
         }
 
+
+        public void Draw_LookAtChamp()
+        {
+            foreach(Being bbb in SingleO.objectManager._linearSearch_list)
+            {
+                ChampUnit unit = bbb as ChampUnit;
+                if(null != unit)
+                {
+                    if (unit.isDeath()) continue;
+
+                    Color cc = Color.red;
+                    if (Camp.eKind.Blue == unit._campKind) cc = Color.blue;
+                    if (Camp.eKind.White == unit._campKind) cc = Color.white;
+
+                    //chamto test - 
+                    if(1 == unit._id)
+                    {
+                        unit._hp_max = 10000;
+                        unit._hp_cur = 10000;
+                        DebugWide.DrawCircle(unit.transform.position, 5f, cc); //탐지사정거리 
+                    }
+                        
+
+                    if(null != unit._looking)
+                    {
+                        if (unit._looking.isDeath()) continue;
+                        Debug.DrawLine(unit.transform.position, unit._looking.transform.position, cc);
+                        DebugWide.DrawCircle(unit.transform.position, 0.3f, cc); 
+                    }
+
+                }
+            }
+        }
+
         void OnDrawGizmos()
         {
             //Misc.DrawDirN();
@@ -1059,12 +1093,14 @@ namespace HordeFight
 
             //==============================================
             //구트리 테스트 
-            //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(false); 
+            //SingleO.objectManager.GetSphereTree_Being().Render_Debug(3, false); 
             //SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
             //SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
             //float radius = (_origin.position - _target.position).magnitude;
             //SingleO.objectManager.GetSphereTree().Render_RangeTest(_origin.position,radius);
             //==============================================
+
+            Draw_LookAtChamp();
         }
 
   //      void Update()
@@ -2433,7 +2469,7 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
-        private SphereTree _sphereTree_being = new SphereTree(2000, new float[]{ 16, 10, 4 }, 1f);
+        private SphereTree _sphereTree_being = new SphereTree(2000, new float[]{ 16, 10 ,5, 2 }, 0.5f);
         private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
         private void Start()
@@ -2642,11 +2678,11 @@ namespace HordeFight
                 //객체 컬링 처리
                 if (null != selected)
                 {
-                    Culling_SightOfView(selected, src);
+                    //Culling_SightOfView(selected, src);
                 }
                 else
                 {
-                    Culling_ViewFrustum(cameraViewBounds, src);
+                    //Culling_ViewFrustum(cameraViewBounds, src);
                 }
 
             }
@@ -3262,12 +3298,91 @@ namespace HordeFight
         }
 
 
+
+
+
+
+        public struct Param_RangeTest
+        {
+            //==============================================
+            public Camp.eRelation vsRelation;
+            public ChampUnit srcUnit;
+            public Camp.eKind src_campKind;
+            public Vector3 src_pos;
+
+            public float minRadius;
+            public float maxRadius;
+            public float maxRadiusSqr;
+
+            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel);
+            public Proto_ConditionCheck callback;
+            //==============================================
+
+            public Param_RangeTest(ChampUnit in_srcUnit, Camp.eRelation in_vsRelation, float meter_minRadius, float meter_maxRadius)
+            {
+                vsRelation = in_vsRelation;
+                srcUnit = in_srcUnit;
+                src_campKind = in_srcUnit._campKind;
+                src_pos = in_srcUnit.transform.position;
+                minRadius = meter_minRadius * GridManager.ONE_METER;
+                maxRadius = meter_maxRadius * GridManager.ONE_METER;
+                maxRadiusSqr = maxRadius * maxRadius;
+
+                callback = Param_RangeTest.Func_ConditionCheck;
+            }
+
+            //==============================================
+
+            static public bool Func_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel)
+            {
+                //return true;
+
+                //기준객체는 검사대상에서 제외한다 
+                if (param.srcUnit._sphereModel == dstModel) return false;
+
+                ChampUnit dstUnit = dstModel.GetLink_UserData<ChampUnit>();
+
+                if (null != dstUnit && param.vsRelation != Camp.eRelation.Unknown)
+                {
+                    if (dstUnit.isDeath()) return false; //죽어있는 대상은 탐지하지 않는다 
+
+                    Camp.eRelation getRelation = SingleO.campManager.GetRelation(param.src_campKind, dstUnit._belongCamp.campKind);
+
+                    //요청 관계인지 검사한다 
+                    if (param.vsRelation == getRelation)
+                    {
+                        //가시거리 검사 
+                        return SingleO.gridManager.IsVisibleTile(param.src_pos, dstModel.GetPos(), 0.1f);
+                    }
+                }
+
+                return false;
+            }
+        }
+        public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
+        {
+            //Old_GetNearCharacter(src, vsRelation, meter_minRadius, meter_maxRadius); //chamto test
+
+            Param_RangeTest param = new Param_RangeTest(src, vsRelation, meter_minRadius, meter_maxRadius);
+            SphereModel sphereModel = _sphereTree_being.RangeTest_MinDisReturn(ref param);
+
+
+            if (null != sphereModel)
+            {
+                //DebugWide.LogBlue(sphereModel.GetLink_UserData<ChampUnit>()); //chamto test
+                return sphereModel.GetLink_UserData<ChampUnit>();
+            }
+                
+
+            return null;
+        }
+
         /// <summary>
         /// 가까운 대상 객체의 충돌원이 지정된 최소/최대 원에 포함되는지 검사한다 
         /// 조건에 포함하는 가장 가까운 객체를 반환한다
         /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
         /// </summary>
-        public ChampUnit GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
+        public ChampUnit Old_GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
         {
             if (null == src) return null;
 
@@ -3457,7 +3572,9 @@ namespace HordeFight
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
+            model.SetLink_UserData<ChampUnit>(cha);
             cha._sphereModel = model;
+
             //==============================================
 
             return cha;
@@ -3616,11 +3733,11 @@ namespace HordeFight
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.archer, camp_BLUE, camp_BLUE.RandPosition());
-                champ._mt_range_min = 2f;
-                champ._mt_range_max = 6f;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
+                //champ._mt_range_min = 2f;
+                //champ._mt_range_max = 6f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -3632,9 +3749,9 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             { 
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.catapult, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.spider, camp_WHITE, camp_WHITE.RandPosition());
                 //champ._mt_range_min = 2f;
                 //champ._mt_range_max = 5f;
                 champ.GetComponent<AI>()._ai_running = true;
