@@ -1034,7 +1034,7 @@ namespace HordeFight
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
             _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
-            SingleO.lineControl.SetActive(_UIID_hp, true);
+            SingleO.lineControl.SetActive(_UIID_hp, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
 
@@ -1085,7 +1085,7 @@ namespace HordeFight
             Update_AnimatorState(_hash_attack, 0.8f);
 
             //임시코드 
-            if (eKind.spearman == _kind)
+            if (eKind.spearman == _kind || eKind.archer == _kind)
             {
                 
                 if(null == _shot || false == _shot._on_theWay)

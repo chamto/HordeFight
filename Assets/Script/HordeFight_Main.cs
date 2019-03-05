@@ -3440,7 +3440,7 @@ namespace HordeFight
         {
             _id_sequence++;
 
-            GameObject obj = CreatePrefab(eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
+            GameObject obj = CreatePrefab("0_champ/" +eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
             obj.AddComponent<Movement>();
             obj.AddComponent<AI>();
@@ -3467,7 +3467,7 @@ namespace HordeFight
         {
             _id_shot_sequence++;
 
-            GameObject obj = CreatePrefab("Shot/" + eKind.ToString(), parent, _id_shot_sequence.ToString("000") + "_" + eKind.ToString());
+            GameObject obj = CreatePrefab("1_effect/" + eKind.ToString(), parent, _id_shot_sequence.ToString("000") + "_" + eKind.ToString());
             Shot shot = obj.AddComponent<Shot>();
             obj.AddComponent<Movement>();
             shot._id = _id_shot_sequence;
@@ -3492,7 +3492,7 @@ namespace HordeFight
         {
             _id_sequence++;
 
-            GameObject obj = CreatePrefab("Obstacle/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
+            GameObject obj = CreatePrefab("2_misc/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             Obstacle obst = obj.AddComponent<Obstacle>();
             obj.AddComponent<Movement>();
             obst._id = _id_sequence;
@@ -3618,9 +3618,9 @@ namespace HordeFight
             //champ.GetComponent<AI>()._ai_running = true;
             for (int i = 0; i < 100; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.catapult, camp_BLUE, camp_BLUE.RandPosition());
-                //champ._mt_range_min = 2f;
-                //champ._mt_range_max = 6f;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.archer, camp_BLUE, camp_BLUE.RandPosition());
+                champ._mt_range_min = 2f;
+                champ._mt_range_max = 6f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -3634,7 +3634,7 @@ namespace HordeFight
             //camp_position++;
             for (int i = 0; i < 100; i++)
             { 
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.catapult, camp_WHITE, camp_WHITE.RandPosition());
                 //champ._mt_range_min = 2f;
                 //champ._mt_range_max = 5f;
                 champ.GetComponent<AI>()._ai_running = true;
