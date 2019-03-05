@@ -5,13 +5,13 @@ AnimatorController:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: ani_skeleton_W
+  m_Name: ani_warlock
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
-    m_StateMachine: {fileID: 1107906388814058184}
+    m_StateMachine: {fileID: 1107577225247610222}
     m_Mask: {fileID: 0}
     m_Motions: []
     m_Behaviours: []
@@ -21,13 +21,13 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
---- !u!1102 &1102031269699202236
+--- !u!1102 &1102007942323622522
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_attack_rightUp
+  m_Name: warlock_attack_down
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -40,19 +40,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6e055e41fadc24c928978230eec22e20, type: 2}
+  m_Motion: {fileID: 7400000, guid: d43e7ad8125bd44b2b6eec8de87118e5, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102112376732627556
+--- !u!1102 &1102080773189828426
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_fallDown_down
+  m_Name: warlock_attack_rightDown
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -65,19 +65,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: eb14a260669f349d68110210d4a203d6, type: 2}
+  m_Motion: {fileID: 7400000, guid: 0c84d73ca7fbc460c845c90dd430729f, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102140216609883274
+--- !u!1102 &1102096183743231524
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_move_rightDown
+  m_Name: warlock_idle_up 0
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -90,19 +90,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 2ff74974c50414b0082e84ef9d91bb0f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 90ad58b86bde0440c9cf1562cd261dbf, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102190205471432654
+--- !u!1102 &1102141699740372488
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_attack_up
+  m_Name: warlock_move_rightUp
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -115,19 +115,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: a5eab969fa801451893e04651ba6d9bb, type: 2}
+  m_Motion: {fileID: 7400000, guid: 454ef57c4cade4136bce5bb3f049afd0, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102218366436369130
+--- !u!1102 &1102368610186546768
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_attack_rightDown
+  m_Name: warlock_idle_down
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -140,19 +140,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 18c84b1f351054f14bc6fad8db4f7a1f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 49a54f1f2d49046de818d3c3b533e0de, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102224819206872292
+--- !u!1102 &1102397717556775246
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_attack_down
+  m_Name: warlock_move_up
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -165,19 +165,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: e7c9e9c6f3a4444e28ccb7499b62312d, type: 2}
+  m_Motion: {fileID: 7400000, guid: 8293de32a6cce43f3aa068c4aacb2fc5, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102405396823449946
+--- !u!1102 &1102525934281415374
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_move_up
+  m_Name: warlock_attack_rightUp
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -190,19 +190,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: af84ed830313845469122bea48d8b53e, type: 2}
+  m_Motion: {fileID: 7400000, guid: 29d776cb0e63d48d5a169e991b98c2ed, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102468961623496162
+--- !u!1102 &1102547829454391850
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_move_down
+  m_Name: warlock_idle_rightDown
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -215,19 +215,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: cdf6db299013447d5baf2c6d0f88b2c6, type: 2}
+  m_Motion: {fileID: 7400000, guid: 2a79463c2be0f47bc989794bc2a67927, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102576079691849238
+--- !u!1102 &1102549371264922242
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_idle_up
+  m_Name: warlock_move_right
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -240,19 +240,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 5a107272817454864af2bc49205219a7, type: 2}
+  m_Motion: {fileID: 7400000, guid: 02911ff03d1f8400bafaabbbed49f26f, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102629960825400852
+--- !u!1102 &1102564815895909618
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_idle_down
+  m_Name: warlock_attack_right
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -265,19 +265,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 688d5b1e7cca940f4b6840185877b174, type: 2}
+  m_Motion: {fileID: 7400000, guid: 503cfde603c39423fb8ce9a1c2fdebcc, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102648960706080856
+--- !u!1102 &1102581505737627044
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_idle_rightUp
+  m_Name: warlock_move_rightDown
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -290,19 +290,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 8efa8686a10ff4f95abd5091bf596741, type: 2}
+  m_Motion: {fileID: 7400000, guid: 580a8927030d846c496d656d663109a8, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102722527511625718
+--- !u!1102 &1102590889314507920
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_idle_rightDown
+  m_Name: warlock_idle_right
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -315,19 +315,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 36722a23091a24ce7a4a284556e59ed8, type: 2}
+  m_Motion: {fileID: 7400000, guid: a242021d9537443fea3f2ca38beb6263, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102815786960417718
+--- !u!1102 &1102676505167065574
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_attack_right
+  m_Name: warlock_fallDown_down
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -340,19 +340,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6f85b14256e2941b5b6c34eca0f5b5b3, type: 2}
+  m_Motion: {fileID: 7400000, guid: 896691862b53f4751bc6295db3b26233, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102875389977418880
+--- !u!1102 &1102684501471217716
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_fallDown_up
+  m_Name: warlock_fallDown_up
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -365,19 +365,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: ba9b9e16d2c4c45cc900a2226fdcacc6, type: 2}
+  m_Motion: {fileID: 7400000, guid: 83f59f378bc464e6da7097975203427a, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102940951035382562
+--- !u!1102 &1102770499135803108
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_idle_right
+  m_Name: warlock_attack_up
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -390,19 +390,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 05a985dc808214946a35794ffebe72be, type: 2}
+  m_Motion: {fileID: 7400000, guid: ea11fdc5d36954962872366dbdf357ce, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102954006489972522
+--- !u!1102 &1102779127752410436
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_move_rightUp
+  m_Name: warlock_idle_up
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -415,19 +415,19 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 9335ca54da81640f89f2e3fb8d1377ee, type: 2}
+  m_Motion: {fileID: 7400000, guid: 90ad58b86bde0440c9cf1562cd261dbf, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1102 &1102991406450122222
+--- !u!1102 &1102788307990824524
 AnimatorState:
   serializedVersion: 5
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: skeleton_W_move_right
+  m_Name: warlock_idle_rightUp
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions: []
@@ -440,13 +440,38 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: c3fd1723c65594eeb8ccf57bff3c6324, type: 2}
+  m_Motion: {fileID: 7400000, guid: f3775da2a759c492da9b451f605ec20f, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
   m_CycleOffsetParameter: 
   m_TimeParameter: 
---- !u!1107 &1107906388814058184
+--- !u!1102 &1102892930295762880
+AnimatorState:
+  serializedVersion: 5
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: warlock_move_down
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 7683152175d1d4fefbb75565ea5e70e7, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
+--- !u!1107 &1107577225247610222
 AnimatorStateMachine:
   serializedVersion: 5
   m_ObjectHideFlags: 1
@@ -455,56 +480,59 @@ AnimatorStateMachine:
   m_Name: Base Layer
   m_ChildStates:
   - serializedVersion: 1
-    m_State: {fileID: 1102224819206872292}
-    m_Position: {x: 507.4747, y: 25.813126, z: 0}
+    m_State: {fileID: 1102779127752410436}
+    m_Position: {x: 200, y: 0, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102815786960417718}
-    m_Position: {x: 519.47473, y: 37.813126, z: 0}
+    m_State: {fileID: 1102007942323622522}
+    m_Position: {x: 534.7737, y: 0.29492188, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102218366436369130}
-    m_Position: {x: 531.47473, y: 49.813126, z: 0}
+    m_State: {fileID: 1102564815895909618}
+    m_Position: {x: 546.7737, y: 12.294922, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102031269699202236}
-    m_Position: {x: 543.47473, y: 61.813126, z: 0}
+    m_State: {fileID: 1102080773189828426}
+    m_Position: {x: 558.7737, y: 24.294922, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102190205471432654}
-    m_Position: {x: 555.47473, y: 73.813126, z: 0}
+    m_State: {fileID: 1102525934281415374}
+    m_Position: {x: 570.7737, y: 36.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102112376732627556}
-    m_Position: {x: 567.47473, y: 85.813126, z: 0}
+    m_State: {fileID: 1102770499135803108}
+    m_Position: {x: 582.7737, y: 48.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102875389977418880}
-    m_Position: {x: 579.47473, y: 97.813126, z: 0}
+    m_State: {fileID: 1102676505167065574}
+    m_Position: {x: 594.7737, y: 60.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102629960825400852}
-    m_Position: {x: 591.47473, y: 109.813126, z: 0}
+    m_State: {fileID: 1102684501471217716}
+    m_Position: {x: 606.7737, y: 72.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102940951035382562}
-    m_Position: {x: 603.47473, y: 121.813126, z: 0}
+    m_State: {fileID: 1102368610186546768}
+    m_Position: {x: 618.7737, y: 84.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102722527511625718}
-    m_Position: {x: 615.47473, y: 133.81313, z: 0}
+    m_State: {fileID: 1102590889314507920}
+    m_Position: {x: 630.7737, y: 96.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102648960706080856}
-    m_Position: {x: 627.47473, y: 145.81313, z: 0}
+    m_State: {fileID: 1102547829454391850}
+    m_Position: {x: 642.7737, y: 108.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102576079691849238}
-    m_Position: {x: 639.47473, y: 157.81313, z: 0}
+    m_State: {fileID: 1102788307990824524}
+    m_Position: {x: 654.7737, y: 120.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102468961623496162}
-    m_Position: {x: 651.47473, y: 169.81313, z: 0}
+    m_State: {fileID: 1102096183743231524}
+    m_Position: {x: 666.7737, y: 132.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102991406450122222}
-    m_Position: {x: 663.47473, y: 181.81313, z: 0}
+    m_State: {fileID: 1102892930295762880}
+    m_Position: {x: 678.7737, y: 144.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102140216609883274}
-    m_Position: {x: 675.47473, y: 193.81313, z: 0}
+    m_State: {fileID: 1102549371264922242}
+    m_Position: {x: 690.7737, y: 156.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102954006489972522}
-    m_Position: {x: 687.47473, y: 205.81313, z: 0}
+    m_State: {fileID: 1102581505737627044}
+    m_Position: {x: 702.7737, y: 168.29492, z: 0}
   - serializedVersion: 1
-    m_State: {fileID: 1102405396823449946}
-    m_Position: {x: 699.47473, y: 217.81313, z: 0}
+    m_State: {fileID: 1102141699740372488}
+    m_Position: {x: 714.7737, y: 180.29492, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 1102397717556775246}
+    m_Position: {x: 726.7737, y: 192.29492, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -514,4 +542,4 @@ AnimatorStateMachine:
   m_EntryPosition: {x: 50, y: 120, z: 0}
   m_ExitPosition: {x: 800, y: 120, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: 1102224819206872292}
+  m_DefaultState: {fileID: 1102779127752410436}

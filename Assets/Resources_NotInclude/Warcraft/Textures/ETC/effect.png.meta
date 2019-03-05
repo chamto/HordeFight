@@ -2,76 +2,76 @@ fileFormatVersion: 2
 guid: 8db6c461ce16b40fe8ce7a28edd4ebb3
 TextureImporter:
   fileIDToRecycleName:
-    21300000: effect_0
-    21300002: effect_1
-    21300004: effect_2
-    21300006: effect_3
-    21300008: effect_4
-    21300010: effect_5
-    21300012: effect_6
-    21300014: effect_7
+    21300000: flaming_2_0
+    21300002: flaming_2_1
+    21300004: flaming_2_2
+    21300006: flaming_2_3
+    21300008: flaming_2_4
+    21300010: flaming_2_9
+    21300012: flaming_2_10
+    21300014: flaming_2_11
     21300016: effect_8
     21300018: effect_9
     21300020: effect_10
     21300022: effect_11
-    21300024: effect_12
-    21300026: effect_13
-    21300028: effect_14
-    21300030: effect_15
-    21300032: effect_16
-    21300034: effect_17
+    21300024: flaming_2_16
+    21300026: flaming_2_8
+    21300028: flaming_2_12
+    21300030: flaming_2_13
+    21300032: flaming_2_13
+    21300034: flaming_2_14
     21300036: effect_18
-    21300038: effect_19
+    21300038: flaming_2_15
     21300040: effect_20
-    21300042: effect_21
-    21300044: effect_22
-    21300046: effect_23
-    21300048: effect_24
+    21300042: flaming_2_5
+    21300044: flaming_2_6
+    21300046: flaming_2_7
+    21300048: corpseA_human_0_0
     21300050: effect_25
-    21300052: effect_26
+    21300052: corpseA_human_1_0
     21300054: effect_27
     21300056: effect_28
-    21300058: effect_29
+    21300058: corpseA_orc_0_0
     21300060: effect_30
-    21300062: effect_31
+    21300062: corpseA_orc_1_0
     21300064: effect_32
     21300066: effect_33
-    21300068: effect_34
+    21300068: corpseB_0_0
     21300070: effect_35
-    21300072: effect_36
+    21300072: corpseB_1_0
     21300074: effect_37
     21300076: effect_38
-    21300078: effect_39
+    21300078: corpseC_0_0
     21300080: effect_40
-    21300082: effect_41
+    21300082: corpseC_1_0
     21300084: effect_42
     21300086: effect_43
     21300088: effect_44
     21300090: effect_45
     21300092: effect_46
-    21300094: effect_47
-    21300096: effect_48
+    21300094: corpseD_0_0
+    21300096: corpseD_1_0
     21300098: effect_49
     21300100: effect_50
     21300102: effect_51
     21300104: effect_52
     21300106: effect_53
-    21300108: force_0
+    21300108: force_0_0
     21300110: effect_55
     21300112: effect_56
     21300114: effect_57
     21300116: effect_58
-    21300118: force_1
+    21300118: force_0_1
     21300120: effect_60
     21300122: effect_61
     21300124: effect_62
     21300126: effect_63
-    21300128: force_2
+    21300128: force_0_2
     21300130: effect_65
     21300132: effect_66
     21300134: effect_67
     21300136: effect_68
-    21300138: force_3
+    21300138: forceHit_0_0
     21300140: effect_70
     21300142: effect_71
     21300144: effect_72
@@ -81,21 +81,21 @@ TextureImporter:
     21300152: explosion_0_5
     21300154: effect_77
     21300156: effect_78
-    21300158: effect_79
-    21300160: effect_80
-    21300162: effect_81
-    21300164: effect_82
-    21300166: effect_83
-    21300168: effect_84
-    21300170: effect_85
-    21300172: effect_86
-    21300174: effect_87
-    21300176: effect_88
-    21300178: effect_89
-    21300180: effect_90
-    21300182: effect_91
-    21300184: effect_92
-    21300186: effect_93
+    21300158: fireRedA_0_0
+    21300160: fireRedA_1_0
+    21300162: fireRedA_2_0
+    21300164: fireRedA_3_0
+    21300166: fireRedA_4_0
+    21300168: fireRedB_0_0
+    21300170: fireRedB_1_0
+    21300172: fireRedB_2_0
+    21300174: fireRedB_3_0
+    21300176: fireRedB_4_0
+    21300178: fireRedC_0_0
+    21300180: fireRedC_1_0
+    21300182: fireRedC_2_0
+    21300184: fireRedC_3_0
+    21300186: fireRedC_4_0
     21300188: explosion_0_0
     21300190: explosion_0_1
     21300192: explosion_0_2
@@ -109,72 +109,74 @@ TextureImporter:
     21300208: effect_104
     21300210: explosion_0_3
     21300212: effect_106
-    21300214: effect_107
-    21300216: effect_108
-    21300218: effect_109
-    21300220: effect_110
-    21300222: effect_111
-    21300224: effect_112
-    21300226: effect_113
-    21300228: effect_114
-    21300230: effect_115
-    21300232: effect_116
+    21300214: fireBlueA_0_0
+    21300216: fireBlueA_1_0
+    21300218: fireBlueA_2_0
+    21300220: fireBlueA_3_0
+    21300222: fireBlueA_4_0
+    21300224: fireBlueB_0_0
+    21300226: fireBlueB_1_0
+    21300228: fireBlueB_2_0
+    21300230: fireBlueB_3_0
+    21300232: fireBlueB_4_0
     21300234: effect_117
     21300236: effect_118
     21300238: explosion_0_4
-    21300240: effect_120
-    21300242: effect_121
-    21300244: effect_122
-    21300246: effect_123
-    21300248: effect_124
-    21300250: effect_125
-    21300252: effect_126
-    21300254: effect_127
-    21300256: effect_128
-    21300258: effect_129
-    21300260: effect_130
-    21300262: effect_131
-    21300264: effect_132
+    21300240: fireRedA_0_1
+    21300242: fireRedA_1_1
+    21300244: fireRedA_2_1
+    21300246: fireRedA_3_1
+    21300248: fireRedA_4_1
+    21300250: fireRedB_0_1
+    21300252: fireRedB_1_1
+    21300254: fireRedB_2_1
+    21300256: fireRedB_3_1
+    21300258: fireRedB_4_1
+    21300260: spellEffect_0_0
+    21300262: spellEffect_0_1
+    21300264: spellEffect_0_2
     21300266: effect_133
-    21300268: effect_134
-    21300270: effect_135
+    21300268: spellEffect_0_3
+    21300270: spellEffect_0_5
     21300272: effect_136
     21300274: effect_137
     21300276: effect_138
-    21300278: effect_139
-    21300280: effect_140
-    21300282: effect_141
+    21300278: cloud_purple_0_1
+    21300280: cloud_purple_0_2
+    21300282: cloud_purple_0_3
     21300284: effect_142
-    21300286: effect_143
-    21300288: effect_144
-    21300290: effect_145
-    21300292: effect_146
-    21300294: effect_147
-    21300296: effect_148
-    21300298: effect_149
-    21300300: effect_150
-    21300302: effect_151
-    21300304: effect_152
-    21300306: effect_153
-    21300308: effect_154
-    21300310: effect_155
-    21300312: effect_156
-    21300314: effect_157
-    21300316: effect_158
-    21300318: effect_159
-    21300320: effect_160
-    21300322: effect_161
+    21300286: flaming_0_0
+    21300288: flaming_0_1
+    21300290: flaming_0_2
+    21300292: flaming_0_3
+    21300294: flaming_1_0
+    21300296: flaming_1_1
+    21300298: flaming_1_2
+    21300300: flaming_1_3
+    21300302: sleep_0_0
+    21300304: sleep_1_0
+    21300306: sleep_2_0
+    21300308: sleep_3_0
+    21300310: sleep_4_0
+    21300312: goldMine_0
+    21300314: fireRain_0_0
+    21300316: fireRain_0_1
+    21300318: fireRain_0_2
+    21300320: pop_0_0
+    21300322: pop_0_1
     21300324: effect_162
-    21300326: effect_163
-    21300328: effect_164
+    21300326: pop_0_3
+    21300328: pop_0_2
     21300330: effect_165
     21300332: effect_166
     21300334: effect_167
-    21300336: force_4
+    21300336: forceHit_0_1
     21300338: spear_1
     21300340: arrow_0
     21300342: arrow_1
     21300344: spear_0
+    21300346: spellEffect_0_4
+    21300348: cloud_purple_0_0
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -277,13 +279,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: effect_0
+      name: flaming_2_0
       rect:
         serializedVersion: 2
-        x: 31
-        y: 231
-        width: 4
-        height: 9
+        x: 0
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -297,13 +299,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_1
+      name: flaming_2_1
       rect:
         serializedVersion: 2
-        x: 57
-        y: 228
-        width: 28
-        height: 39
+        x: 48
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -317,13 +319,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_2
+      name: flaming_2_2
       rect:
         serializedVersion: 2
-        x: 102
-        y: 225
-        width: 36
-        height: 43
+        x: 96
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -337,13 +339,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_3
+      name: flaming_2_3
       rect:
         serializedVersion: 2
-        x: 145
-        y: 222
-        width: 45
-        height: 45
+        x: 144
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -357,13 +359,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_4
+      name: flaming_2_4
       rect:
         serializedVersion: 2
         x: 192
-        y: 220
-        width: 240
-        height: 50
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -377,13 +379,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_5
+      name: flaming_2_9
       rect:
         serializedVersion: 2
         x: 432
-        y: 228
+        y: 219
         width: 48
-        height: 47
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -397,13 +399,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_6
+      name: flaming_2_10
       rect:
         serializedVersion: 2
-        x: 481
-        y: 238
-        width: 47
-        height: 39
+        x: 480
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -417,13 +419,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_7
+      name: flaming_2_11
       rect:
         serializedVersion: 2
         x: 528
-        y: 253
-        width: 96
-        height: 29
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -437,93 +439,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_8
+      name: flaming_2_16
       rect:
         serializedVersion: 2
-        x: 694
-        y: 241
-        width: 4
-        height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 31d81360902e54b99b8a892bb7e29be3
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_9
-      rect:
-        serializedVersion: 2
-        x: 726
-        y: 239
-        width: 11
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a6070cea336cc41d2bd9e9e6b467cc76
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_10
-      rect:
-        serializedVersion: 2
-        x: 740
-        y: 248
-        width: 7
-        height: 13
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: a351e5c86aa984a2a9f63ca907f626ec
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_11
-      rect:
-        serializedVersion: 2
-        x: 774
-        y: 245
-        width: 11
-        height: 12
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9341845a050274c1794cd0799103042c
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_12
-      rect:
-        serializedVersion: 2
-        x: 793
-        y: 244
-        width: 11
-        height: 13
+        x: 768
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -537,13 +459,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_13
+      name: flaming_2_8
       rect:
         serializedVersion: 2
-        x: 594
-        y: 231
-        width: 8
-        height: 13
+        x: 384
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -557,13 +479,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_14
+      name: flaming_2_12
       rect:
         serializedVersion: 2
-        x: 630
-        y: 230
-        width: 11
-        height: 13
+        x: 576
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -577,33 +499,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_15
+      name: flaming_2_13
       rect:
         serializedVersion: 2
-        x: 650
-        y: 228
-        width: 11
-        height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fd63b4ecdfda8457ab72de0a11484c49
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_16
-      rect:
-        serializedVersion: 2
-        x: 650
-        y: 228
-        width: 11
-        height: 14
+        x: 624
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -617,13 +519,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_17
+      name: flaming_2_14
       rect:
         serializedVersion: 2
-        x: 678
-        y: 235
-        width: 11
-        height: 14
+        x: 672
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -637,33 +539,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_18
+      name: flaming_2_15
       rect:
         serializedVersion: 2
-        x: 699
-        y: 232
-        width: 10
-        height: 14
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f83ae92c69dcf4febb4c5d8a0e1598cc
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_19
-      rect:
-        serializedVersion: 2
-        x: 748
-        y: 240
-        width: 9
-        height: 12
+        x: 720
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -677,33 +559,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_20
+      name: flaming_2_5
       rect:
         serializedVersion: 2
-        x: 31
-        y: 231
-        width: 4
-        height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8f8f2bca906ef4febacebedfba24b836
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_21
-      rect:
-        serializedVersion: 2
-        x: 544
-        y: 227
-        width: 11
-        height: 12
+        x: 240
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -717,13 +579,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_22
+      name: flaming_2_6
       rect:
         serializedVersion: 2
-        x: 582
-        y: 225
-        width: 11
-        height: 12
+        x: 288
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -737,13 +599,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_23
+      name: flaming_2_7
       rect:
         serializedVersion: 2
-        x: 602
-        y: 223
-        width: 11
-        height: 13
+        x: 336
+        y: 219
+        width: 48
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -757,7 +619,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_24
+      name: corpseA_human_0_0
       rect:
         serializedVersion: 2
         x: 5
@@ -797,7 +659,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_26
+      name: corpseA_human_1_0
       rect:
         serializedVersion: 2
         x: 69
@@ -857,7 +719,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_29
+      name: corpseA_orc_0_0
       rect:
         serializedVersion: 2
         x: 167
@@ -897,7 +759,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_31
+      name: corpseA_orc_1_0
       rect:
         serializedVersion: 2
         x: 229
@@ -957,7 +819,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_34
+      name: corpseB_0_0
       rect:
         serializedVersion: 2
         x: 326
@@ -997,7 +859,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_36
+      name: corpseB_1_0
       rect:
         serializedVersion: 2
         x: 391
@@ -1057,7 +919,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_39
+      name: corpseC_0_0
       rect:
         serializedVersion: 2
         x: 486
@@ -1097,7 +959,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_41
+      name: corpseC_1_0
       rect:
         serializedVersion: 2
         x: 551
@@ -1157,26 +1019,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_44
-      rect:
-        serializedVersion: 2
-        x: 658
-        y: 202
-        width: 6
-        height: 5
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 833da49da58494fa9a2ea552dcd69cc1
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: effect_45
       rect:
         serializedVersion: 2
@@ -1197,33 +1039,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_46
+      name: corpseD_0_0
       rect:
         serializedVersion: 2
-        x: 690
-        y: 202
-        width: 6
-        height: 5
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 0ae01322511dc4b4f8e66b2328f59c7a
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_47
-      rect:
-        serializedVersion: 2
-        x: 690
-        y: 202
-        width: 6
-        height: 5
+        x: 680
+        y: 195
+        width: 17
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1237,13 +1059,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_48
+      name: corpseD_1_0
       rect:
         serializedVersion: 2
         x: 712
-        y: 206
-        width: 13
-        height: 5
+        y: 196
+        width: 17
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1257,107 +1079,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_49
-      rect:
-        serializedVersion: 2
-        x: 744
-        y: 206
-        width: 13
-        height: 5
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 8ee531e5bba204279bd4a60abcc94cc5
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_50
-      rect:
-        serializedVersion: 2
-        x: 776
-        y: 206
-        width: 13
-        height: 5
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: c63f1b7afdb5b414581c72688149c990
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_51
-      rect:
-        serializedVersion: 2
-        x: 712
-        y: 196
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 7ee0583559bd64ad3a0ccad8366b48f6
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_52
-      rect:
-        serializedVersion: 2
-        x: 744
-        y: 196
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 9d2250c6454ed4481a7409227221c244
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_53
-      rect:
-        serializedVersion: 2
-        x: 776
-        y: 196
-        width: 16
-        height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 4ca8f8227511046db9afae7a0f3e118d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: force_0
+      name: force_0_0
       rect:
         serializedVersion: 2
         x: 11
@@ -1457,7 +1179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: force_1
+      name: force_0_1
       rect:
         serializedVersion: 2
         x: 169
@@ -1557,7 +1279,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: force_2
+      name: force_0_2
       rect:
         serializedVersion: 2
         x: 329
@@ -1657,7 +1379,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: force_3
+      name: forceHit_0_0
       rect:
         serializedVersion: 2
         x: 491
@@ -1760,10 +1482,10 @@ TextureImporter:
       name: explosion_0_5
       rect:
         serializedVersion: 2
-        x: 755
-        y: 112
-        width: 44
-        height: 38
+        x: 752
+        y: 108
+        width: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1797,7 +1519,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_79
+      name: fireRedA_0_0
       rect:
         serializedVersion: 2
         x: 13
@@ -1817,7 +1539,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_80
+      name: fireRedA_1_0
       rect:
         serializedVersion: 2
         x: 38
@@ -1837,7 +1559,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_81
+      name: fireRedA_2_0
       rect:
         serializedVersion: 2
         x: 68
@@ -1857,7 +1579,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_82
+      name: fireRedA_3_0
       rect:
         serializedVersion: 2
         x: 101
@@ -1877,7 +1599,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_83
+      name: fireRedA_4_0
       rect:
         serializedVersion: 2
         x: 142
@@ -1897,7 +1619,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_84
+      name: fireRedB_0_0
       rect:
         serializedVersion: 2
         x: 173
@@ -1917,7 +1639,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_85
+      name: fireRedB_1_0
       rect:
         serializedVersion: 2
         x: 197
@@ -1937,7 +1659,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_86
+      name: fireRedB_2_0
       rect:
         serializedVersion: 2
         x: 226
@@ -1957,7 +1679,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_87
+      name: fireRedB_3_0
       rect:
         serializedVersion: 2
         x: 260
@@ -1977,7 +1699,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_88
+      name: fireRedB_4_0
       rect:
         serializedVersion: 2
         x: 301
@@ -1997,7 +1719,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_89
+      name: fireRedC_0_0
       rect:
         serializedVersion: 2
         x: 331
@@ -2017,7 +1739,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_90
+      name: fireRedC_1_0
       rect:
         serializedVersion: 2
         x: 357
@@ -2037,7 +1759,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_91
+      name: fireRedC_2_0
       rect:
         serializedVersion: 2
         x: 384
@@ -2057,7 +1779,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_92
+      name: fireRedC_3_0
       rect:
         serializedVersion: 2
         x: 419
@@ -2077,7 +1799,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_93
+      name: fireRedC_4_0
       rect:
         serializedVersion: 2
         x: 459
@@ -2100,10 +1822,10 @@ TextureImporter:
       name: explosion_0_0
       rect:
         serializedVersion: 2
-        x: 528
-        y: 125
-        width: 17
-        height: 17
+        x: 512
+        y: 108
+        width: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2120,10 +1842,10 @@ TextureImporter:
       name: explosion_0_1
       rect:
         serializedVersion: 2
-        x: 569
-        y: 118
-        width: 31
-        height: 34
+        x: 560
+        y: 108
+        width: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2140,10 +1862,10 @@ TextureImporter:
       name: explosion_0_2
       rect:
         serializedVersion: 2
-        x: 609
-        y: 114
-        width: 41
-        height: 40
+        x: 608
+        y: 108
+        width: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2160,10 +1882,10 @@ TextureImporter:
       name: explosion_0_3
       rect:
         serializedVersion: 2
-        x: 654
+        x: 656
         y: 108
         width: 48
-        height: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2177,7 +1899,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_107
+      name: fireBlueA_0_0
       rect:
         serializedVersion: 2
         x: 13
@@ -2197,7 +1919,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_108
+      name: fireBlueA_1_0
       rect:
         serializedVersion: 2
         x: 39
@@ -2217,7 +1939,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_109
+      name: fireBlueA_2_0
       rect:
         serializedVersion: 2
         x: 68
@@ -2237,7 +1959,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_110
+      name: fireBlueA_3_0
       rect:
         serializedVersion: 2
         x: 104
@@ -2257,7 +1979,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_111
+      name: fireBlueA_4_0
       rect:
         serializedVersion: 2
         x: 142
@@ -2277,7 +1999,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_112
+      name: fireBlueB_0_0
       rect:
         serializedVersion: 2
         x: 173
@@ -2297,7 +2019,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_113
+      name: fireBlueB_1_0
       rect:
         serializedVersion: 2
         x: 200
@@ -2317,7 +2039,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_114
+      name: fireBlueB_2_0
       rect:
         serializedVersion: 2
         x: 226
@@ -2337,7 +2059,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_115
+      name: fireBlueB_3_0
       rect:
         serializedVersion: 2
         x: 263
@@ -2357,7 +2079,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_116
+      name: fireBlueB_4_0
       rect:
         serializedVersion: 2
         x: 301
@@ -2377,33 +2099,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_117
-      rect:
-        serializedVersion: 2
-        x: 640
-        y: 114
-        width: 6
-        height: 7
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: dfdfb87641d234f4a91f7b7d70c2b008
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: explosion_0_4
       rect:
         serializedVersion: 2
-        x: 703
+        x: 704
         y: 108
-        width: 47
-        height: 49
+        width: 48
+        height: 50
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2417,7 +2119,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_120
+      name: fireRedA_0_1
       rect:
         serializedVersion: 2
         x: 13
@@ -2437,7 +2139,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_121
+      name: fireRedA_1_1
       rect:
         serializedVersion: 2
         x: 38
@@ -2457,7 +2159,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_122
+      name: fireRedA_2_1
       rect:
         serializedVersion: 2
         x: 68
@@ -2477,7 +2179,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_123
+      name: fireRedA_3_1
       rect:
         serializedVersion: 2
         x: 101
@@ -2497,7 +2199,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_124
+      name: fireRedA_4_1
       rect:
         serializedVersion: 2
         x: 142
@@ -2517,7 +2219,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_125
+      name: fireRedB_0_1
       rect:
         serializedVersion: 2
         x: 173
@@ -2537,7 +2239,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_126
+      name: fireRedB_1_1
       rect:
         serializedVersion: 2
         x: 197
@@ -2557,7 +2259,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_127
+      name: fireRedB_2_1
       rect:
         serializedVersion: 2
         x: 226
@@ -2577,7 +2279,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_128
+      name: fireRedB_3_1
       rect:
         serializedVersion: 2
         x: 260
@@ -2597,7 +2299,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_129
+      name: fireRedB_4_1
       rect:
         serializedVersion: 2
         x: 301
@@ -2617,7 +2319,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_130
+      name: spellEffect_0_0
       rect:
         serializedVersion: 2
         x: 342
@@ -2637,7 +2339,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_131
+      name: spellEffect_0_1
       rect:
         serializedVersion: 2
         x: 370
@@ -2657,12 +2359,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_132
+      name: spellEffect_0_2
       rect:
         serializedVersion: 2
         x: 404
         y: 71
-        width: 12
+        width: 24
         height: 27
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -2677,32 +2379,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_133
-      rect:
-        serializedVersion: 2
-        x: 418
-        y: 77
-        width: 10
-        height: 18
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: f19809a7bd735498db7d8b641a66e82f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_134
+      name: spellEffect_0_3
       rect:
         serializedVersion: 2
         x: 435
         y: 71
-        width: 53
+        width: 24
         height: 26
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -2717,7 +2399,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_135
+      name: spellEffect_0_5
       rect:
         serializedVersion: 2
         x: 501
@@ -2737,73 +2419,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_136
-      rect:
-        serializedVersion: 2
-        x: 562
-        y: 89
-        width: 26
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 420678461cbac4b109ba062dbc942e5d
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_137
-      rect:
-        serializedVersion: 2
-        x: 549
-        y: 79
-        width: 17
-        height: 24
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ac4be4aa612c549a5af6316c864e61ac
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_138
-      rect:
-        serializedVersion: 2
-        x: 562
-        y: 89
-        width: 26
-        height: 15
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fe7efe5230af24a448f9ba5cc03c0d51
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_139
+      name: cloud_purple_0_1
       rect:
         serializedVersion: 2
         x: 608
         y: 41
-        width: 63
-        height: 64
+        width: 65
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2817,13 +2439,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_140
+      name: cloud_purple_0_2
       rect:
         serializedVersion: 2
-        x: 676
-        y: 43
-        width: 60
-        height: 60
+        x: 673
+        y: 41
+        width: 65
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2837,13 +2459,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_141
+      name: cloud_purple_0_3
       rect:
         serializedVersion: 2
-        x: 770
-        y: 43
-        width: 30
-        height: 54
+        x: 738
+        y: 41
+        width: 65
+        height: 65
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2857,33 +2479,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_142
+      name: flaming_0_0
       rect:
         serializedVersion: 2
-        x: 770
-        y: 43
-        width: 30
-        height: 54
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: cbd445fa8dd4846e9a9a46c8d0ccf3e7
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_143
-      rect:
-        serializedVersion: 2
-        x: 1
+        x: 0
         y: 28
-        width: 15
-        height: 30
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2897,13 +2499,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_144
+      name: flaming_0_1
       rect:
         serializedVersion: 2
-        x: 17
+        x: 16
         y: 28
-        width: 14
-        height: 30
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2917,13 +2519,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_145
+      name: flaming_0_2
       rect:
         serializedVersion: 2
         x: 32
         y: 28
-        width: 15
-        height: 30
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2937,13 +2539,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_146
+      name: flaming_0_3
       rect:
         serializedVersion: 2
         x: 48
         y: 28
-        width: 15
-        height: 31
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2957,13 +2559,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_147
+      name: flaming_1_0
       rect:
         serializedVersion: 2
         x: 76
         y: 28
-        width: 15
-        height: 31
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2977,13 +2579,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_148
+      name: flaming_1_1
       rect:
         serializedVersion: 2
-        x: 93
+        x: 92
         y: 28
-        width: 15
-        height: 31
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -2997,12 +2599,12 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_149
+      name: flaming_1_2
       rect:
         serializedVersion: 2
-        x: 109
+        x: 108
         y: 28
-        width: 14
+        width: 16
         height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
@@ -3017,13 +2619,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_150
+      name: flaming_1_3
       rect:
         serializedVersion: 2
         x: 124
         y: 28
-        width: 15
-        height: 30
+        width: 16
+        height: 32
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3037,7 +2639,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_151
+      name: sleep_0_0
       rect:
         serializedVersion: 2
         x: 168
@@ -3057,7 +2659,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_152
+      name: sleep_1_0
       rect:
         serializedVersion: 2
         x: 198
@@ -3077,7 +2679,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_153
+      name: sleep_2_0
       rect:
         serializedVersion: 2
         x: 229
@@ -3097,7 +2699,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_154
+      name: sleep_3_0
       rect:
         serializedVersion: 2
         x: 264
@@ -3117,7 +2719,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_155
+      name: sleep_4_0
       rect:
         serializedVersion: 2
         x: 298
@@ -3137,7 +2739,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_156
+      name: goldMine_0
       rect:
         serializedVersion: 2
         x: 434
@@ -3157,7 +2759,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_157
+      name: fireRain_0_0
       rect:
         serializedVersion: 2
         x: 5
@@ -3177,7 +2779,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_158
+      name: fireRain_0_1
       rect:
         serializedVersion: 2
         x: 21
@@ -3197,7 +2799,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_159
+      name: fireRain_0_2
       rect:
         serializedVersion: 2
         x: 37
@@ -3217,7 +2819,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_160
+      name: pop_0_0
       rect:
         serializedVersion: 2
         x: 52
@@ -3237,13 +2839,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_161
+      name: pop_0_1
       rect:
         serializedVersion: 2
         x: 64
-        y: 14
-        width: 4
-        height: 9
+        y: 10
+        width: 15
+        height: 15
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3257,31 +2859,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_162
+      name: pop_0_3
       rect:
         serializedVersion: 2
-        x: 71
-        y: 10
-        width: 8
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 08a86285109b744b09ef991d854c4389
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_163
-      rect:
-        serializedVersion: 2
-        x: 89
-        y: 10
+        x: 101
+        y: 15
         width: 6
         height: 6
       alignment: 0
@@ -3297,13 +2879,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_164
+      name: pop_0_2
       rect:
         serializedVersion: 2
         x: 80
-        y: 11
-        width: 24
-        height: 15
+        y: 9
+        width: 17
+        height: 17
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -3337,47 +2919,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_166
-      rect:
-        serializedVersion: 2
-        x: 71
-        y: 10
-        width: 8
-        height: 4
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 87714c2e2f2fd49bab41d126c5c77d93
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: effect_167
-      rect:
-        serializedVersion: 2
-        x: 89
-        y: 10
-        width: 6
-        height: 6
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 531dbcf71f7044c9c9da58eca4830911
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: force_4
+      name: forceHit_0_1
       rect:
         serializedVersion: 2
         x: 649
@@ -3472,6 +3014,46 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: a7ad06d7d5f0f4208864b42af0ae52eb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spellEffect_0_4
+      rect:
+        serializedVersion: 2
+        x: 470
+        y: 71
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: af6b56e669b4a46998cd22fcb409e22a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: cloud_purple_0_0
+      rect:
+        serializedVersion: 2
+        x: 543
+        y: 41
+        width: 65
+        height: 65
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 585b0f74bc8f541f8b9fac5380c447fe
       vertices: []
       indices: 
       edges: []

@@ -3616,14 +3616,14 @@ namespace HordeFight
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
-            //    champ._mt_range_min = 2f;
-            //    champ._mt_range_max = 6f;
-            //    champ.GetComponent<AI>()._ai_running = true;
-            //    camp_position++;
-            //}
+            for (int i = 0; i < 100; i++)
+            {
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.catapult, camp_BLUE, camp_BLUE.RandPosition());
+                //champ._mt_range_min = 2f;
+                //champ._mt_range_max = 6f;
+                champ.GetComponent<AI>()._ai_running = true;
+                camp_position++;
+            }
 
             //===================================================
 
@@ -3632,17 +3632,17 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 100; i++)
             { 
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
-                champ._mt_range_min = 2f;
-                champ._mt_range_max = 5f;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
+                //champ._mt_range_min = 2f;
+                //champ._mt_range_max = 5f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }
 
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 0; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;

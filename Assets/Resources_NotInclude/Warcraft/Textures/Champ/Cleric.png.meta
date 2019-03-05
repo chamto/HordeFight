@@ -2,72 +2,72 @@ fileFormatVersion: 2
 guid: fd14cc9e8ac2d45c49d43223d16dc665
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Cleric_0
-    21300002: Cleric_1
-    21300004: Cleric_2
-    21300006: Cleric_3
-    21300008: Cleric_4
-    21300010: Cleric_5
-    21300012: Cleric_6
-    21300014: Cleric_7
-    21300016: Cleric_8
-    21300018: Cleric_9
-    21300020: Cleric_10
+    21300000: Cleric_0_0
+    21300002: Cleric_1_0
+    21300004: Cleric_2_0
+    21300006: Cleric_3_0
+    21300008: Cleric_4_0
+    21300010: Cleric_5_0
+    21300012: Cleric_6_0
+    21300014: Cleric_7_0
+    21300016: Cleric_8_0
+    21300018: Cleric_9_0
+    21300020: Cleric_10_0
     21300022: Cleric_11
     21300024: Cleric_12
-    21300026: Cleric_13
+    21300026: Cleric_13_0
     21300028: Cleric_14
     21300030: Cleric_15
     21300032: Cleric_16
     21300034: Cleric_17
-    21300036: Cleric_18
-    21300038: Cleric_19
-    21300040: Cleric_20
-    21300042: Cleric_21
-    21300044: Cleric_22
-    21300046: Cleric_23
-    21300048: Cleric_24
-    21300050: Cleric_25
-    21300052: Cleric_26
-    21300054: Cleric_27
-    21300056: Cleric_28
+    21300036: Cleric_0_1
+    21300038: Cleric_1_1
+    21300040: Cleric_2_1
+    21300042: Cleric_3_1
+    21300044: Cleric_4_1
+    21300046: Cleric_5_1
+    21300048: Cleric_6_1
+    21300050: Cleric_7_1
+    21300052: Cleric_8_1
+    21300054: Cleric_9_1
+    21300056: Cleric_10_1
     21300058: Cleric_29
     21300060: Cleric_30
-    21300062: Cleric_31
+    21300062: Cleric_13_1
     21300064: Cleric_32
     21300066: Cleric_33
     21300068: Cleric_34
     21300070: Cleric_35
-    21300072: Cleric_36
-    21300074: Cleric_37
-    21300076: Cleric_38
-    21300078: Cleric_39
-    21300080: Cleric_40
-    21300082: Cleric_41
-    21300084: Cleric_42
-    21300086: Cleric_43
-    21300088: Cleric_44
-    21300090: Cleric_45
-    21300092: Cleric_46
+    21300072: Cleric_0_2
+    21300074: Cleric_1_2
+    21300076: Cleric_2_2
+    21300078: Cleric_3_2
+    21300080: Cleric_4_2
+    21300082: Cleric_5_2
+    21300084: Cleric_6_2
+    21300086: Cleric_7_2
+    21300088: Cleric_8_2
+    21300090: Cleric_9_2
+    21300092: Cleric_10_2
     21300094: Cleric_47
-    21300096: Cleric_48
+    21300096: Cleric_13_2
     21300098: Cleric_49
     21300100: Cleric_50
-    21300102: Cleric_51
-    21300104: Cleric_52
-    21300106: Cleric_53
-    21300108: Cleric_54
-    21300110: Cleric_55
-    21300112: Cleric_56
-    21300114: Cleric_57
-    21300116: Cleric_58
-    21300118: Cleric_59
-    21300120: Cleric_60
-    21300122: Cleric_61
-    21300124: Cleric_62
-    21300126: Cleric_63
-    21300128: Cleric_64
-    21300130: Cleric_65
+    21300102: Cleric_0_3
+    21300104: Cleric_1_3
+    21300106: Cleric_2_3
+    21300108: Cleric_3_3
+    21300110: Cleric_4_3
+    21300112: Cleric_5_3
+    21300114: Cleric_6_3
+    21300116: Cleric_7_3
+    21300118: Cleric_8_3
+    21300120: Cleric_9_3
+    21300122: Cleric_0_4
+    21300124: Cleric_1_4
+    21300126: Cleric_2_4
+    21300128: Cleric_3_4
+    21300130: Cleric_4_4
     21300132: Cleric_66
   externalObjects: {}
   serializedVersion: 5
@@ -171,7 +171,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Cleric_0
+      name: Cleric_0_0
       rect:
         serializedVersion: 2
         x: 10
@@ -179,7 +179,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -191,7 +191,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_1
+      name: Cleric_1_0
       rect:
         serializedVersion: 2
         x: 45
@@ -199,7 +199,7 @@ TextureImporter:
         width: 8
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -211,7 +211,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_2
+      name: Cleric_2_0
       rect:
         serializedVersion: 2
         x: 76
@@ -219,7 +219,7 @@ TextureImporter:
         width: 6
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -231,7 +231,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_3
+      name: Cleric_3_0
       rect:
         serializedVersion: 2
         x: 107
@@ -239,7 +239,7 @@ TextureImporter:
         width: 9
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -251,7 +251,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_4
+      name: Cleric_4_0
       rect:
         serializedVersion: 2
         x: 137
@@ -259,7 +259,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -271,7 +271,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_5
+      name: Cleric_5_0
       rect:
         serializedVersion: 2
         x: 170
@@ -279,7 +279,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -291,7 +291,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_6
+      name: Cleric_6_0
       rect:
         serializedVersion: 2
         x: 205
@@ -299,7 +299,7 @@ TextureImporter:
         width: 8
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -311,7 +311,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_7
+      name: Cleric_7_0
       rect:
         serializedVersion: 2
         x: 236
@@ -319,7 +319,7 @@ TextureImporter:
         width: 6
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -331,7 +331,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_8
+      name: Cleric_8_0
       rect:
         serializedVersion: 2
         x: 267
@@ -339,7 +339,7 @@ TextureImporter:
         width: 9
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -351,7 +351,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_9
+      name: Cleric_9_0
       rect:
         serializedVersion: 2
         x: 297
@@ -359,7 +359,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -371,7 +371,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_10
+      name: Cleric_10_0
       rect:
         serializedVersion: 2
         x: 332
@@ -379,7 +379,7 @@ TextureImporter:
         width: 14
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -399,7 +399,7 @@ TextureImporter:
         width: 14
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -419,7 +419,7 @@ TextureImporter:
         width: 4
         height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -431,7 +431,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_13
+      name: Cleric_13_0
       rect:
         serializedVersion: 2
         x: 395
@@ -439,7 +439,7 @@ TextureImporter:
         width: 11
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -459,7 +459,7 @@ TextureImporter:
         width: 4
         height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -479,7 +479,7 @@ TextureImporter:
         width: 11
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -499,7 +499,7 @@ TextureImporter:
         width: 4
         height: 8
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -519,7 +519,7 @@ TextureImporter:
         width: 11
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -531,7 +531,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_18
+      name: Cleric_0_1
       rect:
         serializedVersion: 2
         x: 10
@@ -539,7 +539,7 @@ TextureImporter:
         width: 12
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -551,7 +551,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_19
+      name: Cleric_1_1
       rect:
         serializedVersion: 2
         x: 45
@@ -559,7 +559,7 @@ TextureImporter:
         width: 7
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -571,7 +571,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_20
+      name: Cleric_2_1
       rect:
         serializedVersion: 2
         x: 74
@@ -579,7 +579,7 @@ TextureImporter:
         width: 8
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -591,7 +591,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_21
+      name: Cleric_3_1
       rect:
         serializedVersion: 2
         x: 105
@@ -599,7 +599,7 @@ TextureImporter:
         width: 12
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -611,7 +611,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_22
+      name: Cleric_4_1
       rect:
         serializedVersion: 2
         x: 137
@@ -619,7 +619,7 @@ TextureImporter:
         width: 13
         height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -631,7 +631,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_23
+      name: Cleric_5_1
       rect:
         serializedVersion: 2
         x: 168
@@ -639,7 +639,7 @@ TextureImporter:
         width: 16
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -651,7 +651,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_24
+      name: Cleric_6_1
       rect:
         serializedVersion: 2
         x: 200
@@ -659,7 +659,7 @@ TextureImporter:
         width: 16
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -671,7 +671,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_25
+      name: Cleric_7_1
       rect:
         serializedVersion: 2
         x: 232
@@ -679,7 +679,7 @@ TextureImporter:
         width: 15
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -691,7 +691,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_26
+      name: Cleric_8_1
       rect:
         serializedVersion: 2
         x: 266
@@ -699,7 +699,7 @@ TextureImporter:
         width: 12
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -711,7 +711,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_27
+      name: Cleric_9_1
       rect:
         serializedVersion: 2
         x: 296
@@ -719,7 +719,7 @@ TextureImporter:
         width: 18
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -731,7 +731,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_28
+      name: Cleric_10_1
       rect:
         serializedVersion: 2
         x: 326
@@ -739,7 +739,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -759,7 +759,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -779,7 +779,7 @@ TextureImporter:
         width: 7
         height: 5
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -791,7 +791,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_31
+      name: Cleric_13_1
       rect:
         serializedVersion: 2
         x: 393
@@ -799,7 +799,7 @@ TextureImporter:
         width: 14
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -819,7 +819,7 @@ TextureImporter:
         width: 7
         height: 5
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -839,7 +839,7 @@ TextureImporter:
         width: 14
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -859,7 +859,7 @@ TextureImporter:
         width: 7
         height: 5
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -879,7 +879,7 @@ TextureImporter:
         width: 14
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -891,7 +891,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_36
+      name: Cleric_0_2
       rect:
         serializedVersion: 2
         x: 11
@@ -899,7 +899,7 @@ TextureImporter:
         width: 9
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -911,7 +911,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_37
+      name: Cleric_1_2
       rect:
         serializedVersion: 2
         x: 45
@@ -919,7 +919,7 @@ TextureImporter:
         width: 7
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -931,7 +931,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_38
+      name: Cleric_2_2
       rect:
         serializedVersion: 2
         x: 71
@@ -939,7 +939,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -951,7 +951,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_39
+      name: Cleric_3_2
       rect:
         serializedVersion: 2
         x: 104
@@ -959,7 +959,7 @@ TextureImporter:
         width: 14
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -971,7 +971,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_40
+      name: Cleric_4_2
       rect:
         serializedVersion: 2
         x: 138
@@ -979,7 +979,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -991,7 +991,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_41
+      name: Cleric_5_2
       rect:
         serializedVersion: 2
         x: 167
@@ -999,7 +999,7 @@ TextureImporter:
         width: 18
         height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1011,7 +1011,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_42
+      name: Cleric_6_2
       rect:
         serializedVersion: 2
         x: 199
@@ -1019,7 +1019,7 @@ TextureImporter:
         width: 18
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1031,7 +1031,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_43
+      name: Cleric_7_2
       rect:
         serializedVersion: 2
         x: 231
@@ -1039,7 +1039,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1051,7 +1051,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_44
+      name: Cleric_8_2
       rect:
         serializedVersion: 2
         x: 267
@@ -1059,7 +1059,7 @@ TextureImporter:
         width: 15
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1071,7 +1071,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_45
+      name: Cleric_9_2
       rect:
         serializedVersion: 2
         x: 297
@@ -1079,7 +1079,7 @@ TextureImporter:
         width: 18
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1091,7 +1091,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_46
+      name: Cleric_10_2
       rect:
         serializedVersion: 2
         x: 327
@@ -1099,7 +1099,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1119,7 +1119,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1131,7 +1131,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_48
+      name: Cleric_13_2
       rect:
         serializedVersion: 2
         x: 385
@@ -1139,7 +1139,7 @@ TextureImporter:
         width: 23
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1159,7 +1159,7 @@ TextureImporter:
         width: 23
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1179,7 +1179,7 @@ TextureImporter:
         width: 23
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1191,7 +1191,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_51
+      name: Cleric_0_3
       rect:
         serializedVersion: 2
         x: 10
@@ -1199,7 +1199,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1211,7 +1211,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_52
+      name: Cleric_1_3
       rect:
         serializedVersion: 2
         x: 46
@@ -1219,7 +1219,7 @@ TextureImporter:
         width: 10
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1231,7 +1231,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_53
+      name: Cleric_2_3
       rect:
         serializedVersion: 2
         x: 74
@@ -1239,7 +1239,7 @@ TextureImporter:
         width: 11
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1251,7 +1251,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_54
+      name: Cleric_3_3
       rect:
         serializedVersion: 2
         x: 110
@@ -1259,7 +1259,7 @@ TextureImporter:
         width: 7
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1271,7 +1271,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_55
+      name: Cleric_4_3
       rect:
         serializedVersion: 2
         x: 140
@@ -1279,7 +1279,7 @@ TextureImporter:
         width: 10
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1291,7 +1291,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_56
+      name: Cleric_5_3
       rect:
         serializedVersion: 2
         x: 166
@@ -1299,7 +1299,7 @@ TextureImporter:
         width: 20
         height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1311,7 +1311,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_57
+      name: Cleric_6_3
       rect:
         serializedVersion: 2
         x: 198
@@ -1319,7 +1319,7 @@ TextureImporter:
         width: 22
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1331,7 +1331,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_58
+      name: Cleric_7_3
       rect:
         serializedVersion: 2
         x: 230
@@ -1339,7 +1339,7 @@ TextureImporter:
         width: 21
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1351,7 +1351,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_59
+      name: Cleric_8_3
       rect:
         serializedVersion: 2
         x: 266
@@ -1359,7 +1359,7 @@ TextureImporter:
         width: 17
         height: 21
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1371,7 +1371,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_60
+      name: Cleric_9_3
       rect:
         serializedVersion: 2
         x: 297
@@ -1379,7 +1379,7 @@ TextureImporter:
         width: 14
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1391,7 +1391,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_61
+      name: Cleric_0_4
       rect:
         serializedVersion: 2
         x: 10
@@ -1399,7 +1399,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1411,7 +1411,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_62
+      name: Cleric_1_4
       rect:
         serializedVersion: 2
         x: 46
@@ -1419,7 +1419,7 @@ TextureImporter:
         width: 9
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1431,7 +1431,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_63
+      name: Cleric_2_4
       rect:
         serializedVersion: 2
         x: 75
@@ -1439,7 +1439,7 @@ TextureImporter:
         width: 8
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1451,7 +1451,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_64
+      name: Cleric_3_4
       rect:
         serializedVersion: 2
         x: 108
@@ -1459,7 +1459,7 @@ TextureImporter:
         width: 7
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1471,7 +1471,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Cleric_65
+      name: Cleric_4_4
       rect:
         serializedVersion: 2
         x: 138
@@ -1479,7 +1479,7 @@ TextureImporter:
         width: 13
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1499,7 +1499,7 @@ TextureImporter:
         width: 126
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []

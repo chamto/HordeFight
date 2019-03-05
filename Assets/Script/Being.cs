@@ -1219,35 +1219,44 @@ namespace HordeFight
         {
             None = 0,
 
-            ______Champ______,
+            ______Champ_Humans______,
+            peasant,
             footman,
-            lothar,
-            skeleton,
-            garona,
-            conjurer,
-            raider,
-            slime,
-            spearman,
-            grunt,
-            brigand,
+            archer,
             knight,
+            cleric,
+            conjurer,
+            medivh,
+            lothar,
+
+            ______Champ_Orcs______,
+            peon,
+            grunt,
+            spearman,
+            raider,
+            necrolyte,
+            warlock,
+            garona,
+
+            ______Champ_Etc______,
+            slime,
+            brigand,
+            catapult,
             ogre,
+            skeleton,
+            skeletonW,
+            scorpion,
+            spider,
             daemon,
             waterElemental,
             fireElemental,
-            peon,
-            archer,
-            necrolyte,
-            peasant,
-            scorpion,
-            skeletonW,
-            spider,
-            catapult,
-            ______Obstacle______,
+
+            ______Effect______,
+            spear, //창
+
+            ______Misc______,
             barrel, //숱통
 
-            ______Shot______,
-            spear, //창
         }
 
         //==================================================

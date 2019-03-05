@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212618471947195650}
   - component: {fileID: 95610033735121884}
   m_Layer: 0
-  m_Name: ani_skeleton_W
+  m_Name: ani_skeletonW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,7 +38,7 @@ GameObject:
   - component: {fileID: 4125551593254820}
   - component: {fileID: 135647752404723274}
   m_Layer: 0
-  m_Name: skeleton_W
+  m_Name: skeletonW
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

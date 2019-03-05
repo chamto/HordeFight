@@ -138,14 +138,14 @@ TextureImporter:
     21300266: Peasant_c_2_0
     21300268: Peasant_c_3_0
     21300270: Peasant_c_4_0
-    21300272: Peasant_136
-    21300274: Peasant_137
-    21300276: Peasant_138
-    21300278: Peasant_139
-    21300280: Peasant_140
-    21300282: Peasant_141
+    21300272: Peasant_c_5_0
+    21300274: Peasant_c_6_0
+    21300276: Peasant_c_7_0
+    21300278: Peasant_c_8_0
+    21300280: Peasant_c_9_0
+    21300282: Peasant_c_10_0
     21300284: Peasant_142
-    21300286: Peasant_143
+    21300286: Peasant_c_11_0
     21300288: Peasant_144
     21300290: Peasant_145
     21300292: Peasant_c_0_1
@@ -153,14 +153,14 @@ TextureImporter:
     21300296: Peasant_c_2_1
     21300298: Peasant_c_3_1
     21300300: Peasant_c_4_1
-    21300302: Peasant_151
-    21300304: Peasant_152
-    21300306: Peasant_153
-    21300308: Peasant_154
-    21300310: Peasant_155
-    21300312: Peasant_156
+    21300302: Peasant_c_5_1
+    21300304: Peasant_c_6_1
+    21300306: Peasant_c_7_1
+    21300308: Peasant_c_8_1
+    21300310: Peasant_c_9_1
+    21300312: Peasant_c_10_1
     21300314: Peasant_157
-    21300316: Peasant_158
+    21300316: Peasant_c_11_1
     21300318: Peasant_159
     21300320: Peasant_160
     21300322: Peasant_c_0_2
@@ -168,14 +168,14 @@ TextureImporter:
     21300326: Peasant_c_2_2
     21300328: Peasant_c_3_2
     21300330: Peasant_c_4_2
-    21300332: Peasant_166
-    21300334: Peasant_167
-    21300336: Peasant_168
-    21300338: Peasant_169
-    21300340: Peasant_170
-    21300342: Peasant_171
+    21300332: Peasant_c_5_2
+    21300334: Peasant_c_6_2
+    21300336: Peasant_c_7_2
+    21300338: Peasant_c_8_2
+    21300340: Peasant_c_9_2
+    21300342: Peasant_c_10_2
     21300344: Peasant_172
-    21300346: Peasant_173
+    21300346: Peasant_c_11_2
     21300348: Peasant_174
     21300350: Peasant_175
     21300352: Peasant_c_0_3
@@ -183,21 +183,21 @@ TextureImporter:
     21300356: Peasant_c_2_3
     21300358: Peasant_c_3_3
     21300360: Peasant_c_4_3
-    21300362: Peasant_181
-    21300364: Peasant_182
-    21300366: Peasant_183
-    21300368: Peasant_184
-    21300370: Peasant_185
+    21300362: Peasant_c_5_3
+    21300364: Peasant_c_6_3
+    21300366: Peasant_c_7_3
+    21300368: Peasant_c_8_3
+    21300370: Peasant_c_9_3
     21300372: Peasant_c_0_4
     21300374: Peasant_c_1_4
     21300376: Peasant_c_2_4
     21300378: Peasant_c_3_4
     21300380: Peasant_c_4_4
-    21300382: Peasant_191
-    21300384: Peasant_192
-    21300386: Peasant_193
-    21300388: Peasant_194
-    21300390: Peasant_195
+    21300382: Peasant_c_5_4
+    21300384: Peasant_c_6_4
+    21300386: Peasant_c_7_4
+    21300388: Peasant_c_8_4
+    21300390: Peasant_c_9_4
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -3020,7 +3020,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_136
+      name: Peasant_c_5_0
       rect:
         serializedVersion: 2
         x: 172
@@ -3040,7 +3040,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_137
+      name: Peasant_c_6_0
       rect:
         serializedVersion: 2
         x: 204
@@ -3060,7 +3060,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_138
+      name: Peasant_c_7_0
       rect:
         serializedVersion: 2
         x: 235
@@ -3080,7 +3080,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_139
+      name: Peasant_c_8_0
       rect:
         serializedVersion: 2
         x: 269
@@ -3100,7 +3100,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_140
+      name: Peasant_c_9_0
       rect:
         serializedVersion: 2
         x: 303
@@ -3120,7 +3120,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_141
+      name: Peasant_c_10_0
       rect:
         serializedVersion: 2
         x: 328
@@ -3160,7 +3160,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_143
+      name: Peasant_c_11_0
       rect:
         serializedVersion: 2
         x: 395
@@ -3320,7 +3320,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_151
+      name: Peasant_c_5_1
       rect:
         serializedVersion: 2
         x: 172
@@ -3340,7 +3340,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_152
+      name: Peasant_c_6_1
       rect:
         serializedVersion: 2
         x: 203
@@ -3360,7 +3360,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_153
+      name: Peasant_c_7_1
       rect:
         serializedVersion: 2
         x: 234
@@ -3380,11 +3380,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_154
+      name: Peasant_c_8_1
       rect:
         serializedVersion: 2
         x: 269
-        y: 106
+        y: 107
         width: 14
         height: 16
       alignment: 0
@@ -3400,7 +3400,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_155
+      name: Peasant_c_9_1
       rect:
         serializedVersion: 2
         x: 302
@@ -3420,7 +3420,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_156
+      name: Peasant_c_10_1
       rect:
         serializedVersion: 2
         x: 326
@@ -3460,7 +3460,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_158
+      name: Peasant_c_11_1
       rect:
         serializedVersion: 2
         x: 392
@@ -3620,7 +3620,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_166
+      name: Peasant_c_5_2
       rect:
         serializedVersion: 2
         x: 172
@@ -3640,7 +3640,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_167
+      name: Peasant_c_6_2
       rect:
         serializedVersion: 2
         x: 202
@@ -3660,7 +3660,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_168
+      name: Peasant_c_7_2
       rect:
         serializedVersion: 2
         x: 233
@@ -3680,7 +3680,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_169
+      name: Peasant_c_8_2
       rect:
         serializedVersion: 2
         x: 266
@@ -3700,7 +3700,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_170
+      name: Peasant_c_9_2
       rect:
         serializedVersion: 2
         x: 298
@@ -3720,7 +3720,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_171
+      name: Peasant_c_10_2
       rect:
         serializedVersion: 2
         x: 324
@@ -3760,7 +3760,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_173
+      name: Peasant_c_11_2
       rect:
         serializedVersion: 2
         x: 391
@@ -3920,7 +3920,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_181
+      name: Peasant_c_5_3
       rect:
         serializedVersion: 2
         x: 171
@@ -3940,7 +3940,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_182
+      name: Peasant_c_6_3
       rect:
         serializedVersion: 2
         x: 201
@@ -3960,7 +3960,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_183
+      name: Peasant_c_7_3
       rect:
         serializedVersion: 2
         x: 232
@@ -3980,7 +3980,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_184
+      name: Peasant_c_8_3
       rect:
         serializedVersion: 2
         x: 265
@@ -4000,7 +4000,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_185
+      name: Peasant_c_9_3
       rect:
         serializedVersion: 2
         x: 296
@@ -4120,7 +4120,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_191
+      name: Peasant_c_5_4
       rect:
         serializedVersion: 2
         x: 172
@@ -4140,7 +4140,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_192
+      name: Peasant_c_6_4
       rect:
         serializedVersion: 2
         x: 203
@@ -4160,7 +4160,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_193
+      name: Peasant_c_7_4
       rect:
         serializedVersion: 2
         x: 234
@@ -4180,7 +4180,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_194
+      name: Peasant_c_8_4
       rect:
         serializedVersion: 2
         x: 269
@@ -4200,7 +4200,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Peasant_195
+      name: Peasant_c_9_4
       rect:
         serializedVersion: 2
         x: 302

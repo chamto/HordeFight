@@ -12,46 +12,46 @@ TextureImporter:
     21300014: Archer_7_0
     21300016: Archer_8_0
     21300018: Archer_9_0
-    21300020: Archer_0_1
-    21300022: Archer_1_1
-    21300024: Archer_2_1
-    21300026: Archer_3_1
-    21300028: Archer_4_1
-    21300030: Archer_15
-    21300032: Archer_16
-    21300034: Archer_17
-    21300036: Archer_18
-    21300038: Archer_19
-    21300040: Archer_0_2
-    21300042: Archer_1_2
-    21300044: Archer_2_2
-    21300046: Archer_3_2
-    21300048: Archer_4_2
-    21300050: Archer_25
-    21300052: Archer_26
-    21300054: Archer_27
-    21300056: Archer_28
-    21300058: Archer_29
-    21300060: Archer_0_3
-    21300062: Archer_1_3
-    21300064: Archer_2_3
-    21300066: Archer_3_3
-    21300068: Archer_4_3
-    21300070: Archer_35
-    21300072: Archer_36
-    21300074: Archer_37
-    21300076: Archer_38
-    21300078: Archer_39
-    21300080: Archer_0_4
-    21300082: Archer_1_4
-    21300084: Archer_2_4
-    21300086: Archer_3_4
-    21300088: Archer_4_4
-    21300090: Archer_45
-    21300092: Archer_46
-    21300094: Archer_47
-    21300096: Archer_48
-    21300098: Archer_49
+    21300020: Archer_0_x
+    21300022: Archer_1_x
+    21300024: Archer_2_x
+    21300026: Archer_3_x
+    21300028: Archer_4_x
+    21300030: Archer_5_1
+    21300032: Archer_6_1
+    21300034: Archer_7_1
+    21300036: Archer_8_1
+    21300038: Archer_9_1
+    21300040: Archer_0_1
+    21300042: Archer_1_1
+    21300044: Archer_2_1
+    21300046: Archer_3_1
+    21300048: Archer_4_1
+    21300050: Archer_10_0
+    21300052: Archer_11_0
+    21300054: Archer_12_0
+    21300056: Archer_13_0
+    21300058: Archer_14_0
+    21300060: Archer_0_2
+    21300062: Archer_1_2
+    21300064: Archer_2_2
+    21300066: Archer_3_2
+    21300068: Archer_4_2
+    21300070: Archer_10_1
+    21300072: Archer_11_1
+    21300074: Archer_12_1
+    21300076: Archer_13_1
+    21300078: Archer_14_1
+    21300080: Archer_0_3
+    21300082: Archer_1_3
+    21300084: Archer_2_3
+    21300086: Archer_3_3
+    21300088: Archer_4_3
+    21300090: Archer_0_4
+    21300092: Archer_1_4
+    21300094: Archer_2_4
+    21300096: Archer_3_4
+    21300098: Archer_4_4
     21300100: Archer_50
   externalObjects: {}
   serializedVersion: 5
@@ -355,7 +355,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_0_1
+      name: Archer_0_x
       rect:
         serializedVersion: 2
         x: 10
@@ -375,7 +375,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_1_1
+      name: Archer_1_x
       rect:
         serializedVersion: 2
         x: 42
@@ -395,7 +395,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_2_1
+      name: Archer_2_x
       rect:
         serializedVersion: 2
         x: 74
@@ -415,7 +415,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_3_1
+      name: Archer_3_x
       rect:
         serializedVersion: 2
         x: 107
@@ -435,7 +435,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_4_1
+      name: Archer_4_x
       rect:
         serializedVersion: 2
         x: 136
@@ -455,7 +455,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_15
+      name: Archer_5_1
       rect:
         serializedVersion: 2
         x: 170
@@ -475,7 +475,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_16
+      name: Archer_6_1
       rect:
         serializedVersion: 2
         x: 202
@@ -495,7 +495,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_17
+      name: Archer_7_1
       rect:
         serializedVersion: 2
         x: 233
@@ -515,7 +515,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_18
+      name: Archer_8_1
       rect:
         serializedVersion: 2
         x: 267
@@ -535,7 +535,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_19
+      name: Archer_9_1
       rect:
         serializedVersion: 2
         x: 297
@@ -555,7 +555,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_0_2
+      name: Archer_0_1
       rect:
         serializedVersion: 2
         x: 10
@@ -575,7 +575,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_1_2
+      name: Archer_1_1
       rect:
         serializedVersion: 2
         x: 39
@@ -595,7 +595,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_2_2
+      name: Archer_2_1
       rect:
         serializedVersion: 2
         x: 73
@@ -615,7 +615,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_3_2
+      name: Archer_3_1
       rect:
         serializedVersion: 2
         x: 104
@@ -635,7 +635,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_4_2
+      name: Archer_4_1
       rect:
         serializedVersion: 2
         x: 135
@@ -655,7 +655,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_25
+      name: Archer_10_0
       rect:
         serializedVersion: 2
         x: 169
@@ -675,7 +675,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_26
+      name: Archer_11_0
       rect:
         serializedVersion: 2
         x: 198
@@ -695,7 +695,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_27
+      name: Archer_12_0
       rect:
         serializedVersion: 2
         x: 230
@@ -715,7 +715,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_28
+      name: Archer_13_0
       rect:
         serializedVersion: 2
         x: 264
@@ -735,7 +735,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_29
+      name: Archer_14_0
       rect:
         serializedVersion: 2
         x: 293
@@ -755,7 +755,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_0_3
+      name: Archer_0_2
       rect:
         serializedVersion: 2
         x: 10
@@ -775,7 +775,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_1_3
+      name: Archer_1_2
       rect:
         serializedVersion: 2
         x: 42
@@ -795,7 +795,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_2_3
+      name: Archer_2_2
       rect:
         serializedVersion: 2
         x: 73
@@ -815,7 +815,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_3_3
+      name: Archer_3_2
       rect:
         serializedVersion: 2
         x: 107
@@ -835,7 +835,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_4_3
+      name: Archer_4_2
       rect:
         serializedVersion: 2
         x: 138
@@ -855,7 +855,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_35
+      name: Archer_10_1
       rect:
         serializedVersion: 2
         x: 166
@@ -875,7 +875,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_36
+      name: Archer_11_1
       rect:
         serializedVersion: 2
         x: 198
@@ -895,7 +895,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_37
+      name: Archer_12_1
       rect:
         serializedVersion: 2
         x: 230
@@ -915,7 +915,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_38
+      name: Archer_13_1
       rect:
         serializedVersion: 2
         x: 260
@@ -935,7 +935,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_39
+      name: Archer_14_1
       rect:
         serializedVersion: 2
         x: 292
@@ -955,7 +955,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_0_4
+      name: Archer_0_3
       rect:
         serializedVersion: 2
         x: 10
@@ -975,7 +975,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_1_4
+      name: Archer_1_3
       rect:
         serializedVersion: 2
         x: 42
@@ -995,7 +995,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_2_4
+      name: Archer_2_3
       rect:
         serializedVersion: 2
         x: 74
@@ -1015,7 +1015,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_3_4
+      name: Archer_3_3
       rect:
         serializedVersion: 2
         x: 107
@@ -1035,7 +1035,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_4_4
+      name: Archer_4_3
       rect:
         serializedVersion: 2
         x: 133
@@ -1055,7 +1055,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_45
+      name: Archer_0_4
       rect:
         serializedVersion: 2
         x: 169
@@ -1075,7 +1075,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_46
+      name: Archer_1_4
       rect:
         serializedVersion: 2
         x: 203
@@ -1095,7 +1095,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_47
+      name: Archer_2_4
       rect:
         serializedVersion: 2
         x: 234
@@ -1115,7 +1115,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_48
+      name: Archer_3_4
       rect:
         serializedVersion: 2
         x: 267
@@ -1135,7 +1135,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Archer_49
+      name: Archer_4_4
       rect:
         serializedVersion: 2
         x: 295

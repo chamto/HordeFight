@@ -7,72 +7,75 @@ TextureImporter:
     21300004: Spider_2_0
     21300006: Spider_3_0
     21300008: Spider_4_0
-    21300010: Spider_5
-    21300012: Spider_6
-    21300014: Spider_7
-    21300016: Spider_8
-    21300018: Spider_9
-    21300020: Spider_10
-    21300022: Spider_11
-    21300024: Spider_12
-    21300026: Spider_13
-    21300028: Spider_14
+    21300010: Spider_5_0
+    21300012: Spider_6_0
+    21300014: Spider_7_0
+    21300016: Spider_8_0
+    21300018: Spider_9_0
+    21300020: Spider_10_0
+    21300022: Spider_11_0
+    21300024: Spider_12_0
+    21300026: Spider_13_0
+    21300028: Spider_14_0
     21300030: Spider_0_1
     21300032: Spider_1_1
     21300034: Spider_2_1
     21300036: Spider_3_1
     21300038: Spider_4_1
-    21300040: Spider_20
-    21300042: Spider_21
-    21300044: Spider_22
-    21300046: Spider_23
-    21300048: Spider_24
-    21300050: Spider_25
-    21300052: Spider_26
-    21300054: Spider_27
-    21300056: Spider_28
-    21300058: Spider_29
+    21300040: Spider_5_1
+    21300042: Spider_6_1
+    21300044: Spider_7_1
+    21300046: Spider_8_1
+    21300048: Spider_9_1
+    21300050: Spider_10_1
+    21300052: Spider_11_1
+    21300054: Spider_12_1
+    21300056: Spider_13_1
+    21300058: Spider_14_1
     21300060: Spider_0_2
     21300062: Spider_1_2
     21300064: Spider_2_2
     21300066: Spider_3_2
     21300068: Spider_4_2
-    21300070: Spider_35
-    21300072: Spider_36
-    21300074: Spider_37
-    21300076: Spider_38
-    21300078: Spider_39
-    21300080: Spider_40
-    21300082: Spider_41
-    21300084: Spider_42
-    21300086: Spider_43
-    21300088: Spider_44
+    21300070: Spider_5_2
+    21300072: Spider_6_2
+    21300074: Spider_7_2
+    21300076: Spider_8_2
+    21300078: Spider_9_2
+    21300080: Spider_10_2
+    21300082: Spider_11_2
+    21300084: Spider_12_2
+    21300086: Spider_13_2
+    21300088: Spider_14_2
     21300090: Spider_0_3
     21300092: Spider_1_3
     21300094: Spider_2_3
     21300096: Spider_3_3
     21300098: Spider_4_3
-    21300100: Spider_50
-    21300102: Spider_51
-    21300104: Spider_52
-    21300106: Spider_53
-    21300108: Spider_54
-    21300110: Spider_55
-    21300112: Spider_56
-    21300114: Spider_57
-    21300116: Spider_58
+    21300100: Spider_5_3
+    21300102: Spider_6_3
+    21300104: Spider_7_3
+    21300106: Spider_8_3
+    21300108: Spider_9_3
+    21300110: Spider_10_3
+    21300112: Spider_11_3
+    21300114: Spider_12_3
+    21300116: Spider_13_3
     21300118: Spider_59
-    21300120: Spider_60
+    21300120: Spider_14_3
     21300122: Spider_0_4
     21300124: Spider_1_4
     21300126: Spider_2_4
     21300128: Spider_3_4
     21300130: Spider_4_4
-    21300132: Spider_67
+    21300132: Spider_10_4
     21300134: Spider_68
     21300136: Spider_69
-    21300138: Spider_70
+    21300138: Spider_14_4
     21300140: Spider_71
+    21300142: Spider_11_4
+    21300144: Spider_12_4
+    21300146: Spider_13_4
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -275,11 +278,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_5
+      name: Spider_5_0
       rect:
         serializedVersion: 2
         x: 167
-        y: 133
+        y: 134
         width: 20
         height: 19
       alignment: 0
@@ -295,7 +298,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_6
+      name: Spider_6_0
       rect:
         serializedVersion: 2
         x: 199
@@ -315,7 +318,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_7
+      name: Spider_7_0
       rect:
         serializedVersion: 2
         x: 232
@@ -335,7 +338,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_8
+      name: Spider_8_0
       rect:
         serializedVersion: 2
         x: 262
@@ -355,7 +358,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_9
+      name: Spider_9_0
       rect:
         serializedVersion: 2
         x: 295
@@ -375,7 +378,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_10
+      name: Spider_10_0
       rect:
         serializedVersion: 2
         x: 327
@@ -395,7 +398,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_11
+      name: Spider_11_0
       rect:
         serializedVersion: 2
         x: 358
@@ -415,7 +418,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_12
+      name: Spider_12_0
       rect:
         serializedVersion: 2
         x: 392
@@ -435,7 +438,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_13
+      name: Spider_13_0
       rect:
         serializedVersion: 2
         x: 422
@@ -455,7 +458,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_14
+      name: Spider_14_0
       rect:
         serializedVersion: 2
         x: 455
@@ -575,7 +578,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_20
+      name: Spider_5_1
       rect:
         serializedVersion: 2
         x: 167
@@ -595,7 +598,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_21
+      name: Spider_6_1
       rect:
         serializedVersion: 2
         x: 199
@@ -615,7 +618,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_22
+      name: Spider_7_1
       rect:
         serializedVersion: 2
         x: 232
@@ -635,7 +638,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_23
+      name: Spider_8_1
       rect:
         serializedVersion: 2
         x: 262
@@ -655,7 +658,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_24
+      name: Spider_9_1
       rect:
         serializedVersion: 2
         x: 295
@@ -675,7 +678,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_25
+      name: Spider_10_1
       rect:
         serializedVersion: 2
         x: 327
@@ -695,7 +698,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_26
+      name: Spider_11_1
       rect:
         serializedVersion: 2
         x: 358
@@ -715,7 +718,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_27
+      name: Spider_12_1
       rect:
         serializedVersion: 2
         x: 392
@@ -735,7 +738,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_28
+      name: Spider_13_1
       rect:
         serializedVersion: 2
         x: 422
@@ -755,7 +758,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_29
+      name: Spider_14_1
       rect:
         serializedVersion: 2
         x: 454
@@ -875,7 +878,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_35
+      name: Spider_5_2
       rect:
         serializedVersion: 2
         x: 167
@@ -895,7 +898,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_36
+      name: Spider_6_2
       rect:
         serializedVersion: 2
         x: 199
@@ -915,7 +918,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_37
+      name: Spider_7_2
       rect:
         serializedVersion: 2
         x: 232
@@ -935,7 +938,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_38
+      name: Spider_8_2
       rect:
         serializedVersion: 2
         x: 262
@@ -955,7 +958,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_39
+      name: Spider_9_2
       rect:
         serializedVersion: 2
         x: 295
@@ -975,7 +978,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_40
+      name: Spider_10_2
       rect:
         serializedVersion: 2
         x: 327
@@ -995,7 +998,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_41
+      name: Spider_11_2
       rect:
         serializedVersion: 2
         x: 358
@@ -1015,7 +1018,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_42
+      name: Spider_12_2
       rect:
         serializedVersion: 2
         x: 392
@@ -1035,7 +1038,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_43
+      name: Spider_13_2
       rect:
         serializedVersion: 2
         x: 422
@@ -1055,7 +1058,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_44
+      name: Spider_14_2
       rect:
         serializedVersion: 2
         x: 454
@@ -1175,7 +1178,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_50
+      name: Spider_5_3
       rect:
         serializedVersion: 2
         x: 167
@@ -1195,7 +1198,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_51
+      name: Spider_6_3
       rect:
         serializedVersion: 2
         x: 199
@@ -1215,7 +1218,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_52
+      name: Spider_7_3
       rect:
         serializedVersion: 2
         x: 232
@@ -1235,7 +1238,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_53
+      name: Spider_8_3
       rect:
         serializedVersion: 2
         x: 262
@@ -1255,7 +1258,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_54
+      name: Spider_9_3
       rect:
         serializedVersion: 2
         x: 295
@@ -1275,7 +1278,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_55
+      name: Spider_10_3
       rect:
         serializedVersion: 2
         x: 327
@@ -1295,13 +1298,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_56
+      name: Spider_11_3
       rect:
         serializedVersion: 2
         x: 358
-        y: 5
+        y: 35
         width: 21
-        height: 55
+        height: 25
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1315,13 +1318,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_57
+      name: Spider_12_3
       rect:
         serializedVersion: 2
         x: 392
-        y: 6
-        width: 18
-        height: 52
+        y: 37
+        width: 19
+        height: 21
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1335,13 +1338,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_58
+      name: Spider_13_3
       rect:
         serializedVersion: 2
         x: 422
-        y: 8
+        y: 36
         width: 23
-        height: 50
+        height: 22
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1375,7 +1378,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_60
+      name: Spider_14_3
       rect:
         serializedVersion: 2
         x: 454
@@ -1495,7 +1498,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_67
+      name: Spider_10_4
       rect:
         serializedVersion: 2
         x: 327
@@ -1555,7 +1558,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Spider_70
+      name: Spider_14_4
       rect:
         serializedVersion: 2
         x: 455
@@ -1590,6 +1593,66 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 184b118e9d2324bdc85fe959b4eb8097
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spider_11_4
+      rect:
+        serializedVersion: 2
+        x: 358
+        y: 4
+        width: 22
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 430d9e9e912b74e88920355aee2f5c9e
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spider_12_4
+      rect:
+        serializedVersion: 2
+        x: 391
+        y: 5
+        width: 20
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91f75e7f9f2a04021abf800b2c9c4b70
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Spider_13_4
+      rect:
+        serializedVersion: 2
+        x: 422
+        y: 5
+        width: 24
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f318ea72fe7b54422a5ab71be116bc6f
       vertices: []
       indices: 
       edges: []

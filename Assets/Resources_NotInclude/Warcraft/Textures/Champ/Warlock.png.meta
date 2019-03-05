@@ -2,74 +2,74 @@ fileFormatVersion: 2
 guid: 32bae2e7d4c1d4f99b9f770d3f03390a
 TextureImporter:
   fileIDToRecycleName:
-    21300000: Warlock_0
-    21300002: Warlock_1
-    21300004: Warlock_2
-    21300006: Warlock_3
-    21300008: Warlock_4
-    21300010: Warlock_5
-    21300012: Warlock_6
-    21300014: Warlock_7
-    21300016: Warlock_8
-    21300018: Warlock_9
-    21300020: Warlock_10
+    21300000: Warlock_0_0
+    21300002: Warlock_1_0
+    21300004: Warlock_2_0
+    21300006: Warlock_3_0
+    21300008: Warlock_4_0
+    21300010: Warlock_5_0
+    21300012: Warlock_6_0
+    21300014: Warlock_7_0
+    21300016: Warlock_8_0
+    21300018: Warlock_9_0
+    21300020: Warlock_10_0
     21300022: Warlock_11
-    21300024: Warlock_12
+    21300024: Warlock_12_0
     21300026: Warlock_13
     21300028: Warlock_14
-    21300030: Warlock_15
-    21300032: Warlock_16
-    21300034: Warlock_17
-    21300036: Warlock_18
-    21300038: Warlock_19
-    21300040: Warlock_20
-    21300042: Warlock_21
-    21300044: Warlock_22
-    21300046: Warlock_23
-    21300048: Warlock_24
-    21300050: Warlock_25
+    21300030: Warlock_0_1
+    21300032: Warlock_1_1
+    21300034: Warlock_2_1
+    21300036: Warlock_3_1
+    21300038: Warlock_4_1
+    21300040: Warlock_5_1
+    21300042: Warlock_6_1
+    21300044: Warlock_7_1
+    21300046: Warlock_8_1
+    21300048: Warlock_9_1
+    21300050: Warlock_10_1
     21300052: Warlock_26
-    21300054: Warlock_27
+    21300054: Warlock_12_1
     21300056: Warlock_28
     21300058: Warlock_29
     21300060: Warlock_30
     21300062: Warlock_31
     21300064: Warlock_32
-    21300066: Warlock_33
-    21300068: Warlock_34
-    21300070: Warlock_35
-    21300072: Warlock_36
-    21300074: Warlock_37
-    21300076: Warlock_38
-    21300078: Warlock_39
-    21300080: Warlock_40
-    21300082: Warlock_41
-    21300084: Warlock_42
-    21300086: Warlock_43
+    21300066: Warlock_0_2
+    21300068: Warlock_1_2
+    21300070: Warlock_2_2
+    21300072: Warlock_3_2
+    21300074: Warlock_4_2
+    21300076: Warlock_5_2
+    21300078: Warlock_6_2
+    21300080: Warlock_7_2
+    21300082: Warlock_8_2
+    21300084: Warlock_9_2
+    21300086: Warlock_10_2
     21300088: Warlock_44
-    21300090: Warlock_45
+    21300090: Warlock_12_2
     21300092: Warlock_46
     21300094: Warlock_47
-    21300096: Warlock_48
-    21300098: Warlock_49
-    21300100: Warlock_50
-    21300102: Warlock_51
-    21300104: Warlock_52
-    21300106: Warlock_53
-    21300108: Warlock_54
-    21300110: Warlock_55
-    21300112: Warlock_56
-    21300114: Warlock_57
-    21300116: Warlock_58
-    21300118: Warlock_59
-    21300120: Warlock_60
-    21300122: Warlock_61
-    21300124: Warlock_62
-    21300126: Warlock_63
-    21300128: Warlock_64
-    21300130: Warlock_65
-    21300132: Warlock_66
-    21300134: Warlock_67
+    21300096: Warlock_0_3
+    21300098: Warlock_1_3
+    21300100: Warlock_2_3
+    21300102: Warlock_3_3
+    21300104: Warlock_4_3
+    21300106: Warlock_5_3
+    21300108: Warlock_6_3
+    21300110: Warlock_7_3
+    21300112: Warlock_8_3
+    21300114: Warlock_9_3
+    21300116: Warlock_0_4
+    21300118: Warlock_1_4
+    21300120: Warlock_2_4
+    21300122: Warlock_3_4
+    21300124: Warlock_4_4
+    21300126: Warlock_5_4
+    21300128: Warlock_6_4
+    21300130: Warlock_7_4
+    21300132: Warlock_8_4
+    21300134: Warlock_9_4
     21300136: Warlock_68
   externalObjects: {}
   serializedVersion: 5
@@ -173,7 +173,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Warlock_0
+      name: Warlock_0_0
       rect:
         serializedVersion: 2
         x: 11
@@ -181,7 +181,7 @@ TextureImporter:
         width: 12
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -193,7 +193,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_1
+      name: Warlock_1_0
       rect:
         serializedVersion: 2
         x: 42
@@ -201,7 +201,7 @@ TextureImporter:
         width: 12
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -213,7 +213,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_2
+      name: Warlock_2_0
       rect:
         serializedVersion: 2
         x: 75
@@ -221,7 +221,7 @@ TextureImporter:
         width: 9
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -233,7 +233,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_3
+      name: Warlock_3_0
       rect:
         serializedVersion: 2
         x: 107
@@ -241,7 +241,7 @@ TextureImporter:
         width: 9
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -253,7 +253,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_4
+      name: Warlock_4_0
       rect:
         serializedVersion: 2
         x: 137
@@ -261,7 +261,7 @@ TextureImporter:
         width: 13
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -273,7 +273,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_5
+      name: Warlock_5_0
       rect:
         serializedVersion: 2
         x: 171
@@ -281,7 +281,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -293,7 +293,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_6
+      name: Warlock_6_0
       rect:
         serializedVersion: 2
         x: 202
@@ -301,7 +301,7 @@ TextureImporter:
         width: 11
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -313,7 +313,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_7
+      name: Warlock_7_0
       rect:
         serializedVersion: 2
         x: 235
@@ -321,7 +321,7 @@ TextureImporter:
         width: 9
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -333,7 +333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_8
+      name: Warlock_8_0
       rect:
         serializedVersion: 2
         x: 267
@@ -341,7 +341,7 @@ TextureImporter:
         width: 10
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -353,7 +353,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_9
+      name: Warlock_9_0
       rect:
         serializedVersion: 2
         x: 297
@@ -361,7 +361,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -373,7 +373,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_10
+      name: Warlock_10_0
       rect:
         serializedVersion: 2
         x: 329
@@ -381,7 +381,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -401,7 +401,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -413,7 +413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_12
+      name: Warlock_12_0
       rect:
         serializedVersion: 2
         x: 394
@@ -421,7 +421,7 @@ TextureImporter:
         width: 14
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -441,7 +441,7 @@ TextureImporter:
         width: 14
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -461,7 +461,7 @@ TextureImporter:
         width: 14
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -473,7 +473,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_15
+      name: Warlock_0_1
       rect:
         serializedVersion: 2
         x: 11
@@ -481,7 +481,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -493,7 +493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_16
+      name: Warlock_1_1
       rect:
         serializedVersion: 2
         x: 41
@@ -501,7 +501,7 @@ TextureImporter:
         width: 13
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -513,7 +513,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_17
+      name: Warlock_2_1
       rect:
         serializedVersion: 2
         x: 75
@@ -521,7 +521,7 @@ TextureImporter:
         width: 10
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -533,7 +533,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_18
+      name: Warlock_3_1
       rect:
         serializedVersion: 2
         x: 107
@@ -541,7 +541,7 @@ TextureImporter:
         width: 9
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -553,7 +553,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_19
+      name: Warlock_4_1
       rect:
         serializedVersion: 2
         x: 137
@@ -561,7 +561,7 @@ TextureImporter:
         width: 13
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -573,7 +573,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_20
+      name: Warlock_5_1
       rect:
         serializedVersion: 2
         x: 171
@@ -581,7 +581,7 @@ TextureImporter:
         width: 12
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -593,7 +593,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_21
+      name: Warlock_6_1
       rect:
         serializedVersion: 2
         x: 202
@@ -601,7 +601,7 @@ TextureImporter:
         width: 12
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -613,7 +613,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_22
+      name: Warlock_7_1
       rect:
         serializedVersion: 2
         x: 235
@@ -621,7 +621,7 @@ TextureImporter:
         width: 10
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -633,7 +633,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_23
+      name: Warlock_8_1
       rect:
         serializedVersion: 2
         x: 267
@@ -641,7 +641,7 @@ TextureImporter:
         width: 9
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -653,7 +653,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_24
+      name: Warlock_9_1
       rect:
         serializedVersion: 2
         x: 297
@@ -661,7 +661,7 @@ TextureImporter:
         width: 13
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -673,7 +673,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_25
+      name: Warlock_10_1
       rect:
         serializedVersion: 2
         x: 326
@@ -681,7 +681,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -701,7 +701,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -713,41 +713,21 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_27
+      name: Warlock_12_1
       rect:
         serializedVersion: 2
         x: 385
-        y: 114
-        width: 6
-        height: 12
+        y: 103
+        width: 23
+        height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
       spriteID: 876a37b695b85464db8fa47e674f227f
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Warlock_28
-      rect:
-        serializedVersion: 2
-        x: 391
-        y: 104
-        width: 17
-        height: 15
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: fc86ddeebebd54bf9a8e821879798118
       vertices: []
       indices: 
       edges: []
@@ -761,7 +741,7 @@ TextureImporter:
         width: 6
         height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -781,7 +761,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -801,7 +781,7 @@ TextureImporter:
         width: 6
         height: 12
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -821,7 +801,7 @@ TextureImporter:
         width: 17
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -833,7 +813,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_33
+      name: Warlock_0_2
       rect:
         serializedVersion: 2
         x: 11
@@ -841,7 +821,7 @@ TextureImporter:
         width: 11
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -853,7 +833,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_34
+      name: Warlock_1_2
       rect:
         serializedVersion: 2
         x: 42
@@ -861,7 +841,7 @@ TextureImporter:
         width: 11
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -873,7 +853,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_35
+      name: Warlock_2_2
       rect:
         serializedVersion: 2
         x: 75
@@ -881,7 +861,7 @@ TextureImporter:
         width: 11
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -893,7 +873,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_36
+      name: Warlock_3_2
       rect:
         serializedVersion: 2
         x: 108
@@ -901,7 +881,7 @@ TextureImporter:
         width: 9
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -913,7 +893,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_37
+      name: Warlock_4_2
       rect:
         serializedVersion: 2
         x: 138
@@ -921,7 +901,7 @@ TextureImporter:
         width: 12
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -933,7 +913,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_38
+      name: Warlock_5_2
       rect:
         serializedVersion: 2
         x: 171
@@ -941,7 +921,7 @@ TextureImporter:
         width: 12
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -953,7 +933,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_39
+      name: Warlock_6_2
       rect:
         serializedVersion: 2
         x: 203
@@ -961,7 +941,7 @@ TextureImporter:
         width: 12
         height: 13
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -973,7 +953,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_40
+      name: Warlock_7_2
       rect:
         serializedVersion: 2
         x: 235
@@ -981,7 +961,7 @@ TextureImporter:
         width: 13
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -993,7 +973,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_41
+      name: Warlock_8_2
       rect:
         serializedVersion: 2
         x: 269
@@ -1001,7 +981,7 @@ TextureImporter:
         width: 9
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1013,7 +993,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_42
+      name: Warlock_9_2
       rect:
         serializedVersion: 2
         x: 297
@@ -1021,7 +1001,7 @@ TextureImporter:
         width: 12
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1033,7 +1013,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_43
+      name: Warlock_10_2
       rect:
         serializedVersion: 2
         x: 327
@@ -1041,7 +1021,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1061,7 +1041,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1073,7 +1053,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_45
+      name: Warlock_12_2
       rect:
         serializedVersion: 2
         x: 391
@@ -1081,7 +1061,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1101,7 +1081,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1121,7 +1101,7 @@ TextureImporter:
         width: 17
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1133,7 +1113,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_48
+      name: Warlock_0_3
       rect:
         serializedVersion: 2
         x: 11
@@ -1141,7 +1121,7 @@ TextureImporter:
         width: 12
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1153,7 +1133,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_49
+      name: Warlock_1_3
       rect:
         serializedVersion: 2
         x: 43
@@ -1161,7 +1141,7 @@ TextureImporter:
         width: 10
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1173,7 +1153,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_50
+      name: Warlock_2_3
       rect:
         serializedVersion: 2
         x: 75
@@ -1181,7 +1161,7 @@ TextureImporter:
         width: 10
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1193,7 +1173,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_51
+      name: Warlock_3_3
       rect:
         serializedVersion: 2
         x: 106
@@ -1201,7 +1181,7 @@ TextureImporter:
         width: 11
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1213,7 +1193,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_52
+      name: Warlock_4_3
       rect:
         serializedVersion: 2
         x: 137
@@ -1221,7 +1201,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1233,7 +1213,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_53
+      name: Warlock_5_3
       rect:
         serializedVersion: 2
         x: 169
@@ -1241,7 +1221,7 @@ TextureImporter:
         width: 14
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1253,7 +1233,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_54
+      name: Warlock_6_3
       rect:
         serializedVersion: 2
         x: 202
@@ -1261,7 +1241,7 @@ TextureImporter:
         width: 15
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1273,7 +1253,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_55
+      name: Warlock_7_3
       rect:
         serializedVersion: 2
         x: 235
@@ -1281,7 +1261,7 @@ TextureImporter:
         width: 18
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1293,7 +1273,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_56
+      name: Warlock_8_3
       rect:
         serializedVersion: 2
         x: 269
@@ -1301,7 +1281,7 @@ TextureImporter:
         width: 12
         height: 19
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1313,7 +1293,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_57
+      name: Warlock_9_3
       rect:
         serializedVersion: 2
         x: 297
@@ -1321,7 +1301,7 @@ TextureImporter:
         width: 15
         height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1333,7 +1313,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_58
+      name: Warlock_0_4
       rect:
         serializedVersion: 2
         x: 11
@@ -1341,7 +1321,7 @@ TextureImporter:
         width: 12
         height: 15
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1353,7 +1333,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_59
+      name: Warlock_1_4
       rect:
         serializedVersion: 2
         x: 42
@@ -1361,7 +1341,7 @@ TextureImporter:
         width: 11
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1373,7 +1353,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_60
+      name: Warlock_2_4
       rect:
         serializedVersion: 2
         x: 75
@@ -1381,7 +1361,7 @@ TextureImporter:
         width: 9
         height: 14
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1393,7 +1373,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_61
+      name: Warlock_3_4
       rect:
         serializedVersion: 2
         x: 107
@@ -1401,7 +1381,7 @@ TextureImporter:
         width: 10
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1413,7 +1393,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_62
+      name: Warlock_4_4
       rect:
         serializedVersion: 2
         x: 137
@@ -1421,7 +1401,7 @@ TextureImporter:
         width: 12
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1433,7 +1413,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_63
+      name: Warlock_5_4
       rect:
         serializedVersion: 2
         x: 170
@@ -1441,7 +1421,7 @@ TextureImporter:
         width: 13
         height: 20
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1453,7 +1433,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_64
+      name: Warlock_6_4
       rect:
         serializedVersion: 2
         x: 202
@@ -1461,7 +1441,7 @@ TextureImporter:
         width: 16
         height: 16
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1473,7 +1453,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_65
+      name: Warlock_7_4
       rect:
         serializedVersion: 2
         x: 236
@@ -1481,7 +1461,7 @@ TextureImporter:
         width: 18
         height: 17
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1493,7 +1473,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_66
+      name: Warlock_8_4
       rect:
         serializedVersion: 2
         x: 270
@@ -1501,7 +1481,7 @@ TextureImporter:
         width: 14
         height: 18
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1513,7 +1493,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Warlock_67
+      name: Warlock_9_4
       rect:
         serializedVersion: 2
         x: 299
@@ -1521,7 +1501,7 @@ TextureImporter:
         width: 12
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -1541,7 +1521,7 @@ TextureImporter:
         width: 126
         height: 23
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
