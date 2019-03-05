@@ -540,6 +540,7 @@ namespace HordeFight
             //}
 		}
 
+        const float HP_BAR_LENGTH = 0.8f;
         public int Create_LineHP_AxisY(Transform dst)
         {
             GameObject obj = new GameObject();
@@ -573,7 +574,7 @@ namespace HordeFight
             Vector3 pos = ConstV.v3_zero;
             pos.x = -0.5f; pos.z = -0.8f;
             render.SetPosition(0, pos);
-            pos.x += 0.8f;
+            pos.x += HP_BAR_LENGTH;
             render.SetPosition(1, pos);
 
             return _sequenceId;
@@ -657,11 +658,13 @@ namespace HordeFight
             if (1f < rate) rate = 1f;
 
             LineRenderer render = _list[id].render;
-            Vector3 pos = ConstV.v3_zero;
-            pos.x = -0.05f; pos.z = -0.15f;
-            render.SetPosition(0, pos);
-            pos.x += (0.1f * rate) ;
+            Vector3 pos = render.GetPosition(0);
+            pos.x += HP_BAR_LENGTH * rate;
             render.SetPosition(1, pos);
+            //pos.x = -0.05f; pos.z = -0.15f;
+            //render.SetPosition(0, pos);
+            //pos.x += (0.1f * rate) ;
+            //render.SetPosition(1, pos);
         }
 
 	}
@@ -1081,7 +1084,7 @@ namespace HordeFight
     //한셀에 몇명의 캐릭터가 있는지 나타낸다 
     public class CellInfo : LinkedList<Being>
     {
-        
+
         public Vector3Int _index = default(Vector3Int);
     }
 
@@ -2662,9 +2665,12 @@ namespace HordeFight
 
                 //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
 
+                if (null == src || true == src.isDeath()) continue;
+                if (null == dst || true == dst.isDeath()) continue;
+                if (false == src.gameObject.activeInHierarchy) continue;
                 if (false == dst.gameObject.activeInHierarchy) continue;
                 if (src == dst) continue;
-                if (null == dst || true == dst.isDeath()) continue;
+
 
                 CollisionPush(src, dst);
             }
@@ -3594,9 +3600,9 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
@@ -3626,17 +3632,17 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 2; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
                 champ._mt_range_max = 5f;
-                //champ.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }
 
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 1; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
@@ -3646,7 +3652,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 0 ;i++)
+            for (int i = 0; i < 10 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -3870,6 +3876,11 @@ namespace HordeFight
 
                         }else
                         {
+                            if(_me._looking.isDeath())
+                            {
+                                _state = eState.Roaming;
+                                break;
+                            }
                             //대상이 보이는 위치에 있는지 검사한다 
                             if (false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
                             {
@@ -3883,6 +3894,8 @@ namespace HordeFight
                             result = Situation_Is_AttackInRange();
                             if (_IN_RANGE == result)
                             {
+                                
+                                _me._target = _me._looking; //보고 있는 상대를 목표로 설정 
                                 _me.Attack(_me._looking.transform.position - _me.transform.position);
                                 //_state = eState.Attack;
                                 break;
@@ -3938,16 +3951,19 @@ namespace HordeFight
                     {
                         //일정 거리 안에 적이 있으면 추격한다
                         _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, 5f);
+                        _me._target = null; //공격할 대상 없음 
                         //DebugWide.LogBlue("Roaming: " + _target);
 
-                        //대상이 보이는 위치에 있는지 검사한다 
+
                         if(null != _me._looking)
                         {
-                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
+                            //죽은 객체면 대상을 해제한다 , //안보이는 위치면 대상을 해제한다
+                            if (_me._looking.isDeath() 
+                                || false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
                             {
-                                //안보이는 위치면 대상을 해제한다 
                                 _me._looking = null;
                             }
+
                         }
 
 
@@ -4098,7 +4114,7 @@ namespace HordeFight
                         
                 //}
 
-                //.Attack(champSelected._move._direction); //chamto test
+                //champSelected.Attack(champSelected._move._direction); //chamto test
 
             }
 

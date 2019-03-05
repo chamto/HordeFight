@@ -285,7 +285,21 @@ namespace HordeFight
             //Load_CampPlacement(Camp.eKind.Blue);
             //Load_CampPlacement(Camp.eKind.White);
             //SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
+
+
+            Create_DefaultCamp();
         }
+
+        public void Create_DefaultCamp()
+        {
+            foreach(Camp.eKind kind in Enum.GetValues(typeof(Camp.eKind)))
+            {
+                if (Camp.eKind.None == kind || Camp.eKind.Max == kind) continue;
+
+                CreateCamp(kind, (int)kind);
+            }
+        }
+
 
         //계층도에서 읽어들인다 
         public void Load_CampPlacement(Camp.eKind kind)
@@ -303,8 +317,8 @@ namespace HordeFight
                     //DebugWide.LogBlue(TcampName.name);
 
                     //캠프 추가 
-                    camp = AddCamp(kind, TcampName.name.GetHashCode());
-                    camp._campHashName = TcampName.name.GetHashCode();
+                    camp = CreateCamp(kind, TcampName.name.GetHashCode());
+                    //camp._campHashName = TcampName.name.GetHashCode();
                     camp._campPos = TcampName.position;
                     //맴버위치 추가 
                     foreach (Transform Tmember in TcampName.GetComponentsInChildren<Transform>())
@@ -352,6 +366,20 @@ namespace HordeFight
             return GetCampRelation(camp_1).GetRelation(camp_2);
         }
 
+        public Camp GetDefaultCamp(Camp.eKind kind)
+        {
+            CampPlatoon platoon = null;
+            if (true == _campDivision.TryGetValue(kind, out platoon))
+            {
+                if (null != platoon)
+                {
+                    return platoon.GetCamp((int)kind);
+                }
+            }
+
+            return null;
+        }
+
         public Camp GetCamp(Camp.eKind kind, int hashName)
         {
             CampPlatoon platoon = null;
@@ -378,16 +406,18 @@ namespace HordeFight
         }
 
 
-        public Camp AddCamp(Camp.eKind kind, int hashName)
+        public Camp CreateCamp(Camp.eKind kind, int hashName)
         {
             Camp camp = new Camp(hashName, kind);
 
             CampPlatoon platoon = GetPlatoon(kind);
             if (null == platoon)
+            {
                 platoon = new CampPlatoon();
+                _campDivision.Add(kind, platoon);
+            }
+                
             platoon.Add(hashName, camp);
-
-            _campDivision.Add(kind, platoon);
 
             return camp;
         }
@@ -960,6 +990,19 @@ namespace HordeFight
        
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
+        public Camp.eKind _campKind = Camp.eKind.None;
+        //{
+        //    get
+        //    {
+        //        return _belongCamp.campKind;
+        //    }
+        //    set
+        //    {
+        //        _belongCamp = SingleO.campManager.GetDefaultCamp(value);
+        //    }
+        //}
+
+
         public float attack_range_min
         {
             get { return this._collider_radius + _mt_range_min * GridManager.MeterToWorld; }
@@ -991,20 +1034,31 @@ namespace HordeFight
             _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
             _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             SingleO.lineControl.SetActive(_UIID_circle_collider, false);
-            SingleO.lineControl.SetActive(_UIID_hp, false);
+            SingleO.lineControl.SetActive(_UIID_hp, true);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
 
-		//public override bool UpdateAll()
-		//{
-  //          bool result = base.UpdateAll();
-  //          //if(true == result)
-  //          //{
-               
-  //          //}
+		public override bool UpdateAll()
+		{
+            bool result = base.UpdateAll();
+            if(true == result)
+            {
+                //캠프값에 따라 기본 캠프 설정
+                if(Camp.eKind.None == _campKind)
+                {
+                    _campKind = _belongCamp.campKind;
+                }
+                if(_campKind != _belongCamp.campKind)
+                {
+                    _belongCamp = SingleO.campManager.GetDefaultCamp(_campKind);
+                }
 
-  //          return result;
-		//}
+                //HP갱신 
+                SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
+            }
+
+            return result;
+		}
 
         public void Attack(Vector3 dir)
         {
@@ -1016,7 +1070,7 @@ namespace HordeFight
         public Shot _shot = null;
         int _hash_attack = Animator.StringToHash("attack");
         Vector3 _appointmentDir = ConstV.v3_zero;
-        Being _target = null;
+        public Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
             _animator.SetInteger("state", (int)Behavior.eKind.Attack);
@@ -1025,7 +1079,7 @@ namespace HordeFight
             //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
             //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
             _appointmentDir = dir;
-            _target = target;
+            //_target = target;
 
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
             Update_AnimatorState(_hash_attack, 0.8f);
@@ -1058,6 +1112,8 @@ namespace HordeFight
         //임시처리
         public override void OnAniState_Start(int hash_state)
         {
+            //DebugWide.LogBlue("OnAniState_Start :" + hash_state); //chamto test
+
             if (hash_state == _hash_attack)
             {
                 //예약된 방향값 설정
@@ -1072,17 +1128,21 @@ namespace HordeFight
         //임시처리
         public override void OnAniState_End(int hash_state)
         {
+            //DebugWide.LogYellow("OnAniState_End :" + hash_state + "  " + _hash_attack + "   "+ _target); //chamto test
+
             if (hash_state == _hash_attack)
             {
                 
                 //목표에 피해를 준다
                 if (null != _target)
                 {
+                    //DebugWide.LogYellow("OnAniState_End :" + hash_state); //chamto test
+
                     _target.AddHP(-1);
                     ChampUnit champ = _target as ChampUnit;
                     if(null != champ)
                     {
-                        StartCoroutine(champ.Demage());    
+                        StartCoroutine(champ.Damage());    
                     }
 
                 }
@@ -1091,7 +1151,7 @@ namespace HordeFight
         }
 
         bool __in_corutin_Damage = false;
-        public IEnumerator Demage()
+        public IEnumerator Damage()
         {
             //같은 코루틴을 요청하면 빨강색으로 변경후 종료한다  
             //if (true == __in_corutin_Damage)
@@ -1401,9 +1461,7 @@ namespace HordeFight
 
             if (_hp_max < _hp_cur)
                 _hp_cur = _hp_max;
-
-            //SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
-
+            
         }
 
 
@@ -1833,16 +1891,16 @@ namespace HordeFight
             float normalTime = 0;
 
             //* 상태전이 없고, 요청 상태값이 아닌 경우
-            if (true == IsActive_Animator()) 
-            {
-                //요청 전 동작일 때 값을 초기화 해준다 
-                _prevCount = -1;
-                _curCount = 0;
-                _nextCount = 0;
-                _trans_start = false;
+            //if (true == IsActive_Animator()) 
+            //{
+            //    //요청 전 동작일 때 값을 초기화 해준다 
+            //    _prevCount = -1;
+            //    _curCount = 0;
+            //    _nextCount = 0;
+            //    _trans_start = false;
 
-                return;
-            }
+            //    return;
+            //}
 
             //====================================================================
             //동작 전환전에 상태전이가 있다 
@@ -1870,6 +1928,17 @@ namespace HordeFight
                 _curCount = (int)aniState.normalizedTime;
                 normalTime = aniState.normalizedTime - _curCount;
             }
+            //상태전이 없고, 요청 상태값이 아닌 경우
+            else
+            {
+                //DebugWide.LogRed("상태전이 없고, 요청 상태값이 아닌 경우");
+                //요청 전 동작일 때 값을 초기화 해준다 
+                _prevCount = -1;
+                _curCount = 0;
+                _nextCount = 0;
+                _trans_start = false;
+                return;
+            }
             //====================================================================
 
 
@@ -1880,12 +1949,13 @@ namespace HordeFight
                 this.OnAniState_Start(hash_state);
             }
 
+            //DebugWide.LogGreen("애니동작 진행중 " + normalTime + "   cur: " + _curCount + "   next: " + _nextCount);
 
             //* 1회 동작이 80% 진행되었다면 동작이 완료되었다고 간주한다. 한동작에서 한번만 수행되게 한다
             if (progress < normalTime && _nextCount == _curCount)
             {
                 _nextCount = _curCount + 1; //동작카운트의 소수점을 올림한다
-                //DebugWide.LogGreen("애니동작 완료 " + normalTime +  "   cur: " + _curCount + "   next: " + _nextCount);
+                //DebugWide.LogRed("애니동작 완료 " + normalTime +  "   cur: " + _curCount + "   next: " + _nextCount);
                 this.OnAniState_End(hash_state);
             }
         }
