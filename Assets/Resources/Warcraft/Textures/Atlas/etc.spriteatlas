@@ -371,6 +371,9 @@ SpriteAtlas:
   - {fileID: 21300140, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300142, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300340, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300350, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300352, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300354, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300248, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300166, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300218, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -722,6 +725,9 @@ SpriteAtlas:
   - effect_70
   - effect_71
   - arrow_0
+  - sack_0
+  - sack_1
+  - sack_2
   - fireRedA_4_1
   - fireRedA_4_0
   - fireBlueA_2_0
