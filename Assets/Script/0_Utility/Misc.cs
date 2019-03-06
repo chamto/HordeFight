@@ -622,6 +622,73 @@ namespace UtilGS9
             return rad * Mathf.Rad2Deg;
         }
 
+        //ref : https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/p_maputl.c#L43-L58
+        //ref : https://libsora.so/posts/vector-length-and-normalize-doom-version/
+        //월드축에서만 사용할 수 있는 방법. 근사치를 구한다 
+        //Vector3.magnitude 함수 보다 빠르다 
+        static float GetV2Length_AxisZ_WithError(Vector3 v0)
+        {
+            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
+            float y = v0.y >= 0 ? v0.y : v0.y * -1f;
+
+            if (x > y)
+                return x + y * 0.5f;
+
+            return y + x * 0.5f;
+        }
+
+
+        static public float GetV2Length_AxisY_WithError(Vector3 v0)
+        {
+            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
+            float z = v0.z >= 0 ? v0.z : v0.z * -1f;
+
+            if (x > z)
+                return x + z * 0.5f;
+
+            return z + x * 0.5f;
+        }
+
+        static public float GetV2Length_AxisY(Vector3 v0)
+        {
+            const float ERROR_RATE_1STEP = 0.05179096f; //오차량 / 근사치 = 1차 오차비율
+            const float ERROR_RATE_2STEP = 0.005694969f; //2차 오차비율 
+
+            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
+            float z = v0.z >= 0 ? v0.z : v0.z * -1f;
+            float approximate = 0f;
+
+            if (x > z)
+                approximate = x + z * 0.5f;
+            else
+                approximate = z + x * 0.5f;
+
+            approximate -= approximate * ERROR_RATE_1STEP;
+            approximate -= approximate * ERROR_RATE_2STEP;
+
+            return approximate;
+        }
+
+        static public float GetV2Length_AxisZ(Vector3 v0)
+        {
+            const float ERROR_RATE_1STEP = 0.05179096f; //오차량 / 근사치 = 1차 오차비율
+            const float ERROR_RATE_2STEP = 0.005694969f; //2차 오차비율 
+
+            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
+            float y = v0.y >= 0 ? v0.y : v0.y * -1f;
+            float approximate = 0f;
+
+            if (x > y)
+                approximate = x + y * 0.5f;
+            else
+                approximate = y + x * 0.5f;
+
+            approximate -= approximate * ERROR_RATE_1STEP;
+            approximate -= approximate * ERROR_RATE_2STEP;
+
+            return approximate;
+        }
+
         //ray_dir : 정규화된 값을 넣어야 한다 
         //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir, out Vector3 intersection_firstPoint)
@@ -1083,7 +1150,7 @@ namespace UtilGS9
 
         static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
         {
-            if (Misc.IsZero(dir)) return 0;
+            //if (Misc.IsZero(dir)) return 0;
 
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
@@ -1093,11 +1160,33 @@ namespace UtilGS9
 
             //360 / 11.25 = 32
             float angle_division = 360f / (float)equal_division;
-            int quad = Mathf.RoundToInt(deg / angle_division); //0~32
+            //int quad = Mathf.RoundToInt(deg / angle_division); //0~32
+            int quad = (int)((deg / angle_division) + 0.5f); //0~32
             quad %= equal_division; //32 => 0 : 0~31,0
             quad++; //값의 범위를 0~31 에서 1~32로 변경 
 
             return quad;
+        }
+
+        const float ANGLE_DIVISION_64 = 360f / 64;
+        static public Vector3 GetDir64_Normal3D2(Vector3 dir)
+        {
+            //if (Misc.IsZero(dir)) return 0;
+
+            float rad = Mathf.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 11.25 = 32
+            
+            //int quad = Mathf.RoundToInt(deg / angle_division); //0~32
+            int quad = (int)((deg / ANGLE_DIVISION_64) + 0.5f); //0~32
+            quad %= 64; //32 => 0 : 0~31,0
+            quad++; //값의 범위를 0~31 에서 1~32로 변경 
+
+            return _dir64_normal3D_AxisY[quad];
         }
         //==========================  equal_division 32 ==============================
         static public Vector3 GetDir64_Normal3D(Vector3 dir)
