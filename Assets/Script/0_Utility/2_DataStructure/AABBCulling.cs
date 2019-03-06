@@ -291,7 +291,15 @@ namespace UtilGS9
         //}
 
 
-        public void Update()
+        public void UpdateXZ()
+        {
+            if (null == mRectangles) return;
+
+            InsertionSort(mXEndpoints, mXLookup);
+            InsertionSort(mZEndpoints, mZLookup);
+        }
+
+        public void UpdateXYZ()
         {
             if (null == mRectangles) return;
 

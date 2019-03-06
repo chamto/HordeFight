@@ -2691,7 +2691,7 @@ namespace HordeFight
             //==============================================
             //AABB 삽입정렬 및 충돌처리
             //==============================================
-            _aabbCulling.Update();
+            _aabbCulling.UpdateXZ();
 
             foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
             {
@@ -3030,36 +3030,46 @@ namespace HordeFight
         {
             if (null == src || null == dst) return;
 
-            float max_sqrRadius = Mathf.Max(src._collider_sqrRadius, dst._collider_sqrRadius);
+            //float max_sqrRadius = Mathf.Max(src._collider_sqrRadius, dst._collider_sqrRadius);
+            float max_sqrRadius = dst._collider_sqrRadius;
+            if(src._collider_sqrRadius > dst._collider_sqrRadius)
+                max_sqrRadius = src._collider_sqrRadius;
+            
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
+            float dis_sqr = dis.sqrMagnitude;
             //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
-            float r_sum = src._collider_radius + dst._collider_radius;
-
+            float r_sum = (src._collider_radius + dst._collider_radius);
+            float r_sumsqr = r_sum * r_sum;
             //1.두 캐릭터가 겹친상태 
-            if (dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+            if (dis_sqr < r_sumsqr)
+            //if (0 > (dis_sqr - r_sumsqr))
             {
                 //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
 
                 //todo : 최적화 필요 
 
-                Vector3 n = dis.normalized;
+                Vector3 n = Misc.GetDir64_Normal3D(dis);
+
+                //Vector3 n = dis.normalized;
                 //Vector3 n = Misc.GetDir64_Normal3D(dis);
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
 
                 //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-                if (dis.sqrMagnitude < max_sqrRadius)
+                if (dis_sqr < max_sqrRadius)
                 {
                     //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-                    if (n == ConstV.v3_zero)
+                    //if (n == ConstV.v3_zero)
+                    if(Misc.IsZero(n))
                     {
+                        //DebugWide.LogBlue(n); //chamto test
                         //방향값이 없기 때문에 임의로 지정해 준다. 
                         n = Misc.GetDir8_Random_AxisY();
                     }
 
-                    meterPerSecond = 0.5f;
+                    meterPerSecond = 1.0f;
 
                     //if(Being.eKind.spear != dst._kind)
                         //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
@@ -3718,7 +3728,7 @@ namespace HordeFight
 
             // -- 블루 진형 --
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
@@ -3733,12 +3743,12 @@ namespace HordeFight
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 100; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
                 //champ._mt_range_min = 2f;
                 //champ._mt_range_max = 6f;
-                champ.GetComponent<AI>()._ai_running = true;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -3749,12 +3759,12 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 100; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
                 champ._mt_range_max = 5f;
-                champ.GetComponent<AI>()._ai_running = true;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }

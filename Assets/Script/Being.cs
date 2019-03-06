@@ -933,33 +933,34 @@ namespace HordeFight
     /// </summary>
     public class ChampUnit : Being
     {
+
         //직책 
-        public enum eJobPosition
-        {
-            None = 0,
-            Squad_Leader, //분대장 10
-            Platoon_Leader, //소대장 20
-            Company_Commander, //중대장 100
-            Battalion_Commander, //대대장 300
+        //public enum eJobPosition
+        //{
+        //    None = 0,
+        //    Squad_Leader, //분대장 10
+        //    Platoon_Leader, //소대장 20
+        //    Company_Commander, //중대장 100
+        //    Battalion_Commander, //대대장 300
 
-            Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
-        }
+        //    Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
+        //}
 
-        //병종
-        public enum eClass
-        {
-            None = 0,
-            PaengBaeSu, //팽배수 - 방패 
-            GeomSu, //검수 - 언월도
-            BuWolSu, //부월수 - 도끼 
-            SaSu, //사수 - 활
-            GiSa, //기사 - 마상활 
-            GiChang, //기창 - 마상창 
+        ////병종
+        //public enum eClass
+        //{
+        //    None = 0,
+        //    PaengBaeSu, //팽배수 - 방패 
+        //    GeomSu, //검수 - 언월도
+        //    BuWolSu, //부월수 - 도끼 
+        //    SaSu, //사수 - 활
+        //    GiSa, //기사 - 마상활 
+        //    GiChang, //기창 - 마상창 
 
-        }
+        //}
 
-        public eJobPosition _jobPosition = eJobPosition.None;
-        public eClass _class = eClass.None;
+        //public eJobPosition _jobPosition = eJobPosition.None;
+        //public eClass _class = eClass.None;
 
         public ushort _level = 1;
 
@@ -1068,12 +1069,11 @@ namespace HordeFight
 
 
         public Shot _shot = null;
-        int _hash_attack = Animator.StringToHash("attack");
         Vector3 _appointmentDir = ConstV.v3_zero;
         public Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
-            _animator.SetInteger("state", (int)Behavior.eKind.Attack);
+            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Attack);
             _behaviorKind = Behavior.eKind.Attack;
 
             //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
@@ -1082,7 +1082,7 @@ namespace HordeFight
             //_target = target;
 
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
-            Update_AnimatorState(_hash_attack, 0.8f);
+            Update_AnimatorState(ANI_STATE_ATTACK, 0.8f);
 
             //임시코드 
             if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind)
@@ -1114,7 +1114,7 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("OnAniState_Start :" + hash_state); //chamto test
 
-            if (hash_state == _hash_attack)
+            if (hash_state == ANI_STATE_ATTACK)
             {
                 //예약된 방향값 설정
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
@@ -1130,7 +1130,7 @@ namespace HordeFight
         {
             //DebugWide.LogYellow("OnAniState_End :" + hash_state + "  " + _hash_attack + "   "+ _target); //chamto test
 
-            if (hash_state == _hash_attack)
+            if (hash_state == ANI_STATE_ATTACK)
             {
                 
                 //목표에 피해를 준다
@@ -1291,6 +1291,15 @@ namespace HordeFight
         //        this[(int)base_key] = new KeyValuePair<AnimationClip, AnimationClip>(this[(int)base_key].Key, over_clip);
         //    }
         //}
+
+        //==================================================
+
+        //상수
+        public int ANI_STATE = Animator.StringToHash("state");
+        public int ANI_STATE_IDLE = Animator.StringToHash("idle");
+        public int ANI_STATE_MOVE = Animator.StringToHash("move");
+        public int ANI_STATE_ATTACK = Animator.StringToHash("attack");
+        public int ANI_STATE_FALLDOWN = Animator.StringToHash("fallDown");
 
         //==================================================
 
@@ -1822,7 +1831,7 @@ namespace HordeFight
         private float __randTime = 0f;
         public void Idle_Random()
         {
-            if ((int)Behavior.eKind.Idle == _animator.GetInteger("state"))
+            if ((int)Behavior.eKind.Idle == _animator.GetInteger(ANI_STATE))
             {
                 __elapsedTime_1 += Time.deltaTime;
 
@@ -1840,7 +1849,7 @@ namespace HordeFight
                     _move._eDir8 = (eDirection8)num;
 
                     Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                    _animator.SetInteger("state", (int)Behavior.eKind.Idle);
+                    _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
 
                     __elapsedTime_1 = 0f;
 
@@ -1860,8 +1869,8 @@ namespace HordeFight
             if (true == IsActive_Animator()) 
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                _animator.SetInteger("state", (int)Behavior.eKind.Idle);
-                _animator.Play("idle"); //상태전이 없이 바로 적용되게 한다    
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+                _animator.Play(ANI_STATE_IDLE); //상태전이 없이 바로 적용되게 한다    
             }
 
         }
@@ -1996,7 +2005,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.FallDown;
             Switch_Ani(_kind, eAniBaseKind.fallDown, _move._eDir8);
-            _animator.SetInteger("state", (int)Behavior.eKind.FallDown);
+            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.FallDown);
             //int hash = Animator.StringToHash("fallDown");
             //_animator.SetTrigger(hash);
         }
@@ -2009,8 +2018,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Block;
             Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            //Switch_Ani("base_move", _kind.ToString() + "_attack_", _move._eDir8);
-            _animator.SetInteger("state", (int)Behavior.eKind.Block);
+            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Block);
 
         }
 
@@ -2034,7 +2042,7 @@ namespace HordeFight
             {
                 Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger("state", (int)Behavior.eKind.Move);    
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);    
             }
 
             //==============================================
@@ -2058,7 +2066,7 @@ namespace HordeFight
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
                 
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger("state", (int)Behavior.eKind.Idle);    
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);    
             }
 
             //==============================================
@@ -2075,7 +2083,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Move;
             Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            _animator.SetInteger("state", (int)Behavior.eKind.Move);
+            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
             //int hash = Animator.StringToHash("move");
             //_animator.SetTrigger(hash);
 
@@ -2099,7 +2107,7 @@ namespace HordeFight
             if (8 > _hp_cur)
             {
                 //다시 살리기
-                _animator.Play("idle");
+                _animator.Play(ANI_STATE_IDLE);
                 //_death = false;
                 _hp_cur = 10;
                 _behaviorKind = Behavior.eKind.Idle;
@@ -2136,7 +2144,7 @@ namespace HordeFight
 
             Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
             //_animator.SetInteger("state", (int)eState.Idle);
-            _animator.Play("idle");
+            _animator.Play(ANI_STATE_IDLE);
 
 
             _behaviorKind = Behavior.eKind.Idle_Random;
