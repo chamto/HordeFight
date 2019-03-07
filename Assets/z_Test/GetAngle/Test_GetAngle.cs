@@ -13,7 +13,9 @@ public class Test_GetAngle : MonoBehaviour
 	void Start () {
         Misc.Init();
 
-        PrintErrorRate_V2Length();
+        //PrintErrorRate_V2Length();
+
+        Create_LookUpTable_TrigonometricFunction();
 	}
 	
 	// Update is called once per frame
@@ -30,29 +32,37 @@ public class Test_GetAngle : MonoBehaviour
         //}
 
 
-        //단위벡터 구하는 함수 성능 테스트 
+        //벡터 길이 구하는 함수 성능 테스트 
         //Vector3 pos = _line_1.position;
-        //for (int i = 0; i < 36*2; i++)
+        //for (int i = 0; i < 10000; i++)
         //{
-        //    Misc.GetDir64_Normal3D2(_line_1.position);
-        //    pos = pos.normalized;
-
-        //    DebugWide.LogBlue(i*5 + "도   :" + Mathf.Tan(Mathf.Deg2Rad * i * 5));
-
+        //    float d0 = GetV2Length_AxisY_WithError(pos); //10000번 1.15ms
+        //    float d1 = GetV2Length_AxisY(pos); //10000번 1.46ms
+        //    float d2 = pos.magnitude; //10000번 2.99ms
         //}
 
 
+        //단위벡터 구하는 함수 성능 테스트 
+        //Vector3 pos = _line_0.position;
+        //for (int i = 0; i < 10000; i++)
+        //{
+        //    //_line_1.position = Misc.TestGetDir_Normal3D_AxisY(pos); //10000번  11.84ms
+        //   Misc.GetDir64_Normal3D(pos); //10000번  5.14ms
+        //    Vector3 n = pos.normalized; //10000번  11.13ms
 
-        //벡터 길이 구하는 함수 성능 테스트 
-        Vector3 pos = _line_1.position;
-        for (int i = 0; i < 10000; i++)
-        {
-            float d0 = GetV2Length_AxisY_WithError(pos); //10000번 1.15ms
-            float d1 = GetV2Length_AxisY(pos); //10000번 1.46ms
-            float d2 = pos.magnitude; //10000번 2.99ms
+        //    //DebugWide.LogBlue(i*5 + "도   :" + Mathf.Tan(Mathf.Deg2Rad * i * 5));
+        //}
 
-        }
 
+        //삼각함수 성능 테스트
+        //for (int i = 0; i < 10000; i++)
+        //{
+        //    int angle = i % 360;
+        //    //Mathf.Cos(i); 
+        //    Mathf.Sin(angle); 
+        //    //Cos(i);
+        //    Sin(angle); //느리다 ..
+        //}
 
 	}
 
@@ -84,14 +94,46 @@ public class Test_GetAngle : MonoBehaviour
 
     }
 
+    //ref : https://libsora.so/posts/angle-and-sine-doom-version/
+    private float[] _lookUpTable_sin = null;
+    const int _lookUpTable_precision = 10;
+    public void Create_LookUpTable_TrigonometricFunction()
+    {
+        //int precision = 1000; //소수점 셋째 자리까지 표현  
+        int size_tableSin = _lookUpTable_precision * (360);
+        _lookUpTable_sin = new float[size_tableSin];
+        for (int i = 0; i < size_tableSin; i++)
+        {
+            float toAngle = (float)i / _lookUpTable_precision; //인덱스를 각도로 변환 
+            _lookUpTable_sin[i] = Mathf.Sin(Mathf.Deg2Rad * toAngle);
+        }
+    }
 
-    //벡터의 길이 근사치 구하는 함수의 오차율을 출력한다 
-    //!! x 와 z축의 길이가 같을때 최대 오차율이 나온다 
-    //!! 항상 근사치가 정확한값 보다 오차율 만큼 크다 
-    //!! 근사치에서 오차량이 차지하는 비율은  항상 5.179096 퍼센트이다 (1차 오차비율) 
-    //!! 1차 오차비율값을 적용하면 2차 비율이 나온다. 항상 0.5694969 퍼센트이다 (2차 오차비율) 
-    //!! 2차 오차비율값을 적용하면 3차 오차 비율이 0이 나온다. 
-    public void PrintErrorRate_V2Length()
+
+    //Mathf.Sin 보다 느리다.. 쓰지 말자 
+    //ref : http://bbs.nicklib.com/algorithm/2005
+	float Sin(float degree)
+	{
+        while((degree) < ((int)0))   (degree) += (int)360;
+        while((degree) >= ((int)360))  (degree) -= (int)360; 
+
+        return _lookUpTable_sin[ (int)(degree * _lookUpTable_precision) ];
+	}
+
+    float Cos(float degree)
+    {
+        return Sin(90f + degree);
+    }
+
+	//======================================================
+
+	//벡터의 길이 근사치 구하는 함수의 오차율을 출력한다 
+	//!! x 와 z축의 길이가 같을때 최대 오차율이 나온다 
+	//!! 항상 근사치가 정확한값 보다 오차율 만큼 크다 
+	//!! 근사치에서 오차량이 차지하는 비율은  항상 5.179096 퍼센트이다 (1차 오차비율) 
+	//!! 1차 오차비율값을 적용하면 2차 비율이 나온다. 항상 0.5694969 퍼센트이다 (2차 오차비율) 
+	//!! 2차 오차비율값을 적용하면 3차 오차 비율이 0이 나온다. 
+	public void PrintErrorRate_V2Length()
     {
         Vector3 dst = ConstV.v3_zero;
         string tt = "";
@@ -179,6 +221,7 @@ public class Test_GetAngle : MonoBehaviour
         return approximate;
     }
 
+    //======================================================
 
     //** 정규화 Normalize 한번 보다 초월함수 atan2 두번 호출하는 것이 빠르다 
     //Vector3.SignedAngle 와 내부 알고리즘 동일. 속도가 조금더 빠르다 
@@ -232,4 +275,5 @@ public class Test_GetAngle : MonoBehaviour
         return Vector3.SignedAngle(v0, v1, axis);
     }
 
+    //======================================================
 }

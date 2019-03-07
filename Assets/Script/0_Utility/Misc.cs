@@ -625,7 +625,7 @@ namespace UtilGS9
         //ref : https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/p_maputl.c#L43-L58
         //ref : https://libsora.so/posts/vector-length-and-normalize-doom-version/
         //월드축에서만 사용할 수 있는 방법. 근사치를 구한다 
-        //Vector3.magnitude 함수 보다 빠르다 
+        //Vector3.magnitude 함수 보다 빠르다. 정확도 5%정도 떨어진다 
         static float GetV2Length_AxisZ_WithError(Vector3 v0)
         {
             float x = v0.x >= 0 ? v0.x : v0.x * -1f;
@@ -649,6 +649,7 @@ namespace UtilGS9
             return z + x * 0.5f;
         }
 
+        //Vector3.magnitude 함수 보다 빠르다. magnitude 와 동일한 값을 계산한다 
         static public float GetV2Length_AxisY(Vector3 v0)
         {
             const float ERROR_RATE_1STEP = 0.05179096f; //오차량 / 근사치 = 1차 오차비율
@@ -1020,6 +1021,7 @@ namespace UtilGS9
                 //DebugWide.LogBlue((i+1) + "  : " + dirN[i + 1] + "  : " + angle * i); //chamto test
 
             }
+            dirN[equal_division] = dirN[0]; //360도에 0도 일때의 값을 넣는다 
 
             return dirN;
         }
@@ -1043,14 +1045,15 @@ namespace UtilGS9
         /// <returns> 정규벡터 방향값 </returns>
         static public Vector3 GetDir8_Random_AxisY()
         {
-            const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
+            //const float ANG_RAD = (360f / 8f) * Mathf.Deg2Rad;
             int rand = Misc.rand.Next(1, 9); //1~8
-            Vector3 dir = Vector3.zero;
-            rand -= 1;
-            dir.x = Mathf.Cos(ANG_RAD * rand);
-            dir.z = Mathf.Sin(ANG_RAD * rand);
+             //Vector3 dir = Vector3.zero;
+             //rand -= 1;
+             //dir.x = Mathf.Cos(ANG_RAD * rand);
+             //dir.z = Mathf.Sin(ANG_RAD * rand);
+             //return dir;
 
-            return dir;
+            return _dir8_normal3D_AxisY[rand];
         }
 
         static public eDirection8 GetDir8_Reverse_AxisY(eDirection8 eDirection)
@@ -1140,7 +1143,8 @@ namespace UtilGS9
 
             //360 / 45 = 8
             //int quad = Mathf.RoundToInt(deg / 45f); //0~8
-            int quad = Misc.RoundToInt(deg / 45f); //0~8
+            //int quad = Misc.RoundToInt(deg / 45f); //0~8
+            int quad = (int)((deg / 45f) + 0.5f);
             quad %= 8; //8을 0으로 변경 : 0~7,0 
             quad++; //값의 범위를 0~7 에서 1~8로 변경 
 
@@ -1150,50 +1154,51 @@ namespace UtilGS9
 
         static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
         {
-            //if (Misc.IsZero(dir)) return 0;
-
+            
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 
             //각도가 음수라면 360을 더한다 
             if (deg < 0) deg += 360f;
 
-            //360 / 11.25 = 32
-            float angle_division = 360f / (float)equal_division;
-            //int quad = Mathf.RoundToInt(deg / angle_division); //0~32
+            float angle_division = 360f / equal_division;
             int quad = (int)((deg / angle_division) + 0.5f); //0~32
-            quad %= equal_division; //32 => 0 : 0~31,0
-            quad++; //값의 범위를 0~31 에서 1~32로 변경 
 
             return quad;
         }
 
-        const float ANGLE_DIVISION_64 = 360f / 64;
-        static public Vector3 GetDir64_Normal3D2(Vector3 dir)
-        {
-            //if (Misc.IsZero(dir)) return 0;
+        //느림.  GetDir64_Normal3D > Vector3.normalized  .  GetDir64_Normal3D 함수 쓰기 
+        //static public Vector3 TestGetDir_Normal3D_AxisY(Vector3 dir)
+        //{
+        //    float rad = Mathf.Atan2(dir.z, dir.x);
+        //    return new Vector3(Mathf.Cos(rad),0,Mathf.Sin(rad));
+        //}
 
+
+        //==========================  equal_division 64 ==============================
+
+        const float ANGLE_DIVISION_64 = 360f / 64;
+        static public Vector3 GetDir64_Normal3D(Vector3 dir)
+        {
+            
             float rad = Mathf.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 
             //각도가 음수라면 360을 더한다 
             if (deg < 0) deg += 360f;
-
-            //360 / 11.25 = 32
             
-            //int quad = Mathf.RoundToInt(deg / angle_division); //0~32
-            int quad = (int)((deg / ANGLE_DIVISION_64) + 0.5f); //0~32
-            quad %= 64; //32 => 0 : 0~31,0
-            quad++; //값의 범위를 0~31 에서 1~32로 변경 
+            int quad = (int)((deg / ANGLE_DIVISION_64) + 0.5f); //0~64
 
             return _dir64_normal3D_AxisY[quad];
         }
-        //==========================  equal_division 32 ==============================
-        static public Vector3 GetDir64_Normal3D(Vector3 dir)
-        {
-            int quad = GetDirN_AxisY(64,dir);
-            return _dir64_normal3D_AxisY[quad];
-        }
+
+
+
+        //static public Vector3 GetDir64_Normal3D(Vector3 dir)
+        //{
+        //    int quad = GetDirN_AxisY(64,dir);
+        //    return _dir64_normal3D_AxisY[quad];
+        //}
 
         //==========================  Axis munus Z ==============================
 
