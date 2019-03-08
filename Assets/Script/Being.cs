@@ -1513,20 +1513,29 @@ namespace HordeFight
         /// <summary>
         /// 그리드상 셀값이 변경되면 셀정보값을 갱신한다 
         /// </summary>
-        public void Update_CellInfo()
+        public void Update_CellSpace()
         {
-            //Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
             int new_pos1d = SingleO.cellPartition.ToPosition1D(transform.position);
 
-            //UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다"); //절대 쓰지 말기!! 성능하락폭이 엄청나다.
-            //if (_cellInfo._index != cur_posXY_2d)
-            if(_cur_cell._pos1d != new_pos1d)
+            if (_cur_cell._pos1d != new_pos1d)
             {
-                //SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
-                //SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this); //새로운 위치 정보 추가
-                //_cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
-
                 SingleO.cellPartition.AttachCellSpace(new_pos1d, this);
+            }
+        }
+
+
+        //느린방식 , 순차적으로 제거해야함
+        public void Update_CellInfo()
+        {
+            Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
+
+            if (null != _cellInfo && _cellInfo._index != cur_posXY_2d)
+
+            {
+                SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
+                SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this); //새로운 위치 정보 추가
+                _cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
+
 
                 //chamto test
                 //string temp = "count:"+_cellInfo.Count + "  (" + curIdx + ")  ";
@@ -1597,7 +1606,8 @@ namespace HordeFight
                 return false;
             }
 
-            Update_CellInfo();
+            //Update_CellInfo();
+            Update_CellSpace();
 
 
             Update_SpriteMask();
@@ -1695,11 +1705,11 @@ namespace HordeFight
             //========================================
 
             //이동정보에 따라 위치 갱신
-            if(null != _move)
+            if(null != (object)_move)
                 _move.UpdateNextPath();
 
             //인공지능 갱신
-            if(null != _ai)
+            if(null != (object)_ai)
                 _ai.UpdateAI();
 
             Update_SortingOrder(0);

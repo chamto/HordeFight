@@ -1643,7 +1643,7 @@ namespace HordeFight
         private Tilemap _tilemap_struct = null;
         private Tilemap _tilemap_structUp = null;
         private Tilemap _tilemap_fogOfWar = null;
-        //public Dictionary<Vector3Int, CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
+        public Dictionary<Vector3Int, CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
         public Dictionary<Vector3Int, CellSpace> _structTileList = new Dictionary<Vector3Int, CellSpace>(new Vector3IntComparer());
 
         //public CellSpacePartition _cellSpacePartition = new CellSpacePartition();
@@ -2400,82 +2400,82 @@ namespace HordeFight
 
 
 
-        //public CellInfo GetCellInfo(Vector3Int cellIndex)
-        //{
-        //    CellInfo cell = null;
-        //    _cellInfoList.TryGetValue(cellIndex, out cell);
+        public CellInfo GetCellInfo(Vector3Int cellIndex)
+        {
+            CellInfo cell = null;
+            _cellInfoList.TryGetValue(cellIndex, out cell);
 
-        //    return cell;
-        //}
+            return cell;
+        }
 
 
 
         //todo : 자료구조를 복사하는데 부하가 있기때문에, 자료구조를 직접 순회하면서 처리하는 방향으로 해봐야겠다
-        //public CellInfo GetCellInfo_NxN(Vector3Int center , ushort NCount_odd)
-        //{
-        //    //NCount 는 홀수값을 넣어야 한다 
-        //    if (0 == NCount_odd % 2) return null;
+        public CellInfo GetCellInfo_NxN(Vector3Int center , ushort NCount_odd)
+        {
+            //NCount 는 홀수값을 넣어야 한다 
+            if (0 == NCount_odd % 2) return null;
 
-        //    CellInfo cellList = new CellInfo();
-        //    cellList._index = center;
+            CellInfo cellList = new CellInfo();
+            cellList._index = center;
 
-        //    //DebugWide.LogBlue("================" + NCount_odd + " ================ ");
-        //    //string temp1 = "";
+            //DebugWide.LogBlue("================" + NCount_odd + " ================ ");
+            //string temp1 = "";
 
-        //    CellInfo dst = null;
-        //    Vector3Int index = Vector3Int.zero;
-        //    int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
-        //    for (int i = -startIdx; i < NCount_odd - startIdx; i++)
-        //    {
-        //        //temp1 = "";
-        //        for (int j = -startIdx; j < NCount_odd - startIdx; j++)
-        //        {
-        //            //temp1 += "(" + i + ", "+ j +")  "; 
-        //            index.x = i + center.x; 
-        //            index.y = j + center.y;
-        //            dst = this.GetCellInfo(index);
+            CellInfo dst = null;
+            Vector3Int index = Vector3Int.zero;
+            int startIdx = (NCount_odd - 1) / 2; //중심좌표를 (0,0)으로 만들기 위함
+            for (int i = -startIdx; i < NCount_odd - startIdx; i++)
+            {
+                //temp1 = "";
+                for (int j = -startIdx; j < NCount_odd - startIdx; j++)
+                {
+                    //temp1 += "(" + i + ", "+ j +")  "; 
+                    index.x = i + center.x; 
+                    index.y = j + center.y;
+                    dst = this.GetCellInfo(index);
 
-        //            if(null != dst && 0 != dst.Count)
-        //            {
-        //                //DebugWide.LogBlue(dst.Count + "  " + i + "," + j);
+                    if(null != dst && 0 != dst.Count)
+                    {
+                        //DebugWide.LogBlue(dst.Count + "  " + i + "," + j);
 
-        //                foreach(var v in dst)
-        //                {
-        //                   cellList.AddLast(v);    
-        //                }
+                        foreach(var v in dst)
+                        {
+                           cellList.AddLast(v);    
+                        }
 
-        //            }
-        //        }
-        //        //DebugWide.LogBlue(temp1);
-        //    }
+                    }
+                }
+                //DebugWide.LogBlue(temp1);
+            }
 
-        //    return cellList;
-        //}
+            return cellList;
+        }
 
 
-        //public void AddCellInfo_Being(Vector3Int cellIndex, Being being)
-        //{
-        //    CellInfo cell = null;
-        //    if (false == _cellInfoList.TryGetValue(cellIndex, out cell))
-        //    {
-        //        cell = new CellInfo();
-        //        cell._index = cellIndex;
-        //        _cellInfoList.Add(cellIndex, cell);
-        //    }
-        //    _cellInfoList[cellIndex].AddLast(being);
-        //}
+        public void AddCellInfo_Being(Vector3Int cellIndex, Being being)
+        {
+            CellInfo cell = null;
+            if (false == _cellInfoList.TryGetValue(cellIndex, out cell))
+            {
+                cell = new CellInfo();
+                cell._index = cellIndex;
+                _cellInfoList.Add(cellIndex, cell);
+            }
+            _cellInfoList[cellIndex].AddLast(being);
+        }
 
-        //public void RemoveCellInfo_Being(Vector3Int cellIndex, Being being)
-        //{
-        //    if (null == being) return;
+        public void RemoveCellInfo_Being(Vector3Int cellIndex, Being being)
+        {
+            if (null == being) return;
 
-        //    CellInfo cell = null;
-        //    if (true == _cellInfoList.TryGetValue(cellIndex, out cell))
-        //    {
-        //        cell.Remove(being);
-        //    }
+            CellInfo cell = null;
+            if (true == _cellInfoList.TryGetValue(cellIndex, out cell))
+            {
+                cell.Remove(being);
+            }
 
-        //}
+        }
 
 
 
@@ -2778,15 +2778,12 @@ namespace HordeFight
 
 
             Vector3 collisionCellPos_center = ConstV.v3_zero;
-            //CellInfo cellInfo = null;
             CellSpace structTile = null;
 
-
             Being src = null, dst = null;
-            //Vector3Int[] cellIndexes = null;
-            Vector3Int ix = Vector3Int.zero;
+
+            Vector3Int ix = ConstV.v3Int_zero;
             int src_count = _linearSearch_list.Count;
-            //int cell_count = 0;
             for (int sc = 0; sc < src_count; sc++)
             {
                 src = _linearSearch_list[sc];
@@ -2795,15 +2792,15 @@ namespace HordeFight
                 src.UpdateAll(); //객체 갱신
                 //============================
 
-                if (false == src.gameObject.activeInHierarchy) continue;
-                //if (null == src._cellInfo) continue;
                 if (true == src.isDeath()) continue;
+                //if (false == src.gameObject.activeInHierarchy) continue; //<- 코드제거 : 죽지 않았으면 안보이는 상태라 해도 처리해야 한다 
 
 
                 //===============================================================================
 
                 //동굴벽과 캐릭터 충돌처리 
-                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                if (SingleO.cellPartition.HasStructTile(src.transform.position, out structTile))
                 {
                     CollisionPush_StructTile(src, structTile);
                     //CollisionPush_Rigid(src, structTile);
@@ -2814,7 +2811,7 @@ namespace HordeFight
                 //============================
 
                 //객체 컬링 처리
-                if (null != selected)
+                if (null != (object)selected)
                 {
                     //Culling_SightOfView(selected, src);
                 }
@@ -2831,125 +2828,139 @@ namespace HordeFight
             //==============================================
             _aabbCulling.UpdateXZ();
 
-            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            int overlapCount = _aabbCulling.GetOverlap().Count;
+            AABBCulling.UnOrderedEdgeKey[] toArray = _aabbCulling.GetOverlap().ToArray();
+            for (int i = 0; i < overlapCount;i++)
             {
-                
-                src = _linearSearch_list[key._V0];
-                dst = _linearSearch_list[key._V1];
+                src = _linearSearch_list[ toArray[i]._V0 ];
+                dst = _linearSearch_list[ toArray[i]._V1 ];
 
-                //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
-
-                if (null == src || true == src.isDeath()) continue;
-                if (null == dst || true == dst.isDeath()) continue;
-                if (false == src.gameObject.activeInHierarchy) continue;
-                if (false == dst.gameObject.activeInHierarchy) continue;
-                if (src == dst) continue;
-
+                if (null == (object)src || true == src.isDeath()) continue;
+                if (null == (object)dst || true == dst.isDeath()) continue;
+                if ((object)src == (object)dst) continue;
 
                 CollisionPush(src, dst);
             }
+
+            //foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            //{
+                
+            //    src = _linearSearch_list[key._V0];
+            //    dst = _linearSearch_list[key._V1];
+
+            //    //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
+
+            //    if (null == src || true == src.isDeath()) continue;
+            //    if (null == dst || true == dst.isDeath()) continue;
+            //    //if (false == src.gameObject.activeInHierarchy) continue; //<- 코드제거 : 죽지 않았으면 안보이는 상태라 해도 처리해야 한다 
+            //    //if (false == dst.gameObject.activeInHierarchy) continue;
+            //    if (src == dst) continue;
+
+
+            //    CollisionPush(src, dst);
+            //}
             //==============================================
 
 
 		}
 
-		//public void UpdateCollision_UseDirectGrid3x3()
-        //{
-        //    //return; //chamto test
+		public void UpdateCollision_UseDirectGrid3x3()
+        {
+            //return; //chamto test
 
-        //    //====================================
-        //    // 발사체 갱신 
-        //    //====================================
-        //    int shot_count = _shots.Count;
-        //    for (int si = 0; si < shot_count;si++)
-        //    {
-        //        _shots[si].Update_Shot();  
-        //    }
-        //    //====================================
-
-
-        //    Bounds cameraViewBounds = GetBounds_CameraView();
-        //    Being selected = SingleO.touchControl._selected;
-        //    if (null != selected)
-        //    {
-        //        SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
-        //        selected.SetVisible(true);
-        //    }
+            //====================================
+            // 발사체 갱신 
+            //====================================
+            int shot_count = _shots.Count;
+            for (int si = 0; si < shot_count;si++)
+            {
+                _shots[si].Update_Shot();  
+            }
+            //====================================
 
 
-        //    Vector3 collisionCellPos_center = ConstV.v3_zero;
-        //    CellInfo cellInfo = null;
-        //    CellSpace structTile = null;
-
-        //    //foreach (Being src in _linearSearch_list)
-        //    Being src = null, dst = null;
-        //    Vector3Int[] cellIndexes = null;
-        //    Vector3Int ix = Vector3Int.zero;
-        //    int src_count = _linearSearch_list.Count;
-        //    int cell_count = 0;
-        //    for (int sc = 0; sc < src_count;sc++)
-        //    {
-        //        src = _linearSearch_list[sc];
-
-        //        //============================
-        //        src.UpdateAll(); //객체 갱신
-        //        //============================
-
-        //        if (false == src.gameObject.activeInHierarchy) continue;
-        //        if (null == src._cellInfo) continue;
-        //        if (true == src.isDeath()) continue;
-
-        //        //src._move._direction = Misc.GetDir64_Normal3D(src._move._direction);
-        //        //src._move._direction = src._move._direction.normalized; //성능상의 차이가 없음 
-
-        //        //1. 3x3그리드 정보를 가져온다
-        //        //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
-        //        //foreach (Vector3Int ix in __cellIndexes_5) //5개의 영역 (중복되는 4개의 영역 제거) : 객체200 fps80
-        //        //foreach(Vector3Int ix in __cellIndexes_Max4[this.GetOverlapCellSpace(src)]) //충돌원이 셀에 겹친 영역만 가져옴 (최대 4개 영역) : 객체 200 fps90
-        //        cellIndexes = __cellIndexes_Max4[this.GetOverlapCellSpace(src)];
-        //        cell_count = cellIndexes.Length;
-        //        for (int cc = 0; cc < cell_count;cc++ )
-        //        {
-        //            ix = cellIndexes[cc];
-
-        //            cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
-        //            //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
-        //            if (null == cellInfo) continue;
-
-        //            //foreach (Being dst in cellInfo)
-        //            for (LinkedListNode<Being> curNode = cellInfo.First; null != curNode; curNode = curNode.Next)
-        //            {
-        //                dst = curNode.Value;
-
-        //                if (false == dst.gameObject.activeInHierarchy) continue;
-        //                if (src == dst) continue;
-        //                if (null == dst || true == dst.isDeath()) continue;
-
-        //                CollisionPush(src, dst);
-        //            }
-        //        }
+            Bounds cameraViewBounds = GetBounds_CameraView();
+            Being selected = SingleO.touchControl._selected;
+            if (null != selected)
+            {
+                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
+                selected.SetVisible(true);
+            }
 
 
-        //        //동굴벽과 캐릭터 충돌처리 
-        //        if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-        //        {
-        //            CollisionPush_StructTile(src, structTile);
-        //            //CollisionPush_Rigid(src, structTile);
-        //        }
+            Vector3 collisionCellPos_center = ConstV.v3_zero;
+            CellInfo cellInfo = null;
+            CellSpace structTile = null;
 
-        //        //객체 컬링 처리
-        //        if(null != selected)
-        //        {
-        //            Culling_SightOfView(selected, src);
-        //        }else
-        //        {
-        //            Culling_ViewFrustum(cameraViewBounds, src);
-        //        }
+            //foreach (Being src in _linearSearch_list)
+            Being src = null, dst = null;
+            Vector3Int[] cellIndexes = null;
+            Vector3Int ix = Vector3Int.zero;
+            int src_count = _linearSearch_list.Count;
+            int cell_count = 0;
+            for (int sc = 0; sc < src_count;sc++)
+            {
+                src = _linearSearch_list[sc];
 
-        //    }
+                //============================
+                src.UpdateAll(); //객체 갱신
+                //============================
 
-        //    //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
-        //}
+                if (false == src.gameObject.activeInHierarchy) continue;
+                if (null == src._cellInfo) continue;
+                if (true == src.isDeath()) continue;
+
+                //src._move._direction = Misc.GetDir64_Normal3D(src._move._direction);
+                //src._move._direction = src._move._direction.normalized; //성능상의 차이가 없음 
+
+                //1. 3x3그리드 정보를 가져온다
+                //foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3]) //9개의 영역 : 객체200 fps60
+                //foreach (Vector3Int ix in __cellIndexes_5) //5개의 영역 (중복되는 4개의 영역 제거) : 객체200 fps80
+                //foreach(Vector3Int ix in __cellIndexes_Max4[this.GetOverlapCellSpace(src)]) //충돌원이 셀에 겹친 영역만 가져옴 (최대 4개 영역) : 객체 200 fps90
+                cellIndexes = __cellIndexes_Max4[this.GetOverlapCellSpace(src)];
+                cell_count = cellIndexes.Length;
+                for (int cc = 0; cc < cell_count;cc++ )
+                {
+                    ix = cellIndexes[cc];
+
+                    cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                    //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
+                    if (null == cellInfo) continue;
+
+                    //foreach (Being dst in cellInfo)
+                    for (LinkedListNode<Being> curNode = cellInfo.First; null != curNode; curNode = curNode.Next)
+                    {
+                        dst = curNode.Value;
+
+                        if (false == dst.gameObject.activeInHierarchy) continue;
+                        if (src == dst) continue;
+                        if (null == dst || true == dst.isDeath()) continue;
+
+                        CollisionPush(src, dst);
+                    }
+                }
+
+
+                //동굴벽과 캐릭터 충돌처리 
+                if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                {
+                    CollisionPush_StructTile(src, structTile);
+                    //CollisionPush_Rigid(src, structTile);
+                }
+
+                //객체 컬링 처리
+                if(null != selected)
+                {
+                    Culling_SightOfView(selected, src);
+                }else
+                {
+                    Culling_ViewFrustum(cameraViewBounds, src);
+                }
+
+            }
+
+            //DebugWide.LogRed(_listTest.Count + "  총회전:" + count); //114 , 1988
+        }
 
 
 
@@ -2988,22 +2999,22 @@ namespace HordeFight
         }
 
         //챔프를 중심으로 3x3그리드 영역의 정보를 가지고 충돌검사한다
-        //public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
-        //{
-        //    CellInfo cellInfo = null;
-        //    foreach (Being src in _linearSearch_list)
-        //    {
+        public void UpdateCollision_UseGrid3x3() //3x3 => 5x5 => 7x7 ... 홀수로 그리드 범위를 늘려 테스트 해볼 수 있다
+        {
+            CellInfo cellInfo = null;
+            foreach (Being src in _linearSearch_list)
+            {
 
-        //        //1. 3x3그리드 정보를 가져온다
-        //        cellInfo = SingleO.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
+                //1. 3x3그리드 정보를 가져온다
+                cellInfo = SingleO.gridManager.GetCellInfo_NxN(src._cellInfo._index, 3);
 
-        //        foreach (Being dst in cellInfo)
-        //        {
-        //            if (src == dst) continue;
-        //            CollisionPush(src, dst);
-        //        }
-        //    }
-        //}
+                foreach (Being dst in cellInfo)
+                {
+                    if (src == dst) continue;
+                    CollisionPush(src, dst);
+                }
+            }
+        }
 
         //딕셔너리 보다 인덱싱 속도가 빠르다. 안정적 객체수 : 500
         public void UpdateCollision_UseList()
@@ -3166,7 +3177,7 @@ namespace HordeFight
 
         public void CollisionPush(Being src , Being dst)
         {
-            if (null == src || null == dst) return;
+            if (null == (object)src || null == (object)dst) return;
 
             //float max_sqrRadius = Mathf.Max(src._collider_sqrRadius, dst._collider_sqrRadius);
             float max_sqrRadius = dst._collider_sqrRadius;
@@ -3530,73 +3541,73 @@ namespace HordeFight
         /// 조건에 포함하는 가장 가까운 객체를 반환한다
         /// 대상 객체의 충돌원 크기와 상관없이, 최대 원 크기의 그리드를 가져와 그리드 안에있는 객체들로만 검사한다   
         /// </summary>
-        //public ChampUnit Old_GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
-        //{
-        //    if (null == src) return null;
+        public ChampUnit Old_GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
+        {
+            if (null == src) return null;
 
-        //    float wrd_minRad = meter_minRadius * GridManager.ONE_METER;
-        //    float wrd_maxRad = meter_maxRadius * GridManager.ONE_METER;
-        //    float sqr_minRadius = 0;
-        //    float sqr_maxRadius = 0;
-        //    float min_value = wrd_maxRad * wrd_maxRad * 1000f; //최대 반경보다 큰 최대값 지정
-        //    float sqr_dis = 0f;
-
-
-        //    //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
-        //    uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(wrd_maxRad);
-
-        //    //int count = 0;
-        //    CellInfo cellInfo = null;
-        //    ChampUnit target = null;
-        //    foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[ NxN ])
-        //    {
-        //        cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
-
-        //        if (null == cellInfo) continue;
-
-        //        foreach (Being dst in cellInfo)
-        //        {
-        //            ChampUnit champDst = dst as ChampUnit;
-        //            if (null == champDst) continue;
-        //            if (src == dst) continue;
-        //            if (true == dst.isDeath()) continue; //쓰러진 객체는 처리하지 않는다 
+            float wrd_minRad = meter_minRadius * GridManager.ONE_METER;
+            float wrd_maxRad = meter_maxRadius * GridManager.ONE_METER;
+            float sqr_minRadius = 0;
+            float sqr_maxRadius = 0;
+            float min_value = wrd_maxRad * wrd_maxRad * 1000f; //최대 반경보다 큰 최대값 지정
+            float sqr_dis = 0f;
 
 
-        //            if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != champDst._belongCamp)
-        //            {
-        //                Camp.eRelation getRelation = SingleO.campManager.GetRelation(src._belongCamp.campKind, champDst._belongCamp.campKind);
+            //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
+            uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(wrd_maxRad);
 
-        //                //요청 관계가 아니면 처리하지 않는다 
-        //                if (vsRelation != getRelation)
-        //                    continue;
-        //            }
+            //int count = 0;
+            CellInfo cellInfo = null;
+            ChampUnit target = null;
+            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[ NxN ])
+            {
+                cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
 
-        //            //count++;
-        //            //==========================================================
-        //            sqr_minRadius = Mathf.Pow(wrd_minRad + dst._collider_radius, 2);
-        //            sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst._collider_radius, 2);
-        //            sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
+                if (null == cellInfo) continue;
 
-        //            //최대 반경 이내일 경우
-        //            if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
-        //            {
+                foreach (Being dst in cellInfo)
+                {
+                    ChampUnit champDst = dst as ChampUnit;
+                    if (null == champDst) continue;
+                    if (src == dst) continue;
+                    if (true == dst.isDeath()) continue; //쓰러진 객체는 처리하지 않는다 
 
-        //                //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  dst.name); //chamto test
 
-        //                //기존 객체보다 더 가까운 경우
-        //                if (min_value > sqr_dis)
-        //                {
-        //                    min_value = sqr_dis;
-        //                    target = champDst;
-        //                }
-        //            }
-        //            //==========================================================v
-        //        }
-        //    }
+                    if(vsRelation != Camp.eRelation.Unknown && null != src._belongCamp && null != champDst._belongCamp)
+                    {
+                        Camp.eRelation getRelation = SingleO.campManager.GetRelation(src._belongCamp.campKind, champDst._belongCamp.campKind);
 
-        //    //DebugWide.LogRed(count);
-        //    return target;
-        //}
+                        //요청 관계가 아니면 처리하지 않는다 
+                        if (vsRelation != getRelation)
+                            continue;
+                    }
+
+                    //count++;
+                    //==========================================================
+                    sqr_minRadius = Mathf.Pow(wrd_minRad + dst._collider_radius, 2);
+                    sqr_maxRadius = Mathf.Pow(wrd_maxRad + dst._collider_radius, 2);
+                    sqr_dis = (src.transform.position - dst.transform.position).sqrMagnitude;
+
+                    //최대 반경 이내일 경우
+                    if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
+                    {
+
+                        //DebugWide.LogBlue(min_value + "__" + sqr_dis +"__"+  dst.name); //chamto test
+
+                        //기존 객체보다 더 가까운 경우
+                        if (min_value > sqr_dis)
+                        {
+                            min_value = sqr_dis;
+                            target = champDst;
+                        }
+                    }
+                    //==========================================================v
+                }
+            }
+
+            //DebugWide.LogRed(count);
+            return target;
+        }
 
 
 
@@ -3604,40 +3615,40 @@ namespace HordeFight
         /// 지정된 범위의 캐릭터가 특정캐릭터를 쳐다보게 설정한다
         /// </summary>
         /// <param name="target">Target.</param>
-        //public void LookAtTarget(Being src , uint gridRange_NxN)
-        //{
+        public void LookAtTarget(Being src , uint gridRange_NxN)
+        {
             
-        //    Vector3 dir = ConstV.v3_zero;
-        //    CellInfo cellInfo = null;
-        //    foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[gridRange_NxN])
-        //    {
-        //        cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
-        //        if (null == cellInfo) continue;
+            Vector3 dir = ConstV.v3_zero;
+            CellInfo cellInfo = null;
+            foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[gridRange_NxN])
+            {
+                cellInfo = SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                if (null == cellInfo) continue;
 
-        //        foreach (Being dst in cellInfo)
-        //        {
-        //            if (src == dst) continue;
+                foreach (Being dst in cellInfo)
+                {
+                    if (src == dst) continue;
 
-        //            if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
-        //            {
-        //                dir = src.transform.position - dst.transform.position;
+                    if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
+                    {
+                        dir = src.transform.position - dst.transform.position;
 
-        //                //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
-        //                //==============================
-        //                float sqr_radius = (float)(gridRange_NxN) / 2f; //반지름으로 변환
-        //                sqr_radius *= SingleO.gridManager._cellSize_x; //셀크기로 변환
-        //                sqr_radius *= sqr_radius; //제곱으로 변환
-        //                if(sqr_radius < dir.sqrMagnitude)
-        //                    continue;
-        //                //==============================
+                        //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
+                        //==============================
+                        float sqr_radius = (float)(gridRange_NxN) / 2f; //반지름으로 변환
+                        sqr_radius *= SingleO.gridManager._cellSize_x; //셀크기로 변환
+                        sqr_radius *= sqr_radius; //제곱으로 변환
+                        if(sqr_radius < dir.sqrMagnitude)
+                            continue;
+                        //==============================
 
-        //                //dst.Idle_View(dir, true); //todo 나중에 수정된 함수 호출하기 
-        //                dst._behaviorKind = Behavior.eKind.Idle_LookAt;
-        //            }
-        //        }
-        //    }
+                        //dst.Idle_View(dir, true); //todo 나중에 수정된 함수 호출하기 
+                        dst._behaviorKind = Behavior.eKind.Idle_LookAt;
+                    }
+                }
+            }
 
-        //}
+        }
 
         public void SetAll_Behavior(Behavior.eKind kind)
         {
