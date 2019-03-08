@@ -18,26 +18,13 @@ namespace HordeFight
         void Start()
         {
             Misc.Init();
-            ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
+            SingleO.Init(gameObject); //싱글톤 객체 생성 , 설정 
             SingleO.hierarchy.Init(); //계층도 읽어들이기 
             SingleO.resourceManager.Init(); //스프라이트 로드 
 
-            gameObject.AddComponent<LineControl>();
+            ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
 
-            gameObject.AddComponent<GridManager>();
-            gameObject.AddComponent<CampManager>();
-            gameObject.AddComponent<ObjectManager>();
-            gameObject.AddComponent<PathFinder>();
 
-            gameObject.AddComponent<UI_Main>();
-
-            //SingleO.mainCamera.gameObject.AddComponent<CameraWalk>();
-            gameObject.AddComponent<CameraWalk>();
-
-            gameObject.AddComponent<TouchEvent>();
-            gameObject.AddComponent<TouchControl>();
-
-            SingleO.hierarchy.GetTransform("z_debug").gameObject.AddComponent<DebugViewer>();
             SingleO.debugViewer._origin = SingleO.hierarchy.GetTransform("z_debug/origin");
             SingleO.debugViewer._target = SingleO.hierarchy.GetTransform("z_debug/target");
             //===================
@@ -45,8 +32,8 @@ namespace HordeFight
             //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
             //SingleO.objectManager.Create_ChampCamp();
 
-
         }
+
 
         // Update is called once per frame
         //void Update()
@@ -74,214 +61,141 @@ namespace HordeFight
 //========================================================
 namespace HordeFight
 {
+    
+    //==================================================================
+    //S<CellSpacePartition>.Create();
+    //S<ResourceManager>.Create();
+    //S<HierarchyPreLoader>.Create();
+    //S<WideCoroutine>.Create();
+    //S<HashToStringMap>.Create();
+
+    //S<GridManager>.inst     = gameObject.AddComponent<GridManager>();
+    //S<CampManager>.inst     = gameObject.AddComponent<CampManager>();
+    //S<ObjectManager>.inst   = gameObject.AddComponent<ObjectManager>();
+    //S<PathFinder>.inst      = gameObject.AddComponent<PathFinder>();
+    //S<UI_Main>.inst         = gameObject.AddComponent<UI_Main>();
+    //S<DebugViewer>.inst     = gameObject.AddComponent<DebugViewer>();
+    //S<LineControl>.inst     = gameObject.AddComponent<LineControl>();
+    //S<CameraWalk>.inst      = gameObject.AddComponent<CameraWalk>();
+    //S<TouchEvent>.inst      = gameObject.AddComponent<TouchEvent>();
+    //S<TouchControl>.inst    = gameObject.AddComponent<TouchControl>();
+
+    //S<GameObject>.mainCamera    = S<GameObject>.FindHierarchy<Camera>("Main Camera");
+    //S<GameObject>.canvasRoot    = S<GameObject>.FindHierarchy<Canvas>("Canvas");
+    //S<GameObject>.gridRoot      = S<GameObject>.FindHierarchy<Transform>("0_grid");
+    //S<GameObject>.unitRoot      = S<GameObject>.FindHierarchy<Transform>("0_unit");
+    //S<GameObject>.shotRoot      = S<GameObject>.FindHierarchy<Transform>("0_shot");
+
+    //S<HierarchyPreLoader>.inst.GetTransform("z_debug").gameObject.AddComponent<DebugViewer>();
+    //S<DebugViewer>.inst._origin = S<HierarchyPreLoader>.inst.GetTransform("z_debug/origin");
+
+    //S<HierarchyPreLoader>.inst.Init();
+    //S<ResourceManager>.inst.Init();
+    //==================================================================
+    //public static class S<T> where T : class, new()
+    //{
+    //    static public T inst = null;
+
+    //    //ex:  S<CellSpacePartition>.i.Create();
+    //    static public void Create()
+    //    {
+    //        S<T>.inst = new T();
+    //    }
+
+    //    //ex:  S<TouchEvent>.i = S<TouchEvent>.FindMono<TouchEvent>();
+    //    static public MONO FindMono<MONO>() where MONO : MonoBehaviour
+    //    {
+    //        return (MONO)MonoBehaviour.FindObjectOfType(typeof(MONO));
+    //    }
+
+    //    //ex:  S<GameObject>.mainCamera = S<GameObject>.FindHierarchy<Camera>("Main Camera");
+    //    static public  GT FindHierarchy<GT>(string name) where GT : class
+    //    {
+    //        if (typeof(T) != typeof(GameObject)) 
+    //            return null;
+
+    //        GameObject obj = GameObject.Find(name);
+    //        if (null != obj)
+    //        {
+    //            return obj.GetComponent<GT>();
+    //        }
+    //        return null;
+
+    //    } 
+
+    //    static public Camera mainCamera = null; //"Main Camera"  
+    //    static public Canvas canvasRoot = null; //"Canvas"
+    //    static public Transform gridRoot = null; //"0_grid
+    //    static public Transform unitRoot = null; //"0_unit"
+    //    static public Transform shotRoot = null; //"0_shot
+    //}
+
     public static class SingleO
     {
         
-        public static TouchEvent touchEvent
+        static public  GT FindHierarchy<GT>(string name) where GT : class
         {
-            get
+            
+            GameObject obj = GameObject.Find(name);
+            if (null != obj)
             {
-                return CSingletonMono<TouchEvent>.Instance;
+                return obj.GetComponent<GT>();
             }
+            return null;
+        } 
+
+        public static void Init(GameObject parent)
+        {
+            mainCamera = FindHierarchy<Camera>("Main Camera");
+            canvasRoot = FindHierarchy<Canvas>("Canvas");
+            gridRoot = FindHierarchy<Transform>("0_grid");
+            unitRoot = FindHierarchy<Transform>("0_unit");
+            shotRoot = FindHierarchy<Transform>("0_shot");
+            debugRoot = FindHierarchy<Transform>("z_debug");
+
+
+            gridManager = parent.AddComponent<GridManager>();
+            objectManager = parent.AddComponent<ObjectManager>();
+            campManager = parent.AddComponent<CampManager>();
+            pathFinder = parent.AddComponent<PathFinder>();
+            cameraWalk = parent.AddComponent<CameraWalk>();
+            touchEvent = parent.AddComponent<TouchEvent>();
+            touchControl = parent.AddComponent<TouchControl>();
+            uiMain = parent.AddComponent<UI_Main>();
+            lineControl = parent.AddComponent<LineControl>();
+
+            debugViewer = debugRoot.gameObject.AddComponent<DebugViewer>();
+
         }
 
-        public static TouchControl touchControl
-        {
-            get
-            {
-                return CSingletonMono<TouchControl>.Instance;
-            }
-        }
-
-        public static LineControl lineControl
-        {
-            get
-            {
-                return CSingletonMono<LineControl>.Instance;
-            }
-        }
-
-        public static CampManager campManager
-        {
-            get
-            {
-                return CSingletonMono<CampManager>.Instance;
-            }
-        }
-
-        public static ObjectManager objectManager
-        {
-            get
-            {
-                return CSingletonMono<ObjectManager>.Instance;
-            }
-        }
-
-        public static GridManager gridManager
-        {
-            get
-            {
-                return CSingletonMono<GridManager>.Instance;
-            }
-        }
-
-        public static PathFinder pathFinder
-        {
-            get
-            {
-                return CSingletonMono<PathFinder>.Instance;
-            }
-        }
-
-        public static UI_Main uiMain
-        {
-            get
-            {
-                return CSingletonMono<UI_Main>.Instance;
-            }
-        }
-
-        public static CameraWalk cameraWalk
-        {
-            get
-            {
-                return CSingletonMono<CameraWalk>.Instance;
-            }
-        }
-
-        public static ResourceManager resourceManager
-        {
-            get
-            {
-                return CSingleton<ResourceManager>.Instance;
-            }
-        }
-
-        public static HierarchyPreLoader hierarchy
-        {
-            get
-            {
-                return CSingleton<HierarchyPreLoader>.Instance;
-            }
-        }
-
-        public static WideCoroutine coroutine
-        {
-            get
-            {
-                return CSingleton<WideCoroutine>.Instance;
-            }
-        }
-
-        public static HashToStringMap hashMap
-        {
-            get
-            {
-                return CSingleton<HashToStringMap>.Instance;
-            }
-        }
-
-        public static DebugViewer debugViewer
-        {
-            get
-            {
-                return CSingletonMono<DebugViewer>.Instance;
-            }
-        }
-
-        private static Camera _mainCamera = null;
-        public static Camera mainCamera
-        {
-            get
-            {
-                if (null == _mainCamera)
-                {
-
-                    GameObject obj = GameObject.Find("Main Camera");
-                    if (null != obj)
-                    {
-                        _mainCamera = obj.GetComponent<Camera>();
-                    }
-
-                }
-                return _mainCamera;
-            }
-        }
+        //유니티 객체 
+        static public Camera mainCamera = null; //"Main Camera"  
+        static public Canvas canvasRoot = null; //"Canvas"
+        static public Transform gridRoot = null; //"0_grid
+        static public Transform unitRoot = null; //"0_unit"
+        static public Transform shotRoot = null; //"0_shot
+        static public Transform debugRoot = null; //"z_debug
 
 
-        private static Canvas _canvasRoot = null;
-        public static Canvas canvasRoot
-        {
-            get
-            {
-                if (null == _canvasRoot)
-                {
-                    GameObject obj = GameObject.Find("Canvas");
-                    if (null != obj)
-                    {
-                        _canvasRoot = obj.GetComponent<Canvas>();
-                    }
-
-                }
-                return _canvasRoot;
-            }
-        }
+        //모노 객체 
+        public static CampManager campManager = null;
+        public static ObjectManager objectManager = null;
+        public static GridManager gridManager = null;
+        public static PathFinder pathFinder = null;
+        public static CameraWalk cameraWalk = null;
+        public static TouchEvent touchEvent = null;
+        public static TouchControl touchControl = null;
+        public static UI_Main uiMain = null;
+        public static LineControl lineControl = null;
+        public static DebugViewer debugViewer = null;
 
 
-        private static Transform _gridRoot = null;
-        public static Transform gridRoot
-        {
-            get
-            {
-                if (null == _gridRoot)
-                {
-                    GameObject obj = GameObject.Find("0_grid");
-                    if (null != obj)
-                    {
-                        _gridRoot = obj.GetComponent<Transform>();
-                    }
-
-                }
-                return _gridRoot;
-            }
-        }
-
-        private static Transform _unitRoot = null;
-        public static Transform unitRoot
-        {
-            get
-            {
-                if (null == _unitRoot)
-                {
-                    GameObject obj = GameObject.Find("0_unit");
-                    if (null != obj)
-                    {
-                        _unitRoot = obj.GetComponent<Transform>();
-                    }
-
-                }
-                return _unitRoot;
-            }
-        }
-
-        private static Transform _shotRoot = null;
-        public static Transform shotRoot
-        {
-            get
-            {
-                if (null == _shotRoot)
-                {
-                    GameObject obj = GameObject.Find("0_shot");
-                    if (null != obj)
-                    {
-                        _shotRoot = obj.GetComponent<Transform>();
-                    }
-
-                }
-                return _shotRoot;
-            }
-        }
-
+        //일반 객체
+        public static CellSpacePartition cellPartition = CSingleton<CellSpacePartition>.Instance;
+        public static ResourceManager resourceManager = CSingleton<ResourceManager>.Instance;
+        public static HierarchyPreLoader hierarchy = CSingleton<HierarchyPreLoader>.Instance;
+        public static WideCoroutine coroutine = CSingleton<WideCoroutine>.Instance;
+        public static HashToStringMap hashMap = CSingleton<HashToStringMap>.Instance;
 
     }
 
@@ -634,6 +548,11 @@ namespace HordeFight
         public void Create_Polygon(Transform dst)
         { }
 
+        public bool IsActive(int id)
+        {
+            return _list[id].render.gameObject.activeSelf;
+        }
+
         public void SetActive(int id, bool onOff)
         {
             //todo : 예외처리 추가하기 
@@ -658,6 +577,9 @@ namespace HordeFight
             if (1f < rate) rate = 1f;
 
             LineRenderer render = _list[id].render;
+
+            if (false == render.gameObject.activeSelf) return; //비활성시에는 처리하지 않는다 
+
             Vector3 pos = render.GetPosition(0);
             pos.x += HP_BAR_LENGTH * rate;
             render.SetPosition(1, pos);
@@ -665,6 +587,7 @@ namespace HordeFight
             //render.SetPosition(0, pos);
             //pos.x += (0.1f * rate) ;
             //render.SetPosition(1, pos);
+
         }
 
 	}
@@ -1100,7 +1023,7 @@ namespace HordeFight
             //SingleO.objectManager.GetSphereTree().Render_RangeTest(_origin.position,radius);
             //==============================================
 
-            Draw_LookAtChamp();
+            //Draw_LookAtChamp();
         }
 
   //      void Update()
@@ -1513,7 +1436,7 @@ namespace HordeFight
         public Dictionary<Vector3Int, CellInfo> _cellInfoList = new Dictionary<Vector3Int,CellInfo>(new Vector3IntComparer());
         public Dictionary<Vector3Int, StructTile> _structTileList = new Dictionary<Vector3Int, StructTile>(new Vector3IntComparer());
 
-        public CellSpacePartition _cellSpacePartition = new CellSpacePartition();
+        //public CellSpacePartition _cellSpacePartition = new CellSpacePartition();
 
         //중심이 (0,0)인 nxn 그리드 인덱스 값을 미리 구해놓는다
         public Dictionary<uint, Vector3Int[]> _indexesNxN = new Dictionary<uint, Vector3Int[]>();
@@ -1555,6 +1478,7 @@ namespace HordeFight
 
 		private void Start()
 		{
+            
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
             GameObject o = GameObject.Find("Tilemap_Structure");
             if(null != o)
@@ -1585,7 +1509,8 @@ namespace HordeFight
 
             this.LoadTilemap_Struct();
 
-            _cellSpacePartition.Init(new Vector2Int(64, 64)); //chamto test
+            SingleO.cellPartition.Init(new Vector2Int(64, 64));
+            //_cellSpacePartition.Init(new Vector2Int(64, 64)); //chamto test
 		}
 
 
@@ -1643,7 +1568,7 @@ namespace HordeFight
         //chamto test
         public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
         {
-            return _cellSpacePartition.IsVisibleTile(origin_3d, target_3d, length_interval);
+            return SingleO.cellPartition.IsVisibleTile(origin_3d, target_3d, length_interval);
         }
 
         public bool old_IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)

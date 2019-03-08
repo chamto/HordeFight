@@ -1013,16 +1013,18 @@ namespace HordeFight
             get { return this._collider_radius + _mt_range_max * GridManager.MeterToWorld; }
         }
 
-		//private void Start()
-		//{
-  //          //DebugWide.LogBlue("ChampUnit");
-  //          //this.Init();
-		//}
+        //private void Start()
+        //{
+        //          //DebugWide.LogBlue("ChampUnit");
+        //          //this.Init();
+        //}
 
         //private void Update()
         //{
         //    this.UpdateAll();
         //}
+
+        //LineControl LINE_CONTROL = null;
 
 		public override void Init()
 		{
@@ -1038,6 +1040,7 @@ namespace HordeFight
             SingleO.lineControl.SetActive(_UIID_hp, false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
+
 
 		public override bool UpdateAll()
 		{
@@ -1373,7 +1376,7 @@ namespace HordeFight
 
         public virtual void Init()
         {
-
+            
             //=====================================================
             _collider = GetComponent<SphereCollider>();
             _collider_radius = _collider.radius;
@@ -1503,15 +1506,6 @@ namespace HordeFight
         public void Update_CellInfo()
         {
             Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
-
-            //충돌없는 마지막 타일 위치를 갱신한다 
-            //StructTile structTile = null;
-            //if (false == SingleO.gridManager.HasStructTile(transform.position, out structTile))
-            //{
-            //    _lastCellPos_withoutCollision = SingleO.gridManager.ToPosition3D_Center(cur_posXY_2d);
-            //    //DebugWide.LogBlue(curIdx + "   " + this.transform.position);
-            //}
-
 
             //UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다"); //절대 쓰지 말기!! 성능하락폭이 엄청나다.
             if (_cellInfo._index != cur_posXY_2d)
