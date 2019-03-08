@@ -174,6 +174,14 @@ public class DebugWide
         Gizmos.DrawWireSphere(pos, radius);
     }
 
+    static public void DrawCube(Vector3 pos, Vector3 size, Color cc)
+    {
+        Gizmos.color = cc;
+        Gizmos.DrawWireCube(pos, size);
+    }
+
+
+
     static public void PrintText(Vector3 pos, Color cc, string text)
     {
 
