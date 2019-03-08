@@ -1306,6 +1306,13 @@ namespace HordeFight
 
         //==================================================
 
+        //셀공간 링크 정보
+        public Being _prev_sibling = null;
+        public Being _next_sibling = null;
+        public StructTile _cur_cell = null;
+
+        //==================================================
+
         //고유정보
         public uint _id;
         public eKind _kind = eKind.None;
@@ -1350,6 +1357,7 @@ namespace HordeFight
         //==================================================
         public Movement _move = null;
         public CellInfo _cellInfo = null;
+
         //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
 
         //==================================================

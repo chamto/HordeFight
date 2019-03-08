@@ -715,8 +715,8 @@ namespace HordeFight
                     ccc = Color.red;
                 }
 
-                Vector3 end = t._center_3d + Misc.GetDir8_Normal3D_AxisY(t._dir) * 0.12f;
-                Debug.DrawLine(t._center_3d, end, ccc);
+                Vector3 end = t._pos3d_center + Misc.GetDir8_Normal3D_AxisY(t._dir) * 0.12f;
+                Debug.DrawLine(t._pos3d_center, end, ccc);
 
 
                 //UnityEditor.Handles.Label(t._center_3d, "( " + cur.x + " , " + cur.z + " )");
@@ -1052,10 +1052,62 @@ namespace HordeFight
     {
         public const int Specifier_DiagonalFixing = 7; //대각고정 예약어
 
-        public int _specifier = 0;
-        public eDirection8 _dir = eDirection8.none;
-        public Vector3 _center_3d = ConstV.v3_zero;    //타일의 중앙 월드위치
+        public int          _specifier = 0;
+        public eDirection8  _dir = eDirection8.none;
         public bool _isUpTile = false; //챔프보다 위에 있는 타일 (TileMap_StructUp)
+        public bool _isStructTile = false; //구조물 타일인지 나타냄
+
+        public Vector3      _pos3d_center = ConstV.v3_zero;    //타일의 중앙 월드위치
+        public Vector2Int   _pos2d = ConstV.v2Int_zero;
+        public int          _pos1d = -1; //타일의 1차원 위치값 
+
+        //==================================================
+        //타일에 속해있는 객체의 링크
+        public Being _children = null; 
+        public int _childCount = 0;
+
+
+        //새로운 객체가 머리가 된다 
+        public void AttachChild(Being dst)
+        {
+            Being my_child = _children;
+            _children = dst; // new head of list
+
+            dst._prev_sibling = null; 
+            dst._next_sibling = my_child; 
+            dst._cur_cell = this;
+
+            if (null != my_child) my_child._prev_sibling = dst; // previous now this..
+
+            _childCount++;
+
+        }
+
+        public void DetachChild(Being dst)
+        {
+            if (null == dst._cur_cell._children || 0 == dst._cur_cell._childCount) return;
+
+            Being prev = dst._prev_sibling;
+            Being next = dst._next_sibling;
+            if (null != prev)
+            {
+                prev._next_sibling = next; 
+                if (null != next) next._prev_sibling = prev;
+            }
+            else
+            {
+                //dst가 head 인 경우, 새로운 head 설정한다
+                //_children = next;
+                dst._cur_cell._children = next;
+
+                if (null != next) next._prev_sibling = null;
+            }
+
+            _childCount--;
+            dst._prev_sibling = null;
+            dst._next_sibling = null;
+            dst._cur_cell = null;
+        }
     }
 
 
@@ -1080,10 +1132,6 @@ namespace HordeFight
     }
 
 
-    //public class CellSpace : LinkedList<Being>
-    //{
-        
-    //}
     public class CellSpacePartition
     {
         public const float ONE_METER = 1f; //타일 한개의 가로길이 , 월드 크기 
@@ -1092,6 +1140,7 @@ namespace HordeFight
         private float _tileSize_h = ONE_METER * 1; //월드 크기
         private int _tileMapSize_x = 64;
         private int _tileMapSize_y = 64;
+        private int _max_tileMapSize = 64 * 64;
         //private Vector2Int _tileMapSize = new Vector2Int(64, 64); //64*64 타일 갯수까지 사용한다 
         private StructTile[] _cellInfo2Map = null;
 
@@ -1100,6 +1149,7 @@ namespace HordeFight
         {
             _tileMapSize_x = tileMapSize.x;
             _tileMapSize_y = tileMapSize.y;
+            _max_tileMapSize = _tileMapSize_x * _tileMapSize_y;
             _cellInfo2Map = new StructTile[_tileMapSize_x * _tileMapSize_y];
 
             CreateCellIfoMap_FromStructUpTile();
@@ -1114,7 +1164,14 @@ namespace HordeFight
                 for (int x = 0; x < _tileMapSize_x; x++)
                 {
                     StructTile structTile = null;
-                    SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile);
+                    if(false == SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile))
+                    {
+                        structTile = new StructTile();
+                        structTile._pos3d_center = ToPosition3D_Center(count);
+                        structTile._pos2d = new Vector2Int(x, y);
+                        structTile._pos1d = count;
+
+                    }
                     _cellInfo2Map[count] = structTile;
 
                     count++;
@@ -1245,7 +1302,7 @@ namespace HordeFight
                             //대각타일 영역에서 점 p를 포함하는지 내적을 이용해서 검사 
                             Vector3 oDir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
                             //Vector3 pDir = xz_3d - structTile._center_3d; //실수값 부정확성 때문에 같은 위치에서도 다른 결과가 나옴.
-                            Vector3 pDir = Misc.GetDir8_Normal3D(xz_3d - structTile._center_3d); //정규화된8 방향값으로 변환해서 부정확성을 최소로 줄인다.
+                            Vector3 pDir = Misc.GetDir8_Normal3D(xz_3d - structTile._pos3d_center); //정규화된8 방향값으로 변환해서 부정확성을 최소로 줄인다.
                             if (0 > Vector3.Dot(oDir, pDir))
                                 return _ReturnMessage_Included_InDiagonalArea; //대각타일 영역에 포함
                             else
@@ -1264,14 +1321,6 @@ namespace HordeFight
             return _ReturnMessage_NotIncluded_InStructTile; //구조타일 영역에 미포함
         }
 
-        public StructTile GetStructTile(Vector3 pos3d)
-        {
-            int pos1d = ToPosition1D(pos3d);
-            if (0 > pos1d) return null; //타일맵을 벗어나는 범위 
-
-            return _cellInfo2Map[pos1d];
-
-        }
 
 
         public Vector2Int ToPosition2D(Vector3 pos3d)
@@ -1414,6 +1463,151 @@ namespace HordeFight
 
             return new Vector3(pos3d_x,0,pos3d_z);
         }
+
+
+        //==================================================
+
+        public bool HasStructUpTile(int p1d)
+        {
+            if (0 > p1d || p1d >= _max_tileMapSize)
+            {
+                return false;
+            }
+
+            StructTile structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+                return structTile._isUpTile && structTile._isStructTile;
+            }
+
+            return false;
+        }
+        public bool HasStructUpTile(Vector2Int p2d)
+        {
+            int p1d = this.ToPosition1D(p2d, _tileMapSize_x);
+            if (-1 == p1d)
+            {
+                return false;
+            }
+
+            StructTile structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+
+                return structTile._isUpTile && structTile._isStructTile;
+            }
+
+
+            return false;
+        }
+        public bool HasStructUpTile(Vector3 p3d)
+        {
+            int p1d = this.ToPosition1D(p3d);
+            if (-1 == p1d)
+            {
+                return false;
+            }
+
+            StructTile structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+                return structTile._isUpTile && structTile._isStructTile;
+            }
+
+            return false;
+        }
+
+        public bool HasStructTile(int p1d, out StructTile structTile)
+        {
+            if(0 > p1d  || p1d >= _max_tileMapSize)
+            {
+                structTile = null;
+                return false;
+            }
+
+            structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+                return structTile._isStructTile;
+            }
+
+            return false;
+        }
+        public bool HasStructTile(Vector2Int p2d, out StructTile structTile)
+        {
+            int p1d = this.ToPosition1D(p2d, _tileMapSize_x);
+            if (-1 == p1d) 
+            {
+                structTile = null;
+                return false;   
+            }
+
+            structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+                return structTile._isStructTile;
+            }
+
+
+            return false;
+        }
+        public bool HasStructTile(Vector3 p3d, out StructTile structTile)
+        {
+            int p1d = this.ToPosition1D(p3d);
+            if (-1 == p1d)
+            {
+                structTile = null;
+                return false;
+            }
+
+            structTile = _cellInfo2Map[p1d];
+            if (null != structTile)
+            {
+                return structTile._isStructTile;
+            }
+
+            return false;
+        }
+
+        public StructTile GetStructTile(int p1d)
+        {
+            if (0 > p1d || p1d >= _max_tileMapSize)
+            {
+                return null;
+            }
+
+            return _cellInfo2Map[p1d];
+        }
+
+        public StructTile GetStructTile(Vector3 pos3d)
+        {
+            int pos1d = ToPosition1D(pos3d);
+            if (0 > pos1d) return null; //타일맵을 벗어나는 범위 
+
+            return _cellInfo2Map[pos1d];
+
+        }
+
+        public void AttachCellSpace(int pos1d, Being dst)
+        {
+            StructTile tile = null;
+            if(true == HasStructTile(pos1d,out tile))
+            {
+                //뗀후 새로운 곳에 붙인다 
+                tile.DetachChild(dst);
+                tile.AttachChild(dst);
+            }
+        }
+
+        public void DetachCellSpace(int pos1d, Being dst)
+        {
+            StructTile tile = null;
+            if (true == HasStructTile(pos1d, out tile))
+            {
+                tile.DetachChild(dst);
+            }
+        }
+
     }
 
     public class GridManager : MonoBehaviour
@@ -1535,9 +1729,12 @@ namespace HordeFight
 
                 structTile = new StructTile();
                 structTile._specifier = specifier;
-                structTile._center_3d = this.ToPosition3D_Center(XY_2d); 
+                structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
+                structTile._pos2d = new Vector2Int(XY_2d.x, XY_2d.y);
+                structTile._pos1d = this.ToPosition1D(XY_2d, 64); //임시코드
                 structTile._dir = ruleTile._tileDataMap.GetDirection8(XY_2d);
                 structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                structTile._isStructTile = true;
                 _structTileList.Add(XY_2d, structTile);
 
             }
@@ -2116,7 +2313,7 @@ namespace HordeFight
                             //대각타일 영역에서 점 p를 포함하는지 내적을 이용해서 검사 
                             Vector3 oDir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
                             //Vector3 pDir = xz_3d - structTile._center_3d; //실수값 부정확성 때문에 같은 위치에서도 다른 결과가 나옴.
-                            Vector3 pDir = Misc.GetDir8_Normal3D(xz_3d - structTile._center_3d); //정규화된8 방향값으로 변환해서 부정확성을 최소로 줄인다.
+                            Vector3 pDir = Misc.GetDir8_Normal3D(xz_3d - structTile._pos3d_center); //정규화된8 방향값으로 변환해서 부정확성을 최소로 줄인다.
                             if (0 > Vector3.Dot(oDir, pDir))
                                 return _ReturnMessage_Included_InDiagonalArea; //대각타일 영역에 포함
                             else
@@ -2421,7 +2618,7 @@ namespace HordeFight
             {
                 //if (true == t.Value._isUpTile)
                 {
-                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._center_3d, 0.6f, SphereModel.Flag.TREE_LEVEL_LAST);
+                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, SphereModel.Flag.TREE_LEVEL_LAST);
                     _sphereTree_struct.AddIntegrateQ(model);
                 }
             }
@@ -3026,7 +3223,7 @@ namespace HordeFight
 
             const float Tile_Radius = 0.08f;
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 sqr_dis = src.transform.localPosition - structTile._center_3d;
+            Vector3 sqr_dis = src.transform.localPosition - structTile._pos3d_center;
             float r_sum = src._collider_radius + Tile_Radius;
 
             //1.두 캐릭터가 겹친상태 
@@ -3069,7 +3266,7 @@ namespace HordeFight
             if (null == structTile) return;
 
             Vector3 srcPos = src.transform.position;
-            Vector3 centerToSrc_dir = srcPos - structTile._center_3d;
+            Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
             float size = SingleO.gridManager._cellSize_x * 0.5f;
@@ -3080,22 +3277,22 @@ namespace HordeFight
             {
                 case eDirection8.up:
                     {
-                        srcPos.z = structTile._center_3d.z + size;
+                        srcPos.z = structTile._pos3d_center.z + size;
                     }
                     break;
                 case eDirection8.down:
                     {
-                        srcPos.z = structTile._center_3d.z - size;
+                        srcPos.z = structTile._pos3d_center.z - size;
                     }
                     break;
                 case eDirection8.left:
                     {
-                        srcPos.x = structTile._center_3d.x - size;
+                        srcPos.x = structTile._pos3d_center.x - size;
                     }
                     break;
                 case eDirection8.right:
                     {
-                        srcPos.x = structTile._center_3d.x + size;
+                        srcPos.x = structTile._pos3d_center.x + size;
                     }
                     break;
                 case eDirection8.leftUp:
@@ -3103,19 +3300,19 @@ namespace HordeFight
                         //down , right
                         if(StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._center_3d.x - size;
-                            srcPos.z = structTile._center_3d.z + size;
+                            srcPos.x = structTile._pos3d_center.x - size;
+                            srcPos.z = structTile._pos3d_center.z + size;
                             break;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x -= size;
                         center.z -= size;
                         line3.origin = center;
 
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x += size;
                         center.z += size;
                         line3.last = center;
@@ -3129,19 +3326,19 @@ namespace HordeFight
                         //down , left
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._center_3d.x + size;
-                            srcPos.z = structTile._center_3d.z + size;
+                            srcPos.x = structTile._pos3d_center.x + size;
+                            srcPos.z = structTile._pos3d_center.z + size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x -= size;
                         center.z += size;
                         line3.origin = center;
 
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x += size;
                         center.z -= size;
                         line3.last = center;
@@ -3154,20 +3351,20 @@ namespace HordeFight
                         //up , right
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._center_3d.x - size;
-                            srcPos.z = structTile._center_3d.z - size;
+                            srcPos.x = structTile._pos3d_center.x - size;
+                            srcPos.z = structTile._pos3d_center.z - size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
 
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x -= size;
                         center.z += size;
                         line3.origin = center;
 
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x += size;
                         center.z -= size;
                         line3.last = center;
@@ -3180,19 +3377,19 @@ namespace HordeFight
                         //up , left
                         if (StructTile.Specifier_DiagonalFixing == structTile._specifier)
                         {
-                            srcPos.x = structTile._center_3d.x + size;
-                            srcPos.z = structTile._center_3d.z - size;
+                            srcPos.x = structTile._pos3d_center.x + size;
+                            srcPos.z = structTile._pos3d_center.z - size;
                             break;
                         }
 
 
                         if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return;
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x -= size;
                         center.z -= size;
                         line3.origin = center;
 
-                        center = structTile._center_3d;
+                        center = structTile._pos3d_center;
                         center.x += size;
                         center.z += size;
                         line3.last = center;
