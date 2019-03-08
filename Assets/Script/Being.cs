@@ -1309,7 +1309,7 @@ namespace HordeFight
         //셀공간 링크 정보
         public Being _prev_sibling = null;
         public Being _next_sibling = null;
-        public StructTile _cur_cell = null;
+        public CellSpace _cur_cell = null;
 
         //==================================================
 
@@ -1422,9 +1422,11 @@ namespace HordeFight
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-            Vector3Int posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
-            SingleO.gridManager.AddCellInfo_Being(posXY_2d, this);
-            _cellInfo = SingleO.gridManager.GetCellInfo(posXY_2d);
+            //Vector3Int posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
+            //SingleO.gridManager.AddCellInfo_Being(posXY_2d, this);
+            //_cellInfo = SingleO.gridManager.GetCellInfo(posXY_2d);
+            int pos1d = SingleO.cellPartition.ToPosition1D(transform.position);
+            SingleO.cellPartition.AttachCellSpace(pos1d, this);
 
 
             //=====================================================
@@ -1513,15 +1515,18 @@ namespace HordeFight
         /// </summary>
         public void Update_CellInfo()
         {
-            Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
+            //Vector3Int cur_posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
+            int new_pos1d = SingleO.cellPartition.ToPosition1D(transform.position);
 
             //UnityEngine.Assertions.Assert.IsTrue(null != _cellInfo, "CellInfo 가 Null 이다"); //절대 쓰지 말기!! 성능하락폭이 엄청나다.
-            if (_cellInfo._index != cur_posXY_2d)
+            //if (_cellInfo._index != cur_posXY_2d)
+            if(_cur_cell._pos1d != new_pos1d)
             {
-                SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
-                SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this); //새로운 위치 정보 추가
+                //SingleO.gridManager.RemoveCellInfo_Being(_cellInfo._index, this); //이전 위치의 정보 제거
+                //SingleO.gridManager.AddCellInfo_Being(cur_posXY_2d, this); //새로운 위치 정보 추가
+                //_cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
 
-                _cellInfo = SingleO.gridManager.GetCellInfo(cur_posXY_2d);
+                SingleO.cellPartition.AttachCellSpace(new_pos1d, this);
 
                 //chamto test
                 //string temp = "count:"+_cellInfo.Count + "  (" + curIdx + ")  ";
@@ -2131,7 +2136,7 @@ namespace HordeFight
             dir.y = 0;
             //DebugWide.LogBlue("TouchMoved " + dir);
 
-            SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
+            //SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
 
         }
 
