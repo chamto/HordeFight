@@ -962,6 +962,8 @@ namespace HordeFight
         //public eJobPosition _jobPosition = eJobPosition.None;
         //public eClass _class = eClass.None;
 
+        //==================================================
+
         public ushort _level = 1;
 
         //능력치1 
@@ -973,6 +975,7 @@ namespace HordeFight
         //private Geo.Sphere _collider;
         //private Vector3 _direction = Vector3.forward;
 
+        //==================================================
 
         //주시대상
         public Being _looking = null;
@@ -981,27 +984,22 @@ namespace HordeFight
         public Inventory _inventory = null;
 
         //전용UI
-        public int _UIID_circle_collider = -1;
-        public int _UIID_hp = -1;
-        //====================================
+        //public int _UIID_circle_collider = -1;
+        //public int _UIID_hp = -1;
+        public LineControl.Info _ui_circle;
+        public LineControl.Info _ui_hp;
+
+        //==================================================
 
         //진영정보
         public Camp _belongCamp = null; //소속 캠프
-        //public TacticsSphere _tacticsSphere = new TacticsSphere();
+        public Camp.eKind _campKind = Camp.eKind.None;
        
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
-        public Camp.eKind _campKind = Camp.eKind.None;
-        //{
-        //    get
-        //    {
-        //        return _belongCamp.campKind;
-        //    }
-        //    set
-        //    {
-        //        _belongCamp = SingleO.campManager.GetDefaultCamp(value);
-        //    }
-        //}
+        //==================================================
+
+
 
 
         public float attack_range_min
@@ -1034,10 +1032,10 @@ namespace HordeFight
 
             //=====================================================
             // ui 설정 
-            _UIID_circle_collider = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
-            _UIID_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            SingleO.lineControl.SetActive(_UIID_circle_collider, false);
-            SingleO.lineControl.SetActive(_UIID_hp, false);
+            _ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
+            _ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            _ui_circle.gameObject.SetActive(false);
+            _ui_hp.gameObject.SetActive(true);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
 		}
 
@@ -1057,8 +1055,6 @@ namespace HordeFight
                     _belongCamp = SingleO.campManager.GetDefaultCamp(_campKind);
                 }
 
-                //HP갱신 
-                SingleO.lineControl.SetLineHP(_UIID_hp, (float)_hp_cur / (float)_hp_max);
             }
 
             return result;
@@ -1142,15 +1138,22 @@ namespace HordeFight
                     //DebugWide.LogYellow("OnAniState_End :" + hash_state); //chamto test
 
                     _target.AddHP(-1);
-                    ChampUnit champ = _target as ChampUnit;
-                    if(null != champ)
+                    ChampUnit target_champ = _target as ChampUnit;
+                    if(null != target_champ)
                     {
-                        StartCoroutine(champ.Damage());    
+                        StartCoroutine(target_champ.Damage());
+                        target_champ.ApplyUI_HPBar();
                     }
 
                 }
 
             }
+        }
+
+        public void ApplyUI_HPBar()
+        {
+            //HP갱신 
+            _ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
         }
 
         bool __in_corutin_Damage = false;

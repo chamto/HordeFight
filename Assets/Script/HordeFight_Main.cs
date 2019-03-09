@@ -834,7 +834,7 @@ namespace HordeFight
     {
 
         private int _sequenceId = 0;
-        private Dictionary<int, LineInfo> _list = new Dictionary<int, LineInfo>();
+        private Dictionary<int, Info> _list = new Dictionary<int, Info>();
 
 
         public enum eKind
@@ -847,17 +847,45 @@ namespace HordeFight
             Graph,  //경로 표현 
         }
 
-        public struct LineInfo
+        public struct Info
         {
             public LineRenderer render;
+            public GameObject gameObject;
+            public Transform transform;
             public eKind kind;
             public int id;
+
+            public Vector3 hpPos_0;
 
             public void Init()
             {
                 render = null;
+                gameObject = null;
+                transform = null;
                 kind = eKind.None;
                 id = -1;
+
+                hpPos_0 = ConstV.v3_zero;
+            }
+
+            public void SetScale(float scale)
+            {
+                //Vector3 s = _list[id].render.transform.localScale;
+                transform.localScale = Vector3.one * scale;
+            }
+
+            public void SetLineHP(float rate)
+            {
+                if (false == gameObject.activeSelf) return; //비활성시에는 처리하지 않는다 
+                if (eKind.Line != kind) return;
+                
+                if (0 > rate) rate = 0;
+                if (1f < rate) rate = 1f;
+
+                Vector3 pos = hpPos_0;
+                pos.x += HP_BAR_LENGTH * rate;
+                render.SetPosition(1, pos);
+
             }
 
             //public void Update_Circle()
@@ -882,29 +910,22 @@ namespace HordeFight
 			
 		}
 
-		private void Update()
-		{
-            //foreach(LineInfo info in _list.Values)
-            //{
-            //    if(eKind.Circle == info.kind)
-            //    {
-                    
-            //    }
-            //}
-		}
+		
 
         const float HP_BAR_LENGTH = 0.8f;
-        public int Create_LineHP_AxisY(Transform dst)
+        public Info Create_LineHP_AxisY(Transform dst)
         {
             GameObject obj = new GameObject();
             LineRenderer render = obj.AddComponent<LineRenderer>();
-            LineInfo info = new LineInfo();
+            Info info = new Info();
             info.Init();
 
             _sequenceId++;
 
             info.id = _sequenceId;
             info.render = render;
+            info.gameObject = render.gameObject;
+            info.transform = render.transform;
             info.kind = eKind.Line;
 
             render.name = info.kind.ToString() + "_" + _sequenceId.ToString("000");
@@ -927,23 +948,27 @@ namespace HordeFight
             Vector3 pos = ConstV.v3_zero;
             pos.x = -0.5f; pos.z = -0.8f;
             render.SetPosition(0, pos);
+            info.hpPos_0 = pos; //초기위치 저장해 놓음
             pos.x += HP_BAR_LENGTH;
             render.SetPosition(1, pos);
 
-            return _sequenceId;
+            //return _sequenceId;
+            return info;
         }
 
-        public int Create_Circle_AxisY(Transform parent, float radius, Color color)
+        public Info Create_Circle_AxisY(Transform parent, float radius, Color color)
         {
             GameObject obj = new GameObject();
             LineRenderer render = obj.AddComponent<LineRenderer>();
-            LineInfo info = new LineInfo();
+            Info info = new Info();
             info.Init();
 
             _sequenceId++;
 
             info.id = _sequenceId;
             info.render = render;
+            info.gameObject = render.gameObject;
+            info.transform = render.transform;
             info.kind = eKind.Circle;
 
             render.name = info.kind.ToString() + "_" + _sequenceId.ToString("000");
@@ -977,25 +1002,26 @@ namespace HordeFight
                 //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
             }
 
-            return _sequenceId;
+            //return _sequenceId;
+            return info;
 
         }
 
-        public void Create_Square(Transform dst)
-        { }
+        //public void Create_Square(Transform dst)
+        //{ }
 
-        public void Create_Polygon(Transform dst)
-        { }
+        //public void Create_Polygon(Transform dst)
+        //{ }
 
         public bool IsActive(int id)
         {
-            return _list[id].render.gameObject.activeSelf;
+            return _list[id].gameObject.activeSelf;
         }
 
         public void SetActive(int id, bool onOff)
         {
             //todo : 예외처리 추가하기 
-            _list[id].render.gameObject.SetActive(onOff);
+            _list[id].gameObject.SetActive(onOff);
         }
 
         public void SetScale(int id, float scale)
@@ -1004,10 +1030,10 @@ namespace HordeFight
             _list[id].render.transform.localScale = Vector3.one * scale; 
         }
 
-        public void SetCircle_Radius(int id, float radius)
-        {
+        //public void SetCircle_Radius(int id, float radius)
+        //{
             
-        }
+        //}
 
         //rate : 0~1
         public void SetLineHP(int id, float rate)
@@ -2828,37 +2854,37 @@ namespace HordeFight
             //==============================================
             _aabbCulling.UpdateXZ();
 
-            int overlapCount = _aabbCulling.GetOverlap().Count;
-            AABBCulling.UnOrderedEdgeKey[] toArray = _aabbCulling.GetOverlap().ToArray();
-            for (int i = 0; i < overlapCount;i++)
-            {
-                src = _linearSearch_list[ toArray[i]._V0 ];
-                dst = _linearSearch_list[ toArray[i]._V1 ];
-
-                if (null == (object)src || true == src.isDeath()) continue;
-                if (null == (object)dst || true == dst.isDeath()) continue;
-                if ((object)src == (object)dst) continue;
-
-                CollisionPush(src, dst);
-            }
-
-            //foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            //int overlapCount = _aabbCulling.GetOverlap().Count;
+            //AABBCulling.UnOrderedEdgeKey[] toArray = _aabbCulling.GetOverlap().ToArray();
+            //for (int i = 0; i < overlapCount;i++)
             //{
-                
-            //    src = _linearSearch_list[key._V0];
-            //    dst = _linearSearch_list[key._V1];
+            //    src = _linearSearch_list[ toArray[i]._V0 ];
+            //    dst = _linearSearch_list[ toArray[i]._V1 ];
 
-            //    //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
-
-            //    if (null == src || true == src.isDeath()) continue;
-            //    if (null == dst || true == dst.isDeath()) continue;
-            //    //if (false == src.gameObject.activeInHierarchy) continue; //<- 코드제거 : 죽지 않았으면 안보이는 상태라 해도 처리해야 한다 
-            //    //if (false == dst.gameObject.activeInHierarchy) continue;
-            //    if (src == dst) continue;
-
+            //    if (null == (object)src || true == src.isDeath()) continue;
+            //    if (null == (object)dst || true == dst.isDeath()) continue;
+            //    if ((object)src == (object)dst) continue;
 
             //    CollisionPush(src, dst);
             //}
+
+            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            {
+                
+                src = _linearSearch_list[key._V0];
+                dst = _linearSearch_list[key._V1];
+
+                //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
+
+                if (null == src || true == src.isDeath()) continue;
+                if (null == dst || true == dst.isDeath()) continue;
+                //if (false == src.gameObject.activeInHierarchy) continue; //<- 코드제거 : 죽지 않았으면 안보이는 상태라 해도 처리해야 한다 
+                //if (false == dst.gameObject.activeInHierarchy) continue;
+                if (src == dst) continue;
+
+
+                CollisionPush(src, dst);
+            }
             //==============================================
 
 
@@ -4321,7 +4347,8 @@ namespace HordeFight
                     if(null != champ)
                     {
                         champ.GetComponent<AI>()._ai_running = true;
-                        SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
+                        //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
+                        champ._ui_circle.gameObject.SetActive(false);
                     }
                         
 
@@ -4334,7 +4361,8 @@ namespace HordeFight
                 if (null != champ)
                 {
                     _selected.GetComponent<AI>()._ai_running = false;
-                    SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
+                    //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
+                    champ._ui_circle.gameObject.SetActive(true);
                 }
 
                 SingleO.cameraWalk.SetTarget(_selected.transform);

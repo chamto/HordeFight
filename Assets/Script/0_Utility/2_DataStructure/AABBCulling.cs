@@ -59,6 +59,20 @@ namespace UtilGS9
                 return 0; //part == this
             }
 
+            static public int ToEdgeKey1D(UnOrderedEdgeKey edge2d)
+            {
+                return (edge2d._V0 << 16) + edge2d._V1;
+            }
+
+            static public UnOrderedEdgeKey ToEdgeKey2D(int edge1d)
+            {
+                UnOrderedEdgeKey edge2d = new UnOrderedEdgeKey();
+                edge2d._V0 = edge1d >> 16;
+                edge2d._V1 = edge1d - edge2d._V0;
+
+                return edge2d;
+            }
+
         }
 
         public class Endpoint : IComparable<Endpoint>
