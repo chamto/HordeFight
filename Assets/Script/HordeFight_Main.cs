@@ -2832,7 +2832,7 @@ namespace HordeFight
             Being selected = SingleO.touchControl._selected;
             if (null != selected)
             {
-                SingleO.gridManager.Update_FogOfWar(selected.transform.position, selected._move._direction);
+                SingleO.gridManager.Update_FogOfWar(selected._getPos3D, selected._move._direction);
                 selected.SetVisible(true);
             }
 
@@ -2844,9 +2844,9 @@ namespace HordeFight
 
             Vector3Int ix = ConstV.v3Int_zero;
             int src_count = _linearSearch_list.Count;
-            for (int sc = 0; sc < src_count; sc++)
+            for (int key = 0; key < src_count; key++)
             {
-                src = _linearSearch_list[sc];
+                src = _linearSearch_list[key];
 
                 //============================
                 src.UpdateAll(); //객체 갱신
@@ -2860,14 +2860,14 @@ namespace HordeFight
 
                 //동굴벽과 캐릭터 충돌처리 
                 //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-                if (SingleO.cellPartition.HasStructTile(src.transform.position, out structTile))
+                if (SingleO.cellPartition.HasStructTile(src._getPos3D, out structTile))
                 {
                     CollisionPush_StructTile(src, structTile);
                     //CollisionPush_Rigid(src, structTile);
                 }
 
                 //============================
-                _aabbCulling.SetEndPoint(sc, src.GetBounds()); //aabb 갱신 
+                _aabbCulling.SetEndPoint(key, src); //aabb 갱신 
                 //============================
 
                 //객체 컬링 처리
@@ -2904,18 +2904,16 @@ namespace HordeFight
 
             foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
             {
-                
                 src = _linearSearch_list[key._V0];
                 dst = _linearSearch_list[key._V1];
 
                 //DebugWide.LogBlue(_aabbCulling.GetOverlap().Count + "   " + key._V0 + "  " + key._V1 + "   " + src + "  " + dst); //chamto test
 
-                if (null == src || true == src.isDeath()) continue;
-                if (null == dst || true == dst.isDeath()) continue;
+                if (null == (object)src || true == src.isDeath()) continue;
+                if (null == (object)dst || true == dst.isDeath()) continue;
                 //if (false == src.gameObject.activeInHierarchy) continue; //<- 코드제거 : 죽지 않았으면 안보이는 상태라 해도 처리해야 한다 
                 //if (false == dst.gameObject.activeInHierarchy) continue;
-                if (src == dst) continue;
-
+                if ((object)src == (object)dst) continue;
 
                 CollisionPush(src, dst);
             }
@@ -3243,26 +3241,22 @@ namespace HordeFight
             float max_sqrRadius = dst._collider_sqrRadius;
             if(src._collider_sqrRadius > dst._collider_sqrRadius)
                 max_sqrRadius = src._collider_sqrRadius;
-            
+
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
+            //Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
+            Vector3 dis = src._getPos3D - dst._getPos3D;
             float dis_sqr = dis.sqrMagnitude;
             //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
             float r_sum = (src._collider_radius + dst._collider_radius);
             float r_sumsqr = r_sum * r_sum;
             //1.두 캐릭터가 겹친상태 
             if (dis_sqr < r_sumsqr)
-            //if (0 > (dis_sqr - r_sumsqr))
             {
-                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-                //todo : 최적화 필요 
-
+                
                 Vector3 n = Misc.GetDir64_Normal3D(dis);
-
                 //Vector3 n = dis.normalized;
-                //Vector3 n = Misc.GetDir64_Normal3D(dis);
+
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
 
@@ -3352,7 +3346,7 @@ namespace HordeFight
         {
             if (null == structTile) return;
 
-            Vector3 srcPos = src.transform.position;
+            Vector3 srcPos = src._getPos3D;
             Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
@@ -3487,7 +3481,7 @@ namespace HordeFight
 
             }
 
-            src.transform.position = srcPos;
+            src._transform.position = srcPos;
 
         }
 

@@ -1328,6 +1328,8 @@ namespace HordeFight
         public Vector3      _getPos3D = ConstV.v3_zero;
         public Vector2Int   _getPos2D = ConstV.v2Int_zero;
         public int          _getPos1D = -1;
+        public Vector3      _getBounds_min = ConstV.v3_zero;
+        public Vector3      _getBounds_max = ConstV.v3_zero;
 
         //==================================================
 
@@ -1456,7 +1458,21 @@ namespace HordeFight
         }
 
 
-        public Bounds GetBounds()
+        public bool Intersects(Being dst)
+        {
+            //기본조건 : 두 선분 A , B 에 대하여 
+            //A.max >= B.min && A.min <= B.max
+
+            if (_getBounds_max.x >= dst._getBounds_min.x && _getBounds_min.x <= dst._getBounds_max.x
+                && _getBounds_max.z >= dst._getBounds_min.z && _getBounds_min.z <= dst._getBounds_max.z)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public Bounds old_GetBounds()
         {
             float diameter = _collider_radius * 2f;
             return  new Bounds(_getPos3D, new Vector3(diameter, 0, diameter));
@@ -1521,10 +1537,17 @@ namespace HordeFight
             
         }
 
-        public void Update_Position3D2D1D()
+
+
+        public void Update_PositionAndBounds()
         {
             _getPos3D = _transform.position;
             SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+
+            _getBounds_min.x = _getPos3D.x - _collider_radius;
+            _getBounds_min.z = _getPos3D.z - _collider_radius;
+            _getBounds_max.x = _getPos3D.x + _collider_radius;
+            _getBounds_max.z = _getPos3D.z + _collider_radius;
         }
 
 
@@ -1635,7 +1658,7 @@ namespace HordeFight
 
             //==============================================
             //위치 갱신
-            Update_Position3D2D1D();
+            Update_PositionAndBounds();
             //==============================================
 
             //Update_CellInfo();

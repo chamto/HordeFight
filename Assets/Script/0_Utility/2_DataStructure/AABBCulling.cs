@@ -174,17 +174,18 @@ namespace UtilGS9
             {
                 //DebugWide.LogBlue(j); //chamto test
 
-                Bounds bb = mRectangles[i].GetBounds();
+                //Bounds bb = mRectangles[i].GetBounds();
+                HordeFight.Being bb = mRectangles[i];
 
-                mXEndpoints[j].Set(Endpoint.BEGIN, bb.min.x, i);
-                mYEndpoints[j].Set(Endpoint.BEGIN, bb.min.y, i);
-                mZEndpoints[j].Set(Endpoint.BEGIN, bb.min.z, i);
+                mXEndpoints[j].Set(Endpoint.BEGIN, bb._getBounds_min.x, i);
+                mYEndpoints[j].Set(Endpoint.BEGIN, bb._getBounds_min.y, i);
+                mZEndpoints[j].Set(Endpoint.BEGIN, bb._getBounds_min.z, i);
                 ++j;
 
 
-                mXEndpoints[j].Set(Endpoint.END, bb.max.x, i);
-                mYEndpoints[j].Set(Endpoint.END, bb.max.y, i);
-                mZEndpoints[j].Set(Endpoint.END, bb.max.z, i);
+                mXEndpoints[j].Set(Endpoint.END, bb._getBounds_max.x, i);
+                mYEndpoints[j].Set(Endpoint.END, bb._getBounds_max.y, i);
+                mZEndpoints[j].Set(Endpoint.END, bb._getBounds_max.z, i);
                 ++j;
 
             }
@@ -240,10 +241,12 @@ namespace UtilGS9
                     foreach (int activeIndex in active)
                     {
 
-                        Bounds b0 = mRectangles[activeIndex].GetBounds();
-                        Bounds b1 = mRectangles[index].GetBounds();
-                        if (b0.max.y >= b1.min.y && b0.min.y <= b1.max.y
-                            && b0.max.z >= b1.min.z && b0.min.z <= b1.max.z)
+                        //Bounds b0 = mRectangles[activeIndex].GetBounds();
+                        //Bounds b1 = mRectangles[index].GetBounds();
+                        //if (b0.Intersects(b1))
+                        //if (b0.max.y >= b1.min.y && b0.min.y <= b1.max.y
+                            //&& b0.max.z >= b1.min.z && b0.min.z <= b1.max.z)
+                        if(mRectangles[activeIndex].Intersects(mRectangles[index]))
                         {
                             if (activeIndex < index)
                             {
@@ -285,20 +288,35 @@ namespace UtilGS9
         //}
 
 
-        public void SetEndPoint(int i, Bounds box)
+        public void SetEndPoint(int i, HordeFight.Being box)
         {
 
             //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
 
-            mXEndpoints[mXLookup[2 * i]].value = box.min.x;
-            mXEndpoints[mXLookup[2 * i + 1]].value = box.max.x;
-            mYEndpoints[mYLookup[2 * i]].value = box.min.y;
-            mYEndpoints[mYLookup[2 * i + 1]].value = box.max.y;
-            mZEndpoints[mZLookup[2 * i]].value = box.min.z;
-            mZEndpoints[mZLookup[2 * i + 1]].value = box.max.z;
+            mXEndpoints[mXLookup[2 * i]].value = box._getBounds_min.x;
+            mXEndpoints[mXLookup[2 * i + 1]].value = box._getBounds_max.x;
+            mYEndpoints[mYLookup[2 * i]].value = box._getBounds_min.y;
+            mYEndpoints[mYLookup[2 * i + 1]].value = box._getBounds_max.y;
+            mZEndpoints[mZLookup[2 * i]].value = box._getBounds_min.z;
+            mZEndpoints[mZLookup[2 * i + 1]].value = box._getBounds_max.z;
 
             //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
         }
+
+        //public void SetEndPoint(int i, Bounds box)
+        //{
+
+        //    //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
+
+        //    mXEndpoints[mXLookup[2 * i]].value = box.min.x;
+        //    mXEndpoints[mXLookup[2 * i + 1]].value = box.max.x;
+        //    mYEndpoints[mYLookup[2 * i]].value = box.min.y;
+        //    mYEndpoints[mYLookup[2 * i + 1]].value = box.max.y;
+        //    mZEndpoints[mZLookup[2 * i]].value = box.min.z;
+        //    mZEndpoints[mZLookup[2 * i + 1]].value = box.max.z;
+
+        //    //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
+        //}
 
         //public Bounds GetRectangle(int i)
         //{
@@ -359,8 +377,9 @@ namespace UtilGS9
                     {
                         if (e1.type == Endpoint.BEGIN)
                         {
-
-                            if (mRectangles[e0.index].GetBounds().Intersects(mRectangles[e1.index].GetBounds()))
+                            
+                            //if (mRectangles[e0.index].GetBounds().Intersects(mRectangles[e1.index].GetBounds()))
+                            if (mRectangles[e0.index].Intersects(mRectangles[e1.index]))
                             {
                                 mOverlap.Add(new UnOrderedEdgeKey(e0.index, e1.index));
                             }
