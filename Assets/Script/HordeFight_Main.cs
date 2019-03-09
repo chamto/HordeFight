@@ -1447,6 +1447,40 @@ namespace HordeFight
             return new Vector2Int(pos1d % tileMapSize_x, pos1d / tileMapSize_x);
         }
 
+        public void ToPosition1D(Vector3 pos3d , out Vector2Int out_pos2d, out int out_pos1d)
+        {
+            int pos2d_x = 0;
+            int pos2d_y = 0;
+            if (0 <= pos3d.x)
+            {
+                //양수일때는 소수점을 버린다. 
+                pos2d_x = (int)(pos3d.x / _tileSize_w);
+            }
+            else
+            {
+                //음수일때는 올림을 한다. 
+                pos2d_x = (int)((pos3d.x / _tileSize_w) - 0.9f);
+            }
+
+            if (0 <= pos3d.z)
+            {
+                //???? 부동소수점 때문에 생기는 이상한 계산 결과 : 버림 함수를 사용하여 비트쯔끄러기를 처리한다
+                pos2d_y = (int)(pos3d.z / _tileSize_h); //(int)(0.8 / 0.16) => 4 로 잘못계산됨. 5가 나와야 한다
+            }
+            else
+            {
+                pos2d_y = (int)((pos3d.z / _tileSize_h) - 0.9f);
+            }
+            //==============================================
+
+            out_pos2d = new Vector2Int(pos2d_x, pos2d_y);
+            out_pos1d = -1;
+            if (0 > pos2d_x || 0 > pos2d_y || _tileMapSize_x <= pos2d_x || _tileMapSize_y <= pos2d_y) return;
+
+            //2d => 1d
+            out_pos1d = (pos2d_x + pos2d_y * _tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+        }
+
         public int ToPosition1D(Vector3 pos3d)
         {
             //3d => 2d
