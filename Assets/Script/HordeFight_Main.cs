@@ -1224,6 +1224,11 @@ namespace HordeFight
 
         public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
         {
+            return IsVisibleTile(null, origin_3d, target_3d, length_interval);
+        }
+
+        public bool IsVisibleTile(Being origin, Vector3 origin_3d ,Vector3 target_3d, float length_interval)
+        {
             
             //interval 값이 너무 작으면 바로 종료 한다 
             if (0.01f >= length_interval)
@@ -1231,9 +1236,17 @@ namespace HordeFight
                 return false;
             }
 
-
-            Vector2Int origin_2d = ToPosition2D(origin_3d);
-            Vector3 origin_3d_center = ToPosition3D_Center(origin_2d);
+            Vector2Int origin_2d;
+            Vector3 origin_3d_center;
+            if(null == (object)origin)
+            {
+                origin_2d = ToPosition2D(origin_3d);
+                origin_3d_center = ToPosition3D_Center(origin_2d);
+            }else
+            {
+                origin_2d = origin._getPos2D;
+                origin_3d_center = origin._cur_cell._pos3d_center;    
+            }
 
 
             //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
@@ -1268,6 +1281,7 @@ namespace HordeFight
             }
 
             Vector3 line = target_3d - origin_3d_center;
+            //Vector3 n = Misc.GetDir64_Normal3D(line); //근사치 노멀값을 사용하면 목표에 도달이 안되는 무한루프에 
             Vector3 n = line.normalized;
             n *= length_interval; //미리 곱해 놓는다 
 
@@ -1277,6 +1291,12 @@ namespace HordeFight
             float lineSqr = line.sqrMagnitude;
             while (lineSqr > next.sqrMagnitude)
             {
+                //최대 50회까지만 탐색한다 
+                if(50 <= count) 
+                {
+                    //DebugWide.LogBlue(n); //chamto test
+                    return false;
+                }
                 next = origin_3d_center + next;
                 structTile = GetStructTile(next);
                 if (null != structTile)
@@ -1838,15 +1858,10 @@ namespace HordeFight
 
         //}
 
-        //chamto test
-        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
-        {
-            return SingleO.cellPartition.IsVisibleTile(origin_3d, target_3d, length_interval);
-        }
 
         public bool old_IsVisibleTile(Vector3 origin_3d, Vector3 target_3d , float length_interval)
         {
-            //return true; //test
+            return true; //test
 
             //interval 값이 너무 작으면 바로 종료 한다 
             if(0.01f >= length_interval)
@@ -1972,7 +1987,7 @@ namespace HordeFight
                 float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
                 if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
                 {
-                    if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
+                    if (true == old_IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
                     {
 
                         //대상과 정반대 방향이 아닐때 처리 
@@ -2030,8 +2045,8 @@ namespace HordeFight
 
             //TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
             TileBase tileScript3 = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
-            Color baseColor = Color.white;
-            Color fogColor = new Color(1, 1, 1, 0.7f);
+            //Color baseColor = Color.white;
+            //Color fogColor = new Color(1, 1, 1, 0.7f);
             Vector3Int posXY_2d = this.ToPosition2D(standard_3d);
             Vector3 tile_3d_center = ConstV.v3_zero;
             Vector3Int tile_2d = Vector3Int.zero;
@@ -2046,31 +2061,32 @@ namespace HordeFight
 
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
                 float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
-                if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
+                float sqrStd = GridManager.MeterToWorld * 6.2f; sqrStd *= sqrStd;
+                if (sqrDis <= sqrStd)
                 {
-                    if (true == IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
+                    if (true == SingleO.cellPartition.IsVisibleTile(standard_3d, tile_3d_center, 0.1f))
                     //SphereModel model = SingleO.objectManager.GetSphereTree_Struct().RayTrace_FirstReturn(standard_3d, tile_3d_center, null);
                     //if(null == model)
                     {
 
                         //대상과 정반대 방향이 아닐때 처리 
                         Vector3 tileDir = tile_3d_center - standard_3d;
-                        tileDir.Normalize(); lookAt_dir.Normalize();
-                        //tileDir = Misc.GetDir8_Normal3D(tileDir);
-                        //target_dir = Misc.GetDir8_Normal3D(target_dir);
-
+                        //tileDir.Normalize(); lookAt_dir.Normalize();
+                        //tileDir = Misc.GetDir64_Normal3D(tileDir); lookAt_dir = Misc.GetDir64_Normal3D(lookAt_dir); //근사치노멀을 사용하면 값이 이상하게 나옴a
+                        sqrStd = GridManager.MeterToWorld * 1.2f; sqrStd *= sqrStd;
 
                         if (true == this.HasStructUpTile(tile_3d_center))
                         {
                             //구조덮개타일인 경우 
                             SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                         }
-                        else if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
+                        //else if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
+                        else if (40f >= Geo.GetAngle_AxisY(tileDir, lookAt_dir))
                         {
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
                         }
-                        else if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 1.2f, 2))
+                        else if (sqrDis <= sqrStd)
                         {
                             //주변 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);
@@ -2780,9 +2796,10 @@ namespace HordeFight
         //충돌원이 셀에 겹친 영역을 구함
         public int GetOverlapCellSpace(Being being)
         {
-            
-            Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
-            Vector3 rate = being.transform.position - center;
+
+            //Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
+            Vector3 center = being._cur_cell._pos3d_center;
+            Vector3 rate = being._getPos3D - center;
             float cellHalfSize = SingleO.gridManager._cellSize_x * 0.5f;
 
             //return 8;
@@ -2830,7 +2847,7 @@ namespace HordeFight
 
             Bounds cameraViewBounds = GetBounds_CameraView();
             Being selected = SingleO.touchControl._selected;
-            if (null != selected)
+            if (null != (object)selected)
             {
                 SingleO.gridManager.Update_FogOfWar(selected._getPos3D, selected._move._direction);
                 selected.SetVisible(true);
@@ -3108,7 +3125,8 @@ namespace HordeFight
             {
 
                 //대상과 정반대 방향이 아닐때 처리 
-                dirToDst.Normalize();
+                //dirToDst.Normalize();
+                dirToDst = Misc.GetDir64_Normal3D(dirToDst); //정확도를 희생한 대신에 Vector3.Normalize 보다 성능이 2배 좋다. 
                 DIS = GridManager.MeterToWorld * 2f;
                 if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
                     dirToDstsq < DIS*DIS)
@@ -3121,7 +3139,8 @@ namespace HordeFight
                     //if (null == model) return true;
 
                     //보이는 위치의 타일인지 검사한다 
-                    if(true == SingleO.gridManager.IsVisibleTile(src.transform.position,dstPos, 0.1f))
+                    //if(true == SingleO.gridManager.IsVisibleTile(src._getPos3D, dstPos, 0.1f))
+                    if (true == SingleO.cellPartition.IsVisibleTile(src, src._getPos3D, dstPos, 0.1f))
                         return true;
                 }
 
@@ -3555,7 +3574,7 @@ namespace HordeFight
 
                 ChampUnit dstUnit = dstModel.GetLink_UserData<ChampUnit>();
 
-                if (null != dstUnit && param.vsRelation != Camp.eRelation.Unknown)
+                if (null != (object)dstUnit && param.vsRelation != Camp.eRelation.Unknown)
                 {
                     if (dstUnit.isDeath()) return false; //죽어있는 대상은 탐지하지 않는다 
 
@@ -3565,7 +3584,7 @@ namespace HordeFight
                     if (param.vsRelation == getRelation)
                     {
                         //가시거리 검사 
-                        return SingleO.gridManager.IsVisibleTile(param.src_pos, dstModel.GetPos(), 0.1f);
+                        return SingleO.cellPartition.IsVisibleTile(param.srcUnit, param.src_pos, dstModel.GetPos(), 0.1f);
                     }
                 }
 
