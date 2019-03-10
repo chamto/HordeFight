@@ -55,6 +55,9 @@ public class Test_FuncPerformance : MonoBehaviour
         Vector3 va = _line_0.position;
         Vector3 vb = _line_1.position;
         Vector3 vc;
+        Vector2Int v2a = Vector2Int.one;
+        Vector2Int v2b = Vector2Int.one;
+        Vector2Int v2c;
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
@@ -277,6 +280,76 @@ public class Test_FuncPerformance : MonoBehaviour
 
         _timeTemp += "\n";
         //==============================================================================
+        //v2_mult  2.107ms v2_mult(1)  2.622ms v2_div(1)  2.621ms v2_plus  2.963ms v2_plus(1)  3.403ms v2_minu  3.14ms v2_minu(1)  3.47ms
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = v2a * i;
+
+        }
+        _timeTemp += "  v2_mult  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = Multiply(v2a, i);
+        }
+        _timeTemp += "  v2_mult(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        //_startDateTime = DateTime.Now;
+        //for (int i = 0; i < 50000; i++)
+        //{
+        //    v2c = v2a / i;
+        //}
+        //_timeTemp += "  v2_div  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 1; i < 50001; i++)
+        {
+            v2c = Division(v2a, i);
+        }
+        _timeTemp += "  v2_div(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = v2a + v2b;
+        }
+        _timeTemp += "  v2_plus  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = Plus(v2a, v2b);
+        }
+        _timeTemp += "  v2_plus(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = v2a - v2b;
+
+        }
+        _timeTemp += "  v2_minu  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            v2c = Minus(v2a, v2b);
+        }
+        _timeTemp += "  v2_minu(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _timeTemp += "\n";
+        //==============================================================================
         //v_length(1)  1.983ms v_length(2)  2.498ms
   
         _startDateTime = DateTime.Now;
@@ -476,6 +549,40 @@ public class Test_FuncPerformance : MonoBehaviour
     };
     //무명 메소드와 마찮가지로 인라인화 되는지 모르겠고, 성능도 안좋다
     Func<float, float, float> lamda_ATan2 = (float x, float y) => (float)System.Math.Atan2(x, y);
+
+
+     public Vector2Int Plus(Vector2Int va, Vector2Int vb, Vector2Int result = default(Vector2Int))
+    {
+        result.x = va.x + vb.x;
+        result.y = va.y + vb.y;
+        //result.z = va.z + vb.z;
+        return result;
+    }
+
+
+     public Vector2Int Minus(Vector2Int va, Vector2Int vb, Vector2Int result = default(Vector2Int))
+    {
+        result.x = va.x - vb.x;
+        result.y = va.y - vb.y;
+        //result.z = va.z - vb.z;
+        return result;
+    }
+
+     public Vector2Int Multiply(Vector2Int va, int b, Vector2Int result = default(Vector2Int))
+    {
+        result.x = va.x * b;
+        result.y = va.y * b;
+        //result.z = va.z * b;
+        return result;
+    }
+
+     public Vector2Int Division(Vector2Int va, int b, Vector2Int result = default(Vector2Int))
+    {
+        result.x = va.x / b;
+        result.y = va.y / b;
+        //result.z = va.z / b;
+        return result;
+    }
 
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

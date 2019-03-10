@@ -362,6 +362,7 @@ namespace UtilGS9
             return result;
         }
 
+
         //Vector3.normalize 보다 빠르다
         static public Vector3 Normalize(Vector3 vector3)
         {

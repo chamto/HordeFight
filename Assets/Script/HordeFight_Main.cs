@@ -2070,7 +2070,8 @@ namespace HordeFight
                     {
 
                         //대상과 정반대 방향이 아닐때 처리 
-                        Vector3 tileDir = tile_3d_center - standard_3d;
+                        //Vector3 tileDir = tile_3d_center - standard_3d;
+                        Vector3 tileDir = VOp.Minus(tile_3d_center , standard_3d);
                         //tileDir.Normalize(); lookAt_dir.Normalize();
                         //tileDir = Misc.GetDir64_Normal3D(tileDir); lookAt_dir = Misc.GetDir64_Normal3D(lookAt_dir); //근사치노멀을 사용하면 값이 이상하게 나옴a
                         sqrStd = GridManager.MeterToWorld * 1.2f; sqrStd *= sqrStd;
