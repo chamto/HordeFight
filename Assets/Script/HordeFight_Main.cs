@@ -2081,7 +2081,7 @@ namespace HordeFight
                             SetTile(_tilemap_fogOfWar, tile_2d, tileScript3);
                         }
                         //else if (Mathf.Cos(Mathf.Deg2Rad * 40f) < Vector3.Dot(tileDir, lookAt_dir))
-                        else if (40f >= Geo.GetAngle_AxisY(tileDir, lookAt_dir))
+                        else if (40f >= Geo.Angle_AxisY(tileDir, lookAt_dir))
                         {
                             //원거리 시야 표현
                             SetTile(_tilemap_fogOfWar, tile_2d, null);

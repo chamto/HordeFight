@@ -323,6 +323,60 @@ namespace UtilGS9
 
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
+    /// 벡터 함수 묶음 
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public static class VOp
+    {
+        //Vector3 사칙연산 함수보다 약간 더 빠르다 
+        static public Vector3 Plus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
+        {
+            result.x = va.x + vb.x;
+            result.y = va.y + vb.y;
+            result.z = va.z + vb.z;
+            return result;
+        }
+
+
+        static public Vector3 Minus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
+        {
+            result.x = va.x - vb.x;
+            result.y = va.y - vb.y;
+            result.z = va.z - vb.z;
+            return result;
+        }
+
+        static public Vector3 Multiply(Vector3 va, float b, Vector3 result = default(Vector3))
+        {
+            result.x = va.x * b;
+            result.y = va.y * b;
+            result.z = va.z * b;
+            return result;
+        }
+
+        static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
+        {
+            result.x = va.x / b;
+            result.y = va.y / b;
+            result.z = va.z / b;
+            return result;
+        }
+
+        //Vector3.normalize 보다 빠르다
+        static public Vector3 Normalize(Vector3 vector3)
+        {
+            float len = vector3.magnitude;
+            vector3.x /= len;
+            vector3.y /= len;
+            vector3.z /= len;
+
+            return vector3; 
+
+        }
+    }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
     /// 기하 함수 묶음
     /// </summary>
     ///////////////////////////////////////////////////////////////////////
@@ -578,12 +632,56 @@ namespace UtilGS9
             return false;
         }
 
-        //** 정규화 Normalize 한번 보다 초월함수 atan2 두번 호출하는 것이 빠르다 
+        //==================================================
+        //** 수행횟수 5만번 기준 **
+        //1ms Math.Sqrt
+        ///1.4ms VOp.Multiply //벡터연산 곱 
+        ///1.4ms VOp.Plus //벡터연산 합
+        ///1.4ms VOp.Minus //벡터연산 차
+        ///2ms VOp.Division //벡터연산 나눔
+        //2ms Vector3.magnitude
+        //2ms Math.Atan2 ~ Math.Cos ~ Math.Sin
+        ///3.5ms AngleSigned_AxisY (월드축)
+        ///4ms VOp.Normalize
+        //6ms Vector3.Dot
+        ///6ms AngleSigned_Normal_V0V1 (월드축제한 없음 : 인수벡터 2개 정규화)
+        ///10ms AngleSigned_Normal_V0 (월드축제한 없음 : 인수벡터 1개 정규화)
+        ///17ms AngleSigned (월드축제한 없음 : 인수벡터 0개 정규화)
+        /// 
         //Vector3.SignedAngle 와 내부 알고리즘 동일. 속도가 조금더 빠르다 
-        public static float GetSignedAngle(Vector3 v0, Vector3 v1, Vector3 axis)
+        public static float AngleSigned(Vector3 v0, Vector3 v1, Vector3 axis)
         {
-            v0.Normalize();
-            v1.Normalize();
+            //v0.Normalize();
+            //v1.Normalize();
+            v0 = VOp.Normalize(v0);
+            v1 = VOp.Normalize(v1);
+            float proj = Vector3.Dot(v0, v1);
+            Vector3 vxw = Vector3.Cross(v0, v1);
+
+            //스칼라삼중적을 이용하여 최단회전방향을 구한다 
+            //float sign = 1f;
+            if (Vector3.Dot(axis, vxw) < 0)
+                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+
+            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+        }
+
+        public static float AngleSigned_Normal_V0(Vector3 v0, Vector3 v1, Vector3 axis)
+        {
+            v1 = VOp.Normalize(v1);
+            float proj = Vector3.Dot(v0, v1);
+            Vector3 vxw = Vector3.Cross(v0, v1);
+
+            //스칼라삼중적을 이용하여 최단회전방향을 구한다 
+            //float sign = 1f;
+            if (Vector3.Dot(axis, vxw) < 0)
+                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+
+            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+        }
+
+        public static float AngleSigned_Normal_V0V1(Vector3 v0, Vector3 v1, Vector3 axis)
+        {
             float proj = Vector3.Dot(v0, v1);
             Vector3 vxw = Vector3.Cross(v0, v1);
 
@@ -597,15 +695,7 @@ namespace UtilGS9
 
 
         //속도가 가장 빠름. 월드축에서만 사용 할 수 있다 
-        public static float GetSignedAngle_AxisZ(Vector3 v0, Vector3 v1)
-        {
-            float at0 = Mathf.Atan2(v0.y, v0.x);
-            float at1 = Mathf.Atan2(v1.y, v1.x);
-
-            return (at0 - at1) * Mathf.Rad2Deg;
-        }
-
-        public static float GetSignedAngle_AxisY(Vector3 v0, Vector3 v1)
+        public static float AngleSigned_AxisY(Vector3 v0, Vector3 v1)
         {
             float at0 = Mathf.Atan2(v0.z, v0.x);
             float at1 = Mathf.Atan2(v1.z, v1.x);
@@ -613,7 +703,7 @@ namespace UtilGS9
             return (at0 - at1) * Mathf.Rad2Deg;
         }
 
-        public static float GetAngle_AxisY(Vector3 v0, Vector3 v1)
+        public static float Angle_AxisY(Vector3 v0, Vector3 v1)
         {
             float at0 = Mathf.Atan2(v0.z, v0.x);
             float at1 = Mathf.Atan2(v1.z, v1.x);
@@ -624,73 +714,7 @@ namespace UtilGS9
             return rad * Mathf.Rad2Deg;
         }
 
-        //ref : https://github.com/id-Software/DOOM/blob/77735c3ff0772609e9c8d29e3ce2ab42ff54d20b/linuxdoom-1.10/p_maputl.c#L43-L58
-        //ref : https://libsora.so/posts/vector-length-and-normalize-doom-version/
-        //월드축에서만 사용할 수 있는 방법. 근사치를 구한다 
-        //Vector3.magnitude 함수 보다 빠르다. 정확도 5%정도 떨어진다 
-        static float GetV2Length_AxisZ_WithError(Vector3 v0)
-        {
-            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
-            float y = v0.y >= 0 ? v0.y : v0.y * -1f;
-
-            if (x > y)
-                return x + y * 0.5f;
-
-            return y + x * 0.5f;
-        }
-
-
-        static public float GetV2Length_AxisY_WithError(Vector3 v0)
-        {
-            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
-            float z = v0.z >= 0 ? v0.z : v0.z * -1f;
-
-            if (x > z)
-                return x + z * 0.5f;
-
-            return z + x * 0.5f;
-        }
-
-        //Vector3.magnitude 함수 보다 빠르다. magnitude 와 동일한 값을 계산한다 
-        static public float GetV2Length_AxisY(Vector3 v0)
-        {
-            const float ERROR_RATE_1STEP = 0.05179096f; //오차량 / 근사치 = 1차 오차비율
-            const float ERROR_RATE_2STEP = 0.005694969f; //2차 오차비율 
-
-            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
-            float z = v0.z >= 0 ? v0.z : v0.z * -1f;
-            float approximate = 0f;
-
-            if (x > z)
-                approximate = x + z * 0.5f;
-            else
-                approximate = z + x * 0.5f;
-
-            approximate -= approximate * ERROR_RATE_1STEP;
-            approximate -= approximate * ERROR_RATE_2STEP;
-
-            return approximate;
-        }
-
-        static public float GetV2Length_AxisZ(Vector3 v0)
-        {
-            const float ERROR_RATE_1STEP = 0.05179096f; //오차량 / 근사치 = 1차 오차비율
-            const float ERROR_RATE_2STEP = 0.005694969f; //2차 오차비율 
-
-            float x = v0.x >= 0 ? v0.x : v0.x * -1f;
-            float y = v0.y >= 0 ? v0.y : v0.y * -1f;
-            float approximate = 0f;
-
-            if (x > y)
-                approximate = x + y * 0.5f;
-            else
-                approximate = y + x * 0.5f;
-
-            approximate -= approximate * ERROR_RATE_1STEP;
-            approximate -= approximate * ERROR_RATE_2STEP;
-
-            return approximate;
-        }
+        //==================================================
 
         //ray_dir : 정규화된 값을 넣어야 한다 
         //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환

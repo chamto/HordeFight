@@ -35,18 +35,18 @@ public class Test_FuncPerformance : MonoBehaviour
 
         //** 수행횟수 5만번 기준 **
         //1ms Math.Sqrt
-        //_1.4ms v_mult //벡터연산 곱 
-        //_1.4ms v_plus //벡터연산 합
-        //_1.4ms v_minu //벡터연산 차
-        //_2ms v_div //벡터연산 나눔
+        ///1.4ms v_mult //벡터연산 곱 
+        ///1.4ms v_plus //벡터연산 합
+        ///1.4ms v_minu //벡터연산 차
+        ///2ms v_div //벡터연산 나눔
         //2ms Vector3.magnitude
         //2ms Math.Atan2 ~ Math.Cos ~ Math.Sin
-        //_3.5ms GetSignedAngle_Atan2_AxisY (월드축)
-        //_4ms My_Normalize
+        ///3.5ms GetSignedAngle_Atan2_AxisY (월드축)
+        ///4ms My_Normalize
         //6ms Vector3.Dot
-        //_6ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 2개 정규화)
-        //_10ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 1개 정규화)
-        //_17ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 0개 정규화)
+        ///6ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 2개 정규화)
+        ///10ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 1개 정규화)
+        ///17ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 0개 정규화)
 
 
         //==============================================================================
