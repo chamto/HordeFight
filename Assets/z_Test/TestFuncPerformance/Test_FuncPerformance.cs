@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System;
 using System.Diagnostics;
 
-public class Test_GetAngle : MonoBehaviour 
+public class Test_FuncPerformance : MonoBehaviour 
 {
 
     public Transform _line_0 = null;
