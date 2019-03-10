@@ -24,94 +24,7 @@ public class Test_FuncPerformance : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-
-        //각도 구하는 함수 성능 테스트 
-        //float angle = 0;
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //    //angle = GetSignedAngle_Normalize(_line_0.position, _line_1.position, Vector3.back); //10000번  45.57ms
-        //    //angle += GetSignedAngle_Atan2_AxisZ(_line_0.position, _line_1.position); //10000번 19.97ms
-        //    //angle += GetSignedAngle_Vector3(_line_0.position, _line_1.position, Vector3.back); //10000번 55.71ms
-        //}
-
-
-        //벡터 길이 구하는 함수 성능 테스트 
-        //Vector3 pos = _line_1.position;
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //    float d0 = GetV2Length_AxisY_WithError(pos); //10000번 1.15ms
-        //    float d1 = GetV2Length_AxisY(pos); //10000번 1.46ms
-        //    float d2 = pos.magnitude; //10000번 2.99ms
-        //}
-
-
-        //단위벡터 구하는 함수 성능 테스트 
-        //Vector3 pos = _line_0.position;
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //    //_line_1.position = Misc.TestGetDir_Normal3D_AxisY(pos); //10000번  11.84ms
-        //   Misc.GetDir64_Normal3D(pos); //10000번  5.14ms
-        //    Vector3 n = pos.normalized; //10000번  11.13ms
-
-        //    //DebugWide.LogBlue(i*5 + "도   :" + Mathf.Tan(Mathf.Deg2Rad * i * 5));
-        //}
-
-
-        //삼각함수 성능 테스트
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //    int angle = i % 360;
-        //    //Mathf.Cos(i); 
-        //    Mathf.Sin(angle); 
-        //    //Cos(i);
-        //    Sin(angle); //느리다 ..
-        //}
-
-        //삼각함수 성능 테스트 2 - 잘못 측정한 성능 - 유니티 프로파일러로 정확한 성능을 측정할 수 없다
-        //함수안에 함수가 있는경우 프로파일러에 의해 오버헤드가 크게 발생한다. 
-        //예)Mathf.Atan2 와 Mathf.Cos 이 둘은 실제성능은 비슷하다. 프로파일러로 재면 의해 Atan2가 과하게 성능이 낮은 것으로 나온
-        Vector3 va = _line_0.position;
-        Vector3 vb = _line_1.position;
-        Vector3 vc;
-        //for (int i = 0; i < 10000; i++)
-        //{
-        //    // * 제곱근함수 < 삼각함수 < 초월함수 < 벡터노멀함수
-        //    //예상외로 제곱근함수가 가장빠름
-        //    //제곱근함수를 한번 사용하는 노멀함수가 가장느림
-        //    //예상외로 초월함수가 가장느림a
-
-        //    float a = Mathf.Atan2((float)i, 5f); //10000번  4.09ms
-        //    a = (float)System.Math.Atan2((double)i, 5.0);
-        //    a = ATan2((float)i, 5f);
-        //    a = FastAtan2((float)i, 5f);
-        //    float b = Mathf.Cos((float)i); //10000번  1.65ms
-        //    float c = Mathf.Sqrt((float)i); //10000번  1.27ms
-        //    float d = Vector3.Dot(_line_0.position , _line_1.position); //10000번  1.1ms
-
-        //    // * My_Normalize < Misc.GetDir64_Normal3D < Vector3.Normalize < Vector3.normalized
-        //    //직접 구현한 노멀함수가 가장빠름 
-        //    Vector3 vd = _line_0.position;
-        //    vd.Normalize(); //10000번  10.61ms
-        //    Vector3 ve = vd.normalized; //10000번  12.74ms
-        //    Misc.GetDir64_Normal3D(vd); //10000번  6.82ms
-        //    My_Normalize(vd); //10000번  6.55ms
-
-        //    //벡터 연산 테스트
-            //vc = va * i;
-            //vc = va / i;
-            //vc = va + vb;
-            //vc = va - vb;
-
-            //vc = Operator_Mult(va , i);
-            //vc = Operator_Division(va , i);
-            //vc = Operator_Plus(va , vb , vc);
-            //vc = Operator_Minus(va , vb);
-        //}
-
-
-
-        //
-
+        
         //유니티 프로파일러로 정확한 성능을 측정할 수 없다
         //함수안에 함수가 있는경우 프로파일러에 의해 오버헤드가 크게 발생한다. 
         //예)Mathf.Atan2 와 Mathf.Cos 이 둘은 실제성능은 비슷하다. 프로파일러로 재면 의해 Atan2가 과하게 성능이 낮은 것으로 나온다
@@ -122,26 +35,26 @@ public class Test_FuncPerformance : MonoBehaviour
 
         //** 수행횟수 5만번 기준 **
         //1ms Math.Sqrt
-        //1.4ms v_mult //벡터연산 곱 
-        //1.4ms v_plus //벡터연산 합
-        //1.4ms v_minu //벡터연산 차
-        //2ms v_div //벡터연산 나눔
+        //_1.4ms v_mult //벡터연산 곱 
+        //_1.4ms v_plus //벡터연산 합
+        //_1.4ms v_minu //벡터연산 차
+        //_2ms v_div //벡터연산 나눔
         //2ms Vector3.magnitude
         //2ms Math.Atan2 ~ Math.Cos ~ Math.Sin
-        //3.5ms GetSignedAngle_Atan2_AxisY (월드축)
-        //4ms My_Normalize
+        //_3.5ms GetSignedAngle_Atan2_AxisY (월드축)
+        //_4ms My_Normalize
         //6ms Vector3.Dot
-        //6ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 2개 정규화)
-        //10ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 1개 정규화)
-        //17ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 0개 정규화)
-
-
-
+        //_6ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 2개 정규화)
+        //_10ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 1개 정규화)
+        //_17ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 0개 정규화)
 
 
         //==============================================================================
         //atan2(1)  2.994ms atan2(2)  2.217ms atan2(3)  2.919ms atan2(4)  3.251ms atan2(5)  3.709ms atan2(6)  3.648ms
 
+        Vector3 va = _line_0.position;
+        Vector3 vb = _line_1.position;
+        Vector3 vc;
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
