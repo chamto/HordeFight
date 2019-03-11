@@ -2898,11 +2898,11 @@ namespace HordeFight
                 //객체 컬링 처리
                 if (null != (object)selected)
                 {
-                    //Culling_SightOfView(selected, src);
+                    Culling_SightOfView(selected, src);
                 }
                 else
                 {
-                    //Culling_ViewFrustum(cameraViewBounds, src);
+                    //Culling_ViewFrustum(cameraViewBounds, src); //테스트를 위해 주석 
                 }
 
             }
@@ -2927,7 +2927,7 @@ namespace HordeFight
             //    CollisionPush(src, dst);
             //}
 
-            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap())
+            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap()) //fixme : 조회속도가 빠른 자료구조로 바꾸기 
             {
                 src = _linearSearch_list[key._V0];
                 dst = _linearSearch_list[key._V1];
@@ -3052,13 +3052,13 @@ namespace HordeFight
             
             bool onOff = false;
             //챔프 시야에 없으면 안보이게 처리함
-            if (true == IsVisibleArea(selected, target.transform.position))
+            if (true == IsVisibleArea(selected, target._getPos3D))
             {
                 onOff = true;
             }
 
             //술통은 항상 보이게 한다 -  임시 처리
-            if (target == selected || Being.eKind.barrel == target._kind)  
+            if ((object)target == (object)selected || Being.eKind.barrel == target._kind)  
             {
                 onOff = true;
             }
@@ -3070,7 +3070,7 @@ namespace HordeFight
         public void Culling_ViewFrustum(Bounds viewBounds, Being target)
         {
             
-            if (true == viewBounds.Contains(target.transform.position))
+            if (true == viewBounds.Contains(target._getPos3D))
             {
                 target.SetVisible(true);
             }
@@ -4149,10 +4149,10 @@ namespace HordeFight
         public bool Situation_Is_Enemy()
         {
             ChampUnit champTarget = _me._looking as ChampUnit;
-            if (null == champTarget ) return false;
+            if (null == (object)champTarget ) return false;
 
             //불확실한 대상
-            if (null == _me._looking || null == champTarget._belongCamp || null == _me._belongCamp) return false;
+            if (null == (object)_me._looking || null == (object)champTarget._belongCamp || null == (object)_me._belongCamp) return false;
 
             Camp.eRelation relation = SingleO.campManager.GetRelation(_me._belongCamp.campKind, champTarget._belongCamp.campKind);
 
@@ -4168,12 +4168,12 @@ namespace HordeFight
         private const int _IN_RANGE = 2;
         public int Situation_Is_InRange(float meter_rangeMin, float meter_rangeMax)
         {
-            if (null == _me._looking) return _FAILURE;
+            if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
+            float sqrDis = VOp.Minus(_me._getPos3D , _me._looking._getPos3D).sqrMagnitude;
 
-            float sqrRangeMax = Mathf.Pow(meter_rangeMax * GridManager.ONE_METER , 2);
-            float sqrRangeMin = Mathf.Pow(meter_rangeMin * GridManager.ONE_METER , 2);
+            float sqrRangeMax = (meter_rangeMax * GridManager.ONE_METER) * (meter_rangeMax * GridManager.ONE_METER);
+            float sqrRangeMin = (meter_rangeMin * GridManager.ONE_METER) * (meter_rangeMin * GridManager.ONE_METER);
 
             if (sqrRangeMin <= sqrDis)
             {
@@ -4189,12 +4189,12 @@ namespace HordeFight
 
         public int Situation_Is_AttackInRange()
         {
-            if (null == _me._looking) return _FAILURE;
+            if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = (_me.transform.position - _me._looking.transform.position).sqrMagnitude;
+            float sqrDis = VOp.Minus(_me._getPos3D , _me._looking._getPos3D).sqrMagnitude;
 
-            float sqrRangeMax = Mathf.Pow(_me.attack_range_max + _me._looking._collider_radius , 2);
-            float sqrRangeMin = Mathf.Pow(_me.attack_range_min + _me._looking._collider_radius , 2);
+            float sqrRangeMax = (_me.attack_range_max + _me._looking._collider_radius) * (_me.attack_range_max + _me._looking._collider_radius);
+            float sqrRangeMin = (_me.attack_range_min + _me._looking._collider_radius) * (_me.attack_range_min + _me._looking._collider_radius);
 
             if (sqrRangeMin <= sqrDis)
             {
@@ -4245,7 +4245,7 @@ namespace HordeFight
                                 break;
                             }
                             //대상이 보이는 위치에 있는지 검사한다 
-                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._getPos3D))
                             {
                                 //대상이 안보이면 다시 배회하기 
                                 _state = eState.Roaming;
@@ -4259,13 +4259,13 @@ namespace HordeFight
                             {
                                 
                                 _me._target = _me._looking; //보고 있는 상대를 목표로 설정 
-                                _me.Attack(_me._looking.transform.position - _me.transform.position);
+                                _me.Attack(VOp.Minus(_me._looking._getPos3D , _me._getPos3D));
                                 //_state = eState.Attack;
                                 break;
                                 //DebugWide.LogBlue("attack");
                             }
 
-                            Vector3 moveDir = _me._looking.transform.position - _me.transform.position;
+                            Vector3 moveDir = VOp.Minus( _me._looking._getPos3D , _me._getPos3D);
                             float second = 0.7f;
                             bool foward = true;
                             //상대와 너무 붙어 최소공격사거리 조건에 안맞는 경우 
@@ -4318,11 +4318,11 @@ namespace HordeFight
                         //DebugWide.LogBlue("Roaming: " + _target);
 
 
-                        if(null != _me._looking)
+                        if(null != (object)_me._looking)
                         {
                             //죽은 객체면 대상을 해제한다 , //안보이는 위치면 대상을 해제한다
                             if (_me._looking.isDeath() 
-                                || false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.transform.position))
+                                || false == SingleO.objectManager.IsVisibleArea(_me, _me._looking._getPos3D))
                             {
                                 _me._looking = null;
                             }
@@ -4395,13 +4395,13 @@ namespace HordeFight
 
 
             Being getBeing = hit.transform.GetComponent<Being>();
-            if(null != getBeing)
+            if(null != (object)getBeing)
             {
                 //쓰러진 객체는 처리하지 않는다 
                 if (true == getBeing.isDeath()) return;
                 
                 //전 객체 선택 해제 
-                if (null != _selected)
+                if (null != (object)_selected)
                 {
                     champ = _selected as ChampUnit;
                     if(null != champ)
@@ -4418,14 +4418,14 @@ namespace HordeFight
                 _selected = getBeing;
 
                 champ = _selected as ChampUnit;
-                if (null != champ)
+                if (null != (object)champ)
                 {
                     _selected.GetComponent<AI>()._ai_running = false;
                     //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
                     champ._ui_circle.gameObject.SetActive(true);
                 }
 
-                SingleO.cameraWalk.SetTarget(_selected.transform);
+                SingleO.cameraWalk.SetTarget(_selected._transform);
             }
             //else
             //{
@@ -4441,10 +4441,10 @@ namespace HordeFight
 
             //===============================================
 
-            if (null == _selected) return;
+            if (null == (object)_selected) return;
 
             //챔프를 선택한 경우, 추가 처리 하지 않는다
-            if (getBeing == _selected) return;
+            if ((object)getBeing == (object)_selected) return;
 
             //_selected.MoveToTarget(hit.point, 1f);
            
@@ -4452,17 +4452,17 @@ namespace HordeFight
         }
         private void TouchMoved() 
         {
-            if (null == _selected) return;
+            if (null == (object)_selected) return;
 
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
-            Vector3 touchDir = hit.point - _selected.transform.position;
+            Vector3 touchDir = VOp.Minus(hit.point , _selected._getPos3D);
 
             //_selected.Attack(hit.point - _selected.transform.position);
             //_selected.Block_Forward(hit.point - _selected.transform.position);
             _selected.Move_Forward(touchDir, 1f, true);
 
             ChampUnit champSelected = _selected as ChampUnit;
-            if (null != champSelected )
+            if (null != (object)champSelected )
             {
                 //임시처리 
                 //최적화를 위해 주석처리 
@@ -4489,7 +4489,7 @@ namespace HordeFight
         }
         private void TouchEnded() 
         {
-            if (null == _selected) return;
+            if (null == (object)_selected) return;
 
             _selected.Idle();
 
@@ -4560,7 +4560,7 @@ namespace HordeFight
         void Update()
         {
             //화면상 ui를 터치했을 경우 터치이벤트를 보내지 않는다 
-            if (null != EventSystem.current && null != EventSystem.current.currentSelectedGameObject)
+            if (null != (object)EventSystem.current && null != (object)EventSystem.current.currentSelectedGameObject)
             {
                 return;
             }
@@ -4645,8 +4645,10 @@ namespace HordeFight
 
         private void SendTouchEvent_Device_NonTarget()
         {
-            foreach (GameObject o in _sendList)
+            //foreach (GameObject o in _sendList)
+            for (int i = 0; i < _sendList.Count;i++)
             {
+                GameObject o = _sendList[i];
                 if (Input.touchCount > 0)
                 {
                     if (Input.GetTouch(0).phase == TouchPhase.Began)
@@ -4679,8 +4681,11 @@ namespace HordeFight
         private bool __touchBegan = false;
         private void SendMouseEvent_Editor_NonTarget()
         {
-            foreach (GameObject o in _sendList)
+            //foreach (GameObject o in _sendList)
+            for (int i = 0; i < _sendList.Count; i++)
             {
+                GameObject o = _sendList[i];
+            
                 //=================================
                 //    mouse Down
                 //=================================
