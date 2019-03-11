@@ -438,6 +438,9 @@ namespace HordeFight
         //public const float WorldToMeter = 1f / ONE_METER;
         //public const float MeterToWorld = ONE_METER;
 
+        public GameObject _gameObject = null;
+        public Transform _transform = null;
+
         public eDirection8 _eDir8 = eDirection8.down;
         public Vector3 _direction = Vector3.back; //_eDir8과 같은 방향으로 설정한다  
 
@@ -457,6 +460,8 @@ namespace HordeFight
 
         private void Start()
         {
+            _gameObject = gameObject;
+            _transform = transform;
             _direction = Misc.GetDir8_Normal3D_AxisY(_eDir8);
         }
 
@@ -470,7 +475,7 @@ namespace HordeFight
         {
             if (false == _isNextMoving) return;
 
-            if (null == _targetPath || 0 == _targetPath.Count)
+            if (null == (object)_targetPath || 0 == _targetPath.Count)
             {
                 //이동종료 
                 _elapsed_movingTime = 0;
@@ -493,7 +498,7 @@ namespace HordeFight
                 _nextTargetPos = _targetPath.Dequeue();
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
-                _direction = Quaternion.FromToRotation(_direction, _nextTargetPos - this.transform.position) * _direction;
+                _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos , _transform.position)) * _direction;
                 _eDir8 = Misc.GetDir8_AxisY(_direction);
 
             }
@@ -533,16 +538,16 @@ namespace HordeFight
             targetPos.y = 0;
 
             _isNextMoving = true;
-            _startPos = this.transform.position;
+            _startPos = _transform.position;
             _lastTargetPos = targetPos;
-            _nextTargetPos = this.transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
+            _nextTargetPos = _transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
             _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             _elapsedTime = 0;
             _prevInterpolationTime = 0;
 
-            _targetPath = SingleO.pathFinder.Search(this.transform.position, targetPos);
+            _targetPath = SingleO.pathFinder.Search(_transform.position, targetPos);
 
             //초기방향을 구한다
             _eDir8 = Misc.GetDir8_AxisY(_targetPath.First() - _startPos);
@@ -560,7 +565,7 @@ namespace HordeFight
 
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
-            this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            _transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
 
             //보간 없는 기본형
             //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
@@ -591,10 +596,10 @@ namespace HordeFight
         public void DebugVeiw_DrawPath_MoveToTarget()
         {
             Vector3 prev = _targetPath.FirstOrDefault();
+
             foreach (Vector3 pos3d in _targetPath)
             {
-
-                Debug.DrawLine(prev, pos3d);
+                DebugWide.DrawLine(prev, pos3d, Color.green);
                 prev = pos3d;
             }
         }
