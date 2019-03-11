@@ -1161,7 +1161,7 @@ namespace HordeFight
 
         private float _tileSize_w = ONE_METER * 1; //월드 크기 
         private float _tileSize_h = ONE_METER * 1; //월드 크기
-        private int _tileMapSize_x = 64;
+        public int _tileMapSize_x = 64;
         private int _tileMapSize_y = 64;
         private int _max_tileMapSize = 64 * 64;
         //private Vector2Int _tileMapSize = new Vector2Int(64, 64); //64*64 타일 갯수까지 사용한다 
@@ -1688,6 +1688,8 @@ namespace HordeFight
 
         public CellSpace GetCellSpace(Index2 pos2d)
         {
+            //int pos1d = pos2d.x + pos2d.y * _tileMapSize_x;
+                    
             int pos1d = ToPosition1D(pos2d);
             if (0 > pos1d) return null; //타일맵을 벗어나는 범위 
 
@@ -3659,6 +3661,7 @@ namespace HordeFight
 
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
             uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(wrd_maxRad);
+            int TILE_MAP_SIZE = SingleO.cellPartition._tileMapSize_x;
 
             //int count = 0;
             Index2 tempv2;
@@ -3668,10 +3671,11 @@ namespace HordeFight
             int count = array.Length;
             for (int i = 0; i < count;i++)
             {
+                //int pos1d = pos2d.x + pos2d.y * _tileMapSize_x; 1차원 값으로 변환 
                 tempv2 = array[i]; 
                 tempv2.x += src._cur_cell._pos2d.x;
                 tempv2.y += src._cur_cell._pos2d.y;
-                cell = SingleO.cellPartition.GetCellSpace(tempv2); //SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+                cell = SingleO.cellPartition.GetCellSpace(tempv2.y * TILE_MAP_SIZE + tempv2.x); 
 
                 if (null == cell) continue;
 
@@ -3998,7 +4002,10 @@ namespace HordeFight
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
             SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Obstacle);
+
             SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Blue, Camp.eKind.White);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.Blue);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.White);
 
             Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
             Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
@@ -4007,7 +4014,7 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, SingleO.campManager.GetDefaultCamp(Camp.eKind.Hero), camp_Obstacle.GetPosition(camp_position));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
             champ.GetComponent<AI>()._ai_running = true;
@@ -4027,7 +4034,7 @@ namespace HordeFight
             //champ.GetComponent<AI>()._ai_running = true;
             for (int i = 0; i < 100; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_BLUE, camp_BLUE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.peon, camp_BLUE, camp_BLUE.RandPosition());
                 //champ._mt_range_min = 2f;
                 //champ._mt_range_max = 3f;
                 champ.GetComponent<AI>()._ai_running = true;

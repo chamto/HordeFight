@@ -133,6 +133,7 @@ namespace HordeFight
         {
             None = 0,
 
+            Hero,
             Blue,
             Red,
             White,
@@ -271,9 +272,10 @@ namespace HordeFight
     {
         //private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>(new EnumCampKindComparer());
         //private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(new EnumCampKindComparer()); //전체소대를 포함하는 사단
-        private List<CampRelation> _relations = new List<CampRelation>();
-        private List<CampPlatoon> _campDivision = new List<CampPlatoon>(); //전체소대를 포함하는 사단
+        private List<CampRelation> _relations = new List<CampRelation>(); //제거대상
 
+        private List<CampPlatoon> _campDivision = new List<CampPlatoon>(); //전체소대를 포함하는 사단
+        private Camp.eRelation[][] _relations2 = new Camp.eRelation[(int)Camp.eKind.Max][];
         //캠프의 초기 배치정보 
 
         public CampManager()
@@ -291,8 +293,8 @@ namespace HordeFight
                 CampPlatoon platoon = new CampPlatoon();
                 _campDivision.Add(platoon);
 
-                CampRelation relation = new CampRelation();
-                _relations.Add(relation);
+                CampRelation campRelation = new CampRelation();
+                _relations.Add(campRelation);
                 //==========================================
                 //각 분대별 관계를 미리 넣어놓는다  
                 foreach (Camp.eKind kind2 in Enum.GetValues(typeof(Camp.eKind)))
@@ -300,8 +302,13 @@ namespace HordeFight
                     if (Camp.eKind.Max == kind2) continue;
 
 
-                    relation.Add(Camp.eRelation.Unknown);
+                    campRelation.Add(Camp.eRelation.Unknown);
+
+                    //배열형 관계정보 설정 
+                    _relations2[(int)kind2] = new Camp.eRelation[(int)Camp.eKind.Max];
                 }
+
+
                 //==========================================
 
                 Camp camp = new Camp((int)kind, kind); //열거형 값을 키로 사용한다 
@@ -367,12 +374,17 @@ namespace HordeFight
 
             GetCampRelation(camp_1).SetRelation(camp_2, eRelation);
             GetCampRelation(camp_2).SetRelation(camp_1, eRelation);
+
+            _relations2[(int)camp_1][(int)camp_2] = eRelation;
+            _relations2[(int)camp_2][(int)camp_1] = eRelation;
         }
 
         public Camp.eRelation GetRelation(Camp.eKind camp_1, Camp.eKind camp_2)
         {
             //DebugWide.LogBlue(camp_1.ToString() + "   " + camp_2.ToString()); //chamto test
-            return GetCampRelation(camp_1).GetRelation(camp_2);
+            //return GetCampRelation(camp_1).GetRelation(camp_2);
+
+            return _relations2[(int)camp_1][(int)camp_2];
         }
 
         public Camp GetDefaultCamp(Camp.eKind kind)
