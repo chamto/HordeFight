@@ -696,7 +696,7 @@ namespace HordeFight
         public void ThrowThings(Being owner, Vector3 launchPos, Vector3 targetPos)
         {
             
-            if (null == _sprRender) 
+            if (null == (object)_sprRender) 
                 return; //Start 함수 수행전에 호출된 경우 
 
 
@@ -707,13 +707,14 @@ namespace HordeFight
                 float shake = (float)Misc.RandInRange(0f, 0.2f); //흔들림 정도
                 _launchPos = launchPos;
                 _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
+                Vector3 toTarget = VOp.Minus(_targetPos , _launchPos);
 
                 //기준값 : 7미터 당 1초
-                _shotMoveTime = (_targetPos - _launchPos).magnitude / (GridManager.MeterToWorld * 7f);
+                _shotMoveTime = toTarget.magnitude / (GridManager.MeterToWorld * 7f);
                 //DebugWide.LogBlue((_targetPos - _launchPos).magnitude + "  " + _shotMoveTime);
 
                 //_perpNormal = Vector3.Cross(_targetPos - _launchPos, Vector3.up).normalized;
-                _perpNormal = Misc.GetDir8_Normal3D(Vector3.Cross(_targetPos - _launchPos, ConstV.v3_up));
+                _perpNormal = Misc.GetDir8_Normal3D(Vector3.Cross(toTarget, ConstV.v3_up));
                 _elapsedTime = 0f;
                 _owner = owner;
                 _prev_pos = _launchPos; //!
@@ -722,8 +723,9 @@ namespace HordeFight
 
                 //초기 방향 설정 
                 Vector3 angle = ConstV.v3_zero;
-                angle.y = Vector3.SignedAngle(ConstV.v3_forward, _targetPos - _launchPos, ConstV.v3_up);
-                this.transform.localEulerAngles = angle;
+                //angle.y = Vector3.SignedAngle(ConstV.v3_forward, toTarget, ConstV.v3_up);
+                angle.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, toTarget);
+                _transform.localEulerAngles = angle;
 
 
                 float posRateVert = 0f;
@@ -747,10 +749,11 @@ namespace HordeFight
                         _perpNormal *= -1f;
                     }
                     posRateVert = _maxHeight_posRate + shake;
-                    posHori = _perpNormal * _maxHeight_length;
+                    posHori = VOp.Multiply(_perpNormal , _maxHeight_length);
                 }
-                _maxHeight_pos = (_targetPos - _launchPos) * (posRateVert) + _launchPos;
-                _maxHeight_pos += posHori;
+                _maxHeight_pos = VOp.Multiply(toTarget , posRateVert);
+                _maxHeight_pos = VOp.Plus(_maxHeight_pos, _launchPos);
+                _maxHeight_pos = VOp.Plus(_maxHeight_pos, posHori);
 
 
                 //TweenStart();
@@ -845,18 +848,19 @@ namespace HordeFight
 
         public void Rotate_Towards_FrontGap(Transform tr)
         {
-            Vector3 dir = tr.position - _prev_pos;
+            Vector3 dir = VOp.Minus(tr.position , _prev_pos);
 
             //목표지점의 반대방향일 경우는 처리하지 않는다 
-            if (0 > Vector3.Dot(_targetPos - _launchPos, dir))
+            if (0 > Vector3.Dot(VOp.Minus( _targetPos , _launchPos), dir))
                 return;
 
-            if (dir.sqrMagnitude <= Mathf.Pow(0.16f, 2)) //타일 하나의 길이만큼 거리가 있어야 함a
+            const float TILE_LENGTH_SQR = 0.16f * 0.16f;
+            if (dir.sqrMagnitude <= TILE_LENGTH_SQR) //타일 하나의 길이만큼 거리가 있어야 함a
                 return;
 
 
             Vector3 euler = tr.eulerAngles;
-            float angle = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+            float angle = (float)Math.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
             //아래 3가지 방법도 같은 표현이다
             //float angle = Vector3.SignedAngle(Vector3.forward, dir, Vector3.up);
             //tr.localRotation = Quaternion.LookRotation(dir, Vector3.up);
