@@ -781,10 +781,11 @@ namespace HordeFight
         Vector3 _ori_scale = Vector3.one;
         public void Update_Shot()
         {
-            //base.Update_Position3D2D1D(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
-
+            
             if (true == this._on_theWay)
             {
+                base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
+
                 _elapsedTime += Time.deltaTime;
 
                 //Rotate_Towards_FrontGap(this.transform);
@@ -817,8 +818,8 @@ namespace HordeFight
 
                 if (_shotMoveTime < _elapsedTime)
                 {
-                    //Update_CellInfo(); //마지막 위치 등록 - 등록된 객체만 충돌처리대상이 된다 
-                    Update_CellSpace();
+                    //base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
+                    Update_CellSpace();//마지막 위치 등록 - 등록된 객체만 충돌처리대상이 된다 
                     this.End();
                 }
 
@@ -1565,9 +1566,8 @@ namespace HordeFight
         /// </summary>
         public void Update_CellSpace()
         {
-            //int new_pos1d = SingleO.cellPartition.ToPosition1D(_pos3d); //fixme
-
-            if (_cur_cell._pos1d != _getPos1D)
+            
+            if (null == _cur_cell || _cur_cell._pos1d != _getPos1D)
             {
                 SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
             }
