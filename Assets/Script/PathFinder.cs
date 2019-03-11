@@ -81,24 +81,28 @@ namespace HordeFight
             //if (null == tilemap) return;
 
             int from_1d = 0, to_1d = 0;
-            Vector3Int to_2d = Vector3Int.zero;
+            Index2 to_2d = ConstV.id2_zero;
             GraphEdge edge = new GraphEdge(0, 1);
-            Vector3Int[] grid3x3 = SingleO.gridManager._indexesNxN[3];
+            Index2[] grid3x3 = SingleO.gridManager._indexesNxN[3];
             BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
-            foreach (Vector3Int from_2d in boundsInt.allPositionsWithin)
+            foreach (Vector3Int v3from_2d in boundsInt.allPositionsWithin)
             {
                 //구조물이 있는 셀에는 엣지를 연결하지 않는다 - 임시처리 : 엣지를 어떻게 연결할지 좀더 생각해 봐야 함
-                if (true == SingleO.gridManager.HasStructTile_InPostion2D(from_2d)) continue;
+                if (true == SingleO.gridManager.HasStructTile_InPostion2D(v3from_2d)) continue;
 
 
-                from_1d = SingleO.gridManager.ToPosition1D(from_2d , boundsInt.size.x);
+                from_1d = SingleO.gridManager.ToPosition1D(v3from_2d , boundsInt.size.x);
 
-                foreach (Vector3Int dst_2d in grid3x3)
+                foreach (Index2 dst_2d in grid3x3)
                 {
+                    Index2 from_2d = new Index2(v3from_2d.x, v3from_2d.y);
+
                     //미리구한 그리드범위에 중심위치값 더하기
                     to_2d = from_2d + dst_2d;
 
-                    if (true == SingleO.gridManager.HasStructTile_InPostion2D(to_2d)) continue;
+                    //if (true == SingleO.gridManager.HasStructTile_InPostion2D(to_2d)) continue;
+                    CellSpace outcell = null;
+                    if (true == SingleO.cellPartition.HasStructTile(to_2d, out outcell)) continue;
 
                     //설정된 노드 범위를 벗어나는 노드값은 추가하면 안된다 
                     if (to_2d.x < 0 || TILE_BLOCK_WIDTH <= to_2d.x) continue;
@@ -106,7 +110,8 @@ namespace HordeFight
 
 
                     //1차원으로 변환
-                    to_1d = SingleO.gridManager.ToPosition1D(to_2d , boundsInt.size.x);
+                    //to_1d = SingleO.gridManager.ToPosition1D(to_2d , boundsInt.size.x);
+                    to_1d = SingleO.cellPartition.ToPosition1D(to_2d);
 
                     if (false == _graph.isNodePresent(to_1d)) continue;
 
@@ -136,24 +141,29 @@ namespace HordeFight
             lineSeg.last = destPos;
 
             float CELL_HARF_SIZE = SingleO.gridManager._cellSize_x * 0.5f;
-            float CELL_SQUARED_RADIUS = Mathf.Pow(CELL_HARF_SIZE, 2f);
+            float CELL_SQUARED_RADIUS = CELL_HARF_SIZE * CELL_HARF_SIZE;
             float sqrDis = 0f;
             float t_c = 0;
 
             //기준셀값을 더해준다. 기준셀은 그리드값 변환된 값이이어야 한다 
-            Vector3Int originToGrid_XY_2d = SingleO.gridManager.ToPosition2D(srcPos);
-            Vector3 originToPos_3d = SingleO.gridManager.ToPosition3D(originToGrid_XY_2d);
-            Vector3 worldCellCenterPos = Vector3.zero;
-            foreach (Vector3Int cell_posXY_2d in SingleO.gridManager._indexesNxN[7])
+            Index2 originToGrid_XY_2d = SingleO.cellPartition.ToPosition2D(srcPos);
+            Vector3 originToPos_3d = SingleO.cellPartition.ToPosition3D(originToGrid_XY_2d);
+            Vector3 worldCellCenterPos = ConstV.v3_zero;
+            int count = SingleO.gridManager._indexesNxN[7].Length;
+            //foreach (Vector3Int cell_posXY_2d in SingleO.gridManager._indexesNxN[7])
+            for (int i = 0; i < count;i++)
             {
+
+                Index2 cell_posXY_2d = SingleO.gridManager._indexesNxN[7][i];
+
                 //셀의 중심좌표로 변환 
-                worldCellCenterPos = SingleO.gridManager.ToPosition3D_Center(cell_posXY_2d);
+                worldCellCenterPos = SingleO.cellPartition.ToPosition3D_Center(cell_posXY_2d);
                 worldCellCenterPos += originToPos_3d;
 
 
                 //시작위치셀을 포함하거나 뺄때가 있다. 사용하지 않느다 
                 //선분방향과 반대방향인 셀들을 걸러낸다 , (0,0)원점 즉 출발점의 셀은 제외한다 
-                if (0 == cell_posXY_2d.sqrMagnitude || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - srcPos))
+                if (0 == cell_posXY_2d.sqrMagnitude() || 0 >= Vector3.Dot(lineSeg.direction, worldCellCenterPos - srcPos))
                 {
                     continue;
                 }
@@ -166,7 +176,8 @@ namespace HordeFight
                     continue;
                 }
 
-                if (true == SingleO.gridManager.HasStructTile(worldCellCenterPos))
+                CellSpace outcell = null;
+                if (true == SingleO.cellPartition.HasStructTile(worldCellCenterPos , out outcell))
                 {
                     return false;
                 }

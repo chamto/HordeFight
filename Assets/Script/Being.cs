@@ -169,7 +169,7 @@ namespace HordeFight
         //====================================
 
         public int _campHashName = 0;
-        private eKind _eCampKind = eKind.None;
+        public eKind _eCampKind = eKind.None;
 
         //====================================
 
@@ -186,10 +186,10 @@ namespace HordeFight
             _eCampKind = kind;
         }
 
-        public eKind campKind
-        {
-            get { return _eCampKind; }
-        }
+        //public eKind campKind
+        //{
+        //    get { return _eCampKind; }
+        //}
 
         public Vector3 GetPosition(int posNum)
         {
@@ -220,74 +220,64 @@ namespace HordeFight
     }
 
     //캠프와 캠프간의 관계를 저장 
-    public class CampRelation : Dictionary<Camp.eKind, Camp.eRelation>
+    //public class CampRelation : Dictionary<Camp.eKind, Camp.eRelation>
+    public class CampRelation : List<Camp.eRelation>
     {
 
-        public CampRelation() : base(new EnumCampKindComparer())
+        //public CampRelation() : base(new EnumCampKindComparer()) {}
+
+        public void SetRelation(Camp.eKind campKey, Camp.eRelation relat)
         {
+            this[(int)campKey] = relat;
+
+            //if (false == this.ContainsKey(camp))
+            //{
+            //    //없으면 추가 한다
+            //    this.Add(camp, relat);
+            //}
+            //this[camp] = relat;
+
         }
 
-        public void SetRelation(Camp.eKind camp, Camp.eRelation relat)
+        public Camp.eRelation GetRelation(Camp.eKind campKey)
         {
-
-            if (false == this.ContainsKey(camp))
-            {
-                //없으면 추가 한다
-                this.Add(camp, relat);
-            }
-
-            this[camp] = relat;
-
-        }
-
-        public Camp.eRelation GetRelation(Camp.eKind camp)
-        {
-            if (true == this.ContainsKey(camp))
-            {
-                return this[camp];
-            }
-
-            return Camp.eRelation.Unknown;
+            return this[(int)campKey];
+            
+            //if (true == this.ContainsKey(campKey))
+            //{
+            //    return this[campKey];
+            //}
+            //return Camp.eRelation.Unknown;
         }
     }
 
 
-    public class EnumCampKindComparer : IEqualityComparer<Camp.eKind>
+    //public class EnumCampKindComparer : IEqualityComparer<Camp.eKind>
+    //{
+    //    public bool Equals(Camp.eKind a, Camp.eKind b)
+    //    {
+    //        if (a == b)
+    //            return true;
+    //        return false;
+    //    }
+
+    //    public int GetHashCode(Camp.eKind a)
+    //    {
+    //        return (int)a;
+    //    }
+    //}
+
+    public class CampManager
     {
-
-        public bool Equals(Camp.eKind a, Camp.eKind b)
-        {
-            if (a == b)
-                return true;
-            return false;
-
-        }
-
-        public int GetHashCode(Camp.eKind a)
-        {
-
-            return (int)a;
-
-        }
-
-    }
-
-    public class CampManager : MonoBehaviour
-    {
-        private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>(new EnumCampKindComparer());
-        private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(new EnumCampKindComparer()); //전체소대를 포함하는 사단
+        //private Dictionary<Camp.eKind, CampRelation> _relations = new Dictionary<Camp.eKind, CampRelation>(new EnumCampKindComparer());
+        //private Dictionary<Camp.eKind, CampPlatoon> _campDivision = new Dictionary<Camp.eKind, CampPlatoon>(new EnumCampKindComparer()); //전체소대를 포함하는 사단
+        private List<CampRelation> _relations = new List<CampRelation>();
+        private List<CampPlatoon> _campDivision = new List<CampPlatoon>(); //전체소대를 포함하는 사단
 
         //캠프의 초기 배치정보 
 
-        private void Start()
+        public CampManager()
         {
-            //DebugWide.LogBlue("CampManager Start");
-
-            //Load_CampPlacement(Camp.eKind.Blue);
-            //Load_CampPlacement(Camp.eKind.White);
-            //SetRelation(Camp.eRelation.Enemy, Camp.eKind.Black, Camp.eKind.White);
-
-
             Create_DefaultCamp();
         }
 
@@ -295,9 +285,27 @@ namespace HordeFight
         {
             foreach(Camp.eKind kind in Enum.GetValues(typeof(Camp.eKind)))
             {
-                if (Camp.eKind.None == kind || Camp.eKind.Max == kind) continue;
+                if (Camp.eKind.Max == kind) continue;
 
-                CreateCamp(kind, (int)kind);
+
+                CampPlatoon platoon = new CampPlatoon();
+                _campDivision.Add(platoon);
+
+                CampRelation relation = new CampRelation();
+                _relations.Add(relation);
+                //==========================================
+                //각 분대별 관계를 미리 넣어놓는다  
+                foreach (Camp.eKind kind2 in Enum.GetValues(typeof(Camp.eKind)))
+                {
+                    if (Camp.eKind.Max == kind2) continue;
+
+
+                    relation.Add(Camp.eRelation.Unknown);
+                }
+                //==========================================
+
+                Camp camp = new Camp((int)kind, kind); //열거형 값을 키로 사용한다 
+                platoon.Add((int)kind, camp);
             }
         }
 
@@ -341,15 +349,15 @@ namespace HordeFight
 
         private CampRelation GetCampRelation(Camp.eKind camp)
         {
-            CampRelation camp_relat = null;
-            if (false == _relations.TryGetValue(camp, out camp_relat))
-            {
-                //없으면 추가 한다
-                camp_relat = new CampRelation();
-                _relations.Add(camp, camp_relat);
-            }
+            //CampRelation camp_relat = null;
+            //if (false == _relations.TryGetValue(camp, out camp_relat))
+            //{
+            //    //없으면 추가 한다
+            //    camp_relat = new CampRelation();
+            //    _relations.Add(camp, camp_relat);
+            //}
 
-            return camp_relat;
+            return _relations[(int)camp];
         }
 
         public void SetRelation(Camp.eRelation eRelation, Camp.eKind camp_1, Camp.eKind camp_2)
@@ -369,56 +377,66 @@ namespace HordeFight
 
         public Camp GetDefaultCamp(Camp.eKind kind)
         {
-            CampPlatoon platoon = null;
-            if (true == _campDivision.TryGetValue(kind, out platoon))
-            {
-                if (null != platoon)
-                {
-                    return platoon.GetCamp((int)kind);
-                }
-            }
+            //CampPlatoon platoon = null;
+            //if (true == _campDivision.TryGetValue(kind, out platoon))
+            //{
+            //    if (null != platoon)
+            //    {
+            //        return platoon.GetCamp((int)kind);
+            //    }
+            //}
 
+            CampPlatoon platoon = _campDivision[(int)kind];
+            if (null != platoon)
+            {
+                return platoon.GetCamp((int)kind);
+            }
             return null;
         }
 
         public Camp GetCamp(Camp.eKind kind, int hashName)
         {
-            CampPlatoon platoon = null;
-            if (true == _campDivision.TryGetValue(kind, out platoon))
-            {
-                if (null != platoon)
-                {
-                    return platoon.GetCamp(hashName);
-                }
-            }
+            //CampPlatoon platoon = null;
+            //if (true == _campDivision.TryGetValue(kind, out platoon))
+            //{
+            //    if (null != platoon)
+            //    {
+            //        return platoon.GetCamp(hashName);
+            //    }
+            //}
 
+            CampPlatoon platoon = _campDivision[(int)kind];
+            if (null != platoon)
+            {
+                return platoon.GetCamp(hashName);
+            }
             return null;
         }
 
         public CampPlatoon GetPlatoon(Camp.eKind kind)
         {
-            CampPlatoon platoon = null;
-            if (false == _campDivision.TryGetValue(kind, out platoon))
-            {
-                return null;
-            }
+            //CampPlatoon platoon = null;
+            //if (false == _campDivision.TryGetValue(kind, out platoon))
+            //{
+            //    return null;
+            //}
 
-            return platoon;
+            return _campDivision[(int)kind];
         }
 
 
         public Camp CreateCamp(Camp.eKind kind, int hashName)
         {
-            Camp camp = new Camp(hashName, kind);
-
+            //열거형에 있는 캠프분대를 미리 만들어 놓았기 때문에, 분대를 가져오지 못했다면 무언가 잘못된 열거형 값이 들어온 것이다 
             CampPlatoon platoon = GetPlatoon(kind);
-            if (null == platoon)
+            if (null == platoon) return null; 
+
+            Camp camp = GetCamp(kind, hashName);
+            if(null == camp)
             {
-                platoon = new CampPlatoon();
-                _campDivision.Add(kind, platoon);
+                camp = new Camp(hashName, kind);
+                platoon.Add(hashName, camp);
             }
-                
-            platoon.Add(hashName, camp);
 
             return camp;
         }
@@ -1072,9 +1090,9 @@ namespace HordeFight
                 //캠프값에 따라 기본 캠프 설정
                 if(Camp.eKind.None == _campKind)
                 {
-                    _campKind = _belongCamp.campKind;
+                    _campKind = _belongCamp._eCampKind;
                 }
-                if(_campKind != _belongCamp.campKind)
+                if(_campKind != _belongCamp._eCampKind)
                 {
                     _belongCamp = SingleO.campManager.GetDefaultCamp(_campKind);
                 }
@@ -1347,7 +1365,8 @@ namespace HordeFight
         public GameObject   _gameObject = null;
         public Transform    _transform = null;
         public Vector3      _getPos3D = ConstV.v3_zero;
-        public Vector2Int   _getPos2D = ConstV.v2Int_zero;
+        //public Vector2Int   _getPos2D = ConstV.v2Int_zero;
+        public Index2       _getPos2D = ConstV.id2_zero;
         public int          _getPos1D = -1;
         public Vector3      _getBounds_min = ConstV.v3_zero;
         public Vector3      _getBounds_max = ConstV.v3_zero;

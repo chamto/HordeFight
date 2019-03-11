@@ -102,7 +102,8 @@ namespace UtilGS9
         static public readonly Vector3 v3_forward = Vector3.forward;
 
         static public readonly Vector3Int v3Int_zero = Vector3Int.zero;
-        static public readonly Vector2Int v2Int_zero = Vector2Int.zero;
+        //static public readonly Vector2Int v2Int_zero = Vector2Int.zero;
+        static public readonly Index2 id2_zero = new Index2(0, 0);
     }
 
 }
@@ -320,6 +321,67 @@ namespace UtilGS9
         }//end func
     }//end class
 
+
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// int2 자료형
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public struct Index2
+    {
+        public int x;
+        public int y;
+
+        public Index2(int in_x, int in_y)
+        {
+            x = in_x;
+            y = in_y;
+        }
+
+        public int sqrMagnitude()
+        {
+            return x * x + y * y;
+        }
+
+        public static Index2 IOp_Plus(Index2 a, Index2 b, Index2 r = default(Index2))
+        {
+            r.x = a.x + b.x;
+            r.y = a.y + b.y;
+            return r;
+        }
+        public static Index2 IOp_Minus(Index2 a, Index2 b, Index2 r = default(Index2))
+        {
+            r.x = a.x - b.x;
+            r.y = a.y - b.y;
+            return r;
+        }
+
+        public static Index2 operator +(Index2 a, Index2 b)
+        {
+            Index2 r = default(Index2);
+            r.x = a.x + b.x;
+            r.y = a.y + b.y;
+            return r;
+        }
+        public static Index2 operator -(Index2 a, Index2 b)
+        {
+            Index2 r = default(Index2);
+            r.x = a.x - b.x;
+            r.y = a.y - b.y;
+            return r;
+        }
+
+        public static bool operator ==(Index2 a, Index2 b)
+        {
+            
+            return a.x == b.x && a.y == b.y;
+        }
+
+        public static bool operator !=(Index2 a, Index2 b)
+        {
+            return a.x != b.x || a.y != b.y;
+        }
+    }
 
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
