@@ -1045,16 +1045,6 @@ Prefab:
       propertyPath: m_Name
       value: prefab_spear
       objectReference: {fileID: 0}
-    - target: {fileID: 212765882590292744, guid: 01b42aab1e1ba4c58a41b67945388e3e,
-        type: 2}
-      propertyPath: m_SortingLayerID
-      value: 85658221
-      objectReference: {fileID: 0}
-    - target: {fileID: 212765882590292744, guid: 01b42aab1e1ba4c58a41b67945388e3e,
-        type: 2}
-      propertyPath: m_SortingLayer
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 01b42aab1e1ba4c58a41b67945388e3e, type: 2}
   m_IsPrefabParent: 0

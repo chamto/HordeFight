@@ -4032,7 +4032,7 @@ namespace HordeFight
             for (int i = 0; i < 300;i++)
             {
                 //being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
-                being = Create_Shot(SingleO.shotRoot, Being.eKind.sackMissile, ConstV.v3_zero);
+                being = Create_Shot(SingleO.shotRoot, Being.eKind.magicMissile, ConstV.v3_zero);
             }
 
             //===================================================
