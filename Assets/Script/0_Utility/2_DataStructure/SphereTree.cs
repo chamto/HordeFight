@@ -104,7 +104,7 @@ namespace UtilGS9
 
         public float GetRadius() { return _radius; }
         public float GetRadiusSqr() { return _radius_sqr; }
-        public float ToDistanceSquared(SphereModel pack) { return (_center - pack._center).sqrMagnitude; }
+        public float ToDistanceSquared(SphereModel pack) { return VOp.Minus(_center , pack._center).sqrMagnitude; }
 
         //=====================================================
         //Flag 열거값 다루는 함수
@@ -215,7 +215,7 @@ namespace UtilGS9
             if (null != _parent && false == HasFlag(Flag.INTEGRATE)) //첫번째 통합요청이 선점. 두번째 이상의 통합요청은 무시된다  
             {
                 //DebugWide.LogBlue(GetID());
-                if (Mathf.Epsilon < Mathf.Abs(radius - _radius))
+                if (float.Epsilon < Math.Abs(radius - _radius))
                 {
                     SetRadius(radius);
                     Compute_BindingDistanceSquared(_parent); //반지름 변경에 따른 슈퍼구와 묶인거리 다시 계산
@@ -333,7 +333,7 @@ namespace UtilGS9
 
             //#if 1
             // recompute bounding sphere!
-            Vector3 total = Vector3.zero;
+            Vector3 total = ConstV.v3_zero;
             int count = 0;
             SphereModel pack = _children;
             while (null != pack)
@@ -358,7 +358,7 @@ namespace UtilGS9
                 while (null != pack)
                 {
                     float dist = ToDistanceSquared(pack);
-                    float radius = Mathf.Sqrt(dist) + pack.GetRadius();
+                    float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
                     if (radius > maxradius)
                     {
                         maxradius = radius;
@@ -424,7 +424,7 @@ namespace UtilGS9
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
+                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last , line_origin));
                 if (hit)
                 {
                     
@@ -468,7 +468,7 @@ namespace UtilGS9
         public SphereModel RangeTest_MinDisReturn(Frustum.ViewState state, ref HordeFight.ObjectManager.Param_RangeTest param)
         {
             
-            float between_sqr = (param.src_pos - _center).sqrMagnitude;
+            float between_sqr = VOp.Minus(param.src_pos , _center).sqrMagnitude;
 
             if (state == Frustum.ViewState.PARTIAL)
             {
@@ -504,7 +504,7 @@ namespace UtilGS9
                     pack = pack.GetNextSibling();
                     if (null == cur_sm) continue;
 
-                    cur_sqr = (param.src_pos - cur_sm.GetPos()).sqrMagnitude; //중복 계산a
+                    cur_sqr = VOp.Minus(param.src_pos , cur_sm.GetPos()).sqrMagnitude; //중복 계산a
 
                     //기존 모델보다 더 가까운 경우
                     if (null != cur_sm && min_sqr > cur_sqr)
@@ -565,7 +565,7 @@ namespace UtilGS9
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
+                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last , line_origin));
                 if (hit)
                 {
                     
@@ -604,7 +604,7 @@ namespace UtilGS9
         {
             if (state == Frustum.ViewState.PARTIAL)
             {
-                float between_sqr = (dstCenter - _center).sqrMagnitude;
+                float between_sqr = VOp.Minus(dstCenter , _center).sqrMagnitude;
 
                 //완전비포함 검사
                 float sqrSumRd = (_radius + dstRadius) * (_radius + dstRadius);
@@ -1065,7 +1065,7 @@ namespace UtilGS9
                         if (sqrDist < includedSqrDist)
                         {
 
-                            float dist = Mathf.Sqrt(sqrDist) + src_pack.GetRadius();
+                            float dist = (float)Math.Sqrt(sqrDist) + src_pack.GetRadius();
 
                             //조건1 전용 처리
                             if (dist <= search.GetRadius()) //슈퍼구에 src구가 완저 포함 
@@ -1079,7 +1079,7 @@ namespace UtilGS9
                     else
                     {
 
-                        float dist = (Mathf.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
+                        float dist = ((float)Math.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
 
                         if (dist < nearDist)
                         {

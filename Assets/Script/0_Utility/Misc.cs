@@ -406,7 +406,7 @@ namespace UtilGS9
             {
                 get
                 {   //f = radius / sin
-                    return radius_collider_standard / Mathf.Sin(Mathf.Deg2Rad * degree * 0.5f);
+                    return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
                 }
             }
 
@@ -516,12 +516,13 @@ namespace UtilGS9
                 if (false == Geo.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
                 {
                     //각도를 반으로 줄여 넣는다. 1과 4분면을 구별 못하기 때문에 1사분면에서 검사하면 4사분면도 검사 결과에 포함된다. 즉 실제 검사 범위가 2배가 된다.
-                    float angle_arc = Mathf.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
+                    float angle_arc = (float)Math.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
 
                     //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
 
-                    Vector3 arc_sph_dir = sph.pos - arc.GetPosition_Factor(Geo.Arc.Focus_Included);
-                    arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
+                    Vector3 arc_sph_dir = VOp.Minus(sph.pos , arc.GetPosition_Factor(Geo.Arc.Focus_Included));
+                    //arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
+                    arc_sph_dir = VOp.Normalize(arc_sph_dir);
 
                     float rate_cos = Vector3.Dot(arc.dir, arc_sph_dir);
                     if (rate_cos > angle_arc)
@@ -582,7 +583,7 @@ namespace UtilGS9
             sqr_standard_value = (sum_radius * sum_radius) * ratio;
 
             //두원의 중점 사이의 거리를 구한다. 피타고라스의 정리를 이용 , 제곱을 벗기지 않는다.
-            float sqr_dis_between = Vector3.SqrMagnitude(src.pos - dst.pos);
+            float sqr_dis_between = Vector3.SqrMagnitude(VOp.Minus(src.pos , dst.pos));
 
             //DebugWide.LogBlue (" r+r: "+Mathf.Sqrt(sqr_standard_value) + " p-p: " + Mathf.Sqrt(sqr_dis_between));
 
@@ -593,7 +594,7 @@ namespace UtilGS9
                 return true; //두원이 겹쳐짐 
             }
             //if (sqr_standard_value == sqr_dis_between)
-            if(float.Epsilon >= Mathf.Abs(sqr_standard_value - sqr_dis_between))
+            if(float.Epsilon >= Math.Abs(sqr_standard_value - sqr_dis_between))
             {
                 //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
                 //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
@@ -662,9 +663,9 @@ namespace UtilGS9
             //스칼라삼중적을 이용하여 최단회전방향을 구한다 
             //float sign = 1f;
             if (Vector3.Dot(axis, vxw) < 0)
-                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+                return (float)Math.Acos(proj) * Mathf.Rad2Deg * -1f;
 
-            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+            return (float)Math.Acos(proj) * Mathf.Rad2Deg;
         }
 
         public static float AngleSigned_Normal_V0(Vector3 v0, Vector3 v1, Vector3 axis)
@@ -676,9 +677,9 @@ namespace UtilGS9
             //스칼라삼중적을 이용하여 최단회전방향을 구한다 
             //float sign = 1f;
             if (Vector3.Dot(axis, vxw) < 0)
-                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+                return (float)Math.Acos(proj) * Mathf.Rad2Deg * -1f;
 
-            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+            return (float)Math.Acos(proj) * Mathf.Rad2Deg;
         }
 
         public static float AngleSigned_Normal_V0V1(Vector3 v0, Vector3 v1, Vector3 axis)
@@ -689,25 +690,25 @@ namespace UtilGS9
             //스칼라삼중적을 이용하여 최단회전방향을 구한다 
             //float sign = 1f;
             if (Vector3.Dot(axis, vxw) < 0)
-                return Mathf.Acos(proj) * Mathf.Rad2Deg * -1f;
+                return (float)Math.Acos(proj) * Mathf.Rad2Deg * -1f;
 
-            return Mathf.Acos(proj) * Mathf.Rad2Deg;
+            return (float)Math.Acos(proj) * Mathf.Rad2Deg;
         }
 
 
         //속도가 가장 빠름. 월드축에서만 사용 할 수 있다 
         public static float AngleSigned_AxisY(Vector3 v0, Vector3 v1)
         {
-            float at0 = Mathf.Atan2(v0.z, v0.x);
-            float at1 = Mathf.Atan2(v1.z, v1.x);
+            float at0 = (float)Math.Atan2(v0.z, v0.x);
+            float at1 = (float)Math.Atan2(v1.z, v1.x);
 
             return (at0 - at1) * Mathf.Rad2Deg;
         }
 
         public static float Angle_AxisY(Vector3 v0, Vector3 v1)
         {
-            float at0 = Mathf.Atan2(v0.z, v0.x);
-            float at1 = Mathf.Atan2(v1.z, v1.x);
+            float at0 = (float)Math.Atan2(v0.z, v0.x);
+            float at1 = (float)Math.Atan2(v1.z, v1.x);
             float rad = at0 - at1;
 
             if (rad < 0) rad *= -1; //부호를 없앤다 
@@ -722,30 +723,33 @@ namespace UtilGS9
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir, out Vector3 intersection_firstPoint)
         {
 
-            Vector3 w = sphere_center - ray_origin;
+            Vector3 w = VOp.Minus(sphere_center , ray_origin);
             Vector3 v = ray_dir; //rayDirection 이 정규화 되어 있어야 올바르게 계산할 수 있다 
             float rsq = sphere_radius * sphere_radius;
-            float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
+            //float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
+            float wsq = w.sqrMagnitude;
 
             // Bug Fix For Gem, if origin is *inside* the sphere, invert the
             // direction vector so that we get a valid intersection location.
-            if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
+            //if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
+            if (wsq < rsq) v = VOp.Multiply(v , -1f); //반직선의 시작점이 원안에 있는 경우 - 방법1 
 
             float proj = Vector3.Dot(w, v);
             float ssq = (wsq - proj * proj);
             float dsq = rsq - ssq;
 
-            intersection_firstPoint = Vector3.zero;
+            intersection_firstPoint = ConstV.v3_zero;
             if (dsq > 0.0f)
             {
-                float d = Mathf.Sqrt(dsq);
+                float d = (float)Math.Sqrt(dsq);
 
                 //반직선의 시작점이 원안에 있는 경우 - 방법2
                 //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
                 //if(wsq < rsq) length = proj + d; //선분 시작점이 원 안에 있는 경우
                 //intersect_firstPoint = rayOrigin + v * length;
 
-                intersection_firstPoint = ray_origin + v * (proj - d);
+                //intersection_firstPoint = ray_origin + v * (proj - d);
+                intersection_firstPoint = VOp.Plus(ray_origin , VOp.Multiply(v , (proj - d)));
 
                 return true;
             }
@@ -759,10 +763,10 @@ namespace UtilGS9
             Vector3 sect;
             bool hit = IntersectRay(sphere_center, sphere_radius, segment_origin, segment_dir, out sect);
 
-            intersection_firstPoint = Vector3.zero;
+            intersection_firstPoint = ConstV.v3_zero;
             if (hit)
             {
-                float d = (segment_origin - sect).sqrMagnitude;
+                float d = VOp.Minus(segment_origin , sect).sqrMagnitude;
                 if (d > (segment_distance * segment_distance)) return false;
                 intersection_firstPoint = sect;
                 return true;
@@ -774,8 +778,8 @@ namespace UtilGS9
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir)
         {
             // compute intermediate values
-            Vector3 w = sphere_center - ray_origin;
-            float wsq = Vector3.Dot(w, w); //w.sqrMagnitude
+            Vector3 w = VOp.Minus(sphere_center , ray_origin);
+            float wsq = w.sqrMagnitude;
             float proj = Vector3.Dot(w, ray_dir);
             float rsq = sphere_radius * sphere_radius;
 
@@ -794,10 +798,10 @@ namespace UtilGS9
         static public bool IntersectLineSegment(Vector3 sphere_center, float sphere_radius, Vector3 segment_origin, Vector3 segment_last)
         {
 
-            Vector3 v = segment_last - segment_origin;
+            Vector3 v = VOp.Minus(segment_last , segment_origin);
             float vsq = v.sqrMagnitude;
 
-            Vector3 w = sphere_center - segment_origin;
+            Vector3 w = VOp.Minus(sphere_center , segment_origin);
             float proj = Vector3.Dot(w, v);
 
             //ipt : 원의 중심점과 선분이 가장 가까운 선분위의 점. 원의 중점과 선분이 직각으로 만나는 점.
@@ -815,9 +819,10 @@ namespace UtilGS9
                 percAlongLine = 1.0f;
             }
 
-            Vector3 ipt = (segment_origin + (percAlongLine * v)); //선분에 비율값을 곱한다 
+            //Vector3 ipt = (segment_origin + (percAlongLine * v)); //선분에 비율값을 곱한다 
+            Vector3 ipt = VOp.Plus(segment_origin , VOp.Multiply(v , percAlongLine)); //선분에 비율값을 곱한다 
 
-            Vector3 s = ipt - sphere_center;
+            Vector3 s = VOp.Minus(ipt , sphere_center);
             float ssq = s.sqrMagnitude;
             float rsq = sphere_radius * sphere_radius;
             return (ssq <= rsq);
