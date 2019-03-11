@@ -451,10 +451,66 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  v_angle(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+        _timeTemp += "\n";
+        //==============================================================================
+        //go  1.838ms  go(2)  0.282ms  tr  1.689ms  tr(2)  0.282ms  tr.pos  3.674ms  tr.pos(2)  2.2ms  tr.pos(3)  0.332m
+
+        GameObject _go = null;
+        Transform _tr = null;
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            _go = this.gameObject;
+        }
+        _timeTemp += "  go  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            GameObject gg = _go;
+        }
+        _timeTemp += "  go(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            _tr = this.transform;
+        }
+        _timeTemp += "  tr  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Transform tt = _tr;
+        }
+        _timeTemp += "  tr(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 pp = transform.position;
+        }
+        _timeTemp += "  tr.pos  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 pp = _tr.position;
+        }
+        _timeTemp += "  tr.pos(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 pp = ConstV.v3_zero;
+        }
+        _timeTemp += "  tr.pos(3)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        //==============================================================================
         DebugWide.LogBlue(_timeTemp);
         _timeTemp = ConstV.STRING_EMPTY;
-        //*/
 
+        //*/
+        //==============================================================================
 
         //탄젠트 출력 
         //for (int i = 0; i < 36;i++)

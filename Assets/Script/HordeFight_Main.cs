@@ -1500,6 +1500,7 @@ namespace HordeFight
             //==============================================
 
             out_pos2d = new Vector2Int(pos2d_x, pos2d_y);
+            //out_pos2d.x = pos2d_x; out_pos2d.y = pos2d_y;
             out_pos1d = -1;
             if (0 > pos2d_x || 0 > pos2d_y || _tileMapSize_x <= pos2d_x || _tileMapSize_y <= pos2d_y) return;
 
@@ -3377,7 +3378,8 @@ namespace HordeFight
             if (null == structTile) return;
 
             Vector3 srcPos = src._getPos3D;
-            Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
+            //Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
+            Vector3 centerToSrc_dir = VOp.Minus(srcPos , structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._dir);
 
             float size = SingleO.gridManager._cellSize_x * 0.5f;
