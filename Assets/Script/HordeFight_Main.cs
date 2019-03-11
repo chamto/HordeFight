@@ -3983,7 +3983,7 @@ namespace HordeFight
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
                 //champ._mt_range_min = 2f;
                 //champ._mt_range_max = 6f;
-                //champ.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -3999,7 +3999,7 @@ namespace HordeFight
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 2f;
                 champ._mt_range_max = 5f;
-                //champ.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
             }
@@ -4381,7 +4381,10 @@ namespace HordeFight
 		private void Update()
 		{
             if (null == _selected) return;
-
+            if(_selected.isDeath()) 
+            {
+                _selected = null;
+            }
 
 		}
 
