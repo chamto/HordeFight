@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 //using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 
 using UtilGS9;
 
@@ -3802,6 +3803,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab("0_champ/" +eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
+            obj.AddComponent<SortingGroup>();
             obj.AddComponent<Movement>();
             obj.AddComponent<AI>();
             cha._id = _id_sequence;
@@ -3831,6 +3833,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab("1_effect/" + eKind.ToString(), parent, _id_shot_sequence.ToString("000") + "_" + eKind.ToString());
             Shot shot = obj.AddComponent<Shot>();
+            obj.AddComponent<SortingGroup>();
             obj.AddComponent<Movement>();
             shot._id = _id_shot_sequence;
             shot._kind = eKind;
@@ -3856,6 +3859,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab("2_misc/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             Obstacle obst = obj.AddComponent<Obstacle>();
+            obj.AddComponent<SortingGroup>();
             obj.AddComponent<Movement>();
             obst._id = _id_sequence;
             obst._kind = eKind;
@@ -3963,7 +3967,9 @@ namespace HordeFight
 
             // -- 블루 진형 --
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
+            champ._hp_max = 10000;
+            champ._hp_cur = 10000;
+            champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
@@ -4014,7 +4020,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 0 ;i++)
+            for (int i = 0; i < 20 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -4412,6 +4418,7 @@ namespace HordeFight
                         champ.GetComponent<AI>()._ai_running = true;
                         //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
                         champ._ui_circle.gameObject.SetActive(false);
+                        champ._ui_hp.gameObject.SetActive(false);
                     }
                         
 
@@ -4426,6 +4433,7 @@ namespace HordeFight
                     _selected.GetComponent<AI>()._ai_running = false;
                     //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
                     champ._ui_circle.gameObject.SetActive(true);
+                    champ._ui_hp.gameObject.SetActive(true);
                 }
 
                 SingleO.cameraWalk.SetTarget(_selected._transform);

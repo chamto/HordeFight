@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 //using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 using UtilGS9;
 
 
@@ -618,6 +619,8 @@ namespace HordeFight
         private Transform _sprParent = null;
         private Transform _shader = null;
 
+
+
         //private void Start()
         //{
         //    //base.Init();
@@ -669,6 +672,11 @@ namespace HordeFight
             _transform.position = _sprParent.position;
             _sprParent.localPosition = ConstV.v3_zero;
 
+            //캐릭터 아래에 깔리도록 설정
+            base.Update_SortingOrder(-500);
+            //_sortingGroup.sortingOrder = base.GetSortingOrder(0);
+
+
 		}
 
 		//____________________________________________
@@ -707,6 +715,8 @@ namespace HordeFight
 
             if (false == _on_theWay && null != owner)
             {
+                base.Update_SortingOrder(1000); //지형위로 날라다니게 설정 
+
                 _transform.position = launchPos;
                 _on_theWay = true;
                 float shake = (float)Misc.RandInRange(0f, 0.2f); //흔들림 정도
@@ -793,6 +803,7 @@ namespace HordeFight
             if (true == this._on_theWay)
             {
                 base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
+                base.Update_SortingOrder(1000); //지형위로 날라다니게 한다 
 
                 _elapsedTime += Time.deltaTime;
 
@@ -1388,7 +1399,7 @@ namespace HordeFight
         public Movement _move = null;
         public CellInfo _cellInfo = null;
 
-        //public Vector3 _lastCellPos_withoutCollision = Vector3Int.zero; //충돌하지 않은 마지막 타일의 월드위치값
+        public SortingGroup _sortingGroup = null;
 
         //==================================================
         //ai
@@ -1419,6 +1430,8 @@ namespace HordeFight
             _getPos3D = _transform.position;
             SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
             //=====================================================
+
+            _sortingGroup = GetComponent<SortingGroup>();
             _collider = GetComponent<SphereCollider>();
             _collider_radius = _collider.radius;
             _collider_sqrRadius = _collider_radius * _collider_radius;
@@ -1606,11 +1619,17 @@ namespace HordeFight
         //    }
         //}
 
-        public void Update_SortingOrder(int add)
+        public int GetSortingOrder(int add)
         {
             //  1/0.16 = 6.25 : 곱해지는 값이 최소 6.25보다는 커야 한다
             //y축값이 작을수록 먼저 그려지게 한다. 캐릭터간의 실수값이 너무 작아서 20배 한후 소수점을 버린값을 사용함
-            _sprRender.sortingOrder = -(int)(_getPos3D.z * 20f) + add;
+            return -(int)(_getPos3D.z * 20f) + add;
+        }
+
+        public void Update_SortingOrder(int add)
+        {
+            //_sprRender.sortingOrder = GetSortingOrder(add);
+            _sortingGroup.sortingOrder = GetSortingOrder(add);
         }
 
         //public void Update_Collision()
