@@ -455,6 +455,7 @@ public class Test_FuncPerformance : MonoBehaviour
         //==============================================================================
         //go  1.838ms  go(2)  0.282ms  tr  1.689ms  tr(2)  0.282ms  tr.pos  3.674ms  tr.pos(2)  2.2ms  tr.pos(3)  0.332m
 
+
         GameObject _go = null;
         Transform _tr = null;
         _startDateTime = DateTime.Now;
@@ -505,6 +506,41 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  tr.pos(3)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+
+        _timeTemp += "\n";
+        //==============================================================================
+        //equal.Oj  3.295ms  equal.Oj(2)  0.336ms  equal.class  0.386ms  equal.class(2)  0.38ms
+
+        float testValue = 0f;
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            if (null == _go) testValue = 1f;
+        }
+        _timeTemp += "  equal.Oj  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            if (null == (object)_go) testValue = 1f;
+        }
+        _timeTemp += "  equal.Oj(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        EqualTest t1 = new EqualTest();
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            if (null == t1) testValue = 1f;
+        }
+        _timeTemp += "  equal.class  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            if (null == (object)t1) testValue = 1f;
+        }
+        _timeTemp += "  equal.class(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
         //==============================================================================
         DebugWide.LogBlue(_timeTemp);
         _timeTemp = ConstV.STRING_EMPTY;
@@ -522,6 +558,8 @@ public class Test_FuncPerformance : MonoBehaviour
         //}
 
 	}
+
+    public class EqualTest { }
 
     string _timeTemp = ConstV.STRING_EMPTY;
     Stopwatch _sw = new Stopwatch();
