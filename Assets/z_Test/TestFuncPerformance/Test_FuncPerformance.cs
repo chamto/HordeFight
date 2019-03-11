@@ -24,7 +24,7 @@ public class Test_FuncPerformance : MonoBehaviour
 	// Update is called once per frame
 	void Update () 
     {
-        
+
         //유니티 프로파일러로 정확한 성능을 측정할 수 없다
         //함수안에 함수가 있는경우 프로파일러에 의해 오버헤드가 크게 발생한다. 
         //예)Mathf.Atan2 와 Mathf.Cos 이 둘은 실제성능은 비슷하다. 프로파일러로 재면 의해 Atan2가 과하게 성능이 낮은 것으로 나온다
@@ -41,17 +41,17 @@ public class Test_FuncPerformance : MonoBehaviour
         ///2ms v_div //벡터연산 나눔
         //2ms Vector3.magnitude
         //2ms Math.Atan2 ~ Math.Cos ~ Math.Sin
-        ///3.5ms GetSignedAngle_Atan2_AxisY (월드축)
+        ///3.5ms AngleSigned_AxisY (월드축)
         ///4ms My_Normalize
         //6ms Vector3.Dot
-        ///6ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 2개 정규화)
-        ///10ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 1개 정규화)
-        ///17ms GetSignedAngle_Normalize (월드축제한 없음 : 인수벡터 0개 정규화)
+        ///6ms AngleSigned_Normal_V0V1 (월드축제한 없음 : 인수벡터 2개 정규화)
+        ///10ms AngleSigned_Normal_V0 (월드축제한 없음 : 인수벡터 1개 정규화)
+        ///17ms AngleSigned (월드축제한 없음 : 인수벡터 0개 정규화)
 
 
         //==============================================================================
         //atan2(1)  2.994ms atan2(2)  2.217ms atan2(3)  2.919ms atan2(4)  3.251ms atan2(5)  3.709ms atan2(6)  3.648ms
-
+        //*
         Vector3 va = _line_0.position;
         Vector3 vb = _line_1.position;
         Vector3 vc;
@@ -173,7 +173,7 @@ public class Test_FuncPerformance : MonoBehaviour
 
         _timeTemp += "\n";
         //==============================================================================
-        //norm(1)  5.087ms norm(2)  5.887ms norm(3)  3.748ms norm(4)  3.956ms
+        //norm(1)  4.694ms  norm(2)  5.521ms  norm(3)  4.158ms  norm(3.2)  5.171ms  norm(3.3)  3.215ms  norm(3.4)  3.199ms  norm(4)  3.617ms  norm(5)  3.595ms
 
         Vector3 vd = _line_0.position;
         _startDateTime = DateTime.Now;
@@ -195,18 +195,45 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            Misc.GetDir64_Normal3D(vd); 
+            Vector3 ve = Misc.notuse_GetDir360_Normal3D(vd); 
         }
         _timeTemp += "  norm(3)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = Misc.GetDir8_Normal3D(vd);
+        }
+        _timeTemp += "  norm(3.2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = Misc.GetDir8_Normal3D((float)i % 360);
+        }
+        _timeTemp += "  norm(3.3)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3Int ve = Misc.GetDir8_Normal2D((float)i % 360);
+        }
+        _timeTemp += "  norm(3.4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = My_Normalize(vd); //두번째로 빠름 . 가장 빠른것보다 정확도가 높기 때문에 이것쓰기 !!!!!! 
+        }
+        _timeTemp += "  norm(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            My_Normalize(vd); //두번째로 빠름 . 가장 빠른것보다 정확도가 높기 때문에 이것쓰기 !!!!!! 
+            Vector3 ve = My_Normalize_B(vd); //두번째로 빠름 . 가장 빠른것보다 정확도가 높기 때문에 이것쓰기 !!!!!! 
         }
-        _timeTemp += "  norm(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
-
+        _timeTemp += "  norm(5)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================
@@ -426,8 +453,17 @@ public class Test_FuncPerformance : MonoBehaviour
 
         DebugWide.LogBlue(_timeTemp);
         _timeTemp = ConstV.STRING_EMPTY;
+        //*/
 
 
+        //탄젠트 출력 
+        //for (int i = 0; i < 36;i++)
+        //{
+        //    float radian = (float)(i * 10) * Mathf.Deg2Rad;
+        //    float cos = Mathf.Cos(radian);
+        //    float sin = Mathf.Sin(radian);
+        //    DebugWide.LogBlue(i*10  + "   " +  Mathf.Atan(radian) * Mathf.Rad2Deg + "   " + Mathf.Atan2( sin, cos) * Mathf.Rad2Deg);
+        //}
 
 	}
 
@@ -452,17 +488,21 @@ public class Test_FuncPerformance : MonoBehaviour
         //DebugWide.PrintText(_line_0.position, Color.blue, temp);
 
 
-        tempV3 = _line_1.position;
-        temp = ConstV.STRING_EMPTY + tempV3.magnitude;
-        DebugWide.DrawLine(ConstV.v3_zero, _line_1.position, Color.blue);
-        DebugWide.PrintText(_line_1.position, Color.blue, temp);
+        //tempV3 = _line_1.position;
+        //temp = ConstV.STRING_EMPTY + tempV3.magnitude;
+        //DebugWide.DrawLine(ConstV.v3_zero, _line_1.position, Color.blue);
+        //DebugWide.PrintText(_line_1.position, Color.blue, temp);
 
-        temp = ConstV.STRING_EMPTY + GetAngle_Atan2_AxisY(_line_0.position, _line_1.position );
-        DebugWide.PrintText(ConstV.v3_zero, Color.blue, temp);
+        //temp = ConstV.STRING_EMPTY + GetAngle_Atan2_AxisY(_line_0.position, _line_1.position );
+        //DebugWide.PrintText(ConstV.v3_zero, Color.blue, temp);
 
-        //벡터 길이 근사값 테스트 
-        temp = ConstV.STRING_EMPTY + "  근사치:" +GetV2Length_AxisY(_line_0.position) + "   정확한값:" + _line_0.position.magnitude;
-        DebugWide.PrintText(_line_0.position, Color.blue, temp);
+        ////벡터 길이 근사값 테스트 
+        //temp = ConstV.STRING_EMPTY + "  근사치:" +GetV2Length_AxisY(_line_0.position) + "   정확한값:" + _line_0.position.magnitude;
+        //DebugWide.PrintText(_line_0.position, Color.blue, temp);
+
+
+        _line_1.position = Misc.GetDir8_Normal3D(_line_0.position) * 50;
+        DebugWide.DrawLine(ConstV.v3_zero, _line_1.position, Color.white);
 
     }
 
@@ -636,6 +676,15 @@ public class Test_FuncPerformance : MonoBehaviour
         //return vector3 / len; //Vector3.normalize 의 방식. 느리다
     }
 
+    Vector3 My_Normalize_B(Vector3 vector3)
+    {
+        float len = vector3.magnitude;
+        vector3.x /= len;
+
+        vector3.z /= len;
+
+        return vector3;
+    }
 
     //Mathf.Sin 보다 느리다.. 쓰지 말자 
     //ref : http://bbs.nicklib.com/algorithm/2005

@@ -1280,14 +1280,18 @@ namespace HordeFight
 
             }
 
-            Vector3 line = target_3d - origin_3d_center;
-            //Vector3 n = Misc.GetDir64_Normal3D(line); //근사치 노멀값을 사용하면 목표에 도달이 안되는 무한루프에 
-            Vector3 n = line.normalized;
-            n *= length_interval; //미리 곱해 놓는다 
+            //Vector3 line = target_3d - origin_3d_center;
+            Vector3 line = VOp.Minus(target_3d , origin_3d_center);
+            Vector3 n = VOp.Normalize(line);
+            //Vector3 n = Misc.GetDir360_Normal3D(line); //근사치 노멀값을 사용하면 목표에 도달이 안되는 무한루프에 
+            //Vector3 n = line.normalized;
+            //n *= length_interval; //미리 곱해 놓는다 
+            n = VOp.Multiply(n, length_interval); //미리 곱해 놓는다 
 
             //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
             int count = 1;
-            Vector3 next = n * count;
+            //Vector3 next = n * count;
+            Vector3 next =VOp.Multiply(n , count);
             float lineSqr = line.sqrMagnitude;
             while (lineSqr > next.sqrMagnitude)
             {
@@ -1297,7 +1301,8 @@ namespace HordeFight
                     //DebugWide.LogBlue(n); //chamto test
                     return false;
                 }
-                next = origin_3d_center + next;
+                //next = origin_3d_center + next;
+                next = VOp.Plus(origin_3d_center , next);
                 structTile = GetStructTile(next);
                 if (null != structTile)
                 {
@@ -1313,7 +1318,8 @@ namespace HordeFight
                 }
 
                 count++;
-                next = n * count;
+                //next = n * count;
+                next = VOp.Multiply(n, count);
 
             }
 
@@ -3119,7 +3125,8 @@ namespace HordeFight
         {
             //return true; //chamto test
             
-            Vector3 dirToDst = dstPos - src.transform.position;
+            //Vector3 dirToDst = dstPos - src.transform.position;
+            Vector3 dirToDst = VOp.Minus(dstPos , src.transform.position);
             float dirToDstsq = dirToDst.sqrMagnitude;
             float DIS = GridManager.MeterToWorld * 7f;
             if (dirToDstsq < DIS*DIS) //목표와의 거리가 7미터 안
@@ -3127,10 +3134,11 @@ namespace HordeFight
 
                 //대상과 정반대 방향이 아닐때 처리 
                 //dirToDst.Normalize();
-                dirToDst = Misc.GetDir64_Normal3D(dirToDst); //정확도를 희생한 대신에 Vector3.Normalize 보다 성능이 2배 좋다. 
+                //dirToDst = Misc.GetDir360_Normal3D(dirToDst); 
+                dirToDst = VOp.Normalize(dirToDst); 
                 DIS = GridManager.MeterToWorld * 2f;
-                if (Mathf.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || 
-                    dirToDstsq < DIS*DIS)
+                //if (Math.Cos(Mathf.Deg2Rad * 45f) < Vector3.Dot(src._move._direction, dirToDst) || dirToDstsq < DIS*DIS)
+                if (45f > Geo.Angle_AxisY(src._move._direction, dirToDst) || dirToDstsq < DIS * DIS)
                 {
 
                     //여기까지 오면 캐릭터 검사는 통과된것이다
@@ -3265,7 +3273,8 @@ namespace HordeFight
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             //Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
-            Vector3 dis = src._getPos3D - dst._getPos3D;
+            //Vector3 dis = src._getPos3D - dst._getPos3D;
+            Vector3 dis = VOp.Minus(src._getPos3D , dst._getPos3D);
             float dis_sqr = dis.sqrMagnitude;
             //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
             float r_sum = (src._collider_radius + dst._collider_radius);
@@ -3273,8 +3282,9 @@ namespace HordeFight
             //1.두 캐릭터가 겹친상태 
             if (dis_sqr < r_sumsqr)
             {
-                
-                Vector3 n = Misc.GetDir64_Normal3D(dis);
+
+                Vector3 n = VOp.Normalize(dis);
+                //Vector3 n = Misc.GetDir360_Normal3D(dis);
                 //Vector3 n = dis.normalized;
 
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test

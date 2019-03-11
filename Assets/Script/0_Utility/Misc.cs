@@ -842,7 +842,7 @@ namespace UtilGS9
         {
             ConstV.InitConst_BaseAni();
 
-            _dir64_normal3D_AxisY = Misc.Create_DirNormal(64);
+            _dir360_normal3D_AxisY = Misc.Create_DirNormal();
         }
 
         //========================================================
@@ -1008,6 +1008,8 @@ namespace UtilGS9
             new Vector3(-1,0,-1).normalized ,   //    leftDown = 6,
             new Vector3(0,0,-1).normalized ,    //    down = 7,
             new Vector3(1,0,-1).normalized ,    //    rightDown = 8,
+            new Vector3(1,0,0).normalized ,     //    right = 9,
+            new Vector3(0,0,0).normalized ,     //   
         };
 
         //-z축 기준 
@@ -1021,6 +1023,7 @@ namespace UtilGS9
             new Vector3(-1,-1,0).normalized ,   //    leftDown = 6,
             new Vector3(0,-1,0).normalized ,    //    down = 7,
             new Vector3(1,-1,0).normalized ,    //    rightDown = 8,
+            new Vector3(1,0,0).normalized ,     //    right = 9,
         };
 
         static private Vector3Int[] _dir8_normal2D = new Vector3Int[]
@@ -1033,22 +1036,26 @@ namespace UtilGS9
             new Vector3Int(-1,-1,0) ,   //    leftDown = 6,
             new Vector3Int(0,-1,0) ,    //    down = 7,
             new Vector3Int(1,-1,0) ,    //    rightDown = 8,
+            new Vector3Int(1,0,0) ,     //    right = 9,
         };
 
-        static private Vector3[] _dir64_normal3D_AxisY = null;
-        static public Vector3[] Create_DirNormal(ushort equal_division)
+        const int EQUAL_DIVISION = 360;
+        static private Vector3[] _dir360_normal3D_AxisY = null;
+        static public Vector3[] Create_DirNormal()
         {
-            Vector3[] dirN = new Vector3[equal_division+1];
-            float angle = 360f / (float)equal_division;
+            //ushort equal_division = 8;
+            Vector3[] dirN = new Vector3[EQUAL_DIVISION+2];
+            float angle = 360f / (float)EQUAL_DIVISION;
             dirN[0] = Vector3.zero;
-            for (ushort i = 0; i < equal_division;i++)
+            for (ushort i = 0; i < EQUAL_DIVISION+1;i++)
             {
                 dirN[i+1] = Quaternion.AngleAxis(-angle * i, Vector3.up) * Vector3.right;
                 dirN[i+1].Normalize();
                 //DebugWide.LogBlue((i+1) + "  : " + dirN[i + 1] + "  : " + angle * i); //chamto test
 
             }
-            dirN[equal_division] = dirN[0]; //360도에 0도 일때의 값을 넣는다 
+            dirN[EQUAL_DIVISION+1] = dirN[1];
+            //dirN[EQUAL_DIVISION + 1] = dirN[0]; //360도에 0도 일때의 값을 넣는다 
 
             return dirN;
         }
@@ -1057,7 +1064,7 @@ namespace UtilGS9
         {
 #if UNITY_EDITOR
             int count = 0;
-            foreach (Vector3 xz in _dir64_normal3D_AxisY)
+            foreach (Vector3 xz in _dir360_normal3D_AxisY)
             {
                 Debug.DrawLine(Vector3.zero, xz);
                 UnityEditor.Handles.Label(xz, ":" + count++);
@@ -1095,25 +1102,7 @@ namespace UtilGS9
             return (eDirection8)dir;
         }
 
-        static public Vector3 GetDir8_Normal3D_AxisY(eDirection8 eDirection)
-        {
-            return _dir8_normal3D_AxisY[(int)eDirection];
-        }
 
-        static public Vector3Int GetDir8_Normal2D(eDirection8 eDirection)
-        {
-            return _dir8_normal2D[(int)eDirection];
-        }
-        static public Vector3Int GetDir8_Normal2D(Vector3 dir)
-        {
-            int quad = (int)GetDir8_AxisY(dir);
-            return _dir8_normal2D[quad];
-        }
-        static public Vector3 GetDir8_Normal3D(Vector3 dir)
-        {
-            int quad = (int)GetDir8_AxisY(dir);
-            return _dir8_normal3D_AxisY[quad];
-        }
 
 
         static public int RoundToInt(float value)
@@ -1145,7 +1134,7 @@ namespace UtilGS9
 
         static public bool IsZero(Vector3 v3)
         {
-            float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z;
+            float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
             if (0 > value) value *= -1f;
             if (Vector3.kEpsilon < value)
                 return false;
@@ -1154,45 +1143,86 @@ namespace UtilGS9
             return true;
         }
 
+        static public Vector3 GetDir8_Normal3D_AxisY(eDirection8 eDirection)
+        {
+            return _dir8_normal3D_AxisY[(int)eDirection];
+        }
+
+        static public Vector3Int GetDir8_Normal2D(eDirection8 eDirection)
+        {
+            return _dir8_normal2D[(int)eDirection];
+        }
+        static public Vector3Int GetDir8_Normal2D(Vector3 dir)
+        {
+            int quad = (int)GetDir8_AxisY(dir);
+            return _dir8_normal2D[quad];
+        }
+        static public Vector3Int GetDir8_Normal2D(float degree)
+        {
+            int quad = (int)GetDir8_AxisY(degree);
+            return _dir8_normal2D[quad];
+        }
+
+        static public Vector3 GetDir8_Normal3D(Vector3 dir)
+        {
+            int quad = (int)GetDir8_AxisY(dir);
+            return _dir8_normal3D_AxisY[quad];
+        }
+
+        static public Vector3 GetDir8_Normal3D(float degree)
+        {
+            int quad = (int)GetDir8_AxisY(degree);
+            return _dir8_normal3D_AxisY[quad];
+
+        }
+
+        static public eDirection8 GetDir8_AxisY(float deg)
+        {
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+            
+            //360 / 45 = 8
+            int quad = (int)((deg / 45f) + 1.5f);
+
+            //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
+            return (eDirection8)quad;
+        }
+
         /// <summary>
         /// 방향값을 8방향 값으로 변환해 준다 
+        /// Vector3.Normalize 와 성능이 비슷하므로, 미리 저장된 각도로 방향을 구하는 방향으로 사용해야 한다 
         /// </summary>
         static public eDirection8 GetDir8_AxisY(Vector3 dir)
         {
-            //if (Misc.IsZero(dir.x*dir.x+dir.y*dir.y+dir.z*dir.z)) return eDirection8.none;
-            if (Misc.IsZero(dir)) return eDirection8.none;
-
-            float rad = Mathf.Atan2(dir.z, dir.x);
+            float rad = (float)Math.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 
             //각도가 음수라면 360을 더한다 
             if (deg < 0) deg += 360f;
+            else if (0 == dir.z && 0 == dir.x) return eDirection8.none;
 
             //360 / 45 = 8
-            //int quad = Mathf.RoundToInt(deg / 45f); //0~8
-            //int quad = Misc.RoundToInt(deg / 45f); //0~8
-            int quad = (int)((deg / 45f) + 0.5f);
-            quad %= 8; //8을 0으로 변경 : 0~7,0 
-            quad++; //값의 범위를 0~7 에서 1~8로 변경 
-
+            int quad = (int)((deg / 45f) + 1.5f);
+            
+            //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
             return (eDirection8)quad;
         }
 
 
-        static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
-        {
+        //static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
+        //{
             
-            float rad = Mathf.Atan2(dir.z, dir.x);
-            float deg = Mathf.Rad2Deg * rad;
+        //    float rad = (float)Math.Atan2(dir.z, dir.x);
+        //    float deg = Mathf.Rad2Deg * rad;
 
-            //각도가 음수라면 360을 더한다 
-            if (deg < 0) deg += 360f;
+        //    //각도가 음수라면 360을 더한다 
+        //    if (deg < 0) deg += 360f;
 
-            float angle_division = 360f / equal_division;
-            int quad = (int)((deg / angle_division) + 0.5f); //0~32
+        //    float angle_division = 360f / equal_division;
+        //    int quad = (int)((deg / angle_division) + 0.5f); //0~32
 
-            return quad;
-        }
+        //    return quad;
+        //}
 
         //느림.  GetDir64_Normal3D > Vector3.normalized  .  GetDir64_Normal3D 함수 쓰기 
         //static public Vector3 TestGetDir_Normal3D_AxisY(Vector3 dir)
@@ -1202,21 +1232,25 @@ namespace UtilGS9
         //}
 
 
-        //==========================  equal_division 64 ==============================
+        //==========================  equal_division 360 ==============================
 
-        const float ANGLE_DIVISION_64 = 360f / 64;
-        static public Vector3 GetDir64_Normal3D(Vector3 dir)
+        //Vector3.Normalize 보다 약간 더 빠르지만, 직접 만든 VOp.Normalize 보다 훨씬 느리기 때문에 쓸 이유가 없다 
+        const float ANGLE_DIVISION_360 = 360f / (float)EQUAL_DIVISION;
+        static public Vector3 notuse_GetDir360_Normal3D(Vector3 dir)
         {
             
-            float rad = Mathf.Atan2(dir.z, dir.x);
+            float rad = (float)Math.Atan2(dir.z, dir.x);
             float deg = Mathf.Rad2Deg * rad;
-
+            
             //각도가 음수라면 360을 더한다 
             if (deg < 0) deg += 360f;
+            else if (0 == dir.x && 0 == dir.z) return ConstV.v3_zero;
             
-            int quad = (int)((deg / ANGLE_DIVISION_64) + 0.5f); //0~64
+            //int quad = (int)((deg / ANGLE_DIVISION_360) +1.5f); //1~361
+            int quad = (int)(deg + 1.5f); //1~361 //EQUAL_DIVISION 이 360 이기 때문에 나누기 계산을 생략한다 
 
-            return _dir64_normal3D_AxisY[quad];
+            //DebugWide.LogBlue(rad +"   "+deg + "  " + quad + "  " + _dir360_normal3D_AxisY[quad] + "  " + dir);
+            return _dir360_normal3D_AxisY[quad];
         }
 
 
@@ -1236,9 +1270,11 @@ namespace UtilGS9
 
         static public eDirection8 GetDir8_AxisMZ(Vector3 dir)
         {
-            if (Misc.IsZero(dir)) return eDirection8.none;
+            float dot = dir.x * dir.x + dir.y * dir.y;
+            if (float.Epsilon >= dot) return eDirection8.none;
+            //if (Misc.IsZero(dir)) return eDirection8.none;
 
-            float rad = Mathf.Atan2(dir.y, dir.x);
+            float rad = (float)Math.Atan2(dir.y, dir.x);
             float deg = Mathf.Rad2Deg * rad;
 
             //각도가 음수라면 360을 더한다 
