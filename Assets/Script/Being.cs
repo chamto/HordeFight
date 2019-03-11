@@ -1108,7 +1108,7 @@ namespace HordeFight
             Update_AnimatorState(ANI_STATE_ATTACK, 0.8f);
 
             //임시코드 
-            if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind)
+            if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)
             {
                 
                 if(null == (object)_shot || false == _shot._on_theWay)

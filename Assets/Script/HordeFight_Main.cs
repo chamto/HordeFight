@@ -3986,9 +3986,9 @@ namespace HordeFight
             //champ.GetComponent<AI>()._ai_running = true;
             for (int i = 0; i < 100; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_BLUE, camp_BLUE.RandPosition());
                 //champ._mt_range_min = 2f;
-                //champ._mt_range_max = 6f;
+                //champ._mt_range_max = 3f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -4003,8 +4003,8 @@ namespace HordeFight
             for (int i = 0; i < 100; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
-                champ._mt_range_min = 2f;
-                champ._mt_range_max = 5f;
+                champ._mt_range_min = 1f;
+                champ._mt_range_max = 4f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
                 //champ.SetColor(Color.black);
@@ -4012,7 +4012,7 @@ namespace HordeFight
 
             for (int i = 0; i < 0; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
@@ -4020,7 +4020,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 20 ;i++)
+            for (int i = 0; i < 30 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -4032,7 +4032,7 @@ namespace HordeFight
             for (int i = 0; i < 300;i++)
             {
                 //being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
-                being = Create_Shot(SingleO.shotRoot, Being.eKind.magicMissile, ConstV.v3_zero);
+                being = Create_Shot(SingleO.shotRoot, Being.eKind.waterBolt, ConstV.v3_zero);
             }
 
             //===================================================
