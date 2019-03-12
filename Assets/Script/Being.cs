@@ -147,10 +147,12 @@ namespace HordeFight
         //진영간 관계
         public enum eRelation
         {
-            Unknown = 0, //알수없음
-            Neutrality, //중립
-            Alliance, //동맹
-            Enemy, //적대
+            Unknown = 0,    //알수없음
+            SameSide,       //같은편
+            Neutrality,     //중립
+            Alliance,       //동맹
+            Enemy,          //적대
+
 
         }
 
@@ -221,12 +223,10 @@ namespace HordeFight
     }
 
     //캠프와 캠프간의 관계를 저장 
-    //public class CampRelation : Dictionary<Camp.eKind, Camp.eRelation>
     public class CampRelation : List<Camp.eRelation>
     {
 
         //public CampRelation() : base(new EnumCampKindComparer()) {}
-
         public void SetRelation(Camp.eKind campKey, Camp.eRelation relat)
         {
             this[(int)campKey] = relat;
@@ -310,10 +310,13 @@ namespace HordeFight
 
 
                 //==========================================
+                _relations2[(int)kind][(int)kind] = Camp.eRelation.SameSide; //같은편 설정한다 
 
                 Camp camp = new Camp((int)kind, kind); //열거형 값을 키로 사용한다 
                 platoon.Add((int)kind, camp);
             }
+
+
         }
 
 
@@ -1046,8 +1049,8 @@ namespace HordeFight
         //==================================================
 
         //진영정보
-        public Camp _belongCamp = null; //소속 캠프
-        public Camp.eKind _campKind = Camp.eKind.None;
+        //public Camp _belongCamp = null; //소속 캠프
+        //public Camp.eKind _campKind = Camp.eKind.None;
        
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
@@ -1097,19 +1100,10 @@ namespace HordeFight
 		public override bool UpdateAll()
 		{
             bool result = base.UpdateAll();
-            if(true == result)
-            {
-                //캠프값에 따라 기본 캠프 설정
-                if(Camp.eKind.None == _campKind)
-                {
-                    _campKind = _belongCamp._eCampKind;
-                }
-                if(_campKind != _belongCamp._eCampKind)
-                {
-                    _belongCamp = SingleO.campManager.GetDefaultCamp(_campKind);
-                }
-
-            }
+            //if(true == result)
+            //{
+                
+            //}
 
             return result;
 		}
@@ -1392,7 +1386,14 @@ namespace HordeFight
         public int _hp_cur = 10;
         public int _hp_max = 10;
 
-        //====================================
+
+        //==================================================
+
+        //진영정보
+        public Camp _belongCamp = null; //소속 캠프
+        public Camp.eKind _campKind = Camp.eKind.None;
+
+        //==================================================
 
         public delegate void CallBack_State();
 
@@ -1714,6 +1715,21 @@ namespace HordeFight
 
                 return false;
             }
+
+            //==============================================
+            //캠프값에 따라 기본 캠프 설정
+            if(null != _belongCamp)
+            {
+                if (Camp.eKind.None == _campKind)
+                {
+                    _campKind = _belongCamp._eCampKind;
+                }
+                if (_campKind != _belongCamp._eCampKind)
+                {
+                    _belongCamp = SingleO.campManager.GetDefaultCamp(_campKind);
+                }
+            }
+
 
             //==============================================
             //위치 갱신
