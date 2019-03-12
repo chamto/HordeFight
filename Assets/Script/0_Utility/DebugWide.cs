@@ -163,34 +163,40 @@ public class DebugWide
 
     static public void DrawLine(Vector3 start, Vector3 end, Color cc)
     {
-
+#if UNITY_EDITOR
         Gizmos.color = cc;
         Gizmos.DrawLine(start, end);
+#endif
     }
 
     static public void DrawCircle(Vector3 pos, float radius, Color cc)
     {
+#if UNITY_EDITOR
         Gizmos.color = cc;
         Gizmos.DrawWireSphere(pos, radius);
+#endif
     }
 
     static public void DrawCube(Vector3 pos, Vector3 size, Color cc)
     {
+#if UNITY_EDITOR
         Gizmos.color = cc;
         Gizmos.DrawWireCube(pos, size);
+#endif
     }
 
 
 
     static public void PrintText(Vector3 pos, Color cc, string text)
     {
-
+#if UNITY_EDITOR
         GUIStyle style = new GUIStyle();
         style.normal.textColor = cc;
 
         UnityEditor.Handles.BeginGUI();
         UnityEditor.Handles.Label(pos, text, style);
         UnityEditor.Handles.EndGUI();
+#endif
     }
 
 }

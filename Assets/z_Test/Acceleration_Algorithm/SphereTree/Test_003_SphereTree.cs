@@ -171,26 +171,30 @@ namespace Test_003
     {
         static public void DrawLine(Vector3 start, Vector3 end, Color cc)
         {
-
+#if UNITY_EDITOR
             Gizmos.color = cc;
             Gizmos.DrawLine(start, end);
+#endif
         }
 
         static public void DrawCircle(Vector3 pos, float radius, Color cc)
         {
+#if UNITY_EDITOR
             Gizmos.color = cc;
             Gizmos.DrawWireSphere(pos, radius);
+#endif
         }
 
         static public void PrintText(Vector3 pos, Color cc, string text)
         {
-
+#if UNITY_EDITOR
             GUIStyle style = new GUIStyle();
             style.normal.textColor = cc;
 
             UnityEditor.Handles.BeginGUI();
             UnityEditor.Handles.Label(pos, text, style);
             UnityEditor.Handles.EndGUI();
+#endif
         }
 
         //ray_dir : 정규화된 값을 넣어야 한다 

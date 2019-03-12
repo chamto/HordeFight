@@ -103,17 +103,18 @@ namespace Test_003
 
         static public void DrawLine(float x1, float y1, float x2, float y2, uint color)
         {
+#if UNITY_EDITOR
             Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
             //DebugWide.LogBlue(cc);
-            //cc.a = 1f;
-
 
             Gizmos.color = cc;
             Gizmos.DrawLine(new Vector3(x1, y1, 0), new Vector3(x2, y2, 0));
+#endif
         }
 
         static public void DrawCircle(float locx, float locy, float radius, uint color)
         {
+#if UNITY_EDITOR
             Color cc = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
             //DebugWide.LogBlue(cc + "    " + DefineO.HexToColor(color) + "    " + color);
             //cc.a = 1f;
@@ -121,10 +122,12 @@ namespace Test_003
             //UnityEditor.Handles.color = Color.red;
             Gizmos.color = cc;
             Gizmos.DrawWireSphere(new Vector3(locx, locy, 0), radius);
+#endif
         }
 
         static public void PrintText(float x, float y, uint color, string text)
         {
+#if UNITY_EDITOR
             //UnityEditor.Handles.color = Misc.Color32_ToColor(Misc.Hex_ToColor32(color));
 
             GUIStyle style = new GUIStyle();
@@ -133,6 +136,7 @@ namespace Test_003
             UnityEditor.Handles.BeginGUI();
             UnityEditor.Handles.Label(new Vector3(x, y, 0), text, style);
             UnityEditor.Handles.EndGUI();
+#endif
         }
     }
 }
