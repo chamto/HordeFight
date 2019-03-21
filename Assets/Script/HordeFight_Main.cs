@@ -3046,7 +3046,7 @@ namespace HordeFight
 
                 //동굴벽과 캐릭터 충돌처리 
                 //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-                if (SingleO.cellPartition.HasStructTile(src._getPos3D, out structTile))
+                if (SingleO.cellPartition.HasStructTile(src._transform.position, out structTile))
                 {
                     CollisionPush_StructTile(src, structTile);
                     //CollisionPush_Rigid(src, structTile);
@@ -3063,7 +3063,7 @@ namespace HordeFight
                 }
                 else
                 {
-                    Culling_ViewFrustum(cameraViewBounds, src); //테스트를 위해 주석 
+                    //Culling_ViewFrustum(cameraViewBounds, src); //테스트를 위해 주석 
                 }
 
             }
@@ -3440,7 +3440,8 @@ namespace HordeFight
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             //Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
             //Vector3 dis = src._getPos3D - dst._getPos3D;
-            Vector3 dis = VOp.Minus(src._getPos3D , dst._getPos3D);
+            Vector3 dis = VOp.Minus(src._transform.position , dst._transform.position);
+            Vector3 n = ConstV.v3_zero;
             float dis_sqr = dis.sqrMagnitude;
             //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
             float r_sum = (src._collider_radius + dst._collider_radius);
@@ -3448,10 +3449,30 @@ namespace HordeFight
             //1.두 캐릭터가 겹친상태 
             if (dis_sqr < r_sumsqr)
             {
+                //==========================================
+                n = dis;
+                float length = (float)Math.Sqrt(dis_sqr);
+                float btLength = (r_sum - length) * 0.55f;
+                if(0 == length)
+                {
+                    n = Misc.GetDir8_Random_AxisY();
+                    length = 1f;
+                    btLength = r_sum * 0.5f;
+                }
+                n.x /= length;
+                n.z /= length;
+                n *= btLength;
+                src._transform.position = src._getPos3D + n;
+                dst._transform.position = dst._getPos3D - n;
+                return;
+                //DebugWide.LogBlue(n + "  " + btLength + "   " + length);
+                //==========================================
 
-                Vector3 n = VOp.Normalize(dis);
+                n = VOp.Normalize(dis);
                 //Vector3 n = Misc.GetDir360_Normal3D(dis);
                 //Vector3 n = dis.normalized;
+
+
 
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
@@ -3542,7 +3563,7 @@ namespace HordeFight
         {
             if (null == structTile) return;
 
-            Vector3 srcPos = src._getPos3D;
+            Vector3 srcPos = src._transform.position;
             //Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
             Vector3 centerToSrc_dir = VOp.Minus(srcPos , structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
@@ -4162,7 +4183,7 @@ namespace HordeFight
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, SingleO.campManager.GetDefaultCamp(Camp.eKind.Hero), camp_Obstacle.GetPosition(camp_position));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
@@ -4180,9 +4201,11 @@ namespace HordeFight
             for (int i = 0; i < 100; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
-                champ._mt_range_min = 0.3f;
-                champ._mt_range_max = 0.5f;
-                champ.GetComponent<AI>()._ai_running = true;
+                champ._hp_max = 10000;
+                champ._hp_cur = 10000;
+                //champ._mt_range_min = 0.3f;
+                //champ._mt_range_max = 0.5f;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -4193,7 +4216,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 0; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 1f;
@@ -4213,7 +4236,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 30 ;i++)
+            for (int i = 0; i < 0 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
