@@ -51,7 +51,7 @@ namespace HordeFight
 
             __msec = __deltaTime * 1000.0f;
             __fps = 1.0f / __deltaTime;
-            _fpsText.text = string.Format("{0:0.0} ms ({1:0.} fps)", __msec, __fps);
+            _fpsText.text = string.Format("{1:0.} fps ({0:0.0} ms)", __fps, __msec);
 
 
             //StringBuilder 를 사용해도 GC가 발생함. 

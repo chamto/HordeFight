@@ -3475,7 +3475,8 @@ namespace HordeFight
                     rate_dst = 0f;
                 }
 
-                n = dis;
+                n = Misc.GetDir8_Normal3D(dis); //8방향으로만 밀리게 한다 
+                //n = dis;
                 float length = (float)Math.Sqrt(dis_sqr);
                 float btLength = (r_sum - length);
                 float btLength_src = btLength * rate_src;
@@ -3487,9 +3488,9 @@ namespace HordeFight
                     btLength_src = r_sum * 0.5f;
                     btLength_dst = r_sum * 0.5f;
                 }
-                n.x /= length;
-                n.z /= length;
-                //n *= btLength_src;
+                //n.x /= length;
+                //n.z /= length;
+
                 src.SetPos(src.GetPos3D() + n * btLength_src);
                 dst.SetPos(dst.GetPos3D() - n * btLength_dst);
                 return;
