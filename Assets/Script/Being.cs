@@ -472,6 +472,7 @@ namespace HordeFight
         //public const float WorldToMeter = 1f / ONE_METER;
         //public const float MeterToWorld = ONE_METER;
 
+        public Being _being = null;
         public GameObject _gameObject = null;
         public Transform _transform = null;
 
@@ -525,7 +526,7 @@ namespace HordeFight
                 MoveToTarget(_lastTargetPos, _speed_meterPerSecond); //test
             }
             //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
-            else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= GridManager.SQR_ONE_METER * 0.2f)
+            else if ((_nextTargetPos - _being.GetPos3D()).sqrMagnitude <= GridManager.SQR_ONE_METER * 0.2f)
             {
                 _elapsed_movingTime = 0;
 
@@ -572,16 +573,16 @@ namespace HordeFight
             targetPos.y = 0;
 
             _isNextMoving = true;
-            _startPos = _transform.position;
+            _startPos = _being.GetPos3D();//_transform.position;
             _lastTargetPos = targetPos;
-            _nextTargetPos = _transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
+            _nextTargetPos = _being.GetPos3D();//_transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
             _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             _elapsedTime = 0;
             _prevInterpolationTime = 0;
 
-            _targetPath = SingleO.pathFinder.Search(_transform.position, targetPos);
+            _targetPath = SingleO.pathFinder.Search(_being.GetPos3D(), targetPos);
 
             //초기방향을 구한다
             _eDir8 = Misc.GetDir8_AxisY(_targetPath.First() - _startPos);
@@ -599,7 +600,9 @@ namespace HordeFight
 
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
-            _transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            //_transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime);
+            _being.SetPos(newPos);
 
             //보간 없는 기본형
             //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
@@ -616,7 +619,9 @@ namespace HordeFight
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            //this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            _being.SetPos(newPos);
         }
 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
@@ -624,7 +629,9 @@ namespace HordeFight
             _isNextMoving = true;
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            //this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            _being.SetPos(newPos);
         }
 
         public void DebugVeiw_DrawPath_MoveToTarget()
@@ -1144,7 +1151,7 @@ namespace HordeFight
                         if(null != (object)target)
                         {
                             //targetPos = target.transform.position;
-                            targetPos = target._getPos3D;
+                            targetPos = target.GetPos3D();
                         }else
                         {
                             _appointmentDir.Normalize();
@@ -1370,10 +1377,10 @@ namespace HordeFight
         //복사정보 - 속도를 위해 미리 구해 놓은 정보
         public GameObject   _gameObject = null;
         public Transform    _transform = null;
-        public Vector3      _getPos3D = ConstV.v3_zero;
-        //public Vector2Int   _getPos2D = ConstV.v2Int_zero;
-        public Index2       _getPos2D = ConstV.id2_zero;
-        public int          _getPos1D = -1;
+        protected Vector3      _getPos3D = ConstV.v3_zero;
+
+        //public Index2       _getPos2D = ConstV.id2_zero;
+        //public int          _getPos1D = -1;
         public Vector3      _getBounds_min = ConstV.v3_zero;
         public Vector3      _getBounds_max = ConstV.v3_zero;
 
@@ -1460,7 +1467,9 @@ namespace HordeFight
             _gameObject = gameObject;
             _transform = transform;
             _getPos3D = _transform.position;
-            SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //Apply_Bounds();
+            this.SetPos(_getPos3D);
             //=====================================================
 
             _sortingGroup = GetComponent<SortingGroup>();
@@ -1500,10 +1509,8 @@ namespace HordeFight
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-            //Vector3Int posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
-            //SingleO.gridManager.AddCellInfo_Being(posXY_2d, this);
-            //_cellInfo = SingleO.gridManager.GetCellInfo(posXY_2d);
-            //int pos1d = SingleO.cellPartition.ToPosition1D(transform.position);
+
+            int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
 
 
@@ -1512,6 +1519,27 @@ namespace HordeFight
             this.Idle();
         }
 
+        public Vector3 GetPos3D()
+        {
+            return _getPos3D;
+        }
+
+        public void SetPos(Vector3 newPos)
+        {
+            _getPos3D = newPos;
+
+            //==============================================
+            //!!!!! 구트리 위치 갱신 
+            _sphereModel.SetPos(_getPos3D);
+            //==============================================
+
+            //!!!!! 경계상자 위치 갱신
+            _getBounds_min.x = _getPos3D.x - _collider_radius;
+            _getBounds_min.z = _getPos3D.z - _collider_radius;
+            _getBounds_max.x = _getPos3D.x + _collider_radius;
+            _getBounds_max.z = _getPos3D.z + _collider_radius;
+            //==============================================
+        }
 
         public bool Intersects(Being dst)
         {
@@ -1592,17 +1620,28 @@ namespace HordeFight
             
         }
 
+        public void Apply_UnityPosition()
+        {
+            _transform.position = _getPos3D;
+        }
 
+        //public void Apply_Bounds()
+        //{
+        //    _getBounds_min.x = _getPos3D.x - _collider_radius;
+        //    _getBounds_min.z = _getPos3D.z - _collider_radius;
+        //    _getBounds_max.x = _getPos3D.x + _collider_radius;
+        //    _getBounds_max.z = _getPos3D.z + _collider_radius;
+        //}
 
         public void Update_PositionAndBounds()
         {
-            _getPos3D = _transform.position;
-            SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //_getPos3D = _transform.position;
+            //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
 
-            _getBounds_min.x = _getPos3D.x - _collider_radius;
-            _getBounds_min.z = _getPos3D.z - _collider_radius;
-            _getBounds_max.x = _getPos3D.x + _collider_radius;
-            _getBounds_max.z = _getPos3D.z + _collider_radius;
+            //_getBounds_min.x = _getPos3D.x - _collider_radius;
+            //_getBounds_min.z = _getPos3D.z - _collider_radius;
+            //_getBounds_max.x = _getPos3D.x + _collider_radius;
+            //_getBounds_max.z = _getPos3D.z + _collider_radius;
         }
 
 
@@ -1620,7 +1659,8 @@ namespace HordeFight
         /// </summary>
         public void Update_CellSpace()
         {
-            
+
+            int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             if (null == _cur_cell || _cur_cell._pos1d != _getPos1D)
             {
                 SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
@@ -1733,7 +1773,7 @@ namespace HordeFight
 
             //==============================================
             //위치 갱신
-            Update_PositionAndBounds();
+            //Update_PositionAndBounds();
             //==============================================
 
             //Update_CellInfo();
@@ -2195,7 +2235,7 @@ namespace HordeFight
             //==============================================
             //!!!!! 구트리 위치 갱신 
             //_sphereModel.SetPos(_transform.position);
-            _sphereModel.SetPos(_getPos3D);
+            //_sphereModel.SetPos(_getPos3D);
             //==============================================
 
         }
@@ -2220,7 +2260,7 @@ namespace HordeFight
             //==============================================
             //!!!!! 구트리 위치 갱신 
             //_sphereModel.SetPos(_transform.position);
-            _sphereModel.SetPos(_getPos3D);
+            //_sphereModel.SetPos(_getPos3D);
             //==============================================
         }
 

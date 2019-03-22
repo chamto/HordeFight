@@ -166,7 +166,7 @@ namespace UtilGS9
                 mYLookup.Add(-1);
                 mZLookup.Add(-1);
             }
-            DebugWide.LogBlue("init  x_endpoint count : " + mXEndpoints.Count);
+            DebugWide.LogBlue("init  AABBCulling  endpoint size : " + endpSize);
 
 
 
