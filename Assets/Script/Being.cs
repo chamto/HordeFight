@@ -612,6 +612,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
+            
             //dir.Normalize();
             _isNextMoving = true;
             _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
@@ -621,7 +622,39 @@ namespace HordeFight
             //보간 없는 기본형
             //this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
             Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
-            _being.SetPos(newPos);
+            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
+            //================================
+            //!!!! 셀에 원의 중점 기준으로만 등록되어 있어서 가져온 셀정보 외에서도 충돌가능원이 있을 가능성이 매우 높다. 즉 제대로 처리 할 수가 없다  
+            //새로운 위치로 이동이 가능한지 검사 
+            //CellSpace cell = SingleO.cellPartition.GetCellSpace(newPos); //원의 중점인 자기위치의 타일정보만 가져오는 결과가 됨
+            CellSpace cell = SingleO.cellPartition.GetCellSpace(newPosBounds); //객체 반지름의 경계면의 타일정보를 가져온다  
+            if(null != cell )
+            {
+                //DebugWide.LogBlue(cell._childCount);
+                bool moveable = true;
+                Being cur = cell._children;
+                for (int i = 0; i < cell._childCount;i++)
+                {
+                    if ((object)_being == (object)cur) continue;
+                    Vector3 between = cur.GetPos3D() - newPos;
+                    float sumRadius = cur._collider_radius + _being._collider_radius;
+                    if (between.sqrMagnitude <= sumRadius * sumRadius)
+                    {
+                        moveable = false;
+                        break;
+                    }
+                        
+
+                    cur = cell._children._next_sibling;
+                }
+
+                if(true == moveable )//&& 3 > cell._childCount)
+                    _being.SetPos(newPos);        
+
+            }
+
+            //================================
+
         }
 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
@@ -1461,6 +1494,11 @@ namespace HordeFight
         public SphereModel _sphereModel = null;
 
         //==================================================
+        // 작용힘 - 임시 
+        //==================================================
+        public Vector3 _force_dir = ConstV.v3_zero;
+        public float _force = 0f;
+        //==================================================
 
         public virtual void Init()
         {
@@ -1517,6 +1555,25 @@ namespace HordeFight
             //=====================================================
             //초기 애니 설정 
             this.Idle();
+        }
+
+        public void SetForce(Vector3 nDir, float force)
+        {
+            _force_dir = nDir * force;
+            _force = force;
+        }
+
+        public void ReactionForce(Being dst, float deltaTime)
+        {
+            if(null != (object)dst)
+            {
+                _force_dir += dst._force_dir; //충돌후 방향을 구한다 
+                //_force -= dst._force;
+                //if (0 > _force) _force = 0; 
+            }
+
+            _getPos3D += _force_dir;
+
         }
 
         public Vector3 GetPos3D()
