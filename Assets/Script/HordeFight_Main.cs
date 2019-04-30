@@ -4152,6 +4152,7 @@ namespace HordeFight
             SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.Blue);
             SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.White);
 
+            Camp camp_HERO = SingleO.campManager.GetDefaultCamp(Camp.eKind.Hero);
             Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
             Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
             Camp camp_Obstacle = SingleO.campManager.GetCamp(Camp.eKind.Obstacle, Obstacle_CampName.GetHashCode());
@@ -4159,29 +4160,35 @@ namespace HordeFight
             ChampUnit champ = null;
 
             // -- 블루 진형 --
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, SingleO.campManager.GetDefaultCamp(Camp.eKind.Hero), camp_Obstacle.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(camp_position));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
             champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ._mt_range_min = 1f;
-            //champ._mt_range_max = 8f;
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
-            //camp_position++;
-            //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
-            //champ.GetComponent<AI>()._ai_running = true;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_HERO, camp_Obstacle.GetPosition(camp_position));
+            champ._hp_max = 1000;
+            champ._hp_cur = 1000;
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, camp_HERO, camp_Obstacle.GetPosition(camp_position));
+            champ._hp_max = 1000;
+            champ._hp_cur = 1000;
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_HERO, camp_Obstacle.GetPosition(camp_position));
+            champ._hp_max = 1000;
+            champ._hp_cur = 1000;
+            champ.GetComponent<AI>()._ai_running = true;
+            camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, camp_HERO, camp_Obstacle.GetPosition(camp_position));
+            champ._hp_max = 1000;
+            champ._hp_cur = 1000;
+            champ.GetComponent<AI>()._ai_running = true;
             for (int i = 0; i < 100; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
-                champ._mt_range_min = 0.3f;
-                champ._mt_range_max = 0.5f;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
+                champ._mt_range_min = 1f;
+                champ._mt_range_max = 5f;
                 champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
