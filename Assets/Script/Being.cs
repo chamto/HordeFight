@@ -51,7 +51,7 @@ namespace HordeFight
 
             __msec = __deltaTime * 1000.0f;
             __fps = 1.0f / __deltaTime;
-            _fpsText.text = string.Format("{0:0.0} ms ({1:0.} fps)", __msec, __fps);
+            _fpsText.text = string.Format("{1:0.} fps ({0:0.0} ms)", __fps, __msec);
 
 
             //StringBuilder 를 사용해도 GC가 발생함. 
@@ -243,7 +243,7 @@ namespace HordeFight
         public Camp.eRelation GetRelation(Camp.eKind campKey)
         {
             return this[(int)campKey];
-            
+
             //if (true == this.ContainsKey(campKey))
             //{
             //    return this[campKey];
@@ -285,7 +285,7 @@ namespace HordeFight
 
         public void Create_DefaultCamp()
         {
-            foreach(Camp.eKind kind in Enum.GetValues(typeof(Camp.eKind)))
+            foreach (Camp.eKind kind in Enum.GetValues(typeof(Camp.eKind)))
             {
                 if (Camp.eKind.Max == kind) continue;
 
@@ -444,10 +444,10 @@ namespace HordeFight
         {
             //열거형에 있는 캠프분대를 미리 만들어 놓았기 때문에, 분대를 가져오지 못했다면 무언가 잘못된 열거형 값이 들어온 것이다 
             CampPlatoon platoon = GetPlatoon(kind);
-            if (null == platoon) return null; 
+            if (null == platoon) return null;
 
             Camp camp = GetCamp(kind, hashName);
-            if(null == camp)
+            if (null == camp)
             {
                 camp = new Camp(hashName, kind);
                 platoon.Add(hashName, camp);
@@ -472,6 +472,7 @@ namespace HordeFight
         //public const float WorldToMeter = 1f / ONE_METER;
         //public const float MeterToWorld = ONE_METER;
 
+        public Being _being = null;
         public GameObject _gameObject = null;
         public Transform _transform = null;
 
@@ -525,14 +526,14 @@ namespace HordeFight
                 MoveToTarget(_lastTargetPos, _speed_meterPerSecond); //test
             }
             //1meter 의 20% 길이에 해당하는 거리가 남았다면 도착 
-            else if ((_nextTargetPos - this.transform.position).sqrMagnitude <= GridManager.SQR_ONE_METER * 0.2f)
+            else if ((_nextTargetPos - _being.GetPos3D()).sqrMagnitude <= GridManager.SQR_ONE_METER * 0.2f)
             {
                 _elapsed_movingTime = 0;
 
                 _nextTargetPos = _targetPath.Dequeue();
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
-                _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos , _transform.position)) * _direction;
+                _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos, _transform.position)) * _direction;
                 _eDir8 = Misc.GetDir8_AxisY(_direction);
 
             }
@@ -572,16 +573,16 @@ namespace HordeFight
             targetPos.y = 0;
 
             _isNextMoving = true;
-            _startPos = _transform.position;
+            _startPos = _being.GetPos3D();//_transform.position;
             _lastTargetPos = targetPos;
-            _nextTargetPos = _transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
+            _nextTargetPos = _being.GetPos3D();//_transform.position; //현재위치를 넣어 바로 다음 경로를 꺼내게 한다 
             _speed_meterPerSecond = 1f / speed_meterPerSecond; //역수를 넣어준다. 숫자가 커질수록 빠르게 설정하기 위함이다 
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             _elapsedTime = 0;
             _prevInterpolationTime = 0;
 
-            _targetPath = SingleO.pathFinder.Search(_transform.position, targetPos);
+            _targetPath = SingleO.pathFinder.Search(_being.GetPos3D(), targetPos);
 
             //초기방향을 구한다
             _eDir8 = Misc.GetDir8_AxisY(_targetPath.First() - _startPos);
@@ -599,7 +600,9 @@ namespace HordeFight
 
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
-            _transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            //_transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
+            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime);
+            _being.SetPos(newPos);
 
             //보간 없는 기본형
             //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
@@ -609,6 +612,7 @@ namespace HordeFight
 
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
+
             //dir.Normalize();
             _isNextMoving = true;
             _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
@@ -616,7 +620,41 @@ namespace HordeFight
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            //this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
+            //================================
+            //!!!! 셀에 원의 중점 기준으로만 등록되어 있어서 가져온 셀정보 외에서도 충돌가능원이 있을 가능성이 매우 높다. 즉 제대로 처리 할 수가 없다  
+            //새로운 위치로 이동이 가능한지 검사 
+            //CellSpace cell = SingleO.cellPartition.GetCellSpace(newPos); //원의 중점인 자기위치의 타일정보만 가져오는 결과가 됨
+            CellSpace cell = SingleO.cellPartition.GetCellSpace(newPosBounds); //객체 반지름의 경계면의 타일정보를 가져온다  
+            if (null != cell)
+            {
+                //DebugWide.LogBlue(cell._childCount);
+                bool moveable = true;
+                Being cur = cell._children;
+                for (int i = 0; i < cell._childCount; i++)
+                {
+                    if ((object)_being == (object)cur) continue;
+                    Vector3 between = cur.GetPos3D() - newPos;
+                    float sumRadius = cur._collider_radius + _being._collider_radius;
+                    if (between.sqrMagnitude <= sumRadius * sumRadius)
+                    {
+                        moveable = false;
+                        break;
+                    }
+
+
+                    cur = cell._children._next_sibling;
+                }
+
+                if (true == moveable)//&& 3 > cell._childCount)
+                    _being.SetPos(newPos);
+
+            }
+
+            //================================
+
         }
 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
@@ -624,7 +662,9 @@ namespace HordeFight
             _isNextMoving = true;
             perSecond = 1f / perSecond;
             //보간 없는 기본형
-            this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            //this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            _being.SetPos(newPos);
         }
 
         public void DebugVeiw_DrawPath_MoveToTarget()
@@ -660,19 +700,19 @@ namespace HordeFight
 
         //}
 
-		public override void Init()
-		{
+        public override void Init()
+        {
             base.Init();
 
             _sprParent = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/pos");
             _shader = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/shader");
             //this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
 
-		}
+        }
 
-		//private void Update()
+        //private void Update()
         //{
-            
+
         //    Update_Shot();
         //    //Update_CellInfo(); //매프레임 마다 충돌검사의 대상이 된다
 
@@ -681,7 +721,7 @@ namespace HordeFight
         //    if(GridManager._ReturnMessage_Included_InStructTile == result ||
         //       GridManager._ReturnMessage_Included_InDiagonalArea == result)
         //    {
-                
+
         //        End();
         //    }
 
@@ -689,11 +729,11 @@ namespace HordeFight
 
         //샷의 움직임을 종료한다 
         public void End()
-		{
-            if(null != (object)_owner)
+        {
+            if (null != (object)_owner)
             {
                 ChampUnit champ = _owner as ChampUnit;
-                if(null != (object)champ)
+                if (null != (object)champ)
                 {
                     champ._shot = null;
                 }
@@ -710,17 +750,17 @@ namespace HordeFight
             //_sortingGroup.sortingOrder = base.GetSortingOrder(0);
 
 
-		}
+        }
 
-		//____________________________________________
-		//                  충돌반응
-		//____________________________________________
+        //____________________________________________
+        //                  충돌반응
+        //____________________________________________
 
         public override void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
         {
             //무언가와 충돌했으면 투사체를 해제한다 (챔프 , 숥통 등)
 
-            if((object)dst != (object)_owner)
+            if ((object)dst != (object)_owner)
                 End();
         }
 
@@ -741,8 +781,8 @@ namespace HordeFight
         public float _maxHeight_posRate = 0.5f; //곡선의 최고점이 되는 위치 비율
         public void ThrowThings(Being owner, Vector3 launchPos, Vector3 targetPos)
         {
-            
-            if (null == (object)_sprRender) 
+
+            if (null == (object)_sprRender)
                 return; //Start 함수 수행전에 호출된 경우 
 
 
@@ -755,7 +795,7 @@ namespace HordeFight
                 float shake = (float)Misc.RandInRange(0f, 0.2f); //흔들림 정도
                 _launchPos = launchPos;
                 _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
-                Vector3 toTarget = VOp.Minus(_targetPos , _launchPos);
+                Vector3 toTarget = VOp.Minus(_targetPos, _launchPos);
 
                 //기준값 : 7미터 당 1초
                 _shotMoveTime = toTarget.magnitude / (GridManager.MeterToWorld * 7f);
@@ -778,12 +818,12 @@ namespace HordeFight
 
                 float posRateVert = 0f;
                 Vector3 posHori = ConstV.v3_zero;
-                if(eDirection8.up == owner._move._eDir8)
+                if (eDirection8.up == owner._move._eDir8)
                 {
                     //그림자를 참 뒤에 보이게 함
                     posRateVert = 0.8f;
                 }
-                else if(eDirection8.down == owner._move._eDir8)
+                else if (eDirection8.down == owner._move._eDir8)
                 {
                     //그림자를 창 앞에 보이게 함 
                     posRateVert = 0.3f;
@@ -797,9 +837,9 @@ namespace HordeFight
                         _perpNormal *= -1f;
                     }
                     posRateVert = _maxHeight_posRate + shake;
-                    posHori = VOp.Multiply(_perpNormal , _maxHeight_length);
+                    posHori = VOp.Multiply(_perpNormal, _maxHeight_length);
                 }
-                _maxHeight_pos = VOp.Multiply(toTarget , posRateVert);
+                _maxHeight_pos = VOp.Multiply(toTarget, posRateVert);
                 _maxHeight_pos = VOp.Plus(_maxHeight_pos, _launchPos);
                 _maxHeight_pos = VOp.Plus(_maxHeight_pos, posHori);
 
@@ -832,7 +872,7 @@ namespace HordeFight
         Vector3 _ori_scale = Vector3.one;
         public void Update_Shot()
         {
-            
+
             if (true == this._on_theWay)
             {
                 base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
@@ -851,13 +891,13 @@ namespace HordeFight
                 //* 화살 중간비율값 위치에 최대크기 비율값 계산
                 //중간비율값 위치에 최고비율로 값변형 : [ 0 ~ 0.7 ~ 1 ] => [ 0 ~ 1 ~ 0 ]
                 float scaleMaxRate = 0f;
-                if(zeroOneRate < _maxHeight_posRate)
+                if (zeroOneRate < _maxHeight_posRate)
                 {
                     scaleMaxRate = zeroOneRate / _maxHeight_posRate;
                 }
                 else
                 {
-                    scaleMaxRate = 1f - (zeroOneRate - _maxHeight_posRate) / ( 1f - _maxHeight_posRate);
+                    scaleMaxRate = 1f - (zeroOneRate - _maxHeight_posRate) / (1f - _maxHeight_posRate);
                 }
                 _sprParent.localScale = _ori_scale + (ConstV.v3_one * scaleMaxRate * 0.5f); //최고점에서 1.5배
                 _shader.transform.localScale = (_ori_scale * 0.7f) + (ConstV.v3_one * scaleMaxRate * 0.5f); //시작과 끝위치점에서 0.7배. 최고점에서 1.2배
@@ -897,10 +937,10 @@ namespace HordeFight
 
         public void Rotate_Towards_FrontGap(Transform tr)
         {
-            Vector3 dir = VOp.Minus(tr.position , _prev_pos);
+            Vector3 dir = VOp.Minus(tr.position, _prev_pos);
 
             //목표지점의 반대방향일 경우는 처리하지 않는다 
-            if (0 > Vector3.Dot(VOp.Minus( _targetPos , _launchPos), dir))
+            if (0 > Vector3.Dot(VOp.Minus(_targetPos, _launchPos), dir))
                 return;
 
             const float TILE_LENGTH_SQR = 0.16f * 0.16f;
@@ -948,12 +988,12 @@ namespace HordeFight
 
     public class Obstacle : Being
     {
-        
-		//private void Update()
-		//{
-  //          base.UpdateAll();
 
-		//}
+        //private void Update()
+        //{
+        //          base.UpdateAll();
+
+        //}
 
         //____________________________________________
         //                  충돌반응
@@ -964,8 +1004,8 @@ namespace HordeFight
             Move_Push(dir, meterPerSecond);
         }
 
-		
-	}
+
+    }
 
     /// <summary>
     /// 구조물 : 건물 , 배
@@ -1051,7 +1091,7 @@ namespace HordeFight
         //진영정보
         //public Camp _belongCamp = null; //소속 캠프
         //public Camp.eKind _campKind = Camp.eKind.None;
-       
+
         public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
         //==================================================
@@ -1081,11 +1121,11 @@ namespace HordeFight
 
         //LineControl LINE_CONTROL = null;
 
-		public override void Init()
-		{
+        public override void Init()
+        {
             base.Init();
 
-            _activeRange.radius = GridManager.ONE_METER * 1f; 
+            _activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
             // ui 설정 
@@ -1094,19 +1134,19 @@ namespace HordeFight
             _ui_circle.gameObject.SetActive(false);
             _ui_hp.gameObject.SetActive(false);
             //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
-		}
+        }
 
 
-		public override bool UpdateAll()
-		{
+        public override bool UpdateAll()
+        {
             bool result = base.UpdateAll();
             //if(true == result)
             //{
-                
+
             //}
 
             return result;
-		}
+        }
 
         public void Attack(Vector3 dir)
         {
@@ -1134,18 +1174,19 @@ namespace HordeFight
             //임시코드 
             if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)
             {
-                
-                if(null == (object)_shot || false == _shot._on_theWay)
+
+                if (null == (object)_shot || false == _shot._on_theWay)
                 {
                     _shot = SingleO.objectManager.GetNextShot();
-                    if(null != (object)_shot)
+                    if (null != (object)_shot)
                     {
                         Vector3 targetPos = ConstV.v3_zero;
-                        if(null != (object)target)
+                        if (null != (object)target)
                         {
                             //targetPos = target.transform.position;
-                            targetPos = target._getPos3D;
-                        }else
+                            targetPos = target.GetPos3D();
+                        }
+                        else
                         {
                             _appointmentDir.Normalize();
                             //targetPos = this.transform.position + _appointmentDir * attack_range_max;
@@ -1169,7 +1210,7 @@ namespace HordeFight
                 //예약된 방향값 설정
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
-                Switch_Ani(_kind, eAniBaseKind.attack , _move._eDir8);
+                Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
 
 
             }
@@ -1182,7 +1223,7 @@ namespace HordeFight
 
             if (hash_state == ANI_STATE_ATTACK)
             {
-                
+
                 //목표에 피해를 준다
                 if (null != _target)
                 {
@@ -1190,7 +1231,7 @@ namespace HordeFight
 
                     _target.AddHP(-1);
                     ChampUnit target_champ = _target as ChampUnit;
-                    if(null != target_champ)
+                    if (null != target_champ)
                     {
                         StartCoroutine(target_champ.Damage());
                         target_champ.ApplyUI_HPBar();
@@ -1249,13 +1290,13 @@ namespace HordeFight
             Move_Push(dir, meterPerSecond);
         }
 
-	}
+    }
 
     //======================================================
 
 
 
-    public class Being : MonoBehaviour , SphereModel.IUserData
+    public class Being : MonoBehaviour, SphereModel.IUserData
     {
         //단계
         public enum ePhase
@@ -1368,14 +1409,14 @@ namespace HordeFight
         //==================================================
 
         //복사정보 - 속도를 위해 미리 구해 놓은 정보
-        public GameObject   _gameObject = null;
-        public Transform    _transform = null;
-        public Vector3      _getPos3D = ConstV.v3_zero;
-        //public Vector2Int   _getPos2D = ConstV.v2Int_zero;
-        public Index2       _getPos2D = ConstV.id2_zero;
-        public int          _getPos1D = -1;
-        public Vector3      _getBounds_min = ConstV.v3_zero;
-        public Vector3      _getBounds_max = ConstV.v3_zero;
+        public GameObject _gameObject = null;
+        public Transform _transform = null;
+        protected Vector3 _getPos3D = ConstV.v3_zero;
+
+        //public Index2       _getPos2D = ConstV.id2_zero;
+        //public int          _getPos1D = -1;
+        public Vector3 _getBounds_min = ConstV.v3_zero;
+        public Vector3 _getBounds_max = ConstV.v3_zero;
 
         //==================================================
 
@@ -1454,13 +1495,20 @@ namespace HordeFight
         public SphereModel _sphereModel = null;
 
         //==================================================
+        // 작용힘 - 임시 
+        //==================================================
+        public Vector3 _force_dir = ConstV.v3_zero;
+        public float _force = 0f;
+        //==================================================
 
         public virtual void Init()
         {
             _gameObject = gameObject;
             _transform = transform;
             _getPos3D = _transform.position;
-            SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //Apply_Bounds();
+            this.SetPos(_getPos3D);
             //=====================================================
 
             _sortingGroup = GetComponent<SortingGroup>();
@@ -1471,7 +1519,7 @@ namespace HordeFight
 
             _move = GetComponent<Movement>();
             _ai = GetComponent<AI>();
-            if(null != _ai)
+            if (null != _ai)
             {
                 _ai.Init();
             }
@@ -1483,7 +1531,7 @@ namespace HordeFight
             //=====================================================
             //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             //오버라이트컨트롤러를 직접 생성해서 추가한다
-            if(null != _animator)
+            if (null != _animator)
             {
                 //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
                 _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
@@ -1500,10 +1548,8 @@ namespace HordeFight
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-            //Vector3Int posXY_2d = SingleO.gridManager.ToPosition2D(transform.position);
-            //SingleO.gridManager.AddCellInfo_Being(posXY_2d, this);
-            //_cellInfo = SingleO.gridManager.GetCellInfo(posXY_2d);
-            //int pos1d = SingleO.cellPartition.ToPosition1D(transform.position);
+
+            int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
 
 
@@ -1512,6 +1558,46 @@ namespace HordeFight
             this.Idle();
         }
 
+        public void SetForce(Vector3 nDir, float force)
+        {
+            _force_dir = nDir * force;
+            _force = force;
+        }
+
+        public void ReactionForce(Being dst, float deltaTime)
+        {
+            if (null != (object)dst)
+            {
+                _force_dir += dst._force_dir; //충돌후 방향을 구한다 
+                //_force -= dst._force;
+                //if (0 > _force) _force = 0; 
+            }
+
+            _getPos3D += _force_dir;
+
+        }
+
+        public Vector3 GetPos3D()
+        {
+            return _getPos3D;
+        }
+
+        public void SetPos(Vector3 newPos)
+        {
+            _getPos3D = newPos;
+
+            //==============================================
+            //!!!!! 구트리 위치 갱신 
+            _sphereModel.SetPos(_getPos3D);
+            //==============================================
+
+            //!!!!! 경계상자 위치 갱신
+            _getBounds_min.x = _getPos3D.x - _collider_radius;
+            _getBounds_min.z = _getPos3D.z - _collider_radius;
+            _getBounds_max.x = _getPos3D.x + _collider_radius;
+            _getBounds_max.z = _getPos3D.z + _collider_radius;
+            //==============================================
+        }
 
         public bool Intersects(Being dst)
         {
@@ -1530,7 +1616,7 @@ namespace HordeFight
         public Bounds old_GetBounds()
         {
             float diameter = _collider_radius * 2f;
-            return  new Bounds(_getPos3D, new Vector3(diameter, 0, diameter));
+            return new Bounds(_getPos3D, new Vector3(diameter, 0, diameter));
         }
 
         //public float GetCollider_Radius()
@@ -1547,16 +1633,16 @@ namespace HordeFight
 
         public void SetVisible(bool onoff)
         {
-            if(null != (object)_sprRender)
+            if (null != (object)_sprRender)
             {
                 _sprRender.enabled = onoff;
                 //_sprRender.gameObject.SetActive(onoff);
             }
-            if(null != (object)_animator)
+            if (null != (object)_animator)
             {
                 _animator.enabled = onoff;
             }
-            if(null != (object)_sprMask)
+            if (null != (object)_sprMask)
             {
                 //_sprMask.enabled = onoff;
                 _sprMask.gameObject.SetActive(onoff);
@@ -1566,9 +1652,9 @@ namespace HordeFight
 
         public void SetColor(Color color)
         {
-            if(null != (object)_sprRender)
+            if (null != (object)_sprRender)
             {
-                _sprRender.color = color; 
+                _sprRender.color = color;
             }
         }
 
@@ -1589,20 +1675,31 @@ namespace HordeFight
 
             if (_hp_max < _hp_cur)
                 _hp_cur = _hp_max;
-            
+
         }
 
+        public void Apply_UnityPosition()
+        {
+            _transform.position = _getPos3D;
+        }
 
+        //public void Apply_Bounds()
+        //{
+        //    _getBounds_min.x = _getPos3D.x - _collider_radius;
+        //    _getBounds_min.z = _getPos3D.z - _collider_radius;
+        //    _getBounds_max.x = _getPos3D.x + _collider_radius;
+        //    _getBounds_max.z = _getPos3D.z + _collider_radius;
+        //}
 
         public void Update_PositionAndBounds()
         {
-            _getPos3D = _transform.position;
-            SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+            //_getPos3D = _transform.position;
+            //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
 
-            _getBounds_min.x = _getPos3D.x - _collider_radius;
-            _getBounds_min.z = _getPos3D.z - _collider_radius;
-            _getBounds_max.x = _getPos3D.x + _collider_radius;
-            _getBounds_max.z = _getPos3D.z + _collider_radius;
+            //_getBounds_min.x = _getPos3D.x - _collider_radius;
+            //_getBounds_min.z = _getPos3D.z - _collider_radius;
+            //_getBounds_max.x = _getPos3D.x + _collider_radius;
+            //_getBounds_max.z = _getPos3D.z + _collider_radius;
         }
 
 
@@ -1620,7 +1717,8 @@ namespace HordeFight
         /// </summary>
         public void Update_CellSpace()
         {
-            
+
+            int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             if (null == _cur_cell || _cur_cell._pos1d != _getPos1D)
             {
                 SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
@@ -1700,25 +1798,25 @@ namespace HordeFight
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         public virtual bool UpdateAll()
         {
-            
+
             if (true == isDeath())
             {
                 FallDown();
 
                 Update_SortingOrder(-400);
                 //_sprRender.sortingOrder = -800; //바닥타일과 동굴벽 보다 위에 있게 하고 다른 챔프들 보다 아래에 있게 한다 
-                                                //if(false == _death)
-                                                //{
-                                                //    FallDown();
-                                                //    _death = true;
-                                                //}
+                //if(false == _death)
+                //{
+                //    FallDown();
+                //    _death = true;
+                //}
 
                 return false;
             }
 
             //==============================================
             //캠프값에 따라 기본 캠프 설정
-            if(null != _belongCamp)
+            if (null != _belongCamp)
             {
                 if (Camp.eKind.None == _campKind)
                 {
@@ -1733,7 +1831,7 @@ namespace HordeFight
 
             //==============================================
             //위치 갱신
-            Update_PositionAndBounds();
+            //Update_PositionAndBounds();
             //==============================================
 
             //Update_CellInfo();
@@ -1835,11 +1933,11 @@ namespace HordeFight
             //========================================
 
             //이동정보에 따라 위치 갱신
-            if(null != (object)_move)
+            if (null != (object)_move)
                 _move.UpdateNextPath();
 
             //인공지능 갱신
-            if(null != (object)_ai)
+            if (null != (object)_ai)
                 _ai.UpdateAI();
 
             Update_SortingOrder(0);
@@ -1853,14 +1951,14 @@ namespace HordeFight
         }
 
 
-		//____________________________________________
-		//                  충돌반응
-		//____________________________________________
+        //____________________________________________
+        //                  충돌반응
+        //____________________________________________
 
         public virtual void OnCollision_MovePush(Being dst, Vector3 dir, float meterPerSecond)
-		{
-            
-		}
+        {
+
+        }
 
 
         //존재간에 부딪힌 경우
@@ -1893,7 +1991,7 @@ namespace HordeFight
 
             switch (dir)
             {
-                
+
                 case eDirection8.leftUp:
                     {
                         dir = eDirection8.rightUp;
@@ -2010,10 +2108,10 @@ namespace HordeFight
 
         public void Idle()
         {
-            
+
             _behaviorKind = Behavior.eKind.Idle;
 
-            if (true == IsActive_Animator()) 
+            if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
                 _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
@@ -2026,7 +2124,7 @@ namespace HordeFight
         {
             if (null != (object)_animator && true == _animator.gameObject.activeInHierarchy)
                 return true;
-            
+
             return false;
         }
 
@@ -2038,13 +2136,13 @@ namespace HordeFight
 
         public virtual void OnAniState_Start(int hash_state)
         {
-            
+
         }
 
 
         public virtual void OnAniState_End(int hash_state)
         {
-            
+
         }
 
 
@@ -2185,17 +2283,17 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Move;
 
-            if (true == IsActive_Animator()) 
+            if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);    
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
             }
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
             //_sphereModel.SetPos(_transform.position);
-            _sphereModel.SetPos(_getPos3D);
+            //_sphereModel.SetPos(_getPos3D);
             //==============================================
 
         }
@@ -2209,18 +2307,18 @@ namespace HordeFight
             //아이들 상태에서 밀려 이동하는 걸 표현
             _behaviorKind = Behavior.eKind.Idle;
 
-            if (true == IsActive_Animator()) 
+            if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                
+
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);    
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
             }
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
             //_sphereModel.SetPos(_transform.position);
-            _sphereModel.SetPos(_getPos3D);
+            //_sphereModel.SetPos(_getPos3D);
             //==============================================
         }
 
@@ -2591,15 +2689,15 @@ namespace HordeFight
         public float _PIXEL_PER_UNIT = 16f; //ppu
         public float _PIXEL_LENGTH = 0.0625f; //게임에서 사용하는 픽셀하나의 크기 
 
-		private void Start()
-		{
+        private void Start()
+        {
             _PIXEL_LENGTH = 1f / _PIXEL_PER_UNIT;
             _camera = SingleO.mainCamera;
 
-		}
+        }
 
-		private void Update()
-		{
+        private void Update()
+        {
             if (null == _target || null == _camera) return;
 
             //_camera.cullingMask = 0;
@@ -2607,16 +2705,17 @@ namespace HordeFight
             Vector3 targetPos = _target.position;
             targetPos.y = _camera.transform.position.y;
 
-            if(true == _enable_PixelPerfect)
+            if (true == _enable_PixelPerfect)
             {
                 //픽셀퍼팩트 처리 : PIXEL_LENGTH 단위로 이동하게, 버림 처리한다 
-                _camera.transform.position = ToPixelPerfect(targetPos , _PIXEL_PER_UNIT); 
-            }else
+                _camera.transform.position = ToPixelPerfect(targetPos, _PIXEL_PER_UNIT);
+            }
+            else
             {
-                _camera.transform.position = targetPos; 
+                _camera.transform.position = targetPos;
             }
 
-		}
+        }
 
 
         public void SetTarget(Transform target)
@@ -2624,7 +2723,7 @@ namespace HordeFight
             _target = target;
         }
 
-        public Vector3 ToPixelPerfect(Vector3 pos3d , float pixelPerUnit)
+        public Vector3 ToPixelPerfect(Vector3 pos3d, float pixelPerUnit)
         {
             float pixel_length = 1f / pixelPerUnit;
             Vector3Int posXY_2d = new Vector3Int((int)pos3d.x, (int)pos3d.y, (int)pos3d.z);
@@ -2634,13 +2733,13 @@ namespace HordeFight
             Vector3 remainder = new Vector3(decimalPoint.x % pixel_length,
                                             decimalPoint.y % pixel_length,
                                             decimalPoint.z % pixel_length);
-            
+
 
             return pos3d - remainder;
         }
 
 
-	}
+    }
 
-}    
+}
 
