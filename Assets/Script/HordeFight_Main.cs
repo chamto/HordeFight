@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -1261,12 +1261,17 @@ namespace HordeFight
                 return null;
             }
 
-            Index2 origin_2d = origin._getPos2D;
+            //Index2 origin_2d = origin._getPos2D;
+            int origin_1d = -1;
+            Index2 origin_2d = ConstV.id2_zero;
+            ToPosition1D(origin.GetPos3D(), out origin_2d, out origin_1d);
+
             Vector3 origin_3d_center = origin._cur_cell._pos3d_center;
 
 
             //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
-            CellSpace structTile = GetCellSpace(origin._getPos1D);
+            //CellSpace structTile = GetCellSpace(origin._getPos1D);
+            CellSpace structTile = GetCellSpace(origin_1d);
             if (null != structTile && structTile._isStructTile)
             {
                 switch (structTile._eDir)
@@ -1375,7 +1380,8 @@ namespace HordeFight
                 origin_3d_center = ToPosition3D_Center(origin_2d);
             }else
             {
-                origin_2d = origin._getPos2D;
+                //origin_2d = origin._getPos2D;
+                origin_2d = ToPosition2D(origin_3d);
                 origin_3d_center = origin._cur_cell._pos3d_center;    
             }
 
@@ -2968,7 +2974,7 @@ namespace HordeFight
 
             //Vector3 center = SingleO.gridManager.ToPosition3D_Center(being._cellInfo._index);
             Vector3 center = being._cur_cell._pos3d_center;
-            Vector3 rate = being._getPos3D - center;
+            Vector3 rate = being.GetPos3D() - center;
             float cellHalfSize = SingleO.gridManager._cellSize_x * 0.5f;
 
             //return 8;
@@ -3018,17 +3024,15 @@ namespace HordeFight
             Being selected = SingleO.touchControl._selected;
             if (null != (object)selected)
             {
-                SingleO.gridManager.Update_FogOfWar(selected._getPos3D, selected._move._direction);
+                SingleO.gridManager.Update_FogOfWar(selected.GetPos3D(), selected._move._direction);
                 selected.SetVisible(true);
             }
 
 
-            Vector3 collisionCellPos_center = ConstV.v3_zero;
+            //Vector3 collisionCellPos_center = ConstV.v3_zero;
             CellSpace structTile = null;
-
             Being src = null, dst = null;
-
-            Vector3Int ix = ConstV.v3Int_zero;
+            //Vector3Int ix = ConstV.v3Int_zero;
             int src_count = _linearSearch_list.Count;
             for (int key = 0; key < src_count; key++)
             {
@@ -3044,17 +3048,6 @@ namespace HordeFight
 
                 //===============================================================================
 
-                //동굴벽과 캐릭터 충돌처리 
-                //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-                if (SingleO.cellPartition.HasStructTile(src._getPos3D, out structTile))
-                {
-                    CollisionPush_StructTile(src, structTile);
-                    //CollisionPush_Rigid(src, structTile);
-                }
-
-                //============================
-                _aabbCulling.SetEndPoint(key, src); //aabb 갱신 
-                //============================
 
                 //객체 컬링 처리
                 if (null != (object)selected)
@@ -3063,9 +3056,13 @@ namespace HordeFight
                 }
                 else
                 {
-                    Culling_ViewFrustum(cameraViewBounds, src); //테스트를 위해 주석 
+                    //Culling_ViewFrustum(cameraViewBounds, src); //테스트를 위해 주석 
                 }
 
+                //============================
+                //src.Apply_Bounds(); //경계상자 위치갱신
+                _aabbCulling.SetEndPoint(key, src); //aabb 갱신 
+                //============================
             }
 
 
@@ -3102,10 +3099,26 @@ namespace HordeFight
                 if ((object)src == (object)dst) continue;
 
                 CollisionPush(src, dst);
+                //CollisionForce_Test(src, dst); //chamto test
             }
             //==============================================
 
+            for (int key = 0; key < src_count; key++)
+            {
+                src = _linearSearch_list[key];
 
+                //==========================================
+                //동굴벽과 캐릭터 충돌처리 
+                //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
+                if (SingleO.cellPartition.HasStructTile(src.GetPos3D(), out structTile))
+                {
+                    CollisionPush_StructTile(src, structTile);
+                    //CollisionPush_Rigid(src, structTile);
+                }
+                //==========================================
+
+                src.Apply_UnityPosition();
+            }
 		}
 
 		public void UpdateCollision_UseDirectGrid3x3()
@@ -3190,7 +3203,7 @@ namespace HordeFight
 
 
                 //동굴벽과 캐릭터 충돌처리 
-                if (SingleO.cellPartition.HasStructTile(src._getPos3D, out cellSpace))
+                if (SingleO.cellPartition.HasStructTile(src.GetPos3D(), out cellSpace))
                 {
                     CollisionPush_StructTile(src, cellSpace);
                     //CollisionPush_Rigid(src, structTile);
@@ -3217,7 +3230,7 @@ namespace HordeFight
             
             bool onOff = false;
             //챔프 시야에 없으면 안보이게 처리함
-            if (true == IsVisibleArea(selected, target._getPos3D))
+            if (true == IsVisibleArea(selected, target.GetPos3D()))
             {
                 onOff = true;
             }
@@ -3235,7 +3248,7 @@ namespace HordeFight
         public void Culling_ViewFrustum(Bounds viewBounds, Being target)
         {
             
-            if (true == viewBounds.Contains(target._getPos3D))
+            if (true == viewBounds.Contains(target.GetPos3D()))
             {
                 target.SetVisible(true);
             }
@@ -3315,7 +3328,7 @@ namespace HordeFight
 
                     //보이는 위치의 타일인지 검사한다 
                     //if(true == SingleO.gridManager.IsVisibleTile(src._getPos3D, dstPos, 0.1f))
-                    if (true == SingleO.cellPartition.IsVisibleTile(src, src._getPos3D, dstPos, 0.1f))
+                    if (true == SingleO.cellPartition.IsVisibleTile(src, src.GetPos3D(), dstPos, 0.1f))
                         return true;
                 }
 
@@ -3427,6 +3440,48 @@ namespace HordeFight
         //    }
         //}
 
+        public void CollisionForce_Test(Being src, Being dst)
+        {
+            if (null == (object)src || null == (object)dst) return;
+
+            float max_sqrRadius = dst._collider_sqrRadius;
+            if (src._collider_sqrRadius > dst._collider_sqrRadius)
+                max_sqrRadius = src._collider_sqrRadius;
+
+
+
+            Vector3 dis = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
+            Vector3 n = ConstV.v3_zero;
+            float dis_sqr = dis.sqrMagnitude;
+            float r_sum = (src._collider_radius + dst._collider_radius);
+            float r_sumsqr = r_sum * r_sum;
+            //1.두 캐릭터가 겹친상태 
+            if (dis_sqr < r_sumsqr)
+            {
+                //==========================================
+
+                float length = (float)Math.Sqrt(dis_sqr);
+                float btLength = (r_sum - length) * 0.5f;
+                n = Misc.GetDir8_Normal3D(dis); //8방향으로만 밀리게 한다 
+
+                src.SetForce(n, btLength);
+                dst.SetForce(-n, btLength);
+
+                if (float.Epsilon + 0.01f >= length)
+                {
+                    n = Misc.GetDir8_Random_AxisY();
+                    length = 1f;
+                    src.SetForce(n, 1f);
+                    dst.SetForce(-n, 1f);
+
+                }
+
+                src.ReactionForce(dst, 1);
+                dst.ReactionForce(src,1 );
+
+            }
+        }
+
         public void CollisionPush(Being src , Being dst)
         {
             if (null == (object)src || null == (object)dst) return;
@@ -3440,7 +3495,8 @@ namespace HordeFight
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
             //Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
             //Vector3 dis = src._getPos3D - dst._getPos3D;
-            Vector3 dis = VOp.Minus(src._getPos3D , dst._getPos3D);
+            Vector3 dis = VOp.Minus(src.GetPos3D() , dst.GetPos3D());
+            Vector3 n = ConstV.v3_zero;
             float dis_sqr = dis.sqrMagnitude;
             //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
             float r_sum = (src._collider_radius + dst._collider_radius);
@@ -3448,10 +3504,47 @@ namespace HordeFight
             //1.두 캐릭터가 겹친상태 
             if (dis_sqr < r_sumsqr)
             {
+                //==========================================
+                float rate_src = 0.5f;
+                float rate_dst = 0.5f;
+                //if(Being.eKind.lothar == src._kind)
+                //{
+                //    rate_src = 0f;
+                //    rate_dst = 1f;
+                //}
+                //if (Being.eKind.lothar == dst._kind)
+                //{
+                //    rate_src = 1f;
+                //    rate_dst = 0f;
+                //}
 
-                Vector3 n = VOp.Normalize(dis);
+                n = Misc.GetDir8_Normal3D(dis); //8방향으로만 밀리게 한다 
+                //n = dis;
+                float length = (float)Math.Sqrt(dis_sqr);
+                float btLength = (r_sum - length);
+                float btLength_src = btLength * rate_src;
+                float btLength_dst = btLength * rate_dst;
+                if(0 == length)
+                {
+                    n = Misc.GetDir8_Random_AxisY();
+                    length = 1f;
+                    btLength_src = r_sum * 0.5f;
+                    btLength_dst = r_sum * 0.5f;
+                }
+                //n.x /= length;
+                //n.z /= length;
+
+                src.SetPos(src.GetPos3D() + n * btLength_src);
+                dst.SetPos(dst.GetPos3D() - n * btLength_dst);
+                return;
+                //DebugWide.LogBlue(n + "  " + btLength + "   " + length);
+                //==========================================
+
+                n = VOp.Normalize(dis);
                 //Vector3 n = Misc.GetDir360_Normal3D(dis);
                 //Vector3 n = dis.normalized;
+
+
 
                 //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
                 float meterPerSecond = 2f;
@@ -3488,61 +3581,59 @@ namespace HordeFight
         }
 
 
-        public void CollisionPush_Rigid(Being src, CellSpace structTile)
-        {
+        //public void CollisionPush_Rigid(Being src, CellSpace structTile)
+        //{
+        //    //이상진동 : 방향의 평균내기 방식
+        //    //Vector3 smoothDir = Misc.GetDir8Normal_AxisY(structTile._dir);
+        //    //smoothDir += src._move._direction.normalized;
+        //    //smoothDir /= 2f;
+        //    //src._move.Move_Forward(smoothDir, 2f, 0.5f);
+        //    //return;
 
-            //이상진동 : 방향의 평균내기 방식
-            //Vector3 smoothDir = Misc.GetDir8Normal_AxisY(structTile._dir);
-            //smoothDir += src._move._direction.normalized;
-            //smoothDir /= 2f;
-            //src._move.Move_Forward(smoothDir, 2f, 0.5f);
-            //return;
+        //    const float Tile_Radius = 0.08f;
+        //    //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+        //    Vector3 sqr_dis = src.transform.localPosition - structTile._pos3d_center;
+        //    float r_sum = src._collider_radius + Tile_Radius;
 
-            const float Tile_Radius = 0.08f;
-            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 sqr_dis = src.transform.localPosition - structTile._pos3d_center;
-            float r_sum = src._collider_radius + Tile_Radius;
+        //    //1.두 캐릭터가 겹친상태 
+        //    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
+        //    {
+        //        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
 
-            //1.두 캐릭터가 겹친상태 
-            if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-            {
-                //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
+        //        //todo : 최적화 필요 
 
-                //todo : 최적화 필요 
+        //        Vector3 n = sqr_dis.normalized;
+        //        //n = Vector3.back;
+        //        //Vector3 n = sqr_dis;
+        //        float div_dis = 0.5f;
 
-                Vector3 n = sqr_dis.normalized;
-                //n = Vector3.back;
-                //Vector3 n = sqr_dis;
-                float div_dis = 0.5f;
+        //        //2.반지름 이상으로 겹쳐있는 경우
+        //        if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
+        //        {
+        //            //3.완전 겹쳐있는 경우
+        //            if (n == ConstV.v3_zero)
+        //            {
+        //                //방향값이 없기 때문에 임의로 지정해 준다. 
+        //                n = Misc.GetDir8_Random_AxisY();
+        //            }
 
-                //2.반지름 이상으로 겹쳐있는 경우
-                if (sqr_dis.sqrMagnitude * 2 < Mathf.Pow(r_sum, 2))
-                {
-                    //3.완전 겹쳐있는 경우
-                    if (n == ConstV.v3_zero)
-                    {
-                        //방향값이 없기 때문에 임의로 지정해 준다. 
-                        n = Misc.GetDir8_Random_AxisY();
-                    }
+        //            div_dis = 0.2f;
+        //        }
 
-                    div_dis = 0.2f;
-                }
-
-                //src.transform.position = collisionCellPos_center + n * 0.16f;
-                //src._move.Move_Forward(n, 2f, div_dis);
-                src.Move_Forward(n, div_dis, true);
-                //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, ConstV.v3_up) + "   " + src.transform.position);
-                
-
-            }
-        }
+        //        //src.transform.position = collisionCellPos_center + n * 0.16f;
+        //        //src._move.Move_Forward(n, 2f, div_dis);
+        //        src.Move_Forward(n, div_dis, true);
+        //        //DebugWide.LogBlue(SingleO.gridManager.ToCellIndex(src.transform.position, ConstV.v3_up) + "   " + src.transform.position);
+        //    }
+        //}
 
         //고정된 물체와 충돌 검사 : 동굴벽 등 
         public void CollisionPush_StructTile(Being src, CellSpace structTile)
         {
             if (null == structTile) return;
 
-            Vector3 srcPos = src._getPos3D;
+            //Vector3 srcPos = src._transform.position;
+            Vector3 srcPos = src.GetPos3D();
             //Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
             Vector3 centerToSrc_dir = VOp.Minus(srcPos , structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
@@ -3677,8 +3768,8 @@ namespace HordeFight
                     break;
 
             }
-
-            src._transform.position = srcPos;
+            //src._transform.position = srcPos;
+            src.SetPos(srcPos);
 
         }
 
@@ -3851,7 +3942,7 @@ namespace HordeFight
                     //==========================================================
                     sqr_minRadius = (wrd_minRad + dst._collider_radius) * (wrd_minRad + dst._collider_radius);
                     sqr_maxRadius = (wrd_maxRad + dst._collider_radius) * (wrd_maxRad + dst._collider_radius);
-                    sqr_dis = VOp.Minus(src._getPos3D , dst._getPos3D).sqrMagnitude;
+                    sqr_dis = VOp.Minus(src.GetPos3D() , dst.GetPos3D()).sqrMagnitude;
 
                     //최대 반경 이내일 경우
                     if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)
@@ -3908,7 +3999,7 @@ namespace HordeFight
 
                     if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
                     {
-                        dir = VOp.Minus(src._getPos3D , dst._getPos3D);
+                        dir = VOp.Minus(src.GetPos3D() , dst.GetPos3D());
 
                         //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
                         //==============================
@@ -3994,25 +4085,28 @@ namespace HordeFight
             GameObject obj = CreatePrefab("0_champ/" +eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
             obj.AddComponent<SortingGroup>();
-            obj.AddComponent<Movement>();
+            Movement mov = obj.AddComponent<Movement>();
+            mov._being = cha;
             obj.AddComponent<AI>();
             cha._id = _id_sequence;
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
-            cha.transform.localPosition = pos;
-            cha.Init();
-
-            _beings.Add(_id_sequence,cha);
-            _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
+            cha.transform.position = pos;
 
             //==============================================
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<ChampUnit>(cha);
+            //==============================================
+
             cha._sphereModel = model;
+            cha.Init();
 
             //==============================================
+
+            _beings.Add(_id_sequence, cha);
+            _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
 
             return cha;
         }
@@ -4024,21 +4118,25 @@ namespace HordeFight
             GameObject obj = CreatePrefab("1_effect/" + eKind.ToString(), parent, _id_shot_sequence.ToString("000") + "_" + eKind.ToString());
             Shot shot = obj.AddComponent<Shot>();
             obj.AddComponent<SortingGroup>();
-            obj.AddComponent<Movement>();
+            Movement mov = obj.AddComponent<Movement>();
+            mov._being = shot;
             shot._id = _id_shot_sequence;
             shot._kind = eKind;
-            shot.transform.localPosition = pos;
-            shot.Init();
-
-            //_shots.Add(_id_shot_sequence, shot);
-            _shots.Add(shot);
+            shot.transform.position = pos;
 
             //==============================================
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
-            shot._sphereModel = model;
             //==============================================
+
+            shot._sphereModel = model;
+            shot.Init();
+
+            //==============================================
+
+            //_shots.Add(_id_shot_sequence, shot);
+            _shots.Add(shot);
 
             return shot;
         }
@@ -4050,21 +4148,25 @@ namespace HordeFight
             GameObject obj = CreatePrefab("2_misc/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             Obstacle obst = obj.AddComponent<Obstacle>();
             obj.AddComponent<SortingGroup>();
-            obj.AddComponent<Movement>();
+            Movement mov = obj.AddComponent<Movement>();
+            mov._being = obst;
             obst._id = _id_sequence;
             obst._kind = eKind;
-            obst.transform.localPosition = pos;
-            obst.Init();
-
-            _beings.Add(_id_sequence, obst);
-            _linearSearch_list.Add(obst);
+            obst.transform.position = pos;
 
             //==============================================
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
-            obst._sphereModel = model;
             //==============================================
+
+            obst._sphereModel = model;
+            obst.Init();
+
+            //==============================================
+
+            _beings.Add(_id_sequence, obst);
+            _linearSearch_list.Add(obst);
 
             return obst;
         }
@@ -4163,33 +4265,29 @@ namespace HordeFight
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(camp_position));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ.GetComponent<AI>()._ai_running = true;
             camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_HERO, camp_Obstacle.GetPosition(camp_position));
-            champ._hp_max = 1000;
-            champ._hp_cur = 1000;
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, camp_HERO, camp_Obstacle.GetPosition(camp_position));
-            champ._hp_max = 1000;
-            champ._hp_cur = 1000;
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_HERO, camp_Obstacle.GetPosition(camp_position));
-            champ._hp_max = 1000;
-            champ._hp_cur = 1000;
-            champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, camp_HERO, camp_Obstacle.GetPosition(camp_position));
-            champ._hp_max = 1000;
-            champ._hp_cur = 1000;
-            champ.GetComponent<AI>()._ai_running = true;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ._mt_range_min = 1f;
+            //champ._mt_range_max = 8f;
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
             for (int i = 0; i < 100; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.RandPosition());
-                champ._mt_range_min = 1f;
-                champ._mt_range_max = 5f;
-                champ.GetComponent<AI>()._ai_running = true;
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
+                champ._hp_max = 10000;
+                champ._hp_cur = 10000;
+                //champ._mt_range_min = 0.3f;
+                //champ._mt_range_max = 0.5f;
+                //champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 
@@ -4200,7 +4298,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 0; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 1f;
@@ -4220,7 +4318,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 30 ;i++)
+            for (int i = 0; i < 0 ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
@@ -4376,7 +4474,7 @@ namespace HordeFight
         {
             if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = VOp.Minus(_me._getPos3D , _me._looking._getPos3D).sqrMagnitude;
+            float sqrDis = VOp.Minus(_me.GetPos3D() , _me._looking.GetPos3D()).sqrMagnitude;
 
             float sqrRangeMax = (meter_rangeMax * GridManager.ONE_METER) * (meter_rangeMax * GridManager.ONE_METER);
             float sqrRangeMin = (meter_rangeMin * GridManager.ONE_METER) * (meter_rangeMin * GridManager.ONE_METER);
@@ -4397,7 +4495,7 @@ namespace HordeFight
         {
             if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = VOp.Minus(_me._getPos3D , _me._looking._getPos3D).sqrMagnitude;
+            float sqrDis = VOp.Minus(_me.GetPos3D() , _me._looking.GetPos3D()).sqrMagnitude;
 
             float sqrRangeMax = (_me.attack_range_max + _me._looking._collider_radius) * (_me.attack_range_max + _me._looking._collider_radius);
             float sqrRangeMin = (_me.attack_range_min + _me._looking._collider_radius) * (_me.attack_range_min + _me._looking._collider_radius);
@@ -4451,7 +4549,7 @@ namespace HordeFight
                                 break;
                             }
                             //대상이 보이는 위치에 있는지 검사한다 
-                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me._getPos3D))
+                            if (false == SingleO.objectManager.IsVisibleArea(_me, _me.GetPos3D()))
                             {
                                 //대상이 안보이면 다시 배회하기 
                                 _state = eState.Roaming;
@@ -4465,14 +4563,14 @@ namespace HordeFight
                             {
                                 
                                 _me._target = _me._looking; //보고 있는 상대를 목표로 설정 
-                                _me.Attack(VOp.Minus(_me._looking._getPos3D , _me._getPos3D));
+                                _me.Attack(VOp.Minus(_me._looking.GetPos3D() , _me.GetPos3D()));
                                 //_state = eState.Attack;
                                 break;
                                 //DebugWide.LogBlue("attack");
                             }
                            
 
-                            Vector3 moveDir = VOp.Minus( _me._looking._getPos3D , _me._getPos3D);
+                            Vector3 moveDir = VOp.Minus( _me._looking.GetPos3D() , _me.GetPos3D());
                             float second = 0.7f;
                             bool foward = true;
 
@@ -4541,7 +4639,7 @@ namespace HordeFight
                         {
                             //죽은 객체면 대상을 해제한다 , //안보이는 위치면 대상을 해제한다
                             if (_me._looking.isDeath() 
-                                || false == SingleO.objectManager.IsVisibleArea(_me, _me._looking._getPos3D))
+                                || false == SingleO.objectManager.IsVisibleArea(_me, _me._looking.GetPos3D()))
                             {
                                 _me._looking = null;
                             }
@@ -4679,7 +4777,7 @@ namespace HordeFight
             if (null == (object)_selected) return;
 
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
-            Vector3 touchDir = VOp.Minus(hit.point , _selected._getPos3D);
+            Vector3 touchDir = VOp.Minus(hit.point , _selected.GetPos3D());
 
             //_selected.Attack(hit.point - _selected.transform.position);
             //_selected.Block_Forward(hit.point - _selected.transform.position);
@@ -4696,7 +4794,7 @@ namespace HordeFight
                 {
                     if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
                     {
-                        champSelected.Attack(target._getPos3D - _selected._getPos3D, target);
+                        champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
                     }
 
                     //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
