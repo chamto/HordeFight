@@ -1250,6 +1250,7 @@ namespace UtilGS9
             
             //360 / 45 = 8
             int quad = (int)((deg / 45f) + 1.5f);
+        if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
 
             //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
             return (eDirection8)quad;
@@ -1270,7 +1271,9 @@ namespace UtilGS9
 
             //360 / 45 = 8
             int quad = (int)((deg / 45f) + 1.5f);
+        if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
             
+
             //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
             return (eDirection8)quad;
         }
@@ -1315,6 +1318,7 @@ namespace UtilGS9
             
             //int quad = (int)((deg / ANGLE_DIVISION_360) +1.5f); //1~361
             int quad = (int)(deg + 1.5f); //1~361 //EQUAL_DIVISION 이 360 이기 때문에 나누기 계산을 생략한다 
+        if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
 
             //DebugWide.LogBlue(rad +"   "+deg + "  " + quad + "  " + _dir360_normal3D_AxisY[quad] + "  " + dir);
             return _dir360_normal3D_AxisY[quad];

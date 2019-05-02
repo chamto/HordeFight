@@ -617,6 +617,11 @@ namespace HordeFight
             _isNextMoving = true;
             _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
             _eDir8 = Misc.GetDir8_AxisY(dir);
+            //if(eDirection8.max == _eDir8)
+            //{
+            //    DebugWide.LogBlue(_direction + "    : " + dir + "    : " + _being.name); //chamto test
+            //}
+
 
             perSecond = 1f / perSecond;
             //보간 없는 기본형
@@ -1041,13 +1046,23 @@ namespace HordeFight
         //    Platoon_Leader, //소대장 20
         //    Company_Commander, //중대장 100
         //    Battalion_Commander, //대대장 300
-
         //    Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
         //}
-
-
         //public eJobPosition _jobPosition = eJobPosition.None;
       
+
+        //전용 effect
+        public enum eEffectKind
+        {
+            Aim,        //조준점
+            Dir,        //방향
+            Emotion,    //감정표현
+            Hand_Left,  //행동 왼손
+            Hand_Right, //행동 오른손
+
+            Max,
+        }
+
 
         //==================================================
 
@@ -1071,11 +1086,12 @@ namespace HordeFight
         public Inventory _inventory = null;
 
         //전용effect
-        public Transform _effect_aim = null; //조준
-        public Transform _effect_dir = null; //방향 
-        public Transform _effect_emotion = null; //감정 표현 
-        public Transform _effect_hand_left = null; //왼손 
-        public Transform _effect_hand_right = null; //오른손
+        private Transform[] _effect = new Transform[(int)eEffectKind.Max];
+        //public Transform _effect_aim = null; //조준
+        //public Transform _effect_dir = null; //방향 
+        //public Transform _effect_emotion = null; //감정 표현 
+        //public Transform _effect_hand_left = null; //왼손 
+        //public Transform _effect_hand_right = null; //오른손
 
         //전용UI
         //public int _UIID_circle_collider = -1;
@@ -1126,14 +1142,19 @@ namespace HordeFight
 
             //=====================================================
             // 전용 effect 설정 
-            _effect_aim = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
-            _effect_dir = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
-            _effect_emotion = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
-            _effect_hand_left = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
-            _effect_hand_right = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
+            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
+            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
+            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
+            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
+            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
 
-            if(null != _effect_emotion)
-                _effect_emotion.gameObject.SetActive(true);
+            //_effect_aim = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
+            //_effect_dir = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
+            //_effect_emotion = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
+            //_effect_hand_left = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
+            //_effect_hand_right = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
+            //if(null != _effect_emotion)
+                //_effect_emotion.gameObject.SetActive(true);
 
             //=====================================================
             // 전용 ui 설정 
@@ -1220,7 +1241,7 @@ namespace HordeFight
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
                 Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
 
-
+                this.SetActiveEffect(eEffectKind.Hand_Right, true);
             }
         }
 
@@ -1236,6 +1257,8 @@ namespace HordeFight
                 if (null != _target)
                 {
                     //DebugWide.LogYellow("OnAniState_End :" + hash_state); //chamto test
+
+                    this.SetActiveEffect(eEffectKind.Hand_Right, false);
 
                     _target.AddHP(-1);
                     ChampUnit target_champ = _target as ChampUnit;
@@ -1274,7 +1297,7 @@ namespace HordeFight
             //    //_sprRender.color = Color.red;
             //    yield return new WaitForSeconds(0.05f);
             //}
-
+            this.SetActiveEffect(eEffectKind.Emotion, true);
             _sprRender.color = Color.red;
 
             if (true == __in_corutin_Damage)
@@ -1282,6 +1305,8 @@ namespace HordeFight
 
             __in_corutin_Damage = true;
             yield return new WaitForSeconds(0.5f);
+
+            this.SetActiveEffect(eEffectKind.Emotion, false);
             _sprRender.color = Color.white;
             __in_corutin_Damage = false;
 
@@ -1298,6 +1323,16 @@ namespace HordeFight
             Move_Push(dir, meterPerSecond);
         }
 
+
+        //____________________________________________
+        //                  전용 effect 처리
+        //____________________________________________
+        public void SetActiveEffect(eEffectKind kind, bool value)
+        {
+            if (null == _effect[(int)kind]) return;
+
+            _effect[(int)kind].gameObject.SetActive(value);
+        }
     }
 
     //======================================================
