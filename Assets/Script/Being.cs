@@ -326,7 +326,7 @@ namespace HordeFight
             string campRoot = "0_main/0_placement/Camp/";
             string campPath = campRoot + kind.ToString();
 
-            Transform campKind = SingleO.hierarchy.GetTransform(campPath);
+            Transform campKind = SingleO.hierarchy.GetTransformA(campPath);
 
             Camp camp = null;
             foreach (Transform TcampName in campKind.GetComponentsInChildren<Transform>())
@@ -704,8 +704,10 @@ namespace HordeFight
         {
             base.Init();
 
-            _sprParent = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/pos");
-            _shader = SingleO.hierarchy.GetTransform(SingleO.hierarchy.GetFullPath(transform) + "/shader");
+            //_sprParent = SingleO.hierarchy.GetTransformA(SingleO.hierarchy.GetFullPath(transform) + "/pos");
+            //_shader = SingleO.hierarchy.GetTransformA(SingleO.hierarchy.GetFullPath(transform) + "/shader");
+            _sprParent = SingleO.hierarchy.GetTransformA(transform, "/pos");
+            _shader = SingleO.hierarchy.GetTransformA(transform, "/shader");
             //this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
 
         }
@@ -1043,21 +1045,9 @@ namespace HordeFight
         //    Division_Commander, //사단장 , 독립된 부대단위 전술을 펼칠수 있다 3000
         //}
 
-        ////병종
-        //public enum eClass
-        //{
-        //    None = 0,
-        //    PaengBaeSu, //팽배수 - 방패 
-        //    GeomSu, //검수 - 언월도
-        //    BuWolSu, //부월수 - 도끼 
-        //    SaSu, //사수 - 활
-        //    GiSa, //기사 - 마상활 
-        //    GiChang, //기창 - 마상창 
-
-        //}
 
         //public eJobPosition _jobPosition = eJobPosition.None;
-        //public eClass _class = eClass.None;
+      
 
         //==================================================
 
@@ -1079,6 +1069,13 @@ namespace HordeFight
 
         //소유아이템
         public Inventory _inventory = null;
+
+        //전용effect
+        public Transform _effect_aim = null; //조준
+        public Transform _effect_dir = null; //방향 
+        public Transform _effect_emotion = null; //감정 표현 
+        public Transform _effect_hand_left = null; //왼손 
+        public Transform _effect_hand_right = null; //오른손
 
         //전용UI
         //public int _UIID_circle_collider = -1;
@@ -1128,7 +1125,18 @@ namespace HordeFight
             _activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
-            // ui 설정 
+            // 전용 effect 설정 
+            _effect_aim = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
+            _effect_dir = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
+            _effect_emotion = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
+            _effect_hand_left = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
+            _effect_hand_right = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
+
+            if(null != _effect_emotion)
+                _effect_emotion.gameObject.SetActive(true);
+
+            //=====================================================
+            // 전용 ui 설정 
             _ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
             _ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             _ui_circle.gameObject.SetActive(false);
@@ -1548,7 +1556,6 @@ namespace HordeFight
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-
             int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
 

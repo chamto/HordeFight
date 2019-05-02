@@ -26,8 +26,8 @@ namespace HordeFight
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
 
 
-            SingleO.debugViewer._origin = SingleO.hierarchy.GetTransform("z_debug/origin");
-            SingleO.debugViewer._target = SingleO.hierarchy.GetTransform("z_debug/target");
+            SingleO.debugViewer._origin = SingleO.hierarchy.GetTransformA("z_debug/origin");
+            SingleO.debugViewer._target = SingleO.hierarchy.GetTransformA("z_debug/target");
             //===================
 
             //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
@@ -4298,7 +4298,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 10; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 1f;
