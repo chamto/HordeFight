@@ -3024,7 +3024,7 @@ namespace HordeFight
             Being selected = SingleO.touchControl._selected;
             if (null != (object)selected)
             {
-                SingleO.gridManager.Update_FogOfWar(selected.GetPos3D(), selected._move._direction);
+                //SingleO.gridManager.Update_FogOfWar(selected.GetPos3D(), selected._move._direction);
                 selected.SetVisible(true);
             }
 
