@@ -533,6 +533,7 @@ namespace HordeFight
                 _nextTargetPos = _targetPath.Dequeue();
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
+                //회전쿼터니언을 추출해 방향값에 곱한다 => 새로운 방향 
                 _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos, _transform.position)) * _direction;
                 _eDir8 = Misc.GetDir8_AxisY(_direction);
 
@@ -1586,10 +1587,10 @@ namespace HordeFight
         //                  디버그 정보 출력
         //____________________________________________
 
-        public bool _active_gizmos_behavior = false;
+        public bool _GIZMOS_BEHAVIOR = false;
         void OnDrawGizmos()
         {
-            if(true == _active_gizmos_behavior)
+            if(true == _GIZMOS_BEHAVIOR)
                 Debug_DrawGizmos_Behavior();
         }
 
@@ -1599,15 +1600,19 @@ namespace HordeFight
         public void Debug_DrawGizmos_Behavior()
         {
 
-            Vector3 posSt = this.GetPos3D();
+            Vector3 posBody = this.GetPos3D();
+            Quaternion quater_r = Quaternion.FromToRotation(UtilGS9.ConstV.v3_forward, _move._direction);
+            Vector3 posHL = quater_r * _behaviorControl._parts[(int)BodyControl.Part.eKind.Hand_Left].pos_standard + posBody;
+            Vector3 posHR = quater_r * _behaviorControl._parts[(int)BodyControl.Part.eKind.Hand_Right].pos_standard + posBody;
+
             float weaponArc_degree = 45f;
             float weaponArc_radius_far = 3f;
             Vector3 weaponArc_dir = _move._direction;
             //*
-            //공격 범위 - 안쪽원/바깥원
+            //어깨 기준점 
             Gizmos.color = Color.gray;
-            Gizmos.DrawWireSphere(posSt, 2f);
-            Gizmos.DrawWireSphere(posSt, 4f);
+            Gizmos.DrawWireSphere(posHL, 0.1f);
+            Gizmos.DrawWireSphere(posHR, 0.15f);
 
             //공격 범위 - 호/수직 : Vector3.forward
             //eTraceShape tr = eTraceShape.None;
@@ -1618,10 +1623,10 @@ namespace HordeFight
                 Gizmos.color = Color.yellow;
                 _debug_q = Quaternion.AngleAxis(weaponArc_degree * 0.5f, Vector3.up);
                 _debug_dir = _debug_q * weaponArc_dir;
-                Gizmos.DrawLine(posSt, posSt + _debug_dir * weaponArc_radius_far);
+                Gizmos.DrawLine(posBody, posBody + _debug_dir * weaponArc_radius_far);
                 _debug_q = Quaternion.AngleAxis(weaponArc_degree * -0.5f, Vector3.up);
                 _debug_dir = _debug_q * weaponArc_dir;
-                Gizmos.DrawLine(posSt, posSt + _debug_dir * weaponArc_radius_far);
+                Gizmos.DrawLine(posBody, posBody + _debug_dir * weaponArc_radius_far);
             }
 
             //공격 범위 - 호/수평 : Vector3.up
@@ -1632,14 +1637,14 @@ namespace HordeFight
 
             //캐릭터 방향 
             Gizmos.color = Color.black;
-            Gizmos.DrawLine(posSt, posSt + _move._direction * 4);
-            Gizmos.DrawSphere(posSt + _move._direction * 4, 0.4f);
+            Gizmos.DrawLine(posBody, posBody + _move._direction * 4);
+            Gizmos.DrawSphere(posBody + _move._direction * 4, 0.2f);
 
             //공격 무기이동 경로
             _debug_line.y = -0.5f;
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(posSt, posSt + _behaviorControl.CurrentDistance() * weaponArc_dir);
-            Gizmos.DrawWireSphere(posSt, 1f);
+            Gizmos.DrawLine(posBody, posBody + _behaviorControl.CurrentDistance() * weaponArc_dir);
+            Gizmos.DrawWireSphere(posBody, 0.5f);
             //*/
 
             //칼죽이기 가능 범위
@@ -1821,7 +1826,7 @@ namespace HordeFight
         public Behavior.eKind _behaviorKind = Behavior.eKind.None;
         public Behavior _behavior = null;
         public float _timeDelta = 0f;  //시간변화량
-        public BehaviorControl _behaviorControl = new BehaviorControl();
+        public BodyControl _behaviorControl = new BodyControl();
 
         //==================================================
         //상태정보
@@ -1830,7 +1835,7 @@ namespace HordeFight
         //private bool _death = false;
 
         //==================================================
-        //이동 
+        //이동 (방향정보)
         //==================================================
         public Movement _move = null;
         public CellInfo _cellInfo = null;
@@ -3208,7 +3213,7 @@ namespace HordeFight
 
 namespace HordeFight
 {
-    public class BehaviorControl
+    public class BodyControl
     {
         public enum eState
         {
@@ -3233,12 +3238,59 @@ namespace HordeFight
             Max
         }
 
+        public struct Part
+        {
+            //신체부위
+            public enum eKind
+            {
+                None = 0,
+
+                //==== 인간형태 ==== 
+                Head = 0,
+                Hand_Left,  //손
+                Hand_Right,
+                Foot_Left,  //발
+                Foot_Right,
+
+                //Other_1,    //또다른 손발등
+                //Other_2,
+
+                Max,
+
+            }
+
+            public enum ePoint
+            {
+                Start,  //시작점
+                End,    //끝지점
+
+                Cur,    //현재점
+
+                Max,
+            }
+
+            public Vector3 pos_standard;    //신체 부위의 기준점 
+            public float range_max;         //부위 기준점으로 부터 최대 범위
+            public Vector3[] pos;           //부위 위치 (로컬값)
+            public Vector3[] dir;           //부위 방향 (로컬값)
+
+            public Vector3 target;          //목표점 (월드값)
+
+            public void Init()
+            {
+                pos_standard = UtilGS9.ConstV.v3Int_zero;
+                range_max = 1f;
+                pos = new Vector3[(int)ePoint.Max];
+                dir = new Vector3[(int)ePoint.Max];
+
+                target = new Vector3(0,0,-2f);
+            }
+
+        }
 
         //====================================
+        public Part[] _parts = null;    //부위 정보 
 
-
-        private Vector3 _startPos;  //행동시작점 
-        private Vector3 _target;    //대상위치 
 
         //동작정보
         public Behavior _behavior = null;
@@ -3257,10 +3309,34 @@ namespace HordeFight
 
         //====================================
 
-        public BehaviorControl()
+        public BodyControl()
         {
-            
+            _parts = new Part[(int)Part.eKind.Max];
+            for (int i = 0; i < (int)Part.eKind.Max;i++)
+            {
+                _parts[i].Init();
+            }
+
+            Setting_Head_2Hand_2Foot();
         }
+
+        public void Setting_2Hand()
+        {
+            //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
+            _parts[(int)Part.eKind.Hand_Left].pos_standard = new Vector3(-0.5f, 0.5f,0);
+            _parts[(int)Part.eKind.Hand_Right].pos_standard = new Vector3(0.5f, 0.5f, 0);
+        }
+
+        public void Setting_Head_2Hand_2Foot()
+        {
+            //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
+            Setting_2Hand();
+            _parts[(int)Part.eKind.Head].pos_standard = new Vector3(0, 1f, 0);
+            _parts[(int)Part.eKind.Foot_Left].pos_standard = new Vector3(-0.5f, 0, 0);
+            _parts[(int)Part.eKind.Foot_Right].pos_standard = new Vector3(0.5f, 0, 0);
+        }
+
+
 
         public float CurrentDistance()
         {
