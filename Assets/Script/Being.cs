@@ -1438,7 +1438,7 @@ namespace HordeFight
         {
             _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Attack);
             _behaviorKind = Behavior.eKind.Attack;
-            _behaviorControl.Attack_Strong_1();
+            _bodyControl.Attack_Strong_1();
 
             //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
             //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
@@ -1599,11 +1599,13 @@ namespace HordeFight
         Vector3 _debug_line = Vector3.zero;
         public void Debug_DrawGizmos_Behavior()
         {
+            BodyControl.Part HL = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Left];
+            BodyControl.Part HR = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Right];
 
             Vector3 posBody = this.GetPos3D();
             Quaternion quater_r = Quaternion.FromToRotation(UtilGS9.ConstV.v3_forward, _move._direction);
-            Vector3 posHL = quater_r * _behaviorControl._parts[(int)BodyControl.Part.eKind.Hand_Left].pos_standard + posBody;
-            Vector3 posHR = quater_r * _behaviorControl._parts[(int)BodyControl.Part.eKind.Hand_Right].pos_standard + posBody;
+            Vector3 posHL = quater_r * HL.pos_standard + posBody;
+            Vector3 posHR = quater_r * HR.pos_standard + posBody;
 
             float weaponArc_degree = 45f;
             float weaponArc_radius_far = 3f;
@@ -1611,8 +1613,8 @@ namespace HordeFight
             //*
             //어깨 기준점 
             Gizmos.color = Color.gray;
-            Gizmos.DrawWireSphere(posHL, 0.1f);
-            Gizmos.DrawWireSphere(posHR, 0.15f);
+            Gizmos.DrawWireSphere(posHL, HL.range_max);
+            Gizmos.DrawWireSphere(posHR, HR.range_max);
 
             //공격 범위 - 호/수직 : Vector3.forward
             //eTraceShape tr = eTraceShape.None;
@@ -1643,7 +1645,7 @@ namespace HordeFight
             //공격 무기이동 경로
             _debug_line.y = -0.5f;
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(posBody, posBody + _behaviorControl.CurrentDistance() * weaponArc_dir);
+            Gizmos.DrawLine(posBody, posBody + _bodyControl.CurrentDistance() * weaponArc_dir);
             Gizmos.DrawWireSphere(posBody, 0.5f);
             //*/
 
@@ -1826,7 +1828,7 @@ namespace HordeFight
         public Behavior.eKind _behaviorKind = Behavior.eKind.None;
         public Behavior _behavior = null;
         public float _timeDelta = 0f;  //시간변화량
-        public BodyControl _behaviorControl = new BodyControl();
+        public BodyControl _bodyControl = new BodyControl();
 
         //==================================================
         //상태정보
@@ -2231,7 +2233,7 @@ namespace HordeFight
             }
 
             //========================================
-            _behaviorControl.Update(); //행동 진행 갱신 
+            _bodyControl.Update(); //행동 진행 갱신 
             //========================================
 
             //아래 행동 관련 사용 안되는 코드임 - 분석필요 
@@ -2483,7 +2485,7 @@ namespace HordeFight
         {
 
             _behaviorKind = Behavior.eKind.Idle;
-            _behaviorControl.Idle();
+            _bodyControl.Idle();
 
             if (true == IsActive_Animator())
             {
@@ -2656,7 +2658,7 @@ namespace HordeFight
                 eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
             _behaviorKind = Behavior.eKind.Move;
-            _behaviorControl.Move_0();
+            _bodyControl.Move_0();
 
             if (true == IsActive_Animator())
             {
@@ -3238,7 +3240,7 @@ namespace HordeFight
             Max
         }
 
-        public struct Part
+        public class Part
         {
             //신체부위
             public enum eKind
@@ -3283,7 +3285,7 @@ namespace HordeFight
                 pos = new Vector3[(int)ePoint.Max];
                 dir = new Vector3[(int)ePoint.Max];
 
-                target = new Vector3(0,0,-2f);
+                target = new Vector3(0,0,2f); //z축을 보게 한다 
             }
 
         }
@@ -3314,6 +3316,7 @@ namespace HordeFight
             _parts = new Part[(int)Part.eKind.Max];
             for (int i = 0; i < (int)Part.eKind.Max;i++)
             {
+                _parts[i] = new Part();
                 _parts[i].Init();
             }
 
@@ -3323,8 +3326,12 @@ namespace HordeFight
         public void Setting_2Hand()
         {
             //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
-            _parts[(int)Part.eKind.Hand_Left].pos_standard = new Vector3(-0.5f, 0.5f,0);
-            _parts[(int)Part.eKind.Hand_Right].pos_standard = new Vector3(0.5f, 0.5f, 0);
+            Part HL = _parts[(int)Part.eKind.Hand_Left];
+            Part HR = _parts[(int)Part.eKind.Hand_Right];
+
+            HL.pos_standard = new Vector3(-0.5f, 0.5f,0);
+            HR.pos_standard = new Vector3(0.5f, 0.5f, 0);
+            HR.range_max = 1.1f; //오른쪽 사정거리를 약간 더 늘린다 
         }
 
         public void Setting_Head_2Hand_2Foot()
