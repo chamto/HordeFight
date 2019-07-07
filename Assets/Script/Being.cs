@@ -1304,7 +1304,7 @@ namespace HordeFight
             Hand_Right, //행동 오른손
 
             Max,
-        }
+x        }
 
 
         //==================================================
@@ -1616,6 +1616,9 @@ namespace HordeFight
             Gizmos.DrawWireSphere(posHL, HL.range_max);
             Gizmos.DrawWireSphere(posHR, HR.range_max);
 
+            //skill 진행 상태 출력 
+            DebugWide.PrintText(posHR,Color.white,_bodyControl._skill_current._kind.ToString() + "  st: " + _bodyControl._state_current.ToString() + "   t: " + _bodyControl._timeDelta.ToString("00.00"));
+
             //공격 범위 - 호/수직 : Vector3.forward
             //eTraceShape tr = eTraceShape.None;
             //_data.GetBehavior().attack_shape
@@ -1640,13 +1643,14 @@ namespace HordeFight
             //캐릭터 방향 
             Gizmos.color = Color.black;
             Gizmos.DrawLine(posBody, posBody + _move._direction * 4);
-            Gizmos.DrawSphere(posBody + _move._direction * 4, 0.2f);
+            //Gizmos.DrawSphere(posBody + _move._direction * 4, 0.2f);
 
             //공격 무기이동 경로
+            Vector3 weapon_curPos = posBody + _bodyControl.CurrentDistance() * weaponArc_dir;
             _debug_line.y = -0.5f;
             Gizmos.color = Color.red;
-            Gizmos.DrawLine(posBody, posBody + _bodyControl.CurrentDistance() * weaponArc_dir);
-            Gizmos.DrawWireSphere(posBody, 0.5f);
+            Gizmos.DrawLine(posBody, weapon_curPos);
+            Gizmos.DrawWireSphere(weapon_curPos, 0.1f);
             //*/
 
             //칼죽이기 가능 범위
@@ -3044,8 +3048,8 @@ namespace HordeFight
 
         //========================================
 
-        public eKind kind { get; set; }
-        public eName name { get; set; }
+        public eKind _kind;
+        public eName _name;
 
         //========================================
 
@@ -3099,8 +3103,8 @@ namespace HordeFight
         {
             Skill skinfo = new Skill();
 
-            skinfo.kind = eKind.None;
-            skinfo.name = eName.Idle;
+            skinfo._kind = eKind.None;
+            skinfo._name = eName.Idle;
 
             Behavior bhvo = new Behavior();
             bhvo.runningTime = 1f;
@@ -3118,8 +3122,8 @@ namespace HordeFight
         {
             Skill skinfo = new Skill();
 
-            skinfo.kind = eKind.Move;
-            skinfo.name = eName.Move_0;
+            skinfo._kind = eKind.Move;
+            skinfo._name = eName.Move_0;
 
             Behavior bhvo = new Behavior();
             bhvo.runningTime = 1f;
@@ -3138,8 +3142,8 @@ namespace HordeFight
         {
             Skill skinfo = new Skill();
 
-            skinfo.kind = eKind.Attack_Strong;
-            skinfo.name = eName.Attack_Strong_1;
+            skinfo._kind = eKind.Attack_Strong;
+            skinfo._name = eName.Attack_Strong_1;
 
             Behavior bhvo = new Behavior();
             bhvo.runningTime = 2.0f;
@@ -3296,12 +3300,12 @@ namespace HordeFight
 
         //동작정보
         public Behavior _behavior = null;
-        private Skill _skill_current = null;
+        public Skill _skill_current = null;
         private Skill _skill_next = null;
-        private float _timeDelta = 0f;  //시간변화량
+        public float _timeDelta = 0f;  //시간변화량
 
         //상태정보
-        private eState _state_current = eState.None;
+        public eState _state_current = eState.None;
         private eSubState _eventState_current = eSubState.None;     //유효상태
                                                                     
         //판정
@@ -3411,7 +3415,7 @@ namespace HordeFight
 
             _skill_next = skill;
 
-            SetState(eState.End);
+            //SetState(eState.End); //계속 함수를 호출하면 End 상태를 못 벗어나 주석처리함 
         }
 
         public void Attack_Strong_1()
