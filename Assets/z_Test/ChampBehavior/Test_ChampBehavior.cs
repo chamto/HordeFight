@@ -33,9 +33,9 @@ public class TwoHandControl : MonoBehaviour
     public Transform _object_sword = null;
 
     public float _shoulder_length = 0f;
-    public float _arm_left_length = 0.4f;
-    public float _arm_right_length = 0.5f;
-    public float _twoHand_length = 1f;
+    public float _arm_left_length = 1.5f;
+    public float _arm_right_length = 1f;
+    public float _twoHand_length = 0.5f;
 
 	private void Start()
 	{
