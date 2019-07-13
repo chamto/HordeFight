@@ -30,6 +30,8 @@ public class TwoHandControl : MonoBehaviour
     public Transform _hand_left = null;
     public Transform _hand_right = null;
 
+    public Transform _object_sword = null;
+
     public float _shoulder_length = 0f;
     public float _arm_left_length = 0.4f;
     public float _arm_right_length = 0.5f;
@@ -41,6 +43,9 @@ public class TwoHandControl : MonoBehaviour
         _shoulder_right = GameObject.Find("shoulder_right").transform;
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
+
+        _object_sword = GameObject.Find("object_sword").transform;
+
 	}
 
 
@@ -67,7 +72,6 @@ public class TwoHandControl : MonoBehaviour
 
 
         //==================================================
-
         //위치 제약 
         //if( 0.5f < _arm_left_length)
         //{
@@ -116,6 +120,13 @@ public class TwoHandControl : MonoBehaviour
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
         //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
+
+        //==================================================
+        Vector3 hLhR = _hand_right.position - _hand_left.position;
+        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, Vector3.up);
+        Vector3 angles = _object_sword.eulerAngles;
+        angles.y = angleW;
+        _object_sword.eulerAngles = angles;
 	}
 
 	private void OnDrawGizmos()
