@@ -1604,8 +1604,8 @@ x        }
 
             Vector3 posBody = this.GetPos3D();
             Quaternion quater_r = Quaternion.FromToRotation(UtilGS9.ConstV.v3_forward, _move._direction);
-            Vector3 posHL = quater_r * HL.pos_standard + posBody;
-            Vector3 posHR = quater_r * HR.pos_standard + posBody;
+            Vector3 posHL = quater_r * HL._pos_standard + posBody;
+            Vector3 posHR = quater_r * HR._pos_standard + posBody;
 
             float weaponArc_degree = 45f;
             float weaponArc_radius_far = 3f;
@@ -1613,8 +1613,8 @@ x        }
             //*
             //어깨 기준점 
             Gizmos.color = Color.gray;
-            Gizmos.DrawWireSphere(posHL, HL.range_max);
-            Gizmos.DrawWireSphere(posHR, HR.range_max);
+            Gizmos.DrawWireSphere(posHL, HL._range_max);
+            Gizmos.DrawWireSphere(posHR, HR._range_max);
 
             //skill 진행 상태 출력 
             DebugWide.PrintText(posHR,Color.white,_bodyControl._skill_current._kind.ToString() + "  st: " + _bodyControl._state_current.ToString() + "   t: " + _bodyControl._timeDelta.ToString("00.00"));
@@ -3164,7 +3164,7 @@ namespace HordeFight
             bhvo.angle = 45f;
             bhvo.plus_range_0 = 2f;
             bhvo.plus_range_1 = 2f;
-            bhvo.distance_travel = 3f; 
+            bhvo.distance_travel = 1f; 
             //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
             bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
 
@@ -3244,6 +3244,17 @@ namespace HordeFight
             Max
         }
 
+
+        public enum ePoint
+        {
+            Start,  //시작
+            End,    //끝지
+
+            Cur,    //현재
+
+            Max,
+        }
+
         public class Part
         {
             //신체부위
@@ -3265,34 +3276,32 @@ namespace HordeFight
 
             }
 
-            public enum ePoint
-            {
-                Start,  //시작점
-                End,    //끝지점
 
-                Cur,    //현재점
+            public Vector3 _pos_standard;    //신체 부위의 기준점 
+            public float _range_max;         //부위 기준점으로 부터 최대 범위
+            public Vector3[] _pos;           //부위 위치 (로컬값)
+            public Vector3[] _dir;           //부위 방향 (로컬값)
 
-                Max,
-            }
-
-            public Vector3 pos_standard;    //신체 부위의 기준점 
-            public float range_max;         //부위 기준점으로 부터 최대 범위
-            public Vector3[] pos;           //부위 위치 (로컬값)
-            public Vector3[] dir;           //부위 방향 (로컬값)
-
-            public Vector3 target;          //목표점 (월드값)
+            public Vector3 _target;          //목표점 (월드값)
 
             public void Init()
             {
-                pos_standard = UtilGS9.ConstV.v3Int_zero;
-                range_max = 1f;
-                pos = new Vector3[(int)ePoint.Max];
-                dir = new Vector3[(int)ePoint.Max];
+                _pos_standard = UtilGS9.ConstV.v3Int_zero;
+                _range_max = 1f;
+                _pos = new Vector3[(int)ePoint.Max];
+                _dir = new Vector3[(int)ePoint.Max];
 
-                target = new Vector3(0,0,2f); //z축을 보게 한다 
+                _target = new Vector3(0,0,2f); //z축을 보게 한다 
             }
 
         }
+
+        public class Weapon
+        {
+            public float length; //무기 길이 
+            //public 
+        }
+
 
         //====================================
         public Part[] _parts = null;    //부위 정보 
@@ -3333,18 +3342,18 @@ namespace HordeFight
             Part HL = _parts[(int)Part.eKind.Hand_Left];
             Part HR = _parts[(int)Part.eKind.Hand_Right];
 
-            HL.pos_standard = new Vector3(-0.5f, 0.5f,0);
-            HR.pos_standard = new Vector3(0.5f, 0.5f, 0);
-            HR.range_max = 1.1f; //오른쪽 사정거리를 약간 더 늘린다 
+            HL._pos_standard = new Vector3(-0.5f, 0.5f,0);
+            HR._pos_standard = new Vector3(0.5f, 0.5f, 0);
+            HR._range_max = 1.1f; //오른쪽 사정거리를 약간 더 늘린다 
         }
 
         public void Setting_Head_2Hand_2Foot()
         {
             //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
             Setting_2Hand();
-            _parts[(int)Part.eKind.Head].pos_standard = new Vector3(0, 1f, 0);
-            _parts[(int)Part.eKind.Foot_Left].pos_standard = new Vector3(-0.5f, 0, 0);
-            _parts[(int)Part.eKind.Foot_Right].pos_standard = new Vector3(0.5f, 0, 0);
+            _parts[(int)Part.eKind.Head]._pos_standard = new Vector3(0, 1f, 0);
+            _parts[(int)Part.eKind.Foot_Left]._pos_standard = new Vector3(-0.5f, 0, 0);
+            _parts[(int)Part.eKind.Foot_Right]._pos_standard = new Vector3(0.5f, 0, 0);
         }
 
 
