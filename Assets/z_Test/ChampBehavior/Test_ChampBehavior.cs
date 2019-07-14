@@ -33,9 +33,13 @@ public class TwoHandControl : MonoBehaviour
     public Transform _object_sword = null;
 
     public float _shoulder_length = 0f;
-    public float _arm_left_length = 1.5f;
-    public float _arm_right_length = 1f;
-    public float _twoHand_length = 1f;
+    public float _arm_left_length = 1f;
+    public float _arm_right_length = 1.5f;
+    public float _twoHand_length = 0.5f;
+
+    public float _rotate_shoulder_left = -10f;
+    public float _rotate_shoulder_right = -10f;
+    public bool _cals_hand_right = true;
 
 	private void Start()
 	{
@@ -100,51 +104,94 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
         //손 움직임 만들기 
         //코사인 제2법칙 공식을 사용하는 방식 
-        float a = (_shoulder_right.position - _hand_left.position).magnitude;
-        float b = _arm_right_length;
-        float c = _twoHand_length;
+        if (true == _cals_hand_right)
+            HandRight_Control();
+        else
+            HandLeft_Control();
+        
 
-        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
-        //if (a + b - c < 0)
-            //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
-            //a = (c - b) * 1.01f;
-
-        float cosC = (a * a + b * b - c * c) / (2 * a * b);
-        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
-
-        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
-        Vector3 newPos_hR = (_hand_left.position - _shoulder_right.position).normalized * b;
-
-        //회전축 구하기 
-        Vector3 shaft = Vector3.Cross((_hand_left.position - _shoulder_right.position), (_hand_right.position - _shoulder_right.position));
-        //shaft.Normalize();
-        DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
-
-        newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
-        //newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(-angleC, Vector3.up) * newPos_hR;
-        _hand_right.position = newPos_hR;
-
+        //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
         //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
 
         //==================================================
-        //손에 칼 붙이기 2d
-        Vector3 hLhR = _hand_right.position - _hand_left.position;
-        //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, Vector3.up);
-        //Vector3 angles = _object_sword.eulerAngles;
-        //angles.y = angleW;
-        //_object_sword.eulerAngles = angles;
 
-        //3d
+        //손에 칼 붙이기 3d
+        Vector3 hLhR = _hand_right.position - _hand_left.position;
         Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR); 
         //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
         //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
 
         float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
         _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-        //_object_sword.Rotate(shaft, angleW); //현재값에 중첩되는 방식
+
+        //==================================================
+        //왼손 회전 테스트
+
+        if(true == _cals_hand_right)
+            _shoulder_left.Rotate(Vector3.up, _rotate_shoulder_left , Space.World);
+        else
+            _shoulder_right.Rotate(Vector3.up, _rotate_shoulder_right, Space.World);
 	}
+
+
+    public void HandLeft_Control()
+    {
+        //손 움직임 만들기 
+        Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = shoulderToCrossHand.magnitude;
+        float b = _arm_left_length;
+        float c = _twoHand_length;
+
+        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
+        //if (a + b - c < 0)
+        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
+        //a = (c - b) * 1.01f;
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+        Vector3 newPos_hR = shoulderToCrossHand.normalized * b;
+
+        //회전축 구하기 
+        Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_left.position - _shoulder_left.position));
+
+        newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        _hand_left.position = newPos_hR;
+    }
+    public void HandRight_Control()
+    {
+        //손 움직임 만들기 
+        Vector3 shoulderToCrossHand = _hand_left.position - _shoulder_right.position;
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = shoulderToCrossHand.magnitude;
+        float b = _arm_right_length;
+        float c = _twoHand_length;
+
+        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
+        //if (a + b - c < 0)
+        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
+        //a = (c - b) * 1.01f;
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+        Vector3 newPos_hR = shoulderToCrossHand.normalized * b;
+
+        //회전축 구하기 
+        Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_right.position - _shoulder_right.position));
+
+        newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        _hand_right.position = newPos_hR;
+    }
 
 	private void OnDrawGizmos()
 	{
@@ -162,12 +209,12 @@ public class TwoHandControl : MonoBehaviour
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
         DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.green);
         //DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.yellow);
-        //DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.yellow);
+        DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.yellow);
 
         //==================================================
 
-        //Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
-        //DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
-        DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up)+"");
+        Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
+        DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
+        DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft)+"");
 	}
 }
