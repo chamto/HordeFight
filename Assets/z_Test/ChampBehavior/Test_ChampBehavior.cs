@@ -35,7 +35,7 @@ public class TwoHandControl : MonoBehaviour
     public float _shoulder_length = 0f;
     public float _arm_left_length = 1.5f;
     public float _arm_right_length = 1f;
-    public float _twoHand_length = 0.5f;
+    public float _twoHand_length = 1f;
 
 	private void Start()
 	{
@@ -98,6 +98,7 @@ public class TwoHandControl : MonoBehaviour
         //__prev_hLsL = hLsL;
 
         //==================================================
+        //손 움직임 만들기 
         //코사인 제2법칙 공식을 사용하는 방식 
         float a = (_shoulder_right.position - _hand_left.position).magnitude;
         float b = _arm_right_length;
@@ -114,7 +115,13 @@ public class TwoHandControl : MonoBehaviour
         float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
         Vector3 newPos_hR = (_hand_left.position - _shoulder_right.position).normalized * b;
 
-        newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(-angleC, Vector3.up) * newPos_hR;
+        //회전축 구하기 
+        Vector3 shaft = Vector3.Cross((_hand_left.position - _shoulder_right.position), (_hand_right.position - _shoulder_right.position));
+        //shaft.Normalize();
+        DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
+
+        newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        //newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(-angleC, Vector3.up) * newPos_hR;
         _hand_right.position = newPos_hR;
 
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
@@ -122,11 +129,21 @@ public class TwoHandControl : MonoBehaviour
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
 
         //==================================================
+        //손에 칼 붙이기 2d
         Vector3 hLhR = _hand_right.position - _hand_left.position;
-        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, Vector3.up);
-        Vector3 angles = _object_sword.eulerAngles;
-        angles.y = angleW;
-        _object_sword.eulerAngles = angles;
+        //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, Vector3.up);
+        //Vector3 angles = _object_sword.eulerAngles;
+        //angles.y = angleW;
+        //_object_sword.eulerAngles = angles;
+
+        //3d
+        Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR); 
+        //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
+        //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
+
+        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+        _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+        //_object_sword.Rotate(shaft, angleW); //현재값에 중첩되는 방식
 	}
 
 	private void OnDrawGizmos()
@@ -144,13 +161,13 @@ public class TwoHandControl : MonoBehaviour
         DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
         DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.green);
-        DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.yellow);
-        DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.yellow);
+        //DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.yellow);
+        //DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.yellow);
 
         //==================================================
 
-
-        DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
+        //Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
+        //DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
         DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up)+"");
 	}
 }
