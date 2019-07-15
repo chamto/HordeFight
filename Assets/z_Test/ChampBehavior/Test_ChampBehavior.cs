@@ -25,11 +25,19 @@ public class Test_ChampBehavior : MonoBehaviour
 
 public class TwoHandControl : MonoBehaviour
 {
+    public enum ePart
+    {
+        None,
+        Hand_Left,
+        Hand_Right,
+
+        Max,
+    }
+
     public Transform _shoulder_left = null;
     public Transform _shoulder_right = null;
     public Transform _hand_left = null;
     public Transform _hand_right = null;
-
     public Transform _object_sword = null;
 
     public float _shoulder_length = 0f;
@@ -37,9 +45,19 @@ public class TwoHandControl : MonoBehaviour
     public float _arm_right_length = 1.5f;
     public float _twoHand_length = 0.5f;
 
-    public float _rotate_shoulder_left = -10f;
-    public float _rotate_shoulder_right = -10f;
-    public bool _cals_hand_right = true;
+    public ePart _part_control = ePart.Hand_Left;
+
+    public string ___SHOULDER_AUTO_ROTATE___ = "";
+    public bool  _active_shoulder_autoRotate = true;
+    public float _angle_shoulderLeft_autoRotate = -10f; //왼쪽 어깨 자동회전 각도량
+    public float _angle_shoulderRight_autoRotate = -10f; //오른쪽 어깨 자동회전 각도량
+
+    public string ___BODY_AROUND_ROTATE___ = "";
+    public bool   _active_body_aroundRotate = true;
+    public float _radius_handLeft_aroundRotate = 0.5f;
+    public float _radius_handRight_aroundRotate = 1f;
+    public Transform _pos_handLeft_aroundRotate = null;
+    public Transform _pos_handRight_aroundRotate = null;
 
 	private void Start()
 	{
@@ -47,8 +65,12 @@ public class TwoHandControl : MonoBehaviour
         _shoulder_right = GameObject.Find("shoulder_right").transform;
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
-
         _object_sword = GameObject.Find("object_sword").transform;
+
+        //=======
+        //조종항목
+        _pos_handLeft_aroundRotate = GameObject.Find("pos_handLeft_aroundRotate").transform;
+        _pos_handRight_aroundRotate = GameObject.Find("pos_handRight_aroundRotate").transform;
 
 	}
 
@@ -104,10 +126,10 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
         //손 움직임 만들기 
         //코사인 제2법칙 공식을 사용하는 방식 
-        if (true == _cals_hand_right)
-            HandRight_Control();
-        else
+        if (ePart.Hand_Left == _part_control)
             HandLeft_Control();
+        if (ePart.Hand_Right == _part_control)
+            HandRight_Control();
         
 
         //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
@@ -127,16 +149,34 @@ public class TwoHandControl : MonoBehaviour
         _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
         //==================================================
-        //왼손 회전 테스트
+        //왼손,오른손 자동 회전 테스트
+        if(true == _active_shoulder_autoRotate)
+        {
+            _shoulder_left.Rotate(Vector3.up, _angle_shoulderLeft_autoRotate, Space.World);
+            _shoulder_right.Rotate(Vector3.up, _angle_shoulderRight_autoRotate, Space.World);
+        }
+            
 
-        if(true == _cals_hand_right)
-            _shoulder_left.Rotate(Vector3.up, _rotate_shoulder_left , Space.World);
-        else
-            _shoulder_right.Rotate(Vector3.up, _rotate_shoulder_right, Space.World);
+        //==================================================
+        //몸통 중심으로 오른손 회전하기 
+        if(true == _active_body_aroundRotate)
+        {
+
+            Vector3 bodyCenter = _pos_handRight_aroundRotate.position;
+            Vector3 n_bodyToHandRight = (_hand_right.position - bodyCenter).normalized;
+            _hand_right.position = bodyCenter + n_bodyToHandRight * _radius_handRight_aroundRotate;
+            _arm_right_length = (_hand_right.position - _shoulder_right.position).magnitude;
+
+            bodyCenter = _pos_handLeft_aroundRotate.position;
+            Vector3 n_bodyToHandLeft = (_hand_left.position - bodyCenter).normalized;
+            _hand_left.position = bodyCenter + n_bodyToHandLeft * _radius_handLeft_aroundRotate;
+            _arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
+        }
+
 	}
 
 
-    public void HandLeft_Control()
+    public void HandRight_Control()
     {
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
@@ -164,7 +204,7 @@ public class TwoHandControl : MonoBehaviour
         newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_left.position = newPos_hR;
     }
-    public void HandRight_Control()
+    public void HandLeft_Control()
     {
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_left.position - _shoulder_right.position;
@@ -207,14 +247,32 @@ public class TwoHandControl : MonoBehaviour
 
         DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
-        DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.green);
-        //DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.yellow);
-        DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.yellow);
+        DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.gray);
+
+        if(true == _active_shoulder_autoRotate)
+        {
+            DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
+            DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.gray);    
+        }
+        if(true == _active_body_aroundRotate)
+        {
+            DebugWide.DrawCircle(_pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate, Color.yellow);
+            DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
+        }
 
         //==================================================
 
-        Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
-        DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
-        DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft)+"");
+        if(ePart.Hand_Left == _part_control)
+        {
+            Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
+            DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
+            DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
+        }
+        if (ePart.Hand_Right == _part_control)
+        {
+            Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
+            DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
+            DebugWide.PrintText(_shoulder_left.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
+        }
 	}
 }
