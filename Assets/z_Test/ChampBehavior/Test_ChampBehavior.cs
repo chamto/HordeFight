@@ -149,7 +149,7 @@ public class TwoHandControl : MonoBehaviour
             
 
         //==================================================
-        //몸통 중심으로 오른손 회전하기 
+        //몸통 중심으로 오른손/왼손 회전하기 
         if(true == _active_body_aroundRotate)
         {
 
@@ -162,6 +162,8 @@ public class TwoHandControl : MonoBehaviour
             Vector3 n_bodyToHandLeft = (_hand_left.position - bodyCenter).normalized;
             _hand_left.position = bodyCenter + n_bodyToHandLeft * _radius_handLeft_aroundRotate;
             _arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
+
+            _twoHand_length = (_hand_right.position - _hand_left.position).magnitude; //양손 사이길이 다시 셈함
         }
 
         //==================================================
@@ -274,7 +276,7 @@ public class TwoHandControl : MonoBehaviour
         {
             Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
             DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
-            DebugWide.PrintText(_shoulder_left.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
+            DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
         }
 	}
 }
