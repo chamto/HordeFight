@@ -43,17 +43,17 @@ public class TwoHandControl : MonoBehaviour
     public float _shoulder_length = 0f;
     public float _arm_left_length = 1f;
     public float _arm_right_length = 1.5f;
-    public float _twoHand_length = 0.5f;
+    public float _twoHand_length = 0.7f;
 
     public ePart _part_control = ePart.Hand_Left;
 
     public string ___SHOULDER_AUTO_ROTATE___ = "";
-    public bool  _active_shoulder_autoRotate = true;
+    public bool  _active_shoulder_autoRotate = false;
     public float _angle_shoulderLeft_autoRotate = -10f; //왼쪽 어깨 자동회전 각도량
     public float _angle_shoulderRight_autoRotate = -10f; //오른쪽 어깨 자동회전 각도량
 
     public string ___BODY_AROUND_ROTATE___ = "";
-    public bool   _active_body_aroundRotate = true;
+    public bool   _active_body_aroundRotate = false;
     public float _radius_handLeft_aroundRotate = 0.5f;
     public float _radius_handRight_aroundRotate = 1f;
     public Transform _pos_handLeft_aroundRotate = null;
@@ -137,23 +137,14 @@ public class TwoHandControl : MonoBehaviour
         //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
 
-        //==================================================
-
-        //손에 칼 붙이기 3d
-        Vector3 hLhR = _hand_right.position - _hand_left.position;
-        Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR); 
-        //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
-        //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
-
-        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-        _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
         //==================================================
         //왼손,오른손 자동 회전 테스트
         if(true == _active_shoulder_autoRotate)
         {
-            _shoulder_left.Rotate(Vector3.up, _angle_shoulderLeft_autoRotate, Space.World);
-            _shoulder_right.Rotate(Vector3.up, _angle_shoulderRight_autoRotate, Space.World);
+            Vector3 axis = Vector3.right; //chamto test
+            _shoulder_left.Rotate(axis, _angle_shoulderLeft_autoRotate, Space.World);
+            _shoulder_right.Rotate(axis, _angle_shoulderRight_autoRotate, Space.World);
         }
             
 
@@ -172,6 +163,16 @@ public class TwoHandControl : MonoBehaviour
             _hand_left.position = bodyCenter + n_bodyToHandLeft * _radius_handLeft_aroundRotate;
             _arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
         }
+
+        //==================================================
+        //손에 칼 붙이기 3d
+        Vector3 hLhR = _hand_right.position - _hand_left.position;
+        Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+        //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
+        //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
+
+        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+        _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
 	}
 
@@ -228,6 +229,7 @@ public class TwoHandControl : MonoBehaviour
 
         //회전축 구하기 
         Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_right.position - _shoulder_right.position));
+        shaft = Vector3.left; //chamto test -------
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
@@ -249,7 +251,7 @@ public class TwoHandControl : MonoBehaviour
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
         DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.gray);
 
-        if(true == _active_shoulder_autoRotate)
+        //if(true == _active_shoulder_autoRotate)
         {
             DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
             DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.gray);    
