@@ -134,14 +134,18 @@ public class TwoHandControl : MonoBehaviour
         float rsq = _arm_left_length * _arm_left_length;
         Vector3 inter_pos = UtilGS9.ConstV.v3_zero;
         bool testInter = false;
-        if(wsq > rsq)
-        {   //기준점이 왼손범위 바깥에 있다 - 몸방향 값을 받대로 바꿔서 계산 
-            testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, -_body_dir, out inter_pos);
-        }else
-        {
-            //기준점이 왼손범위 안에 있다 
-            testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, _body_dir, out inter_pos);
-        }
+        float frontDir = 1f;
+        float stand_dir = Vector3.Dot(_body_dir, _standard.position - transform.position);
+
+        //기준점이 왼손범위 바깥에 있다 - 몸방향 값을 받대로 바꿔서 계산 
+        if (wsq > rsq)
+            frontDir = -1f;
+
+        //기준점이 몸방향과 반대방향에 있다 - 몸방향 값을 받대로 바꿔서 계산 
+        if (0 > stand_dir)
+            frontDir *= -1f;
+        
+        testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, frontDir * _body_dir, out inter_pos);
 
         _hand_left.position = inter_pos;
         if(false == testInter)
@@ -336,6 +340,13 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_standard.position, _target.position, Color.black);
             DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
             DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
+
+            float rsq = _arm_left_length * _arm_left_length;
+            float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
+            float inArea = 1;
+            if (rsq < wsq) inArea = -1f;
+            DebugWide.DrawLine(_standard.position, _standard.position + _body_dir * inArea * 3, Color.yellow);
+
         }
         if (ePart.Hand_Right == _part_control)
         {
