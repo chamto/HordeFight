@@ -34,16 +34,22 @@ public class TwoHandControl : MonoBehaviour
         Max,
     }
 
+    public Transform _tbody_dir = null;
     public Transform _shoulder_left = null;
     public Transform _shoulder_right = null;
     public Transform _hand_left = null;
     public Transform _hand_right = null;
     public Transform _object_sword = null;
+    public Transform _object_dir = null;
+    public Transform _target = null;
+    public Transform _standard = null;
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 1f;
     public float _arm_right_length = 1.5f;
     public float _twoHand_length = 0.7f;
+
+    public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
 
     public ePart _part_control = ePart.Hand_Left;
 
@@ -61,11 +67,15 @@ public class TwoHandControl : MonoBehaviour
 
 	private void Start()
 	{
+        _tbody_dir = GameObject.Find("body_dir").transform;
         _shoulder_left = GameObject.Find("shoulder_left").transform;
         _shoulder_right = GameObject.Find("shoulder_right").transform;
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
         _object_sword = GameObject.Find("object_sword").transform;
+        _object_dir = GameObject.Find("object_dir").transform;
+        _target = GameObject.Find("target").transform;
+        _standard = GameObject.Find("standard").transform;
 
         //=======
         //조종항목
@@ -79,7 +89,7 @@ public class TwoHandControl : MonoBehaviour
     public Vector3 __prev_hLsL = UtilGS9.ConstV.v3_zero;
 	private void Update()
 	{
-
+        _body_dir = (_tbody_dir.position - transform.position).normalized;
         //==================================================
 
         if (null == (object)_shoulder_left || null == (object)_shoulder_right) return;
@@ -112,6 +122,34 @@ public class TwoHandControl : MonoBehaviour
         hLsL = _hand_left.position - _shoulder_left.position;
         hRsR = _hand_right.position - _shoulder_right.position;
 
+        //==================================================
+        //조종축에 맞게 위치 계산 
+
+        //- 기준점이 어깨범위를 벗어났는지 검사
+
+        //1. 기준점이 왼손범위 안에 있는지 바깥에 있는지 검사
+        float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
+        float rsq = _arm_left_length * _arm_left_length;
+        Vector3 inter_pos = UtilGS9.ConstV.v3_zero;
+        bool testInter = false;
+        if(wsq > rsq)
+        {   //기준점이 왼손범위 바깥에 있다 - 몸방향 값을 받대로 바꿔서 계산 
+            testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, -_body_dir, out inter_pos);
+        }else
+        {
+            //기준점이 왼손범위 안에 있다 
+            testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, _body_dir, out inter_pos);
+        }
+
+        _hand_left.position = inter_pos;
+        //if(false == testInter)
+        {   //기준점에서 몸방향이 왼손범위에 닿지 않는 경우 
+            hLsL = _standard.position - _shoulder_left.position;
+            n_hLsL = hLsL.normalized;
+            _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+        }
+
+
 
         //==================================================
 
@@ -122,20 +160,6 @@ public class TwoHandControl : MonoBehaviour
         //_hand_right.position = newHRsR;
 
         //__prev_hLsL = hLsL;
-
-        //==================================================
-        //손 움직임 만들기 
-        //코사인 제2법칙 공식을 사용하는 방식 
-        if (ePart.Hand_Left == _part_control)
-            HandLeft_Control();
-        if (ePart.Hand_Right == _part_control)
-            HandRight_Control();
-        
-
-        //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
-        //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
-        //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
-        //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
 
 
         //==================================================
@@ -165,6 +189,20 @@ public class TwoHandControl : MonoBehaviour
 
             _twoHand_length = (_hand_right.position - _hand_left.position).magnitude; //양손 사이길이 다시 셈함
         }
+
+        //==================================================
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        if (ePart.Hand_Left == _part_control)
+            HandLeft_Control();
+        if (ePart.Hand_Right == _part_control)
+            HandRight_Control();
+        
+        //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
+        //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
+        //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
+        //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
+
 
         //==================================================
         //손에 칼 붙이기 3d
@@ -207,8 +245,25 @@ public class TwoHandControl : MonoBehaviour
         newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_left.position = newPos_hR;
     }
+
+
     public void HandLeft_Control()
     {
+        //chamto test 1 - 고정위치(object_dir)에서 오른손 위치값 구하기 
+        //Vector3 objectDir = _object_dir.position - _hand_left.position;
+        //objectDir.Normalize();
+        //_hand_right.position = _hand_left.position + objectDir * _twoHand_length;
+        //return;
+
+        //chamto test 2 - 고정위치로 회전면을 구해 오른손 위치값 결정하기 
+        Vector3 objectDir = _object_dir.position - _hand_left.position;
+        Vector3 targetDir = _target.position - _hand_left.position;
+        Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
+
+        //return;
+
+        //==================================================
+
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_left.position - _shoulder_right.position;
 
@@ -231,7 +286,8 @@ public class TwoHandControl : MonoBehaviour
 
         //회전축 구하기 
         Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_right.position - _shoulder_right.position));
-        shaft = Vector3.left; //chamto test -------
+        //shaft = Vector3.left; //chamto test -------
+        shaft = -shaft_t; //chamto test -------
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
@@ -271,6 +327,13 @@ public class TwoHandControl : MonoBehaviour
             Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
             DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
+
+            Vector3 objectDir = _object_dir.position - _standard.position;
+            Vector3 targetDir = _target.position - _standard.position;
+            Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
+            DebugWide.DrawLine(_standard.position, _target.position, Color.black);
+            DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
+            DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
         }
         if (ePart.Hand_Right == _part_control)
         {
