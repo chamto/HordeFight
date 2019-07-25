@@ -89,6 +89,7 @@ public class TwoHandControl : MonoBehaviour
     public Vector3 __prev_hLsL = UtilGS9.ConstV.v3_zero;
 	private void Update()
 	{
+        //몸 방향값 갱신 
         _body_dir = (_tbody_dir.position - transform.position).normalized;
         //==================================================
 
@@ -115,8 +116,9 @@ public class TwoHandControl : MonoBehaviour
         //}
         //__prev_handL_Pos = _hand_left.position;
 
-        _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-        _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+        //chamto test - 임시로 주석 
+        //_hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+        //_hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
 
         //다시 갱신 
         hLsL = _hand_left.position - _shoulder_left.position;
@@ -142,9 +144,9 @@ public class TwoHandControl : MonoBehaviour
         }
 
         _hand_left.position = inter_pos;
-        //if(false == testInter)
+        if(false == testInter)
         {   //기준점에서 몸방향이 왼손범위에 닿지 않는 경우 
-            hLsL = _standard.position - _shoulder_left.position;
+            hLsL = inter_pos - _shoulder_left.position;
             n_hLsL = hLsL.normalized;
             _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
         }
@@ -216,37 +218,6 @@ public class TwoHandControl : MonoBehaviour
 
 	}
 
-
-    public void HandRight_Control()
-    {
-        //손 움직임 만들기 
-        Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
-
-        //손 움직임 만들기 
-        //코사인 제2법칙 공식을 사용하는 방식 
-        float a = shoulderToCrossHand.magnitude;
-        float b = _arm_left_length;
-        float c = _twoHand_length;
-
-        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
-        //if (a + b - c < 0)
-        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
-        //a = (c - b) * 1.01f;
-
-        float cosC = (a * a + b * b - c * c) / (2 * a * b);
-        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
-
-        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
-        Vector3 newPos_hR = shoulderToCrossHand.normalized * b;
-
-        //회전축 구하기 
-        Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_left.position - _shoulder_left.position));
-
-        newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
-        _hand_left.position = newPos_hR;
-    }
-
-
     public void HandLeft_Control()
     {
         //chamto test 1 - 고정위치(object_dir)에서 오른손 위치값 구하기 
@@ -292,6 +263,37 @@ public class TwoHandControl : MonoBehaviour
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
     }
+
+
+    public void HandRight_Control()
+    {
+        //손 움직임 만들기 
+        Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = shoulderToCrossHand.magnitude;
+        float b = _arm_left_length;
+        float c = _twoHand_length;
+
+        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
+        //if (a + b - c < 0)
+        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
+        //a = (c - b) * 1.01f;
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+        Vector3 newPos_hR = shoulderToCrossHand.normalized * b;
+
+        //회전축 구하기 
+        Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_left.position - _shoulder_left.position));
+
+        newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        _hand_left.position = newPos_hR;
+    }
+
 
 	private void OnDrawGizmos()
 	{
