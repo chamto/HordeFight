@@ -55,29 +55,35 @@ public class DeformationCircle : MonoBehaviour
         float maxAngle = angleA > angleB ? angleA : angleB;
         float maxTd = (maxAngle * t) / angleH;
 
-        float count = 30;
+        float count = 300;
+        Vector3 prevPos = Vector3.zero;
         for (int i = 0; i < count;i++)
         {
-            float angleD = Mathf.LerpAngle(angleA, angleB, i / (float)count);
+            float angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
+            //float angleD = Mathf.LerpAngle(angleA, angleB, i / (float)count);
             //float angleD = Mathf.Lerp(angleA, angleB, i / (float)count);
             Vector3 tdPos = Quaternion.AngleAxis(angleD, Vector3.up) * Vector3.forward;
 
             //if (angleD > angleH) angleD = maxAngle - angleD;
             float td = (angleD * t) / angleH;
             //if (td > t) td = maxTd - td; //최고점을 기준으로 대칭형을 만들어 준다 
-            if (td > t) 
-            {
-                //최고점을 기준으로 대칭형을 만들어 준다    
-                td = td - maxTd;
-                td *= -1f;
-                td /= (maxTd - t); //1~0로 변환
-                td *= t; //t~0 범위값으로 바꾸어 준다 
-            }
+            //if (td > t) 
+            //{
+            //    //최고점을 기준으로 대칭형을 만들어 준다    
+            //    td = td - maxTd;
+            //    td *= -1f;
+            //    td /= (maxTd - t); //1~0로 변환
+            //    td *= t; //t~0 범위값으로 바꾸어 준다 
+            //}
 
 
             tdPos = tdPos * (radius + td);
-            DebugWide.DrawLine(Vector3.zero, tdPos, Color.red);
+
+            //DebugWide.DrawLine(Vector3.zero, tdPos, Color.red);
             //DebugWide.PrintText(tdPos, Color.black, " " + td);
+            DebugWide.DrawLine(prevPos, tdPos, Color.blue);
+
+            prevPos = tdPos;
         }
 	}
 }
