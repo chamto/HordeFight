@@ -23,6 +23,8 @@ public class DeformationCircle : MonoBehaviour
 		
 	}
 
+    public bool isTornado = false;
+
     //**** 1사분면에서만 정상 동작한다 ****
 	private void OnDrawGizmos()
 	{
@@ -57,7 +59,6 @@ public class DeformationCircle : MonoBehaviour
         float maxTd = (maxAngle * t) / angleH;
 
         float angleD = 0f;
-        bool isTornado = false;
         float count = 300;
         Vector3 prevPos = Vector3.zero;
         for (int i = 0; i < count;i++)
@@ -69,6 +70,7 @@ public class DeformationCircle : MonoBehaviour
             }
             else
             {
+                //5도 간격으로 각도를 늘린다 
                 angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
             }
 
@@ -77,14 +79,40 @@ public class DeformationCircle : MonoBehaviour
 
             float td = (angleD * t) / angleH;
 
-            if (false == isTornado && td > t) 
+
+
+            if (false == isTornado) 
             {
-                //최고점을 기준으로 대칭형을 만들어 준다    
-                td = td - maxTd;
-                td *= -1f;
-                td /= (maxTd - t); //1~0로 변환
-                td *= t; //t~0 범위값으로 바꾸어 준다 
+                if(td < t)
+                {
+                    td /= t; //0~1로 변환
+                    //td *= t; //0~t 범위로 변환 
+
+                }
+                else //td >= t 
+                {
+                    //최고점을 기준으로 대칭형을 만들어 준다    
+                    td = maxTd - td; //t ~ maxTd => (maxTd - t) ~ 0
+                    td /= (maxTd - t); //1~0로 변환
+                    //td *= t; //t~0 범위값으로 바꾸어 준다 
+                }
+
+                //td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 *
+                td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 **
+                //td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 ***
+                //td = UtilGS9.Interpolation.easeInSine(0, 1f, td); 
+
+
+                td *= t; //0~t 범위로 변환 
             }
+            //else
+            //{
+            //    float ma = 300f * 5f;
+            //    float mat = (ma * t) / angleH;
+            //    td /= mat; //0~1로 변환
+            //    td = UtilGS9.Interpolation.easeOutElastic(0, 1f, td);
+            //    td *= mat; //0~t 범위로 변환 
+            //}
 
 
             tdPos = tdPos * (radius + td);
