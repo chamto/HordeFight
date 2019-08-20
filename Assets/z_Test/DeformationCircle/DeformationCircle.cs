@@ -38,6 +38,7 @@ public class DeformationCircle : MonoBehaviour
 
         DebugWide.DrawLine(anchorPointA.position, highestPoint.position, Color.green);
         DebugWide.DrawLine(anchorPointB.position, highestPoint.position, Color.green);
+        DebugWide.DrawLine(Vector3.zero, highestPoint.position, Color.green);
 
 
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
@@ -56,11 +57,13 @@ public class DeformationCircle : MonoBehaviour
         //td * angleH = angleD * t
         //td = (angleD * t) / angleH
         float maxAngle = angleA > angleB ? angleA : angleB;
+        float minAngle = angleA < angleB ? angleA : angleB;
         float maxTd = (maxAngle * t) / angleH;
+        float minTd = (minAngle * t) / angleH;
 
         float angleD = 0f;
         float count = 300;
-        Vector3 prevPos = Vector3.zero;
+        Vector3 prevPos = anchorPointA.position;
         for (int i = 0; i < count;i++)
         {
             if(false == isTornado)
@@ -85,8 +88,11 @@ public class DeformationCircle : MonoBehaviour
             {
                 if(td < t)
                 {
-                    td /= t; //0~1로 변환
+                    //td /= t; //0~1로 변환
                     //td *= t; //0~t 범위로 변환 
+
+                    td = td - minTd; //minTd ~ t => 0 ~ (t - minTd)
+                    td /= (t - minTd); //0~1로 변환
 
                 }
                 else //td >= t 
@@ -98,7 +104,7 @@ public class DeformationCircle : MonoBehaviour
                 }
 
                 //td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 *
-                td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 **
+                //td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 **
                 //td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 ***
                 //td = UtilGS9.Interpolation.easeInSine(0, 1f, td); 
 
