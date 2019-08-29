@@ -5,13 +5,18 @@ using UnityEngine;
 public class DeformationCircle : MonoBehaviour 
 {
 
+    public float _radius = 10f;
+    public Transform sphereCenter = null;
     public Transform highestPoint = null;
     public Transform anchorPointA = null;
     public Transform anchorPointB = null;
 
+    private Vector3 _initialDir = Vector3.forward;
+
 	// Use this for initialization
 	void Start () 
     {
+        sphereCenter = GameObject.Find("sphereCenter").transform;   
         highestPoint = GameObject.Find("highestPoint").transform;
         anchorPointA = GameObject.Find("anchorPointA").transform;
         anchorPointB = GameObject.Find("anchorPointB").transform;
@@ -30,27 +35,42 @@ public class DeformationCircle : MonoBehaviour
 	{
         if (null == highestPoint) return;
 
-        float radius = 10f;
-
-        DebugWide.DrawCircle(Vector3.zero, radius, Color.black);
-        DebugWide.DrawLine(Vector3.zero, Vector3.right * radius, Color.gray);
-        DebugWide.DrawLine(Vector3.zero, Vector3.forward * radius, Color.gray);
+        //----------- debug print -----------
+        DebugWide.DrawCircle(sphereCenter.position, _radius, Color.black);
+        DebugWide.DrawLine(sphereCenter.position, anchorPointA.position, Color.gray);
+        DebugWide.DrawLine(sphereCenter.position, anchorPointB.position, Color.gray);
 
         DebugWide.DrawLine(anchorPointA.position, highestPoint.position, Color.green);
         DebugWide.DrawLine(anchorPointB.position, highestPoint.position, Color.green);
-        DebugWide.DrawLine(Vector3.zero, highestPoint.position, Color.green);
+        DebugWide.DrawLine(sphereCenter.position, highestPoint.position, Color.green);
+        //----------- debug print -----------
 
 
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-        float t = highestPoint.position.magnitude - radius; 
+        float centerToHighestPoint = (highestPoint.position - sphereCenter.position).magnitude;
+        float t = centerToHighestPoint - _radius;
 
-        float angleA = Vector3.SignedAngle(Vector3.forward,anchorPointA.position,  Vector3.up);
-        float angleB = Vector3.SignedAngle(Vector3.forward,anchorPointB.position,   Vector3.up);
-        float angleH = Vector3.SignedAngle(Vector3.forward,highestPoint.position,   Vector3.up);
+        Vector3 upDir = Vector3.Cross(anchorPointA.position - sphereCenter.position, anchorPointB.position - sphereCenter.position);
+        upDir.Normalize();
+        float angleA = Vector3.SignedAngle(_initialDir, anchorPointA.position - sphereCenter.position,  upDir);
+        float angleB = Vector3.SignedAngle(_initialDir, anchorPointB.position - sphereCenter.position,   upDir);
+        float angleH = Vector3.SignedAngle(_initialDir, highestPoint.position - sphereCenter.position,   upDir);
+
+        //if (0 > angleA)
+        //    angleA += 360f;
+
+        //if (0 > angleB)
+        //    angleB += 360f;
+
+        //if (0 > angleH)
+            //angleH += 360f;
+
+        //----------- debug print -----------
         DebugWide.PrintText(anchorPointA.position, Color.black, "A : " + angleA);
         DebugWide.PrintText(anchorPointB.position, Color.black, "B : " + angleB);
         DebugWide.PrintText(highestPoint.position, Color.black, "H : " + angleH + "  t : " + t);
-        //angleH += 30f;
+        //----------- debug print -----------
+
 
         //비례식을 이용하여 td 구하기 
         //angleD : td  = angleH : t
@@ -62,14 +82,48 @@ public class DeformationCircle : MonoBehaviour
         float minTd = (minAngle * t) / angleH;
 
         float angleD = 0f;
-        float count = 300;
-        Vector3 prevPos = anchorPointA.position;
+        float count = 5;
+        Vector3 prevPos = sphereCenter.position;
+        Vector3 tdPos = sphereCenter.position;
+
+        count = 300;
+        for (int i = 0; i < count; i++)
+        {
+
+            //5도 간격으로 각도를 늘린다 
+            angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
+
+            //각도변환 : 181~359 => -179~-1 
+            angleD %= 360f;
+            if(angleD > 180f)
+                angleD -= 360f;
+
+            tdPos = Quaternion.AngleAxis(angleD, upDir) * _initialDir;
+
+
+            float td = (angleD * t) / angleH;
+
+
+            tdPos = sphereCenter.position + tdPos * (_radius + td);
+
+            //----------- debug print -----------
+            DebugWide.DrawLine(prevPos, tdPos, Color.gray);
+            //----------- debug print -----------
+
+            prevPos = tdPos;
+
+        }
+
+        count = 5;
         for (int i = 0; i < count;i++)
         {
+            
             if(false == isTornado)
             {
-                angleD = Mathf.LerpAngle(angleA, angleB, i / (float)count);
+                //angleD = Mathf.LerpAngle(angleA, angleB, i / (float)count);
+                angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count);
                 //angleD = Mathf.Lerp(angleA, angleB, i / (float)count);
+
             }
             else
             {
@@ -78,13 +132,14 @@ public class DeformationCircle : MonoBehaviour
             }
 
 
-            Vector3 tdPos = Quaternion.AngleAxis(angleD, Vector3.up) * Vector3.forward;
+            tdPos = Quaternion.AngleAxis(angleD, upDir) * _initialDir;
+
 
             float td = (angleD * t) / angleH;
+            //DebugWide.PrintText(tdPos * _radius, Color.black, " " + td + "  " + angleD);
 
 
-
-            if (false == isTornado) 
+            if (false && false == isTornado) 
             {
                 if(td < t)
                 {
@@ -121,13 +176,19 @@ public class DeformationCircle : MonoBehaviour
             //}
 
 
-            tdPos = tdPos * (radius + td);
+            tdPos = sphereCenter.position +  tdPos * (_radius + td);
 
-            //DebugWide.DrawLine(Vector3.zero, tdPos, Color.red);
+            //----------- debug print -----------
+            //DebugWide.DrawLine(sphereCenter.position, tdPos, Color.red);
             //DebugWide.PrintText(tdPos, Color.black, " " + td);
-            DebugWide.DrawLine(prevPos, tdPos, Color.blue);
+            if(0 != i) 
+                DebugWide.DrawLine(prevPos, tdPos, Color.blue);
+            //----------- debug print -----------
 
             prevPos = tdPos;
+
         }
+
+
 	}
 }
