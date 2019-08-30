@@ -39,19 +39,20 @@ public class DeformationCircle : MonoBehaviour
         if (null == highestPoint) return;
 
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-        float centerToHighestPoint = (highestPoint.position - sphereCenter.position).magnitude;
-        float t = centerToHighestPoint - _radius;
+        Vector3 centerToHighestPoint = (highestPoint.position - sphereCenter.position);
+        float highestPointLength = centerToHighestPoint.magnitude;
+        float t = highestPointLength - _radius;
 
         Vector3 upDir = Vector3.Cross(anchorPointA.position - sphereCenter.position, anchorPointB.position - sphereCenter.position);
         upDir.Normalize();
 
         //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-        _initialDir = Quaternion.AngleAxis(-90f, upDir) * (highestPoint.position - sphereCenter.position);
+        _initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
         _initialDir.Normalize();
 
         float angleA = Vector3.SignedAngle(_initialDir, anchorPointA.position - sphereCenter.position,  upDir);
         float angleB = Vector3.SignedAngle(_initialDir, anchorPointB.position - sphereCenter.position,   upDir);
-        //float angleH = Vector3.SignedAngle(_initialDir, highestPoint.position - sphereCenter.position,   upDir);
+        //float angleH = Vector3.SignedAngle(_initialDir, centerToHighestPoint,   upDir);
         float angleH = 90f;
 
         //-1~-179 각도표현을 1~179 로 변환한다
@@ -61,8 +62,9 @@ public class DeformationCircle : MonoBehaviour
         if (0 > angleB)
             angleB *= -1;
 
+
         if(angleH > angleA && angleH > angleB)
-        {   //최고점 위영역
+        {   //최고점 위영역에 앵커 두개가 있을 때의 예외처리 
 
             //최고점과 가까운 각도 찾기 
             if(angleA > angleB)
@@ -74,7 +76,7 @@ public class DeformationCircle : MonoBehaviour
             }
         }
         if(angleH < angleA && angleH < angleB)
-        {   //최고점 아래영역
+        {   //최고점 아래영역에 앵커 두개가 있을 떄의 예외처리 
 
             if (angleA < angleB)
             {
@@ -155,8 +157,11 @@ public class DeformationCircle : MonoBehaviour
 
         }
 
+
+
         //회오리 값의 지정구간 비율값을 0~1 , 1~0 으로 변환시킨다 
         count = 30;
+        bool outside_highestPoint = true; 
         for (int i = 0; i < count+1;i++)
         {
             
@@ -172,7 +177,16 @@ public class DeformationCircle : MonoBehaviour
 
             if(false == isTornado)
             {
-                if (td < t)
+                //최고점이 중심원의 외부에 위치한 경우
+                outside_highestPoint = td < t;
+
+                if (highestPointLength < _radius)
+                {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
+                    outside_highestPoint = !outside_highestPoint;
+                }
+
+                //if (td < t)
+                if(outside_highestPoint)
                 {
                     //td /= t; //0~1로 변환
                     //td *= t; //0~t 범위로 변환 
