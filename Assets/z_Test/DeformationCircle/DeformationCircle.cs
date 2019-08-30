@@ -51,20 +51,44 @@ public class DeformationCircle : MonoBehaviour
 
         float angleA = Vector3.SignedAngle(_initialDir, anchorPointA.position - sphereCenter.position,  upDir);
         float angleB = Vector3.SignedAngle(_initialDir, anchorPointB.position - sphereCenter.position,   upDir);
-        float angleH = Vector3.SignedAngle(_initialDir, highestPoint.position - sphereCenter.position,   upDir);
+        //float angleH = Vector3.SignedAngle(_initialDir, highestPoint.position - sphereCenter.position,   upDir);
+        float angleH = 90f;
 
         //-1~-179 각도표현을 1~179 로 변환한다
         //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
         if (0 > angleA)
             angleA *= -1;
-            //angleA += 360f;
         if (0 > angleB)
             angleB *= -1;
-            //angleB += 360f;
+
+        if(angleH > angleA && angleH > angleB)
+        {   //최고점 위영역
+
+            //최고점과 가까운 각도 찾기 
+            if(angleA > angleB)
+            {
+                angleA = 91f;
+            }else
+            {
+                angleB = 91f;
+            }
+        }
+        if(angleH < angleA && angleH < angleB)
+        {   //최고점 아래영역
+
+            if (angleA < angleB)
+            {
+                angleA = 89f;
+            }
+            else
+            {
+                angleB = 89f;
+            }
+        }
 
         //-1~-179 각도표현을 359~181 로 변환한다 
-        if (0 > angleH)
-            angleH += 360f;
+        //if (0 > angleH)
+            //angleH += 360f;
 
         //----------- debug print -----------
         Vector3 angle_M45 = _initialDir;
