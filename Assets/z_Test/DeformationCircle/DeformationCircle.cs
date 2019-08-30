@@ -53,17 +53,24 @@ public class DeformationCircle : MonoBehaviour
         float angleB = Vector3.SignedAngle(_initialDir, anchorPointB.position - sphereCenter.position,   upDir);
         float angleH = Vector3.SignedAngle(_initialDir, highestPoint.position - sphereCenter.position,   upDir);
 
+        //-1~-179 각도표현을 1~179 로 변환한다
+        //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
         if (0 > angleA)
-            angleA += 360f;
+            angleA *= -1;
+            //angleA += 360f;
         if (0 > angleB)
-            angleB += 360f;
+            angleB *= -1;
+            //angleB += 360f;
+
+        //-1~-179 각도표현을 359~181 로 변환한다 
         if (0 > angleH)
             angleH += 360f;
 
+        //----------- debug print -----------
         Vector3 angle_M45 = _initialDir;
         Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * _initialDir;
-        DebugWide.DrawLine(sphereCenter.position, angle_M45 * _radius, Color.red);
-        DebugWide.DrawLine(sphereCenter.position, angle_P45 * _radius, Color.red);
+        DebugWide.DrawLine(sphereCenter.position, sphereCenter.position + angle_M45 * _radius, Color.red);
+        DebugWide.DrawLine(sphereCenter.position, sphereCenter.position + angle_P45 * _radius, Color.red);
         //----------- debug print -----------
         DebugWide.DrawCircle(sphereCenter.position, _radius, Color.black);
         DebugWide.DrawLine(sphereCenter.position, anchorPointA.position, Color.gray);
@@ -160,8 +167,8 @@ public class DeformationCircle : MonoBehaviour
 
                 if(true == isInter)
                 {
-                    //td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 *
-                    td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 **
+                    td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 *
+                    //td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 **
                     //td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 ***
                     //td = UtilGS9.Interpolation.easeInSine(0, 1f, td);     
                 }
