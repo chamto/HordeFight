@@ -152,6 +152,49 @@ public class DeformationCircle : MonoBehaviour
         return sphereCenter + tdDir * (sphereRadius + td);
     }
 
+    public void Gizimo_DeformationSpherePoint(Vector3 dPos, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
+    {
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+        int count = 36;
+        for (int i = 0; i < count; i++)
+        {
+            cur = DeformationSpherePoint(i * 10, sphereCenter, sphereRadius, anchorA, anchorB, highestPoint, interpolationNumber);
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, dPos + cur, Color.cyan);
+
+            prev = dPos + cur;
+        }
+
+        //=============================
+        //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+        Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
+        float highestPointLength = centerToHighestPoint.magnitude;
+        float t = highestPointLength - sphereRadius;
+
+        Vector3 upDir = Vector3.Cross(anchorA - sphereCenter, anchorB - sphereCenter);
+        upDir.Normalize();
+
+        //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+        Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+        initialDir.Normalize();
+        //----------- debug print -----------
+        Vector3 angle_M45 = initialDir;
+        Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
+        DebugWide.DrawLine(dPos + sphereCenter, dPos + sphereCenter + angle_M45 * sphereRadius, Color.red);
+        DebugWide.DrawLine(dPos + sphereCenter, dPos + sphereCenter + angle_P45 * sphereRadius, Color.red);
+        //----------- debug print -----------
+        //DebugWide.DrawCircle(dPos + sphereCenter, sphereRadius, Color.black);
+        DebugWide.DrawLine(dPos + sphereCenter, dPos + anchorA, Color.gray);
+        DebugWide.DrawLine(dPos + sphereCenter, dPos + anchorB, Color.gray);
+
+        DebugWide.DrawLine(dPos + anchorA, dPos + highestPoint, Color.green);
+        DebugWide.DrawLine(dPos + anchorB, dPos + highestPoint, Color.green);
+        DebugWide.DrawLine(dPos + sphereCenter, dPos + highestPoint, Color.red);
+        //----------- debug print -----------
+
+    }
 
     private void PrintDemo(Vector3 pos, int interpolationNumber)
     {
@@ -178,16 +221,20 @@ public class DeformationCircle : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
+        if (null == _highestPoint) return;
+
         //=======
         Vector3 demoPos = Vector3.right * 70 + Vector3.forward * 70;
+
         PrintDemo(demoPos - Vector3.forward * 35 * 0, 0);
         PrintDemo(demoPos - Vector3.forward * 35 * 1, 1);
         PrintDemo(demoPos - Vector3.forward * 35 * 2, 2);
         PrintDemo(demoPos - Vector3.forward * 35 * 3, 3);
         PrintDemo(demoPos - Vector3.forward * 35 * 4, 4);
-        //=======
 
-        if (null == _highestPoint) return;
+        Gizimo_DeformationSpherePoint(Vector3.forward * 35 * 1, _sphereCenter.position, _radius, _anchorPointA.position, _anchorPointB.position, _highestPoint.position, 0);
+
+        //=======
 
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
         Vector3 centerToHighestPoint = (_highestPoint.position - _sphereCenter.position);
