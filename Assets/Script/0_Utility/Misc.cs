@@ -963,7 +963,8 @@ namespace UtilGS9
             Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
             float td = 0f;
 
-            if (minAngle <= rotateAngle && rotateAngle <= maxAngle)
+            //t 가 0 이면 0 으로 나누는 문제가 발생함, 이를 막는 예외처리 추가 
+            if (t != 0 && minAngle <= rotateAngle && rotateAngle <= maxAngle)
             {
 
                 td = (rotateAngle * t) / angleH;
@@ -1016,7 +1017,7 @@ namespace UtilGS9
             return sphereCenter + tdDir * (sphereRadius + td);
         }
 
-        static public void Gizimo_DeformationSpherePoint(Vector3 dPos, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
+        static public void DeformationSpherePoint_Gizimo(Vector3 dPos, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
         {
             Vector3 prev = Vector3.zero;
             Vector3 cur = Vector3.zero;

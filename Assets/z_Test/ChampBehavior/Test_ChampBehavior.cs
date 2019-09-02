@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UtilGS9;
 
 public class Test_ChampBehavior : MonoBehaviour 
 {
@@ -68,6 +69,14 @@ public class TwoHandControl : MonoBehaviour
     public Transform _pos_handLeft_aroundRotate = null;
     public Transform _pos_handRight_aroundRotate = null;
 
+    public string ___Trajectory_Circle___ = "";
+    public bool _active_trajectoryCircle = true;
+    public Transform _tc_center = null;
+    public Transform _tc_anchorA = null;
+    public Transform _tc_anchorB = null;
+    public Transform _tc_highest = null;
+    public float _tc_radius = 1f;
+
 	private void Start()
 	{
         _tbody_dir = GameObject.Find("body_dir").transform;
@@ -81,6 +90,13 @@ public class TwoHandControl : MonoBehaviour
         _standard = GameObject.Find("standard").transform;
         _control = GameObject.Find("control").transform;
 
+        //궤적원
+        _tc_center = GameObject.Find("trajectoryCircle").transform;
+        _tc_anchorA = GameObject.Find("anchorA").transform;
+        _tc_anchorB = GameObject.Find("anchorB").transform;
+        _tc_highest = GameObject.Find("highest").transform;
+
+
         //=======
         //조종항목
         _pos_handLeft_aroundRotate = GameObject.Find("pos_handLeft_aroundRotate").transform;
@@ -88,7 +104,7 @@ public class TwoHandControl : MonoBehaviour
 
 	}
 
-
+    public float __cur_left_angle = 0;
     public Vector3 __prev_handL_Pos = UtilGS9.ConstV.v3_zero;
     public Vector3 __prev_hLsL = UtilGS9.ConstV.v3_zero;
 	private void Update()
@@ -133,7 +149,7 @@ public class TwoHandControl : MonoBehaviour
         //조종축에 맞게 위치 계산 
 
         //- 기준점이 어깨범위를 벗어났는지 검사
-        //*
+        /*
         //1. 기준점이 왼손범위 안에 있는지 바깥에 있는지 검사
         float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
         float rsq = _arm_left_length * _arm_left_length;
@@ -207,13 +223,24 @@ public class TwoHandControl : MonoBehaviour
             _twoHand_length = (_hand_right.position - _hand_left.position).magnitude; //양손 사이길이 다시 셈함
         }
 
+        //궤적원에 따른 왼손 움직임 표현 
+        if(true == _active_trajectoryCircle)
+        {
+            
+            __cur_left_angle += 5f;
+            __cur_left_angle %= 360f;
+            _hand_left.position = Geo.DeformationSpherePoint(__cur_left_angle, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position,1);
+
+
+        }
+
         //==================================================
         //손 움직임 만들기 
         //코사인 제2법칙 공식을 사용하는 방식 
-        //if (ePart.Hand_Left == _part_control)
-        //    HandLeft_Control();
-        //if (ePart.Hand_Right == _part_control)
-            //HandRight_Control();
+        if (ePart.Hand_Left == _part_control)
+            HandLeft_Control();
+        if (ePart.Hand_Right == _part_control)
+            HandRight_Control();
         
         //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
@@ -364,6 +391,13 @@ public class TwoHandControl : MonoBehaviour
             Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
             DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
             DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
+        }
+
+
+        //궤적원에 따른 왼손 움직임 표현 
+        if (true == _active_trajectoryCircle)
+        {
+            Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
         }
 	}
 }
