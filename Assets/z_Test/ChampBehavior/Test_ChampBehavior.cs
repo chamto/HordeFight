@@ -48,9 +48,11 @@ public class TwoHandControl : MonoBehaviour
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 1f;
-    public float _arm_left_max_length = 1.5f;
+    public float _arm_left_min_length = 0.5f;
+    public float _arm_left_max_length = 1.0f;
     public float _arm_right_length = 1.5f;
-    public float _arm_right_max_length = 1.5f;
+    public float _arm_right_min_length = 0.8f;
+    public float _arm_right_max_length = 1.6f;
     public float _twoHand_length = 0.7f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
@@ -70,7 +72,7 @@ public class TwoHandControl : MonoBehaviour
     public Transform _pos_handRight_aroundRotate = null;
 
     public string ___Trajectory_Circle___ = "";
-    public bool _active_trajectoryCircle = true;
+    public bool _active_trajectoryCircle = false;
     public Transform _tc_center = null;
     public Transform _tc_anchorA = null;
     public Transform _tc_anchorB = null;
@@ -104,7 +106,7 @@ public class TwoHandControl : MonoBehaviour
 
 	}
 
-    public float __cur_left_angle = 0;
+    public float __cur_tc_angle = 0;
     public Vector3 __prev_handL_Pos = UtilGS9.ConstV.v3_zero;
     public Vector3 __prev_hLsL = UtilGS9.ConstV.v3_zero;
 	private void Update()
@@ -130,16 +132,30 @@ public class TwoHandControl : MonoBehaviour
         _arm_right_length = hRsR.magnitude;
 
         //==================================================
-        //위치 제약 
-        //if( 0.5f < _arm_left_length)
-        //{
-        //    _hand_left.position = __prev_handL_Pos;
-        //}
-        //__prev_handL_Pos = _hand_left.position;
 
-        //chamto test - 임시로 주석 
-        //_hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-        //_hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+        //오른손길이 최소최대 제약 
+        if (_arm_right_min_length > _arm_right_length)
+        {
+            _arm_right_length = _arm_right_min_length;
+            _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+        }else if(_arm_right_length > _arm_right_max_length)
+        {
+            _arm_right_length = _arm_right_max_length;
+            _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+        }
+
+        //왼손길이 최소최대 제약
+        if (_arm_left_min_length > _arm_left_length)
+        {
+            _arm_left_length = _arm_left_min_length;
+            _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+        }
+        else if (_arm_left_length > _arm_left_max_length)
+        {
+            _arm_left_length = _arm_left_max_length;
+            _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+        }
+
 
         //다시 갱신 
         hLsL = _hand_left.position - _shoulder_left.position;
@@ -223,13 +239,18 @@ public class TwoHandControl : MonoBehaviour
             _twoHand_length = (_hand_right.position - _hand_left.position).magnitude; //양손 사이길이 다시 셈함
         }
 
-        //궤적원에 따른 왼손 움직임 표현 
+        //궤적원에 따른 왼손/오른손 움직임 표현 
         if(true == _active_trajectoryCircle)
         {
             
-            __cur_left_angle += 5f;
-            __cur_left_angle %= 360f;
-            _hand_left.position = Geo.DeformationSpherePoint(__cur_left_angle, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position,1);
+            __cur_tc_angle += 5f;
+            __cur_tc_angle %= 360f;
+            Vector3 temp = Geo.DeformationSpherePoint(__cur_tc_angle, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
+            if (ePart.Hand_Left == _part_control)
+                _hand_left.position = temp;
+            if (ePart.Hand_Right == _part_control)
+                _hand_right.position = temp;
+            
 
 
         }
