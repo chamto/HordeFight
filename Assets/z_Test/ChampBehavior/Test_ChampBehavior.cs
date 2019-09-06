@@ -77,7 +77,7 @@ public class TwoHandControl : MonoBehaviour
     public Transform _tc_anchorA = null;
     public Transform _tc_anchorB = null;
     public Transform _tc_highest = null;
-    public float _tc_radius = 1f;
+    public float _tc_radius = 0.5f;
 
 	private void Start()
 	{
@@ -242,17 +242,15 @@ public class TwoHandControl : MonoBehaviour
         //궤적원에 따른 왼손/오른손 움직임 표현 
         if(true == _active_trajectoryCircle)
         {
-            
-            __cur_tc_angle += 5f;
-            __cur_tc_angle %= 360f;
-            Vector3 temp = Geo.DeformationSpherePoint(__cur_tc_angle, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
+            //__cur_tc_angle = 0;
+            //__cur_tc_angle += 5f;
+            //__cur_tc_angle %= 360f;
+
             if (ePart.Hand_Left == _part_control)
-                _hand_left.position = temp;
+                _hand_left.position = Geo.DeformationSpherePoint(_hand_left.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
             if (ePart.Hand_Right == _part_control)
-                _hand_right.position = temp;
+                _hand_right.position = Geo.DeformationSpherePoint(_hand_right.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
             
-
-
         }
 
         //==================================================
