@@ -106,7 +106,7 @@ public class TwoHandControl : MonoBehaviour
 
 	}
 
-    public float __cur_tc_angle = 0;
+
     public Vector3 __prev_handL_Pos = UtilGS9.ConstV.v3_zero;
     public Vector3 __prev_hLsL = UtilGS9.ConstV.v3_zero;
 	private void Update()
@@ -124,6 +124,9 @@ public class TwoHandControl : MonoBehaviour
 
         if (null == (object)_hand_left || null == (object)_hand_right) return;
 
+        //==================================================
+
+        //손길이 제약 
         Vector3 hLsL = (_hand_left.position - _shoulder_left.position);
         Vector3 hRsR = (_hand_right.position - _shoulder_right.position);
         Vector3 n_hLsL = hLsL.normalized;
@@ -131,14 +134,13 @@ public class TwoHandControl : MonoBehaviour
         _arm_left_length = hLsL.magnitude;
         _arm_right_length = hRsR.magnitude;
 
-        //==================================================
-
         //오른손길이 최소최대 제약 
         if (_arm_right_min_length > _arm_right_length)
         {
             _arm_right_length = _arm_right_min_length;
             _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-        }else if(_arm_right_length > _arm_right_max_length)
+        }
+        else if (_arm_right_length > _arm_right_max_length)
         {
             _arm_right_length = _arm_right_max_length;
             _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
@@ -265,6 +267,10 @@ public class TwoHandControl : MonoBehaviour
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
         //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
+
+
+        //==================================================
+
 
 
         //==================================================

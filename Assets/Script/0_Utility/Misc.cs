@@ -911,7 +911,13 @@ namespace UtilGS9
             Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
             //initialDir.Normalize();
 
-            Vector3 tdDir = targetPoint - sphereCenter;
+
+            //임의점을 변형원의 평면상으로 투영 
+            Vector3 centerToTarget = targetPoint - sphereCenter;
+            Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            Vector3 tdDir = centerToTarget - proj_targetToUp;
+
+            //Vector3 tdDir = targetPoint - sphereCenter;
             tdDir.Normalize();
 
             float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir); 
