@@ -79,6 +79,14 @@ public class TwoHandControl : MonoBehaviour
     public Transform _tc_highest = null;
     public float _tc_radius = 0.5f;
 
+    public string ___Hand_Control___ = "";
+    public bool _active_hand_control = true;
+    public Transform _hc_L_axis_o = null;
+    public Transform _hc_L_axis_up = null;
+    public Transform _hc_L_axis_right = null;
+    public Transform _hc_L_axis_forward = null;
+
+
 	private void Start()
 	{
         _tbody_dir = GameObject.Find("body_dir").transform;
@@ -103,6 +111,14 @@ public class TwoHandControl : MonoBehaviour
         //조종항목
         _pos_handLeft_aroundRotate = GameObject.Find("pos_handLeft_aroundRotate").transform;
         _pos_handRight_aroundRotate = GameObject.Find("pos_handRight_aroundRotate").transform;
+
+
+        //=======
+        //손조종
+        _hc_L_axis_o = GameObject.Find("L_axis_o").transform;
+        _hc_L_axis_up = GameObject.Find("L_axis_up").transform;
+        _hc_L_axis_right = GameObject.Find("L_axis_right").transform;
+        _hc_L_axis_forward = GameObject.Find("L_axis_forward").transform;
 
 	}
 
@@ -294,11 +310,15 @@ public class TwoHandControl : MonoBehaviour
         //return;
 
         //chamto test 2 - 고정위치로 회전면을 구해 오른손 위치값 결정하기 
-        Vector3 objectDir = _object_dir.position - _standard.position;
-        Vector3 targetDir = _target.position - _standard.position;
-        Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
+        //Vector3 objectDir = _object_dir.position - _standard.position;
+        //Vector3 targetDir = _target.position - _standard.position;
+        //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
 
-        //return;
+        Vector3 axis_up = _hc_L_axis_up.position - _hc_L_axis_o.position;
+        Vector3 Os1 = _shoulder_left.position - _hand_left.position;
+        Vector3 Lf = Vector3.Cross(axis_up, Os1);
+        Vector3 Os2 = Vector3.Cross(Lf,axis_up);
+        Vector3 up2 = Vector3.Cross(Os2, -Os1);
 
         //==================================================
 
@@ -324,8 +344,9 @@ public class TwoHandControl : MonoBehaviour
 
         //회전축 구하기 
         Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_right.position - _shoulder_right.position));
-        //shaft = Vector3.left; //chamto test -------
-        shaft = -shaft_t; //chamto test -------
+        //shaft = Vector3.left; //chamto test 0-------
+        //shaft = -shaft_t; //chamto test 2-------
+        shaft = up2;
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
@@ -376,7 +397,7 @@ public class TwoHandControl : MonoBehaviour
 
         DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
-        DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.gray);
+        DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
 
         //if(true == _active_shoulder_autoRotate)
         {
@@ -424,5 +445,38 @@ public class TwoHandControl : MonoBehaviour
         {
             Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
         }
+
+        //손조종 
+        if(true == _active_hand_control)
+        {
+            Vector3 handPos = _hand_left.position;
+
+            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_up.position - _hc_L_axis_o.position, Color.red);
+            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_right.position - _hc_L_axis_o.position, Color.red);
+            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_forward.position - _hc_L_axis_o.position, Color.red);
+            this.DrawCircle3D(handPos, _twoHand_length, _hc_L_axis_up.position - _hc_L_axis_o.position ,_hc_L_axis_forward.position - _hc_L_axis_o.position, Color.magenta);
+        }
 	}
+
+    public void DrawCircle3D(Vector3 pos , float radius, Vector3 up , Vector3 forward, Color cc)
+    {
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+
+        int count = 36;
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+
+            cur = pos + tdDir * radius;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            //if (0 == i%5)
+                //DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+    }
 }
