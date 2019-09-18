@@ -147,9 +147,13 @@ public class TwoHandControl : MonoBehaviour
         Vector3 hRsR = (_hand_right.position - _shoulder_right.position);
         Vector3 n_hLsL = hLsL.normalized;
         Vector3 n_hRsR = hRsR.normalized;
-        _arm_left_length = hLsL.magnitude;
-        _arm_right_length = hRsR.magnitude;
+        //_arm_left_length = hLsL.magnitude;
+        //_arm_right_length = hRsR.magnitude;
 
+        _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+        _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+
+        /*
         //오른손길이 최소최대 제약 
         if (_arm_right_min_length > _arm_right_length)
         {
@@ -173,7 +177,7 @@ public class TwoHandControl : MonoBehaviour
             _arm_left_length = _arm_left_max_length;
             _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
         }
-
+        //*/
 
         //다시 갱신 
         hLsL = _hand_left.position - _shoulder_left.position;
@@ -315,19 +319,28 @@ public class TwoHandControl : MonoBehaviour
         //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
 
         Vector3 axis_up = _hc_L_axis_up.position - _hc_L_axis_o.position;
-        Vector3 Os1 = _shoulder_left.position - _hand_left.position;
-        Vector3 Lf = Vector3.Cross(axis_up, Os1);
-        Vector3 Os2 = Vector3.Cross(Lf,axis_up);
-        Vector3 up2 = Vector3.Cross(Os2, -Os1);
+        //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
+        //Vector3 Lf = Vector3.Cross(axis_up, Os1);
+        //Vector3 Os2 = Vector3.Cross(Lf,axis_up);
+        //Vector3 up2 = Vector3.Cross(Os2, -Os1);
 
         //==================================================
 
+
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_left.position - _shoulder_right.position;
+        float shoulderToCrossHand_length = shoulderToCrossHand.magnitude;
+
+        //==================================================
+        //삼각형 구성 불능 검사
+        //if (shoulderToCrossHand.magnitude + _twoHand_length < _arm_right_length)
+            //DebugWide.LogBlue("삼각형 구성 불능 : "+ shoulderToCrossHand_length);
+            
+        //==================================================
 
         //손 움직임 만들기 
         //코사인 제2법칙 공식을 사용하는 방식 
-        float a = shoulderToCrossHand.magnitude;
+        float a = shoulderToCrossHand_length;
         float b = _arm_right_length;
         float c = _twoHand_length;
 
@@ -337,6 +350,8 @@ public class TwoHandControl : MonoBehaviour
         //a = (c - b) * 1.01f;
 
         float cosC = (a * a + b * b - c * c) / (2 * a * b);
+        //DebugWide.LogBlue(cosC + "   " + Mathf.Acos(cosC));
+
         cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
 
         float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
@@ -346,7 +361,15 @@ public class TwoHandControl : MonoBehaviour
         Vector3 shaft = Vector3.Cross(shoulderToCrossHand, (_hand_right.position - _shoulder_right.position));
         //shaft = Vector3.left; //chamto test 0-------
         //shaft = -shaft_t; //chamto test 2-------
-        shaft = up2;
+        //shaft = up2;
+        //shaft = Lf;
+
+        //shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
+        //위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
+        if(Vector3.Dot(axis_up , shaft) >= 0)
+            shaft = axis_up;
+        else 
+            shaft = -axis_up;
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
@@ -393,10 +416,13 @@ public class TwoHandControl : MonoBehaviour
         DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL "+_arm_left_length.ToString("00.00"));
         DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
         DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
-        DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + _twoHand_length.ToString("00.00"));
+        DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
+
 
         DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
+        DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
         DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
+        DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
         DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
 
         //if(true == _active_shoulder_autoRotate)
@@ -414,22 +440,25 @@ public class TwoHandControl : MonoBehaviour
 
         if(ePart.Hand_Left == _part_control)
         {
-            Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
-            DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
+
+            Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
+            //shaft.Normalize();
+            //DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
+            //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.white);
 
             Vector3 objectDir = _object_dir.position - _standard.position;
             Vector3 targetDir = _target.position - _standard.position;
             Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
-            DebugWide.DrawLine(_standard.position, _target.position, Color.black);
-            DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
-            DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
+            //DebugWide.DrawLine(_standard.position, _target.position, Color.black);
+            //DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
+            //DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
 
             float rsq = _arm_left_length * _arm_left_length;
             float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
             float inArea = 1;
             if (rsq < wsq) inArea = -1f;
-            DebugWide.DrawLine(_standard.position, _standard.position + _body_dir * inArea * 3, Color.yellow);
+            //DebugWide.DrawLine(_standard.position, _standard.position + _body_dir * inArea * 3, Color.yellow);
 
         }
         if (ePart.Hand_Right == _part_control)
@@ -451,10 +480,18 @@ public class TwoHandControl : MonoBehaviour
         {
             Vector3 handPos = _hand_left.position;
 
-            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_up.position - _hc_L_axis_o.position, Color.red);
+            DebugWide.DrawLine(handPos,handPos + _hc_L_axis_up.position - _hc_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_right.position - _hc_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_forward.position - _hc_L_axis_o.position, Color.red);
             this.DrawCircle3D(handPos, _twoHand_length, _hc_L_axis_up.position - _hc_L_axis_o.position ,_hc_L_axis_forward.position - _hc_L_axis_o.position, Color.magenta);
+
+            Vector3 axis_up = _hc_L_axis_up.position - _hc_L_axis_o.position;
+            Vector3 Os1 = _shoulder_right.position - _hand_left.position;
+            Vector3 Lf = Vector3.Cross(axis_up, Os1);
+            //Vector3 Os2 = Vector3.Cross(Lf, axis_up);
+            //Vector3 up2 = Vector3.Cross(Os2, -Os1);
+            //DebugWide.LogBlue(up2);
+            //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + Lf, Color.magenta);
         }
 	}
 
