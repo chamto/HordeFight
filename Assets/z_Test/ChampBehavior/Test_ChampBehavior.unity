@@ -162,7 +162,7 @@ GameObject:
   m_Component:
   - component: {fileID: 21543995}
   m_Layer: 0
-  m_Name: target
+  m_Name: hc1_target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -190,7 +190,7 @@ GameObject:
   m_Component:
   - component: {fileID: 72364619}
   m_Layer: 0
-  m_Name: L_axis_forward
+  m_Name: hc2_L_axis_forward
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64528,7 +64528,7 @@ GameObject:
   m_Component:
   - component: {fileID: 230298261}
   m_Layer: 0
-  m_Name: L_axis_o
+  m_Name: hc2_L_axis_o
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64795,7 +64795,7 @@ GameObject:
   m_Component:
   - component: {fileID: 568333655}
   m_Layer: 0
-  m_Name: control
+  m_Name: hc1_axis_o
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65335,7 +65335,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1274361246}
   m_Layer: 0
-  m_Name: object_dir
+  m_Name: hc1_axis_up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65643,7 +65643,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1488136098}
   m_Layer: 0
-  m_Name: L_axis_up
+  m_Name: hc2_L_axis_up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65858,7 +65858,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1713684249}
   m_Layer: 0
-  m_Name: L_axis_right
+  m_Name: hc2_L_axis_right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -41,10 +41,7 @@ public class TwoHandControl : MonoBehaviour
     public Transform _hand_left = null;
     public Transform _hand_right = null;
     public Transform _object_sword = null;
-    public Transform _object_dir = null;
-    public Transform _target = null;
-    public Transform _standard = null;
-    public Transform _control = null;
+
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 1f;
@@ -79,12 +76,20 @@ public class TwoHandControl : MonoBehaviour
     public Transform _tc_highest = null;
     public float _tc_radius = 0.5f;
 
-    public string ___Hand_Control___ = "";
-    public bool _active_hand_control = true;
-    public Transform _hc_L_axis_o = null;
-    public Transform _hc_L_axis_up = null;
-    public Transform _hc_L_axis_right = null;
-    public Transform _hc_L_axis_forward = null;
+    public string ___Hand_Control_1___ = "";
+    public bool _active_hand_control_1 = false;
+    public Transform _hc1_axis_o = null; //control => _hc1_axis_o
+    public Transform _hc1_axis_up = null; //object_dir => _hc1_axis_up
+    public Transform _hc1_target = null;
+    public Transform _hc1_standard = null;
+
+
+    public string ___Hand_Control_2___ = "";
+    public bool _active_hand_control_2 = false;
+    public Transform _hc2_L_axis_o = null;
+    public Transform _hc2_L_axis_up = null;
+    public Transform _hc2_L_axis_right = null;
+    public Transform _hc2_L_axis_forward = null;
 
 
 	private void Start()
@@ -95,10 +100,7 @@ public class TwoHandControl : MonoBehaviour
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
         _object_sword = GameObject.Find("object_sword").transform;
-        _object_dir = GameObject.Find("object_dir").transform;
-        _target = GameObject.Find("target").transform;
-        _standard = GameObject.Find("standard").transform;
-        _control = GameObject.Find("control").transform;
+
 
         //궤적원
         _tc_center = GameObject.Find("trajectoryCircle").transform;
@@ -113,12 +115,20 @@ public class TwoHandControl : MonoBehaviour
         _pos_handRight_aroundRotate = GameObject.Find("pos_handRight_aroundRotate").transform;
 
 
+
         //=======
-        //손조종
-        _hc_L_axis_o = GameObject.Find("L_axis_o").transform;
-        _hc_L_axis_up = GameObject.Find("L_axis_up").transform;
-        _hc_L_axis_right = GameObject.Find("L_axis_right").transform;
-        _hc_L_axis_forward = GameObject.Find("L_axis_forward").transform;
+        //손조종 1
+        _hc1_axis_up = GameObject.Find("hc1_axis_up").transform;
+        _hc1_target = GameObject.Find("hc1_target").transform;
+        _hc1_standard = GameObject.Find("hc1_standard").transform;
+        _hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
+
+        //=======
+        //손조종 2
+        _hc2_L_axis_o = GameObject.Find("hc2_L_axis_o").transform;
+        _hc2_L_axis_up = GameObject.Find("hc2_L_axis_up").transform;
+        _hc2_L_axis_right = GameObject.Find("hc2_L_axis_right").transform;
+        _hc2_L_axis_forward = GameObject.Find("hc2_L_axis_forward").transform;
 
 	}
 
@@ -184,17 +194,17 @@ public class TwoHandControl : MonoBehaviour
         hRsR = _hand_right.position - _shoulder_right.position;
 
         //==================================================
-        //조종축에 맞게 위치 계산 
+        //조종축에 맞게 위치 계산 (코사인제2법칙으로 구현한 것과는 다른 방식)
 
         //- 기준점이 어깨범위를 벗어났는지 검사
-        /*
+        //*
         //1. 기준점이 왼손범위 안에 있는지 바깥에 있는지 검사
-        float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
+        float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
         float rsq = _arm_left_length * _arm_left_length;
         Vector3 inter_pos = UtilGS9.ConstV.v3_zero;
         bool testInter = false;
         float frontDir = 1f;
-        float stand_dir = Vector3.Dot(_body_dir, _standard.position - transform.position);
+        float stand_dir = Vector3.Dot(_body_dir, _hc1_standard.position - transform.position);
 
         //기준점이 왼손범위 바깥에 있다 - 몸방향 값을 받대로 바꿔서 계산 
         if (wsq > rsq)
@@ -204,7 +214,7 @@ public class TwoHandControl : MonoBehaviour
         if (0 > stand_dir)
             frontDir *= -1f;
         
-        testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _standard.position, frontDir * _body_dir, out inter_pos);
+        testInter = UtilGS9.Geo.IntersectRay(_shoulder_left.position, _arm_left_length, _hc1_standard.position, frontDir * _body_dir, out inter_pos);
 
         if(true == testInter)
         {
@@ -217,7 +227,7 @@ public class TwoHandControl : MonoBehaviour
             _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
         }
 
-        _hand_right.position = _hand_left.position + (_object_dir.position - _standard.position).normalized * _twoHand_length;
+        _hand_right.position = _hand_left.position + (_hc1_axis_up.position - _hc1_standard.position).normalized * _twoHand_length;
         //*/
 
         //==================================================
@@ -308,17 +318,17 @@ public class TwoHandControl : MonoBehaviour
     public void HandLeft_Control()
     {
         //chamto test 1 - 고정위치(object_dir)에서 오른손 위치값 구하기 
-        //Vector3 objectDir = _object_dir.position - _hand_left.position;
-        //objectDir.Normalize();
-        //_hand_right.position = _hand_left.position + objectDir * _twoHand_length;
-        //return;
+        Vector3 objectDir = _hc1_axis_up.position - _hand_left.position;
+        objectDir.Normalize();
+        _hand_right.position = _hand_left.position + objectDir * _twoHand_length;
+        return;
 
         //chamto test 2 - 고정위치로 회전면을 구해 오른손 위치값 결정하기 
         //Vector3 objectDir = _object_dir.position - _standard.position;
         //Vector3 targetDir = _target.position - _standard.position;
         //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
 
-        Vector3 axis_up = _hc_L_axis_up.position - _hc_L_axis_o.position;
+        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
         //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
         //Vector3 Lf = Vector3.Cross(axis_up, Os1);
         //Vector3 Os2 = Vector3.Cross(Lf,axis_up);
@@ -447,15 +457,15 @@ public class TwoHandControl : MonoBehaviour
             //DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
             //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.white);
 
-            Vector3 objectDir = _object_dir.position - _standard.position;
-            Vector3 targetDir = _target.position - _standard.position;
+            Vector3 objectDir = _hc1_axis_up.position - _hc1_standard.position;
+            Vector3 targetDir = _hc1_target.position - _hc1_standard.position;
             Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
             //DebugWide.DrawLine(_standard.position, _target.position, Color.black);
             //DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
             //DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
 
             float rsq = _arm_left_length * _arm_left_length;
-            float wsq = (_standard.position - _shoulder_left.position).sqrMagnitude;
+            float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
             float inArea = 1;
             if (rsq < wsq) inArea = -1f;
             //DebugWide.DrawLine(_standard.position, _standard.position + _body_dir * inArea * 3, Color.yellow);
@@ -476,16 +486,16 @@ public class TwoHandControl : MonoBehaviour
         }
 
         //손조종 
-        if(true == _active_hand_control)
+        if(true == _active_hand_control_2)
         {
             Vector3 handPos = _hand_left.position;
 
-            DebugWide.DrawLine(handPos,handPos + _hc_L_axis_up.position - _hc_L_axis_o.position, Color.red);
+            DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_right.position - _hc_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_forward.position - _hc_L_axis_o.position, Color.red);
-            this.DrawCircle3D(handPos, _twoHand_length, _hc_L_axis_up.position - _hc_L_axis_o.position ,_hc_L_axis_forward.position - _hc_L_axis_o.position, Color.magenta);
+            this.DrawCircle3D(handPos, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position ,_hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
 
-            Vector3 axis_up = _hc_L_axis_up.position - _hc_L_axis_o.position;
+            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
             Vector3 Os1 = _shoulder_right.position - _hand_left.position;
             Vector3 Lf = Vector3.Cross(axis_up, Os1);
             //Vector3 Os2 = Vector3.Cross(Lf, axis_up);
