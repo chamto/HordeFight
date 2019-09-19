@@ -80,7 +80,7 @@ public class TwoHandControl : MonoBehaviour
     public string ___Hand_Control_1___ = "";
     public bool _active_hand_control_1 = false;
     public Transform _hc1_axis_o = null; //control => _hc1_axis_o
-    public Transform _hc1_axis_up = null; //object_dir => _hc1_axis_up
+    public Transform _hc1_object_dir = null; 
     public Transform _hc1_target = null;
     public Transform _hc1_standard = null;
 
@@ -119,7 +119,7 @@ public class TwoHandControl : MonoBehaviour
 
         //=======
         //손조종 1
-        _hc1_axis_up = GameObject.Find("hc1_axis_up").transform;
+        _hc1_object_dir = GameObject.Find("hc1_object_dir").transform;
         _hc1_target = GameObject.Find("hc1_target").transform;
         _hc1_standard = GameObject.Find("hc1_standard").transform;
         _hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
@@ -339,14 +339,14 @@ public class TwoHandControl : MonoBehaviour
             _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
         }
 
-        _hand_right.position = _hand_left.position + (_hc1_axis_up.position - _hc1_standard.position).normalized * _twoHand_length;
+        _hand_right.position = _hand_left.position + (_hc1_object_dir.position - _hc1_standard.position).normalized * _twoHand_length;
         //*/   
 
         //chamto test 1 - 고정위치(object_dir)에서 오른손 위치값 구하기 
-        Vector3 objectDir = _hc1_axis_up.position - _hand_left.position;
-        objectDir.Normalize();
-        _hand_right.position = _hand_left.position + objectDir * _twoHand_length;
-        return;
+        //Vector3 objectDir = _hc1_object_dir.position - _hand_left.position;
+        //objectDir.Normalize();
+        //_hand_right.position = _hand_left.position + objectDir * _twoHand_length;
+        //return;
 
         //chamto test 2 - 고정위치로 회전면을 구해 오른손 위치값 결정하기 
         //Vector3 objectDir = _object_dir.position - _standard.position;
@@ -486,24 +486,12 @@ public class TwoHandControl : MonoBehaviour
             //DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
             //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.white);
 
-            Vector3 objectDir = _hc1_axis_up.position - _hc1_standard.position;
-            Vector3 targetDir = _hc1_target.position - _hc1_standard.position;
-            Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
-            //DebugWide.DrawLine(_standard.position, _target.position, Color.black);
-            //DebugWide.DrawLine(_standard.position, _object_dir.position, Color.black);
-            //DebugWide.DrawLine(_standard.position, _standard.position + shaft_t, Color.white);
-
-            float rsq = _arm_left_length * _arm_left_length;
-            float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
-            float inArea = 1;
-            if (rsq < wsq) inArea = -1f;
-            //DebugWide.DrawLine(_standard.position, _standard.position + _body_dir * inArea * 3, Color.yellow);
-
         }
         if (ePart.Hand_Right == _part_control)
         {
-            Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
             DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
+
+            Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
             DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
         }
 
@@ -514,15 +502,32 @@ public class TwoHandControl : MonoBehaviour
             Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
         }
 
-        //손조종 
+        //손조종 1
+        if (true == _active_hand_control_1)
+        {
+            Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
+            Vector3 targetDir = _hc1_target.position - _hc1_standard.position;
+            Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
+            DebugWide.DrawLine(_hc1_standard.position, _hc1_target.position, Color.black);
+            DebugWide.DrawLine(_hc1_standard.position, _hc1_object_dir.position, Color.black);
+            DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + shaft_t, Color.white);
+
+            float rsq = _arm_left_length * _arm_left_length;
+            float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
+            float inArea = 1;
+            if (rsq < wsq) inArea = -1f;
+            DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + _body_dir * inArea * 3, Color.yellow);
+        }
+
+        //손조종 2
         if(true == _active_hand_control_2)
         {
             Vector3 handPos = _hand_left.position;
 
             DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
-            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_right.position - _hc_L_axis_o.position, Color.red);
-            //DebugWide.DrawLine(handPos,handPos + _hc_L_axis_forward.position - _hc_L_axis_o.position, Color.red);
-            this.DrawCircle3D(handPos, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position ,_hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
+            //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_right.position - _hc2_L_axis_o.position, Color.red);
+            //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.red);
+            this.DrawCirclePlate(handPos, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position ,_hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
 
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
             Vector3 Os1 = _shoulder_right.position - _hand_left.position;
@@ -534,7 +539,7 @@ public class TwoHandControl : MonoBehaviour
         }
 	}
 
-    public void DrawCircle3D(Vector3 pos , float radius, Vector3 up , Vector3 forward, Color cc)
+    public void DrawCirclePlate(Vector3 pos , float radius, Vector3 up , Vector3 forward, Color cc)
     {
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
