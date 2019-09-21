@@ -447,23 +447,7 @@ public class TwoHandControl : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-        Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
-        Vector3 hLsL = _hand_left.position - _shoulder_left.position;
-        Vector3 hRsR = _hand_right.position - _shoulder_right.position;
-        Vector3 hLhR = _hand_left.position - _hand_right.position;
-
-        DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL "+_arm_left_length.ToString("00.00"));
-        DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
-        DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
-        DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
-
-
-        DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
-        DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
-        DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
-        DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
-        DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
-
+        
         //if(true == _active_shoulder_autoRotate)
         {
             DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
@@ -520,22 +504,44 @@ public class TwoHandControl : MonoBehaviour
         }
 
         //손조종 2
-        if(true == _active_hand_control_2)
+        if (true == _active_hand_control_2)
         {
-            Vector3 handPos = _hand_left.position;
-
-            DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
+            //왼손기준 
+            DebugWide.DrawLine(_hand_left.position, _hand_left.position + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_right.position - _hc2_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.red);
-            this.DrawCirclePlate(handPos, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position ,_hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
+            this.DrawCirclePlate(_hand_left.position, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position, _hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
 
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
-            Vector3 Os1 = _shoulder_right.position - _hand_left.position;
-            Vector3 Lf = Vector3.Cross(axis_up, Os1);
+            //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
+            //Vector3 Lf = Vector3.Cross(axis_up, Os1);
             //Vector3 Os2 = Vector3.Cross(Lf, axis_up);
             //Vector3 up2 = Vector3.Cross(Os2, -Os1);
             //DebugWide.LogBlue(up2);
             //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + Lf, Color.magenta);
+
+            this.DrawCircleCone(_shoulder_right.position, _arm_right_length, axis_up, _hand_right.position - _shoulder_right.position, Color.cyan);
+        }
+
+
+        //기본 손정보  출력 
+        {
+            Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
+            Vector3 hLsL = _hand_left.position - _shoulder_left.position;
+            Vector3 hRsR = _hand_right.position - _shoulder_right.position;
+            Vector3 hLhR = _hand_left.position - _hand_right.position;
+
+            DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
+            DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
+            DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
+            DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
+
+
+            DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
+            DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
+            DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
+            DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
+            DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
         }
 	}
 
@@ -556,6 +562,29 @@ public class TwoHandControl : MonoBehaviour
 
             //if (0 == i%5)
                 //DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+    }
+
+    public void DrawCircleCone(Vector3 pos, float radius, Vector3 up, Vector3 forward, Color cc)
+    {
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+        forward.Normalize();
+
+        int count = 36;
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+
+            cur = pos + tdDir * radius;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            //if (0 == i%2)
+                DebugWide.DrawLine(pos, cur, cc);
 
             prev = cur;
         }
