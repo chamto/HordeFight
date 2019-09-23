@@ -29,8 +29,9 @@ public class TwoHandControl : MonoBehaviour
     public enum ePart
     {
         None,
-        Hand_Left,
-        Hand_Right,
+        TwoHand_Left,
+        TwoHand_Right,
+        OneHand,
 
         Max,
     }
@@ -40,7 +41,10 @@ public class TwoHandControl : MonoBehaviour
     public Transform _shoulder_right = null;
     public Transform _hand_left = null;
     public Transform _hand_right = null;
-    public Transform _object_sword = null;
+    public Transform _handle_left = null;
+    public Transform _handle_right = null;
+    public Transform _object_left = null;
+    public Transform _object_right = null;
 
 
     public float _shoulder_length = 0f;
@@ -53,7 +57,8 @@ public class TwoHandControl : MonoBehaviour
     public float _twoHand_length = 0.7f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
-    public ePart _part_control = ePart.Hand_Left;
+    //public ePart _part_control = ePart.TwoHand_Left;
+    public ePart _part_control = ePart.OneHand;
 
     public bool _active_armLength_max_min = false;
 
@@ -77,7 +82,7 @@ public class TwoHandControl : MonoBehaviour
     public Transform _tc_highest = null;
     public float _tc_radius = 0.5f;
 
-    public string ___Hand_Control_1___ = "";
+    public string ___TwoHand_Control_1___ = "";
     public bool _active_hand_control_1 = false;
     public Transform _hc1_axis_o = null; //control => _hc1_axis_o
     public Transform _hc1_object_dir = null; 
@@ -85,12 +90,17 @@ public class TwoHandControl : MonoBehaviour
     public Transform _hc1_standard = null;
 
 
-    public string ___Hand_Control_2___ = "";
+    public string ___TwoHand_Control_2___ = "";
     public bool _active_hand_control_2 = false;
     public Transform _hc2_L_axis_o = null;
     public Transform _hc2_L_axis_up = null;
     public Transform _hc2_L_axis_right = null;
     public Transform _hc2_L_axis_forward = null;
+
+
+    public string ___OneHand_Control_1___ = "";
+    public bool _active_oneHand_control_1 = false;
+
 
 
 	private void Start()
@@ -100,7 +110,10 @@ public class TwoHandControl : MonoBehaviour
         _shoulder_right = GameObject.Find("shoulder_right").transform;
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
-        _object_sword = GameObject.Find("object_sword").transform;
+        _handle_left = GameObject.Find("handle_left").transform;
+        _handle_right = GameObject.Find("handle_right").transform;
+        _object_left = GameObject.Find("object_left").transform;
+        _object_right = GameObject.Find("object_right").transform;
 
 
         //궤적원
@@ -206,12 +219,12 @@ public class TwoHandControl : MonoBehaviour
             if( Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude) > 0.001f)
             {
                 twoHandDir.Normalize();
-                if (ePart.Hand_Left == _part_control)
+                if (ePart.TwoHand_Left == _part_control)
                 {
                     twoHandDir *= -1f;
                     _hand_right.position = _hand_left.position + twoHandDir * _twoHand_length;
                 }
-                if (ePart.Hand_Right == _part_control)
+                if (ePart.TwoHand_Right == _part_control)
                 {
                     _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
                 }       
@@ -272,9 +285,9 @@ public class TwoHandControl : MonoBehaviour
             //__cur_tc_angle += 5f;
             //__cur_tc_angle %= 360f;
 
-            if (ePart.Hand_Left == _part_control)
+            if (ePart.TwoHand_Left == _part_control)
                 _hand_left.position = Geo.DeformationSpherePoint(_hand_left.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
-            if (ePart.Hand_Right == _part_control)
+            if (ePart.TwoHand_Right == _part_control)
                 _hand_right.position = Geo.DeformationSpherePoint(_hand_right.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
             
         }
@@ -284,16 +297,16 @@ public class TwoHandControl : MonoBehaviour
         if (true == _active_hand_control_1)
         {
             //조종축으로 손위치 계산 
-            if (ePart.Hand_Left == _part_control)
+            if (ePart.TwoHand_Left == _part_control)
                 TwoHandControl1_Left();
         }
         if(true == _active_hand_control_2)
         {
             //코사인 제2법칙 공식을 사용하는 방식 
-            if (ePart.Hand_Left == _part_control)
+            if (ePart.TwoHand_Left == _part_control)
                 TwoHandControl2_Left();
-            if (ePart.Hand_Right == _part_control)
-                TWoHandControl2_Right();    
+            if (ePart.TwoHand_Right == _part_control)
+                TwoHandControl2_Right();    
         }
 
         
@@ -309,13 +322,31 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
         //손에 칼 붙이기 3d
-        Vector3 hLhR = _hand_right.position - _hand_left.position;
-        Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
-        //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
-        //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
 
-        float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-        _object_sword.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+        if (ePart.OneHand == _part_control)
+        {   //한손 칼 붙이기 
+
+            Vector3 handToHandle = _handle_left.position - _hand_left.position;
+            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToHandle);
+            float angleW = Vector3.SignedAngle(Vector3.forward, handToHandle, obj_shaft);
+            _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
+
+            handToHandle = _handle_right.position - _hand_right.position;
+            obj_shaft = Vector3.Cross(Vector3.forward, handToHandle);
+            angleW = Vector3.SignedAngle(Vector3.forward, handToHandle, obj_shaft);
+            _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
+
+        }else
+        {   //양손 칼 붙이기
+            Vector3 hLhR = _hand_right.position - _hand_left.position;
+            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+            //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
+            //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
+
+            float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+            _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
+        }
+
 
 	}
 
@@ -435,7 +466,7 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
-    public void TWoHandControl2_Right()
+    public void TwoHandControl2_Right()
     {
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
@@ -464,6 +495,56 @@ public class TwoHandControl : MonoBehaviour
         _hand_left.position = newPos_hR;
     }
 
+    public void OneHandleControl1_Left()
+    {
+        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
+        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+
+
+        //==================================================
+
+
+        //손 움직임 만들기 
+        Vector3 shoulderToCrossHandle = _handle_left.position - _shoulder_left.position;
+        float shoulderToCrossHandle_length = shoulderToCrossHandle.magnitude;
+
+        Vector3 shoulderToHand = _hand_left.position - _shoulder_left.position;
+        //==================================================
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = shoulderToCrossHandle_length;
+        float b = _arm_left_length;
+        float c = 0.3f; //임시값 , 칼 자루의 길이 
+
+        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
+        //if (a + b - c < 0)
+        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
+        //a = (c - b) * 1.01f;
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+        //DebugWide.LogBlue(cosC + "   " + Mathf.Acos(cosC));
+
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+        Vector3 newPos_hR = shoulderToHand.normalized * a;
+
+        //회전축 구하기 
+        //Vector3 shaft = Vector3.Cross(shoulderToHand, (_hand_right.position - _shoulder_right.position));
+
+        ////shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
+        ////위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
+        //if (Vector3.Dot(axis_up, shaft) >= 0)
+        //    shaft = axis_up;
+        //else
+        //shaft = -axis_up;
+
+        Vector3 shaft = axis_up;
+
+        newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        _handle_left.position = newPos_hR;
+    }
 
 
 	private void OnDrawGizmos()
@@ -482,7 +563,7 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
-        if(ePart.Hand_Left == _part_control)
+        if(ePart.TwoHand_Left == _part_control)
         {
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
 
@@ -491,7 +572,7 @@ public class TwoHandControl : MonoBehaviour
             float shoulderToCrossHand_length = (_hand_left.position - _shoulder_right.position).magnitude;
             float angleC = this.CalcJoint_AngleC(shoulderToCrossHand_length, _arm_right_length, _twoHand_length);
             //Vector3 shaft = Quaternion.AngleAxis(angleC, axis_forward) * axis_up;
-            Vector3 shaft = axis_up;
+            Vector3 shaft = Vector3.Cross((_hand_left.position - _shoulder_right.position), (_hand_right.position - _shoulder_right.position));
             shaft.Normalize();
             if (Vector3.Dot(axis_up, shaft) >= 0)
                 shaft = axis_up;
@@ -501,7 +582,7 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.red);
 
         }
-        if (ePart.Hand_Right == _part_control)
+        if (ePart.TwoHand_Right == _part_control)
         {
             DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
 
@@ -572,6 +653,9 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
             DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
             DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
+
+            DebugWide.DrawCircle(_handle_left.position, 0.05f, Color.green);
+            DebugWide.DrawCircle(_handle_right.position, 0.05f, Color.green);
         }
 	}
 
