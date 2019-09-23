@@ -237,7 +237,9 @@ public class TwoHandControl : MonoBehaviour
         //왼손,오른손 자동 회전 테스트
         if(true == _active_shoulder_autoRotate)
         {
-            Vector3 axis = Vector3.right; //chamto test
+            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            //Vector3 axis = Vector3.right; //chamto test
+            Vector3 axis = axis_up;
             _shoulder_left.Rotate(axis, _angle_shoulderLeft_autoRotate, Space.World);
             _shoulder_right.Rotate(axis, _angle_shoulderRight_autoRotate, Space.World);
 
