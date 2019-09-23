@@ -537,16 +537,16 @@ public class TwoHandControl : MonoBehaviour
         Vector3 newPos_hR = shoulderToHand.normalized * a;
 
         //회전축 구하기 
-        //Vector3 shaft = Vector3.Cross(shoulderToHand, (_hand_right.position - _shoulder_right.position));
+        Vector3 shaft = Vector3.Cross(shoulderToHand, (_handle_left.position - _hand_left.position));
 
-        ////shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
-        ////위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
-        //if (Vector3.Dot(axis_up, shaft) >= 0)
-        //    shaft = axis_up;
-        //else
-        //shaft = -axis_up;
+        //shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
+        //위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
+        if (Vector3.Dot(axis_up, shaft) >= 0)
+            shaft = axis_up;
+        else
+        shaft = -axis_up;
 
-        Vector3 shaft = axis_up;
+        //Vector3 shaft = -axis_up; //임시 
 
         newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _handle_left.position = newPos_hR;
@@ -580,16 +580,16 @@ public class TwoHandControl : MonoBehaviour
         Vector3 newPos_hR = shoulderToHand.normalized * a;
 
         //회전축 구하기 
-        //Vector3 shaft = Vector3.Cross(shoulderToHand, (_hand_right.position - _shoulder_right.position));
+        Vector3 shaft = Vector3.Cross(shoulderToHand, (_handle_right.position - _hand_right.position));
 
-        ////shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
-        ////위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
-        //if (Vector3.Dot(axis_up, shaft) >= 0)
-        //    shaft = axis_up;
-        //else
-        //shaft = -axis_up;
+        //shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
+        //위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
+        if (Vector3.Dot(axis_up, shaft) >= 0)
+            shaft = axis_up;
+        else
+        shaft = -axis_up;
 
-        Vector3 shaft = axis_up;
+        //Vector3 shaft = axis_up;
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _handle_right.position = newPos_hR;
