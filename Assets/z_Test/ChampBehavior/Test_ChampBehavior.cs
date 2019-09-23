@@ -228,6 +228,12 @@ public class TwoHandControl : MonoBehaviour
                 {
                     _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
                 }       
+
+                if (ePart.OneHand == _part_control)
+                {
+                    _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+
+                }       
             }
 
 
@@ -307,6 +313,14 @@ public class TwoHandControl : MonoBehaviour
                 TwoHandControl2_Left();
             if (ePart.TwoHand_Right == _part_control)
                 TwoHandControl2_Right();    
+        }
+        if(true == _active_oneHand_control_1)
+        {
+            if(ePart.OneHand == _part_control)
+            {
+                this.OneHandleControl1_Left();
+                this.OneHandleControl1_Right();
+            }
         }
 
         
@@ -500,9 +514,7 @@ public class TwoHandControl : MonoBehaviour
         Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
         Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
 
-
         //==================================================
-
 
         //손 움직임 만들기 
         Vector3 shoulderToCrossHandle = _handle_left.position - _shoulder_left.position;
@@ -517,13 +529,7 @@ public class TwoHandControl : MonoBehaviour
         float b = _arm_left_length;
         float c = 0.3f; //임시값 , 칼 자루의 길이 
 
-        //Acos 에는 0~1 사이의 값만 들어가야 함. 검사 : a+b < c 일 경우 음수값이 나옴 
-        //if (a + b - c < 0)
-        //c = (a + b) * 0.8f; //c의 길이를 표현 최대값의 80%값으로 설정  
-        //a = (c - b) * 1.01f;
-
         float cosC = (a * a + b * b - c * c) / (2 * a * b);
-        //DebugWide.LogBlue(cosC + "   " + Mathf.Acos(cosC));
 
         cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
 
@@ -544,6 +550,49 @@ public class TwoHandControl : MonoBehaviour
 
         newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _handle_left.position = newPos_hR;
+    }
+
+    public void OneHandleControl1_Right()
+    {
+        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
+        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+
+        //==================================================
+
+        //손 움직임 만들기 
+        Vector3 shoulderToCrossHandle = _handle_right.position - _shoulder_right.position;
+        float shoulderToCrossHandle_length = shoulderToCrossHandle.magnitude;
+
+        Vector3 shoulderToHand = _hand_right.position - _shoulder_right.position;
+        //==================================================
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = shoulderToCrossHandle_length;
+        float b = _arm_right_length;
+        float c = 0.3f; //임시값 , 칼 자루의 길이 
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+        Vector3 newPos_hR = shoulderToHand.normalized * a;
+
+        //회전축 구하기 
+        //Vector3 shaft = Vector3.Cross(shoulderToHand, (_hand_right.position - _shoulder_right.position));
+
+        ////shoulderToCrossHand 를 기준으로 내적값이 오른손이 오른쪽에 있으면 양수 , 왼쪽에 있으면 음수가 된다 
+        ////위 내적값으로 shoulderToCrossHand 기준으로 양쪽으로 오른손이 회전을 할 수 있게 한다 
+        //if (Vector3.Dot(axis_up, shaft) >= 0)
+        //    shaft = axis_up;
+        //else
+        //shaft = -axis_up;
+
+        Vector3 shaft = axis_up;
+
+        newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
+        _handle_right.position = newPos_hR;
     }
 
 
