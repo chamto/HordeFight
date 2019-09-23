@@ -159,7 +159,6 @@ public class TwoHandControl : MonoBehaviour
         Vector3 n_hLsL = hLsL.normalized;
         Vector3 n_hRsR = hRsR.normalized;
 
-
         if(false == _active_armLength_max_min)
         {
             //길이 고정 
@@ -199,10 +198,27 @@ public class TwoHandControl : MonoBehaviour
                 _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
             }
             //*/
+
+            //양손거리 고정
+            float sqrTwoHand_length = _twoHand_length * _twoHand_length;
+            Vector3 twoHandDir = _hand_left.position - _hand_right.position;
+            //DebugWide.LogBlue(Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude));
+            if( Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude) > 0.001f)
+            {
+                twoHandDir.Normalize();
+                if (ePart.Hand_Left == _part_control)
+                {
+                    twoHandDir *= -1f;
+                    _hand_right.position = _hand_left.position + twoHandDir * _twoHand_length;
+                }
+                if (ePart.Hand_Right == _part_control)
+                {
+                    _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+                }       
+            }
+
+
         }
-
-
-
 
 
         //==================================================
@@ -356,7 +372,7 @@ public class TwoHandControl : MonoBehaviour
 
     public void HandControl2_Left()
     {
-        
+        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
         Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
         //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
         //Vector3 Lf = Vector3.Cross(axis_up, Os1);
@@ -409,6 +425,8 @@ public class TwoHandControl : MonoBehaviour
             shaft = axis_up;
         else 
             shaft = -axis_up;
+
+        //shaft = Quaternion.AngleAxis(-angleC, axis_forward) * shaft; //chamto test
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
@@ -465,10 +483,19 @@ public class TwoHandControl : MonoBehaviour
         {
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
 
-            Vector3 shaft = Vector3.Cross(_hand_left.position - _shoulder_right.position, _hand_right.position - _shoulder_right.position);
-            //shaft.Normalize();
-            //DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, shaft) + "");    
-            //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.white);
+            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
+            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            float shoulderToCrossHand_length = (_hand_left.position - _shoulder_right.position).magnitude;
+            float angleC = this.CalcJoint_AngleC(shoulderToCrossHand_length, _arm_right_length, _twoHand_length);
+            //Vector3 shaft = Quaternion.AngleAxis(angleC, axis_forward) * axis_up;
+            Vector3 shaft = axis_up;
+            shaft.Normalize();
+            if (Vector3.Dot(axis_up, shaft) >= 0)
+                shaft = axis_up;
+            else
+                shaft = -axis_up;
+            DebugWide.PrintText(_shoulder_right.position + Vector3.right, Color.red, angleC + "");    
+            DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.red);
 
         }
         if (ePart.Hand_Right == _part_control)
@@ -520,7 +547,7 @@ public class TwoHandControl : MonoBehaviour
             //DebugWide.LogBlue(up2);
             //DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + Lf, Color.magenta);
 
-            this.DrawCircleCone(_shoulder_right.position, _arm_right_length, axis_up, _hand_right.position - _shoulder_right.position, Color.cyan);
+            //this.DrawCircleCone(_shoulder_right.position, _arm_right_length, axis_up, _hand_right.position - _shoulder_right.position, Color.cyan);
         }
 
 
@@ -588,5 +615,31 @@ public class TwoHandControl : MonoBehaviour
 
             prev = cur;
         }
+    }
+
+    public float CalcJoint_AngleC(float a_length, float b_length, float c_length)
+    {
+        
+        //==================================================
+        //삼각형 구성 불능 검사
+        //if (shoulderToCrossHand.magnitude + _twoHand_length < _arm_right_length)
+        //DebugWide.LogBlue("삼각형 구성 불능 : "+ shoulderToCrossHand_length);
+
+        //==================================================
+
+        //손 움직임 만들기 
+        //코사인 제2법칙 공식을 사용하는 방식 
+        float a = a_length;
+        float b = b_length;
+        float c = c_length;
+
+        float cosC = (a * a + b * b - c * c) / (2 * a * b);
+
+
+        cosC = Mathf.Clamp01(cosC); //0~1사이의 값만 사용
+
+        float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
+
+        return angleC;
     }
 }
