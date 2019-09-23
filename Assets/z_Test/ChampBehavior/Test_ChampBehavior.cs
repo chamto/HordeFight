@@ -285,15 +285,15 @@ public class TwoHandControl : MonoBehaviour
         {
             //조종축으로 손위치 계산 
             if (ePart.Hand_Left == _part_control)
-                HandControl1_Left();
+                TwoHandControl1_Left();
         }
         if(true == _active_hand_control_2)
         {
             //코사인 제2법칙 공식을 사용하는 방식 
             if (ePart.Hand_Left == _part_control)
-                HandControl2_Left();
+                TwoHandControl2_Left();
             if (ePart.Hand_Right == _part_control)
-                HandControl2_Right();    
+                TWoHandControl2_Right();    
         }
 
         
@@ -320,7 +320,7 @@ public class TwoHandControl : MonoBehaviour
 	}
 
 
-    public void HandControl1_Left()
+    public void TwoHandControl1_Left()
     {
         Vector3 hLsL = (_hand_left.position - _shoulder_left.position);
         Vector3 n_hLsL = hLsL.normalized;
@@ -372,7 +372,7 @@ public class TwoHandControl : MonoBehaviour
         //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
     }
 
-    public void HandControl2_Left()
+    public void TwoHandControl2_Left()
     {
         Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
         Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
@@ -435,7 +435,7 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
-    public void HandControl2_Right()
+    public void TWoHandControl2_Right()
     {
         //손 움직임 만들기 
         Vector3 shoulderToCrossHand = _hand_right.position - _shoulder_left.position;
@@ -463,6 +463,7 @@ public class TwoHandControl : MonoBehaviour
         newPos_hR = _shoulder_left.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_left.position = newPos_hR;
     }
+
 
 
 	private void OnDrawGizmos()
