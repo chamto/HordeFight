@@ -48,12 +48,12 @@ public class TwoHandControl : MonoBehaviour
 
 
     public float _shoulder_length = 0f;
-    public float _arm_left_length = 1f;
-    public float _arm_left_min_length = 0.5f;
-    public float _arm_left_max_length = 1.0f;
-    public float _arm_right_length = 1.5f;
-    public float _arm_right_min_length = 0.8f;
-    public float _arm_right_max_length = 1.6f;
+    public float _arm_left_length = 0.5f;
+    public float _arm_left_min_length = 0.2f;
+    public float _arm_left_max_length = 0.8f;
+    public float _arm_right_length = 0.7f;
+    public float _arm_right_min_length = 0.2f;
+    public float _arm_right_max_length = 0.8f;
     public float _twoHand_length = 0.7f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
