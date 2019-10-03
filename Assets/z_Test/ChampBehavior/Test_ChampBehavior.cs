@@ -54,11 +54,11 @@ public class TwoHandControl : MonoBehaviour
     public float _arm_right_length = 0.7f;
     public float _arm_right_min_length = 0.2f;
     public float _arm_right_max_length = 0.8f;
-    public float _twoHand_length = 0.7f;
+    public float _twoHand_length = 0.2f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
-    //public ePart _part_control = ePart.TwoHand_Left;
-    public ePart _part_control = ePart.OneHand;
+    public ePart _part_control = ePart.TwoHand_Left;
+    //public ePart _part_control = ePart.OneHand;
 
     public bool _active_armLength_max_min = false;
 
@@ -73,6 +73,9 @@ public class TwoHandControl : MonoBehaviour
     public float _radius_handRight_aroundRotate = 1f;
     public Transform _pos_handLeft_aroundRotate = null;
     public Transform _pos_handRight_aroundRotate = null;
+
+    public string ___BODY_AROUND_ROTATE2___ = "";
+    public bool _active_body_aroundRotate2 = false;
 
     public string ___Trajectory_Circle___ = "";
     public bool _active_trajectoryCircle = false;
@@ -231,11 +234,10 @@ public class TwoHandControl : MonoBehaviour
 
                 if (ePart.OneHand == _part_control)
                 {
-                    _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+                    //_hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
 
                 }       
             }
-
 
         }
 
@@ -256,13 +258,30 @@ public class TwoHandControl : MonoBehaviour
         //왼손,오른손 자동 회전 테스트
         if(true == _active_shoulder_autoRotate)
         {
+            
+            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
-            //Vector3 axis = Vector3.right; //chamto test
-            Vector3 axis = axis_up;
-            _shoulder_left.Rotate(axis, _angle_shoulderLeft_autoRotate, Space.World);
-            _shoulder_right.Rotate(axis, _angle_shoulderRight_autoRotate, Space.World);
+            Vector3 slTohl = _hand_left.position - _shoulder_left.position;
+            Vector3 srTohr = _hand_right.position - _shoulder_right.position;
+            slTohl.Normalize();
+            srTohr.Normalize();
 
-            //_control.Rotate(axis, _angle_shoulderLeft_autoRotate, Space.World);
+            //axis_forward = Quaternion.AngleAxis(45f, axis_up) * axis_forward;
+            //기준축방향 좌우90도 도달시 회전 방향을 바꾸어 준다. 
+            //if (Vector3.Dot(axis_forward, slTohl) < 0.1f)
+            //{
+            //    _angle_shoulderLeft_autoRotate *= -1f;
+            //}
+            //if (Vector3.Dot(axis_forward, srTohr) < 0.1f)
+            //{
+            //    _angle_shoulderRight_autoRotate *= -1f;
+            //}
+
+            _shoulder_right.Rotate(axis_up, _angle_shoulderRight_autoRotate, Space.World);
+            _shoulder_left.Rotate(axis_up, _angle_shoulderLeft_autoRotate, Space.World);
+
+
+
         }
 
         //==================================================
@@ -282,6 +301,11 @@ public class TwoHandControl : MonoBehaviour
             _arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
 
             _twoHand_length = (_hand_right.position - _hand_left.position).magnitude; //양손 사이길이 다시 셈함
+        }
+
+        if (true == _active_body_aroundRotate2)
+        {
+            //길이 계산 
         }
 
         //궤적원에 따른 왼손/오른손 움직임 표현 
@@ -358,8 +382,13 @@ public class TwoHandControl : MonoBehaviour
             //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
 
             float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-            _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
-        }
+            _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+
+            //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
+            Vector3 temp = _object_left.eulerAngles;
+            temp.z = 0;
+            _object_left.eulerAngles = temp;
+        } 
 
 
 	}
