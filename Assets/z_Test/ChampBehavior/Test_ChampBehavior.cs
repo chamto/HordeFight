@@ -60,49 +60,49 @@ public class TwoHandControl : MonoBehaviour
     public ePart _part_control = ePart.TwoHand_Left;
     //public ePart _part_control = ePart.OneHand;
 
-    public bool _active_armLength_max_min = false;
+    public bool _A_armLength_max_min = false;
 
-    public string ___SHOULDER_AUTO_ROTATE___ = "";
-    public bool  _active_shoulder_autoRotate = false;
+    public string _1____________________ = "";
+    public bool  _A_shoulder_autoRotate = false;
     public float _angle_shoulderLeft_autoRotate = -10f; //왼쪽 어깨 자동회전 각도량
     public float _angle_shoulderRight_autoRotate = -10f; //오른쪽 어깨 자동회전 각도량
 
-    public string ___BODY_AROUND_ROTATE___ = "";
-    public bool   _active_body_aroundRotate = false;
+    public string _2____________________ = "";
+    public bool   _A_body_aroundRotate = false;
     public float _radius_handLeft_aroundRotate = 0.5f;
     public float _radius_handRight_aroundRotate = 1f;
     public Transform _pos_handLeft_aroundRotate = null;
     public Transform _pos_handRight_aroundRotate = null;
 
-    public string ___BODY_AROUND_ROTATE2___ = "";
-    public bool _active_body_aroundRotate2 = false;
+    public string _3____________________ = "";
+    public bool _A_body_aroundRotate2 = false;
 
-    public string ___Trajectory_Circle___ = "";
-    public bool _active_trajectoryCircle = false;
+    public string _4____________________ = "";
+    public bool _A_trajectoryCircle = false;
     public Transform _tc_center = null;
     public Transform _tc_anchorA = null;
     public Transform _tc_anchorB = null;
     public Transform _tc_highest = null;
     public float _tc_radius = 0.5f;
 
-    public string ___TwoHand_Control_1___ = "";
-    public bool _active_hand_control_1 = false;
+    public string _5_1___________________ = "";
+    public bool _A_hand_control_1 = false;
     public Transform _hc1_axis_o = null; //control => _hc1_axis_o
     public Transform _hc1_object_dir = null; 
     public Transform _hc1_target = null;
     public Transform _hc1_standard = null;
 
 
-    public string ___TwoHand_Control_2___ = "";
-    public bool _active_hand_control_2 = false;
+    public string _5_2___________________ = "";
+    public bool _A_hand_control_2 = false;
     public Transform _hc2_L_axis_o = null;
     public Transform _hc2_L_axis_up = null;
     public Transform _hc2_L_axis_right = null;
     public Transform _hc2_L_axis_forward = null;
 
 
-    public string ___OneHand_Control_1___ = "";
-    public bool _active_oneHand_control_1 = false;
+    public string _6_1___________________ = "";
+    public bool _A_oneHand_control_1 = false;
 
 
 
@@ -170,7 +170,7 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
 
         //궤적원에 따른 왼손/오른손 움직임 표현 
-        if (true == _active_trajectoryCircle)
+        if (true == _A_trajectoryCircle)
         {
 
             if (ePart.TwoHand_Left == _part_control)
@@ -206,7 +206,7 @@ public class TwoHandControl : MonoBehaviour
         Vector3 n_hLsL = hLsL.normalized;
         Vector3 n_hRsR = hRsR.normalized;
 
-        if(false == _active_armLength_max_min)
+        if(false == _A_armLength_max_min)
         {
             //길이 고정 
             //*
@@ -287,7 +287,7 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
         //왼손,오른손 자동 회전 테스트
-        if(true == _active_shoulder_autoRotate)
+        if(true == _A_shoulder_autoRotate)
         {
             
             Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
@@ -317,7 +317,7 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
-        if (true == _active_body_aroundRotate2)
+        if (true == _A_body_aroundRotate2)
         {
             
             //오른손 길이 계산
@@ -390,7 +390,7 @@ public class TwoHandControl : MonoBehaviour
         }
 
         //임의의 원 중심으로 오른손/왼손 길이 계산 하기  
-        if (true == _active_body_aroundRotate)
+        if (true == _A_body_aroundRotate)
         {
             //오른손 길이 계산
             Vector3 rightCircleCenter = _pos_handRight_aroundRotate.position;
@@ -413,13 +413,13 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
         //손 움직임 만들기 
-        if (true == _active_hand_control_1)
+        if (true == _A_hand_control_1)
         {
             //조종축으로 손위치 계산 
             if (ePart.TwoHand_Left == _part_control)
                 TwoHandControl1_Left();
         }
-        if(true == _active_hand_control_2)
+        if(true == _A_hand_control_2)
         {
             //코사인 제2법칙 공식을 사용하는 방식 
             if (ePart.TwoHand_Left == _part_control)
@@ -427,7 +427,7 @@ public class TwoHandControl : MonoBehaviour
             if (ePart.TwoHand_Right == _part_control)
                 TwoHandControl2_Right();    
         }
-        if(true == _active_oneHand_control_1)
+        if(true == _A_oneHand_control_1)
         {
             if(ePart.OneHand == _part_control)
             {
@@ -722,7 +722,7 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
             DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.gray);    
         }
-        if(true == _active_body_aroundRotate)
+        if(true == _A_body_aroundRotate)
         {
             DebugWide.DrawCircle(_pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate, Color.yellow);
             DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
@@ -759,13 +759,13 @@ public class TwoHandControl : MonoBehaviour
 
 
         //궤적원에 따른 왼손 움직임 표현 
-        if (true == _active_trajectoryCircle)
+        if (true == _A_trajectoryCircle)
         {
             Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
         }
 
         //손조종 1
-        if (true == _active_hand_control_1)
+        if (true == _A_hand_control_1)
         {
             Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
             Vector3 targetDir = _hc1_target.position - _hc1_standard.position;
@@ -782,7 +782,7 @@ public class TwoHandControl : MonoBehaviour
         }
 
         //손조종 2
-        if (true == _active_hand_control_2)
+        if (true == _A_hand_control_2)
         {
             //왼손기준 
             DebugWide.DrawLine(_hand_left.position, _hand_left.position + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
