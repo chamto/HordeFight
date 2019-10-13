@@ -912,7 +912,7 @@ namespace UtilGS9
             //initialDir.Normalize();
 
 
-            //임의점을 변형원의 평면상으로 투영 
+            //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
             Vector3 centerToTarget = targetPoint - sphereCenter;
             Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
             Vector3 tdDir = centerToTarget - proj_targetToUp;

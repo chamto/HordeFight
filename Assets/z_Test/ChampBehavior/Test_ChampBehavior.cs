@@ -67,15 +67,15 @@ public class TwoHandControl : MonoBehaviour
     public float _angle_shoulderLeft_autoRotate = -10f; //왼쪽 어깨 자동회전 각도량
     public float _angle_shoulderRight_autoRotate = -10f; //오른쪽 어깨 자동회전 각도량
 
-    public string _2____________________ = "";
+    public string _2_1__________________ = "";
     public bool   _A_body_aroundRotate = false;
     public float _radius_handLeft_aroundRotate = 0.5f;
     public float _radius_handRight_aroundRotate = 1f;
     public Transform _pos_handLeft_aroundRotate = null;
     public Transform _pos_handRight_aroundRotate = null;
 
-    public string _3____________________ = "";
-    public bool _A_body_aroundRotate2 = false;
+    public string _2_2__________________ = "";
+    public bool _A_body_aroundRotate2 = true;
 
     public string _4____________________ = "";
     public bool _A_trajectoryCircle = false;
@@ -206,71 +206,73 @@ public class TwoHandControl : MonoBehaviour
         Vector3 n_hLsL = hLsL.normalized;
         Vector3 n_hRsR = hRsR.normalized;
 
-        if(false == _A_armLength_max_min)
+        if(false)
         {
-            //길이 고정 
-            //*
-            _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-            _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-            //*/    
-        }
-        else //if(false) //chamto 임시 
-        {
-            //최대 최소 길이 안에서 가변적 
-            //*
-            _arm_left_length = hLsL.magnitude;
-            _arm_right_length = hRsR.magnitude;
-
-            //오른손길이 최소최대 제약 
-            if (_arm_right_min_length > _arm_right_length)
+            if (false == _A_armLength_max_min)
             {
-                _arm_right_length = _arm_right_min_length;
+                //길이 고정 
                 _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-            }
-            else if (_arm_right_length > _arm_right_max_length)
-            {
-                _arm_right_length = _arm_right_max_length;
-                _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-            }
-
-            //왼손길이 최소최대 제약
-            if (_arm_left_min_length > _arm_left_length)
-            {
-                _arm_left_length = _arm_left_min_length;
                 _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-            }
-            else if (_arm_left_length > _arm_left_max_length)
-            {
-                _arm_left_length = _arm_left_max_length;
-                _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-            }
-            //*/
 
-            //양손거리 고정
-            float sqrTwoHand_length = _twoHand_length * _twoHand_length;
-            Vector3 twoHandDir = _hand_left.position - _hand_right.position;
-            //DebugWide.LogBlue(Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude));
-            if( Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude) > 0.001f)
+            }
+            else
             {
-                twoHandDir.Normalize();
-                if (ePart.TwoHand_Left == _part_control)
+                //최대 최소 길이 안에서 가변적 
+                _arm_left_length = hLsL.magnitude;
+                _arm_right_length = hRsR.magnitude;
+
+                //오른손길이 최소최대 제약 
+                if (_arm_right_min_length > _arm_right_length)
                 {
-                    twoHandDir *= -1f;
-                    _hand_right.position = _hand_left.position + twoHandDir * _twoHand_length;
+                    _arm_right_length = _arm_right_min_length;
+                    _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
                 }
-                if (ePart.TwoHand_Right == _part_control)
+                else if (_arm_right_length > _arm_right_max_length)
                 {
-                    _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
-                }       
+                    _arm_right_length = _arm_right_max_length;
+                    _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
+                }
 
-                if (ePart.OneHand == _part_control)
+                //왼손길이 최소최대 제약
+                if (_arm_left_min_length > _arm_left_length)
                 {
-                    //_hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+                    _arm_left_length = _arm_left_min_length;
+                    _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+                }
+                else if (_arm_left_length > _arm_left_max_length)
+                {
+                    _arm_left_length = _arm_left_max_length;
+                    _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
+                }
 
-                }       
+
+                //양손거리 고정
+                float sqrTwoHand_length = _twoHand_length * _twoHand_length;
+                Vector3 twoHandDir = _hand_left.position - _hand_right.position;
+                //DebugWide.LogBlue(Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude));
+                if (Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude) > 0.001f)
+                {
+                    twoHandDir.Normalize();
+                    if (ePart.TwoHand_Left == _part_control)
+                    {
+                        twoHandDir *= -1f;
+                        _hand_right.position = _hand_left.position + twoHandDir * _twoHand_length;
+                    }
+                    if (ePart.TwoHand_Right == _part_control)
+                    {
+                        _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+                    }
+
+                    if (ePart.OneHand == _part_control)
+                    {
+                        //_hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
+
+                    }
+                }
+
             }
-
         }
+
 
 
         //==================================================
@@ -317,78 +319,6 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
-        if (true == _A_body_aroundRotate2)
-        {
-            
-            //오른손 길이 계산
-            Vector3 rightCircleCenter = _pos_handRight_aroundRotate.position;
-            Vector3 n_circleToHandRight = (_hand_right.position - rightCircleCenter).normalized;
-            _hand_right.position = rightCircleCenter + n_circleToHandRight * _radius_handRight_aroundRotate;
-            _arm_right_length = (_hand_right.position - _shoulder_right.position).magnitude;
-
-            //왼손 길이 계산 
-            Vector3 leftCircleCenter = _pos_handLeft_aroundRotate.position;
-            Vector3 n_circleToHandLeft = (_hand_left.position - leftCircleCenter).normalized;
-            _hand_left.position = leftCircleCenter + n_circleToHandLeft * _radius_handLeft_aroundRotate;
-            _arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
-
-
-            //======
-
-
-            _arm_left_length = hLsL.magnitude;
-            _arm_right_length = hRsR.magnitude;
-
-            //오른손길이 최소최대 제약 
-            if (_arm_right_min_length > _arm_right_length)
-            {
-                _arm_right_length = _arm_right_min_length;
-                _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-            }
-            else if (_arm_right_length > _arm_right_max_length)
-            {
-                _arm_right_length = _arm_right_max_length;
-                _hand_right.position = _shoulder_right.position + n_hRsR * _arm_right_length;
-            }
-
-            //왼손길이 최소최대 제약
-            if (_arm_left_min_length > _arm_left_length)
-            {
-                _arm_left_length = _arm_left_min_length;
-                _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-            }
-            else if (_arm_left_length > _arm_left_max_length)
-            {
-                _arm_left_length = _arm_left_max_length;
-                _hand_left.position = _shoulder_left.position + n_hLsL * _arm_left_length;
-            }
-            //*/
-
-            //양손거리 고정
-            float sqrTwoHand_length = _twoHand_length * _twoHand_length;
-            Vector3 twoHandDir = _hand_left.position - _hand_right.position;
-            //DebugWide.LogBlue(Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude));
-            if (Mathf.Abs(sqrTwoHand_length - twoHandDir.sqrMagnitude) > 0.001f)
-            {
-                twoHandDir.Normalize();
-                if (ePart.TwoHand_Left == _part_control)
-                {
-                    twoHandDir *= -1f;
-                    _hand_right.position = _hand_left.position + twoHandDir * _twoHand_length;
-                }
-                if (ePart.TwoHand_Right == _part_control)
-                {
-                    _hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
-                }
-
-                if (ePart.OneHand == _part_control)
-                {
-                    //_hand_left.position = _hand_right.position + twoHandDir * _twoHand_length;
-
-                }
-            }
-        }
-
         //임의의 원 중심으로 오른손/왼손 길이 계산 하기  
         if (true == _A_body_aroundRotate)
         {
@@ -409,6 +339,115 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
+        if (true == _A_body_aroundRotate2)
+        {
+            Vector3 handle = _handle_left.position;
+            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
+            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+
+            // ****  왼손만 계산(임시) *****
+            Vector3 centerToTarget = _pos_handLeft_aroundRotate.position - handle;
+            Vector3 proj_targetToUp = axis_up * Vector3.Dot(centerToTarget, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            Vector3 tdDir = centerToTarget - proj_targetToUp;
+
+            //왼손 길이 계산 
+            Vector3 leftCircleCenter = handle + tdDir; //평면상의 점 
+            Vector3 n_circleToHandLeft = (handle - leftCircleCenter).normalized;
+
+            //=====
+
+            //float sqrLeftLength = (_hand_left.position - _shoulder_left.position).sqrMagnitude;
+            //float cur_leftLength = (_hand_left.position - _shoulder_left.position).magnitude;
+            //_arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
+
+            //왼팔에 대한 주변원 크기를 벗어날 때만 계산한다 
+            //float sqrLcToHL = (_hand_left.position - leftCircleCenter).sqrMagnitude;
+            //float sqrLcRadius = _radius_handLeft_aroundRotate * _radius_handLeft_aroundRotate;
+            //float shToHL = _arm_left_length;
+
+
+            //DebugWide.LogBlue(Mathf.Abs(cur_leftLength - _arm_left_length)); //chamto test
+            //새로운 왼손위치가, 두 원의 교집합 공간이 아닐때만 계산을 적용한다 
+            //if((sqrLeftLength > _arm_left_min_length) && !(sqrLcToHL <= sqrLcRadius && sqrLeftLength <= _arm_left_max_length) )
+            //if(!(sqrLcToHL <= sqrLcRadius && sqrLeftLength <= _arm_left_max_length))
+            //if(!(sqrLcToHL <= sqrLcRadius && Mathf.Abs(cur_leftLength  -  _arm_left_length) < 0.01f))
+            {
+                //===== 1차 계산
+                Vector3 leftPos = leftCircleCenter + n_circleToHandLeft * _radius_handLeft_aroundRotate;
+                Vector3 n_sdToLeftPos = (leftPos - _shoulder_left.position).normalized;
+                //_arm_left_length = (leftPos - _shoulder_left.position).magnitude;
+
+
+                //float sqrLength_curLeft = (_shoulder_left.position - handle).sqrMagnitude;
+                //float sqrLength_calcAround = (leftPos - _shoulder_left.position).sqrMagnitude;
+
+                //if (sqrLength_curLeft > _arm_left_max_length * _arm_left_max_length)
+                //    sqrLength_curLeft = _arm_left_max_length * _arm_left_max_length;
+                //if (sqrLength_curLeft < _arm_left_min_length * _arm_left_min_length)
+                //    sqrLength_curLeft = _arm_left_min_length * _arm_left_min_length;
+                
+                //if(sqrLength_calcAround > sqrLength_curLeft)
+                {
+                    float sqrLength_calcAround = (leftPos - _shoulder_left.position).sqrMagnitude;
+                    float sqrLength_curLeft = (_shoulder_left.position - handle).sqrMagnitude;
+                    //float sqrLength_curLeft = (_shoulder_left.position - _hand_left.position).sqrMagnitude;
+                    float length_curLeft = Mathf.Sqrt(sqrLength_curLeft);
+                    _arm_left_length = length_curLeft;
+
+
+                    if (_arm_left_min_length >= _arm_left_length)
+                    {
+                        //DebugWide.LogBlue("ddd");
+                        _arm_left_length = _arm_left_min_length;
+                        n_sdToLeftPos = (handle - _shoulder_left.position).normalized;
+                        leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
+                    }
+                    else if(sqrLength_calcAround > sqrLength_curLeft )
+                    {
+                        //DebugWide.LogBlue("fff " + _arm_left_length);
+                        leftPos = _shoulder_left.position + n_sdToLeftPos * length_curLeft;
+                    }
+
+
+
+
+                    //leftPos = _shoulder_left.position + n_sdToLeftPos * Mathf.Sqrt(sqrLength_curLeft);
+                    //leftPos = _shoulder_left.position + (_hand_left.position - _shoulder_left.position).normalized * (_hand_left.position - _shoulder_left.position).magnitude;
+
+                    //===== 2차 계산 
+                    //왼손길이 최소최대 제약
+                    if (_arm_left_length >= _arm_left_max_length)
+                    {
+                        _arm_left_length = _arm_left_max_length;
+                        leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
+                    }
+                    //else if (_arm_left_min_length >= _arm_left_length)
+                    //{
+                    //    _arm_left_length = _arm_left_min_length;
+                    //    leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
+                    //}
+
+
+                }
+
+
+                _hand_left.position = leftPos;
+                //_arm_left_length = (leftPos - _shoulder_left.position).magnitude;
+            }
+            //else
+                //_hand_left.position = _shoulder_left.position + (_hand_left.position - _shoulder_left.position).normalized * _arm_left_length;
+            
+            //else if(sqrLeftLength < _arm_left_min_length)
+            //{
+            //    Vector3 n_sdToLeftPos = (_hand_left.position - _shoulder_left.position).normalized;
+            //    _arm_left_length = _arm_left_min_length;
+            //    _hand_left.position = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
+
+            //}
+
+
+
+        }
 
 
         //==================================================
@@ -595,6 +634,8 @@ public class TwoHandControl : MonoBehaviour
 
         newPos_hR = _shoulder_right.position + Quaternion.AngleAxis(angleC, shaft) * newPos_hR;
         _hand_right.position = newPos_hR;
+        _arm_right_length = (_shoulder_right.position - _hand_right.position).magnitude; //임시 
+
     }
 
 
@@ -726,6 +767,33 @@ public class TwoHandControl : MonoBehaviour
         {
             DebugWide.DrawCircle(_pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate, Color.yellow);
             DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
+        }
+        if (true == _A_body_aroundRotate2)
+        {
+            DebugWide.DrawCircle(_pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate, Color.yellow);
+            //DebugWide.DrawLine(_pos_handLeft_aroundRotate.position, _hand_left.position, Color.yellow);
+
+            DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
+
+            //===========
+            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
+            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+
+            // ****  왼손만 계산(임시) *****
+            Vector3 centerToTarget = _pos_handLeft_aroundRotate.position - _hand_left.position;
+            Vector3 proj_targetToUp = axis_up * Vector3.Dot(centerToTarget, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            Vector3 tdDir = centerToTarget - proj_targetToUp;
+
+            //왼손 길이 계산 
+            Vector3 leftCircleCenter = _hand_left.position + tdDir; //평면상의 점 
+            Vector3 n_circleToHandLeft = (_hand_left.position - leftCircleCenter).normalized;
+
+            Vector3 leftPos = leftCircleCenter + n_circleToHandLeft * _radius_handLeft_aroundRotate;
+            Vector3 n_sdToLeftPos = (leftPos - _shoulder_left.position).normalized;
+
+            DebugWide.DrawLine(_pos_handLeft_aroundRotate.position, leftPos, Color.white);
+            DebugWide.DrawLine(_shoulder_left.position, leftPos, Color.white);
+
         }
 
         //==================================================
