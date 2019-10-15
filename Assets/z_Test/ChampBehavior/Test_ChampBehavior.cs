@@ -346,13 +346,15 @@ public class TwoHandControl : MonoBehaviour
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
 
             // ****  왼손만 계산(임시) *****
-            Vector3 centerToTarget = _pos_handLeft_aroundRotate.position - handle;
-            Vector3 proj_targetToUp = axis_up * Vector3.Dot(centerToTarget, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-            Vector3 tdDir = centerToTarget - proj_targetToUp;
+            Vector3 handleToCenter = _pos_handLeft_aroundRotate.position - handle;
+            Vector3 proj_handle = axis_up * Vector3.Dot(handleToCenter, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+            Vector3 projToCenter = handleToCenter - proj_handle;
 
             //왼손 길이 계산 
-            Vector3 leftCircleCenter = handle + tdDir; //평면상의 점 
-            Vector3 n_circleToHandLeft = (handle - leftCircleCenter).normalized;
+            Vector3 leftCircleCenter = handle + projToCenter; //핸들을 중점으로 하는 평면상의 점 
+            //Vector3 n_circleToHandLeft = (handle - leftCircleCenter).normalized;
+            Vector3 n_circleToHandLeft = (-projToCenter).normalized;
 
 
 
@@ -369,26 +371,25 @@ public class TwoHandControl : MonoBehaviour
 
             //===== 2차 계산
             if (_arm_left_min_length >= _arm_left_length)
-            {
-                //왼손길이 최소 제약
+            {   //왼손길이 최소 제약
+                
                 _arm_left_length = _arm_left_min_length;
                 n_sdToLeftPos = (handle - _shoulder_left.position).normalized;
                 leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
             }
             else if (sqrLength_calcAround > sqrLength_curLeft)
-            {
-                //왼손범위에 벗어나는 주변원상 위의 점인 경우  
-                leftPos = _shoulder_left.position + n_sdToLeftPos * length_curLeft;
-            }
-
-
-            if (_arm_left_length >= _arm_left_max_length)
-            {
-                //왼손길이 최대 제약
-                _arm_left_length = _arm_left_max_length;
+            {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
+                
                 leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
             }
 
+            //왼손범위를 벗어나지 않는 leftPos값이면서 왼손범위를 벗어나는 핸들위치가 있을 수 있다  
+            if (_arm_left_length >= _arm_left_max_length)
+            {   //왼손길이 최대 제약
+                
+                _arm_left_length = _arm_left_max_length;
+                leftPos = _shoulder_left.position + n_sdToLeftPos * _arm_left_length;
+            }
 
             _hand_left.position = leftPos;
 
