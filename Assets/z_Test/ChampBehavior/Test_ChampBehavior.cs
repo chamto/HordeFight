@@ -57,7 +57,7 @@ public class TwoHandControl : MonoBehaviour
     public float _arm_right_length = 0.7f;
     public float _arm_right_min_length = 0.2f;
     public float _arm_right_max_length = 0.8f;
-    public float _twoHand_length = 0.2f;
+    public float _twoHand_length = 0.15f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
     public ePart _part_control = ePart.TwoHand_Left;
@@ -73,7 +73,7 @@ public class TwoHandControl : MonoBehaviour
     public string _2_1__________________ = "";
     public bool   _A_body_aroundRotate = false;
     public float _radius_handLeft_aroundRotate = 0.5f;
-    public float _radius_handRight_aroundRotate = 1f;
+    public float _radius_handRight_aroundRotate = 0.8f;
     public Transform _pos_handLeft_aroundRotate = null;
     public Transform _pos_handRight_aroundRotate = null;
 
@@ -352,66 +352,76 @@ public class TwoHandControl : MonoBehaviour
             Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
 
-            // ****  왼손만 계산(임시) *****
-            Vector3 handleToCenter = _pos_handLeft_aroundRotate.position - handle;
-            Vector3 proj_handle = axis_up * Vector3.Dot(handleToCenter, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-            //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-            Vector3 proj_handlePos = handle + proj_handle;
+            //// ****  왼손만 계산(임시) *****
+            //Vector3 handleToCenter = _pos_handLeft_aroundRotate.position - handle;
+            //Vector3 proj_handle = axis_up * Vector3.Dot(handleToCenter, axis_up) / axis_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            ////axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+            //Vector3 proj_handlePos = handle + proj_handle;
 
 
-            //왼손 길이 계산 
-            Vector3 leftCircleCenter = _pos_handLeft_aroundRotate.position;
-            Vector3 n_circleToHandLeft = (proj_handlePos - leftCircleCenter).normalized;
+            ////왼손 길이 계산 
+            //Vector3 leftCircleCenter = _pos_handLeft_aroundRotate.position;
+            //Vector3 n_circleToHandLeft = (proj_handlePos - leftCircleCenter).normalized;
 
 
-            //===== 1차 계산
-            Vector3 aroundCalcPos = leftCircleCenter + n_circleToHandLeft * _radius_handLeft_aroundRotate;
-            Vector3 n_sdToAround = (aroundCalcPos - _shoulder_left.position).normalized;
-            Vector3 handleCalcPos = aroundCalcPos;
+            ////===== 1차 계산
+            //Vector3 aroundCalcPos = leftCircleCenter + n_circleToHandLeft * _radius_handLeft_aroundRotate;
+            //Vector3 n_sdToAround = (aroundCalcPos - _shoulder_left.position).normalized;
+            //Vector3 handleCalcPos = aroundCalcPos;
 
-            float sqrLength_sdToAround = (aroundCalcPos - _shoulder_left.position).sqrMagnitude;
-            float sqrLength_sdToHandle = (proj_handlePos - _shoulder_left.position).sqrMagnitude;
+            //float sqrLength_sdToAround = (aroundCalcPos - _shoulder_left.position).sqrMagnitude;
+            //float sqrLength_sdToHandle = (proj_handlePos - _shoulder_left.position).sqrMagnitude;
 
-            float length_curLeft = Mathf.Sqrt(sqrLength_sdToHandle);
-            _arm_left_length = length_curLeft;
+            //float length_curLeft = Mathf.Sqrt(sqrLength_sdToHandle);
+            //_arm_left_length = length_curLeft;
 
-            //최대길이를 벗어나는 핸들 최대길이로 변경
-            if (_arm_left_length > _arm_left_max_length)
-            {
-                _arm_left_length = _arm_left_max_length;
-                sqrLength_sdToHandle = _arm_left_max_length * _arm_left_max_length;
-            }
+            ////최대길이를 벗어나는 핸들 최대길이로 변경
+            //if (_arm_left_length > _arm_left_max_length)
+            //{
+            //    _arm_left_length = _arm_left_max_length;
+            //    sqrLength_sdToHandle = _arm_left_max_length * _arm_left_max_length;
+            //}
 
-            //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
-            //===== 2차 계산
-            if (_arm_left_min_length >= _arm_left_length)
-            {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
-                //DebugWide.LogBlue("0"); //test
-                _arm_left_length = _arm_left_min_length;
-                n_sdToAround = (proj_handlePos - _shoulder_left.position).normalized;
-                handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
-            }
-            else
-            {
+            ////최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
+            ////===== 2차 계산
+            //if (_arm_left_min_length >= _arm_left_length)
+            //{   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
+            //    //DebugWide.LogBlue("0"); //test
+            //    _arm_left_length = _arm_left_min_length;
+            //    n_sdToAround = (proj_handlePos - _shoulder_left.position).normalized;
+            //    handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
+            //}
+            //else
+            //{
 
-                if (sqrLength_sdToAround <= _arm_left_min_length * _arm_left_min_length)
-                {   //주변원 위의 점이 최소거리 이내인 경우
-                    //DebugWide.LogBlue("1"); //test
-                    _arm_left_length = _arm_left_min_length;
-                    handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
-                }
-                else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
-                {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
-                    //DebugWide.LogBlue("2"); //test
-                    handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
-                }
+            //    if (sqrLength_sdToAround <= _arm_left_min_length * _arm_left_min_length)
+            //    {   //주변원 위의 점이 최소거리 이내인 경우
+            //        //DebugWide.LogBlue("1"); //test
+            //        _arm_left_length = _arm_left_min_length;
+            //        handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
+            //    }
+            //    else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
+            //    {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
+            //        //DebugWide.LogBlue("2"); //test
+            //        handleCalcPos = _shoulder_left.position + n_sdToAround * _arm_left_length;
+            //    }
+            //}
+            //_arm_left_length = (handleCalcPos - _shoulder_left.position).magnitude;
+            //_hand_left.position = handleCalcPos;
 
-            }
+            Vector3 newPos = Vector3.zero;
+            float newLength = 0f;
+            this.CalcHandPos_AroundCircle(handle, axis_up, _pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate,
+                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                         out newPos, out newLength);
+            _arm_left_length = newLength;
+            _hand_left.position = newPos;
 
-            _arm_left_length = (handleCalcPos - _shoulder_left.position).magnitude;
-            _hand_left.position = handleCalcPos;
-
-
+            this.CalcHandPos_AroundCircle(handle, axis_up, _pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate,
+                                         _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                         out newPos, out newLength);
+            _arm_right_length = newLength;
+            _hand_right.position = newPos;
         }
 
 
@@ -498,6 +508,66 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
 	}
 
+
+    public void CalcHandPos_AroundCircle(Vector3 handle , Vector3 circle_up , Vector3 circle_pos , float circle_radius , 
+                                        Vector3 shoulder_pos , float arm_max_length , float arm_min_length , 
+                                        out Vector3 newHand_pos, out float newArm_length)
+    {
+        
+        Vector3 handleToCenter = circle_pos - handle;
+        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+        Vector3 proj_handlePos = handle + proj_handle;
+        Vector3 n_circleToHand = (proj_handlePos - circle_pos).normalized;
+
+
+        //===== 1차 계산
+        Vector3 aroundCalcPos = circle_pos + n_circleToHand * circle_radius;
+        Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
+        Vector3 handleCalcPos = aroundCalcPos;
+
+        float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
+        float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
+
+        float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
+        //_arm_left_length = length_curLeft;
+
+        //최대길이를 벗어나는 핸들 최대길이로 변경
+        if (length_cur > arm_max_length)
+        {
+            length_cur = arm_max_length;
+            sqrLength_sdToHandle = arm_max_length * arm_max_length;
+        }
+
+        //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
+        //===== 2차 계산
+        if (arm_min_length >= length_cur)
+        {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
+            //DebugWide.LogBlue("0"); //test
+            length_cur = arm_min_length;
+            n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
+            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+        }
+        else
+        {
+
+            if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
+            {   //주변원 위의 점이 최소거리 이내인 경우
+                //DebugWide.LogBlue("1"); //test
+                length_cur = arm_min_length;
+                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+            }
+            else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
+            {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
+                //DebugWide.LogBlue("2"); //test
+                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+            }
+
+        }
+
+        newArm_length = (handleCalcPos - shoulder_pos).magnitude;
+        newHand_pos = handleCalcPos;
+    }
 
     public void TwoHandControl1_Left()
     {
@@ -776,7 +846,7 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_shoulder_left.position, leftPos, Color.white);
 
             this.DrawCirclePlate(_pos_handLeft_aroundRotate.position, _radius_handLeft_aroundRotate, axis_up, axis_forward, Color.yellow);
-
+            this.DrawCirclePlate(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, axis_up, axis_forward, Color.yellow);
 
         }
 
