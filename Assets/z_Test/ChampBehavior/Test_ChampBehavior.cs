@@ -46,6 +46,9 @@ public class TwoHandControl : MonoBehaviour
     public Transform _object_left = null;
     public Transform _object_right = null;
 
+    public SpriteRenderer _spr_object_left = null;
+    public SpriteRenderer _spr_object_right = null;
+
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 0.5f;
@@ -117,6 +120,9 @@ public class TwoHandControl : MonoBehaviour
         _handle_right = GameObject.Find("handle_right").transform;
         _object_left = GameObject.Find("object_left").transform;
         _object_right = GameObject.Find("object_right").transform;
+
+        _spr_object_left = _object_left.GetComponentInChildren<SpriteRenderer>();
+        _spr_object_right = _object_right.GetComponentInChildren<SpriteRenderer>();
 
 
         //궤적원
@@ -434,15 +440,11 @@ public class TwoHandControl : MonoBehaviour
             }
         }
 
-        
+
         //DebugWide.LogBlue(shaft + "    angle: " +angleC +"  a:" +a+ "   b:" +b+ "   c:" + c);
         //DebugWide.LogBlue(newPos_hR.x + "  " + newPos_hR.z + "    :" + angleC + "   p:" + (a+b-c));
         //DebugWide.LogBlue(angleC + " a : " + Quaternion.FromToRotation(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position).eulerAngles.y);
         //DebugWide.LogBlue(angleC + " b : " + Vector3.SignedAngle(_hand_right.position - _shoulder_right.position, _hand_left.position - _shoulder_right.position, Vector3.up));
-
-
-        //==================================================
-
 
 
         //==================================================
@@ -467,6 +469,7 @@ public class TwoHandControl : MonoBehaviour
             Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
             //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
             //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
+            //Vector3 obj_up = Vector3.Cross(obj_shaft, hLhR);
 
             float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
             _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
@@ -475,9 +478,24 @@ public class TwoHandControl : MonoBehaviour
             Vector3 temp = _object_left.eulerAngles;
             temp.z = 0;
             _object_left.eulerAngles = temp;
+
+            //칼의 뒷면 표현 - 연구필요 
+            //if(Vector3.Dot(Vector3.up, obj_up) < 0)
+            //    _spr_object_left.color = Color.gray;
+            //else
+                //_spr_object_left.color = Color.white;
+
         } 
 
+        //==================================================
+        //스프라이트 칼 뒷면느낌 나게 색 설정 
 
+        //if (_object_left.rotation.eulerAngles.x < -90f)
+        //    _spr_object_left.color = Color.black;
+        //else
+            //_spr_object_left.color = Color.white;
+
+        //==================================================
 	}
 
 
