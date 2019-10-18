@@ -368,17 +368,35 @@ public class TwoHandControl : MonoBehaviour
             this.CalcHandPos_AroundCircle(handle, axis_up, _pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate,
                                          _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                          out newPos, out newLength);
+            
+
+
             _arm_right_length = newLength;
             _hand_right.position = newPos;
+
 
             //----------------------------
 
             Vector3 twoHand = ( _hand_right.position - _hand_left.position);
             Vector3 n_twoHand = twoHand.normalized;
-            //if(_twoHand_length < twoHand.magnitude)
+            newLength = _twoHand_length;
+            newPos = _hand_left.position + n_twoHand * _twoHand_length;
+            float length_sdToHand = (newPos - _shoulder_right.position).magnitude;
+            Vector3 n_sdToHand = (newPos - _shoulder_right.position).normalized;
+
+            if (length_sdToHand > _arm_right_max_length)
             {
-                _hand_right.position = _hand_left.position + n_twoHand * _twoHand_length;
+                newLength = _arm_right_max_length;
+                newPos = _shoulder_right.position + n_sdToHand * newLength;
+            }else if(length_sdToHand < _arm_right_min_length)
+            {
+                newLength = _arm_right_min_length;
+                newPos = _shoulder_right.position + n_sdToHand * newLength;
             }
+                
+
+            _hand_right.position = newPos;
+            //_hand_right.position = _hand_left.position + n_twoHand * length_twoHand;
         }
 
 
