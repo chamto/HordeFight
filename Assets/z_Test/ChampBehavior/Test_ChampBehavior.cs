@@ -380,25 +380,44 @@ public class TwoHandControl : MonoBehaviour
             Vector3 twoHand = ( _hand_right.position - _hand_left.position);
             Vector3 n_twoHand = twoHand.normalized;
             newLength = _twoHand_length;
+
+            //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
             newPos = _hand_left.position + n_twoHand * _twoHand_length;
-            float length_sdToHand = (newPos - _shoulder_right.position).magnitude;
-            Vector3 n_sdToHand = (newPos - _shoulder_right.position).normalized;
+            Vector3 sdToHand = (newPos - _shoulder_right.position);
+            float length_sdToHand = sdToHand.magnitude;
+            Vector3 n_sdToHand = sdToHand / length_sdToHand;
 
             if (length_sdToHand > _arm_right_max_length)
-            {
+            {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
                 newLength = _arm_right_max_length;
                 newPos = _shoulder_right.position + n_sdToHand * newLength;
             }else if(length_sdToHand < _arm_right_min_length)
-            {
+            {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
                 newLength = _arm_right_min_length;
                 newPos = _shoulder_right.position + n_sdToHand * newLength;
             }
                 
-
             _hand_right.position = newPos;
-            //_hand_right.position = _hand_left.position + n_twoHand * length_twoHand;
         }
 
+        //==================================================
+
+        //float oo = 199208737f; //약2억 원금
+        //float rr = 0.02f; //이율 0.2프로
+        //float aa = oo * (1f + rr) * (12 / 12);
+        //float ee = aa - oo; //1년치 증가한 이자
+        //DebugWide.LogBlue("" + ee);
+
+        //float minus = 830000 * 12f;
+        //for (int i = 0; i < 30;i++)
+        //{
+        //    oo = oo - minus;
+        //    aa = oo * (1f + rr) * (12 / 12);
+        //    ee = aa - oo;
+        //    oo = oo + ee;
+        //    DebugWide.LogBlue(i + "  = " + oo);
+        //}
+        //DebugWide.LogBlue("----------------------");
 
         //==================================================
         //손 움직임 만들기 
