@@ -66,7 +66,8 @@ public class TwoHandControl : MonoBehaviour
     public float _arm_right_length = 0.7f;
     public float _arm_right_min_length = 0.2f;
     public float _arm_right_max_length = 1f;
-    public float _twoHand_length = 0.15f;
+    //public float _twoHand_length = 0.15f;
+    public float _twoHand_length = 0.5f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
     public ePart _part_control = ePart.TwoHand_Left;
@@ -87,7 +88,7 @@ public class TwoHandControl : MonoBehaviour
     public Transform _pos_rightAround = null;
 
     public string _2_2__________________ = "";
-    public bool _A_body_aroundRotate2 = false;
+    public bool _A_body_aroundRotate2 = true;
 
     public string _4____________________ = "";
     public bool _A_trajectoryCircle = false;
@@ -299,6 +300,17 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
+        //찌르기 
+
+        //양손모드
+        if (ePart.OneHand == _part_control)
+        {}
+
+        if (ePart.TwoHand_Left == _part_control)
+        { }
+
+
+        //==================================================
 
         //변경된 각도만큼 증가시키는 방식 - 왼손과 오른손 사이의 거리가 동일하게 유지가 안된다 
         //float angle = Vector3.SignedAngle(__prev_hLsL, hLsL, UtilGS9.ConstV.v3_up);
@@ -391,14 +403,13 @@ public class TwoHandControl : MonoBehaviour
 
             Vector3 twoHand = ( _hand_right.position - _hand_left.position);
             Vector3 n_twoHand = twoHand.normalized;
-            newLength = _twoHand_length;
 
             //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
             newPos = _hand_left.position + n_twoHand * _twoHand_length;
             Vector3 sdToHand = (newPos - _shoulder_right.position);
             float length_sdToHand = sdToHand.magnitude;
             Vector3 n_sdToHand = sdToHand / length_sdToHand;
-
+            newLength = length_sdToHand;
             if (length_sdToHand > _arm_right_max_length)
             {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
                 newLength = _arm_right_max_length;
@@ -409,6 +420,7 @@ public class TwoHandControl : MonoBehaviour
                 newPos = _shoulder_right.position + n_sdToHand * newLength;
             }
                 
+            _arm_right_length = newLength;
             _hand_right.position = newPos;
         }
 
