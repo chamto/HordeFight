@@ -41,10 +41,17 @@ public class TwoHandControl : MonoBehaviour
     public Transform _shoulder_right = null;
     public Transform _hand_left = null;
     public Transform _hand_right = null;
-    public Transform _handle_left = null;
-    public Transform _handle_right = null;
     public Transform _object_left = null;
     public Transform _object_right = null;
+
+    //핸들 
+    public Transform _handle_left = null;   //핸들
+    public Transform _handle_right = null;
+    public Transform _handle_leftToRight = null;
+
+    //목표
+    public Transform _target_1 = null;
+    public Transform _target_2 = null;
 
     public SpriteRenderer _spr_object_left = null;
     public SpriteRenderer _spr_object_right = null;
@@ -94,7 +101,6 @@ public class TwoHandControl : MonoBehaviour
     public bool _A_hand_control_1 = false;
     public Transform _hc1_axis_o = null; //control => _hc1_axis_o
     public Transform _hc1_object_dir = null; 
-    public Transform _hc1_target = null;
     public Transform _hc1_standard = null;
 
 
@@ -118,10 +124,17 @@ public class TwoHandControl : MonoBehaviour
         _shoulder_right = GameObject.Find("shoulder_right").transform;
         _hand_left = GameObject.Find("hand_left").transform;
         _hand_right = GameObject.Find("hand_right").transform;
-        _handle_left = GameObject.Find("handle_left").transform;
-        _handle_right = GameObject.Find("handle_right").transform;
         _object_left = GameObject.Find("object_left").transform;
         _object_right = GameObject.Find("object_right").transform;
+
+        //핸들
+        _handle_left = GameObject.Find("handle_left").transform; //핸들 
+        _handle_right = GameObject.Find("handle_right").transform;
+        _handle_leftToRight = GameObject.Find("handle_leftToRight").transform;
+
+        //목표
+        _target_1 = GameObject.Find("target_1").transform;
+        _target_2 = GameObject.Find("target_2").transform;
 
         //_spr_object_left = _object_left.GetComponentInChildren<SpriteRenderer>();
         //_spr_object_right = _object_right.GetComponentInChildren<SpriteRenderer>();
@@ -146,7 +159,6 @@ public class TwoHandControl : MonoBehaviour
         //=======
         //손조종 1
         _hc1_object_dir = GameObject.Find("hc1_object_dir").transform;
-        _hc1_target = GameObject.Find("hc1_target").transform;
         _hc1_standard = GameObject.Find("hc1_standard").transform;
         _hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
 
@@ -352,7 +364,7 @@ public class TwoHandControl : MonoBehaviour
         //주변원 모드2 
         if (true == _A_body_aroundRotate2)
         {
-            Vector3 handle = _handle_left.position;
+            Vector3 handle = _handle_leftToRight.position;
             Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
 
@@ -827,7 +839,7 @@ public class TwoHandControl : MonoBehaviour
             //DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
 
             //===========
-            Vector3 handle = _handle_left.position;
+            Vector3 handle = _handle_leftToRight.position;
             Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
 
@@ -891,9 +903,9 @@ public class TwoHandControl : MonoBehaviour
         if (true == _A_hand_control_1)
         {
             Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
-            Vector3 targetDir = _hc1_target.position - _hc1_standard.position;
+            Vector3 targetDir = _target_1.position - _hc1_standard.position;
             Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
-            DebugWide.DrawLine(_hc1_standard.position, _hc1_target.position, Color.black);
+            DebugWide.DrawLine(_hc1_standard.position, _target_1.position, Color.black);
             DebugWide.DrawLine(_hc1_standard.position, _hc1_object_dir.position, Color.black);
             DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + shaft_t, Color.white);
 
