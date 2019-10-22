@@ -288,7 +288,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 22829807}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.4000001, y: 0, z: 0.99999994}
+  m_LocalPosition: {x: 0, y: 0, z: 0.99999994}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 666046587}
@@ -65931,7 +65931,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1458844082}
   m_Layer: 0
-  m_Name: pos_handRight_aroundRotate
+  m_Name: pos_rightAround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66230,7 +66230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1665765546}
   m_Layer: 0
-  m_Name: pos_handLeft_aroundRotate
+  m_Name: pos_leftAround
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
