@@ -371,6 +371,7 @@ public class TwoHandControl : MonoBehaviour
 
                 }
 
+
                 //chamto debug test
                 //_debugLine.SetPosition(0, _hand_left.position);
                 //_debugLine.SetPosition(1, posOnMaxCircle);
@@ -388,22 +389,26 @@ public class TwoHandControl : MonoBehaviour
 
                 //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
                 float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
-                newRightPos = newLeftPos + Quaternion.AngleAxis(-angleC, Vector3.up) * n_targetToRSd * length_contactPt; //fixme : up_vector
+                Vector3 shaft_l = Vector3.Cross(newLeftPos, _shoulder_right.position);
+                newRightPos = newLeftPos + Quaternion.AngleAxis(-angleC, shaft_l) * n_targetToRSd * length_contactPt;
+
+                //-----------------------
 
 
             }
 
-              
-            Vector3 rightToLeft = newLeftPos - newRightPos;
-            Vector3 rotateDir = Quaternion.AngleAxis(90f, Vector3.up) * rightToLeft.normalized;
+            //-----------------------
+            Vector3 leftToRight = newRightPos - newLeftPos;
+            Vector3 shaft_rot = Vector3.Cross(newLeftPos, _shoulder_right.position);
+            Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
             float length_min_twoHand = 0.2f;
-            if (rightToLeft.magnitude < length_min_twoHand)
+            if (leftToRight.magnitude < length_min_twoHand)
             {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
-                
+
                 newLeftPos = newLeftPos + rotateDir * 0.08f;
                 //_handle_leftToRight.position = newLeftPos;
-
             }
+            //-----------------------
 
             _hand_left.position = newLeftPos;
             _hand_right.position = newRightPos;
