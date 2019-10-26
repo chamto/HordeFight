@@ -375,6 +375,7 @@ SpriteAtlas:
   - {fileID: 21300350, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300352, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300354, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300378, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300248, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300166, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300218, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -739,6 +740,7 @@ SpriteAtlas:
   - sack_0
   - sack_1
   - sack_2
+  - effect_sheld_1
   - fireRedA_4_1
   - fireRedA_4_0
   - fireBlueA_2_0
@@ -754,7 +756,7 @@ SpriteAtlas:
   - fireRain_0_2
   - ik_Lothar_29
   - ik_Lothar_27
-  - effect_sheld
+  - effect_sheld_0
   - arrow_1
   - pop_0_0
   - effect_hand_1

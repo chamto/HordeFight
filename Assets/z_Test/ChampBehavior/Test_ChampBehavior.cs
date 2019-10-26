@@ -38,6 +38,7 @@ public class TwoHandControl : MonoBehaviour
 
     //------------------------------------------------------
     //debug
+    public bool _A_debug_mode = false;
     public LineRenderer _debugLine = null;
 
 
@@ -77,10 +78,15 @@ public class TwoHandControl : MonoBehaviour
     public float _twoHand_length = 0.5f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
-    public ePart _part_control = ePart.TwoHand_Left;
-    //public ePart _part_control = ePart.OneHand;
+    //public ePart _part_control = ePart.TwoHand_Left;
+    public ePart _part_control = ePart.OneHand;
 
+    //----------------------------------------------------
     public bool _A_armLength_max_min = false;
+
+    public bool _A_action_sting = true; //찌르기 동작 
+    //----------------------------------------------------
+
 
     public string _1____________________ = "";
     public bool  _A_shoulder_autoRotate = false;
@@ -127,9 +133,12 @@ public class TwoHandControl : MonoBehaviour
 
 	private void Start()
 	{
+        if(true == _A_debug_mode)
+        {
+            _debugLine = GameObject.Find("line").GetComponent<LineRenderer>();
+            //_debugLine.gameObject.SetActive(false);    
+        }
 
-        _debugLine = GameObject.Find("line").GetComponent<LineRenderer>();
-        _debugLine.gameObject.SetActive(false);
         //--------------------------------------------------
 
         _tbody_dir = GameObject.Find("body_dir").transform;
@@ -314,111 +323,129 @@ public class TwoHandControl : MonoBehaviour
 
         //찌르기 
 
-        //양손모드
-        if (ePart.OneHand == _part_control)
-        {}
-
-        if (ePart.TwoHand_Left == _part_control)
+        if(true == _A_action_sting)
         {
-            
-            //왼손을 핸들로 조종하기 
-            Vector3 newRightPos;
-            Vector3 newLeftPos;
-            float newLeftLength;
-            this.CalcHandPos(_handle_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
-            _hand_left.position = newLeftPos;
-            _arm_left_length = newLeftLength;
+            //양손모드
+            if (ePart.OneHand == _part_control)
+            {
+                Vector3 newRightPos;
+                Vector3 newLeftPos;
+                float newRightLength;
+                float newLeftLength;
+                this.CalcHandPos(_handle_left.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+                _hand_left.position = newLeftPos;
+                _arm_left_length = newLeftLength;
 
-            //<방식1> target_1 에 따라 오른손 위치 결정하기 - target_1 에 봉이 도달하지 못하는 경우가 있음 (오른손위치계산 => 오른손제약범위 적용)
-            _hand_right.position = newLeftPos + (_target_1.position - newLeftPos).normalized * _twoHand_length;
 
-            Vector3 handToTarget = (_target_1.position - newLeftPos);
-            Vector3 n_handToTarget = handToTarget.normalized;
-            Vector3 posOnMaxCircle;
-            float newlength_twoHand = _arm_right_max_length - (_shoulder_right.position - newLeftPos).magnitude;
+                this.CalcHandPos(_handle_right.position, _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
+                _hand_right.position = newRightPos;
+                _arm_right_length = newRightLength;
+            }
 
-            //----------------------------------------------
+            if (ePart.TwoHand_Left == _part_control)
+            {
 
-            if(true == UtilGS9.Geo.IntersectRay2(_shoulder_right.position, _arm_right_max_length, newLeftPos, n_handToTarget, out posOnMaxCircle))
-            {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 있다  
+                //왼손을 핸들로 조종하기 
+                Vector3 newRightPos;
+                Vector3 newLeftPos;
+                float newLeftLength;
+                this.CalcHandPos(_handle_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+                _hand_left.position = newLeftPos;
+                _arm_left_length = newLeftLength;
 
-                if (newlength_twoHand > 0)
-                {   //왼손이 오른손 최대 범위 안에 있는 경우
-                    
-                    if ((newLeftPos - posOnMaxCircle).magnitude > _twoHand_length)
-                    {
-                        //DebugWide.LogBlue("111");
-                        newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
+                //<방식1> target_1 에 따라 오른손 위치 결정하기 - target_1 에 봉이 도달하지 못하는 경우가 있음 (오른손위치계산 => 오른손제약범위 적용)
+                _hand_right.position = newLeftPos + (_target_1.position - newLeftPos).normalized * _twoHand_length;
+
+                Vector3 handToTarget = (_target_1.position - newLeftPos);
+                Vector3 n_handToTarget = handToTarget.normalized;
+                Vector3 posOnMaxCircle;
+                float newlength_twoHand = _arm_right_max_length - (_shoulder_right.position - newLeftPos).magnitude;
+
+                //----------------------------------------------
+
+                if (true == UtilGS9.Geo.IntersectRay2(_shoulder_right.position, _arm_right_max_length, newLeftPos, n_handToTarget, out posOnMaxCircle))
+                {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 있다  
+
+                    if (newlength_twoHand > 0)
+                    {   //왼손이 오른손 최대 범위 안에 있는 경우
+
+                        if ((newLeftPos - posOnMaxCircle).magnitude > _twoHand_length)
+                        {
+                            //DebugWide.LogBlue("111");
+                            newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
+                        }
+                        else
+                        {
+                            //DebugWide.LogBlue("222");
+                            newRightPos = posOnMaxCircle;
+                        }
                     }
                     else
-                    {
-                        //DebugWide.LogBlue("222");
-                        newRightPos = posOnMaxCircle;
-                    }    
-                }else
-                {   //왼손이 오른손 최대 범위 밖에 있는 경우 
+                    {   //왼손이 오른손 최대 범위 밖에 있는 경우 
 
-                    newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
-                    //newPos = newLeftPos + (posOnMaxCircle - newLeftPos).normalized * _twoHand_length;
-                    if((newRightPos - _shoulder_right.position).sqrMagnitude > _arm_right_max_length * _arm_right_max_length) 
-                    {
-                        //DebugWide.LogBlue("333");
-                        newRightPos = posOnMaxCircle;
-                    }else
-                    {
-                        //DebugWide.LogBlue("444");
+                        newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
+                        //newPos = newLeftPos + (posOnMaxCircle - newLeftPos).normalized * _twoHand_length;
+                        if ((newRightPos - _shoulder_right.position).sqrMagnitude > _arm_right_max_length * _arm_right_max_length)
+                        {
+                            //DebugWide.LogBlue("333");
+                            newRightPos = posOnMaxCircle;
+                        }
+                        else
+                        {
+                            //DebugWide.LogBlue("444");
+                        }
+
                     }
+
+
+                    //chamto debug test
+                    //_debugLine.SetPosition(0, _hand_left.position);
+                    //_debugLine.SetPosition(1, posOnMaxCircle);
+
+                }
+                else
+                {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
+
+                    Vector3 targetToRSd = (_shoulder_right.position - newLeftPos);
+                    Vector3 n_targetToRSd = targetToRSd.normalized;
+                    float length_contactPt = targetToRSd.sqrMagnitude - _arm_right_max_length * _arm_right_max_length;
+                    length_contactPt = (float)System.Math.Sqrt(length_contactPt);
+                    float proj_cos = length_contactPt / targetToRSd.magnitude;
+
+                    //-----------------------
+
+                    //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
+                    float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
+                    Vector3 shaft_l = Vector3.Cross(newLeftPos, _shoulder_right.position);
+                    newRightPos = newLeftPos + Quaternion.AngleAxis(-angleC, shaft_l) * n_targetToRSd * length_contactPt;
+
+                    //-----------------------
+
 
                 }
 
+                //-----------------------
+                Vector3 leftToRight = newRightPos - newLeftPos;
+                Vector3 shaft_rot = Vector3.Cross(newLeftPos, _shoulder_right.position);
+                Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
+                float length_min_twoHand = 0.1f;
+                if (leftToRight.magnitude < length_min_twoHand)
+                {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
 
-                //chamto debug test
-                //_debugLine.SetPosition(0, _hand_left.position);
-                //_debugLine.SetPosition(1, posOnMaxCircle);
-
-            }else
-            {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
-                
-                Vector3 targetToRSd = (_shoulder_right.position - newLeftPos);
-                Vector3 n_targetToRSd = targetToRSd.normalized;
-                float length_contactPt = targetToRSd.sqrMagnitude - _arm_right_max_length * _arm_right_max_length;
-                length_contactPt = (float)System.Math.Sqrt(length_contactPt);
-                float proj_cos = length_contactPt / targetToRSd.magnitude;
-
+                    newLeftPos = newLeftPos + rotateDir * 0.08f;
+                    //_handle_leftToRight.position = newLeftPos;
+                }
                 //-----------------------
 
-                //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
-                float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
-                Vector3 shaft_l = Vector3.Cross(newLeftPos, _shoulder_right.position);
-                newRightPos = newLeftPos + Quaternion.AngleAxis(-angleC, shaft_l) * n_targetToRSd * length_contactPt;
-
-                //-----------------------
+                _hand_left.position = newLeftPos;
+                _hand_right.position = newRightPos;
+                _arm_right_length = (_hand_right.position - _shoulder_right.position).magnitude;
+                if (_arm_right_length > _arm_right_max_length)
+                    _arm_right_length = _arm_right_max_length;
 
 
             }
-
-            //-----------------------
-            Vector3 leftToRight = newRightPos - newLeftPos;
-            Vector3 shaft_rot = Vector3.Cross(newLeftPos, _shoulder_right.position);
-            Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
-            float length_min_twoHand = 0.2f;
-            if (leftToRight.magnitude < length_min_twoHand)
-            {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
-
-                newLeftPos = newLeftPos + rotateDir * 0.08f;
-                //_handle_leftToRight.position = newLeftPos;
-            }
-            //-----------------------
-
-            _hand_left.position = newLeftPos;
-            _hand_right.position = newRightPos;
-            _arm_right_length = (_hand_right.position - _shoulder_right.position).magnitude;
-            if (_arm_right_length > _arm_right_max_length)
-                _arm_right_length = _arm_right_max_length;
-
-
         }
-
 
 
         //==================================================
@@ -592,14 +619,14 @@ public class TwoHandControl : MonoBehaviour
         if (ePart.OneHand == _part_control)
         {   //한손 칼 붙이기 
 
-            Vector3 handToHandle = _handle_left.position - _hand_left.position;
-            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToHandle);
-            float angleW = Vector3.SignedAngle(Vector3.forward, handToHandle, obj_shaft);
+            Vector3 handToTarget = _target_1.position - _hand_left.position;
+            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
+            float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
             _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
 
-            handToHandle = _handle_right.position - _hand_right.position;
-            obj_shaft = Vector3.Cross(Vector3.forward, handToHandle);
-            angleW = Vector3.SignedAngle(Vector3.forward, handToHandle, obj_shaft);
+            handToTarget = _target_1.position - _hand_right.position;
+            obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
+            angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
             _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
 
         }else
