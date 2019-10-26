@@ -338,9 +338,9 @@ public class TwoHandControl : MonoBehaviour
 
             //----------------------------------------------
 
-            if(true == UtilGS9.Geo.IntersectRay(_shoulder_right.position, _arm_right_max_length, _hand_left.position, n_handToTarget, out posOnMaxCircle))
+            if(true == UtilGS9.Geo.IntersectRay2(_shoulder_right.position, _arm_right_max_length, _hand_left.position, n_handToTarget, out posOnMaxCircle))
             {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 있다  
-                
+
                 if (newlength_twoHand > 0)
                 {   //왼손이 오른손 최대 범위 안에 있는 경우
                     
@@ -361,13 +361,12 @@ public class TwoHandControl : MonoBehaviour
                         newPos = posOnMaxCircle;
 
                     //chamto debug test
-                    _debugLine.SetPosition(0, _hand_left.position);
-                    _debugLine.SetPosition(1, posOnMaxCircle);
+                    //_debugLine.SetPosition(0, _hand_left.position);
+                    //_debugLine.SetPosition(1, posOnMaxCircle);
                 }
 
             }else
-            {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를  구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
-                
+            {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
 
                 //newPos = posOnMaxCircle;
                 Vector3 targetToRSd = (_shoulder_right.position - _hand_left.position);
@@ -381,15 +380,6 @@ public class TwoHandControl : MonoBehaviour
                 float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
                 newPos = _hand_left.position + Quaternion.AngleAxis(-angleC, Vector3.up) * targetToRSd;
 
-                //-----------------------
-
-                //Vector3 targetToContact = targetToRSd * proj_cos;
-                //newPos = _target_1.position + targetToContact;
-
-                //chamto debug
-                //_debugLine.SetPosition(0, _hand_left.position);
-                //_debugLine.SetPosition(1, newPos);
-                //DebugWide.LogBlue("sssddddd");
 
             }
 
@@ -400,11 +390,6 @@ public class TwoHandControl : MonoBehaviour
                 _arm_right_length = _arm_right_max_length;
 
 
-            //<방식2> 방식1에서 target 에 도달하지 못할경우 왼손을 적합한 위치로 계산한다 
-            //Vector3 targetToHand = (newPos - _target_1.position);
-            //Vector3 n_targetToHand = targetToHand.normalized;
-            //_hand_left.position = _hand_right.position + n_targetToHand * _twoHand_length;
-            //_arm_left_length = (_hand_left.position - _shoulder_left.position).magnitude;
         }
 
 

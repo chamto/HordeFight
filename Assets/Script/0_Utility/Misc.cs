@@ -778,10 +778,52 @@ namespace UtilGS9
             return rad * Mathf.Rad2Deg;
         }
 
+
+        //==================================================
+        //실험노트 2019-2-21 , 2019-10-26 날짜에 분석한 그림 있음  
+        //ray_dir : 정규화된 값을 넣어야 한다 
+        //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환
+        //<문제점 수정> 반직선 뒤에 원이 있어 명백히 교차가 안되는 상황에서, 교차로 판단하는 문제가 있음 : 반직선에 대한 예외처리가 없음 ray 가 아닌 line(직선)으로 결과가 나오고 있다 
+        static public bool IntersectRay2(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir, out Vector3 intersection_firstPoint)
+        {
+
+            Vector3 w = VOp.Minus(sphere_center, ray_origin);
+            Vector3 v = ray_dir; //rayDirection 이 정규화 되어 있어야 올바르게 계산할 수 있다 
+            float rsq = sphere_radius * sphere_radius;
+            //float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
+            float wsq = w.sqrMagnitude;
+
+
+            //if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
+            if (wsq < rsq) v = VOp.Multiply(v, -1f); //반직선의 시작점이 원안에 있는 경우 - 방법1 
+
+            float proj = Vector3.Dot(w, v);
+            float ssq = (wsq - proj * proj);
+            float dsq = rsq - ssq;
+
+
+            if (proj < 0.0f && wsq > rsq || dsq < 0.0f)
+            {
+                //원과 교차하지 않는다면, 원과 가장 가까운 선분위의 점을 반환 
+                intersection_firstPoint = VOp.Plus(ray_origin, VOp.Multiply(v, proj)); 
+                return false;
+            }
+
+
+            float d = (float)Math.Sqrt(dsq);
+            //intersection_firstPoint = ray_origin + v * (proj - d);
+            intersection_firstPoint = VOp.Plus(ray_origin, VOp.Multiply(v, (proj - d)));
+
+            return true;
+        }
+
+
         //==================================================
         //실험노트 2019-2-21 날짜에 분석한 그림 있음  
         //ray_dir : 정규화된 값을 넣어야 한다 
         //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환
+        //<문제점> 반직선 뒤에 원이 있어 명백히 교차가 안되는 상황에서, 교차로 판단하는 문제가 있음 : 반직선에 대한 예외처리가 없음 ray 가 아닌 line(직선)으로 결과가 나오고 있다 
+        //문제점 있는 것을 정상으로 작성한 함수가 있으므로 사용처를 모두 확인하기 전까지는 수정버젼으로 바꾸지 않는다 - chamto todo 2019-10-27
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir, out Vector3 intersection_firstPoint)
         {
 
@@ -800,6 +842,7 @@ namespace UtilGS9
             float ssq = (wsq - proj * proj);
             float dsq = rsq - ssq;
 
+            
             intersection_firstPoint = ConstV.v3_zero;
             if (dsq > 0.0f)
             {
@@ -840,22 +883,34 @@ namespace UtilGS9
             return false;
         }
 
+        //수학책503page 
+        //반직선 뒤에 원이 있을때의 예외처리가 있음
         //ray_dir : 비정규화된 값을 넣어도 된다  
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir)
         {
             // compute intermediate values
             Vector3 w = VOp.Minus(sphere_center , ray_origin);
             float wsq = w.sqrMagnitude;
-            float proj = Vector3.Dot(w, ray_dir);
+            float proj = Vector3.Dot(w, ray_dir); //proj * ray_length (w를 ray_dir에 투영한 길이 * ray의 길이) 
             float rsq = sphere_radius * sphere_radius;
 
             // if sphere behind ray, no intersection
+            //반직선의 시작점이 원 밖에 있고, 방향이 원을 향하지 않는 명백한 교차가 되지 않는 상태를 제거한다 
+            //이 검사를 미리 하는 이유는, 투영( dot(w,ray_dir) )은 반직선의 반대방향으로도 값을 주기 때문이다  
             if (proj < 0.0f && wsq > rsq)
                 return false;
             float vsq = Vector3.Dot(ray_dir, ray_dir);
 
             // test length of difference vs. radius
-            return (vsq * wsq - proj * proj <= vsq * rsq);
+            //p = dot(w, n_ray_dir)
+            //s : 원의 중점에서 반직선 까지의 최단거리가 되는 점(반직선과 직각이 된다) 까지의 길이 
+            //proj*proj = p*p * ray_dir*ray_dir = p*p * vsq
+            //vsq*wsq - proj*proj = vsq*wsq - vsq * p*p
+            //vsq(wsq-p*p) <= vsq(rsq)
+            //wsq-p*p <= rsq
+            //피타고라스 정리 : wsq-p*p = s*s
+            //s*s <= rsq . 원의 중점에서 반직선 까지의 최단거리 <= 원의 반지름
+            return (vsq * wsq - proj * proj <= vsq * rsq); 
         }
 
 
