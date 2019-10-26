@@ -129,7 +129,7 @@ public class TwoHandControl : MonoBehaviour
 	{
 
         _debugLine = GameObject.Find("line").GetComponent<LineRenderer>();
-
+        _debugLine.gameObject.SetActive(false);
         //--------------------------------------------------
 
         _tbody_dir = GameObject.Find("body_dir").transform;
@@ -322,53 +322,53 @@ public class TwoHandControl : MonoBehaviour
         {
             
             //왼손을 핸들로 조종하기 
-            Vector3 newPos;
-            float newLength;
-            this.CalcHandPos(_handle_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
-            _hand_left.position = newPos;
-            _arm_left_length = newLength;
+            Vector3 newRightPos;
+            Vector3 newLeftPos;
+            float newLeftLength;
+            this.CalcHandPos(_handle_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+            _hand_left.position = newLeftPos;
+            _arm_left_length = newLeftLength;
 
             //<방식1> target_1 에 따라 오른손 위치 결정하기 - target_1 에 봉이 도달하지 못하는 경우가 있음 (오른손위치계산 => 오른손제약범위 적용)
-            _hand_right.position = _hand_left.position + (_target_1.position - _hand_left.position).normalized * _twoHand_length;
+            _hand_right.position = newLeftPos + (_target_1.position - newLeftPos).normalized * _twoHand_length;
 
-            Vector3 handToTarget = (_target_1.position - _hand_left.position);
+            Vector3 handToTarget = (_target_1.position - newLeftPos);
             Vector3 n_handToTarget = handToTarget.normalized;
             Vector3 posOnMaxCircle;
-            float newlength_twoHand = _arm_right_max_length - (_shoulder_right.position - _hand_left.position).magnitude;
+            float newlength_twoHand = _arm_right_max_length - (_shoulder_right.position - newLeftPos).magnitude;
 
             //----------------------------------------------
 
-            if(true == UtilGS9.Geo.IntersectRay2(_shoulder_right.position, _arm_right_max_length, _hand_left.position, n_handToTarget, out posOnMaxCircle))
+            if(true == UtilGS9.Geo.IntersectRay2(_shoulder_right.position, _arm_right_max_length, newLeftPos, n_handToTarget, out posOnMaxCircle))
             {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 있다  
 
                 if (newlength_twoHand > 0)
                 {   //왼손이 오른손 최대 범위 안에 있는 경우
                     
-                    if ((_hand_left.position - posOnMaxCircle).magnitude > _twoHand_length)
+                    if ((newLeftPos - posOnMaxCircle).magnitude > _twoHand_length)
                     {
                         //DebugWide.LogBlue("111");
-                        newPos = _hand_left.position + n_handToTarget * _twoHand_length;
+                        newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
                     }
                     else
                     {
                         //DebugWide.LogBlue("222");
-                        newPos = posOnMaxCircle;
+                        newRightPos = posOnMaxCircle;
                     }    
                 }else
                 {   //왼손이 오른손 최대 범위 밖에 있는 경우 
 
-                    newPos = _hand_left.position + n_handToTarget * _twoHand_length;
-                    //newPos = _hand_left.position + (posOnMaxCircle - _hand_left.position).normalized * _twoHand_length;
-                    if((newPos - _shoulder_right.position).sqrMagnitude > _arm_right_max_length * _arm_right_max_length) 
+                    newRightPos = newLeftPos + n_handToTarget * _twoHand_length;
+                    //newPos = newLeftPos + (posOnMaxCircle - newLeftPos).normalized * _twoHand_length;
+                    if((newRightPos - _shoulder_right.position).sqrMagnitude > _arm_right_max_length * _arm_right_max_length) 
                     {
                         //DebugWide.LogBlue("333");
-                        newPos = posOnMaxCircle;
+                        newRightPos = posOnMaxCircle;
                     }else
                     {
                         //DebugWide.LogBlue("444");
                     }
-                        
-                    
+
                 }
 
                 //chamto debug test
@@ -378,7 +378,7 @@ public class TwoHandControl : MonoBehaviour
             }else
             {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
                 
-                Vector3 targetToRSd = (_shoulder_right.position - _hand_left.position);
+                Vector3 targetToRSd = (_shoulder_right.position - newLeftPos);
                 Vector3 n_targetToRSd = targetToRSd.normalized;
                 float length_contactPt = targetToRSd.sqrMagnitude - _arm_right_max_length * _arm_right_max_length;
                 length_contactPt = (float)System.Math.Sqrt(length_contactPt);
@@ -388,13 +388,25 @@ public class TwoHandControl : MonoBehaviour
 
                 //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
                 float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
-                newPos = _hand_left.position + Quaternion.AngleAxis(-angleC, Vector3.up) * n_targetToRSd * length_contactPt; //fixme : up_vector
+                newRightPos = newLeftPos + Quaternion.AngleAxis(-angleC, Vector3.up) * n_targetToRSd * length_contactPt; //fixme : up_vector
 
 
             }
 
+              
+            Vector3 rightToLeft = newLeftPos - newRightPos;
+            Vector3 rotateDir = Quaternion.AngleAxis(90f, Vector3.up) * rightToLeft.normalized;
+            float length_min_twoHand = 0.2f;
+            if (rightToLeft.magnitude < length_min_twoHand)
+            {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
+                
+                newLeftPos = newLeftPos + rotateDir * 0.08f;
+                //_handle_leftToRight.position = newLeftPos;
 
-            _hand_right.position = newPos;
+            }
+
+            _hand_left.position = newLeftPos;
+            _hand_right.position = newRightPos;
             _arm_right_length = (_hand_right.position - _shoulder_right.position).magnitude;
             if (_arm_right_length > _arm_right_max_length)
                 _arm_right_length = _arm_right_max_length;
