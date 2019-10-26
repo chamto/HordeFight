@@ -324,7 +324,7 @@ public class TwoHandControl : MonoBehaviour
             //왼손을 핸들로 조종하기 
             Vector3 newPos;
             float newLength;
-            this.CalcHandPos(_handle_left.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
+            this.CalcHandPos(_handle_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
             _hand_left.position = newPos;
             _arm_left_length = newLength;
 
@@ -346,30 +346,40 @@ public class TwoHandControl : MonoBehaviour
                     
                     if ((_hand_left.position - posOnMaxCircle).magnitude > _twoHand_length)
                     {
-                        //DebugWide.LogBlue("sss");
+                        //DebugWide.LogBlue("111");
                         newPos = _hand_left.position + n_handToTarget * _twoHand_length;
                     }
                     else
                     {
+                        //DebugWide.LogBlue("222");
                         newPos = posOnMaxCircle;
                     }    
                 }else
                 {   //왼손이 오른손 최대 범위 밖에 있는 경우 
 
-                    newPos = _hand_left.position + (posOnMaxCircle - _handle_left.position).normalized * _twoHand_length;
+                    newPos = _hand_left.position + n_handToTarget * _twoHand_length;
+                    //newPos = _hand_left.position + (posOnMaxCircle - _hand_left.position).normalized * _twoHand_length;
                     if((newPos - _shoulder_right.position).sqrMagnitude > _arm_right_max_length * _arm_right_max_length) 
+                    {
+                        //DebugWide.LogBlue("333");
                         newPos = posOnMaxCircle;
-
-                    //chamto debug test
-                    //_debugLine.SetPosition(0, _hand_left.position);
-                    //_debugLine.SetPosition(1, posOnMaxCircle);
+                    }else
+                    {
+                        //DebugWide.LogBlue("444");
+                    }
+                        
+                    
                 }
+
+                //chamto debug test
+                //_debugLine.SetPosition(0, _hand_left.position);
+                //_debugLine.SetPosition(1, posOnMaxCircle);
 
             }else
             {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
-
-                //newPos = posOnMaxCircle;
+                
                 Vector3 targetToRSd = (_shoulder_right.position - _hand_left.position);
+                Vector3 n_targetToRSd = targetToRSd.normalized;
                 float length_contactPt = targetToRSd.sqrMagnitude - _arm_right_max_length * _arm_right_max_length;
                 length_contactPt = (float)System.Math.Sqrt(length_contactPt);
                 float proj_cos = length_contactPt / targetToRSd.magnitude;
@@ -378,7 +388,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
                 float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
-                newPos = _hand_left.position + Quaternion.AngleAxis(-angleC, Vector3.up) * targetToRSd;
+                newPos = _hand_left.position + Quaternion.AngleAxis(-angleC, Vector3.up) * n_targetToRSd * length_contactPt; //fixme : up_vector
 
 
             }
