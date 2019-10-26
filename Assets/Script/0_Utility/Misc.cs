@@ -808,7 +808,7 @@ namespace UtilGS9
                 //반직선의 시작점이 원안에 있는 경우 - 방법2
                 //float length = proj - d; //선분 시작점이 원 밖에 있는 경우
                 //if(wsq < rsq) length = proj + d; //선분 시작점이 원 안에 있는 경우
-                //intersect_firstPoint = rayOrigin + v * length;
+                //intersection_firstPoint = ray_origin + v * length;
 
                 //intersection_firstPoint = ray_origin + v * (proj - d);
                 intersection_firstPoint = VOp.Plus(ray_origin , VOp.Multiply(v , (proj - d)));

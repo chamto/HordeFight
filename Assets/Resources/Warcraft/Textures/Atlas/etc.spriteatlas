@@ -401,9 +401,9 @@ SpriteAtlas:
   - {fileID: 21300026, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300326, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300090, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300368, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300370, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300376, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
-  - {fileID: 21300368, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300372, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300374, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   m_PackedSpriteNamesToIndex:
@@ -765,9 +765,9 @@ SpriteAtlas:
   - ik_Lothar_13
   - pop_0_3
   - effect_45
+  - effect_hand_0
   - aim_x_0
   - aim_0
-  - effect_hand_0
   - aim_x_1
   - aim_1
   m_Tag: etc
