@@ -391,46 +391,33 @@ public class TwoHandControl : MonoBehaviour
 
                 Vector3 newPos = Vector3.zero;
                 float newLength = 0f;
-                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+                //------------------------------------------
+                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
                                              _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                              out newPos, out newLength);
                 _arm_left_length = newLength;
                 _hand_left.position = newPos;
 
-                //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_rightAround.position, _radius_rightAround,
-                //                             _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                //                             out newPos, out newLength);
+                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A1.position, _radius_circle_A1,
+                                              _shoulder_left.position, 10000, _arm_left_min_length,
+                                             out newPos, out newLength);
+                
+                _odir_left.position = newPos;
+                //------------------------------------------
+                handle = _HANDLE_right.position;
+                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_B0.position, _radius_circle_B0,
+                                             _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                             out newPos, out newLength);
+                _arm_right_length = newLength;
+                _hand_right.position = newPos;
+
+                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_B1.position, _radius_circle_B1,
+                                              _shoulder_right.position, 10000, _arm_right_min_length,
+                                             out newPos, out newLength);
+
+                _odir_right.position = newPos;
 
 
-
-                //_arm_right_length = newLength;
-                //_hand_right.position = newPos;
-
-
-                //----------------------------
-
-                //Vector3 twoHand = (_hand_right.position - _hand_left.position);
-                //Vector3 n_twoHand = twoHand.normalized;
-
-                ////왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
-                //newPos = _hand_left.position + n_twoHand * _twoHand_length;
-                //Vector3 sdToHand = (newPos - _shoulder_right.position);
-                //float length_sdToHand = sdToHand.magnitude;
-                //Vector3 n_sdToHand = sdToHand / length_sdToHand;
-                //newLength = length_sdToHand;
-                //if (length_sdToHand > _arm_right_max_length)
-                //{   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
-                //    newLength = _arm_right_max_length;
-                //    newPos = _shoulder_right.position + n_sdToHand * newLength;
-                //}
-                //else if (length_sdToHand < _arm_right_min_length)
-                //{   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
-                //    newLength = _arm_right_min_length;
-                //    newPos = _shoulder_right.position + n_sdToHand * newLength;
-                //}
-
-                //_arm_right_length = newLength;
-                //_hand_right.position = newPos;
             }
         }
         //찌르기 
@@ -736,10 +723,17 @@ public class TwoHandControl : MonoBehaviour
 
             if (true == _A_action_cut)
             {
-                //Vector3 handToTarget = _target_1.position - _hand_left.position;
-                //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
-                //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                //_object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
+                Vector3 handToTarget = _odir_left.position - _hand_left.position;
+                Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
+                float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
+                _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
+
+                //======
+
+                handToTarget = _odir_right.position - _hand_right.position;
+                obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
+                angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
+                _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
             }
 
             if(true == _A_action_sting)
@@ -1136,8 +1130,11 @@ public class TwoHandControl : MonoBehaviour
             Vector3 handle = _HANDLE_leftToRight.position;
             Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
             Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
-            this.DrawCirclePlate(_pos_circle_left.position, _radius_circle_left, axis_up, axis_forward, Color.yellow);
-            this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.yellow);
+            this.DrawCirclePlate(_pos_circle_A0.position, _radius_circle_A0, axis_up, axis_forward, Color.yellow);
+            this.DrawCirclePlate(_pos_circle_A1.position, _radius_circle_A1, axis_up, axis_forward, Color.yellow);
+
+            this.DrawCirclePlate(_pos_circle_B0.position, _radius_circle_B0, axis_up, axis_forward, Color.white);
+            this.DrawCirclePlate(_pos_circle_B1.position, _radius_circle_B1, axis_up, axis_forward, Color.white);
         }
 
         if(true == _A_body_aroundRotate)
