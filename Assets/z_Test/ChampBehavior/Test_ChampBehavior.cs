@@ -131,6 +131,25 @@ public class TwoHandControl : MonoBehaviour
     public Transform _edge_circle_B0 = null;
     public Transform _edge_circle_B1 = null;
 
+    //양손 좌표축
+    public Transform _L2R_axis_o = null;
+    public Transform _L2R_axis_up = null;
+    public Transform _L2R_axis_right = null;
+    public Transform _L2R_axis_forward = null;
+
+    //왼손 좌표축
+    public Transform _left_axis_o = null;
+    public Transform _left_axis_up = null;
+    public Transform _left_axis_right = null;
+    public Transform _left_axis_forward = null;
+
+    //오른손 좌표축 
+    public Transform _right_axis_o = null;
+    public Transform _right_axis_up = null;
+    public Transform _right_axis_right = null;
+    public Transform _right_axis_forward = null;
+
+
     public string _2_2__________________ = "";
     public bool _A_body_aroundRotate2 = false;
 
@@ -153,10 +172,7 @@ public class TwoHandControl : MonoBehaviour
 
     public string _5_2___________________ = "";
     public bool _A_hand_control_2 = false;
-    public Transform _hc2_L_axis_o = null;
-    public Transform _hc2_L_axis_up = null;
-    public Transform _hc2_L_axis_right = null;
-    public Transform _hc2_L_axis_forward = null;
+
 
 
     public string _6_1___________________ = "";
@@ -234,11 +250,23 @@ public class TwoHandControl : MonoBehaviour
         _hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
 
         //=======
-        //손조종 2
-        _hc2_L_axis_o = GameObject.Find("hc2_L_axis_o").transform;
-        _hc2_L_axis_up = GameObject.Find("hc2_L_axis_up").transform;
-        _hc2_L_axis_right = GameObject.Find("hc2_L_axis_right").transform;
-        _hc2_L_axis_forward = GameObject.Find("hc2_L_axis_forward").transform;
+        //양손 좌표축
+        _L2R_axis_o = GameObject.Find("L2R_axis_o").transform;
+        _L2R_axis_up = GameObject.Find("L2R_axis_up").transform;
+        _L2R_axis_right = GameObject.Find("L2R_axis_right").transform;
+        _L2R_axis_forward = GameObject.Find("L2R_axis_forward").transform;
+
+        //왼손 좌표축
+        _left_axis_o = GameObject.Find("left_axis_o").transform;
+        _left_axis_up = GameObject.Find("left_axis_up").transform;
+        _left_axis_right = GameObject.Find("left_axis_right").transform;
+        _left_axis_forward = GameObject.Find("left_axis_forward").transform;
+
+        //오른손 좌표축
+        _right_axis_o = GameObject.Find("right_axis_o").transform;
+        _right_axis_up = GameObject.Find("right_axis_up").transform;
+        _right_axis_right = GameObject.Find("right_axis_right").transform;
+        _right_axis_forward = GameObject.Find("right_axis_forward").transform;
 
 	}
 
@@ -385,9 +413,7 @@ public class TwoHandControl : MonoBehaviour
             if (ePart.OneHand == _part_control)
             { 
                 Vector3 handle = _HANDLE_left.position;
-                Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-                Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
-
+                Vector3 axis_up = _left_axis_up.position - _left_axis_o.position;
 
                 Vector3 newPos = Vector3.zero;
                 float newLength = 0f;
@@ -405,6 +431,7 @@ public class TwoHandControl : MonoBehaviour
                 _odir_left.position = newPos;
                 //------------------------------------------
                 handle = _HANDLE_right.position;
+                axis_up = _right_axis_up.position - _right_axis_o.position;
                 this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_B0.position, _radius_circle_B0,
                                              _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                              out newPos, out newLength);
@@ -566,8 +593,8 @@ public class TwoHandControl : MonoBehaviour
         if(true == _A_shoulder_autoRotate)
         {
             
-            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
             Vector3 slTohl = _hand_left.position - _shoulder_left.position;
             Vector3 srTohr = _hand_right.position - _shoulder_right.position;
             slTohl.Normalize();
@@ -617,8 +644,8 @@ public class TwoHandControl : MonoBehaviour
         if (true == _A_body_aroundRotate2)
         {
             Vector3 handle = _HANDLE_leftToRight.position;
-            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
 
             Vector3 newPos = Vector3.zero;
@@ -936,8 +963,8 @@ public class TwoHandControl : MonoBehaviour
 
     public void TwoHandControl2_Left()
     {
-        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
         //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
         //Vector3 Lf = Vector3.Cross(axis_up, Os1);
         //Vector3 Os2 = Vector3.Cross(Lf,axis_up);
@@ -1030,8 +1057,8 @@ public class TwoHandControl : MonoBehaviour
 
     public void OneHandleControl1_Left()
     {
-        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
         //==================================================
 
@@ -1073,8 +1100,8 @@ public class TwoHandControl : MonoBehaviour
 
     public void OneHandleControl1_Right()
     {
-        Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-        Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
         //==================================================
 
@@ -1127,12 +1154,14 @@ public class TwoHandControl : MonoBehaviour
         }
         if(true == _A_action_cut)
         {
-            Vector3 handle = _HANDLE_leftToRight.position;
-            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            
+            Vector3 axis_forward = _left_axis_forward.position - _left_axis_o.position;
+            Vector3 axis_up = _left_axis_up.position - _left_axis_o.position;
             this.DrawCirclePlate(_pos_circle_A0.position, _radius_circle_A0, axis_up, axis_forward, Color.yellow);
             this.DrawCirclePlate(_pos_circle_A1.position, _radius_circle_A1, axis_up, axis_forward, Color.yellow);
 
+            axis_forward = _right_axis_forward.position - _right_axis_o.position;
+            axis_up = _right_axis_up.position - _right_axis_o.position;
             this.DrawCirclePlate(_pos_circle_B0.position, _radius_circle_B0, axis_up, axis_forward, Color.white);
             this.DrawCirclePlate(_pos_circle_B1.position, _radius_circle_B1, axis_up, axis_forward, Color.white);
         }
@@ -1152,8 +1181,8 @@ public class TwoHandControl : MonoBehaviour
 
             //===========
             Vector3 handle = _HANDLE_leftToRight.position;
-            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
             // ****  왼손만 계산(임시) *****
             Vector3 handleToCenter = _pos_circle_left.position - handle;
@@ -1181,8 +1210,8 @@ public class TwoHandControl : MonoBehaviour
         {
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
 
-            Vector3 axis_forward = _hc2_L_axis_forward.position - _hc2_L_axis_o.position;
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
             float shoulderToCrossHand_length = (_hand_left.position - _shoulder_right.position).magnitude;
             float angleC = this.CalcJoint_AngleC(shoulderToCrossHand_length, _arm_right_length, _twoHand_length);
             //Vector3 shaft = Quaternion.AngleAxis(angleC, axis_forward) * axis_up;
@@ -1232,12 +1261,12 @@ public class TwoHandControl : MonoBehaviour
         if (true == _A_hand_control_2)
         {
             //왼손기준 
-            DebugWide.DrawLine(_hand_left.position, _hand_left.position + _hc2_L_axis_up.position - _hc2_L_axis_o.position, Color.red);
+            DebugWide.DrawLine(_hand_left.position, _hand_left.position + _L2R_axis_up.position - _L2R_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_right.position - _hc2_L_axis_o.position, Color.red);
             //DebugWide.DrawLine(handPos,handPos + _hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.red);
-            this.DrawCirclePlate(_hand_left.position, _twoHand_length, _hc2_L_axis_up.position - _hc2_L_axis_o.position, _hc2_L_axis_forward.position - _hc2_L_axis_o.position, Color.magenta);
+            this.DrawCirclePlate(_hand_left.position, _twoHand_length, _L2R_axis_up.position - _L2R_axis_o.position, _L2R_axis_forward.position - _L2R_axis_o.position, Color.magenta);
 
-            Vector3 axis_up = _hc2_L_axis_up.position - _hc2_L_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
             //Vector3 Os1 = _shoulder_right.position - _hand_left.position;
             //Vector3 Lf = Vector3.Cross(axis_up, Os1);
             //Vector3 Os2 = Vector3.Cross(Lf, axis_up);
