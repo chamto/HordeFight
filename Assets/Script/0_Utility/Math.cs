@@ -8,6 +8,137 @@ using System;
 
 namespace UtilGS9
 {
+
+    /// <summary>
+    /// 직선 , 매개변수가 곱해진 방향값(direction) 을 사용한다
+    /// </summary>
+    public struct Line3
+    {
+        public Vector3 direction;
+        public Vector3 origin;
+
+        public Line3(Vector3 pa_dir , Vector3 pa_ori )
+        {
+            direction = pa_dir;
+            origin = pa_ori;
+        }
+
+        //두 직선의 교점을 구한다. 두 직선이 평행한 경우, 선과 선사이의 최소거리를 반환한다
+        static public void ClosestPoints(out Vector3 point0, out Vector3 point1,
+                                  Line3 line0,
+                                  Line3 line1)
+        {
+            // compute intermediate parameters
+            Vector3 w0 = line0.origin - line1.origin;
+
+            float a = Vector3.Dot(line0.direction, line0.direction);
+            float b = Vector3.Dot(line0.direction, line1.direction);
+            float c = Vector3.Dot(line1.direction, line1.direction);
+            float d = Vector3.Dot(line0.direction, w0);
+            float e = Vector3.Dot(line1.direction, w0);
+
+            float denom = a * c - b * b;
+
+
+            //if (ML.Util.IsZero(denom))
+            if (Math.Abs(denom) < float.Epsilon)
+            {
+                point0 = line0.origin;
+                point1 = line1.origin + (e / c) * line1.direction;
+            }
+            else
+            {
+                point0 = line0.origin + ((b * e - c * d) / denom) * line0.direction;
+                point1 = line1.origin + ((a * e - b * d) / denom) * line1.direction;
+            }
+
+        }
+
+    }
+
+    public struct Ray3
+    {
+        public Vector3 direction;
+        public Vector3 origin;
+
+        public Ray3(Vector3 pa_dir, Vector3 pa_ori)
+        {
+            direction = pa_dir;
+            origin = pa_ori;
+        }
+
+        //두 반직선의 교점을 구한다. 두 반직선이 평행한 경우, 선과 선사이의 최소거리를 반환한다
+        static public void ClosestPoints(out Vector3 point0, out Vector3 point1,
+                                  Ray3 ray0, Ray3 ray1)
+        {
+            // compute intermediate parameters
+            Vector3 w0 = ray0.origin - ray1.origin;
+
+            float a = Vector3.Dot(ray0.direction, ray0.direction);
+            float b = Vector3.Dot(ray0.direction, ray1.direction);
+            float c = Vector3.Dot(ray1.direction, ray1.direction);
+            float d = Vector3.Dot(ray0.direction, w0);
+            float e = Vector3.Dot(ray1.direction, w0);
+
+            float denom = a * c - b * b;
+
+            // parameters to compute s_c, t_c
+            float s_c, t_c;
+            float sn, sd, tn, td;
+
+            //if (ML.Util.IsZero(denom))
+            if (Math.Abs(denom) < float.Epsilon)
+            {
+                sd = td = c;
+                sn = 0.0f;
+                tn = e;
+            }
+            else
+            {
+                // start by clamping s_c
+                sd = td = denom;
+                sn = b * e - c * d;
+                tn = a * e - b * d;
+
+                // clamp s_c to 0
+                if (sn < 0.0f)
+                {
+                    sn = 0.0f;
+                    tn = e;
+                    td = c;
+                }
+
+            }
+
+            // clamp t_c within [0,+inf]
+            // clamp t_c to 0
+            if (tn < 0.0f)
+            {
+                t_c = 0.0f;
+                // clamp s_c to 0
+                if (-d < 0.0f)
+                {
+                    s_c = 0.0f;
+                }
+                else
+                {
+                    s_c = -d / a;
+                }
+            }
+            else
+            {
+                t_c = tn / td;
+                s_c = sn / sd;
+            }
+
+            // compute closest points
+            point0 = ray0.origin + s_c * ray0.direction;
+            point1 = ray1.origin + t_c * ray1.direction;
+
+        }
+
+    }
+
     /// <summary>
     /// 선분 , 매개변수가 곱해진 방향값(direction) 을 사용한다.
     /// </summary>
