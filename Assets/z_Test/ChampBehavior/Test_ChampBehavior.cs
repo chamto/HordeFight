@@ -56,6 +56,7 @@ public class TwoHandControl : MonoBehaviour
 
 
     //핸들 
+    public Transform _HANDLE_staff = null;
     public Transform _HANDLE_left = null;   //핸들
     public Transform _HANDLE_right = null;
     public Transform _HANDLE_leftToRight = null;
@@ -201,6 +202,7 @@ public class TwoHandControl : MonoBehaviour
         _odir_right = GameObject.Find("odir_right").transform;
 
         //핸들
+        _HANDLE_staff = GameObject.Find("handle_staff").transform; //핸들 
         _HANDLE_left = GameObject.Find("handle_left").transform; //핸들 
         _HANDLE_right = GameObject.Find("handle_right").transform;
         _HANDLE_leftToRight = GameObject.Find("handle_leftToRight").transform;
@@ -828,11 +830,11 @@ public class TwoHandControl : MonoBehaviour
         Vector3 n_line_dir = line_dir.normalized;
         Vector3 posOnMaxCircle;
         float sqr_arm_max_length = arm_max_length * arm_max_length;
-        //newHand_pos = line_origin + n_line_dir * line_length; //예상지점 계산 
+        bool result = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_origin, n_line_dir, out posOnMaxCircle);
 
         //----------------------------------------------
 
-        if (true == UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_origin, n_line_dir, out posOnMaxCircle))
+        if (true == result)
         {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 있다  
 
             if((sqr_arm_max_length - (shoulder_pos - line_origin).sqrMagnitude) > 0)
@@ -883,26 +885,13 @@ public class TwoHandControl : MonoBehaviour
 
         }
 
-        //-----------------------
-        Vector3 leftToRight = newHand_pos - line_origin;
-        Vector3 shaft_rot = Vector3.Cross(line_origin, shoulder_pos);
-        Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
-        float length_min_twoHand = 0.1f;
-        if (leftToRight.magnitude < length_min_twoHand)
-        {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
-
-            line_origin = line_origin + rotateDir * 0.08f;
-            //_handle_leftToRight.position = newLeftPos;
-        }
-        //-----------------------
-
 
         newArm_length = (newHand_pos - shoulder_pos).magnitude;
         if (newArm_length > arm_max_length)
             newArm_length = arm_max_length;
 
 
-        return false;
+        return result;
     
     }
 
@@ -1000,11 +989,11 @@ public class TwoHandControl : MonoBehaviour
 
     public void HandDirControl_LeftToRight()
     {
-        Vector3 sdToHand = (_hand_left.position - _shoulder_left.position);
-        Vector3 n_sdToHand = sdToHand.normalized;
-        Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
-        //조종축에 맞게 위치 계산 (코사인제2법칙으로 구현한 것과는 다른 방식)
+        
+        //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
+        //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
+        Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
         Vector3 newPos;
         float newLength;
         this.CalcHandPos(_hc1_standard.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
@@ -1015,6 +1004,19 @@ public class TwoHandControl : MonoBehaviour
         this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
                                      _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
 
+
+        //-----------------------
+        Vector3 leftToRight = newPos - _hand_left.position;
+        Vector3 shaft_rot = Vector3.Cross(_hand_left.position, _shoulder_right.position);
+        Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
+        float length_min_twoHand = 0.1f;
+        if (leftToRight.magnitude < length_min_twoHand)
+        {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
+
+            _hand_left.position = _hand_left.position + rotateDir * 0.08f;
+            //_handle_leftToRight.position = newLeftPos;
+        }
+        //-----------------------
 
         _hand_right.position = newPos;
         _arm_right_length = newLength;
