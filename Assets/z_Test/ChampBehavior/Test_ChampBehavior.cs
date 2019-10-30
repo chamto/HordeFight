@@ -166,10 +166,10 @@ public class TwoHandControl : MonoBehaviour
     public float _tc_radius = 0.5f;
 
     public string _5_1___________________ = "";
-    public bool _A_handDir_control = true;
-    public Transform _hc1_axis_o = null; 
-    public Transform _hc1_object_dir = null; 
-    public Transform _hc1_standard = null;
+    public bool _A_handleStaff_control = true;
+    //public Transform _hc1_axis_o = null; 
+    public Transform _hs_objectDir = null; 
+    public Transform _hs_standard = null;
 
 
     public string _5_2___________________ = "";
@@ -248,9 +248,9 @@ public class TwoHandControl : MonoBehaviour
 
         //=======
         //손조종 1
-        _hc1_object_dir = GameObject.Find("hc1_object_dir").transform;
-        _hc1_standard = GameObject.Find("hc1_standard").transform;
-        _hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
+        _hs_objectDir = GameObject.Find("hs_objectDir").transform;
+        _hs_standard = GameObject.Find("hs_standard").transform;
+        //_hc1_axis_o = GameObject.Find("hc1_axis_o").transform;
 
         //=======
         //양손 좌표축
@@ -713,7 +713,7 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
         //손 움직임 만들기 
-        if (true == _A_handDir_control)
+        if (true == _A_handleStaff_control)
         {
             //조종축으로 손위치 계산 
             if (ePart.TwoHand_Left == _part_control)
@@ -988,14 +988,14 @@ public class TwoHandControl : MonoBehaviour
 
     public void HandDirControl_LeftToRight()
     {
-        
+        //조종축 회전 테스트 코드 
         //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
         //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
-        Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
+        Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
         Vector3 newPos;
         float newLength;
-        this.CalcHandPos(_hc1_standard.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
+        this.CalcHandPos(_hs_standard.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         _hand_left.position = newPos;
         _arm_left_length = newLength;
 
@@ -1027,18 +1027,18 @@ public class TwoHandControl : MonoBehaviour
     {
         Vector3 sdToHand = (_hand_left.position - _shoulder_left.position);
         Vector3 n_sdToHand = sdToHand.normalized;
-        Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
+        Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
         //조종축에 맞게 위치 계산 (코사인제2법칙으로 구현한 것과는 다른 방식)
 
         //- 기준점이 어깨범위를 벗어났는지 검사
         //*
         //1. 기준점이 왼손범위 안에 있는지 바깥에 있는지 검사
-        float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
+        float wsq = (_hs_standard.position - _shoulder_left.position).sqrMagnitude;
         float rsq = _arm_left_length * _arm_left_length;
         Vector3 inter_pos = UtilGS9.ConstV.v3_zero;
         bool testInter = false;
         float frontDir = 1f;
-        float stand_dir = Vector3.Dot(_body_dir, _hc1_standard.position - transform.position);
+        float stand_dir = Vector3.Dot(_body_dir, _hs_standard.position - transform.position);
 
         //기준점이 왼손범위 바깥에 있다 - 몸방향 값을 받대로 바꿔서 계산 
         if (wsq > rsq)
@@ -1048,7 +1048,7 @@ public class TwoHandControl : MonoBehaviour
         if (0 > stand_dir)
             frontDir *= -1f;
 
-        testInter = UtilGS9.Geo.IntersectRay2(_shoulder_left.position, _arm_left_length, _hc1_standard.position, frontDir * _body_dir, out inter_pos);
+        testInter = UtilGS9.Geo.IntersectRay2(_shoulder_left.position, _arm_left_length, _hs_standard.position, frontDir * _body_dir, out inter_pos);
 
         if (true == testInter)
         {
@@ -1350,21 +1350,21 @@ public class TwoHandControl : MonoBehaviour
         }
 
         //손방향 조종
-        if (true == _A_handDir_control)
+        if (true == _A_handleStaff_control)
         {
             //Vector3 objectDir = _hc1_object_dir.position - _hc1_standard.position;
             //Vector3 targetDir = _target_1.position - _hc1_standard.position;
             //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
             //DebugWide.DrawLine(_hc1_standard.position, _target_1.position, Color.black);
-            DebugWide.DrawLine(_hc1_standard.position, _hc1_object_dir.position, Color.white);
-            DebugWide.DrawCircle(_hc1_object_dir.position, 0.05f, Color.white);
+            DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
+            DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
             //DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + shaft_t, Color.white);
 
             float rsq = _arm_left_length * _arm_left_length;
-            float wsq = (_hc1_standard.position - _shoulder_left.position).sqrMagnitude;
+            float wsq = (_hs_standard.position - _shoulder_left.position).sqrMagnitude;
             float inArea = 1;
             if (rsq < wsq) inArea = -1f;
-            DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + _body_dir * inArea * 3, Color.yellow);
+            DebugWide.DrawLine(_hs_standard.position, _hs_standard.position + _body_dir * inArea * 3, Color.yellow);
         }
 
         //손조종 

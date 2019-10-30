@@ -65166,7 +65166,7 @@ GameObject:
   m_Component:
   - component: {fileID: 568333655}
   m_Layer: 0
-  m_Name: hc1_axis_o
+  m_Name: ctr_integrated
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65422,7 +65422,7 @@ GameObject:
   m_Component:
   - component: {fileID: 758103477}
   m_Layer: 0
-  m_Name: hc1_standard
+  m_Name: hs_standard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66249,7 +66249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1274361246}
   m_Layer: 0
-  m_Name: hc1_object_dir
+  m_Name: hs_objectDir
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
