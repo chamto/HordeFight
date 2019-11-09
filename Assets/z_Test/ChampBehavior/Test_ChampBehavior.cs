@@ -120,6 +120,8 @@ public class TwoHandControl : MonoBehaviour
     public Transform _pos_circle_right = null;
     public Transform _edge_circle_left = null;
     public Transform _edge_circle_right = null;
+    public Transform _highest_circle_left = null;
+    public Transform _highest_circle_right = null;
 
     //왼손 조종용 주변원
     public Transform _pos_circle_A0 = null;
@@ -158,11 +160,12 @@ public class TwoHandControl : MonoBehaviour
     //======================================================
 
     public string _4____________________ = "";
-    public bool _A_trajectoryCircle = false;
-    public Transform _tc_center = null;
-    public Transform _tc_anchorA = null;
-    public Transform _tc_anchorB = null;
-    public Transform _tc_highest = null;
+    public bool _A_deformationCircle = false;
+    public Transform _dc_center = null;
+    public Transform _dc_anchorA = null;
+    public Transform _dc_anchorB = null;
+    public Transform _dc_highest = null;
+    public Transform _dc_edge = null;
     public float _tc_radius = 0.5f;
 
     public string _5_1___________________ = "";
@@ -219,10 +222,11 @@ public class TwoHandControl : MonoBehaviour
         _hand_right_spr = _hand_right.GetComponentInChildren<SpriteRenderer>().transform;
 
         //궤적원
-        _tc_center = GameObject.Find("trajectoryCircle").transform;
-        _tc_anchorA = GameObject.Find("anchorA").transform;
-        _tc_anchorB = GameObject.Find("anchorB").transform;
-        _tc_highest = GameObject.Find("highest").transform;
+        _dc_center = GameObject.Find("deformationCircle").transform;
+        _dc_anchorA = GameObject.Find("dc_anchorA").transform;
+        _dc_anchorB = GameObject.Find("dc_anchorB").transform;
+        _dc_highest = GameObject.Find("dc_highest").transform;
+        _dc_edge = GameObject.Find("dc_edge").transform;
 
 
         //==================================================
@@ -231,6 +235,8 @@ public class TwoHandControl : MonoBehaviour
         _pos_circle_right= GameObject.Find("pos_circle_right").transform;
         _edge_circle_left = GameObject.Find("edge_circle_left").transform;
         _edge_circle_right = GameObject.Find("edge_circle_right").transform;
+        _highest_circle_left = GameObject.Find("highest_circle_left").transform;
+        _highest_circle_right = GameObject.Find("highest_circle_right").transform;
 
 
         _pos_circle_A0 = GameObject.Find("pos_circle_A0").transform;
@@ -298,12 +304,12 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
 
         //궤적원에 따른 왼손/오른손 움직임 표현 
-        if (true == _A_trajectoryCircle)
+        if (true == _A_deformationCircle)
         {
 
             if (ePart.TwoHand_Left == _part_control)
             {
-                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_left.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
+                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_left.position, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
                 float sqrTempLength = (_shoulder_left.position - tempPos).sqrMagnitude;
                 if (_arm_left_min_length <= sqrTempLength && sqrTempLength <= _arm_left_max_length)
                 {
@@ -314,7 +320,7 @@ public class TwoHandControl : MonoBehaviour
 
             if (ePart.TwoHand_Right == _part_control)
             {
-                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_right.position, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
+                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_right.position, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
                 float sqrTempLength = (_shoulder_right.position - tempPos).sqrMagnitude;
                 if (_arm_right_min_length <= sqrTempLength && sqrTempLength <= _arm_right_max_length)
                 {
@@ -996,6 +1002,66 @@ public class TwoHandControl : MonoBehaviour
         newHand_pos = handleCalcPos;
     }
 
+    public void CalcHandPos_DeformationCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
+                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
+                                        out Vector3 newHand_pos, out float newArm_length)
+    {
+
+        Vector3 handleToCenter = circle_pos - handle;
+        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+        Vector3 proj_handlePos = handle + proj_handle;
+
+
+
+        //===== 1차 계산
+        Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
+        Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
+        Vector3 handleCalcPos = aroundCalcPos;
+
+
+        float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
+        float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
+
+        float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
+        //_arm_left_length = length_curLeft;
+
+        //최대길이를 벗어나는 핸들 최대길이로 변경
+        if (length_cur > arm_max_length)
+        {
+            length_cur = arm_max_length;
+            sqrLength_sdToHandle = arm_max_length * arm_max_length;
+        }
+
+        //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
+        //===== 2차 계산
+        if (arm_min_length >= length_cur)
+        {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
+            //DebugWide.LogBlue("0"); //test
+            length_cur = arm_min_length;
+            n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
+            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+        }
+        else
+        {
+
+            if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
+            {   //주변원 위의 점이 최소거리 이내인 경우
+                //DebugWide.LogBlue("1"); //test
+                length_cur = arm_min_length;
+                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+            }
+            else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
+            {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
+                //DebugWide.LogBlue("2"); //test
+                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+            }
+
+        }
+
+        newArm_length = (handleCalcPos - shoulder_pos).magnitude;
+        newHand_pos = handleCalcPos;
+    }
 
     private float __backup_radius_circle_left = -1f;
     private float __backup_radius_circle_right = -1f;
@@ -1083,25 +1149,37 @@ public class TwoHandControl : MonoBehaviour
             }
                 
 
+
+
+
             //-----------------------
             //주변원 크기 갱신 
             _radius_circle_left = (_pos_circle_left.position - _edge_circle_left.position).magnitude;
             _radius_circle_right = (_pos_circle_right.position - _edge_circle_right.position).magnitude;
+            //_tc_radius = (_tc_center.position - _tc_edge.position).magnitude;
+            //-----------------------
+
+            Vector3 handle = _HANDLE_leftToRight.position;
+            //Vector3 handle_1 = _hs_standard.position;
+            //Vector3 handle_2 = _hs_objectDir.position;
+            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+            Vector3 newPos = Vector3.zero;
+            float newLength = 0f;
 
             //-----------------------
 
-
-            Vector3 handle = _HANDLE_leftToRight.position;
-            //Vector3 handle = _hs_standard.position;
-            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
-            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-
-
-            Vector3 newPos = Vector3.zero;
-            float newLength = 0f;
-            this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+            //변형원 위치 계산 
+            this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
                                          _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                          out newPos, out newLength);
+
+            //-----------------------
+
+            //일반원 위치 계산 
+            //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+            //                             _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+            //                             out newPos, out newLength);
             _arm_left_length = newLength;
             _hand_left.position = newPos;
 
@@ -1484,9 +1562,9 @@ public class TwoHandControl : MonoBehaviour
 
 
         //궤적원에 따른 왼손 움직임 표현 
-        if (true == _A_trajectoryCircle)
+        if (true == _A_deformationCircle)
         {
-            Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _tc_center.position, _tc_radius, _tc_anchorA.position, _tc_anchorB.position, _tc_highest.position, 1);
+            Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
         }
 
         //손방향 조종
@@ -1500,11 +1578,13 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
             //DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + shaft_t, Color.white);
 
-            float rsq = _arm_left_length * _arm_left_length;
-            float wsq = (_hs_standard.position - _shoulder_left.position).sqrMagnitude;
-            float inArea = 1;
-            if (rsq < wsq) inArea = -1f;
-            DebugWide.DrawLine(_hs_standard.position, _hs_standard.position + _body_dir * inArea * 3, Color.yellow);
+            //----
+            //float rsq = _arm_left_length * _arm_left_length;
+            //float wsq = (_hs_standard.position - _shoulder_left.position).sqrMagnitude;
+            //float inArea = 1;
+            //if (rsq < wsq) inArea = -1f;
+            //DebugWide.DrawLine(_hs_standard.position, _hs_standard.position + _body_dir * inArea * 3, Color.yellow);
+            //----
 
             if(true == _switch_cutAndSting)
             {
@@ -1512,7 +1592,9 @@ public class TwoHandControl : MonoBehaviour
                 Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
                 Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
                 this.DrawCirclePlate(_pos_circle_left.position, _radius_circle_left, axis_up, axis_forward, Color.yellow);
-                this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.yellow);
+                this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.blue);
+
+                Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
             }
         }
 
