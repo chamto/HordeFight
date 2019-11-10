@@ -1390,6 +1390,144 @@ namespace UtilGS9
         }
 
 
+        static public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+        {
+            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
+            float highestPointLength = centerToHighestPoint.magnitude;
+            float t = highestPointLength - circle_radius;
+            float td = (target_pos - circle_pos).magnitude - circle_radius; //td를 바로 구한다 
+
+            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
+            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+            initialDir.Normalize();
+
+            //비례식을 이용하여 td 구하기 
+            //angleD : td  = angleH : t
+            //td * angleH = angleD * t
+            //td = (angleD * t) / angleH
+            //angleD = (td * angleH) / t 
+            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
+                                            //float angleD = Vector3.SignedAngle(initialDir, target_pos, upDir); //이 방식으로는 360 이상은 구할 수 없다 
+            float angleD = (td * angleH) / t;
+
+            Vector3 tdPos = circle_pos;
+            tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+            //float td = (angleD * t) / angleH;
+            tdPos = circle_pos + tdPos * (circle_radius + td);
+
+            return tdPos;
+        }
+
+        static public Vector3 DeformationCirclePos_Tornado(float src_angle, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+        {
+            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
+            float highestPointLength = centerToHighestPoint.magnitude;
+            float t = highestPointLength - circle_radius;
+
+            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
+            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+            initialDir.Normalize();
+
+            //비례식을 이용하여 td 구하기 
+            //angleD : td  = angleH : t
+            //td * angleH = angleD * t
+            //td = (angleD * t) / angleH
+            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
+            float angleD = src_angle;
+
+            Vector3 tdPos = circle_pos;
+            tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+            float td = (angleD * t) / angleH;
+            tdPos = circle_pos + tdPos * (circle_radius + td);
+
+            return tdPos;
+        }
+
+        static public void DeformationCirclePos_Tornado_Gizimo(Vector3 plus_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+        {
+
+            //=================================
+
+            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
+            float highestPointLength = centerToHighestPoint.magnitude;
+            float t = highestPointLength - circle_radius;
+
+            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
+            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+            initialDir.Normalize();
+
+            //==================================================
+
+            //비례식을 이용하여 td 구하기 
+            //angleD : td  = angleH : t
+            //td * angleH = angleD * t
+            //td = (angleD * t) / angleH
+            float minAngle = 0;
+            float maxAngle = circle_maxAngle;
+            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
+            float angleD = 0f;
+            float count = 300; //5
+            Vector3 prevPos = circle_pos;
+            Vector3 tdPos = circle_pos;
+
+            /*for (int i = 0; i < count; i++)
+            {
+
+                //5도 간격으로 각도를 늘린다 
+                angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
+
+                tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+
+                float td = (angleD * t) / angleH;
+
+                tdPos = circle_pos + tdPos * (circle_radius + td);
+                //tdPos = this.DeformationCirclePos_Tornado(angleD, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
+                //tdPos = this.DeformationCirclePos_Tornado(tdPos, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
+
+                //----------- debug print -----------
+                if (0 != i)
+                    DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.gray);
+                //----------- debug print -----------
+
+                prevPos = tdPos;
+
+            }*/
+            //==================================================
+
+            count = 30;
+            for (int i = 0; i < count + 1; i++)
+            {
+
+                //angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count); //180도 이상 계산못함 
+                angleD = Mathf.Lerp(minAngle, maxAngle, i / (float)count);
+                //DebugWide.LogBlue(i + " : " + angleD);
+                tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+
+
+                float td = (angleD * t) / angleH;
+                //DebugWide.PrintText(tdPos * _radius, Color.black, " " + td + "  " + angleD);
+
+
+                tdPos = circle_pos + tdPos * (circle_radius + td);
+
+                //----------- debug print -----------
+                //DebugWide.DrawLine(target_pos + circle_pos, target_pos + tdPos, Color.red);
+                if (0 != i)
+                    DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.white);
+                //----------- debug print -----------
+
+                prevPos = tdPos;
+
+            }
+
+
+            //----------- debug print -----------
+            DebugWide.DrawCircle(plus_pos + circle_pos, circle_radius, Color.black);
+            DebugWide.DrawLine(plus_pos + circle_pos, plus_pos + circle_highest, Color.red);
+        }
     }//end geo
 
 
