@@ -1156,7 +1156,7 @@ public class TwoHandControl : MonoBehaviour
             //주변원 크기 갱신 
             _radius_circle_left = (_pos_circle_left.position - _edge_circle_left.position).magnitude;
             _radius_circle_right = (_pos_circle_right.position - _edge_circle_right.position).magnitude;
-            //_tc_radius = (_tc_center.position - _tc_edge.position).magnitude;
+
             //-----------------------
 
             Vector3 handle = _HANDLE_leftToRight.position;
