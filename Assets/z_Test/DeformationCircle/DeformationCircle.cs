@@ -15,6 +15,7 @@ public class DeformationCircle : MonoBehaviour
     public Transform _anchorPointA = null;
     public Transform _anchorPointB = null;
     public Transform _handle = null;
+    public Transform _upDir_endPos = null;
 
     private Vector3 _initialDir = Vector3.forward;
 
@@ -26,6 +27,7 @@ public class DeformationCircle : MonoBehaviour
         _anchorPointA = GameObject.Find("anchorPointA").transform;
         _anchorPointB = GameObject.Find("anchorPointB").transform;
         _handle = GameObject.Find("handle").transform;
+        _upDir_endPos = GameObject.Find("upDir_endPos").transform;
     }
 
     // Update is called once per frame
@@ -222,7 +224,7 @@ public class DeformationCircle : MonoBehaviour
 
     }
 
-    public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+    public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, bool endure_upDir ,  Vector3 circle_highest, float circle_maxAngle)
     {
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
         Vector3 centerToHighestPoint = (circle_highest - circle_pos);
@@ -244,12 +246,18 @@ public class DeformationCircle : MonoBehaviour
         //td * angleH = angleD * t
         //td = (angleD * t) / angleH
         //angleD = (td * angleH) / t 
-        float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
-        float angleD = Vector3.SignedAngle(initialDir, target_pos, upDir); //이 방식으로는 180 이상은 구할 수 없다 
+        float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
+
+        //float angleD = Vector3.SignedAngle(initialDir, target_pos, upDir); //0~180 => -179~0 , 180이상을 음수로 출력한다 
+        //SingnedAngle 함수의 axis 인자 : axis 축중심으로 회전하는 각도를 계산한다는 느낌이 있지만, 실제로는 회전의 방향 계산만을 위한 축이다 
+        //의도되로 축 중심으로 회전량을 구하는 함수로 바꾸어야 잘못계산되는 부분을 고칠 수 있다 
+
+        float angleD = UtilGS9.Geo.AngleSigned_Normal_V0(initialDir, target_pos, upDir);
+        //float tempAngle = angleD;
         if (angleD < 0) angleD += 360f; //180도 이상의 음수표현을 양수표현으로 바꾼다 
         angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
         if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
-        //DebugWide.LogBlue(angleD + "  " + circle_maxAngle);
+        //DebugWide.LogBlue(tempAngle + "  => " + angleD + "   , " + angleD2 + "  " + circle_maxAngle);
 
 
         Vector3 tdPos = circle_pos;
@@ -379,9 +387,10 @@ public class DeformationCircle : MonoBehaviour
         //=======
 
         //Vector3 plus_pos = Vector3.back * 80 + Vector3.left * 80;
+        Vector3 upDir1 = (_upDir_endPos.position).normalized; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
         Vector3 plus_pos = Vector3.zero;
-        this.DeformationCirclePos_Tornado_Gizimo(plus_pos, _sphereCenter.position, _radius, Vector3.up, _highestPoint.position, _maxAngle); //chamto test
-        Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, Vector3.up, _highestPoint.position, _maxAngle);
+        this.DeformationCirclePos_Tornado_Gizimo(plus_pos, _sphereCenter.position, _radius, upDir1, _highestPoint.position, _maxAngle); //chamto test
+        Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, upDir1, true, _highestPoint.position, _maxAngle);
         DebugWide.DrawCircle(plus_pos + torPos, 2f, Color.magenta);
         DebugWide.DrawLine(_sphereCenter.position, _handle.position, Color.magenta);
         return;
