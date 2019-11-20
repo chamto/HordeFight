@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using UtilGS9;
 
 public class DeformationCircle : MonoBehaviour
 {
@@ -8,8 +10,8 @@ public class DeformationCircle : MonoBehaviour
     public bool _isTornado = true;
     public bool _isInter = false;
 
-    public float _radius = 10f;
-    public float _maxAngle = 360f;
+    public float _radius = 5f;
+    public float _maxAngle = 360f * 2f;
     public Transform _sphereCenter = null;
     public Transform _highestPoint = null;
     public Transform _anchorPointA = null;
@@ -224,6 +226,26 @@ public class DeformationCircle : MonoBehaviour
 
     }
 
+    public void DrawTornano_T2AndAngle2(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, bool endure_upDir, Vector3 circle_highest, float circle_maxAngle)
+    {
+        Vector3 centerToHighestPoint = (circle_highest - circle_pos);
+        float highestPointLength = centerToHighestPoint.magnitude;
+        float t = highestPointLength - circle_radius;
+
+        float t_td = (target_pos - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+        float t_angleD = (t_td * circle_maxAngle) / t;
+
+        Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+        initialDir.Normalize();
+
+       
+        Vector3 tdPos = Quaternion.AngleAxis(t_angleD, upDir) * initialDir;
+        tdPos = circle_pos + tdPos * (circle_radius + t_td);
+
+        DebugWide.DrawLine(circle_pos, tdPos, Color.black);    
+
+    }
+
     public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, bool endure_upDir ,  Vector3 circle_highest, float circle_maxAngle)
     {
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
@@ -231,11 +253,23 @@ public class DeformationCircle : MonoBehaviour
         float highestPointLength = centerToHighestPoint.magnitude;
         float t = highestPointLength - circle_radius;
 
-        float t_td = (target_pos - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
-        float t_angleD = (t_td * circle_maxAngle) / t;
+        //==================================================
+        //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
+        Vector3 proj_centerToHighest = centerToHighestPoint - upDir * Vector3.Dot(upDir, centerToHighestPoint) / upDir.sqrMagnitude;
+        float proj_highestPointLength = proj_centerToHighest.magnitude;
+        float proj_t = proj_highestPointLength - circle_radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
+
+
+        Vector3 centerToTarget = target_pos - circle_pos;
+        Vector3 proj_target = centerToTarget - upDir * Vector3.Dot(upDir, centerToTarget) / upDir.sqrMagnitude;
+        float t_target = (proj_target - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+        float t_angleD = (t_target * circle_maxAngle) / proj_t;
+
         if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
         else if (t_angleD < 0) t_angleD = 0;
-        int weight = (int)(t_angleD / 360f); //회오리 두께구하기 
+
+        //==================================================
+
 
         //Vector3 initialDir = centerToHighestPoint / highestPointLength;
         Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
@@ -252,12 +286,14 @@ public class DeformationCircle : MonoBehaviour
         //SingnedAngle 함수의 axis 인자 : axis 축중심으로 회전하는 각도를 계산한다는 느낌이 있지만, 실제로는 회전의 방향 계산만을 위한 축이다 
         //의도되로 축 중심으로 회전량을 구하는 함수로 바꾸어야 잘못계산되는 부분을 고칠 수 있다 
 
-        float angleD = UtilGS9.Geo.AngleSigned_Normal_V0(initialDir, target_pos, upDir);
+        //float angleD2 = UtilGS9.Geo.AngleSigned_Normal_V0(initialDir, target_pos, upDir); 
+        float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, upDir); //음수표현없이 양수로 반환  
+        int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 
         //float tempAngle = angleD;
-        if (angleD < 0) angleD += 360f; //180도 이상의 음수표현을 양수표현으로 바꾼다 
+        //if (angleD < 0) angleD += 360f; //180도 이상의 음수표현을 양수표현으로 바꾼다 
         angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
         if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
-        //DebugWide.LogBlue(tempAngle + "  => " + angleD + "   , " + angleD2 + "  " + circle_maxAngle);
+        //DebugWide.LogBlue(tempAngle + "  => " + angleD + "   ,wt " + weight + "  " + t_angleD);
 
 
         Vector3 tdPos = circle_pos;
@@ -393,6 +429,8 @@ public class DeformationCircle : MonoBehaviour
         Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, upDir1, true, _highestPoint.position, _maxAngle);
         DebugWide.DrawCircle(plus_pos + torPos, 2f, Color.magenta);
         DebugWide.DrawLine(_sphereCenter.position, _handle.position, Color.magenta);
+
+        this.DrawTornano_T2AndAngle2(_handle.position, _sphereCenter.position, _radius, upDir1, true, _highestPoint.position, _maxAngle);
         return;
         //=======
 

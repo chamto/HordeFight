@@ -778,6 +778,53 @@ namespace UtilGS9
             return rad * Mathf.Rad2Deg;
         }
 
+        //AngleSigned 함수와는 다르게 , 회전축 중심으로 두벡터의 사이각을 반환한다   
+        //두벡터를 회전축의 회전평면에 투영하여 사이각을 구한다 
+        //0~360 사이를 반환한다 
+        public static float Angle360_AxisRotate(Vector3 v0, Vector3 v1, Vector3 axisRotate)
+        {
+
+            Vector3 proj_v0 = axisRotate * Vector3.Dot(v0, axisRotate) / axisRotate.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            Vector3 proj_c0 = v0 - proj_v0;
+            Vector3 proj_v1 = axisRotate * Vector3.Dot(v1, axisRotate) / axisRotate.sqrMagnitude;
+            Vector3 proj_c1 = v1 - proj_v1;
+
+            proj_c0 = VOp.Normalize(proj_c0);
+            proj_c1 = VOp.Normalize(proj_c1);
+            float rate = Vector3.Dot(proj_c0, proj_c1);
+            float angle = (float)Math.Acos(rate) * Mathf.Rad2Deg;
+
+            Vector3 vxw = Vector3.Cross(proj_c0, proj_c1);
+            if (Vector3.Dot(axisRotate, vxw) < 0)
+                return 360f - angle;
+            //return angle * -1f; //0~180 => -179~0 , 180이상을 음수로 출력한다 
+
+            return angle;
+
+        }
+
+        //0~180 => -179~0 사이를 반환한다 
+        public static float Angle180_AxisRotate(Vector3 v0, Vector3 v1, Vector3 axisRotate)
+        {
+
+            Vector3 proj_v0 = axisRotate * Vector3.Dot(v0, axisRotate) / axisRotate.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+            Vector3 proj_c0 = v0 - proj_v0;
+            Vector3 proj_v1 = axisRotate * Vector3.Dot(v1, axisRotate) / axisRotate.sqrMagnitude;
+            Vector3 proj_c1 = v1 - proj_v1;
+
+            proj_c0 = VOp.Normalize(proj_c0);
+            proj_c1 = VOp.Normalize(proj_c1);
+            float rate = Vector3.Dot(proj_c0, proj_c1);
+            float angle = (float)Math.Acos(rate) * Mathf.Rad2Deg;
+
+            Vector3 vxw = Vector3.Cross(proj_c0, proj_c1);
+            if (Vector3.Dot(axisRotate, vxw) < 0)
+                //return 360f - angle;
+                return angle * -1f; //0~180 => -179~0 , 180이상을 음수로 출력한다 
+
+            return angle;
+
+        }
 
         //==================================================
         //실험노트 2019-2-21 , 2019-10-26 날짜에 분석한 그림 있음  

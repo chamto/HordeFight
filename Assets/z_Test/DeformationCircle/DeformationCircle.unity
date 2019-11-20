@@ -344,7 +344,7 @@ MonoBehaviour:
   _isTornado: 1
   _isInter: 0
   _radius: 10
-  _maxAngle: 360
+  _maxAngle: 720
   _sphereCenter: {fileID: 0}
   _highestPoint: {fileID: 0}
   _anchorPointA: {fileID: 0}
