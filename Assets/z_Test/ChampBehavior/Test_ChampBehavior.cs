@@ -1077,7 +1077,7 @@ public class TwoHandControl : MonoBehaviour
 
         //===== 1차 계산
         //Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
-        Vector3 aroundCalcPos = Geo.DeformationCirclePos_Tornado(handle, circle_pos, circle_radius, circle_up, highest_pos, 360f);
+        Vector3 aroundCalcPos = Geo.DeformationCirclePos_Tornado2D(handle, circle_pos, circle_radius, circle_up, highest_pos, 360f);
         Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
         Vector3 handleCalcPos = aroundCalcPos;
 

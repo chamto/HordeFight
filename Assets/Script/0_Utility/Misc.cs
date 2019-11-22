@@ -778,6 +778,21 @@ namespace UtilGS9
             return rad * Mathf.Rad2Deg;
         }
 
+        public static float Angle360(Vector3 v0, Vector3 v1, Vector3 axis)
+        {
+            v0 = VOp.Normalize(v0);
+            v1 = VOp.Normalize(v1);
+            float proj = Vector3.Dot(v0, v1);
+            Vector3 vxw = Vector3.Cross(v0, v1);
+            float angle = (float)Math.Acos(proj) * Mathf.Rad2Deg;
+
+            //스칼라삼중적을 이용하여 최단회전방향을 구한다 
+            if (Vector3.Dot(axis, vxw) < 0)
+                return 360f - angle;
+
+            return angle;
+        }
+
         public static float Angle360_AxisRotate_Normal_Axis(Vector3 v0, Vector3 v1, Vector3 n_axisRotate)
         {
 
@@ -1459,62 +1474,123 @@ namespace UtilGS9
         }
 
 
-        static public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+        //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
+        static public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+        {
+
+            Vector3 cur_dir = Vector3.Cross(forward, upDir);
+
+            if (Vector3.Dot(cur_dir, unlace_dir) < 0)
+                upDir *= -1f;
+
+            return upDir;
+        }
+
+
+        //2차원 회오리상의 목표위치만 구하는 함수 
+        static public Vector3 DeformationCirclePos_Tornado2D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir, Vector3 circle_highest, float circle_maxAngle)
         {
             //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
             Vector3 centerToHighestPoint = (circle_highest - circle_pos);
             float highestPointLength = centerToHighestPoint.magnitude;
             float t = highestPointLength - circle_radius;
-            float td = (target_pos - circle_pos).magnitude - circle_radius; //td를 바로 구한다 
 
-            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+
+            //==================================================
+            Vector3 centerToTarget = target_pos - circle_pos;
+            float t_target = centerToTarget.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+            float t_angleD = (t_target * circle_maxAngle) / t;
+
+            if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
+            else if (t_angleD < 0) t_angleD = 0;
+
+            //==================================================
+
+
+            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, n_upDir) * centerToHighestPoint;
             initialDir.Normalize();
+
 
             //비례식을 이용하여 td 구하기 
             //angleD : td  = angleH : t
             //td * angleH = angleD * t
             //td = (angleD * t) / angleH
             //angleD = (td * angleH) / t 
-            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
-                                            //float angleD = Vector3.SignedAngle(initialDir, target_pos, upDir); //이 방식으로는 360 이상은 구할 수 없다 
-            float angleD = (td * angleH) / t;
+
+            float angleD = Geo.Angle360(initialDir, centerToTarget, n_upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
+            int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
+
+
+            angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
+            if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
+
 
             Vector3 tdPos = circle_pos;
-            tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
-            //float td = (angleD * t) / angleH;
+            tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+            float td = (angleD * t) / circle_maxAngle;
             tdPos = circle_pos + tdPos * (circle_radius + td);
 
             return tdPos;
         }
 
-        static public Vector3 DeformationCirclePos_Tornado(float src_angle, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+
+        //n_upDir 은 정규화된 값이 들어와야 한다 
+        static public Vector3 DeformationCirclePos_Tornado3D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir, Vector3 circle_highest, float circle_maxAngle)
         {
             //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
             Vector3 centerToHighestPoint = (circle_highest - circle_pos);
             float highestPointLength = centerToHighestPoint.magnitude;
             float t = highestPointLength - circle_radius;
 
-            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
+
+            //==================================================
+            //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
+            Vector3 proj_centerToHighest = centerToHighestPoint - n_upDir * Vector3.Dot(n_upDir, centerToHighestPoint);
+            float proj_highestPointLength = proj_centerToHighest.magnitude;
+            float proj_t = proj_highestPointLength - circle_radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
+
+
+            Vector3 centerToTarget = target_pos - circle_pos;
+            Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
+            float t_target = (proj_target - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+            float t_angleD = (t_target * circle_maxAngle) / proj_t;
+
+            if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
+            else if (t_angleD < 0) t_angleD = 0;
+
+            //==================================================
+
+
+            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, n_upDir) * centerToHighestPoint;
             initialDir.Normalize();
+
 
             //비례식을 이용하여 td 구하기 
             //angleD : td  = angleH : t
             //td * angleH = angleD * t
             //td = (angleD * t) / angleH
-            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
-            float angleD = src_angle;
+            //angleD = (td * angleH) / t 
+            //float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
+
+            //float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, n_upDir); //음수표현없이 양수로 반환  
+            float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir);
+            int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
+
+
+            angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
+            if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
+
 
             Vector3 tdPos = circle_pos;
-            tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
-            float td = (angleD * t) / angleH;
+            tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+            float td = (angleD * t) / circle_maxAngle;
             tdPos = circle_pos + tdPos * (circle_radius + td);
 
             return tdPos;
         }
 
-        static public void DeformationCirclePos_Tornado_Gizimo(Vector3 plus_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+
+        static public void DeformationCirclePos_Tornado3D_Gizimo(Vector3 plus_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
         {
 
             //=================================

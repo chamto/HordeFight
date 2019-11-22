@@ -16,8 +16,12 @@ public class DeformationCircle : MonoBehaviour
     public Transform _highestPoint = null;
     public Transform _anchorPointA = null;
     public Transform _anchorPointB = null;
-    public Transform _handle = null;
-    public Transform _upDir_endPos = null;
+
+    public Transform _tornadoCenter = null;
+    public Transform _tc_handle = null;
+    public Transform _tc_upDir_endPos = null;
+    public Transform _tc_highest = null;
+
 
     private Vector3 _initialDir = Vector3.forward;
 
@@ -28,8 +32,11 @@ public class DeformationCircle : MonoBehaviour
         _highestPoint = GameObject.Find("highestPoint").transform;
         _anchorPointA = GameObject.Find("anchorPointA").transform;
         _anchorPointB = GameObject.Find("anchorPointB").transform;
-        _handle = GameObject.Find("handle").transform;
-        _upDir_endPos = GameObject.Find("upDir_endPos").transform;
+
+        _tornadoCenter = GameObject.Find("tornadoCenter").transform;
+        _tc_handle = GameObject.Find("tc_handle").transform;
+        _tc_upDir_endPos = GameObject.Find("tc_upDir_endPos").transform;
+        _tc_highest = GameObject.Find("tc_highest").transform;
     }
 
     // Update is called once per frame
@@ -260,8 +267,55 @@ public class DeformationCircle : MonoBehaviour
     }
 
 
+    //2차원 회오리상의 목표위치만 구하는 함수 
+    public Vector3 DeformationCirclePos_Tornado2D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir, Vector3 circle_highest, float circle_maxAngle)
+    {
+        //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+        Vector3 centerToHighestPoint = (circle_highest - circle_pos);
+        float highestPointLength = centerToHighestPoint.magnitude;
+        float t = highestPointLength - circle_radius;
+
+
+        //==================================================
+        Vector3 centerToTarget = target_pos - circle_pos;
+        float t_target = centerToTarget.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+        float t_angleD = (t_target * circle_maxAngle) / t;
+
+        if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
+        else if (t_angleD < 0) t_angleD = 0;
+
+        //==================================================
+
+
+        Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, n_upDir) * centerToHighestPoint;
+        initialDir.Normalize();
+
+
+        //비례식을 이용하여 td 구하기 
+        //angleD : td  = angleH : t
+        //td * angleH = angleD * t
+        //td = (angleD * t) / angleH
+        //angleD = (td * angleH) / t 
+
+        float angleD = Geo.Angle360(initialDir, centerToTarget, n_upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
+        int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
+
+
+        angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
+        if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
+
+
+        Vector3 tdPos = circle_pos;
+        tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+        float td = (angleD * t) / circle_maxAngle;
+        tdPos = circle_pos + tdPos * (circle_radius + td);
+
+        return tdPos;
+    }
+
+    //circle_pos 가 0이 아닐때 결과값이 부정확해지는 문제발생 - chamto 20191123
     //n_upDir 은 정규화된 값이 들어와야 한다 
-    public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir ,  Vector3 circle_highest, float circle_maxAngle)
+    public Vector3 DeformationCirclePos_Tornado3D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir ,  Vector3 circle_highest, float circle_maxAngle)
     {
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
         Vector3 centerToHighestPoint = (circle_highest - circle_pos);
@@ -298,24 +352,26 @@ public class DeformationCircle : MonoBehaviour
         //angleD = (td * angleH) / t 
         //float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
 
+
         //float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, n_upDir); //음수표현없이 양수로 반환  
-        float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, target_pos, n_upDir); 
+        float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir); 
         int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
+        //DebugWide.LogBlue(angleD + "  " + target_pos + "  " + initialDir + "   " + n_upDir + "  " + t_angleD); //test
 
         angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
         if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
 
-        Vector3 tdPos = circle_pos;
-        tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+        Vector3 tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
         float td = (angleD * t) / circle_maxAngle;
         tdPos = circle_pos + tdPos * (circle_radius + td);
 
         return tdPos;
     }
 
-    public Vector3 DeformationCirclePos_Tornado(float src_angle, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+    //회오리 3d 로 테스트 필요 
+    public Vector3 DeformationCirclePos_Tornado3D(float src_angle, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
     {
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
         Vector3 centerToHighestPoint = (circle_highest - circle_pos);
@@ -341,7 +397,7 @@ public class DeformationCircle : MonoBehaviour
         return tdPos;
     }
 
-    public void DeformationCirclePos_Tornado_Gizimo(Vector3 plus_pos, Vector3 circle_pos , float circle_radius , Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
+    public void DeformationCirclePos_Tornado3D_Gizimo(Vector3 plus_pos, Vector3 circle_pos , float circle_radius , Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
     {
         
         //=================================
@@ -431,25 +487,23 @@ public class DeformationCircle : MonoBehaviour
 
         if (null == _highestPoint) return;
 
-        //=======
-
         //==================================================
+
+        Vector3 tornado_pos = _tornadoCenter.position;
+
         Vector3 unlaceDir = Vector3.up; //위쪽으로 설정 (위에서 아래로 공격한다 가정) 
-        Vector3 upDir1 = _upDir_endPos.position; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
-        upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _highestPoint.position - _sphereCenter.position); //풀어지는 방향에 맞게 upDir 재설정  
+        Vector3 upDir1 = _tc_upDir_endPos.localPosition; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
+        //upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _tc_highest.position - tornado_pos); //풀어지는 방향에 맞게 upDir 재설정  
         upDir1.Normalize();
         //==================================================
 
-        //Vector3 plus_pos = Vector3.back * 80 + Vector3.left * 80;
-        //Vector3 upDir1 = (_upDir_endPos.position).normalized; 
-        Vector3 plus_pos = Vector3.zero;
-        this.DeformationCirclePos_Tornado_Gizimo(plus_pos, _sphereCenter.position, _radius, upDir1, _highestPoint.position, _maxAngle); //chamto test
-        Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, upDir1, _highestPoint.position, _maxAngle);
-        DebugWide.DrawCircle(plus_pos + torPos, 2f, Color.magenta);
-        DebugWide.DrawLine(_sphereCenter.position, _handle.position, Color.magenta);
 
-        this.DrawTornano_T2AndAngle2(_handle.position, _sphereCenter.position, _radius, upDir1, true, _highestPoint.position, _maxAngle);
-        return;
+        this.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, tornado_pos, _radius, upDir1, _tc_highest.position, _maxAngle); //chamto test
+        Vector3 torPos = this.DeformationCirclePos_Tornado3D(_tc_handle.position, tornado_pos, _radius, upDir1, _tc_highest.position, _maxAngle);
+        DebugWide.DrawCircle(torPos, 2f, Color.magenta);
+        DebugWide.DrawLine(tornado_pos, _tc_handle.position, Color.magenta);
+        this.DrawTornano_T2AndAngle2(_tc_handle.position, tornado_pos, _radius, upDir1, true, _tc_highest.position, _maxAngle);
+
         //=======
 
 
