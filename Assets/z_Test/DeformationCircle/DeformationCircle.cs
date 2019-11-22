@@ -246,12 +246,26 @@ public class DeformationCircle : MonoBehaviour
 
     }
 
-    public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, bool endure_upDir ,  Vector3 circle_highest, float circle_maxAngle)
+
+    //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
+    public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+    {
+
+        Vector3 cur_dir = Vector3.Cross(forward, upDir);
+
+        if (Vector3.Dot(cur_dir, unlace_dir) < 0)
+            upDir *= -1f;
+        
+        return upDir;
+    }
+
+    public Vector3 DeformationCirclePos_Tornado(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir ,  Vector3 circle_highest, float circle_maxAngle)
     {
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
         Vector3 centerToHighestPoint = (circle_highest - circle_pos);
         float highestPointLength = centerToHighestPoint.magnitude;
         float t = highestPointLength - circle_radius;
+
 
         //==================================================
         //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
@@ -269,7 +283,6 @@ public class DeformationCircle : MonoBehaviour
         else if (t_angleD < 0) t_angleD = 0;
 
         //==================================================
-
 
         //Vector3 initialDir = centerToHighestPoint / highestPointLength;
         Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
@@ -422,11 +435,18 @@ public class DeformationCircle : MonoBehaviour
 
         //=======
 
+        //==================================================
+        Vector3 unlaceDir = Vector3.up; //위쪽으로 설정 (위에서 아래로 공격한다 가정) 
+        Vector3 upDir1 = _upDir_endPos.position; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
+        upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _highestPoint.position - _sphereCenter.position); //풀어지는 방향에 맞게 upDir 재설정  
+        upDir1.Normalize();
+        //==================================================
+
         //Vector3 plus_pos = Vector3.back * 80 + Vector3.left * 80;
-        Vector3 upDir1 = (_upDir_endPos.position).normalized; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
+        //Vector3 upDir1 = (_upDir_endPos.position).normalized; 
         Vector3 plus_pos = Vector3.zero;
         this.DeformationCirclePos_Tornado_Gizimo(plus_pos, _sphereCenter.position, _radius, upDir1, _highestPoint.position, _maxAngle); //chamto test
-        Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, upDir1, true, _highestPoint.position, _maxAngle);
+        Vector3 torPos = this.DeformationCirclePos_Tornado(_handle.position, _sphereCenter.position, _radius, upDir1, _highestPoint.position, _maxAngle);
         DebugWide.DrawCircle(plus_pos + torPos, 2f, Color.magenta);
         DebugWide.DrawLine(_sphereCenter.position, _handle.position, Color.magenta);
 
