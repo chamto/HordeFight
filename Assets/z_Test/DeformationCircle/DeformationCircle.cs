@@ -18,8 +18,9 @@ public class DeformationCircle : MonoBehaviour
     public Transform _anchorPointB = null;
 
     public Transform _tornadoCenter = null;
-    public Transform _tc_handle = null;
     public Transform _tc_upDir_endPos = null;
+    public Transform _tc_unlaceDir_endPos = null;
+    public Transform _tc_handle = null;
     public Transform _tc_highest = null;
 
 
@@ -34,8 +35,9 @@ public class DeformationCircle : MonoBehaviour
         _anchorPointB = GameObject.Find("anchorPointB").transform;
 
         _tornadoCenter = GameObject.Find("tornadoCenter").transform;
-        _tc_handle = GameObject.Find("tc_handle").transform;
         _tc_upDir_endPos = GameObject.Find("tc_upDir_endPos").transform;
+        _tc_unlaceDir_endPos = GameObject.Find("tc_unlaceDir_endPos").transform;
+        _tc_handle = GameObject.Find("tc_handle").transform;
         _tc_highest = GameObject.Find("tc_highest").transform;
     }
 
@@ -254,7 +256,8 @@ public class DeformationCircle : MonoBehaviour
     }
 
 
-    //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
+    //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임 
+    //unlace_dir 정규화 되어 있지 않아도 됨 
     public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
     {
 
@@ -332,8 +335,11 @@ public class DeformationCircle : MonoBehaviour
 
         Vector3 centerToTarget = target_pos - circle_pos;
         Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
-        float t_target = (proj_target - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+        //float t_target = (proj_target - circle_pos).magnitude - circle_radius; 
+        float t_target = proj_target.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다.  proj_target 는 이미 벡터값이므로 다시 원점에서 출발하는 점으로 계산하면 안된다 
         float t_angleD = (t_target * circle_maxAngle) / proj_t;
+
+        //DebugWide.LogBlue(t_angleD + "  = " + t_target + "  *  " +  circle_maxAngle + "  / " + proj_t + "   " + (proj_target).magnitude);
 
         if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
         else if (t_angleD < 0) t_angleD = 0;
@@ -357,7 +363,7 @@ public class DeformationCircle : MonoBehaviour
         float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir); 
         int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
-        //DebugWide.LogBlue(angleD + "  " + target_pos + "  " + initialDir + "   " + n_upDir + "  " + t_angleD); //test
+        //DebugWide.LogBlue(angleD + "  " + t_angleD + "  " + weight + "  " + initialDir + "   " + n_upDir); //test
 
         angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
         if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
@@ -491,9 +497,9 @@ public class DeformationCircle : MonoBehaviour
 
         Vector3 tornado_pos = _tornadoCenter.position;
 
-        Vector3 unlaceDir = Vector3.up; //위쪽으로 설정 (위에서 아래로 공격한다 가정) 
+        Vector3 unlaceDir = _tc_unlaceDir_endPos.localPosition;//Vector3.up; //위쪽으로 설정 (위에서 아래로 공격한다 가정) 
         Vector3 upDir1 = _tc_upDir_endPos.localPosition; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
-        //upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _tc_highest.position - tornado_pos); //풀어지는 방향에 맞게 upDir 재설정  
+        upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _tc_highest.position - tornado_pos); //풀어지는 방향에 맞게 upDir 재설정  
         upDir1.Normalize();
         //==================================================
 

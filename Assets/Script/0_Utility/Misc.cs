@@ -1552,7 +1552,7 @@ namespace UtilGS9
 
             Vector3 centerToTarget = target_pos - circle_pos;
             Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
-            float t_target = (proj_target - circle_pos).magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
+            float t_target = proj_target.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다.  proj_target 는 이미 벡터값이므로 다시 원점에서 출발하는 점으로 계산하면 안된다 
             float t_angleD = (t_target * circle_maxAngle) / proj_t;
 
             if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
