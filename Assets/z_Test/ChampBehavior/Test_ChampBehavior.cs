@@ -154,7 +154,12 @@ public class TwoHandControl : MonoBehaviour
     public Transform _right_axis_forward = null;
 
 
-    //public string _2_2__________________ = "";
+    //양손조종. 왼손 회오리 경로
+    public Transform _TL2R_pos_circle_left = null;
+    public Transform _TL2R_edge_circle_left = null;
+    public Transform _TL2R_highest_circle_left = null;
+    public Transform _TL2R_angle_circle_left = null;
+    public Transform _TL2R_unlace_circle_left = null;
 
 
     //======================================================
@@ -276,6 +281,14 @@ public class TwoHandControl : MonoBehaviour
         _right_axis_up = GameObject.Find("right_axis_up").transform;
         _right_axis_right = GameObject.Find("right_axis_right").transform;
         _right_axis_forward = GameObject.Find("right_axis_forward").transform;
+
+        //=======
+        //양손조종. 왼손 회오리 경로
+        _TL2R_pos_circle_left = GameObject.Find("TL2R_pos_circle_left").transform;
+        _TL2R_edge_circle_left = GameObject.Find("TL2R_edge_circle_left").transform;
+        _TL2R_highest_circle_left = GameObject.Find("TL2R_highest_circle_left").transform;
+        _TL2R_angle_circle_left = GameObject.Find("TL2R_angle_circle_left").transform;
+        _TL2R_unlace_circle_left = GameObject.Find("TL2R_unlace_circle_left").transform;
 
 	}
 
@@ -1231,15 +1244,17 @@ public class TwoHandControl : MonoBehaviour
 
             //-----------------------
             //회오리원 위치 계산 
-            //this.CalcHandPos_TornadoCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-                                         //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                         //out newPos, out newLength);
+            axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+            float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+            this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
+                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                         out newPos, out newLength);
 
             //-----------------------
             //변형원 위치 계산 
-            this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                         out newPos, out newLength);
+            //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
+                                         //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                         //out newPos, out newLength);
 
             //-----------------------
             //일반원 위치 계산 
@@ -1660,8 +1675,10 @@ public class TwoHandControl : MonoBehaviour
                 this.DrawCirclePlate(_pos_circle_left.position, _radius_circle_left, axis_up, axis_forward, Color.yellow);
                 this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.blue);
 
-                Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
-                //Geo.DeformationCirclePos_Tornado_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 360f);
+                //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
+                axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+                float tonado_radius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+                Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
             }
         }
 
