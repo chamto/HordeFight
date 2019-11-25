@@ -82,13 +82,13 @@ public class TwoHandControl : MonoBehaviour
     public float _twoHand_length = 0.5f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
-    public ePart _part_control = ePart.TwoHand_Left;
-    //public ePart _part_control = ePart.OneHand;
+    //public ePart _part_control = ePart.TwoHand_Left;
+    public ePart _part_control = ePart.OneHand;
 
     //----------------------------------------------------
     public bool _A_armLength_max_min = false;
 
-    public bool _A_action_cut = false;
+    public bool _A_action_cut = true;
     public bool _A_action_sting = false; //찌르기 동작 
     //----------------------------------------------------
 
@@ -116,65 +116,67 @@ public class TwoHandControl : MonoBehaviour
     public float _radius_circle_B1 = 0f;
 
     //양손 조종용 주변원
-    public Transform _pos_circle_left = null;
-    public Transform _pos_circle_right = null;
-    public Transform _edge_circle_left = null;
-    public Transform _edge_circle_right = null;
-    public Transform _highest_circle_left = null;
-    public Transform _highest_circle_right = null;
+    private Transform _pos_circle_left = null;
+    private Transform _pos_circle_right = null;
+    private Transform _edge_circle_left = null;
+    private Transform _edge_circle_right = null;
+    private Transform _highest_circle_left = null;
+    private Transform _highest_circle_right = null;
 
     //왼손 조종용 주변원
-    public Transform _pos_circle_A0 = null;
-    public Transform _pos_circle_A1 = null;
-    public Transform _edge_circle_A0 = null;
-    public Transform _edge_circle_A1 = null;
+    private Transform _pos_circle_A0 = null;
+    private Transform _pos_circle_A1 = null;
+    private Transform _edge_circle_A0 = null;
+    private Transform _edge_circle_A1 = null;
+    private Transform _highest_circle_A0 = null;
+    private Transform _highest_circle_A1 = null;
 
     //오른손 조종용 주변원 
-    public Transform _pos_circle_B0 = null;
-    public Transform _pos_circle_B1 = null;
-    public Transform _edge_circle_B0 = null;
-    public Transform _edge_circle_B1 = null;
+    private Transform _pos_circle_B0 = null;
+    private Transform _pos_circle_B1 = null;
+    private Transform _edge_circle_B0 = null;
+    private Transform _edge_circle_B1 = null;
 
     //양손 좌표축
-    public Transform _L2R_axis_o = null;
-    public Transform _L2R_axis_up = null;
-    public Transform _L2R_axis_right = null;
-    public Transform _L2R_axis_forward = null;
+    private Transform _L2R_axis_o = null;
+    private Transform _L2R_axis_up = null;
+    private Transform _L2R_axis_right = null;
+    private Transform _L2R_axis_forward = null;
 
     //왼손 좌표축
-    public Transform _left_axis_o = null;
-    public Transform _left_axis_up = null;
-    public Transform _left_axis_right = null;
-    public Transform _left_axis_forward = null;
+    private Transform _left_axis_o = null;
+    private Transform _left_axis_up = null;
+    private Transform _left_axis_right = null;
+    private Transform _left_axis_forward = null;
 
     //오른손 좌표축 
-    public Transform _right_axis_o = null;
-    public Transform _right_axis_up = null;
-    public Transform _right_axis_right = null;
-    public Transform _right_axis_forward = null;
+    private Transform _right_axis_o = null;
+    private Transform _right_axis_up = null;
+    private Transform _right_axis_right = null;
+    private Transform _right_axis_forward = null;
 
 
     //양손조종. 왼손 회오리 경로
-    public Transform _TL2R_pos_circle_left = null;
-    public Transform _TL2R_edge_circle_left = null;
-    public Transform _TL2R_highest_circle_left = null;
-    public Transform _TL2R_angle_circle_left = null;
-    public Transform _TL2R_unlace_circle_left = null;
+    private Transform _TL2R_pos_circle_left = null;
+    private Transform _TL2R_edge_circle_left = null;
+    private Transform _TL2R_highest_circle_left = null;
+    private Transform _TL2R_angle_circle_left = null;
+    private Transform _TL2R_unlace_circle_left = null;
 
 
     //======================================================
 
     public string _4____________________ = "";
     public bool _A_deformationCircle = false;
-    public Transform _dc_center = null;
-    public Transform _dc_anchorA = null;
-    public Transform _dc_anchorB = null;
-    public Transform _dc_highest = null;
-    public Transform _dc_edge = null;
+    private Transform _dc_center = null;
+    private Transform _dc_anchorA = null;
+    private Transform _dc_anchorB = null;
+    private Transform _dc_highest = null;
+    private Transform _dc_edge = null;
     public float _tc_radius = 0.5f;
 
     public string _5_1___________________ = "";
-    public bool _A_handleStaff_control = true;
+    public bool _A_handleStaff_control = false;//true;
     public bool _switch_cutAndSting = true; //cut : true , sting : false
     public Transform _hs_objectDir = null; 
     public Transform _hs_standard = null;
@@ -248,6 +250,8 @@ public class TwoHandControl : MonoBehaviour
         _pos_circle_A1 = GameObject.Find("pos_circle_A1").transform;
         _edge_circle_A0 = GameObject.Find("edge_circle_A0").transform;
         _edge_circle_A1 = GameObject.Find("edge_circle_A1").transform;
+        _highest_circle_A0 = GameObject.Find("highest_circle_A0").transform;
+        _highest_circle_A1 = GameObject.Find("highest_circle_A1").transform;
 
 
         _pos_circle_B0 = GameObject.Find("pos_circle_B0").transform;
@@ -443,9 +447,23 @@ public class TwoHandControl : MonoBehaviour
                 Vector3 newPos = Vector3.zero;
                 float newLength = 0f;
                 //------------------------------------------
-                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
+
+                //회오리원 위치 계산 
+                //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+                //float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+                //this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
+                                         //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                         //out newPos, out newLength);
+
+                //변형원 위치 계산 
+                this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0, _highest_circle_A0.position,
                                              _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                              out newPos, out newLength);
+
+                //주변원 위치 계산 
+                //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
+                                             //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                             //out newPos, out newLength);
                 _arm_left_length = newLength;
                 _hand_left.position = newPos;
 
@@ -848,6 +866,10 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
 	}
 
+    //==============================================================
+    //==============================================================
+    //==============================================================
+
 
     //어깨범위와 선분의 교차위치를 구한다. 어깨범위의 최소범위는 적용안됨 
     public bool CalcHandPos_LineSegment(Vector3 line_origin, Vector3 line_dir, float line_length,
@@ -1244,20 +1266,20 @@ public class TwoHandControl : MonoBehaviour
 
             //-----------------------
             //회오리원 위치 계산 
-            axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
-            float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
-            this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
-                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                         out newPos, out newLength);
-
-            //-----------------------
-            //변형원 위치 계산 
-            //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
+            //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+            //float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+            //this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
                                          //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                          //out newPos, out newLength);
 
             //-----------------------
-            //일반원 위치 계산 
+            //변형원 위치 계산 
+            this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
+                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                         out newPos, out newLength);
+
+            //-----------------------
+            //주변원 위치 계산 
             //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
             //                             _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
             //                             out newPos, out newLength);
@@ -1572,6 +1594,14 @@ public class TwoHandControl : MonoBehaviour
             axis_up = _right_axis_up.position - _right_axis_o.position;
             this.DrawCirclePlate(_pos_circle_B0.position, _radius_circle_B0, axis_up, axis_forward, Color.white);
             this.DrawCirclePlate(_pos_circle_B1.position, _radius_circle_B1, axis_up, axis_forward, Color.white);
+
+            //주변원 그리기 
+            Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_A0.position, _radius_circle_A0, axis_up, _highest_circle_A0.position, 1);
+
+            //회전원 그리기
+            //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+            //float tonado_radius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+            //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
         }
 
         //if(true == _A_body_aroundRotate)
@@ -1675,10 +1705,13 @@ public class TwoHandControl : MonoBehaviour
                 this.DrawCirclePlate(_pos_circle_left.position, _radius_circle_left, axis_up, axis_forward, Color.yellow);
                 this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.blue);
 
-                //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
-                axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
-                float tonado_radius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
-                Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
+                //변형원 그리기 
+                Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
+
+                //회전원 그리기
+                //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+                //float tonado_radius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+                //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
             }
         }
 
