@@ -1037,6 +1037,47 @@ public class TwoHandControl : MonoBehaviour
         newHand_pos = handleCalcPos;
     }
 
+    public void CalcHandPos_AroundCircle2(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius,
+                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
+                                        out Vector3 newHand_pos, out float newArm_length)
+    {
+
+        Vector3 handleToCenter = circle_pos - handle;
+        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+        Vector3 proj_handlePos = handle + proj_handle; //바로 투영점을 구한다 
+        Vector3 n_circleToHand = (proj_handlePos - circle_pos).normalized;
+
+        //===== 1차 계산
+        Vector3 aroundCalcPos = circle_pos + n_circleToHand * circle_radius;
+
+        //===== 어깨원 투영
+        Vector3 proj_sdCenter = circle_up * Vector3.Dot((circle_pos - shoulder_pos), circle_up) / circle_up.sqrMagnitude;
+
+        float length_d = proj_sdCenter.magnitude;
+        Vector3 proj_sdCenterPos = shoulder_pos + proj_sdCenter; //어깨원의 중심점을 주변원공간에 투영 
+
+        if(length_d > arm_max_length )
+        {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
+
+            aroundCalcPos = (proj_handlePos - shoulder_pos).normalized * arm_max_length;
+        }else if (length_d < arm_min_length)
+        {   //주변원과 어깨최소원이 접촉한 상태. 최소값 보다 작은 핸들이 있을 수 있다
+
+            float r2 = ( aroundCalcPos - proj_sdCenterPos ).magnitude;
+            float r3 = arm_min_length * arm_min_length - length_d * length_d;
+            r3 = Mathf.Sqrt(r3);
+            if(r2 < r3)
+            {  //최소값 보다 작은 핸들이 있다. [최소값 조절 필요] 
+                aroundCalcPos = (aroundCalcPos - proj_sdCenterPos).normalized * arm_min_length;
+            }
+        }
+
+
+        newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
+        newHand_pos = aroundCalcPos;
+    }
+
     public void CalcHandPos_DeformationCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
                                         out Vector3 newHand_pos, out float newArm_length)
@@ -1289,18 +1330,19 @@ public class TwoHandControl : MonoBehaviour
 
 
         //변형원 위치 계산 
-        this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,out newPos, out newLength);
+        //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
+                    //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,out newPos, out newLength);
 
         //주변원 위치 계산 
-        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
-                                     //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                     //out newPos, out newLength);
+        this.CalcHandPos_AroundCircle2(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+                                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                     out newPos, out newLength);
 
 
 
         _arm_left_length = newLength;
         _hand_left.position = newPos;
+
 
         //----------------------------
 
@@ -1327,11 +1369,9 @@ public class TwoHandControl : MonoBehaviour
         _arm_left_length = newLength;
         _hand_left.position = newPos;
 
-
         //chamto debug test
         //_debugLine.SetPosition(0, _hand_right.position);
         //_debugLine.SetPosition(1, newPos);
-
 
         //--------------------
         //찌르기 모드로 연결하기 위한 핸들값 조정 
