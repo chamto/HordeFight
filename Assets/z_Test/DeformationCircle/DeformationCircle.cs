@@ -25,11 +25,16 @@ public class DeformationCircle : MonoBehaviour
 
     public Transform _arcCenter         = null;
     public Transform _ac_upDir_endPos   = null;
-    //public Transform _ac_fwDir_endPos   = null;
     public Transform _ac_handle         = null;
     public Transform _ac_far_endPos     = null;
     public Transform _ac_near_endPos    = null;
     public Transform _ac_degree         = null;
+
+    public Transform _cylinderCenter    = null;
+    public Transform _cc_far_o   = null;
+    public Transform _cc_handle         = null;
+    public Transform _cc_far_endPos     = null;
+    public Transform _cc_near_endPos    = null;
 
 
     private Vector3 _initialDir = Vector3.forward;
@@ -51,11 +56,17 @@ public class DeformationCircle : MonoBehaviour
 
         _arcCenter = GameObject.Find("arcCenter").transform;
         _ac_upDir_endPos = GameObject.Find("ac_upDir_endPos").transform;
-        //_ac_fwDir_endPos = GameObject.Find("ac_fwDir_endPos").transform;
         _ac_handle       = GameObject.Find("ac_handle").transform;
         _ac_far_endPos   = GameObject.Find("ac_far_endPos").transform;
         _ac_near_endPos  = GameObject.Find("ac_near_endPos").transform;
         _ac_degree       = GameObject.Find("ac_degree").transform;
+
+
+        _cylinderCenter     = GameObject.Find("cylinderCenter").transform;
+        _cc_far_o    = GameObject.Find("cc_far_o").transform;
+        _cc_handle          = GameObject.Find("cc_handle").transform;
+        _cc_far_endPos      = GameObject.Find("cc_far_endPos").transform;
+        _cc_near_endPos     = GameObject.Find("cc_near_endPos").transform;
 
 
     }
@@ -514,6 +525,24 @@ public class DeformationCircle : MonoBehaviour
         if (null == _highestPoint) return;
 
         //==================================================
+        //실린더 출력 시험
+        Vector3 n_cldFw = (_cc_far_o.position - _cylinderCenter.position).normalized;
+        float cld_length = (_cc_far_o.position - _cylinderCenter.position).magnitude;
+        Vector3 farPos = _cylinderCenter.position + n_cldFw * cld_length;
+        Cylinder cld = new Cylinder();
+        cld.pos = _cylinderCenter.position;
+        cld.dir = n_cldFw;
+        cld.length = cld_length;
+        cld.radius_near = (_cc_near_endPos.position - _cylinderCenter.position).magnitude;
+        cld.radius_far = (_cc_far_endPos.position - farPos).magnitude;
+
+        Cylinder.DrawCylinder(cld);
+
+        Vector3 cld_colPos = cld.CollisionPos(_cc_handle.position);
+        DebugWide.DrawCircle(cld_colPos, 0.5f, Color.magenta);
+        DebugWide.DrawLine(cld.pos, _cc_handle.position, Color.green);
+
+        //==================================================
         //호 출력 시험
         Vector3 arcUp = (_ac_upDir_endPos.position - _arcCenter.position).normalized;
         Arc arc = new Arc();
@@ -866,5 +895,43 @@ public struct Arc
 
         return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
         + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  radius_collider_standard: " + radius_collider_standard + "  factor: " + factor;
+    }
+}
+
+
+//실린더는 선분의 특징을 가지고 있다 
+public struct Cylinder
+{
+    public Vector3 pos;             //호의 시작점  
+    public Vector3 dir;             //정규화 되어야 한다
+    public float length;            //길이 
+    public float radius_near;       //시작점에서 가까운 원의 반지름 
+    public float radius_far;        //시작점에서 먼 원의 반지름
+                                    
+
+    public Vector3 CollisionPos(Vector3 nearToPos)
+    {
+        return pos;
+    }
+
+
+    public static void DrawCylinder(Cylinder cld)
+    {
+        Vector3 farPos = cld.pos + cld.dir * cld.length;
+        Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
+        dirRight.Normalize(); ;
+
+        DebugWide.DrawLine(cld.pos, farPos, Color.green);
+        DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, Color.green);
+        DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, Color.green);
+        DebugWide.DrawCircle(cld.pos, cld.radius_near, Color.green);
+        DebugWide.DrawCircle(farPos, cld.radius_far, Color.green);
+    }
+
+    public override string ToString()
+    {
+
+        return "pos: " + pos + "  dir: " + dir + "  length: " + length
+        + "  radius_near: " + radius_near + "  radius_far: " + radius_far;
     }
 }
