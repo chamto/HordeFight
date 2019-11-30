@@ -23,6 +23,14 @@ public class DeformationCircle : MonoBehaviour
     public Transform _tc_handle = null;
     public Transform _tc_highest = null;
 
+    public Transform _arcCenter         = null;
+    public Transform _ac_upDir_endPos   = null;
+    //public Transform _ac_fwDir_endPos   = null;
+    public Transform _ac_handle         = null;
+    public Transform _ac_far_endPos     = null;
+    public Transform _ac_near_endPos    = null;
+    public Transform _ac_degree         = null;
+
 
     private Vector3 _initialDir = Vector3.forward;
 
@@ -39,6 +47,17 @@ public class DeformationCircle : MonoBehaviour
         _tc_unlaceDir_endPos = GameObject.Find("tc_unlaceDir_endPos").transform;
         _tc_handle = GameObject.Find("tc_handle").transform;
         _tc_highest = GameObject.Find("tc_highest").transform;
+
+
+        _arcCenter = GameObject.Find("arcCenter").transform;
+        _ac_upDir_endPos = GameObject.Find("ac_upDir_endPos").transform;
+        //_ac_fwDir_endPos = GameObject.Find("ac_fwDir_endPos").transform;
+        _ac_handle       = GameObject.Find("ac_handle").transform;
+        _ac_far_endPos   = GameObject.Find("ac_far_endPos").transform;
+        _ac_near_endPos  = GameObject.Find("ac_near_endPos").transform;
+        _ac_degree       = GameObject.Find("ac_degree").transform;
+
+
     }
 
     // Update is called once per frame
@@ -488,10 +507,25 @@ public class DeformationCircle : MonoBehaviour
         DebugWide.DrawLine(plus_pos + circle_pos, plus_pos + circle_highest, Color.red);
     }
 
+
 	private void OnDrawGizmos()
 	{
 
         if (null == _highestPoint) return;
+
+        //==================================================
+        //호 출력 시험
+        Vector3 arcUp = (_ac_upDir_endPos.position - _arcCenter.position).normalized;
+        Arc arc = new Arc();
+        arc.pos = _arcCenter.position;
+        arc.degree = _ac_degree.localPosition.x;
+        arc.dir = (_ac_far_endPos.position - _arcCenter.position).normalized;
+        arc.radius_near = (_ac_near_endPos.position - _arcCenter.position).magnitude;
+        arc.radius_far = (_ac_far_endPos.position - _arcCenter.position).magnitude;
+        arc.radius_collider_standard = arc.radius_near;
+        arc.ratio_nearSphere_included = Arc.Fully_Included;
+        Arc.DrawArc(arc, arcUp);
+
 
         //==================================================
 
@@ -501,8 +535,8 @@ public class DeformationCircle : MonoBehaviour
         Vector3 upDir1 = _tc_upDir_endPos.localPosition; //upDir_endPos 가 항상 0위치에서 출발한다 가정 
         upDir1 = this.Trans_UnlaceDir(unlaceDir, upDir1, _tc_highest.position - tornado_pos); //풀어지는 방향에 맞게 upDir 재설정  
         upDir1.Normalize();
-        //==================================================
 
+        //=========================
 
         this.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, tornado_pos, _radius, upDir1, _tc_highest.position, _maxAngle); //chamto test
         Vector3 torPos = this.DeformationCirclePos_Tornado3D(_tc_handle.position, tornado_pos, _radius, upDir1, _tc_highest.position, _maxAngle);
@@ -510,7 +544,7 @@ public class DeformationCircle : MonoBehaviour
         DebugWide.DrawLine(tornado_pos, _tc_handle.position, Color.magenta);
         this.DrawTornano_T2AndAngle2(_tc_handle.position, tornado_pos, _radius, upDir1, true, _tc_highest.position, _maxAngle);
 
-        //=======
+        //==================================================
 
 
         Vector3 demoPos = Vector3.right * 70 + Vector3.forward * 70;
@@ -719,4 +753,118 @@ public class DeformationCircle : MonoBehaviour
 
 
 	}
+}
+
+//==========================================================
+//==========================================================
+//==========================================================
+
+public struct Sphere
+{
+    public Vector3 pos;
+    public float radius;
+
+    public Sphere(Vector3 p, float r)
+    {
+        pos = p;
+        radius = r;
+    }
+
+    static public Sphere Zero
+    {
+        get
+        {
+            Sphere sphere = new Sphere();
+            sphere.pos = Vector3.zero;
+            sphere.radius = 0f;
+
+            return sphere;
+        }
+    }
+
+    public override string ToString()
+    {
+        return "pos: " + pos + "  radius: " + radius;
+    }
+}
+
+public struct Arc
+{
+    public Vector3 pos;             //호의 시작점  
+    public Vector3 dir;             //정규화 되어야 한다
+    public float degree;            //각도 
+    public float radius_near;       //시작점에서 가까운 원의 반지름 
+    public float radius_far;        //시작점에서 먼 원의 반지름
+                                    //public float radius;
+
+
+    public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
+
+    //ratio : [-1 ~ 1]
+    //호에 원이 완전히 포함 [1]
+    //호에 원의 중점까지 포함 [0]
+    //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
+    public const float Fully_Included = 1f;
+    public const float Focus_Included = 0f;
+    //public const float Boundary_Included = -1f; //올바른 비율 값이 아님. 연구 필요 
+    public float ratio_nearSphere_included;
+
+    public float factor
+    {
+        get
+        {   //f = radius / sin
+            return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+        }
+    }
+
+
+    public Vector3 GetPosition_Factor()
+    {
+        if (0f == ratio_nearSphere_included)
+            return pos;
+
+        return pos + dir * (factor * ratio_nearSphere_included);
+    }
+
+    public Sphere sphere_near
+    {
+        get
+        {
+            Sphere sph;
+            sph.pos = this.pos;
+            sph.radius = this.radius_near;
+            return sph;
+        }
+
+    }
+
+    public Sphere sphere_far
+    {
+        get
+        {
+            Sphere sph;
+            sph.pos = this.pos;
+            sph.radius = this.radius_far;
+            return sph;
+        }
+
+    }
+
+    public static void DrawArc(Arc arc, Vector3 upDir)
+    {
+        Vector3 far = arc.dir * arc.radius_far;
+        DebugWide.DrawLine(arc.pos, arc.pos + far, Color.green);
+        //DebugWide.PrintText(arc.pos, Color.green, arc.degree + "");
+        DebugWide.DrawLine(arc.pos, arc.pos + Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * far, Color.green);
+        DebugWide.DrawLine(arc.pos, arc.pos + Quaternion.AngleAxis(+arc.degree * 0.5f, upDir) * far, Color.green);
+        DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
+        DebugWide.DrawCircle(arc.GetPosition_Factor(), arc.radius_near, Color.green);
+    }
+
+    public override string ToString()
+    {
+
+        return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
+        + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  radius_collider_standard: " + radius_collider_standard + "  factor: " + factor;
+    }
 }
