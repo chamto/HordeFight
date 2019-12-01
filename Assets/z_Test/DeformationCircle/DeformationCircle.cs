@@ -927,10 +927,13 @@ public struct Cylinder
     {
         Vector3 colPos = this.pos;
         Vector3 farPos = this.pos + this.dir * this.length;
-        Vector3 dirRight = Vector3.Cross(Vector3.up, this.dir);
-        dirRight.Normalize();
+        //Vector3 dirRight = Vector3.Cross(Vector3.up, this.dir);
 
         Vector3 toHandlePos = nearToPos - this.pos;
+        Vector3 dirRight = toHandlePos - this.dir * Vector3.Dot(toHandlePos, this.dir);
+        //DebugWide.DrawCircle(this.pos + this.dir * Vector3.Dot(toHandlePos, this.dir), 1f, Color.red);
+        dirRight.Normalize();
+
         //가까운 반구 충돌위치 찾기
         float test = Vector3.Dot(this.dir, toHandlePos);
         if(test < 0)
@@ -939,18 +942,27 @@ public struct Cylinder
             colPos = this.pos + toHandlePos * radius_near;
         }else
         {
-            UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos);
+            UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * this.length); //실린더 안에 nearToPos 가 못있게 연장한다
             UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
             Vector3 pt0, pt1;
             UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
 
-            colPos = pt0;    
+            colPos = pt0;
+            //DebugWide.LogBlue((farPos - pt0).magnitude + "  " + (farPos - pt1).magnitude + "  " + radius_far);
+            //DebugWide.DrawCircle(pt0, 1f, Color.gray);
+            //DebugWide.DrawCircle(pt1, 1f, Color.gray);
+            DebugWide.DrawLine(pt0, pt1, Color.gray);
+            //DebugWide.DrawLine(this.pos + dirRight * radius_near, farPos + dirRight * radius_far, Color.red);
+
 
             //먼 원안에 pt0이 포함되는지 검사한다 
             if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
-            {
-                //toHandlePos.Normalize();
-                //colPos = farPos + toHandlePos * radius_far;
+            {   //먼 반구 충돌위치 찾기
+                Vector3 interPos;
+                UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos, -toHandlePos, out interPos);
+                colPos = interPos;
+
+
             }
         }
 
