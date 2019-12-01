@@ -256,16 +256,16 @@ namespace UtilGS9
             // compute intermediate parameters
             Vector3 w0 = segment0.origin - segment1.origin;
 
-            float a = Vector3.Dot(segment0.direction, segment0.direction);
-            float b = Vector3.Dot(segment0.direction, segment1.direction);
-            float c = Vector3.Dot(segment1.direction, segment1.direction);
-            float d = Vector3.Dot(segment0.direction, w0);
-            float e = Vector3.Dot(segment1.direction, w0);
+            float a = Vector3.Dot(segment0.direction, segment0.direction); //u . u
+            float b = Vector3.Dot(segment0.direction, segment1.direction); //u . v
+            float c = Vector3.Dot(segment1.direction, segment1.direction); //v . v
+            float d = Vector3.Dot(segment0.direction, w0); //u . w0
+            float e = Vector3.Dot(segment1.direction, w0); //v . w0
 
             float denom = a * c - b * b;
             // parameters to compute s_c, t_c
             float s_c, t_c;
-            float sn, sd, tn, td;
+            float sn, sd, tn, td; //  sn/sd , tn/td
 
             // if denom is zero, try finding closest point on segment1 to origin0
             //if (ML.Util.IsZero(denom))
