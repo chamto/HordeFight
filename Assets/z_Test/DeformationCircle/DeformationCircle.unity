@@ -369,7 +369,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 938153858}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 510287694}
@@ -623,6 +623,7 @@ MonoBehaviour:
   _ac_far_endPos: {fileID: 0}
   _ac_near_endPos: {fileID: 0}
   _ac_degree: {fileID: 0}
+  _ac_near_included: {fileID: 0}
   _cylinderCenter: {fileID: 0}
   _cc_far_o: {fileID: 0}
   _cc_handle: {fileID: 0}

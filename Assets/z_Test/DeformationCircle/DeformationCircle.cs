@@ -827,23 +827,24 @@ public struct Arc
     public float degree;            //각도 
     public float radius_near;       //시작점에서 가까운 원의 반지름 
     public float radius_far;        //시작점에서 먼 원의 반지름
-                                    //public float radius;
-
-
-    //public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
-
+                                    
     //ratio : [-1 ~ 1]
     //호에 원이 완전히 포함 [1]
     //호에 원의 중점까지 포함 [0]
     //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
-    public const float Fully_Included = 1f;
+    public const float Fully_Included = -1f;
     public const float Focus_Included = 0f;
-    //public const float Boundary_Included = -1f; //각도에 따로 경계에 붙는 값이 달라짐 60도 => 0.5 등 , 계산공식을 찾아 적용하기 
+    //public const float Boundary_Included = 1f; //경계에 붙이기 위한 값은 가까운원의 반지름값임  
     public float ratio_nearSphere_included;
 
     public float GetFactor()
     {
-        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+        if (0f == ratio_nearSphere_included)//Focus_Included
+            return 0f;
+        if (0 < ratio_nearSphere_included)  //Boundary_Included
+            return radius_near;
+        //if(0 > ratio_nearSphere_included) //Fully_Included  
+        return -radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
     }
 
     //public float factor
@@ -858,10 +859,7 @@ public struct Arc
 
     public Vector3 GetPosition_Factor()
     {
-        if (0f == ratio_nearSphere_included)
-            return pos;
-
-        return pos + dir * (GetFactor() * ratio_nearSphere_included);
+        return pos + dir * GetFactor();
     }
 
     public Sphere sphere_near
@@ -892,7 +890,7 @@ public struct Arc
     {
         Vector3 factorPos = arc.GetPosition_Factor();
         Vector3 far = arc.dir * (arc.radius_far + arc.GetFactor());
-        DebugWide.DrawLine(arc.pos, arc.pos + far, Color.green);
+        DebugWide.DrawLine(arc.pos, arc.pos + arc.dir * arc.radius_far, Color.green);
         DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * far, Color.green);
         DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(+arc.degree * 0.5f, upDir) * far, Color.green);
         DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
