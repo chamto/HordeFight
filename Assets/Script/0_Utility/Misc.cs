@@ -550,7 +550,7 @@ namespace UtilGS9
         {
             public Vector3 pos;             //호의 시작점  
             public Vector3 dir;             //정규화 되어야 한다
-            public float length;            //길이 
+            public float length;            //길이
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
@@ -574,7 +574,7 @@ namespace UtilGS9
                 }
                 else
                 {
-                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * 1000f); //실린더 안에 nearToPos 가 못있게 연장한다
+                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * (radius_far + length)); //실린더 안에 nearToPos 가 못있게 연장한다
                     UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
                     Vector3 pt0, pt1;
                     UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
@@ -592,9 +592,11 @@ namespace UtilGS9
                     if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
                     {   //먼 반구 충돌위치 찾기
                         Vector3 interPos;
-                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos);
+                        //UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
+                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * (radius_far + length), -toHandlePos, out interPos);
                         colPos = interPos;
 
+                        //DebugWide.LogBlue(farPos + "  " + radius_far + "  " + toHandlePos);
                     }
                 }
 
@@ -602,10 +604,11 @@ namespace UtilGS9
             }
 
 
-            public static void DrawCylinder(Cylinder cld)
+            public static void DrawCylinder(Cylinder cld , Vector3 upDir)
             {
                 Vector3 farPos = cld.pos + cld.dir * cld.length;
-                Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
+
+                Vector3 dirRight = Vector3.Cross(upDir, cld.dir);
                 dirRight.Normalize();
 
                 DebugWide.DrawLine(cld.pos, farPos, Color.green);
