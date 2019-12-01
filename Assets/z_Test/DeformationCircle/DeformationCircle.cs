@@ -889,10 +889,17 @@ public struct Arc
     public static void DrawArc(Arc arc, Vector3 upDir)
     {
         Vector3 factorPos = arc.GetPosition_Factor();
-        Vector3 far = arc.dir * (arc.radius_far + arc.GetFactor());
+        Vector3 interPos;
+
+        Vector3 far = Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * arc.dir;
+        UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+        DebugWide.DrawLine(factorPos, interPos, Color.green);
+
+        far = Quaternion.AngleAxis(arc.degree * 0.5f, upDir) * arc.dir;
+        UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+        DebugWide.DrawLine(factorPos, interPos, Color.green);
+
         DebugWide.DrawLine(arc.pos, arc.pos + arc.dir * arc.radius_far, Color.green);
-        DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * far, Color.green);
-        DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(+arc.degree * 0.5f, upDir) * far, Color.green);
         DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
         DebugWide.DrawCircle(arc.pos, arc.radius_near, Color.green);
     }
