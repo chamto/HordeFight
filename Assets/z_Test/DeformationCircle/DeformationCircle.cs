@@ -29,6 +29,8 @@ public class DeformationCircle : MonoBehaviour
     public Transform _ac_far_endPos     = null;
     public Transform _ac_near_endPos    = null;
     public Transform _ac_degree         = null;
+    public Transform _ac_near_included = null;
+
 
     public Transform _cylinderCenter    = null;
     public Transform _cc_far_o   = null;
@@ -60,6 +62,7 @@ public class DeformationCircle : MonoBehaviour
         _ac_far_endPos   = GameObject.Find("ac_far_endPos").transform;
         _ac_near_endPos  = GameObject.Find("ac_near_endPos").transform;
         _ac_degree       = GameObject.Find("ac_degree").transform;
+        _ac_near_included = GameObject.Find("ac_near_included").transform;
 
 
         _cylinderCenter     = GameObject.Find("cylinderCenter").transform;
@@ -551,8 +554,8 @@ public class DeformationCircle : MonoBehaviour
         arc.dir = (_ac_far_endPos.position - _arcCenter.position).normalized;
         arc.radius_near = (_ac_near_endPos.position - _arcCenter.position).magnitude;
         arc.radius_far = (_ac_far_endPos.position - _arcCenter.position).magnitude;
-        arc.radius_collider_standard = arc.radius_near;
-        arc.ratio_nearSphere_included = Arc.Fully_Included;
+        //arc.radius_collider_standard = arc.radius_near;
+        arc.ratio_nearSphere_included = _ac_near_included.localPosition.x;
         Arc.DrawArc(arc, arcUp);
 
 
@@ -827,7 +830,7 @@ public struct Arc
                                     //public float radius;
 
 
-    public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
+    //public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
 
     //ratio : [-1 ~ 1]
     //호에 원이 완전히 포함 [1]
@@ -835,16 +838,22 @@ public struct Arc
     //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
     public const float Fully_Included = 1f;
     public const float Focus_Included = 0f;
-    //public const float Boundary_Included = -1f; //올바른 비율 값이 아님. 연구 필요 
+    //public const float Boundary_Included = -1f; //각도에 따로 경계에 붙는 값이 달라짐 60도 => 0.5 등 , 계산공식을 찾아 적용하기 
     public float ratio_nearSphere_included;
 
-    public float factor
+    public float GetFactor()
     {
-        get
-        {   //f = radius / sin
-            return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-        }
+        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
     }
+
+    //public float factor
+    //{
+    //    get
+    //    {   //f = radius / sin
+    //        //return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+    //        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+    //    }
+    //}
 
 
     public Vector3 GetPosition_Factor()
@@ -852,7 +861,7 @@ public struct Arc
         if (0f == ratio_nearSphere_included)
             return pos;
 
-        return pos + dir * (factor * ratio_nearSphere_included);
+        return pos + dir * (GetFactor() * ratio_nearSphere_included);
     }
 
     public Sphere sphere_near
@@ -881,20 +890,20 @@ public struct Arc
 
     public static void DrawArc(Arc arc, Vector3 upDir)
     {
-        Vector3 far = arc.dir * arc.radius_far;
+        Vector3 factorPos = arc.GetPosition_Factor();
+        Vector3 far = arc.dir * (arc.radius_far + arc.GetFactor());
         DebugWide.DrawLine(arc.pos, arc.pos + far, Color.green);
-        //DebugWide.PrintText(arc.pos, Color.green, arc.degree + "");
-        DebugWide.DrawLine(arc.pos, arc.pos + Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * far, Color.green);
-        DebugWide.DrawLine(arc.pos, arc.pos + Quaternion.AngleAxis(+arc.degree * 0.5f, upDir) * far, Color.green);
+        DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * far, Color.green);
+        DebugWide.DrawLine(factorPos,factorPos + Quaternion.AngleAxis(+arc.degree * 0.5f, upDir) * far, Color.green);
         DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
-        DebugWide.DrawCircle(arc.GetPosition_Factor(), arc.radius_near, Color.green);
+        DebugWide.DrawCircle(arc.pos, arc.radius_near, Color.green);
     }
 
     public override string ToString()
     {
 
         return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
-        + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  radius_collider_standard: " + radius_collider_standard + "  factor: " + factor;
+            + "  radius_near: " + radius_near + "  radius_far: " + radius_far +  "  factor: " + GetFactor();
     }
 }
 
@@ -911,7 +920,45 @@ public struct Cylinder
 
     public Vector3 CollisionPos(Vector3 nearToPos)
     {
-        return pos;
+        Vector3 colPos = this.pos;
+        Vector3 farPos = this.pos + this.dir * this.length;
+        Vector3 dirRight = Vector3.Cross(Vector3.up, this.dir);
+        dirRight.Normalize();
+
+        Vector3 toHandlePos = nearToPos - this.pos;
+        //가까운 반구 충돌위치 찾기
+        float test = Vector3.Dot(this.dir, toHandlePos);
+        if(test < 0)
+        {
+            toHandlePos.Normalize();
+            colPos = this.pos + toHandlePos * radius_near;
+        }else
+        {
+            UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos);
+            UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
+            Vector3 pt0, pt1;
+            UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
+
+            colPos = pt0;    
+
+            //먼 원안에 pt0이 포함되는지 검사한다 
+            if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
+            {
+                //toHandlePos.Normalize();
+                //colPos = farPos + toHandlePos * radius_far;
+            }
+        }
+
+
+        //먼 반구 충돌위치 찾기 
+        //test = Vector3.Dot(-this.dir, nearToPos - farPos);
+        //if (test > 0)
+        //{
+        //}
+
+
+
+        return colPos;
     }
 
 
@@ -919,7 +966,7 @@ public struct Cylinder
     {
         Vector3 farPos = cld.pos + cld.dir * cld.length;
         Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
-        dirRight.Normalize(); ;
+        dirRight.Normalize();
 
         DebugWide.DrawLine(cld.pos, farPos, Color.green);
         DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, Color.green);
