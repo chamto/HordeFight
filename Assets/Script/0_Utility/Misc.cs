@@ -459,32 +459,39 @@ namespace UtilGS9
             public float degree;            //각도 
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
-                                            //public float radius;
-
-            public const float STANDARD_COLLIDER_RADIUS = 2f;
-            public float radius_collider_standard;  //기준이 되는 충돌원의 반지름 
-
-            public float factor
-            {
-                get
-                {   //f = radius / sin
-                    return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-                }
-            }
 
             //ratio : [-1 ~ 1]
             //호에 원이 완전히 포함 [1]
             //호에 원의 중점까지 포함 [0]
             //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
-            public const float Fully_Included = 1f;
+            public const float Fully_Included = -1f;
             public const float Focus_Included = 0f;
-            public const float Boundary_Included = -1f;
-            public Vector3 GetPosition_Factor(float ratio = Focus_Included)
-            {
-                if (0 == ratio)
-                    return pos;
+            //public const float Boundary_Included = 1f; //경계에 붙이기 위한 값은 가까운원의 반지름값임  
+            public float ratio_nearSphere_included;
 
-                return pos + dir * (factor * ratio);
+            public float GetFactor()
+            {
+                if (0f == ratio_nearSphere_included)//Focus_Included
+                    return 0f;
+                if (0 < ratio_nearSphere_included)  //Boundary_Included
+                    return radius_near;
+                //if(0 > ratio_nearSphere_included) //Fully_Included  
+                return -radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+            }
+
+            //public float factor
+            //{
+            //    get
+            //    {   //f = radius / sin
+            //        //return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+            //        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+            //    }
+            //}
+
+
+            public Vector3 GetPosition_Factor()
+            {
+                return pos + dir * GetFactor();
             }
 
             public Sphere sphere_near
@@ -511,11 +518,108 @@ namespace UtilGS9
 
             }
 
+            public static void DrawArc(Arc arc, Vector3 upDir)
+            {
+                Vector3 factorPos = arc.GetPosition_Factor();
+                Vector3 interPos;
+
+                Vector3 far = Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * arc.dir;
+                UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+                DebugWide.DrawLine(factorPos, interPos, Color.green);
+
+                far = Quaternion.AngleAxis(arc.degree * 0.5f, upDir) * arc.dir;
+                UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+                DebugWide.DrawLine(factorPos, interPos, Color.green);
+
+                DebugWide.DrawLine(arc.pos, arc.pos + arc.dir * arc.radius_far, Color.green);
+                DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
+                DebugWide.DrawCircle(arc.pos, arc.radius_near, Color.green);
+            }
+
             public override string ToString()
             {
 
                 return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
-                + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  radius_collider_standard: " + radius_collider_standard + "  factor: " + factor;
+                    + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  factor: " + GetFactor();
+            }
+        }
+
+
+        //실린더는 선분의 특징을 가지고 있다 
+        public struct Cylinder
+        {
+            public Vector3 pos;             //호의 시작점  
+            public Vector3 dir;             //정규화 되어야 한다
+            public float length;            //길이 
+            public float radius_near;       //시작점에서 가까운 원의 반지름 
+            public float radius_far;        //시작점에서 먼 원의 반지름
+
+
+            public Vector3 CollisionPos(Vector3 nearToPos)
+            {
+                Vector3 colPos = this.pos;
+                Vector3 farPos = this.pos + this.dir * this.length;
+
+                Vector3 toHandlePos = nearToPos - this.pos;
+                toHandlePos.Normalize();
+                Vector3 dirRight = toHandlePos - this.dir * Vector3.Dot(toHandlePos, this.dir);
+                dirRight.Normalize();
+
+                //가까운 반구 충돌위치 찾기
+                float test = Vector3.Dot(this.dir, toHandlePos);
+                if (test < 0)
+                {
+                    //toHandlePos.Normalize();
+                    colPos = this.pos + toHandlePos * radius_near;
+                }
+                else
+                {
+                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * 1000f); //실린더 안에 nearToPos 가 못있게 연장한다
+                    UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
+                    Vector3 pt0, pt1;
+                    UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
+
+                    colPos = pt0;
+
+                    //DebugWide.DrawCircle(pt0, 1f, Color.gray);
+                    //DebugWide.DrawCircle(pt1, 1f, Color.gray);
+                    //DebugWide.DrawLine(pt0, pt1, Color.gray);
+                    //DebugWide.DrawLine(this.pos + dirRight * radius_near, farPos + dirRight * radius_far, Color.red);
+
+
+                    //먼 원안에 pt0이 포함되는지 검사한다 
+                    //if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
+                    if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
+                    {   //먼 반구 충돌위치 찾기
+                        Vector3 interPos;
+                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos);
+                        colPos = interPos;
+
+                    }
+                }
+
+                return colPos;
+            }
+
+
+            public static void DrawCylinder(Cylinder cld)
+            {
+                Vector3 farPos = cld.pos + cld.dir * cld.length;
+                Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
+                dirRight.Normalize();
+
+                DebugWide.DrawLine(cld.pos, farPos, Color.green);
+                DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, Color.green);
+                DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, Color.green);
+                DebugWide.DrawCircle(cld.pos, cld.radius_near, Color.green);
+                DebugWide.DrawCircle(farPos, cld.radius_far, Color.green);
+            }
+
+            public override string ToString()
+            {
+
+                return "pos: " + pos + "  dir: " + dir + "  length: " + length
+                + "  radius_near: " + radius_near + "  radius_far: " + radius_far;
             }
         }
 
@@ -582,7 +686,8 @@ namespace UtilGS9
 
                     //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
 
-                    Vector3 arc_sph_dir = VOp.Minus(sph.pos , arc.GetPosition_Factor(Geo.Arc.Focus_Included));
+                    arc.ratio_nearSphere_included = Geo.Arc.Focus_Included;
+                    Vector3 arc_sph_dir = VOp.Minus(sph.pos , arc.GetPosition_Factor());
                     //arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
                     arc_sph_dir = VOp.Normalize(arc_sph_dir);
 
