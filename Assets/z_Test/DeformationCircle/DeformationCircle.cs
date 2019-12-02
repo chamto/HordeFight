@@ -532,14 +532,14 @@ public class DeformationCircle : MonoBehaviour
         Vector3 n_cldFw = (_cc_far_o.position - _cylinderCenter.position).normalized;
         float cld_length = (_cc_far_o.position - _cylinderCenter.position).magnitude;
         Vector3 farPos = _cylinderCenter.position + n_cldFw * cld_length;
-        Cylinder cld = new Cylinder();
+        Cylinder_Proto cld = new Cylinder_Proto();
         cld.pos = _cylinderCenter.position;
         cld.dir = n_cldFw;
         cld.length = cld_length;
         cld.radius_near = (_cc_near_endPos.position - _cylinderCenter.position).magnitude;
         cld.radius_far = (_cc_far_endPos.position - farPos).magnitude;
 
-        Cylinder.DrawCylinder(cld);
+        Cylinder_Proto.DrawCylinder(cld);
 
         Vector3 cld_colPos = cld.CollisionPos(_cc_handle.position);
         DebugWide.DrawCircle(cld_colPos, 0.5f, Color.magenta);
@@ -548,7 +548,7 @@ public class DeformationCircle : MonoBehaviour
         //==================================================
         //호 출력 시험
         Vector3 arcUp = (_ac_upDir_endPos.position - _arcCenter.position).normalized;
-        Arc arc = new Arc();
+        Arc_Proto arc = new Arc_Proto();
         arc.pos = _arcCenter.position;
         arc.degree = _ac_degree.localPosition.x;
         arc.dir = (_ac_far_endPos.position - _arcCenter.position).normalized;
@@ -556,7 +556,7 @@ public class DeformationCircle : MonoBehaviour
         arc.radius_far = (_ac_far_endPos.position - _arcCenter.position).magnitude;
         //arc.radius_collider_standard = arc.radius_near;
         arc.ratio_nearSphere_included = _ac_near_included.localPosition.x;
-        Arc.DrawArc(arc, arcUp);
+        Arc_Proto.DrawArc(arc, arcUp);
 
 
         //==================================================
@@ -820,7 +820,7 @@ public struct Sphere
     }
 }
 
-public struct Arc
+public struct Arc_Proto
 {
     public Vector3 pos;             //호의 시작점  
     public Vector3 dir;             //정규화 되어야 한다
@@ -886,7 +886,7 @@ public struct Arc
 
     }
 
-    public static void DrawArc(Arc arc, Vector3 upDir)
+    public static void DrawArc(Arc_Proto arc, Vector3 upDir)
     {
         Vector3 factorPos = arc.GetPosition_Factor();
         Vector3 interPos;
@@ -914,7 +914,7 @@ public struct Arc
 
 
 //실린더는 선분의 특징을 가지고 있다 
-public struct Cylinder
+public struct Cylinder_Proto
 {
     public Vector3 pos;             //호의 시작점  
     public Vector3 dir;             //정규화 되어야 한다
@@ -969,7 +969,7 @@ public struct Cylinder
     }
 
 
-    public static void DrawCylinder(Cylinder cld)
+    public static void DrawCylinder(Cylinder_Proto cld)
     {
         Vector3 farPos = cld.pos + cld.dir * cld.length;
         Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
