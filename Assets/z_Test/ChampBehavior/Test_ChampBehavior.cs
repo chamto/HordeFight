@@ -115,27 +115,7 @@ public class TwoHandControl : MonoBehaviour
     public float _radius_circle_B0 = 0f;
     public float _radius_circle_B1 = 0f;
 
-    //양손 조종용 주변원
-    private Transform _pos_circle_left = null;
-    private Transform _pos_circle_right = null;
-    private Transform _edge_circle_left = null;
-    private Transform _edge_circle_right = null;
-    private Transform _highest_circle_left = null;
-    private Transform _highest_circle_right = null;
-
-    //왼손 조종용 주변원
-    private Transform _pos_circle_A0 = null;
-    private Transform _pos_circle_A1 = null;
-    private Transform _edge_circle_A0 = null;
-    private Transform _edge_circle_A1 = null;
-    private Transform _highest_circle_A0 = null;
-    private Transform _highest_circle_A1 = null;
-
-    //오른손 조종용 주변원 
-    private Transform _pos_circle_B0 = null;
-    private Transform _pos_circle_B1 = null;
-    private Transform _edge_circle_B0 = null;
-    private Transform _edge_circle_B1 = null;
+    //======================================================
 
     //양손 좌표축
     private Transform _L2R_axis_o = null;
@@ -155,15 +135,42 @@ public class TwoHandControl : MonoBehaviour
     private Transform _right_axis_right = null;
     private Transform _right_axis_forward = null;
 
+    //======================================================
 
-    //양손조종. 왼손 회오리 경로
+    //양손 조종용 경로원
+    private Transform _pos_circle_left = null;
+    private Transform _pos_circle_right = null;
+    private Transform _edge_circle_left = null;
+    private Transform _edge_circle_right = null;
+    private Transform _highest_circle_left = null;
+    private Transform _highest_circle_right = null;
+    private Transform _far_edge_circle_left = null;
+    private Transform _far_edge_circle_right = null;
+
+
+    //왼손 조종용 경로원
+    private Transform _pos_circle_A0 = null;
+    private Transform _pos_circle_A1 = null;
+    private Transform _edge_circle_A0 = null;
+    private Transform _edge_circle_A1 = null;
+    private Transform _highest_circle_A0 = null;
+    private Transform _highest_circle_A1 = null;
+
+    //오른손 조종용 경로 
+    private Transform _pos_circle_B0 = null;
+    private Transform _pos_circle_B1 = null;
+    private Transform _edge_circle_B0 = null;
+    private Transform _edge_circle_B1 = null;
+
+
+    //양손조종. 왼손 회오리 경로원
     private Transform _TL2R_pos_circle_left = null;
     private Transform _TL2R_edge_circle_left = null;
     private Transform _TL2R_highest_circle_left = null;
     private Transform _TL2R_angle_circle_left = null;
     private Transform _TL2R_unlace_circle_left = null;
 
-    //실린더 경로
+    //실린더 경로원
     private Transform _cld_pos          = null;
     private Transform _cld_near_edge    = null;
     private Transform _cld_far_pos      = null;
@@ -256,6 +263,8 @@ public class TwoHandControl : MonoBehaviour
         _edge_circle_right = GameObject.Find("edge_circle_right").transform;
         _highest_circle_left = GameObject.Find("highest_circle_left").transform;
         _highest_circle_right = GameObject.Find("highest_circle_right").transform;
+        _far_edge_circle_left = GameObject.Find("far_edge_circle_left").transform;
+        _far_edge_circle_right = GameObject.Find("far_edge_circle_right").transform;
 
 
         _pos_circle_A0 = GameObject.Find("pos_circle_A0").transform;
@@ -1454,12 +1463,17 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
 
-        _cld_model.pos = _cld_pos.position;
-        _cld_model.length = (_cld_far_pos.position - _cld_pos.position).magnitude;
-        _cld_model.dir = (_cld_far_pos.position - _cld_pos.position) / _cld_model.length;
-        //_cld_model.dir = (_cld_far_pos.position - _cld_pos.position).normalized;
-        _cld_model.radius_near = (_cld_pos.position - _cld_near_edge.position).magnitude;
-        _cld_model.radius_far = (_cld_far_pos.position - _cld_far_edge.position).magnitude;
+        //_cld_model.pos = _cld_pos.position;
+        //_cld_model.length = (_cld_far_pos.position - _cld_pos.position).magnitude;
+        //_cld_model.dir = (_cld_far_pos.position - _cld_pos.position) / _cld_model.length;
+        //_cld_model.radius_near = (_cld_pos.position - _cld_near_edge.position).magnitude;
+        //_cld_model.radius_far = (_cld_far_pos.position - _cld_far_edge.position).magnitude;
+
+        _cld_model.pos = _pos_circle_left.position;
+        _cld_model.length = (_highest_circle_left.position - _cld_model.pos).magnitude;
+        _cld_model.dir = (_highest_circle_left.position - _cld_model.pos) / _cld_model.length;
+        _cld_model.radius_near = _radius_circle_left;
+        _cld_model.radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         this.CalcHandPos_Cylinder(handle, axis_up, _cld_model,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
