@@ -171,10 +171,6 @@ public class TwoHandControl : MonoBehaviour
     private Transform _TL2R_unlace_circle_left = null;
 
     //실린더 경로원
-    private Transform _cld_pos          = null;
-    private Transform _cld_near_edge    = null;
-    private Transform _cld_far_pos      = null;
-    private Transform _cld_far_edge     = null;
     private Geo.Cylinder _cld_model = new Geo.Cylinder();
 
     //======================================================
@@ -314,13 +310,6 @@ public class TwoHandControl : MonoBehaviour
         _TL2R_highest_circle_left = GameObject.Find("TL2R_highest_circle_left").transform;
         _TL2R_angle_circle_left = GameObject.Find("TL2R_angle_circle_left").transform;
         _TL2R_unlace_circle_left = GameObject.Find("TL2R_unlace_circle_left").transform;
-
-        //=======
-        //실린더 경로
-        _cld_pos       = GameObject.Find("cld_pos").transform;
-        _cld_near_edge = GameObject.Find("cld_near_edge").transform;
-        _cld_far_pos   = GameObject.Find("cld_far_pos").transform;
-        _cld_far_edge  = GameObject.Find("cld_far_edge").transform;
 
 	}
 
@@ -1462,12 +1451,6 @@ public class TwoHandControl : MonoBehaviour
                                      //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                      //out newPos, out newLength);
 
-
-        //_cld_model.pos = _cld_pos.position;
-        //_cld_model.length = (_cld_far_pos.position - _cld_pos.position).magnitude;
-        //_cld_model.dir = (_cld_far_pos.position - _cld_pos.position) / _cld_model.length;
-        //_cld_model.radius_near = (_cld_pos.position - _cld_near_edge.position).magnitude;
-        //_cld_model.radius_far = (_cld_far_pos.position - _cld_far_edge.position).magnitude;
 
         _cld_model.pos = _pos_circle_left.position;
         _cld_model.length = (_highest_circle_left.position - _cld_model.pos).magnitude;
