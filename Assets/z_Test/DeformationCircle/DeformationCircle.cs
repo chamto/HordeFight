@@ -12,7 +12,7 @@ public class DeformationCircle : MonoBehaviour
 
     public float _radius = 5f;
     public float _maxAngle = 360f * 2f;
-    public Transform _sphereCenter = null;
+    public Transform _circleCenter = null;
     public Transform _highestPoint = null;
     public Transform _anchorPointA = null;
     public Transform _anchorPointB = null;
@@ -44,7 +44,7 @@ public class DeformationCircle : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        _sphereCenter = GameObject.Find("sphereCenter").transform;
+        _circleCenter = GameObject.Find("circleCenter").transform;
         _highestPoint = GameObject.Find("highestPoint").transform;
         _anchorPointA = GameObject.Find("anchorPointA").transform;
         _anchorPointB = GameObject.Find("anchorPointB").transform;
@@ -256,7 +256,7 @@ public class DeformationCircle : MonoBehaviour
         int count = 36;
         for (int i = 0; i < count; i++)
         {
-            cur = DeformationSpherePoint(i * 10, _sphereCenter.position, _radius, _anchorPointA.position, _anchorPointB.position, _highestPoint.position, interpolationNumber);
+            cur = DeformationSpherePoint(i * 10, _circleCenter.position, _radius, _anchorPointA.position, _anchorPointB.position, _highestPoint.position, interpolationNumber);
             //cur += Vector3.right * 35;
             cur += pos;
 
@@ -587,24 +587,24 @@ public class DeformationCircle : MonoBehaviour
         PrintDemo(demoPos - Vector3.forward * 35 * 3, 3);
         PrintDemo(demoPos - Vector3.forward * 35 * 4, 4);
 
-        Gizimo_DeformationSpherePoint(Vector3.forward * 35 * 1, _sphereCenter.position, _radius, _anchorPointA.position, _anchorPointB.position, _highestPoint.position, 0);
+        Gizimo_DeformationSpherePoint(Vector3.forward * 35 * 1, _circleCenter.position, _radius, _anchorPointA.position, _anchorPointB.position, _highestPoint.position, 0);
 
         //=======
 
         //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-        Vector3 centerToHighestPoint = (_highestPoint.position - _sphereCenter.position);
+        Vector3 centerToHighestPoint = (_highestPoint.position - _circleCenter.position);
         float highestPointLength = centerToHighestPoint.magnitude;
         float t = highestPointLength - _radius;
 
-        Vector3 upDir = Vector3.Cross(_anchorPointA.position - _sphereCenter.position, _anchorPointB.position - _sphereCenter.position);
+        Vector3 upDir = Vector3.Cross(_anchorPointA.position - _circleCenter.position, _anchorPointB.position - _circleCenter.position);
         upDir.Normalize();
 
         //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
         _initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
         _initialDir.Normalize();
 
-        float angleA = Vector3.SignedAngle(_initialDir, _anchorPointA.position - _sphereCenter.position,  upDir);
-        float angleB = Vector3.SignedAngle(_initialDir, _anchorPointB.position - _sphereCenter.position,   upDir);
+        float angleA = Vector3.SignedAngle(_initialDir, _anchorPointA.position - _circleCenter.position,  upDir);
+        float angleB = Vector3.SignedAngle(_initialDir, _anchorPointB.position - _circleCenter.position,   upDir);
         //float angleH = Vector3.SignedAngle(_initialDir, centerToHighestPoint,   upDir);
         float angleH = 90f;
 
@@ -648,16 +648,16 @@ public class DeformationCircle : MonoBehaviour
         //----------- debug print -----------
         Vector3 angle_M45 = _initialDir;
         Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * _initialDir;
-        DebugWide.DrawLine(_sphereCenter.position, _sphereCenter.position + angle_M45 * _radius, Color.red);
-        DebugWide.DrawLine(_sphereCenter.position, _sphereCenter.position + angle_P45 * _radius, Color.red);
+        DebugWide.DrawLine(_circleCenter.position, _circleCenter.position + angle_M45 * _radius, Color.red);
+        DebugWide.DrawLine(_circleCenter.position, _circleCenter.position + angle_P45 * _radius, Color.red);
         //----------- debug print -----------
-        DebugWide.DrawCircle(_sphereCenter.position, _radius, Color.black);
-        DebugWide.DrawLine(_sphereCenter.position, _anchorPointA.position, Color.gray);
-        DebugWide.DrawLine(_sphereCenter.position, _anchorPointB.position, Color.gray);
+        DebugWide.DrawCircle(_circleCenter.position, _radius, Color.black);
+        DebugWide.DrawLine(_circleCenter.position, _anchorPointA.position, Color.gray);
+        DebugWide.DrawLine(_circleCenter.position, _anchorPointB.position, Color.gray);
 
         DebugWide.DrawLine(_anchorPointA.position, _highestPoint.position, Color.green);
         DebugWide.DrawLine(_anchorPointB.position, _highestPoint.position, Color.green);
-        DebugWide.DrawLine(_sphereCenter.position, _highestPoint.position, Color.red);
+        DebugWide.DrawLine(_circleCenter.position, _highestPoint.position, Color.red);
         //----------- debug print -----------
         DebugWide.PrintText(_anchorPointA.position, Color.black, "A : " + angleA);
         DebugWide.PrintText(_anchorPointB.position, Color.black, "B : " + angleB);
@@ -676,8 +676,8 @@ public class DeformationCircle : MonoBehaviour
 
         float angleD = 0f;
         float count = 5;
-        Vector3 prevPos = _sphereCenter.position;
-        Vector3 tdPos = _sphereCenter.position;
+        Vector3 prevPos = _circleCenter.position;
+        Vector3 tdPos = _circleCenter.position;
 
         //최고점 기준 -90도 로 설정된 회오리를 그린다 
         count = 300;
@@ -699,7 +699,7 @@ public class DeformationCircle : MonoBehaviour
             //float td = (angleD * 4f) / 45f;
 
 
-            tdPos = _sphereCenter.position + tdPos * (_radius + td);
+            tdPos = _circleCenter.position + tdPos * (_radius + td);
 
             //----------- debug print -----------
             if (0 != i)
@@ -771,7 +771,7 @@ public class DeformationCircle : MonoBehaviour
 
 
 
-            tdPos = _sphereCenter.position +  tdPos * (_radius + td);
+            tdPos = _circleCenter.position +  tdPos * (_radius + td);
 
             //----------- debug print -----------
             //DebugWide.DrawLine(sphereCenter.position, tdPos, Color.red);
