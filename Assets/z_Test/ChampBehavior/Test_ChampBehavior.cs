@@ -1405,7 +1405,12 @@ public class TwoHandControl : MonoBehaviour
 
         _cld_model.pos = _pos_circle_left.position;
         _cld_model.length = (_highest_circle_left.position - _cld_model.pos).magnitude;
-        _cld_model.dir = (_highest_circle_left.position - _cld_model.pos) / _cld_model.length;
+
+        if (_cld_model.length <= float.Epsilon)
+            _cld_model.dir = Vector3.zero;
+        else
+            _cld_model.dir = (_highest_circle_left.position - _cld_model.pos) / _cld_model.length;
+        
         _cld_model.radius_near = _radius_circle_left;
         _cld_model.radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         this.CalcHandPos_Cylinder(handle, axis_up, _cld_model,

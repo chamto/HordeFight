@@ -561,21 +561,30 @@ namespace UtilGS9
                 Vector3 farPos = this.pos + this.dir * this.length;
                 Vector3 toHandle = nearToPos - this.pos;
 
+                float test = Vector3.Dot(this.dir, toHandle);
+                //방향값이 0일 경우 조기 검사후 반환한다 
+                if (0 == test && true == UtilGS9.Misc.IsZero(this.dir))
+                {   //먼원과 가까운원의 위치가 일치 할 경우 
+
+                    float max = radius_near < radius_far ? radius_far : radius_near;
+                    Vector3 proj_centerToHandle = toHandle - upDir * Vector3.Dot(upDir, toHandle) / upDir.sqrMagnitude;
+
+                    return this.pos + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
+                }
+
                 //dir 의 방향에 맞게 upDir을 새로 구한다 
                 Vector3 dirRight = Vector3.Cross(upDir, this.dir);
                 Vector3 up2Dir = Vector3.Cross(this.dir, dirRight);
-                //up2Dir.Normalize();
+
                 //nearToPos 를 up2Dir 공간에 투영해야 한다 
                 Vector3 proj_nearToHandle = toHandle - up2Dir * Vector3.Dot(up2Dir, toHandle) / up2Dir.sqrMagnitude;
                 proj_nearToHandle.Normalize();
                 Vector3 proj_handleMaxPos = this.pos + proj_nearToHandle * (radius_far + length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
 
-                //DebugWide.DrawLine(this.pos, this.pos + up2Dir * 5f, Color.red);
 
-                //가까운 반구 충돌위치 찾기
-                float test = Vector3.Dot(this.dir, proj_nearToHandle);
                 if (test < 0)
-                {
+                {   //가까운 반구 충돌위치 찾기
+
                     colPos = this.pos + proj_nearToHandle * radius_near;
                 }
                 else
@@ -616,13 +625,20 @@ namespace UtilGS9
 
             public static void DrawCylinder(Cylinder cld, Vector3 upDir)
             {
+
                 Color cc = Color.white;
+
                 Vector3 farPos = cld.pos + cld.dir * cld.length;
 
                 Vector3 dirRight = Vector3.Cross(upDir, cld.dir);
                 dirRight.Normalize();
                 Vector3 up2Dir = Vector3.Cross(cld.dir, dirRight);
                 up2Dir.Normalize();
+
+                if (true == UtilGS9.Misc.IsZero(cld.dir))
+                {
+                    up2Dir = upDir;
+                }
 
                 DebugWide.DrawLine(cld.pos, farPos, cc);
                 DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, cc);
