@@ -175,14 +175,6 @@ public class TwoHandControl : MonoBehaviour
 
     //======================================================
 
-    public string _4____________________ = "";
-    public bool _A_deformationCircle = false;
-    private Transform _dc_center = null;
-    private Transform _dc_anchorA = null;
-    private Transform _dc_anchorB = null;
-    private Transform _dc_highest = null;
-    private Transform _dc_edge = null;
-    public float _tc_radius = 0.5f;
 
     public string _5_1___________________ = "";
     public bool _A_handleStaff_control = true;
@@ -242,13 +234,6 @@ public class TwoHandControl : MonoBehaviour
 
         _hand_left_spr = _hand_left.GetComponentInChildren<SpriteRenderer>().transform;
         _hand_right_spr = _hand_right.GetComponentInChildren<SpriteRenderer>().transform;
-
-        //궤적원
-        _dc_center = GameObject.Find("deformationCircle").transform;
-        _dc_anchorA = GameObject.Find("dc_anchorA").transform;
-        _dc_anchorB = GameObject.Find("dc_anchorB").transform;
-        _dc_highest = GameObject.Find("dc_highest").transform;
-        _dc_edge = GameObject.Find("dc_edge").transform;
 
 
         //==================================================
@@ -333,40 +318,6 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
-
-
-        //==================================================
-
-        //궤적원에 따른 왼손/오른손 움직임 표현 
-        if (true == _A_deformationCircle)
-        {
-
-            if (ePart.TwoHand_Left == _part_control)
-            {
-                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_left.position, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
-                float sqrTempLength = (_shoulder_left.position - tempPos).sqrMagnitude;
-                if (_arm_left_min_length <= sqrTempLength && sqrTempLength <= _arm_left_max_length)
-                {
-                    _hand_left.position = tempPos;
-                }
-
-            }
-
-            if (ePart.TwoHand_Right == _part_control)
-            {
-                Vector3 tempPos = Geo.DeformationSpherePoint(_hand_right.position, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
-                float sqrTempLength = (_shoulder_right.position - tempPos).sqrMagnitude;
-                if (_arm_right_min_length <= sqrTempLength && sqrTempLength <= _arm_right_max_length)
-                {
-                    _hand_right.position = tempPos;
-                }
-            }
-
-
-        }
-
-
-        //==================================================
 
         //손길이 제약 
         Vector3 hLsL = (_hand_left.position - _shoulder_left.position);
@@ -1919,12 +1870,6 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
         }
 
-
-        //궤적원에 따른 왼손 움직임 표현 
-        if (true == _A_deformationCircle)
-        {
-            Geo.DeformationSpherePoint_Gizimo(Vector3.zero, _dc_center.position, _tc_radius, _dc_anchorA.position, _dc_anchorB.position, _dc_highest.position, 1);
-        }
 
         //손방향 조종
         if (true == _A_handleStaff_control)
