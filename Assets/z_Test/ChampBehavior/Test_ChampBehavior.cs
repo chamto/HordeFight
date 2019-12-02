@@ -1232,7 +1232,7 @@ public class TwoHandControl : MonoBehaviour
 
 
         //===== 1차 계산
-        Vector3 aroundCalcPos = cld.CollisionPos(proj_handlePos);
+        Vector3 aroundCalcPos = cld.CollisionPos(handle, circle_up);
         Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
 
 

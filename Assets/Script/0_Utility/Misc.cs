@@ -550,31 +550,41 @@ namespace UtilGS9
         {
             public Vector3 pos;             //호의 시작점  
             public Vector3 dir;             //정규화 되어야 한다
-            public float length;            //길이
+            public float length;            //길이 
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
 
-            public Vector3 CollisionPos(Vector3 nearToPos)
+            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir)
             {
                 Vector3 colPos = this.pos;
                 Vector3 farPos = this.pos + this.dir * this.length;
+                Vector3 toHandle = nearToPos - this.pos;
 
-                Vector3 toHandlePos = nearToPos - this.pos;
-                toHandlePos.Normalize();
-                Vector3 dirRight = toHandlePos - this.dir * Vector3.Dot(toHandlePos, this.dir);
-                dirRight.Normalize();
+                //dir 의 방향에 맞게 upDir을 새로 구한다 
+                Vector3 dirRight = Vector3.Cross(upDir, this.dir);
+                Vector3 up2Dir = Vector3.Cross(this.dir, dirRight);
+                //up2Dir.Normalize();
+                //nearToPos 를 up2Dir 공간에 투영해야 한다 
+                Vector3 proj_nearToHandle = toHandle - up2Dir * Vector3.Dot(up2Dir, toHandle) / up2Dir.sqrMagnitude;
+                proj_nearToHandle.Normalize();
+                Vector3 proj_handleMaxPos = this.pos + proj_nearToHandle * (radius_far + length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
+
+                //DebugWide.DrawLine(this.pos, this.pos + up2Dir * 5f, Color.red);
 
                 //가까운 반구 충돌위치 찾기
-                float test = Vector3.Dot(this.dir, toHandlePos);
+                float test = Vector3.Dot(this.dir, proj_nearToHandle);
                 if (test < 0)
                 {
-                    //toHandlePos.Normalize();
-                    colPos = this.pos + toHandlePos * radius_near;
+                    colPos = this.pos + proj_nearToHandle * radius_near;
                 }
                 else
                 {
-                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * (radius_far + length)); //실린더 안에 nearToPos 가 못있게 연장한다
+                    dirRight.Normalize();
+                    if (0 > Vector3.Dot(dirRight, toHandle))
+                        dirRight = dirRight * -1; //dirRight 를 toHandle 쪽을 바라보게 방향을 바꾸기 위한 용도 
+
+                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, proj_handleMaxPos); //실린더 안에 nearToPos 가 못있게 연장된 최대위치값을 사용한다 
                     UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
                     Vector3 pt0, pt1;
                     UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
@@ -592,10 +602,10 @@ namespace UtilGS9
                     if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
                     {   //먼 반구 충돌위치 찾기
                         Vector3 interPos;
-                        //UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
-                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * (radius_far + length), -toHandlePos, out interPos);
+                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, proj_handleMaxPos, -proj_nearToHandle, out interPos);
                         colPos = interPos;
 
+                        //DebugWide.DrawLine(this.pos, proj_handleMaxPos, Color.red);
                         //DebugWide.LogBlue(farPos + "  " + radius_far + "  " + toHandlePos);
                     }
                 }
@@ -604,18 +614,23 @@ namespace UtilGS9
             }
 
 
-            public static void DrawCylinder(Cylinder cld , Vector3 upDir)
+            public static void DrawCylinder(Cylinder cld, Vector3 upDir)
             {
+                Color cc = Color.white;
                 Vector3 farPos = cld.pos + cld.dir * cld.length;
 
                 Vector3 dirRight = Vector3.Cross(upDir, cld.dir);
                 dirRight.Normalize();
+                Vector3 up2Dir = Vector3.Cross(cld.dir, dirRight);
+                up2Dir.Normalize();
 
-                DebugWide.DrawLine(cld.pos, farPos, Color.green);
-                DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, Color.green);
-                DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, Color.green);
-                DebugWide.DrawCircle(cld.pos, cld.radius_near, Color.green);
-                DebugWide.DrawCircle(farPos, cld.radius_far, Color.green);
+                DebugWide.DrawLine(cld.pos, farPos, cc);
+                DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, cc);
+                DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, cc);
+                //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
+                //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
+                DebugWide.DrawCircle2D(cld.pos, cld.radius_near, up2Dir, cld.dir, cc);
+                DebugWide.DrawCircle2D(farPos, cld.radius_far, up2Dir, cld.dir, cc);
             }
 
             public override string ToString()
