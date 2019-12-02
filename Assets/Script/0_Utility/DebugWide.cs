@@ -199,7 +199,7 @@ public class DebugWide
 #endif
     }
 
-    static public void DrawCircle2D(Vector3 pos, float radius, Vector3 up, Vector3 forward, Color cc)
+    static public void DrawCircle2D(Vector3 pos, float radius, Vector3 up, Color cc)
     {
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
@@ -223,7 +223,7 @@ public class DebugWide
         }
     }
 
-    static public void DrawCircleCone(Vector3 pos, float radius, Vector3 up, Vector3 forward, Color cc)
+    static public void DrawCircleCone(Vector3 pos, float radius, Vector3 up, Color cc)
     {
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;

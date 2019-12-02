@@ -645,8 +645,8 @@ namespace UtilGS9
                 DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, cc);
                 //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
                 //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
-                DebugWide.DrawCircle2D(cld.pos, cld.radius_near, up2Dir, cld.dir, cc);
-                DebugWide.DrawCircle2D(farPos, cld.radius_far, up2Dir, cld.dir, cc);
+                DebugWide.DrawCircle2D(cld.pos, cld.radius_near, up2Dir, cc);
+                DebugWide.DrawCircle2D(farPos, cld.radius_far, up2Dir, cc);
             }
 
             public override string ToString()
