@@ -171,7 +171,8 @@ public class TwoHandControl : MonoBehaviour
     private Transform _TL2R_unlace_circle_left = null;
 
     //실린더 경로원
-    private Geo.Cylinder _cld_model = new Geo.Cylinder();
+    private Geo.Cylinder _cld_left = new Geo.Cylinder();
+    private Geo.Cylinder _cld_right = new Geo.Cylinder();
 
     //======================================================
 
@@ -732,7 +733,7 @@ public class TwoHandControl : MonoBehaviour
         {
             //조종축으로 손위치 계산 
             if (ePart.TwoHand_Left == _part_control)
-                HandDirControl_LeftToRight();
+                HandDirControl_CutAndSting();
         }
         if(true == _A_hand_control_2)
         {
@@ -1267,7 +1268,7 @@ public class TwoHandControl : MonoBehaviour
 
     private float __backup_radius_circle_left = -1f;
     private float __backup_radius_circle_right = -1f;
-    public void HandDirControl_LeftToRight()
+    public void HandDirControl_CutAndSting()
     {
         if (false == _switch_cutAndSting)
         {   //찌르기 , 치기 
@@ -1316,7 +1317,9 @@ public class TwoHandControl : MonoBehaviour
 
             //_HANDLE_leftToRight.position =_pos_circle_left.position + (_hand_left.position - _pos_circle_left.position).normalized * 2f; 
 
-            _HANDLE_leftToRight.position = _hand_left.position;
+            //_HANDLE_leftToRight.position = _hand_left.position;
+
+            _HANDLE_leftToRight.position = _hand_left.position + (_hand_right.position - _hand_left.position).normalized * 2f;
 
             _edge_circle_left.position = _hand_left.position; //현재 위치로 주변원을 맞춘다  
             _edge_circle_right.position = _hand_right.position;
@@ -1358,8 +1361,13 @@ public class TwoHandControl : MonoBehaviour
 
             //-----------------------
 
-            //Cut_LeftToRight();
-            Cut_RightToLeft();
+            Cut_LeftToRight();
+            //Cut_RightToLeft();
+
+            //--------------------
+            //찌르기 모드로 연결하기 위한 핸들값 조정 
+            _hs_standard.position = _hand_left.position;
+            _hs_objectDir.position = _hand_right.position;
         }
 
     }
@@ -1402,18 +1410,9 @@ public class TwoHandControl : MonoBehaviour
                                      //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                      //out newPos, out newLength);
 
-
-        _cld_model.pos = _pos_circle_left.position;
-        _cld_model.length = (_highest_circle_left.position - _cld_model.pos).magnitude;
-
-        if (_cld_model.length <= float.Epsilon)
-            _cld_model.dir = Vector3.zero;
-        else
-            _cld_model.dir = (_highest_circle_left.position - _cld_model.pos) / _cld_model.length;
-        
-        _cld_model.radius_near = _radius_circle_left;
-        _cld_model.radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        this.CalcHandPos_Cylinder(handle, axis_up, _cld_model,
+        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
+        _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_Cylinder(handle, axis_up, _cld_left,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
 
@@ -1451,85 +1450,85 @@ public class TwoHandControl : MonoBehaviour
         //_debugLine.SetPosition(0, _hand_right.position);
         //_debugLine.SetPosition(1, newPos);
 
-        //--------------------
-        //찌르기 모드로 연결하기 위한 핸들값 조정 
-        _hs_standard.position = _hand_left.position;
-        _hs_objectDir.position = _hand_right.position;
-
     }
 
     public void Cut_LeftToRight()
     {
-            Vector3 handle = _HANDLE_leftToRight.position;
-            //Vector3 handle_1 = _hs_standard.position;
-            //Vector3 handle_2 = _hs_objectDir.position;
-            Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
-            Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-            Vector3 newPos = Vector3.zero;
-            float newLength = 0f;
+        Vector3 handle = _HANDLE_leftToRight.position;
+        //Vector3 handle_1 = _hs_standard.position;
+        //Vector3 handle_2 = _hs_objectDir.position;
+        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+        Vector3 newPos = Vector3.zero;
+        float newLength = 0f;
 
-            //-----------------------
-            //회오리원 위치 계산 
-            //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
-            //float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
-            //this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
-            //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-            //out newPos, out newLength);
+        //-----------------------
+        //회오리원 위치 계산 
+        //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
+        //float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
+        //this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
+        //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+        //out newPos, out newLength);
 
-            //-----------------------
-            //변형원 위치 계산 
-            //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-            //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-            //out newPos, out newLength);
+        //-----------------------
+        //변형원 위치 계산 
+        //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
+        //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+        //out newPos, out newLength);
 
-            //-----------------------
-            //주변원 위치 계산 
-            this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
-                                         _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                         out newPos, out newLength);
-            _arm_left_length = newLength;
-            _hand_left.position = newPos;
+        //-----------------------
+        //주변원 위치 계산 
+        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+                                     //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                     //out newPos, out newLength);
 
-            this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right,
-                                         _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                                         out newPos, out newLength);
-
+        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
+        _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_Cylinder(handle, axis_up, _cld_left,
+                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
-            _arm_right_length = newLength;
-            _hand_right.position = newPos;
+        _arm_left_length = newLength;
+        _hand_left.position = newPos;
+
+        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right,
+                                     //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                     //out newPos, out newLength);
+
+        radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
+        _cld_right.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+        this.CalcHandPos_Cylinder(handle, axis_up, _cld_right,
+                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+        
+
+        _arm_right_length = newLength;
+        _hand_right.position = newPos;
 
 
-            //----------------------------
+        //----------------------------
 
-            Vector3 twoHand = (_hand_right.position - _hand_left.position);
-            Vector3 n_twoHand = twoHand.normalized;
+        Vector3 twoHand = (_hand_right.position - _hand_left.position);
+        Vector3 n_twoHand = twoHand.normalized;
 
-            //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
-            newPos = _hand_left.position + n_twoHand * _twoHand_length;
-            Vector3 sdToHand = (newPos - _shoulder_right.position);
-            float length_sdToHand = sdToHand.magnitude;
-            Vector3 n_sdToHand = sdToHand / length_sdToHand;
-            newLength = length_sdToHand;
-            if (length_sdToHand > _arm_right_max_length)
-            {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
-                newLength = _arm_right_max_length;
-                newPos = _shoulder_right.position + n_sdToHand * newLength;
-            }
-            else if (length_sdToHand < _arm_right_min_length)
-            {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
-                newLength = _arm_right_min_length;
-                newPos = _shoulder_right.position + n_sdToHand * newLength;
-            }
+        //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
+        newPos = _hand_left.position + n_twoHand * _twoHand_length;
+        Vector3 sdToHand = (newPos - _shoulder_right.position);
+        float length_sdToHand = sdToHand.magnitude;
+        Vector3 n_sdToHand = sdToHand / length_sdToHand;
+        newLength = length_sdToHand;
+        if (length_sdToHand > _arm_right_max_length)
+        {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
+            newLength = _arm_right_max_length;
+            newPos = _shoulder_right.position + n_sdToHand * newLength;
+        }
+        else if (length_sdToHand < _arm_right_min_length)
+        {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
+            newLength = _arm_right_min_length;
+            newPos = _shoulder_right.position + n_sdToHand * newLength;
+        }
 
-            _arm_right_length = newLength;
-            _hand_right.position = newPos;
-
-
-            //--------------------
-            //찌르기 모드로 연결하기 위한 핸들값 조정 
-            _hs_standard.position = _hand_left.position;
-            _hs_objectDir.position = _hand_right.position;
+        _arm_right_length = newLength;
+        _hand_right.position = newPos;
 
     }
 
@@ -1905,7 +1904,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //변형원 그리기 
                 //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
-                Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_right.position, _radius_circle_right, axis_up, _highest_circle_right.position, 1);
+                //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_right.position, _radius_circle_right, axis_up, _highest_circle_right.position, 1);
 
                 //회전원 그리기
                 //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
@@ -1913,7 +1912,8 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.DrawCylinder(_cld_model, axis_up);
+                Geo.Cylinder.DrawCylinder(_cld_left, axis_up);
+                Geo.Cylinder.DrawCylinder(_cld_right, axis_up);
             }
         }
 

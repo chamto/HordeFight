@@ -554,6 +554,19 @@ namespace UtilGS9
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
+            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos ,float far_radius )
+            {
+                this.pos = orign_pos;
+                this.length = (far_pos - orign_pos).magnitude;
+
+                if (this.length <= float.Epsilon)
+                    this.dir = Vector3.zero;
+                else
+                    this.dir = (far_pos - orign_pos) / this.length;
+
+                this.radius_near = origin_radius;
+                this.radius_far = far_radius;
+            }
 
             public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir)
             {
