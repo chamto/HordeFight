@@ -203,11 +203,13 @@ public class DebugWide
     {
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
+        Vector3 perp = Vector3.Cross(up, Vector3.forward);
+        perp.Normalize();
 
         int count = 36;
         for (int i = 0; i < count; i++)
         {
-            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * perp;
 
             cur = pos + tdDir * radius;
 
@@ -225,12 +227,13 @@ public class DebugWide
     {
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
-        forward.Normalize();
+        Vector3 perp = Vector3.Cross(up, Vector3.forward);
+        perp.Normalize();
 
         int count = 36;
         for (int i = 0; i < count; i++)
         {
-            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * perp;
 
             cur = pos + tdDir * radius;
 
