@@ -199,5 +199,49 @@ public class DebugWide
 #endif
     }
 
+    static public void DrawCircle2D(Vector3 pos, float radius, Vector3 up, Vector3 forward, Color cc)
+    {
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+
+        int count = 36;
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+
+            cur = pos + tdDir * radius;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            //if (0 == i%5)
+            //DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+    }
+
+    static public void DrawCircleCone(Vector3 pos, float radius, Vector3 up, Vector3 forward, Color cc)
+    {
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+        forward.Normalize();
+
+        int count = 36;
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(i * 10, up) * forward;
+
+            cur = pos + tdDir * radius;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            //if (0 == i%2)
+            DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+    }
 }
 

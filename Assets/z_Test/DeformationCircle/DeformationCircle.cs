@@ -33,6 +33,7 @@ public class DeformationCircle : MonoBehaviour
 
 
     public Transform _cylinderCenter    = null;
+    public Transform _cc_upDir_endPos = null;
     public Transform _cc_far_o   = null;
     public Transform _cc_handle         = null;
     public Transform _cc_far_endPos     = null;
@@ -66,6 +67,7 @@ public class DeformationCircle : MonoBehaviour
 
 
         _cylinderCenter     = GameObject.Find("cylinderCenter").transform;
+        _cc_upDir_endPos = GameObject.Find("cc_upDir_endPos").transform;
         _cc_far_o    = GameObject.Find("cc_far_o").transform;
         _cc_handle          = GameObject.Find("cc_handle").transform;
         _cc_far_endPos      = GameObject.Find("cc_far_endPos").transform;
@@ -539,7 +541,8 @@ public class DeformationCircle : MonoBehaviour
         cld.radius_near = (_cc_near_endPos.position - _cylinderCenter.position).magnitude;
         cld.radius_far = (_cc_far_endPos.position - farPos).magnitude;
 
-        Cylinder_Proto.DrawCylinder(cld);
+        Vector3 cld_upDir = (_cc_upDir_endPos.position - _cylinderCenter.position).normalized;
+        Cylinder_Proto.DrawCylinder(cld , cld_upDir);
 
         Vector3 cld_colPos = cld.CollisionPos(_cc_handle.position);
         DebugWide.DrawCircle(cld_colPos, 0.5f, Color.magenta);
@@ -935,13 +938,14 @@ public struct Cylinder_Proto
 
         //가까운 반구 충돌위치 찾기
         float test = Vector3.Dot(this.dir, toHandlePos);
-        if(test < 0)
+        if (test < 0)
         {
             //toHandlePos.Normalize();
             colPos = this.pos + toHandlePos * radius_near;
-        }else
+        }
+        else
         {
-            UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * 1000f); //실린더 안에 nearToPos 가 못있게 연장한다
+            UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, nearToPos + toHandlePos * (radius_far + length)); //실린더 안에 nearToPos 가 못있게 연장한다
             UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
             Vector3 pt0, pt1;
             UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
@@ -956,12 +960,14 @@ public struct Cylinder_Proto
 
             //먼 원안에 pt0이 포함되는지 검사한다 
             //if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
-            if(false == UtilGS9.Misc.IsZero(pt0-pt1))
+            if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
             {   //먼 반구 충돌위치 찾기
                 Vector3 interPos;
-                UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos);
+                //UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * 1000f, -toHandlePos, out interPos); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
+                UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, nearToPos + toHandlePos * (radius_far + length), -toHandlePos, out interPos);
                 colPos = interPos;
 
+                //DebugWide.LogBlue(farPos + "  " + radius_far + "  " + toHandlePos);
             }
         }
 
@@ -969,17 +975,22 @@ public struct Cylinder_Proto
     }
 
 
-    public static void DrawCylinder(Cylinder_Proto cld)
+    public static void DrawCylinder(Cylinder_Proto cld, Vector3 upDir)
     {
         Vector3 farPos = cld.pos + cld.dir * cld.length;
-        Vector3 dirRight = Vector3.Cross(Vector3.up, cld.dir);
-        dirRight.Normalize();
 
+        Vector3 dirRight = Vector3.Cross(upDir, cld.dir);
+        dirRight.Normalize();
+        Vector3 rotUp = Vector3.Cross(cld.dir, dirRight);
+        rotUp.Normalize();
+             
         DebugWide.DrawLine(cld.pos, farPos, Color.green);
         DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, Color.green);
         DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, Color.green);
-        DebugWide.DrawCircle(cld.pos, cld.radius_near, Color.green);
-        DebugWide.DrawCircle(farPos, cld.radius_far, Color.green);
+        //DebugWide.DrawCircle(cld.pos, cld.radius_near, Color.green);
+        //DebugWide.DrawCircle(farPos, cld.radius_far, Color.green);
+        DebugWide.DrawCircle2D(cld.pos, cld.radius_near, rotUp, cld.dir, Color.green);
+        DebugWide.DrawCircle2D(farPos, cld.radius_far, rotUp, cld.dir, Color.green);
     }
 
     public override string ToString()
