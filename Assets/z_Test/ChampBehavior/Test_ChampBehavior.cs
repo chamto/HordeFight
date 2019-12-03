@@ -1914,6 +1914,9 @@ public class TwoHandControl : MonoBehaviour
                 //실린더 그리기
                 Geo.Cylinder.DrawCylinder(_cld_left, axis_up);
                 Geo.Cylinder.DrawCylinder(_cld_right, axis_up);
+
+                DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
+                DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_leftToRight.position, Color.red);
             }
         }
 
