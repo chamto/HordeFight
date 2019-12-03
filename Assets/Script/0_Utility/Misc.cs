@@ -568,11 +568,12 @@ namespace UtilGS9
                 this.radius_far = far_radius;
             }
 
-            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir)
+            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir , out Vector3 up2Dir)
             {
                 Vector3 colPos = this.pos;
                 Vector3 farPos = this.pos + this.dir * this.length;
                 Vector3 toHandle = nearToPos - this.pos;
+                up2Dir = upDir; 
 
                 float test = Vector3.Dot(this.dir, toHandle);
                 //방향값이 0일 경우 조기 검사후 반환한다 
@@ -587,7 +588,7 @@ namespace UtilGS9
 
                 //dir 의 방향에 맞게 upDir을 새로 구한다 
                 Vector3 dirRight = Vector3.Cross(upDir, this.dir);
-                Vector3 up2Dir = Vector3.Cross(this.dir, dirRight);
+                up2Dir = Vector3.Cross(this.dir, dirRight);
 
                 //nearToPos 를 up2Dir 공간에 투영해야 한다 
                 Vector3 proj_nearToHandle = toHandle - up2Dir * Vector3.Dot(up2Dir, toHandle) / up2Dir.sqrMagnitude;
@@ -636,10 +637,10 @@ namespace UtilGS9
             }
 
 
-            public static void DrawCylinder(Cylinder cld, Vector3 upDir)
+            public static void DrawCylinder(Cylinder cld, Vector3 upDir , Color cc)
             {
 
-                Color cc = Color.white;
+                //Color cc = Color.white;
 
                 Vector3 farPos = cld.pos + cld.dir * cld.length;
 

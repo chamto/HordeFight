@@ -1226,40 +1226,41 @@ public class TwoHandControl : MonoBehaviour
                                         out Vector3 newHand_pos, out float newArm_length)
     {
 
-        Vector3 handleToCenter = cld.pos - handle;
-        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-        Vector3 proj_handlePos = handle + proj_handle;
+        //Vector3 handleToOrigin = cld.pos - handle;
+        //Vector3 proj_toOrigin = circle_up * Vector3.Dot(handleToOrigin, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+        //Vector3 proj_handlePos = handle + proj_toOrigin;
 
 
         //===== 1차 계산
-        Vector3 aroundCalcPos = cld.CollisionPos(handle, circle_up);
+        Vector3 up2Dir;
+        Vector3 aroundCalcPos = cld.CollisionPos(handle, circle_up, out up2Dir);
         Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
 
-
         //===== 어깨원 투영
-        Vector3 proj_sdCenter = circle_up * Vector3.Dot((cld.pos - shoulder_pos), circle_up) / circle_up.sqrMagnitude;
-
-        float sqrLength_d = proj_sdCenter.sqrMagnitude;
-        Vector3 proj_sdCenterPos = shoulder_pos + proj_sdCenter; //어깨원의 중심점을 주변원공간에 투영 
+        Vector3 proj_sdToOrigin = up2Dir * Vector3.Dot((cld.pos - shoulder_pos), up2Dir) / up2Dir.sqrMagnitude;
+        Vector3 proj_sdToOringPos = shoulder_pos + proj_sdToOrigin; //어깨원의 중심점을 주변원공간에 투영 
+        float sqrLength_d = (aroundCalcPos - shoulder_pos).sqrMagnitude;
 
         if (sqrLength_d > arm_max_length * arm_max_length)
         {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
 
-            aroundCalcPos = (aroundCalcPos - shoulder_pos).normalized * arm_max_length;
+            Vector3 interPos;
+            if(false == UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, aroundCalcPos, (proj_sdToOringPos - aroundCalcPos).normalized, out interPos))
+            {
+                //todo : 최적화 필요 , 노멀 안구하는 다른 방법 찾기 
+                interPos = shoulder_pos + (interPos - shoulder_pos).normalized * arm_max_length;
+            }
+                
+            aroundCalcPos = interPos;
 
         }
         else if (sqrLength_d < arm_min_length * arm_min_length)
-        {   //주변원과 어깨최소원이 접촉한 상태. 최소값 보다 작은 핸들이 있을 수 있다
+        {   //주변원과 어깨최소원이 접촉한 상태
 
-            Vector3 centerToACPos = aroundCalcPos - proj_sdCenterPos;
-            float r2 = centerToACPos.sqrMagnitude;
-            float r3 = arm_min_length * arm_min_length - sqrLength_d;
+            Vector3 interPos;
+            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, cld.pos, (aroundCalcPos - cld.pos).normalized, out interPos);
+            aroundCalcPos = interPos;
 
-            if (r2 < r3)
-            {  //최소값 보다 작은 핸들이 있다. [최소값 조절 필요] 
-                aroundCalcPos = centerToACPos.normalized * arm_min_length;
-            }
         }
 
         newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
@@ -1478,7 +1479,7 @@ public class TwoHandControl : MonoBehaviour
 
         //-----------------------
         //주변원 위치 계산 
-        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
+        //this.CalcHandPos_AroundCircle2(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
                                      //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                      //out newPos, out newLength);
 
@@ -1899,6 +1900,8 @@ public class TwoHandControl : MonoBehaviour
                 
                 Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
                 Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+
+                //주변원 그리기 
                 this.DrawCirclePlate(_pos_circle_left.position, _radius_circle_left, axis_up, axis_forward, Color.yellow);
                 this.DrawCirclePlate(_pos_circle_right.position, _radius_circle_right, axis_up, axis_forward, Color.blue);
 
@@ -1912,9 +1915,10 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.DrawCylinder(_cld_left, axis_up);
-                Geo.Cylinder.DrawCylinder(_cld_right, axis_up);
+                Geo.Cylinder.DrawCylinder(_cld_left, axis_up, Color.yellow);
+                Geo.Cylinder.DrawCylinder(_cld_right, axis_up, Color.blue);
 
+                //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
                 DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_leftToRight.position, Color.red);
             }
