@@ -577,6 +577,12 @@ namespace UtilGS9
             }
         }
 
+
+        //==================================================
+        //==================================================
+        //==================================================
+
+
         public class Model
         {
             public const int FreePlane = 0; //자유평면
@@ -591,12 +597,25 @@ namespace UtilGS9
             public Vector3 origin;
         }
 
+        public class Model_Intergration
+        {
+            public int kind = Model.FreePlane;
+
+            public Vector3 origin;
+            public float radius;
+        }
+
         //자유평면을 정의
         public class FreePlane : Model
         {
             public FreePlane()
             {
                 base.kind = Model.FreePlane;
+            }
+
+            public void Set(Vector3 p_orign)
+            {
+                origin = p_orign;
             }
 
             public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir)
@@ -621,6 +640,12 @@ namespace UtilGS9
             public Circle()
             {
                 base.kind = Model.Circle;
+            }
+
+            public void Set(Vector3 p_orign, float p_radius)
+            {
+                origin = p_orign;
+                radius = p_radius;
             }
 
             public Vector3 CollisionPos(Vector3 handlePos , Vector3 upDir)
@@ -1010,23 +1035,221 @@ namespace UtilGS9
         public class Tornado : Model
         {
             public float radius;
-            //추가할 멤버변수 : 회오리 시작방향 , 회전각
+            public Vector3 dir; //회오리 시작방향
+            public float maxAngle; //최대회전각
+
 
             public Tornado()
             {
                 base.kind = Model.Tornado;
             }
 
-            //public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
-            //{
-            //}
+            public void Set(Vector3 p_orign, float p_radius, Vector3 p_dir, float p_maxAngle)
+            {
+                origin = p_orign;
+                radius = p_radius;
+                dir = p_dir;
+                maxAngle = p_maxAngle;
+            }
 
-            //public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir)
-            //{
-            //}
+            //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
+            private Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+            {
 
-            //public void Draw()
-            //{ }
+                Vector3 cur_dir = Vector3.Cross(forward, upDir);
+
+                if (Vector3.Dot(cur_dir, unlace_dir) < 0)
+                    upDir *= -1f;
+
+                return upDir;
+            }
+
+
+            //2차원 회오리상의 목표위치만 구하는 함수 
+            public Vector3 CollisionPos(Vector3 handlePos, Vector3 n_upDir)
+            {
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (dir - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+
+                //==================================================
+                Vector3 centerToTarget = handlePos - origin;
+                float t_target = centerToTarget.magnitude - radius; //target_pos에 대한 td를 바로 구한다 
+                float t_angleD = (t_target * maxAngle) / t;
+
+                if (t_angleD > maxAngle) t_angleD = maxAngle; //최대각도 이상 계산을 막는다 
+                else if (t_angleD < 0) t_angleD = 0;
+
+                //==================================================
+
+
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+
+
+                //비례식을 이용하여 td 구하기 
+                //angleD : td  = angleH : t
+                //td * angleH = angleD * t
+                //td = (angleD * t) / angleH
+                //angleD = (td * angleH) / t 
+
+                float angleD = Geo.Angle360(initialDir, centerToTarget, n_upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
+                int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
+
+
+                angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
+                if (angleD > maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
+
+
+                Vector3 tdPos = origin;
+                tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+                float td = (angleD * t) / maxAngle;
+                tdPos = origin + tdPos * (radius + td);
+
+                return tdPos;
+            }
+
+
+            //n_upDir 은 정규화된 값이 들어와야 한다 
+            public Vector3 CollisionPos3D(Vector3 handlePos, Vector3 n_upDir)
+            {
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (dir - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+
+                //==================================================
+                //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
+                Vector3 proj_centerToHighest = centerToHighestPoint - n_upDir * Vector3.Dot(n_upDir, centerToHighestPoint);
+                float proj_highestPointLength = proj_centerToHighest.magnitude;
+                float proj_t = proj_highestPointLength - radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
+
+
+                Vector3 centerToTarget = handlePos - origin;
+                Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
+                float t_target = proj_target.magnitude - radius; //target_pos에 대한 td를 바로 구한다.  proj_target 는 이미 벡터값이므로 다시 원점에서 출발하는 점으로 계산하면 안된다 
+                float t_angleD = (t_target * maxAngle) / proj_t;
+
+                if (t_angleD > maxAngle) t_angleD = maxAngle; //최대각도 이상 계산을 막는다 
+                else if (t_angleD < 0) t_angleD = 0;
+
+                //==================================================
+
+
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+
+
+                //비례식을 이용하여 td 구하기 
+                //angleD : td  = angleH : t
+                //td * angleH = angleD * t
+                //td = (angleD * t) / angleH
+                //angleD = (td * angleH) / t 
+                //float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
+
+                //float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, n_upDir); //음수표현없이 양수로 반환  
+                float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir);
+                int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
+
+
+                angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
+                if (angleD > maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
+
+
+                Vector3 tdPos = origin;
+                tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+                float td = (angleD * t) / maxAngle;
+                tdPos = origin + tdPos * (radius + td);
+
+                return tdPos;
+            }
+
+
+            public void Draw(Vector3 plus_pos, Vector3 n_upDir)
+            {
+
+                //=================================
+
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (dir - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                //Vector3 initialDir = centerToHighestPoint / highestPointLength;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+
+                //==================================================
+
+                //비례식을 이용하여 td 구하기 
+                //angleD : td  = angleH : t
+                //td * angleH = angleD * t
+                //td = (angleD * t) / angleH
+                float minAngle = 0;
+                float angleH = maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
+                float angleD = 0f;
+                float count = 300; //5
+                Vector3 prevPos = origin;
+                Vector3 tdPos = origin;
+
+                /*for (int i = 0; i < count; i++)
+                {
+
+                    //5도 간격으로 각도를 늘린다 
+                    angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
+
+                    tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+
+                    float td = (angleD * t) / angleH;
+
+                    tdPos = circle_pos + tdPos * (circle_radius + td);
+                    //tdPos = this.DeformationCirclePos_Tornado(angleD, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
+                    //tdPos = this.DeformationCirclePos_Tornado(tdPos, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
+
+                    //----------- debug print -----------
+                    if (0 != i)
+                        DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.gray);
+                    //----------- debug print -----------
+
+                    prevPos = tdPos;
+
+                }*/
+                //==================================================
+
+                count = 30;
+                for (int i = 0; i < count + 1; i++)
+                {
+
+                    //angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count); //180도 이상 계산못함 
+                    angleD = Mathf.Lerp(minAngle, maxAngle, i / (float)count);
+                    //DebugWide.LogBlue(i + " : " + angleD);
+                    tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+
+
+                    float td = (angleD * t) / angleH;
+                    //DebugWide.PrintText(tdPos * _radius, Color.black, " " + td + "  " + angleD);
+
+
+                    tdPos = origin + tdPos * (radius + td);
+
+                    //----------- debug print -----------
+                    //DebugWide.DrawLine(target_pos + circle_pos, target_pos + tdPos, Color.red);
+                    if (0 != i)
+                        DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.white);
+                    //----------- debug print -----------
+
+                    prevPos = tdPos;
+
+                }
+
+
+                //----------- debug print -----------
+                DebugWide.DrawCircle(plus_pos + origin, radius, Color.black);
+                DebugWide.DrawLine(plus_pos + origin, plus_pos + dir, Color.red);
+            }
         }
 
         //실린더는 선분의 특징을 가지고 있다 
@@ -1042,18 +1265,18 @@ namespace UtilGS9
                 base.kind = Model.Cylinder;
             }
 
-            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
+            public void Set(Vector3 p_orign, float p_radius_origin, Vector3 p_far_pos, float p_radius_far)
             {
-                this.origin = orign_pos;
-                this.length = (far_pos - orign_pos).magnitude;
+                this.origin = p_orign;
+                this.length = (p_far_pos - p_orign).magnitude;
 
                 if (this.length <= float.Epsilon)
                     this.dir = Vector3.zero;
                 else
-                    this.dir = (far_pos - orign_pos) / this.length;
+                    this.dir = (p_far_pos - p_orign) / this.length;
 
-                this.radius_origin = origin_radius;
-                this.radius_far = far_radius;
+                this.radius_origin = p_radius_origin;
+                this.radius_far = p_radius_far;
             }
 
             public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir, out Vector3 upDir2)
@@ -1642,206 +1865,6 @@ namespace UtilGS9
             return (ssq <= rsq);
         }
 
-
-        //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
-        static public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
-        {
-
-            Vector3 cur_dir = Vector3.Cross(forward, upDir);
-
-            if (Vector3.Dot(cur_dir, unlace_dir) < 0)
-                upDir *= -1f;
-
-            return upDir;
-        }
-
-
-        //2차원 회오리상의 목표위치만 구하는 함수 
-        static public Vector3 DeformationCirclePos_Tornado2D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir, Vector3 circle_highest, float circle_maxAngle)
-        {
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - circle_radius;
-
-
-            //==================================================
-            Vector3 centerToTarget = target_pos - circle_pos;
-            float t_target = centerToTarget.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다 
-            float t_angleD = (t_target * circle_maxAngle) / t;
-
-            if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
-            else if (t_angleD < 0) t_angleD = 0;
-
-            //==================================================
-
-
-            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, n_upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            //angleD = (td * angleH) / t 
-
-            float angleD = Geo.Angle360(initialDir, centerToTarget, n_upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
-            int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
-
-
-            angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
-            if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
-
-
-            Vector3 tdPos = circle_pos;
-            tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
-            float td = (angleD * t) / circle_maxAngle;
-            tdPos = circle_pos + tdPos * (circle_radius + td);
-
-            return tdPos;
-        }
-
-
-        //n_upDir 은 정규화된 값이 들어와야 한다 
-        static public Vector3 DeformationCirclePos_Tornado3D(Vector3 target_pos, Vector3 circle_pos, float circle_radius, Vector3 n_upDir, Vector3 circle_highest, float circle_maxAngle)
-        {
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - circle_radius;
-
-
-            //==================================================
-            //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
-            Vector3 proj_centerToHighest = centerToHighestPoint - n_upDir * Vector3.Dot(n_upDir, centerToHighestPoint);
-            float proj_highestPointLength = proj_centerToHighest.magnitude;
-            float proj_t = proj_highestPointLength - circle_radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
-
-
-            Vector3 centerToTarget = target_pos - circle_pos;
-            Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
-            float t_target = proj_target.magnitude - circle_radius; //target_pos에 대한 td를 바로 구한다.  proj_target 는 이미 벡터값이므로 다시 원점에서 출발하는 점으로 계산하면 안된다 
-            float t_angleD = (t_target * circle_maxAngle) / proj_t;
-
-            if (t_angleD > circle_maxAngle) t_angleD = circle_maxAngle; //최대각도 이상 계산을 막는다 
-            else if (t_angleD < 0) t_angleD = 0;
-
-            //==================================================
-
-
-            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, n_upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            //angleD = (td * angleH) / t 
-            //float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
-
-            //float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, n_upDir); //음수표현없이 양수로 반환  
-            float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir);
-            int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
-
-
-            angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
-            if (angleD > circle_maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
-
-
-            Vector3 tdPos = circle_pos;
-            tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
-            float td = (angleD * t) / circle_maxAngle;
-            tdPos = circle_pos + tdPos * (circle_radius + td);
-
-            return tdPos;
-        }
-
-
-        static public void DeformationCirclePos_Tornado3D_Gizimo(Vector3 plus_pos, Vector3 circle_pos, float circle_radius, Vector3 upDir, Vector3 circle_highest, float circle_maxAngle)
-        {
-
-            //=================================
-
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (circle_highest - circle_pos);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - circle_radius;
-
-            //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-            Vector3 initialDir = Quaternion.AngleAxis(360f - circle_maxAngle, upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-
-            //==================================================
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            float minAngle = 0;
-            float maxAngle = circle_maxAngle;
-            float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다. 
-            float angleD = 0f;
-            float count = 300; //5
-            Vector3 prevPos = circle_pos;
-            Vector3 tdPos = circle_pos;
-
-            /*for (int i = 0; i < count; i++)
-            {
-
-                //5도 간격으로 각도를 늘린다 
-                angleD = i * 5f; //계속 증가하는 각도 .. 파도나치 수열의 소용돌이 모양이 나옴 
-
-                tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
-
-                float td = (angleD * t) / angleH;
-
-                tdPos = circle_pos + tdPos * (circle_radius + td);
-                //tdPos = this.DeformationCirclePos_Tornado(angleD, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
-                //tdPos = this.DeformationCirclePos_Tornado(tdPos, circle_pos, circle_radius, upDir, circle_highest, circle_maxAngle);
-
-                //----------- debug print -----------
-                if (0 != i)
-                    DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.gray);
-                //----------- debug print -----------
-
-                prevPos = tdPos;
-
-            }*/
-            //==================================================
-
-            count = 30;
-            for (int i = 0; i < count + 1; i++)
-            {
-
-                //angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count); //180도 이상 계산못함 
-                angleD = Mathf.Lerp(minAngle, maxAngle, i / (float)count);
-                //DebugWide.LogBlue(i + " : " + angleD);
-                tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
-
-
-                float td = (angleD * t) / angleH;
-                //DebugWide.PrintText(tdPos * _radius, Color.black, " " + td + "  " + angleD);
-
-
-                tdPos = circle_pos + tdPos * (circle_radius + td);
-
-                //----------- debug print -----------
-                //DebugWide.DrawLine(target_pos + circle_pos, target_pos + tdPos, Color.red);
-                if (0 != i)
-                    DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.white);
-                //----------- debug print -----------
-
-                prevPos = tdPos;
-
-            }
-
-
-            //----------- debug print -----------
-            DebugWide.DrawCircle(plus_pos + circle_pos, circle_radius, Color.black);
-            DebugWide.DrawLine(plus_pos + circle_pos, plus_pos + circle_highest, Color.red);
-        }
     }//end geo
 
 
