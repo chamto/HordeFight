@@ -1228,7 +1228,7 @@ public class TwoHandControl : MonoBehaviour
     {
         
         Vector3 md_origin = model.origin;
-        Vector3 upDir2 = UtilGS9.ConstV.v3_zero;
+
         Vector3 aroundCalcPos = UtilGS9.ConstV.v3_zero;
 
         //===== 1차 계산
@@ -1258,8 +1258,10 @@ public class TwoHandControl : MonoBehaviour
                 break;
             case Geo.Model.Cylinder:
                 {
+                    Vector3 upDir2;
                     Geo.Cylinder m = (Geo.Cylinder)model;
                     aroundCalcPos = m.CollisionPos(handle, upDir, out upDir2);
+                    upDir = upDir2;
                 }
                 break;
             
@@ -1268,7 +1270,7 @@ public class TwoHandControl : MonoBehaviour
 
 
         //===== 어깨원 투영
-        Vector3 proj_sdToOrigin = upDir2 * Vector3.Dot((md_origin - shoulder_pos), upDir2) / upDir2.sqrMagnitude;
+        Vector3 proj_sdToOrigin = upDir * Vector3.Dot((md_origin - shoulder_pos), upDir) / upDir.sqrMagnitude;
         Vector3 proj_sdToOringPos = shoulder_pos + proj_sdToOrigin; //어깨원의 중심점을 주변원공간에 투영 
         float sqrLength_d = (aroundCalcPos - shoulder_pos).sqrMagnitude;
 
@@ -1290,52 +1292,6 @@ public class TwoHandControl : MonoBehaviour
 
             Vector3 interPos;
             UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, md_origin, (aroundCalcPos - md_origin).normalized, out interPos);
-            aroundCalcPos = interPos;
-
-        }
-
-        newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
-        newHand_pos = aroundCalcPos;
-    }
-
-    public void CalcHandPos_Cylinder(Vector3 handle, Vector3 circle_up, Geo.Cylinder cld,
-                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-                                        out Vector3 newHand_pos, out float newArm_length)
-    {
-
-        //Vector3 handleToOrigin = cld.pos - handle;
-        //Vector3 proj_toOrigin = circle_up * Vector3.Dot(handleToOrigin, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-        //Vector3 proj_handlePos = handle + proj_toOrigin;
-
-
-        //===== 1차 계산
-        Vector3 up2Dir;
-        Vector3 aroundCalcPos = cld.CollisionPos(handle, circle_up, out up2Dir);
-        Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
-
-        //===== 어깨원 투영
-        Vector3 proj_sdToOrigin = up2Dir * Vector3.Dot((cld.origin - shoulder_pos), up2Dir) / up2Dir.sqrMagnitude;
-        Vector3 proj_sdToOringPos = shoulder_pos + proj_sdToOrigin; //어깨원의 중심점을 주변원공간에 투영 
-        float sqrLength_d = (aroundCalcPos - shoulder_pos).sqrMagnitude;
-
-        if (sqrLength_d > arm_max_length * arm_max_length)
-        {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
-
-            Vector3 interPos;
-            if(false == UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, aroundCalcPos, (proj_sdToOringPos - aroundCalcPos).normalized, out interPos))
-            {
-                //todo : 최적화 필요 , 노멀 안구하는 다른 방법 찾기 
-                interPos = shoulder_pos + (interPos - shoulder_pos).normalized * arm_max_length;
-            }
-                
-            aroundCalcPos = interPos;
-
-        }
-        else if (sqrLength_d < arm_min_length * arm_min_length)
-        {   //주변원과 어깨최소원이 접촉한 상태
-
-            Vector3 interPos;
-            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, cld.origin, (aroundCalcPos - cld.origin).normalized, out interPos);
             aroundCalcPos = interPos;
 
         }
@@ -1490,7 +1446,7 @@ public class TwoHandControl : MonoBehaviour
 
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_Cylinder(handle, axis_up, _cld_left,
+        this.CalcHandPos_PlaneArea(_cld_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
 
@@ -1562,7 +1518,7 @@ public class TwoHandControl : MonoBehaviour
 
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_Cylinder(handle, axis_up, _cld_left,
+        this.CalcHandPos_PlaneArea(_cld_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
@@ -1575,7 +1531,7 @@ public class TwoHandControl : MonoBehaviour
 
         radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
         _cld_right.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
-        this.CalcHandPos_Cylinder(handle, axis_up, _cld_right,
+        this.CalcHandPos_PlaneArea(_cld_right, handle, axis_up,
                     _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
         
 
