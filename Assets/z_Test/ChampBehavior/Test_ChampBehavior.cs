@@ -173,20 +173,20 @@ public class TwoHandControl : MonoBehaviour
 
     //경로모델
 
-    private Geo.FreePlane _mdPlane_left = new Geo.FreePlane();
-    private Geo.FreePlane _mdPlane_right = new Geo.FreePlane();
+    private Geo.Model_Intergration _trjModel_left = new Geo.Model_Intergration();
+    private Geo.Model_Intergration _trjModel_right = new Geo.Model_Intergration();
 
-    private Geo.Circle _mdCircle_left = new Geo.Circle();
-    private Geo.Circle _mdCircle_right = new Geo.Circle();
+    //private Geo.Circle _mdCircle_left = new Geo.Circle();
+    //private Geo.Circle _mdCircle_right = new Geo.Circle();
 
-    private Geo.DeformationCircle _mdDfCircle_left = new Geo.DeformationCircle();
-    private Geo.DeformationCircle _mdDfCircle_right = new Geo.DeformationCircle();
+    //private Geo.DeformationCircle _mdDfCircle_left = new Geo.DeformationCircle();
+    //private Geo.DeformationCircle _mdDfCircle_right = new Geo.DeformationCircle();
 
-    private Geo.Tornado _mdTornado_left = new Geo.Tornado();
-    private Geo.Tornado _mdTornado_right = new Geo.Tornado();
+    //private Geo.Tornado _mdTornado_left = new Geo.Tornado();
+    //private Geo.Tornado _mdTornado_right = new Geo.Tornado();
 
-    private Geo.Cylinder _mdCld_left = new Geo.Cylinder();
-    private Geo.Cylinder _mdCld_right = new Geo.Cylinder();
+    //private Geo.Cylinder _mdCld_left = new Geo.Cylinder();
+    //private Geo.Cylinder _mdCld_right = new Geo.Cylinder();
 
 
 
@@ -223,6 +223,10 @@ public class TwoHandControl : MonoBehaviour
             //_debugLine = GameObject.Find("debugLine").GetComponent<LineRenderer>();
 
         }
+
+
+        _trjModel_left.Init();
+        _trjModel_right.Init();
 
         //--------------------------------------------------
 
@@ -1148,7 +1152,7 @@ public class TwoHandControl : MonoBehaviour
 
     //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
     //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
-    public void CalcHandPos_PlaneArea(Geo.Model model, Vector3 handle, Vector3 upDir,
+    public void CalcHandPos_PlaneArea(Geo.Model_Intergration model, Vector3 handle, Vector3 upDir,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
                                         out Vector3 newHand_pos, out float newArm_length)
     {
@@ -1160,33 +1164,30 @@ public class TwoHandControl : MonoBehaviour
         //===== 1차 계산
         switch(model.kind)
         {
-            case Geo.Model.FreePlane:
+            case Geo.Model_Intergration.FreePlane:
                 {
-                    Geo.FreePlane m = (Geo.FreePlane)model;
-                    aroundCalcPos = m.CollisionPos(handle, upDir);
+                    //aroundCalcPos = model.freePlane.CollisionPos(handle, upDir);
                 }
                 break;
-            case Geo.Model.Circle:
+            case Geo.Model_Intergration.Circle:
                 {
-                    Geo.Circle m= (Geo.Circle)model;
-                    aroundCalcPos = m.CollisionPos(handle, upDir);
+                    //aroundCalcPos = model.circle.CollisionPos(handle, upDir);
                 }
                 break;
-            case Geo.Model.DeformationCircle:
+            case Geo.Model_Intergration.DeformationCircle:
                 {
                     //aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
                 }
                 break;
-            case Geo.Model.Tornado:
+            case Geo.Model_Intergration.Tornado:
                 {
                     //aroundCalcPos = Geo.DeformationCirclePos_Tornado2D(handle, circle_pos, circle_radius, circle_up, highest_pos, 360f);
                 }
                 break;
-            case Geo.Model.Cylinder:
+            case Geo.Model_Intergration.Cylinder:
                 {
                     Vector3 upDir2;
-                    Geo.Cylinder m = (Geo.Cylinder)model;
-                    aroundCalcPos = m.CollisionPos(handle, upDir, out upDir2);
+                    aroundCalcPos = model.cylinder.CollisionPos(handle, upDir, out upDir2);
                     upDir = upDir2;
                 }
                 break;
@@ -1371,8 +1372,11 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_mdCld_left, handle, axis_up,
+        //_mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+
+        _trjModel_left.kind = Geo.Model_Intergration.Cylinder;
+        _trjModel_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_trjModel_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
 
@@ -1442,9 +1446,11 @@ public class TwoHandControl : MonoBehaviour
                                      //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                      //out newPos, out newLength);
 
+
+        _trjModel_left.kind = Geo.Model_Intergration.Cylinder;
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_mdCld_left, handle, axis_up,
+        _trjModel_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_trjModel_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
@@ -1455,9 +1461,12 @@ public class TwoHandControl : MonoBehaviour
                                      //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                      //out newPos, out newLength);
 
+
+
+        _trjModel_right.kind = Geo.Model_Intergration.Cylinder;
         radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
-        _mdCld_right.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
-        this.CalcHandPos_PlaneArea(_mdCld_right, handle, axis_up,
+        _trjModel_right.cylinder.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+        this.CalcHandPos_PlaneArea(_trjModel_right, handle, axis_up,
                     _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
         
 
@@ -1874,8 +1883,8 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.Draw(_mdCld_left, axis_up, Color.yellow);
-                Geo.Cylinder.Draw(_mdCld_right, axis_up, Color.blue);
+                Geo.Cylinder.Draw(_trjModel_left, axis_up, Color.yellow);
+                Geo.Cylinder.Draw(_trjModel_left, axis_up, Color.blue);
 
                 //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);

@@ -582,9 +582,17 @@ namespace UtilGS9
         //==================================================
         //==================================================
 
-        public class Model_Intergration
+        //통합모델은 데이터 공유, 함수만 다른 모델 객체로 나눈다 
+        public class Model_Intergration 
         {
-            public int kind = Model.FreePlane;
+            public const int FreePlane = 0; //자유평면
+            public const int Circle = 1;
+            public const int DeformationCircle = 2;
+            public const int Tornado = 3;
+            public const int Cylinder = 4;
+            public const int Arc = 5;  //호 
+
+            public int kind = Model_Intergration.FreePlane;
 
             public Vector3 origin;
             public float radius;
@@ -606,31 +614,70 @@ namespace UtilGS9
             //public Vector3 dir;             //origin 원에서 다른원까지의 방향 
             //public float length;            //길이 
             public float radius_far;        //시작점에서 먼 원의 반지름
+
+            //----------------------------------------------
+            //public FreePlane freePlane = null;
+            //public Circle circle = null;
+            //public DeformationCircle deformationCircle = null;
+            //public Tornado tornado = null;
+            public Cylinder cylinder = null;
+
+            public void Init()
+            {
+                //Model_Intergration model = this;
+                //freePlane = (FreePlane)model;
+                //circle = (Circle)this;
+                //deformationCircle = (DeformationCircle)this;
+                //tornado = (Tornado)this;
+                cylinder = new Cylinder();
+                cylinder.model = this;
+            }
+
+            //public FreePlane GetFreePlane()
+            //{
+            //    return (FreePlane)this;
+            //}
+            //public Circle GetCircle()
+            //{
+            //    return (Circle)this;
+            //}
+            //public DeformationCircle GetDeformationCircle()
+            //{
+            //    return (DeformationCircle)this;
+            //}
+            //public Tornado GetTornado()
+            //{
+            //    return (Tornado)this;
+            //}
+            //public Cylinder GetCylinder()
+            //{
+            //    return (Cylinder)this;
+            //}
         }
 
 
         public class Model
         {
-            public const int FreePlane = 0; //자유평면
-            public const int Circle = 1;
-            public const int DeformationCircle = 2;
-            public const int Tornado = 3;
-            public const int Cylinder = 4;
-            public const int Arc = 5;  //호 
+            //public const int FreePlane = 0; //자유평면
+            //public const int Circle = 1;
+            //public const int DeformationCircle = 2;
+            //public const int Tornado = 3;
+            //public const int Cylinder = 4;
+            //public const int Arc = 5;  //호 
 
-            public int kind = Model.FreePlane;
+            //public int kind = Model.FreePlane;
 
             public Vector3 origin;
         }
 
 
         //자유평면을 정의
-        public class FreePlane : Model
+        public class FreePlane : Model_Intergration
         {
-            public FreePlane()
-            {
-                base.kind = Model.FreePlane;
-            }
+            //public FreePlane()
+            //{
+            //    base.kind = Model.FreePlane;
+            //}
 
             public void Set(Vector3 p_orign)
             {
@@ -652,14 +699,14 @@ namespace UtilGS9
         }
 
         //평면상의 이차원 원을 정의 
-        public class Circle : Model
+        public class Circle : Model_Intergration
         {
-            public float radius;
+            //public float radius;
 
-            public Circle()
-            {
-                base.kind = Model.Circle;
-            }
+            //public Circle()
+            //{
+            //    base.kind = Model.Circle;
+            //}
 
             public void Set(Vector3 p_orign, float p_radius)
             {
@@ -683,20 +730,20 @@ namespace UtilGS9
         }
 
         //평면상의 이차원 변형원을 정의 
-        public class DeformationCircle : Model
+        public class DeformationCircle : Model_Intergration
         {
-            public float radius;
-            public Vector3 dir;
-            public float length;
-            public Vector3 anchorA;
-            public Vector3 anchorB;
-            public int interpolationNumber;
-            //추가할 멤버변수 : 최고점 , 앵커a , 앵커b , 보간알고리즘 번호 
+            //public float radius;
+            //public Vector3 dir;
+            //public float length;
+            //public Vector3 anchorA;
+            //public Vector3 anchorB;
+            //public int interpolationNumber;
 
-            public DeformationCircle()
-            {
-                base.kind = Model.DeformationCircle;
-            }
+
+            //public DeformationCircle()
+            //{
+            //    base.kind = Model.DeformationCircle;
+            //}
 
 
             public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
@@ -1055,18 +1102,17 @@ namespace UtilGS9
         }
 
         //평면상의 이차원 회오리를 정의 
-        public class Tornado : Model
+        public class Tornado : Model_Intergration
         {
-            public float radius;
-            public Vector3 dir; //회오리 시작방향
-            public float length; //회오리 반지름
-            public float maxAngle; //최대회전각
+            //public float radius;
+            //public Vector3 dir; //회오리 시작방향
+            //public float length; //회오리 반지름
+            //public float maxAngle; //최대회전각
 
-
-            public Tornado()
-            {
-                base.kind = Model.Tornado;
-            }
+            //public Tornado()
+            //{
+            //    base.kind = Model.Tornado;
+            //}
 
             public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, float p_maxAngle)
             {
@@ -1277,65 +1323,67 @@ namespace UtilGS9
             }
         }
 
-        //실린더는 선분의 특징을 가지고 있다 
-        public class Cylinder : Model
-        {
-            public float radius_origin;       //시작점에서 가까운 원의 반지름 
-            public Vector3 dir;             //origin 원에서 다른원까지의 방향 
-            public float length;            //길이 
-            public float radius_far;        //시작점에서 먼 원의 반지름
 
-            public Cylinder()
-            {
-                base.kind = Model.Cylinder;
-            }
+        //실린더는 선분의 특징을 가지고 있다 
+        public class Cylinder //: Model_Intergration
+        {
+            public Model_Intergration model = null;
+            //public float radius;       //시작점에서 가까운 원의 반지름 
+            //public Vector3 dir;             //origin 원에서 다른원까지의 방향 
+            //public float length;            //길이 
+            //public float radius_far;        //시작점에서 먼 원의 반지름
+
+            //public Cylinder()
+            //{
+            //    base.kind = Model.Cylinder;
+            //}
 
             public void Set(Vector3 p_orign, float p_radius_origin, Vector3 p_far_pos, float p_radius_far)
             {
-                this.origin = p_orign;
-                this.length = (p_far_pos - p_orign).magnitude;
+                model.origin = p_orign;
+                model.length = (p_far_pos - p_orign).magnitude;
 
-                if (this.length <= float.Epsilon)
-                    this.dir = Vector3.zero;
+                if (model.length <= float.Epsilon)
+                    model.dir = Vector3.zero;
                 else
-                    this.dir = (p_far_pos - p_orign) / this.length;
+                    model.dir = (p_far_pos - p_orign) / model.length;
 
-                this.radius_origin = p_radius_origin;
-                this.radius_far = p_radius_far;
+                model.radius = p_radius_origin;
+                model.radius_far = p_radius_far;
             }
 
             public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir, out Vector3 upDir2)
             {
-                Vector3 colPos = this.origin;
-                Vector3 farPos = this.origin + this.dir * this.length;
-                Vector3 toHandle = handlePos - this.origin;
+                Vector3 colPos = model.origin;
+                Vector3 farPos = model.origin + model.dir * model.length;
+                Vector3 toHandle = handlePos - model.origin;
                 upDir2 = upDir;
 
-                float test = Vector3.Dot(this.dir, toHandle);
+                float test = Vector3.Dot(model.dir, toHandle);
                 //방향값이 0일 경우 조기 검사후 반환한다 
-                if (0 == test && true == UtilGS9.Misc.IsZero(this.dir))
+                if (0 == test && true == UtilGS9.Misc.IsZero(model.dir))
                 {   //먼원과 가까운원의 위치가 일치 할 경우 
 
-                    float max = radius_origin < radius_far ? radius_far : radius_origin;
+                    float max = model.radius < model.radius_far ? model.radius_far : model.radius;
                     Vector3 proj_centerToHandle = toHandle - upDir * Vector3.Dot(upDir, toHandle) / upDir.sqrMagnitude;
 
-                    return this.origin + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
+                    return model.origin + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
                 }
 
                 //dir 의 방향에 맞게 upDir을 새로 구한다 
-                Vector3 dirRight = Vector3.Cross(upDir, this.dir);
-                upDir2 = Vector3.Cross(this.dir, dirRight);
+                Vector3 dirRight = Vector3.Cross(upDir, model.dir);
+                upDir2 = Vector3.Cross(model.dir, dirRight);
 
                 //nearToPos 를 upDir2 공간에 투영해야 한다 
                 Vector3 proj_originToHandle = toHandle - upDir2 * Vector3.Dot(upDir2, toHandle) / upDir2.sqrMagnitude;
                 proj_originToHandle.Normalize();
-                Vector3 proj_handleMaxPos = this.origin + proj_originToHandle * (radius_far + length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
+                Vector3 proj_handleMaxPos = model.origin + proj_originToHandle * (model.radius_far + model.length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
 
 
                 if (test < 0)
                 {   //가까운 반구 충돌위치 찾기
 
-                    colPos = this.origin + proj_originToHandle * radius_origin;
+                    colPos = model.origin + proj_originToHandle * model.radius;
                 }
                 else
                 {
@@ -1343,8 +1391,8 @@ namespace UtilGS9
                     if (0 > Vector3.Dot(dirRight, toHandle))
                         dirRight = dirRight * -1; //dirRight 를 toHandle 쪽을 바라보게 방향을 바꾸기 위한 용도 
 
-                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.origin, proj_handleMaxPos); //실린더 안에 nearToPos 가 못있게 연장된 최대위치값을 사용한다 
-                    UtilGS9.LineSegment3 line2 = new LineSegment3(this.origin + dirRight * radius_origin, farPos + dirRight * radius_far);
+                    UtilGS9.LineSegment3 line1 = new LineSegment3(model.origin, proj_handleMaxPos); //실린더 안에 nearToPos 가 못있게 연장된 최대위치값을 사용한다 
+                    UtilGS9.LineSegment3 line2 = new LineSegment3(model.origin + dirRight * model.radius, farPos + dirRight * model.radius_far);
                     Vector3 pt0, pt1;
                     UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
 
@@ -1361,7 +1409,7 @@ namespace UtilGS9
                     if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
                     {   //먼 반구 충돌위치 찾기
                         Vector3 interPos;
-                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, proj_handleMaxPos, -proj_originToHandle, out interPos);
+                        UtilGS9.Geo.IntersectRay2(farPos, model.radius_far, proj_handleMaxPos, -proj_originToHandle, out interPos);
                         colPos = interPos;
 
                         //DebugWide.DrawLine(this.pos, proj_handleMaxPos, Color.red);
@@ -1373,9 +1421,9 @@ namespace UtilGS9
             }
 
 
-            public static void Draw(Cylinder model, Vector3 upDir, Color cc)
+            public static void Draw(Model_Intergration model, Vector3 upDir, Color cc)
             {
-
+                
                 //Color cc = Color.white;
 
                 Vector3 farPos = model.origin + model.dir * model.length;
@@ -1391,19 +1439,19 @@ namespace UtilGS9
                 }
 
                 DebugWide.DrawLine(model.origin, farPos, cc);
-                DebugWide.DrawLine(model.origin + dirRight * model.radius_origin, farPos + dirRight * model.radius_far, cc);
-                DebugWide.DrawLine(model.origin + -dirRight * model.radius_origin, farPos + -dirRight * model.radius_far, cc);
+                DebugWide.DrawLine(model.origin + dirRight * model.radius, farPos + dirRight * model.radius_far, cc);
+                DebugWide.DrawLine(model.origin + -dirRight * model.radius, farPos + -dirRight * model.radius_far, cc);
                 //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
                 //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
-                DebugWide.DrawCircle2D(model.origin, model.radius_origin, upDir2, cc);
+                DebugWide.DrawCircle2D(model.origin, model.radius, upDir2, cc);
                 DebugWide.DrawCircle2D(farPos, model.radius_far, upDir2, cc);
             }
 
             public override string ToString()
             {
 
-                return "origin: " + origin + "  dir: " + dir + "  length: " + length
-                + "  radius_origin: " + radius_origin + "  radius_far: " + radius_far;
+                return "origin: " + model.origin + "  dir: " + model.dir + "  length: " + model.length
+                                         + "  radius_origin: " + model.radius + "  radius_far: " + model.radius_far;
             }
         }
 
