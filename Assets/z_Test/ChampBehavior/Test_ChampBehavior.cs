@@ -1220,6 +1220,82 @@ public class TwoHandControl : MonoBehaviour
         newHand_pos = handleCalcPos;
     }
 
+    //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
+    //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
+    public void CalcHandPos_PlaneArea(Geo.Model model, Vector3 handle, Vector3 upDir,
+                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
+                                        out Vector3 newHand_pos, out float newArm_length)
+    {
+        
+        Vector3 md_origin = model.origin;
+        Vector3 upDir2 = UtilGS9.ConstV.v3_zero;
+        Vector3 aroundCalcPos = UtilGS9.ConstV.v3_zero;
+
+        //===== 1차 계산
+        switch(model.kind)
+        {
+            case Geo.Model.FreePlane:
+                {
+                    Geo.FreePlane m = (Geo.FreePlane)model;
+                    aroundCalcPos = m.CollisionPos(handle, upDir);
+                }
+                break;
+            case Geo.Model.Circle:
+                {
+                    Geo.Circle m= (Geo.Circle)model;
+                    aroundCalcPos = m.CollisionPos(handle, upDir);
+                }
+                break;
+            case Geo.Model.DeformationCircle:
+                {
+                    //aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
+                }
+                break;
+            case Geo.Model.Tornado:
+                {
+                    //aroundCalcPos = Geo.DeformationCirclePos_Tornado2D(handle, circle_pos, circle_radius, circle_up, highest_pos, 360f);
+                }
+                break;
+            case Geo.Model.Cylinder:
+                {
+                    //aroundCalcPos = cld.CollisionPos(handle, upDir, out up2Dir);
+                }
+                break;
+            
+
+        }
+
+
+        //===== 어깨원 투영
+        Vector3 proj_sdToOrigin = upDir2 * Vector3.Dot((md_origin - shoulder_pos), upDir2) / upDir2.sqrMagnitude;
+        Vector3 proj_sdToOringPos = shoulder_pos + proj_sdToOrigin; //어깨원의 중심점을 주변원공간에 투영 
+        float sqrLength_d = (aroundCalcPos - shoulder_pos).sqrMagnitude;
+
+        if (sqrLength_d > arm_max_length * arm_max_length)
+        {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
+
+            Vector3 interPos;
+            if (false == UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, aroundCalcPos, (proj_sdToOringPos - aroundCalcPos).normalized, out interPos))
+            {
+                //todo : 최적화 필요 , 노멀 안구하는 다른 방법 찾기 
+                interPos = shoulder_pos + (interPos - shoulder_pos).normalized * arm_max_length;
+            }
+
+            aroundCalcPos = interPos;
+
+        }
+        else if (sqrLength_d < arm_min_length * arm_min_length)
+        {   //주변원과 어깨최소원이 접촉한 상태
+
+            Vector3 interPos;
+            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, md_origin, (aroundCalcPos - md_origin).normalized, out interPos);
+            aroundCalcPos = interPos;
+
+        }
+
+        newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
+        newHand_pos = aroundCalcPos;
+    }
 
     public void CalcHandPos_Cylinder(Vector3 handle, Vector3 circle_up, Geo.Cylinder cld,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,

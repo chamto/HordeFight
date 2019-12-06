@@ -554,7 +554,7 @@ namespace UtilGS9
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
-            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos ,float far_radius )
+            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
             {
                 this.pos = orign_pos;
                 this.length = (far_pos - orign_pos).magnitude;
@@ -568,12 +568,12 @@ namespace UtilGS9
                 this.radius_far = far_radius;
             }
 
-            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir , out Vector3 up2Dir)
+            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir, out Vector3 up2Dir)
             {
                 Vector3 colPos = this.pos;
                 Vector3 farPos = this.pos + this.dir * this.length;
                 Vector3 toHandle = nearToPos - this.pos;
-                up2Dir = upDir; 
+                up2Dir = upDir;
 
                 float test = Vector3.Dot(this.dir, toHandle);
                 //방향값이 0일 경우 조기 검사후 반환한다 
@@ -637,7 +637,7 @@ namespace UtilGS9
             }
 
 
-            public static void DrawCylinder(Cylinder cld, Vector3 upDir , Color cc)
+            public static void DrawCylinder(Cylinder cld, Vector3 upDir, Color cc)
             {
 
                 //Color cc = Color.white;
@@ -701,6 +701,97 @@ namespace UtilGS9
             {
                 return "pos: " + pos + "  radius: " + radius;
             }
+        }
+
+        public class Model
+        {
+            public const int FreePlane = 0; //자유평면
+            public const int Circle = 1;
+            public const int DeformationCircle = 2;
+            public const int Tornado = 3;
+            public const int Cylinder = 4;
+            public const int Arc = 5;  //호 
+
+            public int kind = Model.FreePlane;
+
+            public Vector3 origin;
+        }
+
+        //자유평면을 정의
+        public class FreePlane : Model
+        {
+            public FreePlane()
+            {
+                base.kind = Model.FreePlane;
+            }
+
+            public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir)
+            {
+                Vector3 toHandle = handlePos - origin;
+                Vector3 proj_toHandle = upDir * Vector3.Dot(toHandle, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+
+                Vector3 proj_handlePos = handlePos - proj_toHandle; //바로 투영점을 구한다 
+
+                return proj_handlePos;
+            }
+
+            public void Draw()
+            { }
+        }
+
+        //평면상의 이차원 원을 정의 
+        public class Circle : Model
+        {
+            public Circle()
+            {
+                base.kind = Model.Circle;
+            }
+
+            public float radius;
+
+            public Vector3 CollisionPos(Vector3 handlePos , Vector3 upDir)
+            {
+                Vector3 toHandle = handlePos - origin;
+                Vector3 proj_toHandle = upDir * Vector3.Dot(toHandle, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                                                                                                       
+                Vector3 proj_handlePos = handlePos - proj_toHandle; //바로 투영점을 구한다 
+                Vector3 n_circleToHand = (proj_handlePos - origin).normalized;
+
+                return origin + n_circleToHand * radius;
+            }
+
+            public void Draw()
+            {}
+        }
+
+        //평면상의 이차원 변형원을 정의 
+        public class DeformationCircle : Model
+        {
+            public DeformationCircle()
+            {
+                base.kind = Model.DeformationCircle;
+            }
+
+            public float radius;
+            //추가할 멤버변수 : 최고점 , 앵커a , 앵커b , 보간알고리즘 번호 
+
+            public void Draw()
+            { }
+        }
+
+        //평면상의 이차원 회오리를 정의 
+        public class Tornado : Model
+        {
+            public Tornado()
+            {
+                base.kind = Model.Tornado;
+            }
+
+            public float radius;
+            //추가할 멤버변수 : 회오리 시작방향 , 회전각
+
+            public void Draw()
+            { }
         }
 
         //코사인의 각도값을 비교 한다.
