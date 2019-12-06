@@ -582,6 +582,32 @@ namespace UtilGS9
         //==================================================
         //==================================================
 
+        public class Model_Intergration
+        {
+            public int kind = Model.FreePlane;
+
+            public Vector3 origin;
+            public float radius;
+
+            //deformaitonCircle
+            public Vector3 dir;
+            public float length;
+            public Vector3 anchorA;
+            public Vector3 anchorB;
+            public int interpolationNumber;
+
+            //tornadno
+            //public Vector3 dir; //회오리 시작방향
+            //public float length; //회오리 반지름
+            public float maxAngle; //최대회전각
+
+            //cylinder
+            //public float radius_origin;       //시작점에서 가까운 원의 반지름 
+            //public Vector3 dir;             //origin 원에서 다른원까지의 방향 
+            //public float length;            //길이 
+            public float radius_far;        //시작점에서 먼 원의 반지름
+        }
+
 
         public class Model
         {
@@ -597,13 +623,6 @@ namespace UtilGS9
             public Vector3 origin;
         }
 
-        public class Model_Intergration
-        {
-            public int kind = Model.FreePlane;
-
-            public Vector3 origin;
-            public float radius;
-        }
 
         //자유평면을 정의
         public class FreePlane : Model
@@ -667,7 +686,8 @@ namespace UtilGS9
         public class DeformationCircle : Model
         {
             public float radius;
-            public Vector3 highestPoint;
+            public Vector3 dir;
+            public float length;
             public Vector3 anchorA;
             public Vector3 anchorB;
             public int interpolationNumber;
@@ -683,21 +703,34 @@ namespace UtilGS9
             {
                 origin = p_orign;
                 radius = p_radius;
-                highestPoint = p_highestPoint;
+                this.length = (p_highestPoint - p_orign).magnitude;
+
+                if (this.length <= float.Epsilon)
+                    this.dir = Vector3.zero;
+                else
+                    this.dir = (p_highestPoint - p_orign) / this.length;
+
                 interpolationNumber = p_interpolationNumber;
             }
+
 
             public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
             {
                 origin = p_orign;
                 radius = p_radius;
-                highestPoint = p_highestPoint;
+                this.length = (p_highestPoint - p_orign).magnitude;
+
+                if (this.length <= float.Epsilon)
+                    this.dir = Vector3.zero;
+                else
+                    this.dir = (p_highestPoint - p_orign) / this.length;
+                
                 anchorA = p_anchorA;
                 anchorB = p_anchorB;
                 interpolationNumber = p_interpolationNumber;
             }
 
-            private float Calc_Td(float highestPointLength, float t, 
+            private float Calc_Td(float t, 
                                   float angleA, float angleH, float angleB , float angleTarget)
             {
                 
@@ -729,7 +762,7 @@ namespace UtilGS9
                     //최고점이 중심원의 외부에 위치한 경우
                     bool outside_highestPoint = td < t;
 
-                    if (highestPointLength < radius)
+                    if (length < radius)
                     {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
                         outside_highestPoint = !outside_highestPoint;
                     }
@@ -780,12 +813,10 @@ namespace UtilGS9
             {
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (highestPoint - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * dir;
                 //initialDir.Normalize();
 
 
@@ -805,7 +836,7 @@ namespace UtilGS9
                 //float angleB = 135f;
 
 
-                float td = this.Calc_Td(highestPointLength, t, 45f, 90f, 135f, angleTarget);
+                float td = this.Calc_Td(t, 45f, 90f, 135f, angleTarget);
                 return origin + tdDir * (radius + td);
             }
 
@@ -814,15 +845,13 @@ namespace UtilGS9
             {
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (highestPoint - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
                 //upDir.Normalize();
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * dir;
                 //initialDir.Normalize();
 
 
@@ -877,7 +906,7 @@ namespace UtilGS9
 
 
 
-                float td = this.Calc_Td(highestPointLength, t, angleA, 90f, angleB, angleTarget);
+                float td = this.Calc_Td(t, angleA, 90f, angleB, angleTarget);
                 return origin + tdDir * (radius + td);
             }
 
@@ -887,15 +916,13 @@ namespace UtilGS9
             {
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (highestPoint - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
                 upDir.Normalize();
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * dir;
                 initialDir.Normalize();
 
                 float angleA = Vector3.SignedAngle(initialDir, anchorA - origin, upDir);
@@ -941,7 +968,7 @@ namespace UtilGS9
 
                 Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
 
-                float td = this.Calc_Td(highestPointLength, t, angleA, 90f, angleB, rotateAngle);
+                float td = this.Calc_Td(t, angleA, 90f, angleB, rotateAngle);
                 return origin + tdDir * (radius + td);
             }
 
@@ -963,15 +990,13 @@ namespace UtilGS9
 
                 //=============================
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (highestPoint - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
                 upDir.Normalize();
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * dir;
                 initialDir.Normalize();
                 //----------- debug print -----------
                 Vector3 angle_M45 = initialDir;
@@ -983,9 +1008,9 @@ namespace UtilGS9
                 DebugWide.DrawLine(plusPos + origin, plusPos + anchorA, Color.gray);
                 DebugWide.DrawLine(plusPos + origin, plusPos + anchorB, Color.gray);
 
-                DebugWide.DrawLine(plusPos + anchorA, plusPos + highestPoint, Color.green);
-                DebugWide.DrawLine(plusPos + anchorB, plusPos + highestPoint, Color.green);
-                DebugWide.DrawLine(plusPos + origin, plusPos + highestPoint, Color.red);
+                DebugWide.DrawLine(plusPos + anchorA, plusPos + dir * length, Color.green);
+                DebugWide.DrawLine(plusPos + anchorB, plusPos + dir * length, Color.green);
+                DebugWide.DrawLine(plusPos + origin, plusPos + dir * length, Color.red);
                 //----------- debug print -----------
 
             }
@@ -994,12 +1019,10 @@ namespace UtilGS9
             {
                 //=============================
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (highestPoint - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * dir;
                 initialDir.Normalize();
                 //=============================
 
@@ -1010,7 +1033,7 @@ namespace UtilGS9
                 int count = 36;
                 for (int i = 0; i < count; i++)
                 {
-                    targetPos = Quaternion.AngleAxis(i * 10f, upDir) * initialDir * highestPointLength * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
+                    targetPos = Quaternion.AngleAxis(i * 10f, upDir) * initialDir * length * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
                     cur = CollisionPos_Fast(targetPos, upDir);
 
                     if (0 != i)
@@ -1026,7 +1049,7 @@ namespace UtilGS9
                 DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_M45 * radius, Color.red);
                 DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_P45 * radius, Color.red);
                 //----------- debug print -----------
-                DebugWide.DrawLine(plusPos + origin, plusPos + highestPoint, Color.red);
+                DebugWide.DrawLine(plusPos + origin, plusPos + dir * length, Color.red);
                 //----------- debug print -----------
             }
         }
@@ -1036,6 +1059,7 @@ namespace UtilGS9
         {
             public float radius;
             public Vector3 dir; //회오리 시작방향
+            public float length; //회오리 반지름
             public float maxAngle; //최대회전각
 
 
@@ -1044,11 +1068,18 @@ namespace UtilGS9
                 base.kind = Model.Tornado;
             }
 
-            public void Set(Vector3 p_orign, float p_radius, Vector3 p_dir, float p_maxAngle)
+            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, float p_maxAngle)
             {
                 origin = p_orign;
                 radius = p_radius;
-                dir = p_dir;
+
+                this.length = (p_highestPoint - p_orign).magnitude;
+
+                if (this.length <= float.Epsilon)
+                    this.dir = Vector3.zero;
+                else
+                    this.dir = (p_highestPoint - p_orign) / this.length;
+                
                 maxAngle = p_maxAngle;
             }
 
@@ -1069,9 +1100,7 @@ namespace UtilGS9
             public Vector3 CollisionPos(Vector3 handlePos, Vector3 n_upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (dir - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
 
                 //==================================================
@@ -1085,7 +1114,7 @@ namespace UtilGS9
                 //==================================================
 
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * dir * length;
                 initialDir.Normalize();
 
 
@@ -1116,14 +1145,12 @@ namespace UtilGS9
             public Vector3 CollisionPos3D(Vector3 handlePos, Vector3 n_upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (dir - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
 
                 //==================================================
                 //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
-                Vector3 proj_centerToHighest = centerToHighestPoint - n_upDir * Vector3.Dot(n_upDir, centerToHighestPoint);
+                Vector3 proj_centerToHighest = dir - n_upDir * Vector3.Dot(n_upDir, dir);
                 float proj_highestPointLength = proj_centerToHighest.magnitude;
                 float proj_t = proj_highestPointLength - radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
 
@@ -1139,7 +1166,7 @@ namespace UtilGS9
                 //==================================================
 
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * dir * length;
                 initialDir.Normalize();
 
 
@@ -1174,12 +1201,10 @@ namespace UtilGS9
                 //=================================
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                Vector3 centerToHighestPoint = (dir - origin);
-                float highestPointLength = centerToHighestPoint.magnitude;
-                float t = highestPointLength - radius;
+                float t = length - radius;
 
                 //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * centerToHighestPoint;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - maxAngle, n_upDir) * dir * length;
                 initialDir.Normalize();
 
                 //==================================================
@@ -1255,9 +1280,9 @@ namespace UtilGS9
         //실린더는 선분의 특징을 가지고 있다 
         public class Cylinder : Model
         {
+            public float radius_origin;       //시작점에서 가까운 원의 반지름 
             public Vector3 dir;             //origin 원에서 다른원까지의 방향 
             public float length;            //길이 
-            public float radius_origin;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
             public Cylinder()
