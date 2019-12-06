@@ -545,132 +545,6 @@ namespace UtilGS9
         }
 
 
-        //실린더는 선분의 특징을 가지고 있다 
-        public struct Cylinder
-        {
-            public Vector3 pos;             //호의 시작점  
-            public Vector3 dir;             //정규화 되어야 한다
-            public float length;            //길이 
-            public float radius_near;       //시작점에서 가까운 원의 반지름 
-            public float radius_far;        //시작점에서 먼 원의 반지름
-
-            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
-            {
-                this.pos = orign_pos;
-                this.length = (far_pos - orign_pos).magnitude;
-
-                if (this.length <= float.Epsilon)
-                    this.dir = Vector3.zero;
-                else
-                    this.dir = (far_pos - orign_pos) / this.length;
-
-                this.radius_near = origin_radius;
-                this.radius_far = far_radius;
-            }
-
-            public Vector3 CollisionPos(Vector3 nearToPos, Vector3 upDir, out Vector3 up2Dir)
-            {
-                Vector3 colPos = this.pos;
-                Vector3 farPos = this.pos + this.dir * this.length;
-                Vector3 toHandle = nearToPos - this.pos;
-                up2Dir = upDir;
-
-                float test = Vector3.Dot(this.dir, toHandle);
-                //방향값이 0일 경우 조기 검사후 반환한다 
-                if (0 == test && true == UtilGS9.Misc.IsZero(this.dir))
-                {   //먼원과 가까운원의 위치가 일치 할 경우 
-
-                    float max = radius_near < radius_far ? radius_far : radius_near;
-                    Vector3 proj_centerToHandle = toHandle - upDir * Vector3.Dot(upDir, toHandle) / upDir.sqrMagnitude;
-
-                    return this.pos + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
-                }
-
-                //dir 의 방향에 맞게 upDir을 새로 구한다 
-                Vector3 dirRight = Vector3.Cross(upDir, this.dir);
-                up2Dir = Vector3.Cross(this.dir, dirRight);
-
-                //nearToPos 를 up2Dir 공간에 투영해야 한다 
-                Vector3 proj_nearToHandle = toHandle - up2Dir * Vector3.Dot(up2Dir, toHandle) / up2Dir.sqrMagnitude;
-                proj_nearToHandle.Normalize();
-                Vector3 proj_handleMaxPos = this.pos + proj_nearToHandle * (radius_far + length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
-
-
-                if (test < 0)
-                {   //가까운 반구 충돌위치 찾기
-
-                    colPos = this.pos + proj_nearToHandle * radius_near;
-                }
-                else
-                {
-                    dirRight.Normalize();
-                    if (0 > Vector3.Dot(dirRight, toHandle))
-                        dirRight = dirRight * -1; //dirRight 를 toHandle 쪽을 바라보게 방향을 바꾸기 위한 용도 
-
-                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.pos, proj_handleMaxPos); //실린더 안에 nearToPos 가 못있게 연장된 최대위치값을 사용한다 
-                    UtilGS9.LineSegment3 line2 = new LineSegment3(this.pos + dirRight * radius_near, farPos + dirRight * radius_far);
-                    Vector3 pt0, pt1;
-                    UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
-
-                    colPos = pt0;
-
-                    //DebugWide.DrawCircle(pt0, 1f, Color.gray);
-                    //DebugWide.DrawCircle(pt1, 1f, Color.gray);
-                    //DebugWide.DrawLine(pt0, pt1, Color.gray);
-                    //DebugWide.DrawLine(this.pos + dirRight * radius_near, farPos + dirRight * radius_far, Color.red);
-
-
-                    //먼 원안에 pt0이 포함되는지 검사한다 
-                    //if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
-                    if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
-                    {   //먼 반구 충돌위치 찾기
-                        Vector3 interPos;
-                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, proj_handleMaxPos, -proj_nearToHandle, out interPos);
-                        colPos = interPos;
-
-                        //DebugWide.DrawLine(this.pos, proj_handleMaxPos, Color.red);
-                        //DebugWide.LogBlue(farPos + "  " + radius_far + "  " + toHandlePos);
-                    }
-                }
-
-                return colPos;
-            }
-
-
-            public static void DrawCylinder(Cylinder cld, Vector3 upDir, Color cc)
-            {
-
-                //Color cc = Color.white;
-
-                Vector3 farPos = cld.pos + cld.dir * cld.length;
-
-                Vector3 dirRight = Vector3.Cross(upDir, cld.dir);
-                dirRight.Normalize();
-                Vector3 up2Dir = Vector3.Cross(cld.dir, dirRight);
-                up2Dir.Normalize();
-
-                if (true == UtilGS9.Misc.IsZero(cld.dir))
-                {
-                    up2Dir = upDir;
-                }
-
-                DebugWide.DrawLine(cld.pos, farPos, cc);
-                DebugWide.DrawLine(cld.pos + dirRight * cld.radius_near, farPos + dirRight * cld.radius_far, cc);
-                DebugWide.DrawLine(cld.pos + -dirRight * cld.radius_near, farPos + -dirRight * cld.radius_far, cc);
-                //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
-                //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
-                DebugWide.DrawCircle2D(cld.pos, cld.radius_near, up2Dir, cc);
-                DebugWide.DrawCircle2D(farPos, cld.radius_far, up2Dir, cc);
-            }
-
-            public override string ToString()
-            {
-
-                return "pos: " + pos + "  dir: " + dir + "  length: " + length
-                + "  radius_near: " + radius_near + "  radius_far: " + radius_far;
-            }
-        }
-
         /// <summary>
         /// Sphere.
         /// </summary>
@@ -792,6 +666,136 @@ namespace UtilGS9
 
             public void Draw()
             { }
+        }
+
+        //실린더는 선분의 특징을 가지고 있다 
+        public class Cylinder : Model
+        {
+            public Vector3 dir;             //origin 원에서 다른원까지의 방향 
+            public float length;            //길이 
+            public float radius_origin;       //시작점에서 가까운 원의 반지름 
+            public float radius_far;        //시작점에서 먼 원의 반지름
+
+            public Cylinder()
+            {
+                base.kind = Model.Cylinder;
+            }
+
+            public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
+            {
+                this.origin = orign_pos;
+                this.length = (far_pos - orign_pos).magnitude;
+
+                if (this.length <= float.Epsilon)
+                    this.dir = Vector3.zero;
+                else
+                    this.dir = (far_pos - orign_pos) / this.length;
+
+                this.radius_origin = origin_radius;
+                this.radius_far = far_radius;
+            }
+
+            public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir, out Vector3 upDir2)
+            {
+                Vector3 colPos = this.origin;
+                Vector3 farPos = this.origin + this.dir * this.length;
+                Vector3 toHandle = handlePos - this.origin;
+                upDir2 = upDir;
+
+                float test = Vector3.Dot(this.dir, toHandle);
+                //방향값이 0일 경우 조기 검사후 반환한다 
+                if (0 == test && true == UtilGS9.Misc.IsZero(this.dir))
+                {   //먼원과 가까운원의 위치가 일치 할 경우 
+
+                    float max = radius_origin < radius_far ? radius_far : radius_origin;
+                    Vector3 proj_centerToHandle = toHandle - upDir * Vector3.Dot(upDir, toHandle) / upDir.sqrMagnitude;
+
+                    return this.origin + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
+                }
+
+                //dir 의 방향에 맞게 upDir을 새로 구한다 
+                Vector3 dirRight = Vector3.Cross(upDir, this.dir);
+                upDir2 = Vector3.Cross(this.dir, dirRight);
+
+                //nearToPos 를 upDir2 공간에 투영해야 한다 
+                Vector3 proj_originToHandle = toHandle - upDir2 * Vector3.Dot(upDir2, toHandle) / upDir2.sqrMagnitude;
+                proj_originToHandle.Normalize();
+                Vector3 proj_handleMaxPos = this.origin + proj_originToHandle * (radius_far + length); //반직선의 초기위치가 너무 크면 결과값이 이상하게 나온다. 확인필요
+
+
+                if (test < 0)
+                {   //가까운 반구 충돌위치 찾기
+
+                    colPos = this.origin + proj_originToHandle * radius_origin;
+                }
+                else
+                {
+                    dirRight.Normalize();
+                    if (0 > Vector3.Dot(dirRight, toHandle))
+                        dirRight = dirRight * -1; //dirRight 를 toHandle 쪽을 바라보게 방향을 바꾸기 위한 용도 
+
+                    UtilGS9.LineSegment3 line1 = new LineSegment3(this.origin, proj_handleMaxPos); //실린더 안에 nearToPos 가 못있게 연장된 최대위치값을 사용한다 
+                    UtilGS9.LineSegment3 line2 = new LineSegment3(this.origin + dirRight * radius_origin, farPos + dirRight * radius_far);
+                    Vector3 pt0, pt1;
+                    UtilGS9.LineSegment3.ClosestPoints(out pt0, out pt1, line1, line2);
+
+                    colPos = pt0;
+
+                    //DebugWide.DrawCircle(pt0, 1f, Color.gray);
+                    //DebugWide.DrawCircle(pt1, 1f, Color.gray);
+                    //DebugWide.DrawLine(pt0, pt1, Color.gray);
+                    //DebugWide.DrawLine(this.pos + dirRight * radius_near, farPos + dirRight * radius_far, Color.red);
+
+
+                    //먼 원안에 pt0이 포함되는지 검사한다 
+                    //if((farPos - pt0).sqrMagnitude <= radius_far*radius_far)
+                    if (false == UtilGS9.Misc.IsZero(pt0 - pt1))
+                    {   //먼 반구 충돌위치 찾기
+                        Vector3 interPos;
+                        UtilGS9.Geo.IntersectRay2(farPos, this.radius_far, proj_handleMaxPos, -proj_originToHandle, out interPos);
+                        colPos = interPos;
+
+                        //DebugWide.DrawLine(this.pos, proj_handleMaxPos, Color.red);
+                        //DebugWide.LogBlue(farPos + "  " + radius_far + "  " + toHandlePos);
+                    }
+                }
+
+                return colPos;
+            }
+
+
+            public static void Draw(Cylinder model, Vector3 upDir, Color cc)
+            {
+
+                //Color cc = Color.white;
+
+                Vector3 farPos = model.origin + model.dir * model.length;
+
+                Vector3 dirRight = Vector3.Cross(upDir, model.dir);
+                dirRight.Normalize();
+                Vector3 upDir2 = Vector3.Cross(model.dir, dirRight);
+                upDir2.Normalize();
+
+                if (true == UtilGS9.Misc.IsZero(model.dir))
+                {
+                    upDir2 = upDir;
+                }
+
+                DebugWide.DrawLine(model.origin, farPos, cc);
+                DebugWide.DrawLine(model.origin + dirRight * model.radius_origin, farPos + dirRight * model.radius_far, cc);
+                DebugWide.DrawLine(model.origin + -dirRight * model.radius_origin, farPos + -dirRight * model.radius_far, cc);
+                //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
+                //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
+                DebugWide.DrawCircle2D(model.origin, model.radius_origin, upDir2, cc);
+                DebugWide.DrawCircle2D(farPos, model.radius_far, upDir2, cc);
+            }
+
+            public override string ToString()
+            {
+
+                return "origin: " + origin + "  dir: " + dir + "  length: " + length
+                + "  radius_origin: " + radius_origin + "  radius_far: " + radius_far;
+            }
         }
 
         //코사인의 각도값을 비교 한다.

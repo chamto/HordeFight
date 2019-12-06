@@ -1258,7 +1258,8 @@ public class TwoHandControl : MonoBehaviour
                 break;
             case Geo.Model.Cylinder:
                 {
-                    //aroundCalcPos = cld.CollisionPos(handle, upDir, out up2Dir);
+                    Geo.Cylinder m = (Geo.Cylinder)model;
+                    aroundCalcPos = m.CollisionPos(handle, upDir, out upDir2);
                 }
                 break;
             
@@ -1313,7 +1314,7 @@ public class TwoHandControl : MonoBehaviour
         Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
 
         //===== 어깨원 투영
-        Vector3 proj_sdToOrigin = up2Dir * Vector3.Dot((cld.pos - shoulder_pos), up2Dir) / up2Dir.sqrMagnitude;
+        Vector3 proj_sdToOrigin = up2Dir * Vector3.Dot((cld.origin - shoulder_pos), up2Dir) / up2Dir.sqrMagnitude;
         Vector3 proj_sdToOringPos = shoulder_pos + proj_sdToOrigin; //어깨원의 중심점을 주변원공간에 투영 
         float sqrLength_d = (aroundCalcPos - shoulder_pos).sqrMagnitude;
 
@@ -1334,7 +1335,7 @@ public class TwoHandControl : MonoBehaviour
         {   //주변원과 어깨최소원이 접촉한 상태
 
             Vector3 interPos;
-            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, cld.pos, (aroundCalcPos - cld.pos).normalized, out interPos);
+            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, cld.origin, (aroundCalcPos - cld.origin).normalized, out interPos);
             aroundCalcPos = interPos;
 
         }
@@ -1991,8 +1992,8 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.DrawCylinder(_cld_left, axis_up, Color.yellow);
-                Geo.Cylinder.DrawCylinder(_cld_right, axis_up, Color.blue);
+                Geo.Cylinder.Draw(_cld_left, axis_up, Color.yellow);
+                Geo.Cylinder.Draw(_cld_right, axis_up, Color.blue);
 
                 //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
