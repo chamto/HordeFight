@@ -616,12 +616,12 @@ namespace UtilGS9
         //평면상의 이차원 원을 정의 
         public class Circle : Model
         {
+            public float radius;
+
             public Circle()
             {
                 base.kind = Model.Circle;
             }
-
-            public float radius;
 
             public Vector3 CollisionPos(Vector3 handlePos , Vector3 upDir)
             {
@@ -641,31 +641,392 @@ namespace UtilGS9
         //평면상의 이차원 변형원을 정의 
         public class DeformationCircle : Model
         {
+            public float radius;
+            public Vector3 highestPoint;
+            public Vector3 anchorA;
+            public Vector3 anchorB;
+            public int interpolationNumber;
+            //추가할 멤버변수 : 최고점 , 앵커a , 앵커b , 보간알고리즘 번호 
+
             public DeformationCircle()
             {
                 base.kind = Model.DeformationCircle;
             }
 
-            public float radius;
-            //추가할 멤버변수 : 최고점 , 앵커a , 앵커b , 보간알고리즘 번호 
 
-            public void Draw()
-            { }
+            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
+            {
+                origin = p_orign;
+                radius = p_radius;
+                highestPoint = p_highestPoint;
+                interpolationNumber = p_interpolationNumber;
+            }
+
+            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
+            {
+                origin = p_orign;
+                radius = p_radius;
+                highestPoint = p_highestPoint;
+                anchorA = p_anchorA;
+                anchorB = p_anchorB;
+                interpolationNumber = p_interpolationNumber;
+            }
+
+            private float Calc_Td(float highestPointLength, float t, 
+                                  float angleA, float angleH, float angleB , float angleTarget)
+            {
+                
+                //앵커를 고정으로 놓기 때문에 음수각도에 대한 예외처리를 할 필요가 없어짐
+                //float angleA = 45f;
+                //float angleH = 90f;
+                //float angleB = 135f;
+
+
+                //비례식을 이용하여 td 구하기 
+                //angleD : td  = angleH : t
+                //td * angleH = angleD * t
+                //td = (angleD * t) / angleH
+                float maxAngle = angleB;
+                float minAngle = angleA;
+                float maxTd = (maxAngle * t) / angleH;
+                float minTd = (minAngle * t) / angleH;
+
+
+                //Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
+                float td = 0f;
+
+                //t 가 0 이면 0 으로 나누는 문제가 발생함, 이를 막는 예외처리 추가 
+                if (t != 0 && minAngle <= angleTarget && angleTarget <= maxAngle)
+                {
+
+                    td = (angleTarget * t) / angleH;
+
+                    //최고점이 중심원의 외부에 위치한 경우
+                    bool outside_highestPoint = td < t;
+
+                    if (highestPointLength < radius)
+                    {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
+                        outside_highestPoint = !outside_highestPoint;
+                    }
+
+                    //회오리 값의 지정구간 비율값을 0~1 , 1~0 으로 변환시킨다
+                    if (outside_highestPoint)
+                    {
+                        td = td - minTd; //minTd ~ t => 0 ~ (t - minTd)
+                        td /= (t - minTd); //0~1로 변환
+                    }
+                    else
+                    {
+                        //최고점을 기준으로 대칭형을 만들어 준다    
+                        td = maxTd - td; //t ~ maxTd => (maxTd - t) ~ 0
+                        td /= (maxTd - t); //1~0로 변환
+                    }
+
+                    //0 또는 범위외값 : 보간없음
+                    //1~4 : 번호가 높을 수록 표현이 날카로워 진다 
+                    switch (interpolationNumber)
+                    {
+
+                        case 1:
+                            td = UtilGS9.Interpolation.easeInSine(0, 1f, td); //살짝 둥근 표현 
+                            break;
+                        case 2:
+                            td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 *
+                            break;
+                        case 3:
+                            td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 **
+                            break;
+                        case 4:
+                            td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 ***
+                            break;
+
+
+                    }
+
+                    td *= t; //0~t 범위로 변환 
+                }
+
+                return td;
+            }
+
+
+            //앵커를 고정된 각도로 놓아 계산량을 줄인 함수 버젼
+            public Vector3 CollisionPos_Fast(Vector3 handlePoint, Vector3 upDir)
+            {
+
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (highestPoint - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                //initialDir.Normalize();
+
+
+                //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
+                Vector3 centerToTarget = handlePoint - origin;
+                Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                Vector3 tdDir = centerToTarget - proj_targetToUp;
+
+                //Vector3 tdDir = targetPoint - sphereCenter;
+                tdDir.Normalize();
+
+                float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir);
+
+                //앵커를 고정으로 놓기 때문에 음수각도에 대한 예외처리를 할 필요가 없어짐
+                //float angleA = 45f;
+                //float angleH = 90f;
+                //float angleB = 135f;
+
+
+                float td = this.Calc_Td(highestPointLength, t, 45f, 90f, 135f, angleTarget);
+                return origin + tdDir * (radius + td);
+            }
+
+            //upDir 을 앵커A,B값으로 만든다  
+            public Vector3 CollisionPos(Vector3 handlePoint)
+            {
+
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (highestPoint - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
+                //upDir.Normalize();
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                //initialDir.Normalize();
+
+
+                //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
+                Vector3 centerToTarget = handlePoint - origin;
+                Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                Vector3 tdDir = centerToTarget - proj_targetToUp;
+
+                //Vector3 tdDir = targetPoint - sphereCenter;
+                tdDir.Normalize();
+
+                float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir);
+                float angleA = Vector3.SignedAngle(initialDir, anchorA - origin, upDir);
+                float angleB = Vector3.SignedAngle(initialDir, anchorB - origin, upDir);
+                //float angleA = 45f;
+                //float angleB = 135f;
+                float angleH = 90f;
+
+                //-1~-179 각도표현을 1~179 로 변환한다
+                //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
+                if (0 > angleA)
+                    angleA *= -1;
+                if (0 > angleB)
+                    angleB *= -1;
+
+
+                if (angleH > angleA && angleH > angleB)
+                {   //최고점 위영역에 앵커 두개가 있을 때의 예외처리 
+
+                    //최고점과 가까운 각도 찾기 
+                    if (angleA > angleB)
+                    {
+                        angleA = 91f;
+                    }
+                    else
+                    {
+                        angleB = 91f;
+                    }
+                }
+                if (angleH < angleA && angleH < angleB)
+                {   //최고점 아래영역에 앵커 두개가 있을 떄의 예외처리 
+
+                    if (angleA < angleB)
+                    {
+                        angleA = 89f;
+                    }
+                    else
+                    {
+                        angleB = 89f;
+                    }
+                }
+
+
+
+                float td = this.Calc_Td(highestPointLength, t, angleA, 90f, angleB, angleTarget);
+                return origin + tdDir * (radius + td);
+            }
+
+
+
+            public Vector3 CollisionPos(float rotateAngle)
+            {
+
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (highestPoint - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
+                upDir.Normalize();
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+
+                float angleA = Vector3.SignedAngle(initialDir, anchorA - origin, upDir);
+                float angleB = Vector3.SignedAngle(initialDir, anchorB - origin, upDir);
+                //float angleA = 45f;
+                //float angleB = 135f;
+                float angleH = 90f;
+
+                //-1~-179 각도표현을 1~179 로 변환한다
+                //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
+                if (0 > angleA)
+                    angleA *= -1;
+                if (0 > angleB)
+                    angleB *= -1;
+
+
+                if (angleH > angleA && angleH > angleB)
+                {   //최고점 위영역에 앵커 두개가 있을 때의 예외처리 
+
+                    //최고점과 가까운 각도 찾기 
+                    if (angleA > angleB)
+                    {
+                        angleA = 91f;
+                    }
+                    else
+                    {
+                        angleB = 91f;
+                    }
+                }
+                if (angleH < angleA && angleH < angleB)
+                {   //최고점 아래영역에 앵커 두개가 있을 떄의 예외처리 
+
+                    if (angleA < angleB)
+                    {
+                        angleA = 89f;
+                    }
+                    else
+                    {
+                        angleB = 89f;
+                    }
+                }
+
+
+                Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
+
+                float td = this.Calc_Td(highestPointLength, t, angleA, 90f, angleB, rotateAngle);
+                return origin + tdDir * (radius + td);
+            }
+
+            //plusPos : 중요한 인자 아님. 단순히 다른위치에 나타내고 싶을때 사용하는 값임 
+            public void Draw(Vector3 plusPos)
+            {
+                Vector3 prev = Vector3.zero;
+                Vector3 cur = Vector3.zero;
+                int count = 36;
+                for (int i = 0; i < count; i++)
+                {
+                    cur = CollisionPos(i * 10);
+
+                    if (0 != i)
+                        DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
+
+                    prev = plusPos + cur;
+                }
+
+                //=============================
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (highestPoint - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                Vector3 upDir = Vector3.Cross(anchorA - origin, anchorB - origin);
+                upDir.Normalize();
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+                //----------- debug print -----------
+                Vector3 angle_M45 = initialDir;
+                Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
+                DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_M45 * radius, Color.red);
+                DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_P45 * radius, Color.red);
+                //----------- debug print -----------
+                //DebugWide.DrawCircle(dPos + sphereCenter, sphereRadius, Color.black);
+                DebugWide.DrawLine(plusPos + origin, plusPos + anchorA, Color.gray);
+                DebugWide.DrawLine(plusPos + origin, plusPos + anchorB, Color.gray);
+
+                DebugWide.DrawLine(plusPos + anchorA, plusPos + highestPoint, Color.green);
+                DebugWide.DrawLine(plusPos + anchorB, plusPos + highestPoint, Color.green);
+                DebugWide.DrawLine(plusPos + origin, plusPos + highestPoint, Color.red);
+                //----------- debug print -----------
+
+            }
+
+            public void Draw_Fast(Vector3 plusPos, Vector3 upDir)
+            {
+                //=============================
+                //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
+                Vector3 centerToHighestPoint = (highestPoint - origin);
+                float highestPointLength = centerToHighestPoint.magnitude;
+                float t = highestPointLength - radius;
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
+                initialDir.Normalize();
+                //=============================
+
+                Vector3 prev = Vector3.zero;
+                Vector3 cur = Vector3.zero;
+                Vector3 targetPos = Vector3.zero;
+                float deltaLength = 100f; //이 값이 클수록 상세히 표현된다 
+                int count = 36;
+                for (int i = 0; i < count; i++)
+                {
+                    targetPos = Quaternion.AngleAxis(i * 10f, upDir) * initialDir * highestPointLength * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
+                    cur = CollisionPos_Fast(targetPos, upDir);
+
+                    if (0 != i)
+                        DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
+
+                    prev = plusPos + cur;
+                }
+
+
+                //----------- debug print -----------
+                Vector3 angle_M45 = initialDir;
+                Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
+                DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_M45 * radius, Color.red);
+                DebugWide.DrawLine(plusPos + origin, plusPos + origin + angle_P45 * radius, Color.red);
+                //----------- debug print -----------
+                DebugWide.DrawLine(plusPos + origin, plusPos + highestPoint, Color.red);
+                //----------- debug print -----------
+            }
         }
 
         //평면상의 이차원 회오리를 정의 
         public class Tornado : Model
         {
+            public float radius;
+            //추가할 멤버변수 : 회오리 시작방향 , 회전각
+
             public Tornado()
             {
                 base.kind = Model.Tornado;
             }
 
-            public float radius;
-            //추가할 멤버변수 : 회오리 시작방향 , 회전각
+            //public void Set(Vector3 orign_pos, float origin_radius, Vector3 far_pos, float far_radius)
+            //{
+            //}
 
-            public void Draw()
-            { }
+            //public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir)
+            //{
+            //}
+
+            //public void Draw()
+            //{ }
         }
 
         //실린더는 선분의 특징을 가지고 있다 
@@ -1279,446 +1640,6 @@ namespace UtilGS9
             float ssq = s.sqrMagnitude;
             float rsq = sphere_radius * sphere_radius;
             return (ssq <= rsq);
-        }
-
-        //앵커를 고정된 각도로 놓아 계산량을 줄인 함수 버젼
-        static public Vector3 DeformationSpherePoint_Fast(Vector3 targetPoint, Vector3 sphereCenter, float sphereRadius, Vector3 upDir, Vector3 highestPoint, int interpolationNumber)
-        {
-
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - sphereRadius;
-
-            //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-            Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
-            //initialDir.Normalize();
-
-
-            //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
-            Vector3 centerToTarget = targetPoint - sphereCenter;
-            Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-            Vector3 tdDir = centerToTarget - proj_targetToUp;
-
-            //Vector3 tdDir = targetPoint - sphereCenter;
-            tdDir.Normalize();
-
-            float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir);
-
-            //앵커를 고정으로 놓기 때문에 음수각도에 대한 예외처리를 할 필요가 없어짐
-            float angleA = 45f; 
-            float angleH = 90f;
-            float angleB = 135f;
-
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            float maxAngle = angleB;
-            float minAngle = angleA;
-            float maxTd = (maxAngle * t) / angleH;
-            float minTd = (minAngle * t) / angleH;
-
-
-            //Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
-            float td = 0f;
-
-            //t 가 0 이면 0 으로 나누는 문제가 발생함, 이를 막는 예외처리 추가 
-            if (t != 0 && minAngle <= angleTarget && angleTarget <= maxAngle)
-            {
-
-                td = (angleTarget * t) / angleH;
-
-                //최고점이 중심원의 외부에 위치한 경우
-                bool outside_highestPoint = td < t;
-
-                if (highestPointLength < sphereRadius)
-                {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
-                    outside_highestPoint = !outside_highestPoint;
-                }
-
-                //회오리 값의 지정구간 비율값을 0~1 , 1~0 으로 변환시킨다
-                if (outside_highestPoint)
-                {
-                    td = td - minTd; //minTd ~ t => 0 ~ (t - minTd)
-                    td /= (t - minTd); //0~1로 변환
-                }
-                else
-                {
-                    //최고점을 기준으로 대칭형을 만들어 준다    
-                    td = maxTd - td; //t ~ maxTd => (maxTd - t) ~ 0
-                    td /= (maxTd - t); //1~0로 변환
-                }
-
-                //0 또는 범위외값 : 보간없음
-                //1~4 : 번호가 높을 수록 표현이 날카로워 진다 
-                switch (interpolationNumber)
-                {
-
-                    case 1:
-                        td = UtilGS9.Interpolation.easeInSine(0, 1f, td); //살짝 둥근 표현 
-                        break;
-                    case 2:
-                        td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 *
-                        break;
-                    case 3:
-                        td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 **
-                        break;
-                    case 4:
-                        td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 ***
-                        break;
-
-
-                }
-
-                td *= t; //0~t 범위로 변환 
-            }
-
-            return sphereCenter + tdDir * (sphereRadius + td);
-        }
-
-        //targetPoint 위치값을 변형원의 설정에 따라 변형하여 반환한다 
-        static public Vector3 DeformationSpherePoint(Vector3 targetPoint, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
-        {
-
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - sphereRadius;
-
-            Vector3 upDir = Vector3.Cross(anchorA - sphereCenter, anchorB - sphereCenter);
-            //upDir.Normalize();
-
-            //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-            Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
-            //initialDir.Normalize();
-
-
-            //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
-            Vector3 centerToTarget = targetPoint - sphereCenter;
-            Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-            Vector3 tdDir = centerToTarget - proj_targetToUp;
-
-            //Vector3 tdDir = targetPoint - sphereCenter;
-            tdDir.Normalize();
-
-            float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir);
-            float angleA = Vector3.SignedAngle(initialDir, anchorA - sphereCenter, upDir);
-            float angleB = Vector3.SignedAngle(initialDir, anchorB - sphereCenter, upDir);
-            //float angleA = 45f;
-            //float angleB = 135f;
-            float angleH = 90f;
-
-            //-1~-179 각도표현을 1~179 로 변환한다
-            //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
-            if (0 > angleA)
-                angleA *= -1;
-            if (0 > angleB)
-                angleB *= -1;
-
-
-            if (angleH > angleA && angleH > angleB)
-            {   //최고점 위영역에 앵커 두개가 있을 때의 예외처리 
-
-                //최고점과 가까운 각도 찾기 
-                if (angleA > angleB)
-                {
-                    angleA = 91f;
-                }
-                else
-                {
-                    angleB = 91f;
-                }
-            }
-            if (angleH < angleA && angleH < angleB)
-            {   //최고점 아래영역에 앵커 두개가 있을 떄의 예외처리 
-
-                if (angleA < angleB)
-                {
-                    angleA = 89f;
-                }
-                else
-                {
-                    angleB = 89f;
-                }
-            }
-
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            float maxAngle = angleA > angleB ? angleA : angleB;
-            float minAngle = angleA < angleB ? angleA : angleB;
-            float maxTd = (maxAngle * t) / angleH;
-            float minTd = (minAngle * t) / angleH;
-
-
-            //Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
-            float td = 0f;
-
-            //t 가 0 이면 0 으로 나누는 문제가 발생함, 이를 막는 예외처리 추가 
-            if (t != 0 && minAngle <= angleTarget && angleTarget <= maxAngle)
-            {
-
-                td = (angleTarget * t) / angleH;
-
-                //최고점이 중심원의 외부에 위치한 경우
-                bool outside_highestPoint = td < t;
-
-                if (highestPointLength < sphereRadius)
-                {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
-                    outside_highestPoint = !outside_highestPoint;
-                }
-
-                //회오리 값의 지정구간 비율값을 0~1 , 1~0 으로 변환시킨다
-                if (outside_highestPoint)
-                {
-                    td = td - minTd; //minTd ~ t => 0 ~ (t - minTd)
-                    td /= (t - minTd); //0~1로 변환
-                }
-                else
-                {
-                    //최고점을 기준으로 대칭형을 만들어 준다    
-                    td = maxTd - td; //t ~ maxTd => (maxTd - t) ~ 0
-                    td /= (maxTd - t); //1~0로 변환
-                }
-
-                //0 또는 범위외값 : 보간없음
-                //1~4 : 번호가 높을 수록 표현이 날카로워 진다 
-                switch (interpolationNumber)
-                {
-
-                    case 1:
-                        td = UtilGS9.Interpolation.easeInSine(0, 1f, td); //살짝 둥근 표현 
-                        break;
-                    case 2:
-                        td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 *
-                        break;
-                    case 3:
-                        td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 **
-                        break;
-                    case 4:
-                        td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 ***
-                        break;
-
-
-                }
-
-                td *= t; //0~t 범위로 변환 
-            }
-
-            return sphereCenter + tdDir * (sphereRadius + td);
-        }
-
-        //사용예 : z_Test/DeformationCircle 프로젝트에 있음 
-        static public Vector3 DeformationSpherePoint(float rotateAngle, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
-        {
-
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - sphereRadius;
-
-            Vector3 upDir = Vector3.Cross(anchorA - sphereCenter, anchorB - sphereCenter);
-            upDir.Normalize();
-
-            //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-            Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-
-            float angleA = Vector3.SignedAngle(initialDir, anchorA - sphereCenter, upDir);
-            float angleB = Vector3.SignedAngle(initialDir, anchorB - sphereCenter, upDir);
-            //float angleA = 45f;
-            //float angleB = 135f;
-            float angleH = 90f;
-
-            //-1~-179 각도표현을 1~179 로 변환한다
-            //각도가 음수영역으로 들어가면 양수영역 각도로 변환한다 (각도가 음수영역으로 들어가면 궤적이 올바르게 표현이 안됨)  
-            if (0 > angleA)
-                angleA *= -1;
-            if (0 > angleB)
-                angleB *= -1;
-
-
-            if (angleH > angleA && angleH > angleB)
-            {   //최고점 위영역에 앵커 두개가 있을 때의 예외처리 
-
-                //최고점과 가까운 각도 찾기 
-                if (angleA > angleB)
-                {
-                    angleA = 91f;
-                }
-                else
-                {
-                    angleB = 91f;
-                }
-            }
-            if (angleH < angleA && angleH < angleB)
-            {   //최고점 아래영역에 앵커 두개가 있을 떄의 예외처리 
-
-                if (angleA < angleB)
-                {
-                    angleA = 89f;
-                }
-                else
-                {
-                    angleB = 89f;
-                }
-            }
-
-
-            //비례식을 이용하여 td 구하기 
-            //angleD : td  = angleH : t
-            //td * angleH = angleD * t
-            //td = (angleD * t) / angleH
-            float maxAngle = angleA > angleB ? angleA : angleB;
-            float minAngle = angleA < angleB ? angleA : angleB;
-            float maxTd = (maxAngle * t) / angleH;
-            float minTd = (minAngle * t) / angleH;
-
-
-            Vector3 tdDir = Quaternion.AngleAxis(rotateAngle, upDir) * initialDir;
-            float td = 0f;
-
-            //t 가 0 이면 0 으로 나누는 문제가 발생함, 이를 막는 예외처리 추가 
-            if (t != 0 && minAngle <= rotateAngle && rotateAngle <= maxAngle)
-            {
-
-                td = (rotateAngle * t) / angleH;
-
-                //최고점이 중심원의 외부에 위치한 경우
-                bool outside_highestPoint = td < t;
-
-                if (highestPointLength < sphereRadius)
-                {   //최고점이 중심원의 내부에 위치한 경우의 예외처리 
-                    outside_highestPoint = !outside_highestPoint;
-                }
-
-                //회오리 값의 지정구간 비율값을 0~1 , 1~0 으로 변환시킨다
-                if (outside_highestPoint)
-                {
-                    td = td - minTd; //minTd ~ t => 0 ~ (t - minTd)
-                    td /= (t - minTd); //0~1로 변환
-                }
-                else
-                {
-                    //최고점을 기준으로 대칭형을 만들어 준다    
-                    td = maxTd - td; //t ~ maxTd => (maxTd - t) ~ 0
-                    td /= (maxTd - t); //1~0로 변환
-                }
-
-                //0 또는 범위외값 : 보간없음
-                //1~4 : 번호가 높을 수록 표현이 날카로워 진다 
-                switch (interpolationNumber)
-                {
-
-                    case 1:
-                        td = UtilGS9.Interpolation.easeInSine(0, 1f, td); //살짝 둥근 표현 
-                        break;
-                    case 2:
-                        td = UtilGS9.Interpolation.easeInCirc(0, 1f, td); //직선에 가까운 표현 가능 *
-                        break;
-                    case 3:
-                        td = UtilGS9.Interpolation.easeInQuart(0, 1f, td); //직선에 가까운 표현 가능 **
-                        break;
-                    case 4:
-                        td = UtilGS9.Interpolation.easeInBack(0, 1f, td); //직선에 가까운 표현 가능 ***
-                        break;
-
-
-                }
-
-                td *= t; //0~t 범위로 변환 
-            }
-
-            return sphereCenter + tdDir * (sphereRadius + td);
-        }
-
-        //plusPos : 중요한 인자 아님. 단순히 다른위치에 나타내고 싶을때 사용하는 값임 
-        static public void DeformationSpherePoint_Gizimo(Vector3 plusPos, Vector3 sphereCenter, float sphereRadius, Vector3 anchorA, Vector3 anchorB, Vector3 highestPoint, int interpolationNumber)
-        {
-            Vector3 prev = Vector3.zero;
-            Vector3 cur = Vector3.zero;
-            int count = 36;
-            for (int i = 0; i < count; i++)
-            {
-                cur = DeformationSpherePoint(i * 10, sphereCenter, sphereRadius, anchorA, anchorB, highestPoint, interpolationNumber);
-
-                if (0 != i)
-                    DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
-
-                prev = plusPos + cur;
-            }
-
-            //=============================
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - sphereRadius;
-
-            Vector3 upDir = Vector3.Cross(anchorA - sphereCenter, anchorB - sphereCenter);
-            upDir.Normalize();
-
-            //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-            Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-            //----------- debug print -----------
-            Vector3 angle_M45 = initialDir;
-            Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + sphereCenter + angle_M45 * sphereRadius, Color.red);
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + sphereCenter + angle_P45 * sphereRadius, Color.red);
-            //----------- debug print -----------
-            //DebugWide.DrawCircle(dPos + sphereCenter, sphereRadius, Color.black);
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + anchorA, Color.gray);
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + anchorB, Color.gray);
-
-            DebugWide.DrawLine(plusPos + anchorA, plusPos + highestPoint, Color.green);
-            DebugWide.DrawLine(plusPos + anchorB, plusPos + highestPoint, Color.green);
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + highestPoint, Color.red);
-            //----------- debug print -----------
-
-        }
-
-        static public void DeformationSpherePoint_Fast_Gizimo(Vector3 plusPos, Vector3 sphereCenter, float sphereRadius, Vector3 upDir, Vector3 highestPoint, int interpolationNumber)
-        {
-            //=============================
-            //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-            Vector3 centerToHighestPoint = (highestPoint - sphereCenter);
-            float highestPointLength = centerToHighestPoint.magnitude;
-            float t = highestPointLength - sphereRadius;
-
-            //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-            Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * centerToHighestPoint;
-            initialDir.Normalize();
-            //=============================
-
-            Vector3 prev = Vector3.zero;
-            Vector3 cur = Vector3.zero;
-            Vector3 targetPos = Vector3.zero;
-            float deltaLength = 100f; //이 값이 클수록 상세히 표현된다 
-            int count = 36;
-            for (int i = 0; i < count; i++)
-            {
-                targetPos = Quaternion.AngleAxis(i * 10f, upDir) * initialDir * highestPointLength * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
-                cur = DeformationSpherePoint_Fast(targetPos, sphereCenter, sphereRadius, upDir , highestPoint, interpolationNumber);
-
-                if (0 != i)
-                    DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
-
-                prev = plusPos + cur;
-            }
-
-
-            //----------- debug print -----------
-            Vector3 angle_M45 = initialDir;
-            Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + sphereCenter + angle_M45 * sphereRadius, Color.red);
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + sphereCenter + angle_P45 * sphereRadius, Color.red);
-            //----------- debug print -----------
-            DebugWide.DrawLine(plusPos + sphereCenter, plusPos + highestPoint, Color.red);
-            //----------- debug print -----------
         }
 
 

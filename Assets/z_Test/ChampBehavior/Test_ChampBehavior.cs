@@ -170,9 +170,25 @@ public class TwoHandControl : MonoBehaviour
     private Transform _TL2R_angle_circle_left = null;
     private Transform _TL2R_unlace_circle_left = null;
 
-    //실린더 경로원
-    private Geo.Cylinder _cld_left = new Geo.Cylinder();
-    private Geo.Cylinder _cld_right = new Geo.Cylinder();
+
+    //경로모델
+
+    private Geo.FreePlane _mdPlane_left = new Geo.FreePlane();
+    private Geo.FreePlane _mdPlane_right = new Geo.FreePlane();
+
+    private Geo.Circle _mdCircle_left = new Geo.Circle();
+    private Geo.Circle _mdCircle_right = new Geo.Circle();
+
+    private Geo.DeformationCircle _mdDfCircle_left = new Geo.DeformationCircle();
+    private Geo.DeformationCircle _mdDfCircle_right = new Geo.DeformationCircle();
+
+    private Geo.Tornado _mdTornado_left = new Geo.Tornado();
+    private Geo.Tornado _mdTornado_right = new Geo.Tornado();
+
+    private Geo.Cylinder _mdCld_left = new Geo.Cylinder();
+    private Geo.Cylinder _mdCld_right = new Geo.Cylinder();
+
+
 
     //======================================================
 
@@ -425,9 +441,9 @@ public class TwoHandControl : MonoBehaviour
                                          //out newPos, out newLength);
 
                 //변형원 위치 계산 
-                this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0, _highest_circle_A0.position,
-                                             _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                             out newPos, out newLength);
+                //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0, _highest_circle_A0.position,
+                                             //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                             //out newPos, out newLength);
 
                 //주변원 위치 계산 
                 //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
@@ -1006,157 +1022,67 @@ public class TwoHandControl : MonoBehaviour
         newHand_pos = handleCalcPos;
     }
 
-    //주변원 위치 계산 : 1버젼과 다르게 최소/최대 어깨원에서 벗어났을 떄 주변원 공간에서 값을 찾는다 
-    public void CalcHandPos_AroundCircle2(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius,
-                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-                                        out Vector3 newHand_pos, out float newArm_length)
-    {
 
-        Vector3 handleToCenter = circle_pos - handle;
-        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-        Vector3 proj_handlePos = handle + proj_handle; //바로 투영점을 구한다 
-        Vector3 n_circleToHand = (proj_handlePos - circle_pos).normalized;
+    //public void CalcHandPos_DeformationCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
+    //                                    Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
+    //                                    out Vector3 newHand_pos, out float newArm_length)
+    //{
 
-        //===== 1차 계산
-        Vector3 aroundCalcPos = circle_pos + n_circleToHand * circle_radius;
-
-        //===== 어깨원 투영
-        Vector3 proj_sdCenter = circle_up * Vector3.Dot((circle_pos - shoulder_pos), circle_up) / circle_up.sqrMagnitude;
-
-        float sqrLength_d = proj_sdCenter.sqrMagnitude;
-        Vector3 proj_sdCenterPos = shoulder_pos + proj_sdCenter; //어깨원의 중심점을 주변원공간에 투영 
-
-        if(sqrLength_d > arm_max_length * arm_max_length )
-        {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
-
-            aroundCalcPos = (aroundCalcPos - shoulder_pos).normalized * arm_max_length;
-
-        }else if (sqrLength_d < arm_min_length * arm_min_length)
-        {   //주변원과 어깨최소원이 접촉한 상태. 최소값 보다 작은 핸들이 있을 수 있다
-            
-            Vector3 centerToACPos = aroundCalcPos - proj_sdCenterPos;
-            float r2 = centerToACPos.sqrMagnitude;
-            float r3 = arm_min_length * arm_min_length - sqrLength_d;
-
-            if (r2 < r3)
-            {  //최소값 보다 작은 핸들이 있다. [최소값 조절 필요] 
-                aroundCalcPos = centerToACPos.normalized * arm_min_length;
-            }
-        }
-
-
-        newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
-        newHand_pos = aroundCalcPos;
-    }
-
-
-    public void CalcHandPos_DeformationCircle2(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
-                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-                                        out Vector3 newHand_pos, out float newArm_length)
-    {
-
-        Vector3 handleToCenter = circle_pos - handle;
-        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-        Vector3 proj_handlePos = handle + proj_handle;
-
-
-        //===== 1차 계산
-        Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
-        Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
-
-
-        //===== 어깨원 투영
-        Vector3 proj_sdCenter = circle_up * Vector3.Dot((circle_pos - shoulder_pos), circle_up) / circle_up.sqrMagnitude;
-
-        float sqrLength_d = proj_sdCenter.sqrMagnitude;
-        Vector3 proj_sdCenterPos = shoulder_pos + proj_sdCenter; //어깨원의 중심점을 주변원공간에 투영 
-
-        if (sqrLength_d > arm_max_length * arm_max_length)
-        {   //주변원과 어꺠최대원이 접촉이 없는 상태. [최대값 조절 필요]
-
-            aroundCalcPos = (aroundCalcPos - shoulder_pos).normalized * arm_max_length;
-
-        }
-        else if (sqrLength_d < arm_min_length * arm_min_length)
-        {   //주변원과 어깨최소원이 접촉한 상태. 최소값 보다 작은 핸들이 있을 수 있다
-
-            Vector3 centerToACPos = aroundCalcPos - proj_sdCenterPos;
-            float r2 = centerToACPos.sqrMagnitude;
-            float r3 = arm_min_length * arm_min_length - sqrLength_d;
-
-            if (r2 < r3)
-            {  //최소값 보다 작은 핸들이 있다. [최소값 조절 필요] 
-                aroundCalcPos = centerToACPos.normalized * arm_min_length;
-            }
-        }
-
-        newArm_length = (aroundCalcPos - shoulder_pos).magnitude;
-        newHand_pos = aroundCalcPos;
-    }
-
-
-    public void CalcHandPos_DeformationCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
-                                        Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-                                        out Vector3 newHand_pos, out float newArm_length)
-    {
-
-        Vector3 handleToCenter = circle_pos - handle;
-        Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-        //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-        Vector3 proj_handlePos = handle + proj_handle;
+    //    Vector3 handleToCenter = circle_pos - handle;
+    //    Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+    //    //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
+    //    Vector3 proj_handlePos = handle + proj_handle;
 
 
 
-        //===== 1차 계산
-        Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
-        Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
-        Vector3 handleCalcPos = aroundCalcPos;
+    //    //===== 1차 계산
+    //    Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
+    //    Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
+    //    Vector3 handleCalcPos = aroundCalcPos;
 
 
-        float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
-        float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
+    //    float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
+    //    float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
 
-        float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
-        //_arm_left_length = length_curLeft;
+    //    float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
+    //    //_arm_left_length = length_curLeft;
 
-        //최대길이를 벗어나는 핸들 최대길이로 변경
-        if (length_cur > arm_max_length)
-        {
-            length_cur = arm_max_length;
-            sqrLength_sdToHandle = arm_max_length * arm_max_length;
-        }
+    //    //최대길이를 벗어나는 핸들 최대길이로 변경
+    //    if (length_cur > arm_max_length)
+    //    {
+    //        length_cur = arm_max_length;
+    //        sqrLength_sdToHandle = arm_max_length * arm_max_length;
+    //    }
 
-        //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
-        //===== 2차 계산
-        if (arm_min_length >= length_cur)
-        {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
-            //DebugWide.LogBlue("0"); //test
-            length_cur = arm_min_length;
-            n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
-            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-        }
-        else
-        {
+    //    //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
+    //    //===== 2차 계산
+    //    if (arm_min_length >= length_cur)
+    //    {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
+    //        //DebugWide.LogBlue("0"); //test
+    //        length_cur = arm_min_length;
+    //        n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
+    //        handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+    //    }
+    //    else
+    //    {
 
-            if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
-            {   //주변원 위의 점이 최소거리 이내인 경우
-                //DebugWide.LogBlue("1"); //test
-                length_cur = arm_min_length;
-                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-            }
-            else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
-            {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
-                //DebugWide.LogBlue("2"); //test
-                handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-            }
+    //        if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
+    //        {   //주변원 위의 점이 최소거리 이내인 경우
+    //            //DebugWide.LogBlue("1"); //test
+    //            length_cur = arm_min_length;
+    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+    //        }
+    //        else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
+    //        {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
+    //            //DebugWide.LogBlue("2"); //test
+    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
+    //        }
 
-        }
+    //    }
 
-        newArm_length = (handleCalcPos - shoulder_pos).magnitude;
-        newHand_pos = handleCalcPos;
-    }
+    //    newArm_length = (handleCalcPos - shoulder_pos).magnitude;
+    //    newHand_pos = handleCalcPos;
+    //}
 
     public void CalcHandPos_TornadoCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
@@ -1419,8 +1345,8 @@ public class TwoHandControl : MonoBehaviour
         //-----------------------
 
         //변형원 위치 계산 
-        this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right, _highest_circle_right.position,
-                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+        //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right, _highest_circle_right.position,
+                    //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
 
 
         //주변원 위치 계산 
@@ -1445,8 +1371,8 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_cld_left, handle, axis_up,
+        _mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_mdCld_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
 
@@ -1517,8 +1443,8 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _cld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_cld_left, handle, axis_up,
+        _mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_mdCld_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
@@ -1530,8 +1456,8 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
         radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
-        _cld_right.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
-        this.CalcHandPos_PlaneArea(_cld_right, handle, axis_up,
+        _mdCld_right.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+        this.CalcHandPos_PlaneArea(_mdCld_right, handle, axis_up,
                     _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
         
 
@@ -1833,7 +1759,7 @@ public class TwoHandControl : MonoBehaviour
             this.DrawCirclePlate(_pos_circle_B1.position, _radius_circle_B1, axis_up, axis_forward, Color.white);
 
             //주변원 그리기 
-            Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_A0.position, _radius_circle_A0, axis_up, _highest_circle_A0.position, 1);
+            //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_A0.position, _radius_circle_A0, axis_up, _highest_circle_A0.position, 1);
 
             //회전원 그리기
             //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
@@ -1948,8 +1874,8 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.Draw(_cld_left, axis_up, Color.yellow);
-                Geo.Cylinder.Draw(_cld_right, axis_up, Color.blue);
+                Geo.Cylinder.Draw(_mdCld_left, axis_up, Color.yellow);
+                Geo.Cylinder.Draw(_mdCld_right, axis_up, Color.blue);
 
                 //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
