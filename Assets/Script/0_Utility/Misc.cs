@@ -811,32 +811,39 @@ namespace UtilGS9
             //}
 
 
-            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
+            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
             {
                 model.origin = p_orign;
                 model.radius = p_radius;
-                model.length = (p_highestPoint - p_orign).magnitude;
 
+                Vector3 toDir = p_highestPoint - p_orign;
+                Vector3 proj_toDir = toDir - upDir * Vector3.Dot(upDir, toDir);
+
+                model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
                     model.dir = Vector3.zero;
                 else
-                    model.dir = (p_highestPoint - p_orign) / model.length;
+                    model.dir = proj_toDir / model.length;
+                    
 
                 model.interpolationNumber = p_interpolationNumber;
             }
 
 
-            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
+            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
             {
                 model.origin = p_orign;
                 model.radius = p_radius;
-                model.length = (p_highestPoint - p_orign).magnitude;
 
+                Vector3 toDir = p_highestPoint - p_orign;
+                Vector3 proj_toDir = toDir - upDir * Vector3.Dot(upDir, toDir);
+
+                model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
                     model.dir = Vector3.zero;
                 else
-                    model.dir = (p_highestPoint - p_orign) / model.length;
-                
+                    model.dir = proj_toDir / model.length;
+               
                 model.anchorA = p_anchorA;
                 model.anchorB = p_anchorB;
                 model.interpolationNumber = p_interpolationNumber;
@@ -923,7 +930,6 @@ namespace UtilGS9
             //앵커를 고정된 각도로 놓아 계산량을 줄인 함수 버젼
             public Vector3 CollisionPos_Fast(Vector3 handlePoint, Vector3 upDir)
             {
-
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
 
@@ -1120,9 +1126,9 @@ namespace UtilGS9
                 DebugWide.DrawLine(model.origin, model.anchorA, Color.gray);
                 DebugWide.DrawLine(model.origin, model.anchorB, Color.gray);
 
-                DebugWide.DrawLine(model.anchorA, model.dir * model.length, Color.green);
-                DebugWide.DrawLine(model.anchorB, model.dir * model.length, Color.green);
-                DebugWide.DrawLine(model.origin, model.dir * model.length, Color.red);
+                DebugWide.DrawLine(model.anchorA, model.origin + model.dir * model.length, Color.green);
+                DebugWide.DrawLine(model.anchorB, model.origin + model.dir * model.length, Color.green);
+                DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, Color.red);
                 //----------- debug print -----------
 
             }
@@ -1161,7 +1167,7 @@ namespace UtilGS9
                 DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, cc);
                 DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, cc);
                 //----------- debug print -----------
-                DebugWide.DrawLine(model.origin, model.dir * model.length, cc);
+                DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, cc);
                 //----------- debug print -----------
             }
         }
@@ -1386,8 +1392,9 @@ namespace UtilGS9
 
 
                 //----------- debug print -----------
-                DebugWide.DrawCircle( model.origin, model.radius, cc);
-                DebugWide.DrawLine(model.origin, model.dir, cc);
+                DebugWide.DrawCirclePlane(model.origin, model.radius, upDir, cc);
+                //DebugWide.DrawCircle( model.origin, model.radius, cc);
+                DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, cc);
             }
         }
 

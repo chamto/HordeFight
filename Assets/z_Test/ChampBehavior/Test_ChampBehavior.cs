@@ -900,7 +900,7 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
-    public void SetModel_CurValue(Geo.Model model)
+    public void SetModel_CurValue(Geo.Model model, Vector3 upDir)
     {
         
         switch (model.kind)
@@ -933,11 +933,11 @@ public class TwoHandControl : MonoBehaviour
                 {
                     if (true == model.IsLeft())
                     {
-                        model.deformationCircle.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, 1);
+                        model.deformationCircle.Set(upDir, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, 1);
                     }
                     if (true == model.IsRight())
                     {
-                        model.deformationCircle.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, 1);
+                        model.deformationCircle.Set(upDir, _pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, 1);
                     }
                 }
                 break;
@@ -1248,6 +1248,7 @@ public class TwoHandControl : MonoBehaviour
     public void Cut_HandOriginToHandEnd(Vector3 handle, ePart eHandOrigin, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight)
     {
         Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+        axis_up.Normalize();
 
         float new_leftLength = 0f;
         Vector3 new_leftPos;
@@ -1259,14 +1260,14 @@ public class TwoHandControl : MonoBehaviour
         //모델원 위치 계산 
 
         _Model_left.kind = eModelLeft;
-        this.SetModel_CurValue(_Model_left);
+        this.SetModel_CurValue(_Model_left, axis_up);
         this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
 
 
 
         _Model_right.kind = eModelRight;
-        this.SetModel_CurValue(_Model_right);
+        this.SetModel_CurValue(_Model_right, axis_up);
         this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
                                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
