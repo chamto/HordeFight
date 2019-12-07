@@ -585,6 +585,38 @@ namespace UtilGS9
         //통합모델은 데이터 공유, 함수만 다른 모델 객체로 나눈다 
         public class Model_Intergration 
         {
+            public enum eBranch
+            {
+                none = 0,
+                    
+                head_0,
+
+                //============
+                LEFT_START,
+                arm_left_0,
+                arm_left_1,
+
+                leg_left_0,
+                leg_left_1,
+
+                wing_left_0,
+                LEFT_END,
+
+                //============
+                RIGHT_START,
+                arm_right_0,
+                arm_right_1,
+
+                leg_right_0,
+                leg_right_1,
+
+                wing_right_0,
+                RIGHT_END,
+                //============
+
+                tail_0,
+            }
+
             public const int FreePlane = 0; //자유평면
             public const int Circle = 1;
             public const int DeformationCircle = 2;
@@ -592,6 +624,7 @@ namespace UtilGS9
             public const int Cylinder = 4;
             public const int Arc = 5;  //호 
 
+            public eBranch branch = eBranch.none;
             public int kind = Model_Intergration.FreePlane;
 
             public Vector3 origin;
@@ -630,6 +663,26 @@ namespace UtilGS9
                 tornado.model = this;
                 cylinder.model = this;
             }
+
+            public bool IsLeft()
+            {
+                if(eBranch.LEFT_START < this.branch && this.branch < eBranch.LEFT_END)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+            public bool IsRight()
+            {
+                if (eBranch.RIGHT_START < this.branch && this.branch < eBranch.RIGHT_END)
+                {
+                    return true;
+                }
+                return false;
+            }
+
+
 
             public void Draw(Vector3 upDir, Color cc)
             {
@@ -1136,7 +1189,7 @@ namespace UtilGS9
             }
 
             //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
-            public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+            static public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
             {
 
                 Vector3 cur_dir = Vector3.Cross(forward, upDir);

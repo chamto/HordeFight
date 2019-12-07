@@ -29,9 +29,12 @@ public class TwoHandControl : MonoBehaviour
     public enum ePart
     {
         None,
-        TwoHand_Left,
-        TwoHand_Right,
         OneHand,
+        TwoHand_LeftO, //왼손기준이 되는 잡기(왼손이 고정)
+        TwoHand_RightO, //오른손기준이 되는 잡기(오른손이 고정)
+
+        HandDir_LeftToRight, 
+        HandDir_RightToLeft, 
 
         Max,
     }
@@ -82,7 +85,7 @@ public class TwoHandControl : MonoBehaviour
     public float _twoHand_length = 0.5f;
 
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
-    public ePart _part_control = ePart.TwoHand_Left;
+    public ePart _part_control = ePart.TwoHand_LeftO;
     //public ePart _part_control = ePart.OneHand;
 
     //----------------------------------------------------
@@ -208,8 +211,8 @@ public class TwoHandControl : MonoBehaviour
 
         }
 
-        //_trjModel_left.Init();
-        //_trjModel_right.Init();
+        _Model_left.branch = Geo.Model_Intergration.eBranch.arm_left_0;
+        _Model_right.branch = Geo.Model_Intergration.eBranch.arm_right_0;
 
         //--------------------------------------------------
 
@@ -417,7 +420,7 @@ public class TwoHandControl : MonoBehaviour
             //==============================================
 
             //양손모드
-            if (ePart.TwoHand_Left == _part_control)
+            if (ePart.TwoHand_LeftO == _part_control)
             {
 
                 //왼손을 핸들로 조종하기 
@@ -621,17 +624,17 @@ public class TwoHandControl : MonoBehaviour
         if (true == _A_handleStaff_control)
         {
             //조종축으로 손위치 계산 
-            if (ePart.TwoHand_Left == _part_control)
+            if (ePart.TwoHand_LeftO == _part_control)
                 HandDirControl_CutAndSting();
         }
-        if(true == _A_hand_control_2)
-        {
-            //코사인 제2법칙 공식을 사용하는 방식 
-            if (ePart.TwoHand_Left == _part_control)
-                TwoHandControl2_Left();
-            if (ePart.TwoHand_Right == _part_control)
-                TwoHandControl2_Right();    
-        }
+        //if(true == _A_hand_control_2)
+        //{
+        //    //코사인 제2법칙 공식을 사용하는 방식 
+        //    if (ePart.TwoHand_LeftO == _part_control)
+        //        TwoHandControl2_Left();
+        //    if (ePart.TwoHand_LeftO == _part_control)
+        //        TwoHandControl2_Right();    
+        //}
         //if(true == _A_oneHand_control_1)
         //{
         //    if(ePart.OneHand == _part_control)
@@ -1019,6 +1022,79 @@ public class TwoHandControl : MonoBehaviour
     //    newHand_pos = handleCalcPos;
     //}
 
+
+    public void SetModel_CurValue(Geo.Model_Intergration model)
+    {
+        
+        switch (model.kind)
+        {
+            case Geo.Model_Intergration.FreePlane:
+                {
+                    if (true == model.IsLeft())
+                    {
+                        model.freePlane.Set(_pos_circle_left.position);
+                    }
+                    if (true == model.IsRight())
+                    {
+                        model.freePlane.Set(_pos_circle_right.position);
+                    }
+                }
+                break;
+            case Geo.Model_Intergration.Circle:
+                {
+                    if (true == model.IsLeft())
+                    {
+                        model.circle.Set(_pos_circle_left.position, _radius_circle_left);
+                    }
+                    if (true == model.IsRight())
+                    {
+                        model.circle.Set(_pos_circle_right.position, _radius_circle_right);
+                    }
+                }
+                break;
+            case Geo.Model_Intergration.DeformationCircle:
+                {
+                    if (true == model.IsLeft())
+                    {
+                        model.deformationCircle.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, 1);
+                    }
+                    if (true == model.IsRight())
+                    {
+                        model.deformationCircle.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, 1);
+                    }
+                }
+                break;
+            case Geo.Model_Intergration.Tornado:
+                {
+                    if (true == model.IsLeft())
+                    {
+                        model.tornado.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, 360f);
+                    }
+                    if (true == model.IsRight())
+                    {
+                        model.tornado.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, 360f);
+                    }
+                }
+                break;
+            case Geo.Model_Intergration.Cylinder:
+                {
+                    
+                    if(true == model.IsLeft())
+                    {
+                        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
+                        model.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);    
+                    }
+                    if (true == model.IsRight())
+                    {
+                        float radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
+                        model.cylinder.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+                    }
+
+                }
+                break;
+        }
+    }
+
     //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
     //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
     public void CalcHandPos_PlaneArea(Geo.Model_Intergration model, Vector3 handle, Vector3 upDir,
@@ -1050,6 +1126,9 @@ public class TwoHandControl : MonoBehaviour
                 break;
             case Geo.Model_Intergration.Tornado:
                 {
+                    //todo 적용하기 : 회오리원 감기는 방향 변환  
+                    //upDir = Geo.Tornado.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, upDir, _body_dir);
+
                     aroundCalcPos = model.tornado.CollisionPos(handle, upDir);
                 }
                 break;
@@ -1189,7 +1268,7 @@ public class TwoHandControl : MonoBehaviour
 
             //-----------------------
 
-            Cut_LeftToRight();
+            Cut_LeftO_ERight();
             //Cut_RightToLeft();
 
             //--------------------
@@ -1200,58 +1279,36 @@ public class TwoHandControl : MonoBehaviour
 
     }
 
-    public void Cut_RightToLeft()
+    //오른손끝(End) 기준으로 왼손시작(Origin) 위치정하기 
+    public void Cut_RightE_OLeft()
     {
         Vector3 handle = _HANDLE_leftToRight.position;
 
-        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
         Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
         Vector3 newPos = Vector3.zero;
         float newLength = 0f;
 
 
         //-----------------------
-
-        //변형원 위치 계산 
-        //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right, _highest_circle_right.position,
-                    //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-
-
-        //주변원 위치 계산 
-        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right,
-                                     //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                                     //out newPos, out newLength);
-
-
-
-        _arm_right_length = newLength;
-        _hand_right.position = newPos;
-
-
-        //1버젼과 다르게 2버젼은 최소/최대 어깨원에서 벗어났을 떄 주변원 공간에서 값을 찾는다 
-        //변형원 위치 계산 
-        //this.CalcHandPos_DeformationCircle2(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-                    //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,out newPos, out newLength);
-
-        //주변원 위치 계산 
-        //this.CalcHandPos_AroundCircle2(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
-                                     //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                     //out newPos, out newLength);
-
-
-
+        //모델원 위치 계산 
 
         _Model_left.kind = Geo.Model_Intergration.Cylinder;
-        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _Model_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.SetModel_CurValue(_Model_left);
         this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
-        
 
 
         _arm_left_length = newLength;
         _hand_left.position = newPos;
 
+
+        _Model_right.kind = Geo.Model_Intergration.Cylinder;
+        this.SetModel_CurValue(_Model_right);
+        this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
+                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+
+        _arm_right_length = newLength;
+        _hand_right.position = newPos;
 
         //----------------------------
 
@@ -1278,94 +1335,133 @@ public class TwoHandControl : MonoBehaviour
         _arm_left_length = newLength;
         _hand_left.position = newPos;
 
-        //chamto debug test
-        //_debugLine.SetPosition(0, _hand_right.position);
-        //_debugLine.SetPosition(1, newPos);
+    }
+
+    //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
+    //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
+    //handE : 위치를 구할려는 손 
+    public void ApplyHandPos_TwoHandLength(Vector3 handLeft_pos, float handLeft_length, Vector3 handRight_pos ,float handRight_length, ePart eHandO, float twoLength)
+    {
+
+        Vector3 handO; //Origin
+        Vector3 handE; //End
+        Vector3 shO;
+        Vector3 shE;
+        Vector3 handOE_dir;
+        Vector3 handOE_nDir;
+        Vector3 new_handE_pos;
+        float new_handE_length;
+
+        float shE_min;
+        float shE_max;
+
+        if (eHandO == ePart.TwoHand_LeftO)
+        {
+            handO = handLeft_pos;
+            handE = handRight_pos;
+            shO = _shoulder_left.position;
+            shE = _shoulder_right.position;
+            shE_min = _arm_right_min_length;
+            shE_max = _arm_right_max_length;
+        }
+        else if (eHandO == ePart.TwoHand_RightO)
+        {
+            handO = handRight_pos;
+            handE = handLeft_pos;
+            shO = _shoulder_right.position;
+            shE = _shoulder_left.position;
+            shE_min = _arm_left_min_length;
+            shE_max = _arm_left_max_length;
+        }
+        else
+        {
+            DebugWide.LogBlue("예외상황 : CalcHandPos_TwoHandLength : 처리 못하는 eHandO 값");
+            return;
+        }
+
+        handOE_dir = (handE - handO);
+        handOE_nDir = handOE_dir.normalized;
+
+        //====================
+
+        //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
+        new_handE_pos = handO + handOE_nDir * twoLength;
+        Vector3 sdToHand = (new_handE_pos - shE);
+        float length_sdToHand = sdToHand.magnitude;
+        Vector3 n_sdToHand = sdToHand / length_sdToHand;
+        new_handE_length = length_sdToHand;
+
+        if (length_sdToHand > shE_max)
+        {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
+            new_handE_length = shE_max;
+            new_handE_pos = shE + n_sdToHand * new_handE_length;
+        }
+        else if (length_sdToHand < shE_min)
+        {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
+            new_handE_length = shE_min;
+            new_handE_pos = shE + n_sdToHand * new_handE_length;
+        }
+
+        //====================
+
+        if (eHandO == ePart.TwoHand_LeftO)
+        {
+            _arm_left_length = handLeft_length;
+            _hand_left.position = handO;
+
+            _arm_right_length = new_handE_length;
+            _hand_right.position = new_handE_pos;
+        }
+        if (eHandO == ePart.TwoHand_RightO)
+        {
+            _arm_right_length = handRight_length;
+            _hand_right.position = handO;
+
+            _arm_left_length = new_handE_length;
+            _hand_left.position = new_handE_pos;
+        }
 
     }
 
-    public void Cut_LeftToRight()
+    //왼손시작(Origin) 기준으로  오른손끝(End) 위치정하기 
+    public void Cut_LeftO_ERight()
     {
         Vector3 handle = _HANDLE_leftToRight.position;
-        //Vector3 handle_1 = _hs_standard.position;
-        //Vector3 handle_2 = _hs_objectDir.position;
-        Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
         Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-        Vector3 newPos = Vector3.zero;
-        float newLength = 0f;
+
+        float new_leftLength = 0f;
+        Vector3 new_leftPos;
+        float new_rightLength = 0f;
+        Vector3 new_rightPos;
+
 
         //-----------------------
-        //회오리원 위치 계산 
-        //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
-        //float tonadoRadius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
-        //this.CalcHandPos_TornadoCircle(handle, axis_up, _TL2R_pos_circle_left.position, tonadoRadius, _TL2R_highest_circle_left.position,
-        //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-        //out newPos, out newLength);
-
-        //-----------------------
-        //변형원 위치 계산 
-        //this.CalcHandPos_DeformationCircle(handle, axis_up, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position,
-        //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-        //out newPos, out newLength);
-
-        //-----------------------
-        //주변원 위치 계산 
-        //this.CalcHandPos_AroundCircle2(handle, axis_up, _pos_circle_left.position, _radius_circle_left,
-                                     //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                     //out newPos, out newLength);
-
-
+        //모델원 위치 계산 
+        
         _Model_left.kind = Geo.Model_Intergration.Cylinder;
-        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _Model_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.SetModel_CurValue(_Model_left);
         this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
-                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
+                                   _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
+          
 
-
-        _arm_left_length = newLength;
-        _hand_left.position = newPos;
-
-        //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_right.position, _radius_circle_right,
-                                     //_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                                     //out newPos, out newLength);
-
+        //_arm_left_length = newLength;
+        //_hand_left.position = newPos;
 
 
         _Model_right.kind = Geo.Model_Intergration.Cylinder;
-        radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
-        _Model_right.cylinder.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+        this.SetModel_CurValue(_Model_right);
         this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
-                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-        
+                                   _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
-        _arm_right_length = newLength;
-        _hand_right.position = newPos;
+        //_arm_right_length = newLength;
+        //_hand_right.position = newPos;
 
 
         //----------------------------
 
-        Vector3 twoHand = (_hand_right.position - _hand_left.position);
-        Vector3 n_twoHand = twoHand.normalized;
-
-        //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
-        newPos = _hand_left.position + n_twoHand * _twoHand_length;
-        Vector3 sdToHand = (newPos - _shoulder_right.position);
-        float length_sdToHand = sdToHand.magnitude;
-        Vector3 n_sdToHand = sdToHand / length_sdToHand;
-        newLength = length_sdToHand;
-        if (length_sdToHand > _arm_right_max_length)
-        {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
-            newLength = _arm_right_max_length;
-            newPos = _shoulder_right.position + n_sdToHand * newLength;
-        }
-        else if (length_sdToHand < _arm_right_min_length)
-        {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
-            newLength = _arm_right_min_length;
-            newPos = _shoulder_right.position + n_sdToHand * newLength;
-        }
-
-        _arm_right_length = newLength;
-        _hand_right.position = newPos;
+        ApplyHandPos_TwoHandLength(new_leftPos,new_leftLength, new_rightPos, new_rightLength, 
+                                  ePart.TwoHand_LeftO, _twoHand_length);
+        
 
     }
 
@@ -1684,7 +1780,7 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
 
-        if(ePart.TwoHand_Left == _part_control)
+        if(ePart.TwoHand_LeftO == _part_control)
         {
             DebugWide.DrawLine(_shoulder_right.position, _hand_left.position, Color.red);
 
@@ -1703,13 +1799,13 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_shoulder_right.position, _shoulder_right.position + shaft, Color.red);
 
         }
-        if (ePart.TwoHand_Right == _part_control)
-        {
-            DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
+        //if (ePart.TwoHand_Right == _part_control)
+        //{
+        //    DebugWide.DrawLine(_shoulder_left.position, _hand_right.position, Color.red);
 
-            Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
-            DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
-        }
+        //    Vector3 shaft = Vector3.Cross(_hand_right.position - _shoulder_left.position, _hand_left.position - _shoulder_left.position);
+        //    DebugWide.PrintText(_shoulder_left.position + Vector3.left, Color.red, Vector3.SignedAngle(_hand_left.position - _shoulder_left.position, _hand_right.position - _shoulder_left.position, shaft) + "");
+        //}
 
 
         //손방향 조종
@@ -1734,7 +1830,7 @@ public class TwoHandControl : MonoBehaviour
             if(true == _switch_cutAndSting)
             {
                 
-                Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
+                //Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
                 Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
                 //주변원의 중심에서 핸들까지 
