@@ -33,10 +33,6 @@ public class TwoHandControl : MonoBehaviour
         TwoHand_LeftO, //왼손기준이 되는 잡기(왼손이 고정)
         TwoHand_RightO, //오른손기준이 되는 잡기(오른손이 고정)
 
-        HandDir_LeftToRight, 
-        HandDir_RightToLeft, 
-
-        Max,
     }
 
     //------------------------------------------------------
@@ -87,6 +83,7 @@ public class TwoHandControl : MonoBehaviour
     public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
     public ePart _part_control = ePart.TwoHand_LeftO;
     //public ePart _part_control = ePart.OneHand;
+    public ePart _eHandOrigin = ePart.TwoHand_LeftO; //고정으로 잡는 손지정 
 
     //----------------------------------------------------
     public bool _A_armLength_max_min = false;
@@ -1268,7 +1265,8 @@ public class TwoHandControl : MonoBehaviour
 
             //-----------------------
 
-            Cut_LeftO_ERight();
+            Cut_HandOriginToHandEnd(_HANDLE_leftToRight.position, _eHandOrigin);
+            //Cut_LeftO_ERight();
             //Cut_RightToLeft();
 
             //--------------------
@@ -1279,63 +1277,63 @@ public class TwoHandControl : MonoBehaviour
 
     }
 
-    //오른손끝(End) 기준으로 왼손시작(Origin) 위치정하기 
-    public void Cut_RightE_OLeft()
-    {
-        Vector3 handle = _HANDLE_leftToRight.position;
+    ////오른손끝(End) 기준으로 왼손시작(Origin) 위치정하기 
+    //public void Cut_RightE_OLeft()
+    //{
+    //    Vector3 handle = _HANDLE_leftToRight.position;
 
-        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-        Vector3 newPos = Vector3.zero;
-        float newLength = 0f;
-
-
-        //-----------------------
-        //모델원 위치 계산 
-
-        _Model_left.kind = Geo.Model_Intergration.Cylinder;
-        this.SetModel_CurValue(_Model_left);
-        this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
-                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
+    //    Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+    //    Vector3 newPos = Vector3.zero;
+    //    float newLength = 0f;
 
 
-        _arm_left_length = newLength;
-        _hand_left.position = newPos;
+    //    //-----------------------
+    //    //모델원 위치 계산 
+
+    //    _Model_left.kind = Geo.Model_Intergration.Cylinder;
+    //    this.SetModel_CurValue(_Model_left);
+    //    this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
+    //                _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
-        _Model_right.kind = Geo.Model_Intergration.Cylinder;
-        this.SetModel_CurValue(_Model_right);
-        this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
-                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+    //    _arm_left_length = newLength;
+    //    _hand_left.position = newPos;
 
-        _arm_right_length = newLength;
-        _hand_right.position = newPos;
 
-        //----------------------------
+    //    _Model_right.kind = Geo.Model_Intergration.Cylinder;
+    //    this.SetModel_CurValue(_Model_right);
+    //    this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
+    //                _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
 
-        Vector3 twoHand = (_hand_right.position - _hand_left.position);
-        Vector3 n_twoHand = -twoHand.normalized;
+    //    _arm_right_length = newLength;
+    //    _hand_right.position = newPos;
 
-        //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
-        newPos = _hand_right.position + n_twoHand * _twoHand_length;
-        Vector3 sdToHand = (newPos - _shoulder_left.position);
-        float length_sdToHand = sdToHand.magnitude;
-        Vector3 n_sdToHand = sdToHand / length_sdToHand;
-        newLength = length_sdToHand;
-        if (length_sdToHand > _arm_left_max_length)
-        {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
-            newLength = _arm_left_max_length;
-            newPos = _shoulder_left.position + n_sdToHand * newLength;
-        }
-        else if (length_sdToHand < _arm_left_min_length)
-        {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
-            newLength = _arm_left_min_length;
-            newPos = _shoulder_left.position + n_sdToHand * newLength;
-        }
+    //    //----------------------------
 
-        _arm_left_length = newLength;
-        _hand_left.position = newPos;
+    //    Vector3 twoHand = (_hand_right.position - _hand_left.position);
+    //    Vector3 n_twoHand = -twoHand.normalized;
 
-    }
+    //    //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
+    //    newPos = _hand_right.position + n_twoHand * _twoHand_length;
+    //    Vector3 sdToHand = (newPos - _shoulder_left.position);
+    //    float length_sdToHand = sdToHand.magnitude;
+    //    Vector3 n_sdToHand = sdToHand / length_sdToHand;
+    //    newLength = length_sdToHand;
+    //    if (length_sdToHand > _arm_left_max_length)
+    //    {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
+    //        newLength = _arm_left_max_length;
+    //        newPos = _shoulder_left.position + n_sdToHand * newLength;
+    //    }
+    //    else if (length_sdToHand < _arm_left_min_length)
+    //    {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
+    //        newLength = _arm_left_min_length;
+    //        newPos = _shoulder_left.position + n_sdToHand * newLength;
+    //    }
+
+    //    _arm_left_length = newLength;
+    //    _hand_left.position = newPos;
+
+    //}
 
     //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
     //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
@@ -1424,9 +1422,8 @@ public class TwoHandControl : MonoBehaviour
     }
 
     //왼손시작(Origin) 기준으로  오른손끝(End) 위치정하기 
-    public void Cut_LeftO_ERight()
+    public void Cut_HandOriginToHandEnd(Vector3 handle, ePart eHandOrigin)
     {
-        Vector3 handle = _HANDLE_leftToRight.position;
         Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
         float new_leftLength = 0f;
@@ -1444,23 +1441,18 @@ public class TwoHandControl : MonoBehaviour
                                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
           
 
-        //_arm_left_length = newLength;
-        //_hand_left.position = newPos;
-
 
         _Model_right.kind = Geo.Model_Intergration.Cylinder;
         this.SetModel_CurValue(_Model_right);
         this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
                                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
-        //_arm_right_length = newLength;
-        //_hand_right.position = newPos;
-
 
         //----------------------------
 
         ApplyHandPos_TwoHandLength(new_leftPos,new_leftLength, new_rightPos, new_rightLength, 
-                                  ePart.TwoHand_LeftO, _twoHand_length);
+                                   eHandOrigin, _twoHand_length);
+
         
 
     }
