@@ -173,8 +173,8 @@ public class TwoHandControl : MonoBehaviour
 
     //경로모델
 
-    private Geo.Model_Intergration _trjModel_left = new Geo.Model_Intergration();
-    private Geo.Model_Intergration _trjModel_right = new Geo.Model_Intergration();
+    private Geo.Model_Intergration _Model_left = new Geo.Model_Intergration();
+    private Geo.Model_Intergration _Model_right = new Geo.Model_Intergration();
 
     //private Geo.Circle _mdCircle_left = new Geo.Circle();
     //private Geo.Circle _mdCircle_right = new Geo.Circle();
@@ -224,9 +224,8 @@ public class TwoHandControl : MonoBehaviour
 
         }
 
-
-        _trjModel_left.Init();
-        _trjModel_right.Init();
+        //_trjModel_left.Init();
+        //_trjModel_right.Init();
 
         //--------------------------------------------------
 
@@ -1374,9 +1373,9 @@ public class TwoHandControl : MonoBehaviour
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         //_mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
 
-        _trjModel_left.kind = Geo.Model_Intergration.Cylinder;
-        _trjModel_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_trjModel_left, handle, axis_up,
+        _Model_left.kind = Geo.Model_Intergration.Cylinder;
+        _Model_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
         
 
@@ -1447,10 +1446,10 @@ public class TwoHandControl : MonoBehaviour
                                      //out newPos, out newLength);
 
 
-        _trjModel_left.kind = Geo.Model_Intergration.Cylinder;
+        _Model_left.kind = Geo.Model_Intergration.Cylinder;
         float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        _trjModel_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
-        this.CalcHandPos_PlaneArea(_trjModel_left, handle, axis_up,
+        _Model_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+        this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
 
 
@@ -1463,10 +1462,10 @@ public class TwoHandControl : MonoBehaviour
 
 
 
-        _trjModel_right.kind = Geo.Model_Intergration.Cylinder;
+        _Model_right.kind = Geo.Model_Intergration.Cylinder;
         radius_far = (_highest_circle_right.position - _far_edge_circle_right.position).magnitude;
-        _trjModel_right.cylinder.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
-        this.CalcHandPos_PlaneArea(_trjModel_right, handle, axis_up,
+        _Model_right.cylinder.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, radius_far);
+        this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
                     _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
         
 
@@ -1883,8 +1882,8 @@ public class TwoHandControl : MonoBehaviour
                 //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
 
                 //실린더 그리기
-                Geo.Cylinder.Draw(_trjModel_left, axis_up, Color.yellow);
-                Geo.Cylinder.Draw(_trjModel_left, axis_up, Color.blue);
+                _Model_left.cylinder.Draw(axis_up, Color.yellow);
+                _Model_right.cylinder.Draw(axis_up, Color.blue);
 
                 //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
