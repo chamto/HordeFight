@@ -60,8 +60,8 @@ public class TwoHandControl : MonoBehaviour
     public Transform _HANDLE_staff = null;
     public Transform _HANDLE_left = null;   //핸들
     public Transform _HANDLE_right = null;
-    public Transform _HANDLE_leftToRight = null;
-    public Transform _HANDLE_doubleSword = null;
+    public Transform _HANDLE_twoHand = null;
+    public Transform _HANDLE_oneHand = null;
 
     //목표
     public Transform _target_1 = null;
@@ -237,8 +237,8 @@ public class TwoHandControl : MonoBehaviour
         _HANDLE_staff = GameObject.Find("handle_staff").transform; //핸들 
         _HANDLE_left = GameObject.Find("handle_left").transform; //핸들 
         _HANDLE_right = GameObject.Find("handle_right").transform;
-        _HANDLE_leftToRight = GameObject.Find("handle_leftToRight").transform;
-        _HANDLE_doubleSword = GameObject.Find("handle_doubleSword").transform;
+        _HANDLE_twoHand = GameObject.Find("handle_twoHand").transform;
+        _HANDLE_oneHand = GameObject.Find("handle_oneHand").transform;
 
         //목표
         _target_1 = GameObject.Find("target_1").transform;
@@ -438,7 +438,7 @@ public class TwoHandControl : MonoBehaviour
                 Vector3 newRightPos;
                 Vector3 newLeftPos;
                 float newLeftLength;
-                this.CalcHandPos(_HANDLE_leftToRight.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+                this.CalcHandPos(_HANDLE_twoHand.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
                 _hand_left.position = newLeftPos;
                 _arm_left_length = newLeftLength;
 
@@ -580,7 +580,7 @@ public class TwoHandControl : MonoBehaviour
 
             //=====================
 
-            Vector3 handle = _HANDLE_leftToRight.position;
+            Vector3 handle = _HANDLE_twoHand.position;
             Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
             Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
@@ -1214,7 +1214,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //_HANDLE_leftToRight.position = _hand_left.position;
 
-                _HANDLE_leftToRight.position = _hand_left.position + (_hand_right.position - _hand_left.position).normalized * 2f;
+                _HANDLE_twoHand.position = _hand_left.position + (_hand_right.position - _hand_left.position).normalized * 2f;
 
                 _edge_circle_left.position = _hand_left.position; //현재 위치로 주변원을 맞춘다  
                 _edge_circle_right.position = _hand_right.position;
@@ -1256,7 +1256,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //-----------------------
 
-                Cut_HandOriginToHandEnd(_HANDLE_leftToRight.position, _eHandOrigin, _eModelKind_Left, _eModelKind_Right);
+                Cut_HandOriginToHandEnd(_HANDLE_twoHand.position, _eHandOrigin, _eModelKind_Left, _eModelKind_Right);
 
                 //--------------------
                 //찌르기 모드로 연결하기 위한 핸들값 조정 
@@ -1653,8 +1653,8 @@ public class TwoHandControl : MonoBehaviour
             DebugWide.DrawLine(_HANDLE_left.position, _target_1.position, Color.red);
             DebugWide.DrawLine(_HANDLE_right.position, _target_2.position, Color.red);
 
-            DebugWide.DrawLine(_HANDLE_doubleSword.position, _target_1.position, Color.magenta);
-            DebugWide.DrawLine(_HANDLE_doubleSword.position, _target_2.position, Color.magenta);
+            DebugWide.DrawLine(_HANDLE_oneHand.position, _target_1.position, Color.magenta);
+            DebugWide.DrawLine(_HANDLE_oneHand.position, _target_2.position, Color.magenta);
         }
 
         if(true == _A_action_cut)
@@ -1693,7 +1693,7 @@ public class TwoHandControl : MonoBehaviour
             //DebugWide.DrawCircle(_pos_handRight_aroundRotate.position, _radius_handRight_aroundRotate, Color.yellow);    
 
             //===========
-            Vector3 handle = _HANDLE_leftToRight.position;
+            Vector3 handle = _HANDLE_twoHand.position;
             Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
             Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
@@ -1773,8 +1773,8 @@ public class TwoHandControl : MonoBehaviour
                 Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
                 //주변원의 중심에서 핸들까지 
-                DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
-                DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_leftToRight.position, Color.red);
+                DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.red);
+                DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.red);
 
                 //설정된 모델 그리기 
                 _Model_left.Draw(axis_up, Color.yellow);
