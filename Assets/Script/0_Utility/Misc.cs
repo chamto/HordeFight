@@ -631,26 +631,38 @@ namespace UtilGS9
                 cylinder.model = this;
             }
 
-            //public FreePlane GetFreePlane()
-            //{
-            //    return (FreePlane)this;
-            //}
-            //public Circle GetCircle()
-            //{
-            //    return (Circle)this;
-            //}
-            //public DeformationCircle GetDeformationCircle()
-            //{
-            //    return (DeformationCircle)this;
-            //}
-            //public Tornado GetTornado()
-            //{
-            //    return (Tornado)this;
-            //}
-            //public Cylinder GetCylinder()
-            //{
-            //    return (Cylinder)this;
-            //}
+            public void Draw(Vector3 upDir, Color cc)
+            {
+                switch (kind)
+                {
+                    case Model_Intergration.FreePlane:
+                        {
+                            freePlane.Draw(upDir, cc);
+                        }
+                        break;
+                    case Model_Intergration.Circle:
+                        {
+                            freePlane.Draw(upDir, cc);
+                        }
+                        break;
+                    case Model_Intergration.DeformationCircle:
+                        {
+                            deformationCircle.Draw_Fast(upDir, cc);
+                        }
+                        break;
+                    case Model_Intergration.Tornado:
+                        {
+                            tornado.Draw(upDir, cc);
+                        }
+                        break;
+                    case Model_Intergration.Cylinder:
+                        {
+                            cylinder.Draw(upDir,cc);
+                        }
+                        break;
+                }
+
+            }
         }
 
 
@@ -678,8 +690,10 @@ namespace UtilGS9
                 return proj_handlePos;
             }
 
-            public void Draw()
-            { }
+            public void Draw(Vector3 upDir, Color cc)
+            {
+                DebugWide.DrawCirclePlane(model.origin, 2f, upDir, cc);
+            }
         }
 
         //평면상의 이차원 원을 정의 
@@ -710,8 +724,10 @@ namespace UtilGS9
                 return model.origin + n_circleToHand * model.radius;
             }
 
-            public void Draw()
-            {}
+            public void Draw(Vector3 upDir, Color cc)
+            {
+                DebugWide.DrawCirclePlane(model.origin, model.radius, upDir, cc);
+            }
         }
 
         //평면상의 이차원 변형원을 정의 
@@ -1007,7 +1023,7 @@ namespace UtilGS9
             }
 
             //plusPos : 중요한 인자 아님. 단순히 다른위치에 나타내고 싶을때 사용하는 값임 
-            public void Draw(Vector3 plusPos)
+            public void Draw()
             {
                 Vector3 prev = Vector3.zero;
                 Vector3 cur = Vector3.zero;
@@ -1017,9 +1033,9 @@ namespace UtilGS9
                     cur = CollisionPos(i * 10);
 
                     if (0 != i)
-                        DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
+                        DebugWide.DrawLine(prev, cur, Color.cyan);
 
-                    prev = plusPos + cur;
+                    prev = cur;
                 }
 
                 //=============================
@@ -1035,21 +1051,21 @@ namespace UtilGS9
                 //----------- debug print -----------
                 Vector3 angle_M45 = initialDir;
                 Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.origin + angle_M45 * model.radius, Color.red);
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.origin + angle_P45 * model.radius, Color.red);
+                DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, Color.red);
+                DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, Color.red);
                 //----------- debug print -----------
                 //DebugWide.DrawCircle(dPos + sphereCenter, sphereRadius, Color.black);
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.anchorA, Color.gray);
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.anchorB, Color.gray);
+                DebugWide.DrawLine(model.origin, model.anchorA, Color.gray);
+                DebugWide.DrawLine(model.origin, model.anchorB, Color.gray);
 
-                DebugWide.DrawLine(plusPos + model.anchorA, plusPos + model.dir * model.length, Color.green);
-                DebugWide.DrawLine(plusPos + model.anchorB, plusPos + model.dir * model.length, Color.green);
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.dir * model.length, Color.red);
+                DebugWide.DrawLine(model.anchorA, model.dir * model.length, Color.green);
+                DebugWide.DrawLine(model.anchorB, model.dir * model.length, Color.green);
+                DebugWide.DrawLine(model.origin, model.dir * model.length, Color.red);
                 //----------- debug print -----------
 
             }
 
-            public void Draw_Fast(Vector3 plusPos, Vector3 upDir)
+            public void Draw_Fast(Vector3 upDir, Color cc)
             {
                 //=============================
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
@@ -1071,19 +1087,19 @@ namespace UtilGS9
                     cur = CollisionPos_Fast(targetPos, upDir);
 
                     if (0 != i)
-                        DebugWide.DrawLine(prev, plusPos + cur, Color.cyan);
+                        DebugWide.DrawLine(prev, cur, cc);
 
-                    prev = plusPos + cur;
+                    prev = cur;
                 }
 
 
                 //----------- debug print -----------
                 Vector3 angle_M45 = initialDir;
                 Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.origin + angle_M45 * model.radius, Color.red);
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.origin + angle_P45 * model.radius, Color.red);
+                DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, cc);
+                DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, cc);
                 //----------- debug print -----------
-                DebugWide.DrawLine(plusPos + model.origin, plusPos + model.dir * model.length, Color.red);
+                DebugWide.DrawLine(model.origin, model.dir * model.length, cc);
                 //----------- debug print -----------
             }
         }
@@ -1120,7 +1136,7 @@ namespace UtilGS9
             }
 
             //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
-            private Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+            public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
             {
 
                 Vector3 cur_dir = Vector3.Cross(forward, upDir);
@@ -1231,7 +1247,7 @@ namespace UtilGS9
             }
 
 
-            public void Draw(Vector3 plus_pos, Vector3 n_upDir)
+            public void Draw(Vector3 upDir, Color cc)
             {
 
                 //=================================
@@ -1240,7 +1256,7 @@ namespace UtilGS9
                 float t = model.length - model.radius;
 
                 //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, n_upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
                 //==================================================
@@ -1287,7 +1303,7 @@ namespace UtilGS9
                     //angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count); //180도 이상 계산못함 
                     angleD = Mathf.Lerp(minAngle, model.maxAngle, i / (float)count);
                     //DebugWide.LogBlue(i + " : " + angleD);
-                    tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+                    tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
 
 
                     float td = (angleD * t) / angleH;
@@ -1297,9 +1313,9 @@ namespace UtilGS9
                     tdPos = model.origin + tdPos * (model.radius + td);
 
                     //----------- debug print -----------
-                    //DebugWide.DrawLine(target_pos + circle_pos, target_pos + tdPos, Color.red);
+                    //DebugWide.DrawLine(target_pos + circle_pos, target_pos + tdPos, cc);
                     if (0 != i)
-                        DebugWide.DrawLine(plus_pos + prevPos, plus_pos + tdPos, Color.white);
+                        DebugWide.DrawLine(prevPos, tdPos, cc);
                     //----------- debug print -----------
 
                     prevPos = tdPos;
@@ -1308,8 +1324,8 @@ namespace UtilGS9
 
 
                 //----------- debug print -----------
-                DebugWide.DrawCircle(plus_pos + model.origin, model.radius, Color.black);
-                DebugWide.DrawLine(plus_pos + model.origin, plus_pos + model.dir, Color.red);
+                DebugWide.DrawCircle( model.origin, model.radius, cc);
+                DebugWide.DrawLine(model.origin, model.dir, cc);
             }
         }
 

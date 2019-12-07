@@ -1238,10 +1238,11 @@ public class TwoHandControl : MonoBehaviour
                                      //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                      //out newPos, out newLength);
 
-        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
-        //_mdCld_left.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
+
+
 
         _Model_left.kind = Geo.Model_Intergration.Cylinder;
+        float radius_far = (_highest_circle_left.position - _far_edge_circle_left.position).magnitude;
         _Model_left.cylinder.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, radius_far);
         this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                     _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
@@ -1736,26 +1737,15 @@ public class TwoHandControl : MonoBehaviour
                 Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
                 Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
-                //주변원 그리기 
-                DebugWide.DrawCirclePlane(_pos_circle_left.position, _radius_circle_left, axis_up, Color.yellow);
-                DebugWide.DrawCirclePlane(_pos_circle_right.position, _radius_circle_right, axis_up, Color.blue);
-
-                //변형원 그리기 
-                //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_left.position, _radius_circle_left, axis_up, _highest_circle_left.position, 1);
-                //Geo.DeformationSpherePoint_Fast_Gizimo(Vector3.zero, _pos_circle_right.position, _radius_circle_right, axis_up, _highest_circle_right.position, 1);
-
-                //회전원 그리기
-                //axis_up = Geo.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, axis_up, _TL2R_highest_circle_left.position - _TL2R_pos_circle_left.position);
-                //float tonado_radius = (_TL2R_edge_circle_left.position - _TL2R_pos_circle_left.position).magnitude;
-                //Geo.DeformationCirclePos_Tornado3D_Gizimo(Vector3.zero, _TL2R_pos_circle_left.position, tonado_radius, axis_up, _TL2R_highest_circle_left.position, _TL2R_angle_circle_left.position.x);
-
-                //실린더 그리기
-                _Model_left.cylinder.Draw(axis_up, Color.yellow);
-                _Model_right.cylinder.Draw(axis_up, Color.blue);
-
                 //주변원의 중심에서 핸들까지 
                 DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_leftToRight.position, Color.red);
                 DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_leftToRight.position, Color.red);
+
+                //설정된 모델 그리기 
+                _Model_left.Draw(axis_up, Color.yellow);
+                _Model_right.Draw(axis_up, Color.blue);
+
+
             }
         }
 
