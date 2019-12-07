@@ -171,8 +171,8 @@ public class TwoHandControl : MonoBehaviour
 
 
     //경로모델
-    private Geo.Model_Intergration _Model_left = new Geo.Model_Intergration();
-    private Geo.Model_Intergration _Model_right = new Geo.Model_Intergration();
+    private Geo.Model _Model_left = new Geo.Model();
+    private Geo.Model _Model_right = new Geo.Model();
 
     //======================================================
 
@@ -208,8 +208,8 @@ public class TwoHandControl : MonoBehaviour
 
         }
 
-        _Model_left.branch = Geo.Model_Intergration.eBranch.arm_left_0;
-        _Model_right.branch = Geo.Model_Intergration.eBranch.arm_right_0;
+        _Model_left.branch = Geo.Model.eBranch.arm_left_0;
+        _Model_right.branch = Geo.Model.eBranch.arm_right_0;
 
         //--------------------------------------------------
 
@@ -896,12 +896,12 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
-    public void SetModel_CurValue(Geo.Model_Intergration model)
+    public void SetModel_CurValue(Geo.Model model)
     {
         
         switch (model.kind)
         {
-            case Geo.Model_Intergration.FreePlane:
+            case Geo.Model.FreePlane:
                 {
                     if (true == model.IsLeft())
                     {
@@ -913,7 +913,7 @@ public class TwoHandControl : MonoBehaviour
                     }
                 }
                 break;
-            case Geo.Model_Intergration.Circle:
+            case Geo.Model.Circle:
                 {
                     if (true == model.IsLeft())
                     {
@@ -925,7 +925,7 @@ public class TwoHandControl : MonoBehaviour
                     }
                 }
                 break;
-            case Geo.Model_Intergration.DeformationCircle:
+            case Geo.Model.DeformationCircle:
                 {
                     if (true == model.IsLeft())
                     {
@@ -937,7 +937,7 @@ public class TwoHandControl : MonoBehaviour
                     }
                 }
                 break;
-            case Geo.Model_Intergration.Tornado:
+            case Geo.Model.Tornado:
                 {
                     if (true == model.IsLeft())
                     {
@@ -949,7 +949,7 @@ public class TwoHandControl : MonoBehaviour
                     }
                 }
                 break;
-            case Geo.Model_Intergration.Cylinder:
+            case Geo.Model.Cylinder:
                 {
                     
                     if(true == model.IsLeft())
@@ -970,7 +970,7 @@ public class TwoHandControl : MonoBehaviour
 
     //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
     //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
-    public void CalcHandPos_PlaneArea(Geo.Model_Intergration model, Vector3 handle, Vector3 upDir,
+    public void CalcHandPos_PlaneArea(Geo.Model model, Vector3 handle, Vector3 upDir,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
                                         out Vector3 newHand_pos, out float newArm_length)
     {
@@ -982,22 +982,22 @@ public class TwoHandControl : MonoBehaviour
         //===== 1차 계산
         switch(model.kind)
         {
-            case Geo.Model_Intergration.FreePlane:
+            case Geo.Model.FreePlane:
                 {
                     aroundCalcPos = model.freePlane.CollisionPos(handle, upDir);
                 }
                 break;
-            case Geo.Model_Intergration.Circle:
+            case Geo.Model.Circle:
                 {
                     aroundCalcPos = model.circle.CollisionPos(handle, upDir);
                 }
                 break;
-            case Geo.Model_Intergration.DeformationCircle:
+            case Geo.Model.DeformationCircle:
                 {
                     aroundCalcPos = model.deformationCircle.CollisionPos_Fast(handle, upDir);
                 }
                 break;
-            case Geo.Model_Intergration.Tornado:
+            case Geo.Model.Tornado:
                 {
                     //todo 적용하기 : 회오리원 감기는 방향 변환  
                     //upDir = Geo.Tornado.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, upDir, _body_dir);
@@ -1005,7 +1005,7 @@ public class TwoHandControl : MonoBehaviour
                     aroundCalcPos = model.tornado.CollisionPos(handle, upDir);
                 }
                 break;
-            case Geo.Model_Intergration.Cylinder:
+            case Geo.Model.Cylinder:
                 {
                     Vector3 upDir2;
                     aroundCalcPos = model.cylinder.CollisionPos(handle, upDir, out upDir2);
@@ -1238,7 +1238,9 @@ public class TwoHandControl : MonoBehaviour
 
     }
 
-    //왼손시작(Origin) 기준으로  오른손끝(End) 위치정하기 
+    //handle
+    //eHandOrigin
+    //
     public void Cut_HandOriginToHandEnd(Vector3 handle, ePart eHandOrigin)
     {
         Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
@@ -1252,14 +1254,14 @@ public class TwoHandControl : MonoBehaviour
         //-----------------------
         //모델원 위치 계산 
         
-        _Model_left.kind = Geo.Model_Intergration.Cylinder;
+        _Model_left.kind = Geo.Model.Cylinder;
         this.SetModel_CurValue(_Model_left);
         this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
                                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
           
 
 
-        _Model_right.kind = Geo.Model_Intergration.Cylinder;
+        _Model_right.kind = Geo.Model.Cylinder;
         this.SetModel_CurValue(_Model_right);
         this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
                                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);

@@ -583,7 +583,7 @@ namespace UtilGS9
         //==================================================
 
         //통합모델은 데이터 공유, 함수만 다른 모델 객체로 나눈다 
-        public class Model_Intergration 
+        public class Model 
         {
             public enum eBranch
             {
@@ -625,7 +625,7 @@ namespace UtilGS9
             public const int Arc = 5;  //호 
 
             public eBranch branch = eBranch.none;
-            public int kind = Model_Intergration.FreePlane;
+            public int kind = Model.FreePlane;
 
             public Vector3 origin;
             public float radius;
@@ -655,7 +655,7 @@ namespace UtilGS9
             public Tornado tornado = new Tornado();
             public Cylinder cylinder = new Cylinder();
 
-            public  Model_Intergration()
+            public  Model()
             {
                 freePlane.model = this;
                 circle.model = this;
@@ -688,27 +688,27 @@ namespace UtilGS9
             {
                 switch (kind)
                 {
-                    case Model_Intergration.FreePlane:
+                    case Model.FreePlane:
                         {
                             freePlane.Draw(upDir, cc);
                         }
                         break;
-                    case Model_Intergration.Circle:
+                    case Model.Circle:
                         {
                             freePlane.Draw(upDir, cc);
                         }
                         break;
-                    case Model_Intergration.DeformationCircle:
+                    case Model.DeformationCircle:
                         {
                             deformationCircle.Draw_Fast(upDir, cc);
                         }
                         break;
-                    case Model_Intergration.Tornado:
+                    case Model.Tornado:
                         {
                             tornado.Draw(upDir, cc);
                         }
                         break;
-                    case Model_Intergration.Cylinder:
+                    case Model.Cylinder:
                         {
                             cylinder.Draw(upDir,cc);
                         }
@@ -722,7 +722,7 @@ namespace UtilGS9
         //자유평면을 정의
         public class FreePlane
         {
-            public Model_Intergration model = null;
+            public Model model = null;
             //public FreePlane()
             //{
             //    base.kind = Model.FreePlane;
@@ -752,7 +752,7 @@ namespace UtilGS9
         //평면상의 이차원 원을 정의 
         public class Circle
         {
-            public Model_Intergration model = null;
+            public Model model = null;
             //public float radius;
 
             //public Circle()
@@ -787,7 +787,7 @@ namespace UtilGS9
         public class DeformationCircle
         {
 
-            public Model_Intergration model = null;
+            public Model model = null;
             //public float radius;
             //public Vector3 dir;
             //public float length;
@@ -1161,7 +1161,7 @@ namespace UtilGS9
         public class Tornado
         {
 
-            public Model_Intergration model = null;
+            public Model model = null;
 
             //public float radius;
             //public Vector3 dir; //회오리 시작방향
@@ -1386,7 +1386,7 @@ namespace UtilGS9
         //실린더는 선분의 특징을 가지고 있다 
         public class Cylinder //: Model_Intergration
         {
-            public Model_Intergration model = null;
+            public Model model = null;
             //public float radius;       //시작점에서 가까운 원의 반지름 
             //public Vector3 dir;             //origin 원에서 다른원까지의 방향 
             //public float length;            //길이 
