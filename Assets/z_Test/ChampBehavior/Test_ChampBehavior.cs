@@ -153,7 +153,10 @@ public class TwoHandControl : MonoBehaviour
     private Transform _highest_circle_right = null;
     private Transform _far_edge_circle_left = null;
     private Transform _far_edge_circle_right = null;
-
+    private Transform _tornado_angle_left = null;
+    private Transform _tornado_angle_right = null;
+    private Transform _tornado_unlace_left = null;
+    private Transform _tornado_unlace_right = null;
 
     //왼손 조종용 경로원
     private Transform _pos_circle_A0 = null;
@@ -254,7 +257,10 @@ public class TwoHandControl : MonoBehaviour
         _highest_circle_right = GameObject.Find("highest_circle_right").transform;
         _far_edge_circle_left = GameObject.Find("far_edge_circle_left").transform;
         _far_edge_circle_right = GameObject.Find("far_edge_circle_right").transform;
-
+        _tornado_angle_left = GameObject.Find("tornado_angle_left").transform;
+        _tornado_angle_right = GameObject.Find("tornado_angle_right").transform;
+        _tornado_unlace_left = GameObject.Find("tornado_unlace_left").transform;
+        _tornado_unlace_right = GameObject.Find("tornado_unlace_right").transform;
 
         _pos_circle_A0 = GameObject.Find("pos_circle_A0").transform;
         _pos_circle_A1 = GameObject.Find("pos_circle_A1").transform;
@@ -945,11 +951,11 @@ public class TwoHandControl : MonoBehaviour
                 {
                     if (true == model.IsLeft())
                     {
-                        model.tornado.Set(_pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, 360f);
+                        model.tornado.Set(upDir, _pos_circle_left.position, _radius_circle_left, _highest_circle_left.position, _tornado_unlace_left.position, _tornado_angle_left.localPosition.x);
                     }
                     if (true == model.IsRight())
                     {
-                        model.tornado.Set(_pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, 360f);
+                        model.tornado.Set(upDir, _pos_circle_right.position, _radius_circle_right, _highest_circle_right.position, _tornado_unlace_right.position, _tornado_angle_right.localPosition.x);
                     }
                 }
                 break;
@@ -1004,7 +1010,7 @@ public class TwoHandControl : MonoBehaviour
             case Geo.Model.eKind.Tornado:
                 {
                     //todo 적용하기 : 회오리원 감기는 방향 변환  
-                    //upDir = Geo.Tornado.Trans_UnlaceDir(_TL2R_unlace_circle_left.position - _TL2R_pos_circle_left.position, upDir, _body_dir);
+                    //upDir = Geo.Tornado.Trans_UnlaceDir(_tornado_angle_left.position - _pos_circle_left.position, upDir);
 
                     aroundCalcPos = model.tornado.CollisionPos(handle, upDir);
                 }

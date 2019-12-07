@@ -650,6 +650,7 @@ namespace UtilGS9
             //public Vector3 dir; //회오리 시작방향
             //public float length; //회오리 반지름
             public float maxAngle; //최대회전각
+            public Vector3 unlaceDir; //풀어지는 방향 
 
             //cylinder
             //public float radius_origin;       //시작점에서 가까운 원의 반지름 
@@ -1188,7 +1189,7 @@ namespace UtilGS9
             //    base.kind = Model.Tornado;
             //}
 
-            public void Set(Vector3 p_orign, float p_radius, Vector3 p_highestPoint, float p_maxAngle)
+            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_unlaceDir, float p_maxAngle)
             {
                 model.origin = p_orign;
                 model.radius = p_radius;
@@ -1201,19 +1202,27 @@ namespace UtilGS9
                     model.dir = (p_highestPoint - p_orign) / model.length;
                 
                 model.maxAngle = p_maxAngle;
+                model.unlaceDir = p_unlaceDir;
+                this.Trans_UnlaceDir(upDir);
             }
 
             //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
-            static public Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+            private void Trans_UnlaceDir(Vector3 upDir)
             {
-
-                Vector3 cur_dir = Vector3.Cross(forward, upDir);
-
-                if (Vector3.Dot(cur_dir, unlace_dir) < 0)
-                    upDir *= -1f;
-
-                return upDir;
+                Vector3 cur_dir = Vector3.Cross(model.dir, upDir);
+                if (Vector3.Dot(cur_dir, model.unlaceDir) < 0)
+                    model.maxAngle *= -1f;
+                
             }
+
+            //private Vector3 Trans_UnlaceDir(Vector3 unlace_dir, Vector3 upDir, Vector3 forward)
+            //{
+            //    Vector3 cur_dir = Vector3.Cross(forward, upDir);
+            //    if (Vector3.Dot(cur_dir, unlace_dir) < 0)
+            //        upDir *= -1f;
+            //    return upDir;
+            //}
+
 
 
             //2차원 회오리상의 목표위치만 구하는 함수 
