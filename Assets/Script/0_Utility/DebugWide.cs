@@ -199,8 +199,9 @@ public class DebugWide
 #endif
     }
 
-    static public void DrawCircle2D(Vector3 pos, float radius, Vector3 up, Color cc)
+    static public void DrawCirclePlane(Vector3 pos, float radius, Vector3 up, Color cc)
     {
+#if UNITY_EDITOR
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
         Vector3 perp = Vector3.Cross(up, Vector3.forward);
@@ -221,10 +222,12 @@ public class DebugWide
 
             prev = cur;
         }
+#endif
     }
 
     static public void DrawCircleCone(Vector3 pos, float radius, Vector3 up, Color cc)
     {
+#if UNITY_EDITOR
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
         Vector3 perp = Vector3.Cross(up, Vector3.forward);
@@ -245,6 +248,7 @@ public class DebugWide
 
             prev = cur;
         }
+#endif
     }
 }
 

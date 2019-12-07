@@ -1433,8 +1433,8 @@ namespace UtilGS9
                 DebugWide.DrawLine(model.origin + -dirRight * model.radius, farPos + -dirRight * model.radius_far, cc);
                 //DebugWide.DrawCircle(cld.pos, cld.radius_near, cc);
                 //DebugWide.DrawCircle(farPos, cld.radius_far, cc);
-                DebugWide.DrawCircle2D(model.origin, model.radius, upDir2, cc);
-                DebugWide.DrawCircle2D(farPos, model.radius_far, upDir2, cc);
+                DebugWide.DrawCirclePlane(model.origin, model.radius, upDir2, cc);
+                DebugWide.DrawCirclePlane(farPos, model.radius_far, upDir2, cc);
             }
 
             public override string ToString()
