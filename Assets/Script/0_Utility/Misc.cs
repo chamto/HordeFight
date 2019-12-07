@@ -617,15 +617,24 @@ namespace UtilGS9
                 tail_0,
             }
 
-            public const int FreePlane = 0; //자유평면
-            public const int Circle = 1;
-            public const int DeformationCircle = 2;
-            public const int Tornado = 3;
-            public const int Cylinder = 4;
-            public const int Arc = 5;  //호 
+            public enum eKind
+            {
+                FreePlane = 0,  //자유평면
+                Circle,
+                DeformationCircle,
+                Tornado,
+                Cylinder,
+                Arc, //호 
+            }
+            //public const int FreePlane = 0; //자유평면
+            //public const int Circle = 1;
+            //public const int DeformationCircle = 2;
+            //public const int Tornado = 3;
+            //public const int Cylinder = 4;
+            //public const int Arc = 5;  //호 
 
             public eBranch branch = eBranch.none;
-            public int kind = Model.FreePlane;
+            public eKind kind = eKind.FreePlane;
 
             public Vector3 origin;
             public float radius;
@@ -688,27 +697,27 @@ namespace UtilGS9
             {
                 switch (kind)
                 {
-                    case Model.FreePlane:
+                    case eKind.FreePlane:
                         {
                             freePlane.Draw(upDir, cc);
                         }
                         break;
-                    case Model.Circle:
+                    case eKind.Circle:
                         {
-                            freePlane.Draw(upDir, cc);
+                            circle.Draw(upDir, cc);
                         }
                         break;
-                    case Model.DeformationCircle:
+                    case eKind.DeformationCircle:
                         {
                             deformationCircle.Draw_Fast(upDir, cc);
                         }
                         break;
-                    case Model.Tornado:
+                    case eKind.Tornado:
                         {
                             tornado.Draw(upDir, cc);
                         }
                         break;
-                    case Model.Cylinder:
+                    case eKind.Cylinder:
                         {
                             cylinder.Draw(upDir,cc);
                         }
