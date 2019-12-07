@@ -12,6 +12,23 @@ public class Test_FuncPerformance : MonoBehaviour
     public Transform _line_0 = null;
     public Transform _line_1 = null;
 
+
+
+    public class TestA
+    {
+        public int a = 10;
+        public void CallPerf()
+        {
+            a += 10;
+        }
+    }
+    public TestA testA = new TestA();
+    public int testB = 10;
+    public void TestB_CallPerf()
+    {
+        testB += 10;
+    }
+
 	// Use this for initialization
 	void Start () {
         Misc.Init();
@@ -20,7 +37,8 @@ public class Test_FuncPerformance : MonoBehaviour
 
         Create_LookUpTable_TrigonometricFunction();
 	}
-	
+
+    	
 	// Update is called once per frame
 	void Update () 
     {
@@ -58,6 +76,26 @@ public class Test_FuncPerformance : MonoBehaviour
         Vector2Int v2a = Vector2Int.one;
         Vector2Int v2b = Vector2Int.one;
         Vector2Int v2c;
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            //testA.a += 20; //멤버변수를 사용한 더하기
+            testA.CallPerf(); //멤버함수를 사용한 더하기
+        }
+        _timeTemp += "  class.a+=20  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            //testB += 20; //변수를 사용한 더하기
+            TestB_CallPerf(); //함수를 사용한 더하기
+
+        }
+        _timeTemp += "  b+=20  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
