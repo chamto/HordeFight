@@ -896,130 +896,6 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
-    //public void CalcHandPos_DeformationCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
-    //                                    Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-    //                                    out Vector3 newHand_pos, out float newArm_length)
-    //{
-
-    //    Vector3 handleToCenter = circle_pos - handle;
-    //    Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-    //    //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-    //    Vector3 proj_handlePos = handle + proj_handle;
-
-
-
-    //    //===== 1차 계산
-    //    Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
-    //    Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
-    //    Vector3 handleCalcPos = aroundCalcPos;
-
-
-    //    float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
-    //    float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
-
-    //    float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
-    //    //_arm_left_length = length_curLeft;
-
-    //    //최대길이를 벗어나는 핸들 최대길이로 변경
-    //    if (length_cur > arm_max_length)
-    //    {
-    //        length_cur = arm_max_length;
-    //        sqrLength_sdToHandle = arm_max_length * arm_max_length;
-    //    }
-
-    //    //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
-    //    //===== 2차 계산
-    //    if (arm_min_length >= length_cur)
-    //    {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
-    //        //DebugWide.LogBlue("0"); //test
-    //        length_cur = arm_min_length;
-    //        n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
-    //        handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //    }
-    //    else
-    //    {
-
-    //        if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
-    //        {   //주변원 위의 점이 최소거리 이내인 경우
-    //            //DebugWide.LogBlue("1"); //test
-    //            length_cur = arm_min_length;
-    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //        }
-    //        else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
-    //        {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
-    //            //DebugWide.LogBlue("2"); //test
-    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //        }
-
-    //    }
-
-    //    newArm_length = (handleCalcPos - shoulder_pos).magnitude;
-    //    newHand_pos = handleCalcPos;
-    //}
-
-    //public void CalcHandPos_TornadoCircle(Vector3 handle, Vector3 circle_up, Vector3 circle_pos, float circle_radius, Vector3 highest_pos,
-    //                                    Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-    //                                    out Vector3 newHand_pos, out float newArm_length)
-    //{
-
-    //    Vector3 handleToCenter = circle_pos - handle;
-    //    Vector3 proj_handle = circle_up * Vector3.Dot(handleToCenter, circle_up) / circle_up.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
-    //    //axis_up 이 정규화 되었을 때 : = Dot(handleToCenter, n_axis_up) : n_axis_up 에 handleToCenter  를 투영한 길이를 반환한다  
-    //    Vector3 proj_handlePos = handle + proj_handle;
-
-
-
-    //    //===== 1차 계산
-    //    //Vector3 aroundCalcPos = Geo.DeformationSpherePoint_Fast(handle, circle_pos, circle_radius, circle_up, highest_pos, 1);
-    //    Vector3 aroundCalcPos = Geo.DeformationCirclePos_Tornado2D(handle, circle_pos, circle_radius, circle_up, highest_pos, 360f);
-    //    Vector3 n_sdToAround = (aroundCalcPos - shoulder_pos).normalized;
-    //    Vector3 handleCalcPos = aroundCalcPos;
-
-
-    //    float sqrLength_sdToAround = (aroundCalcPos - shoulder_pos).sqrMagnitude;
-    //    float sqrLength_sdToHandle = (proj_handlePos - shoulder_pos).sqrMagnitude;
-
-    //    float length_cur = Mathf.Sqrt(sqrLength_sdToHandle);
-    //    //_arm_left_length = length_curLeft;
-
-    //    //최대길이를 벗어나는 핸들 최대길이로 변경
-    //    if (length_cur > arm_max_length)
-    //    {
-    //        length_cur = arm_max_length;
-    //        sqrLength_sdToHandle = arm_max_length * arm_max_length;
-    //    }
-
-    //    //최소원 , 최대원 , 현재원(핸들위치기준) , 주변원
-    //    //===== 2차 계산
-    //    if (arm_min_length >= length_cur)
-    //    {   //현재원이 최소원안에 있을 경우 : 왼손길이 최소값으로 조절 
-    //        //DebugWide.LogBlue("0"); //test
-    //        length_cur = arm_min_length;
-    //        n_sdToAround = (proj_handlePos - shoulder_pos).normalized;
-    //        handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //    }
-    //    else
-    //    {
-
-    //        if (sqrLength_sdToAround <= arm_min_length * arm_min_length)
-    //        {   //주변원 위의 점이 최소거리 이내인 경우
-    //            //DebugWide.LogBlue("1"); //test
-    //            length_cur = arm_min_length;
-    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //        }
-    //        else if (sqrLength_sdToAround >= sqrLength_sdToHandle)
-    //        {   //왼손범위에 벗어나는 주변원상 위의 점인 경우  
-    //            //DebugWide.LogBlue("2"); //test
-    //            handleCalcPos = shoulder_pos + n_sdToAround * length_cur;
-    //        }
-
-    //    }
-
-    //    newArm_length = (handleCalcPos - shoulder_pos).magnitude;
-    //    newHand_pos = handleCalcPos;
-    //}
-
-
     public void SetModel_CurValue(Geo.Model_Intergration model)
     {
         
@@ -1266,8 +1142,6 @@ public class TwoHandControl : MonoBehaviour
             //-----------------------
 
             Cut_HandOriginToHandEnd(_HANDLE_leftToRight.position, _eHandOrigin);
-            //Cut_LeftO_ERight();
-            //Cut_RightToLeft();
 
             //--------------------
             //찌르기 모드로 연결하기 위한 핸들값 조정 
@@ -1277,63 +1151,6 @@ public class TwoHandControl : MonoBehaviour
 
     }
 
-    ////오른손끝(End) 기준으로 왼손시작(Origin) 위치정하기 
-    //public void Cut_RightE_OLeft()
-    //{
-    //    Vector3 handle = _HANDLE_leftToRight.position;
-
-    //    Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-    //    Vector3 newPos = Vector3.zero;
-    //    float newLength = 0f;
-
-
-    //    //-----------------------
-    //    //모델원 위치 계산 
-
-    //    _Model_left.kind = Geo.Model_Intergration.Cylinder;
-    //    this.SetModel_CurValue(_Model_left);
-    //    this.CalcHandPos_PlaneArea(_Model_left, handle, axis_up,
-    //                _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
-
-
-    //    _arm_left_length = newLength;
-    //    _hand_left.position = newPos;
-
-
-    //    _Model_right.kind = Geo.Model_Intergration.Cylinder;
-    //    this.SetModel_CurValue(_Model_right);
-    //    this.CalcHandPos_PlaneArea(_Model_right, handle, axis_up,
-    //                _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-
-    //    _arm_right_length = newLength;
-    //    _hand_right.position = newPos;
-
-    //    //----------------------------
-
-    //    Vector3 twoHand = (_hand_right.position - _hand_left.position);
-    //    Vector3 n_twoHand = -twoHand.normalized;
-
-    //    //왼손으로부터 오른손의 지정된 거리에 맞게 위치 계산
-    //    newPos = _hand_right.position + n_twoHand * _twoHand_length;
-    //    Vector3 sdToHand = (newPos - _shoulder_left.position);
-    //    float length_sdToHand = sdToHand.magnitude;
-    //    Vector3 n_sdToHand = sdToHand / length_sdToHand;
-    //    newLength = length_sdToHand;
-    //    if (length_sdToHand > _arm_left_max_length)
-    //    {   //오른손 위치가 오른손의 최대범위를 벗어난 경우 
-    //        newLength = _arm_left_max_length;
-    //        newPos = _shoulder_left.position + n_sdToHand * newLength;
-    //    }
-    //    else if (length_sdToHand < _arm_left_min_length)
-    //    {   //오른손 위치가 오른손의 최소범위를 벗어난 경우 
-    //        newLength = _arm_left_min_length;
-    //        newPos = _shoulder_left.position + n_sdToHand * newLength;
-    //    }
-
-    //    _arm_left_length = newLength;
-    //    _hand_left.position = newPos;
-
-    //}
 
     //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
     //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
