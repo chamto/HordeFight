@@ -378,9 +378,9 @@ public class TwoHandControl : MonoBehaviour
                                              //out newPos, out newLength);
 
                 //주변원 위치 계산 
-                //this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
-                                             //_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                             //out newPos, out newLength);
+                this.CalcHandPos_AroundCircle(handle, axis_up, _pos_circle_A0.position, _radius_circle_A0,
+                                             _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                             out newPos, out newLength);
                 _arm_left_length = newLength;
                 _hand_left.position = newPos;
 
