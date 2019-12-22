@@ -418,6 +418,10 @@ namespace UtilGS9
 
         static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
         {
+            //todo : 아래와 같이 바꾸고 성능 시험 해보기 
+            //b = 1f / b;
+            //result.x = va.x * b; ... 
+
             result.x = va.x / b;
             result.y = va.y / b;
             result.z = va.z / b;
@@ -428,12 +432,12 @@ namespace UtilGS9
         //Vector3.normalize 보다 빠르다
         static public Vector3 Normalize(Vector3 vector3)
         {
-            if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가. 추가처리에 따른 성능평가 필요 
+            if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
 
-            float len = vector3.magnitude;
-            vector3.x /= len;
-            vector3.y /= len;
-            vector3.z /= len;
+            float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
+            vector3.x *= len;
+            vector3.y *= len;
+            vector3.z *= len;
 
             return vector3; 
 
@@ -755,7 +759,7 @@ namespace UtilGS9
                         break;
                     case Geo.Model.eKind.Tornado:
                         {
-                            aroundCalcPos = this.tornado.CollisionPos(handle);
+                            aroundCalcPos = this.tornado.CollisionPos3D(handle);
                         }
                         break;
                     case Geo.Model.eKind.Cylinder:
@@ -1280,6 +1284,8 @@ namespace UtilGS9
             public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_unlaceDir, float p_maxAngle)
             {
                 model.upDir = p_upDir;
+                //model.upDir = Misc.Norm_Quick()
+                //VOp.Normalize
                 model.origin = p_orign;
                 model.radius = p_radius;
 
@@ -1319,8 +1325,8 @@ namespace UtilGS9
 
 
 
-            //2차원 회오리상의 목표위치만 구하는 함수 
-            public Vector3 CollisionPos(Vector3 handlePos) //Vector3 n_upDir)
+            //2차원 회오리상의 목표위치만 구하는 함수 , 최대점으로 3차원 표현시 올바로 계산 못해줌 
+            public Vector3 CollisionPos2D(Vector3 handlePos) //Vector3 n_upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
@@ -1357,8 +1363,7 @@ namespace UtilGS9
                 angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
-                Vector3 tdPos = model.origin;
-                tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
+                Vector3 tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
                 //DebugWide.LogBlue(tdPos + "  - 11  ");
                 float td = (angleD * t) / model.maxAngle;
                 tdPos = model.origin + tdPos * (model.radius + td);

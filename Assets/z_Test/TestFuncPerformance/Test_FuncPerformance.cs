@@ -277,9 +277,23 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            Vector3 ve = My_Normalize_C(vd); //4번과 성능 비슷, NaN 예외처리가 추가된것 , 이것쓰기 !!!!
+            Vector3 ve = My_Normalize_C(vd); //4번과 성능 비슷, NaN 예외처리가 추가된것 
         }
         _timeTemp += "  norm(6)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = My_Normalize_D(vd); //예상과 다르게 느리다. 벡터 나눗셈 연산때문인것 같다 
+        }
+        _timeTemp += "  norm(7)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = My_Normalize_E(vd); //나눗셈을 1번으로 줄임 ,  NaN 예외처리가 추가된것 , 미리계산한 값 사용함수와 성능이 비슷 ,이것쓰기 !!!!
+        }
+        _timeTemp += "  norm(8)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================
@@ -835,6 +849,26 @@ public class Test_FuncPerformance : MonoBehaviour
         vector3.z /= len;
 
         return vector3; 
+
+    }
+
+    Vector3 My_Normalize_D(Vector3 vector3)
+    {
+
+        float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude);
+
+        return vector3 * len;
+    }
+
+    Vector3 My_Normalize_E(Vector3 vector3)
+    {
+        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
+        float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude);
+        vector3.x *= len;
+        vector3.y *= len;
+        vector3.z *= len;
+
+        return vector3;
 
     }
 
