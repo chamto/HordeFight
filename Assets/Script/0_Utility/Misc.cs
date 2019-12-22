@@ -895,11 +895,14 @@ namespace UtilGS9
                 model.radius = p_radius;
 
                 Vector3 toDir = p_highestPoint - p_orign;
-                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir);
+                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir) / p_upDir.sqrMagnitude;
 
                 model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
+                {
+                    model.length = model.radius;
                     model.dir = Vector3.zero;
+                }
                 else
                     model.dir = proj_toDir / model.length;
                     
@@ -915,11 +918,14 @@ namespace UtilGS9
                 model.radius = p_radius;
 
                 Vector3 toDir = p_highestPoint - p_orign;
-                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir);
+                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir) / p_upDir.sqrMagnitude;
 
                 model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
+                {
+                    model.length = model.radius;
                     model.dir = Vector3.zero;
+                }
                 else
                     model.dir = proj_toDir / model.length;
                
@@ -1012,9 +1018,6 @@ namespace UtilGS9
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
 
-                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
-                //initialDir.Normalize();
 
                 //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
                 Vector3 centerToTarget = handlePoint - model.origin;
@@ -1024,6 +1027,10 @@ namespace UtilGS9
                                   
                 //Vector3 tdDir = targetPoint - sphereCenter;
                 tdDir.Normalize();
+
+                //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
+                //initialDir.Normalize();
 
                 float angleTarget = Vector3.SignedAngle(initialDir, tdDir, model.upDir);
 
@@ -1216,11 +1223,11 @@ namespace UtilGS9
             {
                 //=============================
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
-                float t = model.length - model.radius;
+                //float t = model.length - model.radius;
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
-                initialDir.Normalize();
+                //Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
+                //initialDir.Normalize();
                 //=============================
 
                 Vector3 prev = Vector3.zero;
@@ -1230,7 +1237,7 @@ namespace UtilGS9
                 int count = 36;
                 for (int i = 0; i < count; i++)
                 {
-                    targetPos = Quaternion.AngleAxis(i * 10f, model.upDir) * initialDir * model.length * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
+                    targetPos = Quaternion.AngleAxis(i * 10f, model.upDir) * Vector3.forward * model.length * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
                     cur = CollisionPos(targetPos);
 
                     if (0 != i)
@@ -1241,12 +1248,13 @@ namespace UtilGS9
 
 
                 //----------- debug print -----------
-                Vector3 angle_M45 = initialDir;
-                Vector3 angle_P45 = Quaternion.AngleAxis(180f, model.upDir) * initialDir;
-                DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, cc);
-                DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, cc);
+                //Vector3 angle_M45 = initialDir;
+                //Vector3 angle_P45 = Quaternion.AngleAxis(180f, model.upDir) * initialDir;
+                //DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, cc);
+                //DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, cc);
                 //----------- debug print -----------
                 DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, cc);
+                DebugWide.DrawLine(model.origin, model.origin + model.upDir, cc);
                 //----------- debug print -----------
             }
         }
@@ -1322,12 +1330,11 @@ namespace UtilGS9
 
                 //==================================================
 
-
                 Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
-                Vector3 tdPos = model.origin;
-                if (true == Misc.IsZero(initialDir)) return tdPos;//initialDir = Vector3.forward;
+
+                if (true == Misc.IsZero(initialDir)) return model.origin;//initialDir = Vector3.forward;
                 //initialDir 이 0 값인겨우 NaN 에러가 발생함 , origin 값 반환하게 예외처리 
                 //DebugWide.LogBlue("  - 00  " + n_upDir + "   " + initialDir);
 
@@ -1341,10 +1348,10 @@ namespace UtilGS9
                 int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
 
-
                 angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
+                Vector3 tdPos = model.origin;
                 tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
                 //DebugWide.LogBlue(tdPos + "  - 11  ");
                 float td = (angleD * t) / model.maxAngle;
