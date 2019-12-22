@@ -93,7 +93,7 @@ public class TwoHandControl : MonoBehaviour
     public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
     public Geo.Model.eKind _eModelKind_Left_1 = Geo.Model.eKind.Circle;
 
-    public Geo.Model.eKind _eModelKind_Right_0 = Geo.Model.eKind.Cylinder;
+    public Geo.Model.eKind _eModelKind_Right_0 = Geo.Model.eKind.Tornado;
     public Geo.Model.eKind _eModelKind_Right_1 = Geo.Model.eKind.Circle;
 
 
@@ -1743,10 +1743,13 @@ public class TwoHandControl : MonoBehaviour
                     //DebugWide.DrawCirclePlane(_pos_circle_B1.position, _radius_circle_B1, axis_up, Color.white);
 
                     _Model_left_0.Draw(Color.yellow);
-                    _Model_right_0.Draw(Color.blue);
-
                     _Model_left_1.Draw(Color.yellow);
+
+                    _Model_right_0.Draw(Color.blue);
                     _Model_right_1.Draw(Color.blue);
+
+                    _Model_left_0.tornado.Draw_T2AndAngle2(_HANDLE_left.position);
+                    _Model_right_0.tornado.Draw_T2AndAngle2(_HANDLE_right.position);
                 }
                 if(_part_control == ePart.TwoHand)
                 {

@@ -1282,8 +1282,8 @@ namespace UtilGS9
             public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_unlaceDir, float p_maxAngle)
             {
                 model.upDir = p_upDir;
-                //model.upDir = Misc.Norm_Quick()
-                //VOp.Normalize
+                //model.upDir = VOp.Normalize(p_upDir); //test
+
                 model.origin = p_orign;
                 model.radius = p_radius;
 
@@ -1296,20 +1296,25 @@ namespace UtilGS9
                 }
                     
                 else
-                    model.dir = (p_highestPoint - p_orign) / model.length;
+                    model.dir = (p_highestPoint - p_orign);
+                    //model.dir = (p_highestPoint - p_orign) / model.length;
 
                 if (0 == p_maxAngle) p_maxAngle = 1f; //0나누기 연산을 피하기 위한 예외처리 
                 model.maxAngle = p_maxAngle;
                 model.unlaceDir = p_unlaceDir;
-                this.Trans_UnlaceDir(p_upDir);
+                this.Trans_UnlaceDir();
             }
 
             //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
-            private void Trans_UnlaceDir(Vector3 upDir)
+            private void Trans_UnlaceDir()
             {
-                Vector3 cur_dir = Vector3.Cross(model.dir, upDir);
+                Vector3 cur_dir = Vector3.Cross(model.dir, model.upDir);
                 if (Vector3.Dot(cur_dir, model.unlaceDir) < 0)
-                    model.maxAngle *= -1f;
+                {
+                    model.upDir *= -1f;
+                    //model.maxAngle *= -1f;
+                }
+                    
                 
             }
 
@@ -1340,7 +1345,7 @@ namespace UtilGS9
 
                 //==================================================
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir;
                 initialDir.Normalize();
 
 
@@ -1397,7 +1402,7 @@ namespace UtilGS9
                 //==================================================
 
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir;
                 initialDir.Normalize();
 
 
@@ -1417,14 +1422,31 @@ namespace UtilGS9
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
 
-                Vector3 tdPos = model.origin;
-                tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
+                Vector3 tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
                 float td = (angleD * t) / model.maxAngle;
                 tdPos = model.origin + tdPos * (model.radius + td);
 
                 return tdPos;
             }
 
+            public void Draw_T2AndAngle2(Vector3 handlePos)
+            {
+                
+                float t = model.length - model.radius;
+
+                float t_td = (handlePos - model.origin).magnitude - model.radius; //target_pos에 대한 td를 바로 구한다 
+                float t_angleD = (t_td * model.maxAngle) / t;
+
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir;
+                initialDir.Normalize();
+
+
+                Vector3 tdPos = Quaternion.AngleAxis(t_angleD, model.upDir) * initialDir;
+                tdPos = model.origin + tdPos * (model.radius + t_td);
+
+                DebugWide.DrawLine(model.origin, tdPos, Color.black);
+
+            }
 
             public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
@@ -1435,7 +1457,7 @@ namespace UtilGS9
                 float t = model.length - model.radius;
 
                 //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir;
                 initialDir.Normalize();
 
                 //==================================================
@@ -1505,7 +1527,7 @@ namespace UtilGS9
                 //----------- debug print -----------
                 DebugWide.DrawCirclePlane(model.origin, model.radius, model.upDir, cc);
                 //DebugWide.DrawCircle( model.origin, model.radius, cc);
-                DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, cc);
+                DebugWide.DrawLine(model.origin, model.origin + model.dir, cc);
             }
         }
 
@@ -2709,7 +2731,7 @@ namespace UtilGS9
         }
 
 
-        static public Vector3 Norm_Quick(Vector3 v3)
+        static public Vector3 notuse_Norm_Quick(Vector3 v3)
         {
             //float r_length = Util.RSqrt_Quick_2 (v3.sqrMagnitude);
             float r_length = 1f / Misc.Sqrt_Quick_7(v3.sqrMagnitude);
