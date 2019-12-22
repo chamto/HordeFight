@@ -428,6 +428,8 @@ namespace UtilGS9
         //Vector3.normalize 보다 빠르다
         static public Vector3 Normalize(Vector3 vector3)
         {
+            if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가. 추가처리에 따른 성능평가 필요 
+
             float len = vector3.magnitude;
             vector3.x /= len;
             vector3.y /= len;
@@ -1284,7 +1286,11 @@ namespace UtilGS9
                 model.length = (p_highestPoint - p_orign).magnitude;
 
                 if (model.length <= float.Epsilon)
+                {
+                    model.length = model.radius;
                     model.dir = Vector3.zero;
+                }
+                    
                 else
                     model.dir = (p_highestPoint - p_orign) / model.length;
 
@@ -1334,9 +1340,8 @@ namespace UtilGS9
                 initialDir.Normalize();
 
 
-                if (true == Misc.IsZero(initialDir)) return model.origin;//initialDir = Vector3.forward;
+                //if (true == Misc.IsZero(initialDir)) return model.origin;//initialDir = Vector3.forward;
                 //initialDir 이 0 값인겨우 NaN 에러가 발생함 , origin 값 반환하게 예외처리 
-                //DebugWide.LogBlue("  - 00  " + n_upDir + "   " + initialDir);
 
                 //비례식을 이용하여 td 구하기 
                 //angleD : td  = angleH : t
@@ -1347,6 +1352,7 @@ namespace UtilGS9
                 float angleD = Geo.Angle360(initialDir, centerToTarget, model.upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
                 int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
+                //DebugWide.LogBlue("  - 00  " + angleD + "   " + initialDir);
 
                 angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
