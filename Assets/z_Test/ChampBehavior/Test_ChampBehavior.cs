@@ -711,7 +711,9 @@ public class TwoHandControl : MonoBehaviour
         if (ePart.OneHand == _part_control)
         {   //한손 칼 붙이기 
 
-            //if (true == _A_action_cut) //임시로 주석 설정 
+
+            //찌르기 
+            if(true == _switch_cutAndSting)
             {
                 Vector3 handToTarget = _odir_left.position - _hand_left.position;
                 Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
@@ -725,8 +727,8 @@ public class TwoHandControl : MonoBehaviour
                 angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                 _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
             }
-
-            if(true == _A_action_sting)
+            //베기 
+            else
             {
                 Vector3 handToTarget = _target_1.position - _hand_left.position;
                 Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
@@ -739,7 +741,8 @@ public class TwoHandControl : MonoBehaviour
                 _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);        
             }
 
-        }else
+        }
+        if(ePart.TwoHand == _part_control)
         {   //양손 칼 붙이기
             Vector3 hLhR = _hand_right.position - _hand_left.position;
             Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
@@ -781,9 +784,9 @@ public class TwoHandControl : MonoBehaviour
         //==================================================
 	}
 
-    //==============================================================
-    //==============================================================
-    //==============================================================
+    //======================================================================================================================================
+    //======================================================================================================================================
+    //======================================================================================================================================
 
 
     //어깨범위와 선분의 교차위치를 구한다. 어깨범위의 최소범위는 적용안됨 
@@ -1114,6 +1117,21 @@ public class TwoHandControl : MonoBehaviour
 
             if (false == _switch_cutAndSting)
             {   //찌르기
+
+                Vector3 newRightPos;
+                Vector3 newLeftPos;
+                float newRightLength;
+                float newLeftLength;
+                this.CalcHandPos(_HANDLE_left.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+                _hand_left.position = newLeftPos;
+                _arm_left_length = newLeftLength;
+
+
+                this.CalcHandPos(_HANDLE_right.position, _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
+                _hand_right.position = newRightPos;
+                _arm_right_length = newRightLength;
+
+
             }else
             {   //베기
 
@@ -1715,8 +1733,8 @@ public class TwoHandControl : MonoBehaviour
             //Vector3 targetDir = _target_1.position - _hc1_standard.position;
             //Vector3 shaft_t = Vector3.Cross(objectDir, targetDir);
             //DebugWide.DrawLine(_hc1_standard.position, _target_1.position, Color.black);
-            DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
-            DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
+            //DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
+            //DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
             //DebugWide.DrawLine(_hc1_standard.position, _hc1_standard.position + shaft_t, Color.white);
 
             //----
@@ -1726,6 +1744,25 @@ public class TwoHandControl : MonoBehaviour
             //if (rsq < wsq) inArea = -1f;
             //DebugWide.DrawLine(_hs_standard.position, _hs_standard.position + _body_dir * inArea * 3, Color.yellow);
             //----
+
+            //찌르기 
+            if(false == _switch_cutAndSting)
+            {
+                if (_part_control == ePart.OneHand)
+                {
+                    DebugWide.DrawLine(_HANDLE_left.position, _target_1.position, Color.red);
+                    DebugWide.DrawLine(_HANDLE_right.position, _target_2.position, Color.red);
+
+                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target_1.position, Color.magenta);
+                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target_2.position, Color.magenta);
+                }
+
+                if (_part_control == ePart.TwoHand)
+                {
+                    DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
+                    DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
+                }
+            }
 
             //베기 
             if(true == _switch_cutAndSting)
@@ -1748,8 +1785,8 @@ public class TwoHandControl : MonoBehaviour
                     _Model_right_0.Draw(Color.blue);
                     _Model_right_1.Draw(Color.blue);
 
-                    _Model_left_0.tornado.Draw_T2AndAngle2(_HANDLE_left.position);
-                    _Model_right_0.tornado.Draw_T2AndAngle2(_HANDLE_right.position);
+                    //_Model_left_0.tornado.Draw_T2AndAngle2(_HANDLE_left.position);
+                    //_Model_right_0.tornado.Draw_T2AndAngle2(_HANDLE_right.position);
                 }
                 if(_part_control == ePart.TwoHand)
                 {
