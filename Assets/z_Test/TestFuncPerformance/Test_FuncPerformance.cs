@@ -331,6 +331,12 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  v_div(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            vc = Operator_Division_B(va, i); //나눗셈 연산 줄임 , 이것 쓰기 !!!!
+        }
+        _timeTemp += "  v_div(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -817,6 +823,15 @@ public class Test_FuncPerformance : MonoBehaviour
         //return new Vector3(va.x / b, va.y / b, va.z / b);
     }
 
+    Vector3 Operator_Division_B(Vector3 va, float b, Vector3 result = default(Vector3))
+    {
+        b = 1f / b;
+        result.x = va.x * b;
+        result.y = va.y * b;
+        result.z = va.z * b;
+        return result;
+        //return new Vector3(va.x / b, va.y / b, va.z / b);
+    }
 
     Vector3 My_Normalize(Vector3 vector3)
     {

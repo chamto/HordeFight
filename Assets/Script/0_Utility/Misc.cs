@@ -418,13 +418,11 @@ namespace UtilGS9
 
         static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
         {
-            //todo : 아래와 같이 바꾸고 성능 시험 해보기 
-            //b = 1f / b;
-            //result.x = va.x * b; ... 
+            b = 1f / b;
 
-            result.x = va.x / b;
-            result.y = va.y / b;
-            result.z = va.z / b;
+            result.x = va.x * b;
+            result.y = va.y * b;
+            result.z = va.z * b;
             return result;
         }
 
