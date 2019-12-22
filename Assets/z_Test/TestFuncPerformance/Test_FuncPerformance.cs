@@ -225,7 +225,7 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            Vector3 ve = vd.normalized;
+            Vector3 ve = vd.normalized; //가장느림 
         }
         _timeTemp += "  norm(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
@@ -261,7 +261,7 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            Vector3 ve = My_Normalize(vd); //두번째로 빠름 . 가장 빠른것보다 정확도가 높기 때문에 이것쓰기 !!!!!! 
+            Vector3 ve = My_Normalize(vd); //NaN 예외처리 없는 것 
         }
         _timeTemp += "  norm(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
@@ -269,9 +269,17 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            Vector3 ve = My_Normalize_B(vd); //두번째로 빠름 . 가장 빠른것보다 정확도가 높기 때문에 이것쓰기 !!!!!! 
+            Vector3 ve = My_Normalize_B(vd); 
         }
         _timeTemp += "  norm(5)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = My_Normalize_C(vd); //4번과 성능 비슷, NaN 예외처리가 추가된것 , 이것쓰기 !!!!
+        }
+        _timeTemp += "  norm(6)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================
@@ -816,6 +824,18 @@ public class Test_FuncPerformance : MonoBehaviour
         vector3.z /= len;
 
         return vector3;
+    }
+
+    Vector3 My_Normalize_C(Vector3 vector3)
+    {
+        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
+        float len = vector3.magnitude;
+        vector3.x /= len;
+        vector3.y /= len;
+        vector3.z /= len;
+
+        return vector3; 
+
     }
 
     //Mathf.Sin 보다 느리다.. 쓰지 말자 
