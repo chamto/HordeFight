@@ -385,10 +385,10 @@ SpriteAtlas:
   - {fileID: 21300162, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300240, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300158, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
-  - {fileID: 21300358, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300316, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300314, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300318, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300358, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300058, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300054, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300362, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -750,10 +750,10 @@ SpriteAtlas:
   - fireRedA_2_0
   - fireRedA_0_1
   - fireRedA_0_0
-  - effect_attack
   - fireRain_0_1
   - fireRain_0_0
   - fireRain_0_2
+  - effect_attack
   - ik_Lothar_29
   - ik_Lothar_27
   - effect_sheld_0
