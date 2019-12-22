@@ -1304,7 +1304,7 @@ namespace UtilGS9
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
-                if (0 == t) t = 0.0001f; //0으로 나누는 문제를 피하기 위한 예외처리 
+                //if (0 == t) t = 0.0001f; //0으로 나누는 문제를 피하기 위한 예외처리 
 
                 //==================================================
                 Vector3 centerToTarget = handlePos - model.origin;
@@ -1320,8 +1320,9 @@ namespace UtilGS9
                 Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, n_upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
-                if (true == Misc.IsZero(initialDir)) initialDir = Vector3.forward;
-                //initialDir 이 0 값인겨우 NaN 에러가 발생함 , 초기 방향값이 반드시 설정되어야 한다 
+                Vector3 tdPos = model.origin;
+                if (true == Misc.IsZero(initialDir)) return tdPos;//initialDir = Vector3.forward;
+                //initialDir 이 0 값인겨우 NaN 에러가 발생함 , origin 값 반환하게 예외처리 
                 //DebugWide.LogBlue("  - 00  " + n_upDir + "   " + initialDir);
 
                 //비례식을 이용하여 td 구하기 
@@ -1338,7 +1339,6 @@ namespace UtilGS9
                 angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
-                Vector3 tdPos = model.origin;
                 tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
                 //DebugWide.LogBlue(tdPos + "  - 11  ");
                 float td = (angleD * t) / model.maxAngle;
