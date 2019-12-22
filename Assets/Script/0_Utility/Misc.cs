@@ -636,6 +636,7 @@ namespace UtilGS9
             public eBranch branch = eBranch.none;
             public eKind kind = eKind.FreePlane;
 
+            public Vector3 upDir;
             public Vector3 origin;
             public float radius;
 
@@ -693,71 +694,71 @@ namespace UtilGS9
             }
 
 
-            public void SetModel(Vector3 upDir, Vector3 in_center, float in_radius, Vector3 in_highest, Vector3 in_farEdge,
+            public void SetModel(Vector3 in_upDir, Vector3 in_center, float in_radius, Vector3 in_highest, Vector3 in_farEdge,
                           float in_tornadoAngle, Vector3 in_tornadoUnlace)
             {
                 switch (this.kind)
                 {
                     case Geo.Model.eKind.FreePlane:
                         {
-                            this.freePlane.Set(in_center);
+                            this.freePlane.Set(in_upDir, in_center);
                         }
                         break;
                     case Geo.Model.eKind.Circle:
                         {
-                            this.circle.Set(in_center, in_radius);
+                            this.circle.Set(in_upDir, in_center, in_radius);
                         }
                         break;
                     case Geo.Model.eKind.DeformationCircle:
                         {
-                            this.deformationCircle.Set(upDir, in_center, in_radius, in_highest, 1);
+                            this.deformationCircle.Set(in_upDir, in_center, in_radius, in_highest, 1);
                         }
                         break;
                     case Geo.Model.eKind.Tornado:
                         {
-                            this.tornado.Set(upDir, in_center, in_radius, in_highest, in_tornadoUnlace, in_tornadoAngle);
+                            this.tornado.Set(in_upDir, in_center, in_radius, in_highest, in_tornadoUnlace, in_tornadoAngle);
                         }
                         break;
                     case Geo.Model.eKind.Cylinder:
                         {
 
                             float len_radius_far = (in_highest - in_farEdge).magnitude;
-                            this.cylinder.Set(in_center, in_radius, in_highest, len_radius_far);
+                            this.cylinder.Set(in_upDir, in_center, in_radius, in_highest, len_radius_far);
 
                         }
                         break;
                 }
             }
 
-            public Vector3 CollisionPos(Vector3 handle, Vector3 upDir, out Vector3 upDir2)
+            public Vector3 CollisionPos(Vector3 handle, out Vector3 upDir2)
             {
-                upDir2 = upDir;
+                upDir2 = this.upDir;
                 Vector3 aroundCalcPos = UtilGS9.ConstV.v3_zero;
                 switch (this.kind)
                 {
                     case Geo.Model.eKind.FreePlane:
                         {
-                            aroundCalcPos = this.freePlane.CollisionPos(handle, upDir);
+                            aroundCalcPos = this.freePlane.CollisionPos(handle);
                         }
                         break;
                     case Geo.Model.eKind.Circle:
                         {
-                            aroundCalcPos = this.circle.CollisionPos(handle, upDir);
+                            aroundCalcPos = this.circle.CollisionPos(handle);
                         }
                         break;
                     case Geo.Model.eKind.DeformationCircle:
                         {
-                            aroundCalcPos = this.deformationCircle.CollisionPos_Fast(handle, upDir);
+                            aroundCalcPos = this.deformationCircle.CollisionPos(handle);
                         }
                         break;
                     case Geo.Model.eKind.Tornado:
                         {
-                            aroundCalcPos = this.tornado.CollisionPos(handle, upDir);
+                            aroundCalcPos = this.tornado.CollisionPos(handle);
                         }
                         break;
                     case Geo.Model.eKind.Cylinder:
                         {
-                            aroundCalcPos = this.cylinder.CollisionPos(handle, upDir, out upDir2);
+                            aroundCalcPos = this.cylinder.CollisionPos(handle, out upDir2);
                         }
                         break;
                 }
@@ -767,33 +768,33 @@ namespace UtilGS9
 
 
 
-            public void Draw(Vector3 upDir, Color cc)
+            public void Draw(Color cc)
             {
                 switch (kind)
                 {
                     case eKind.FreePlane:
                         {
-                            freePlane.Draw(upDir, cc);
+                            freePlane.Draw(cc);
                         }
                         break;
                     case eKind.Circle:
                         {
-                            circle.Draw(upDir, cc);
+                            circle.Draw(cc);
                         }
                         break;
                     case eKind.DeformationCircle:
                         {
-                            deformationCircle.Draw_Fast(upDir, cc);
+                            deformationCircle.Draw(cc);
                         }
                         break;
                     case eKind.Tornado:
                         {
-                            tornado.Draw(upDir, cc);
+                            tornado.Draw(cc);
                         }
                         break;
                     case eKind.Cylinder:
                         {
-                            cylinder.Draw(upDir,cc);
+                            cylinder.Draw(cc);
                         }
                         break;
                 }
@@ -811,24 +812,25 @@ namespace UtilGS9
             //    base.kind = Model.FreePlane;
             //}
 
-            public void Set(Vector3 p_orign)
+            public void Set(Vector3 p_upDir, Vector3 p_orign)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
             }
 
-            public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir)
+            public Vector3 CollisionPos(Vector3 handlePos)// Vector3 upDir)
             {
                 Vector3 toHandle = handlePos - model.origin;
-                Vector3 proj_toHandle = upDir * Vector3.Dot(toHandle, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                Vector3 proj_toHandle = model.upDir * Vector3.Dot(toHandle, model.upDir) / model.upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
 
                 Vector3 proj_handlePos = handlePos - proj_toHandle; //바로 투영점을 구한다 
 
                 return proj_handlePos;
             }
 
-            public void Draw(Vector3 upDir, Color cc)
+            public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
-                DebugWide.DrawCirclePlane(model.origin, 2f, upDir, cc);
+                DebugWide.DrawCirclePlane(model.origin, 2f, model.upDir, cc);
             }
         }
 
@@ -843,16 +845,17 @@ namespace UtilGS9
             //    base.kind = Model.Circle;
             //}
 
-            public void Set(Vector3 p_orign, float p_radius)
+            public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
                 model.radius = p_radius;
             }
 
-            public Vector3 CollisionPos(Vector3 handlePos , Vector3 upDir)
+            public Vector3 CollisionPos(Vector3 handlePos )//, Vector3 upDir)
             {
                 Vector3 toHandle = handlePos - model.origin;
-                Vector3 proj_toHandle = upDir * Vector3.Dot(toHandle, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                Vector3 proj_toHandle = model.upDir * Vector3.Dot(toHandle, model.upDir) / model.upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
                                                                                                        
                 Vector3 proj_handlePos = handlePos - proj_toHandle; //바로 투영점을 구한다 
                 Vector3 n_circleToHand = (proj_handlePos - model.origin).normalized;
@@ -860,9 +863,9 @@ namespace UtilGS9
                 return model.origin + n_circleToHand * model.radius;
             }
 
-            public void Draw(Vector3 upDir, Color cc)
+            public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
-                DebugWide.DrawCirclePlane(model.origin, model.radius, upDir, cc);
+                DebugWide.DrawCirclePlane(model.origin, model.radius, model.upDir, cc);
             }
         }
 
@@ -885,13 +888,14 @@ namespace UtilGS9
             //}
 
 
-            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
+            public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, int p_interpolationNumber)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
                 model.radius = p_radius;
 
                 Vector3 toDir = p_highestPoint - p_orign;
-                Vector3 proj_toDir = toDir - upDir * Vector3.Dot(upDir, toDir);
+                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir);
 
                 model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
@@ -904,13 +908,14 @@ namespace UtilGS9
             }
 
 
-            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
+            public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_anchorA, Vector3 p_anchorB, int p_interpolationNumber)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
                 model.radius = p_radius;
 
                 Vector3 toDir = p_highestPoint - p_orign;
-                Vector3 proj_toDir = toDir - upDir * Vector3.Dot(upDir, toDir);
+                Vector3 proj_toDir = toDir - p_upDir * Vector3.Dot(p_upDir, toDir);
 
                 model.length = proj_toDir.magnitude;
                 if (model.length <= float.Epsilon)
@@ -1002,25 +1007,25 @@ namespace UtilGS9
 
 
             //앵커를 고정된 각도로 놓아 계산량을 줄인 함수 버젼
-            public Vector3 CollisionPos_Fast(Vector3 handlePoint, Vector3 upDir)
+            public Vector3 CollisionPos(Vector3 handlePoint)//Vector3 upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * model.dir;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
                 //initialDir.Normalize();
 
                 //목표점을 변형원의 평면상으로 투영 (벡터합을 이용하여 도출)
                 Vector3 centerToTarget = handlePoint - model.origin;
-                Vector3 proj_targetToUp = upDir * Vector3.Dot(centerToTarget, upDir) / upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
+                Vector3 proj_targetToUp = model.upDir * Vector3.Dot(centerToTarget, model.upDir) / model.upDir.sqrMagnitude; //up벡터가 정규화 되었다면 "up벡터 제곱길이"로 나누는 연산을 뺄수  있다 
                 Vector3 tdDir = centerToTarget - proj_targetToUp;
 
                                   
                 //Vector3 tdDir = targetPoint - sphereCenter;
                 tdDir.Normalize();
 
-                float angleTarget = Vector3.SignedAngle(initialDir, tdDir, upDir);
+                float angleTarget = Vector3.SignedAngle(initialDir, tdDir, model.upDir);
 
                 //앵커를 고정으로 놓기 때문에 음수각도에 대한 예외처리를 할 필요가 없어짐
                 //float angleA = 45f;
@@ -1033,7 +1038,7 @@ namespace UtilGS9
             }
 
             //upDir 을 앵커A,B값으로 만든다  
-            public Vector3 CollisionPos(Vector3 handlePoint)
+            public Vector3 CollisionPos_Anchor(Vector3 handlePoint)
             {
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
@@ -1104,7 +1109,7 @@ namespace UtilGS9
 
 
 
-            public Vector3 CollisionPos(float rotateAngle)
+            public Vector3 CollisionPos_Anchor(float rotateAngle)
             {
 
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
@@ -1165,14 +1170,14 @@ namespace UtilGS9
             }
 
             //plusPos : 중요한 인자 아님. 단순히 다른위치에 나타내고 싶을때 사용하는 값임 
-            public void Draw()
+            public void Draw_WithAnchor()
             {
                 Vector3 prev = Vector3.zero;
                 Vector3 cur = Vector3.zero;
                 int count = 36;
                 for (int i = 0; i < count; i++)
                 {
-                    cur = CollisionPos(i * 10);
+                    cur = CollisionPos_Anchor(i * 10);
 
                     if (0 != i)
                         DebugWide.DrawLine(prev, cur, Color.cyan);
@@ -1207,14 +1212,14 @@ namespace UtilGS9
 
             }
 
-            public void Draw_Fast(Vector3 upDir, Color cc)
+            public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
                 //=============================
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
 
                 //최고점 기준으로 좌우90,90도 최대 180도를 표현한다 
-                Vector3 initialDir = Quaternion.AngleAxis(-90f, upDir) * model.dir;
+                Vector3 initialDir = Quaternion.AngleAxis(-90f, model.upDir) * model.dir;
                 initialDir.Normalize();
                 //=============================
 
@@ -1225,8 +1230,8 @@ namespace UtilGS9
                 int count = 36;
                 for (int i = 0; i < count; i++)
                 {
-                    targetPos = Quaternion.AngleAxis(i * 10f, upDir) * initialDir * model.length * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
-                    cur = CollisionPos_Fast(targetPos, upDir);
+                    targetPos = Quaternion.AngleAxis(i * 10f, model.upDir) * initialDir * model.length * deltaLength; //최고점 보다 밖에 targetPos가 있어야 한다  
+                    cur = CollisionPos(targetPos);
 
                     if (0 != i)
                         DebugWide.DrawLine(prev, cur, cc);
@@ -1237,7 +1242,7 @@ namespace UtilGS9
 
                 //----------- debug print -----------
                 Vector3 angle_M45 = initialDir;
-                Vector3 angle_P45 = Quaternion.AngleAxis(180f, upDir) * initialDir;
+                Vector3 angle_P45 = Quaternion.AngleAxis(180f, model.upDir) * initialDir;
                 DebugWide.DrawLine(model.origin, model.origin + angle_M45 * model.radius, cc);
                 DebugWide.DrawLine(model.origin, model.origin + angle_P45 * model.radius, cc);
                 //----------- debug print -----------
@@ -1262,8 +1267,9 @@ namespace UtilGS9
             //    base.kind = Model.Tornado;
             //}
 
-            public void Set(Vector3 upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_unlaceDir, float p_maxAngle)
+            public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius, Vector3 p_highestPoint, Vector3 p_unlaceDir, float p_maxAngle)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
                 model.radius = p_radius;
 
@@ -1277,7 +1283,7 @@ namespace UtilGS9
                 if (0 == p_maxAngle) p_maxAngle = 1f; //0나누기 연산을 피하기 위한 예외처리 
                 model.maxAngle = p_maxAngle;
                 model.unlaceDir = p_unlaceDir;
-                this.Trans_UnlaceDir(upDir);
+                this.Trans_UnlaceDir(p_upDir);
             }
 
             //회오리 자체의 방향을 바꾸는 것이 아님. 회오리 풀어지는 방향만 특정 방향으로 바꾸는 것임  
@@ -1300,7 +1306,7 @@ namespace UtilGS9
 
 
             //2차원 회오리상의 목표위치만 구하는 함수 
-            public Vector3 CollisionPos(Vector3 handlePos, Vector3 n_upDir)
+            public Vector3 CollisionPos(Vector3 handlePos) //Vector3 n_upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
@@ -1317,7 +1323,7 @@ namespace UtilGS9
                 //==================================================
 
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, n_upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
                 Vector3 tdPos = model.origin;
@@ -1331,7 +1337,7 @@ namespace UtilGS9
                 //td = (angleD * t) / angleH
                 //angleD = (td * angleH) / t 
 
-                float angleD = Geo.Angle360(initialDir, centerToTarget, n_upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
+                float angleD = Geo.Angle360(initialDir, centerToTarget, model.upDir); //upDir벡터 기준으로 두벡터의 최소각 반환 
                 int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
 
@@ -1339,7 +1345,7 @@ namespace UtilGS9
                 angleD += weight * 360f; //회오리 두꼐에 따라 각도를 더한다 
                 if (angleD > model.maxAngle) angleD -= 360f; //더한 각도가 최대범위를 벗어나면 한두께 아래 회오리를 선택한다 
 
-                tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+                tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
                 //DebugWide.LogBlue(tdPos + "  - 11  ");
                 float td = (angleD * t) / model.maxAngle;
                 tdPos = model.origin + tdPos * (model.radius + td);
@@ -1351,7 +1357,7 @@ namespace UtilGS9
 
 
             //n_upDir 은 정규화된 값이 들어와야 한다 
-            public Vector3 CollisionPos3D(Vector3 handlePos, Vector3 n_upDir)
+            public Vector3 CollisionPos3D(Vector3 handlePos)//Vector3 n_upDir)
             {
                 //늘어남계수 = 원점에서 최고점까지의 길이 - 반지름 
                 float t = model.length - model.radius;
@@ -1359,13 +1365,13 @@ namespace UtilGS9
 
                 //==================================================
                 //t, t_target 모두 upDir 기준으로 투영평면에 투영한 값을 사용해야 highest 의 높이 변화시에도 올바른 위치를 계산할 수 있다 
-                Vector3 proj_centerToHighest = model.dir - n_upDir * Vector3.Dot(n_upDir, model.dir);
+                Vector3 proj_centerToHighest = model.dir - model.upDir * Vector3.Dot(model.upDir, model.dir);
                 float proj_highestPointLength = proj_centerToHighest.magnitude;
                 float proj_t = proj_highestPointLength - model.radius; //proj_t 가 음수가 되는 경우 : 반지름 보다 작은 최고점길이 일때 예외처리가 현재 없다 
 
 
                 Vector3 centerToTarget = handlePos - model.origin;
-                Vector3 proj_target = centerToTarget - n_upDir * Vector3.Dot(n_upDir, centerToTarget);
+                Vector3 proj_target = centerToTarget - model.upDir * Vector3.Dot(model.upDir, centerToTarget);
                 float t_target = proj_target.magnitude - model.radius; //target_pos에 대한 td를 바로 구한다.  proj_target 는 이미 벡터값이므로 다시 원점에서 출발하는 점으로 계산하면 안된다 
                 float t_angleD = (t_target * model.maxAngle) / proj_t;
 
@@ -1375,7 +1381,7 @@ namespace UtilGS9
                 //==================================================
 
 
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, n_upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
 
@@ -1387,7 +1393,7 @@ namespace UtilGS9
                 //float angleH = circle_maxAngle; //이 각도 값이 클수록 회오리가 작아진다.
 
                 //float angleD = Geo.Angle360_AxisRotate(initialDir, target_pos, n_upDir); //음수표현없이 양수로 반환  
-                float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, n_upDir);
+                float angleD = Geo.Angle360_AxisRotate_Normal_Axis(initialDir, centerToTarget, model.upDir);
                 int weight = (int)((t_angleD - angleD) / 360f); //회오리 두께구하기 , angleD(첫번째 회오리 두께의 각도)를 빼지 않으면 회오리가 아닌 원이 된다 
 
 
@@ -1396,7 +1402,7 @@ namespace UtilGS9
 
 
                 Vector3 tdPos = model.origin;
-                tdPos = Quaternion.AngleAxis(angleD, n_upDir) * initialDir;
+                tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
                 float td = (angleD * t) / model.maxAngle;
                 tdPos = model.origin + tdPos * (model.radius + td);
 
@@ -1404,7 +1410,7 @@ namespace UtilGS9
             }
 
 
-            public void Draw(Vector3 upDir, Color cc)
+            public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
 
                 //=================================
@@ -1413,7 +1419,7 @@ namespace UtilGS9
                 float t = model.length - model.radius;
 
                 //Vector3 initialDir = centerToHighestPoint / highestPointLength;
-                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, upDir) * model.dir * model.length;
+                Vector3 initialDir = Quaternion.AngleAxis(360f - model.maxAngle, model.upDir) * model.dir * model.length;
                 initialDir.Normalize();
 
                 //==================================================
@@ -1460,7 +1466,7 @@ namespace UtilGS9
                     //angleD = Mathf.LerpAngle(minAngle, maxAngle, i / (float)count); //180도 이상 계산못함 
                     angleD = Mathf.Lerp(minAngle, model.maxAngle, i / (float)count);
                     //DebugWide.LogBlue(i + " : " + angleD);
-                    tdPos = Quaternion.AngleAxis(angleD, upDir) * initialDir;
+                    tdPos = Quaternion.AngleAxis(angleD, model.upDir) * initialDir;
 
 
                     float td = (angleD * t) / angleH;
@@ -1481,7 +1487,7 @@ namespace UtilGS9
 
 
                 //----------- debug print -----------
-                DebugWide.DrawCirclePlane(model.origin, model.radius, upDir, cc);
+                DebugWide.DrawCirclePlane(model.origin, model.radius, model.upDir, cc);
                 //DebugWide.DrawCircle( model.origin, model.radius, cc);
                 DebugWide.DrawLine(model.origin, model.origin + model.dir * model.length, cc);
             }
@@ -1502,8 +1508,9 @@ namespace UtilGS9
             //    base.kind = Model.Cylinder;
             //}
 
-            public void Set(Vector3 p_orign, float p_radius_origin, Vector3 p_far_pos, float p_radius_far)
+            public void Set(Vector3 p_upDir, Vector3 p_orign, float p_radius_origin, Vector3 p_far_pos, float p_radius_far)
             {
+                model.upDir = p_upDir;
                 model.origin = p_orign;
                 model.length = (p_far_pos - p_orign).magnitude;
 
@@ -1516,12 +1523,12 @@ namespace UtilGS9
                 model.radius_far = p_radius_far;
             }
 
-            public Vector3 CollisionPos(Vector3 handlePos, Vector3 upDir, out Vector3 upDir2)
+            public Vector3 CollisionPos(Vector3 handlePos, out Vector3 upDir2)
             {
                 Vector3 colPos = model.origin;
                 Vector3 farPos = model.origin + model.dir * model.length;
                 Vector3 toHandle = handlePos - model.origin;
-                upDir2 = upDir;
+                upDir2 = model.upDir;
 
                 float test = Vector3.Dot(model.dir, toHandle);
                 //방향값이 0일 경우 조기 검사후 반환한다 
@@ -1529,13 +1536,13 @@ namespace UtilGS9
                 {   //먼원과 가까운원의 위치가 일치 할 경우 
 
                     float max = model.radius < model.radius_far ? model.radius_far : model.radius;
-                    Vector3 proj_centerToHandle = toHandle - upDir * Vector3.Dot(upDir, toHandle) / upDir.sqrMagnitude;
+                    Vector3 proj_centerToHandle = toHandle - model.upDir * Vector3.Dot(model.upDir, toHandle) / model.upDir.sqrMagnitude;
 
                     return model.origin + proj_centerToHandle.normalized * max; //큰쪽원 위치를 구하고 바로 반환     
                 }
 
                 //dir 의 방향에 맞게 upDir을 새로 구한다 
-                Vector3 dirRight = Vector3.Cross(upDir, model.dir);
+                Vector3 dirRight = Vector3.Cross(model.upDir, model.dir);
                 upDir2 = Vector3.Cross(model.dir, dirRight);
 
                 //nearToPos 를 upDir2 공간에 투영해야 한다 
@@ -1585,21 +1592,21 @@ namespace UtilGS9
             }
 
 
-            public void Draw(Vector3 upDir, Color cc)
+            public void Draw(Color cc)//(Vector3 upDir, Color cc)
             {
                 
                 //Color cc = Color.white;
 
                 Vector3 farPos = model.origin + model.dir * model.length;
 
-                Vector3 dirRight = Vector3.Cross(upDir, model.dir);
+                Vector3 dirRight = Vector3.Cross(model.upDir, model.dir);
                 dirRight.Normalize();
                 Vector3 upDir2 = Vector3.Cross(model.dir, dirRight);
                 upDir2.Normalize();
 
                 if (true == UtilGS9.Misc.IsZero(model.dir))
                 {
-                    upDir2 = upDir;
+                    upDir2 = model.upDir;
                 }
 
                 DebugWide.DrawLine(model.origin, farPos, cc);

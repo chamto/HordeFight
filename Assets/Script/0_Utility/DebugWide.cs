@@ -222,6 +222,8 @@ public class DebugWide
 
             prev = cur;
         }
+        DebugWide.DrawLine(pos, pos + up, cc);
+
 #endif
     }
 

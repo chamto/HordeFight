@@ -954,20 +954,30 @@ public class TwoHandControl : MonoBehaviour
 
 
 
-    public void SetModel_OneHand(Geo.Model model_0, Geo.Model model_1, Vector3 upDir)
+    public void SetModel_OneHand(Geo.Model model_0, Geo.Model model_1)
     {
-        
+        Vector3 upDir;
         if (true == model_0.IsLeft())
         {
+            upDir = _edge_circle_A0.position - _pos_circle_A0.position;
+            //upDir.Normalize();
             model_0.SetModel( upDir, _pos_circle_A0.position, _radius_circle_A0, _highest_circle_A0.position, 
                              _far_edge_circle_A0.position, _tornado_angle_A0.localPosition.x, _tornado_unlace_A0.localPosition);
+
+            upDir = _edge_circle_A1.position - _pos_circle_A1.position;
+            //upDir.Normalize();
             model_1.SetModel(upDir, _pos_circle_A1.position, _radius_circle_A1, _highest_circle_A1.position,
                              _far_edge_circle_A1.position, _tornado_angle_A1.localPosition.x, _tornado_unlace_A1.localPosition);
         }
         if (true == model_0.IsRight())
         {
+            upDir = _edge_circle_B0.position - _pos_circle_B0.position;
+            //upDir.Normalize();
             model_0.SetModel(upDir, _pos_circle_B0.position, _radius_circle_B0, _highest_circle_B0.position,
                              _far_edge_circle_B0.position, _tornado_angle_B0.localPosition.x, _tornado_unlace_B0.localPosition);
+
+            upDir = _edge_circle_B1.position - _pos_circle_B1.position;
+            //upDir.Normalize();
             model_1.SetModel(upDir, _pos_circle_B1.position, _radius_circle_B1, _highest_circle_B1.position,
                              _far_edge_circle_B1.position, _tornado_angle_B1.localPosition.x, _tornado_unlace_B1.localPosition);
         }
@@ -991,7 +1001,7 @@ public class TwoHandControl : MonoBehaviour
 
     //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
     //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
-    public void CalcHandPos_PlaneArea(Geo.Model model, Vector3 handle, Vector3 upDir,
+    public void CalcHandPos_PlaneArea(Geo.Model model, Vector3 handle,
                                         Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
                                         out Vector3 newHand_pos, out float newArm_length)
     {
@@ -1000,7 +1010,7 @@ public class TwoHandControl : MonoBehaviour
 
         //===== 1차 계산
         Vector3 upDir2;
-        Vector3 aroundCalcPos = model.CollisionPos(handle, upDir, out upDir2);
+        Vector3 aroundCalcPos = model.CollisionPos(handle, out upDir2);
 
 
         //===== 어깨원 투영
@@ -1056,8 +1066,8 @@ public class TwoHandControl : MonoBehaviour
 
             _Model_left_0.kind = _eModelKind_Left_0;
             _Model_left_1.kind = _eModelKind_Left_1;
-            SetModel_OneHand(_Model_left_0, _Model_left_1, upDir);
-            CalcHandPos_PlaneArea(_Model_left_0, handle, upDir, 
+            SetModel_OneHand(_Model_left_0, _Model_left_1);
+            CalcHandPos_PlaneArea(_Model_left_0, handle, 
                                   _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, 
                                   out newPos, out newLength);
 
@@ -1065,7 +1075,7 @@ public class TwoHandControl : MonoBehaviour
             _hand_left.position = newPos;
 
 
-            CalcHandPos_PlaneArea(_Model_left_1, handle, upDir,
+            CalcHandPos_PlaneArea(_Model_left_1, handle,
                                   _shoulder_left.position, 1000, _arm_left_min_length,
                                   out newPos, out newLength);
             _odir_left.position = newPos;
@@ -1077,8 +1087,8 @@ public class TwoHandControl : MonoBehaviour
 
             _Model_right_0.kind = _eModelKind_Right_0;
             _Model_right_1.kind = _eModelKind_Right_1;
-            SetModel_OneHand(_Model_right_0, _Model_right_1, upDir);
-            CalcHandPos_PlaneArea(_Model_right_0, handle, upDir,
+            SetModel_OneHand(_Model_right_0, _Model_right_1);
+            CalcHandPos_PlaneArea(_Model_right_0, handle,
                                   _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                   out newPos, out newLength);
             
@@ -1086,7 +1096,7 @@ public class TwoHandControl : MonoBehaviour
             _hand_right.position = newPos;
 
 
-            CalcHandPos_PlaneArea(_Model_right_1, handle, upDir,
+            CalcHandPos_PlaneArea(_Model_right_1, handle,
                                   _shoulder_right.position, 1000, _arm_right_min_length,
                                   out newPos, out newLength);
 
@@ -1325,14 +1335,14 @@ public class TwoHandControl : MonoBehaviour
 
         _Model_left_0.kind = eModelLeft;
         this.SetModel_TwoHand(_Model_left_0, axis_up);
-        this.CalcHandPos_PlaneArea(_Model_left_0, handle, axis_up,
+        this.CalcHandPos_PlaneArea(_Model_left_0, handle,
                                    _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
 
 
 
         _Model_right_0.kind = eModelRight;
         this.SetModel_TwoHand(_Model_right_0, axis_up);
-        this.CalcHandPos_PlaneArea(_Model_right_0, handle, axis_up,
+        this.CalcHandPos_PlaneArea(_Model_right_0, handle,
                                    _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
 
@@ -1722,34 +1732,34 @@ public class TwoHandControl : MonoBehaviour
             {
                 if (_part_control == ePart.OneHand)
                 {
-                    Vector3 axis_forward = _left_axis_forward.position - _left_axis_o.position;
-                    Vector3 axis_up = _left_axis_up.position - _left_axis_o.position;
-                    DebugWide.DrawCirclePlane(_pos_circle_A0.position, _radius_circle_A0, axis_up, Color.yellow);
-                    DebugWide.DrawCirclePlane(_pos_circle_A1.position, _radius_circle_A1, axis_up, Color.yellow);
+                    //Vector3 axis_forward = _left_axis_forward.position - _left_axis_o.position;
+                    //Vector3 axis_up = _left_axis_up.position - _left_axis_o.position;
+                    //DebugWide.DrawCirclePlane(_pos_circle_A0.position, _radius_circle_A0, axis_up, Color.yellow);
+                    //DebugWide.DrawCirclePlane(_pos_circle_A1.position, _radius_circle_A1, axis_up, Color.yellow);
 
-                    axis_forward = _right_axis_forward.position - _right_axis_o.position;
-                    axis_up = _right_axis_up.position - _right_axis_o.position;
+                    //axis_forward = _right_axis_forward.position - _right_axis_o.position;
+                    //axis_up = _right_axis_up.position - _right_axis_o.position;
                     //DebugWide.DrawCirclePlane(_pos_circle_B0.position, _radius_circle_B0, axis_up, Color.white);
                     //DebugWide.DrawCirclePlane(_pos_circle_B1.position, _radius_circle_B1, axis_up, Color.white);
 
-                    _Model_left_0.Draw(axis_up, Color.yellow);
-                    _Model_right_0.Draw(axis_up, Color.blue);
+                    _Model_left_0.Draw(Color.yellow);
+                    _Model_right_0.Draw(Color.blue);
 
-                    _Model_left_1.Draw(axis_up, Color.yellow);
-                    _Model_right_1.Draw(axis_up, Color.blue);
+                    _Model_left_1.Draw(Color.yellow);
+                    _Model_right_1.Draw(Color.blue);
                 }
                 if(_part_control == ePart.TwoHand)
                 {
                     //Vector3 axis_forward = _L2R_axis_forward.position - _L2R_axis_o.position;
-                    Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+                    //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
                     //주변원의 중심에서 핸들까지 
                     DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.red);
                     DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.red);
 
                     //설정된 모델 그리기 
-                    _Model_left_0.Draw(axis_up, Color.yellow);
-                    _Model_right_0.Draw(axis_up, Color.blue);
+                    _Model_left_0.Draw(Color.yellow);
+                    _Model_right_0.Draw(Color.blue);
                 }
                 
 
