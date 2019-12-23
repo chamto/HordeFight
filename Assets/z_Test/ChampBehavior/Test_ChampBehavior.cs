@@ -23,6 +23,12 @@ public class Test_ChampBehavior : MonoBehaviour
 	}
 }
 
+public class MotionTrajectory : MonoBehaviour
+{
+    //경로모델
+    public Geo.Model.eKind _eModel_0 = Geo.Model.eKind.Circle;
+    public Geo.Model.eKind _eModel_1 = Geo.Model.eKind.Circle;
+}
 
 public class TwoHandControl : MonoBehaviour
 {
