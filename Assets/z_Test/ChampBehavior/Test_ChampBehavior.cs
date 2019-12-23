@@ -23,12 +23,14 @@ public class Test_ChampBehavior : MonoBehaviour
 	}
 }
 
-public class MotionTrajectory : MonoBehaviour
-{
-    //경로모델
-    public Geo.Model.eKind _eModel_0 = Geo.Model.eKind.Circle;
-    public Geo.Model.eKind _eModel_1 = Geo.Model.eKind.Circle;
-}
+//public class MotionTrajectory : MonoBehaviour
+//{
+//    //경로모델
+//    public Geo.Model.eKind eModel = Geo.Model.eKind.Circle;
+//    public float radius = 1f;
+//    public float tornado_angle = 360f;
+
+//}
 
 public class TwoHandControl : MonoBehaviour
 {
@@ -96,18 +98,24 @@ public class TwoHandControl : MonoBehaviour
 
 
     //경로모델
-    public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
-    public Geo.Model.eKind _eModelKind_Left_1 = Geo.Model.eKind.Circle;
+    //public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
+    //public Geo.Model.eKind _eModelKind_Left_1 = Geo.Model.eKind.Circle;
 
-    public Geo.Model.eKind _eModelKind_Right_0 = Geo.Model.eKind.Tornado;
-    public Geo.Model.eKind _eModelKind_Right_1 = Geo.Model.eKind.Circle;
+    //public Geo.Model.eKind _eModelKind_Right_0 = Geo.Model.eKind.Tornado;
+    //public Geo.Model.eKind _eModelKind_Right_1 = Geo.Model.eKind.Circle;
 
 
     private Geo.Model _Model_left_0 = new Geo.Model();
     private Geo.Model _Model_left_1 = new Geo.Model();
-
     private Geo.Model _Model_right_0 = new Geo.Model();
     private Geo.Model _Model_right_1 = new Geo.Model();
+
+    private MotionTrajectory _motion_oneHand_left_0 = null;
+    private MotionTrajectory _motion_oneHand_left_1 = null;
+    private MotionTrajectory _motion_oneHand_right_0 = null;
+    private MotionTrajectory _motion_oneHand_right_1 = null;
+    private MotionTrajectory _motion_twoHand_left = null;
+    private MotionTrajectory _motion_twoHand_right = null;
 
     //----------------------------------------------------
     public bool _A_armLength_max_min = false;
@@ -284,19 +292,22 @@ public class TwoHandControl : MonoBehaviour
 
         //==================================================
         //조종항목 - AroundCircle
-        _pos_circle_left = GameObject.Find("pos_circle_left").transform;
-        _pos_circle_right= GameObject.Find("pos_circle_right").transform;
-        _edge_circle_left = GameObject.Find("edge_circle_left").transform;
-        _edge_circle_right = GameObject.Find("edge_circle_right").transform;
-        _highest_circle_left = GameObject.Find("highest_circle_left").transform;
-        _highest_circle_right = GameObject.Find("highest_circle_right").transform;
-        _far_edge_circle_left = GameObject.Find("far_edge_circle_left").transform;
-        _far_edge_circle_right = GameObject.Find("far_edge_circle_right").transform;
-        _tornado_angle_left = GameObject.Find("tornado_angle_left").transform;
-        _tornado_angle_right = GameObject.Find("tornado_angle_right").transform;
-        _tornado_unlace_left = GameObject.Find("tornado_unlace_left").transform;
-        _tornado_unlace_right = GameObject.Find("tornado_unlace_right").transform;
 
+        _pos_circle_left = GameObject.Find("pos_circle_left").transform;
+        _edge_circle_left = GameObject.Find("edge_circle_left").transform;
+        _highest_circle_left = GameObject.Find("highest_circle_left").transform;
+        _far_edge_circle_left = GameObject.Find("far_edge_circle_left").transform;
+        _tornado_angle_left = GameObject.Find("tornado_angle_left").transform;
+        _tornado_unlace_left = GameObject.Find("tornado_unlace_left").transform;
+        _motion_twoHand_left = _pos_circle_left.GetComponent<MotionTrajectory>();
+
+        _pos_circle_right= GameObject.Find("pos_circle_right").transform;
+        _edge_circle_right = GameObject.Find("edge_circle_right").transform;
+        _highest_circle_right = GameObject.Find("highest_circle_right").transform;
+        _far_edge_circle_right = GameObject.Find("far_edge_circle_right").transform;
+        _tornado_angle_right = GameObject.Find("tornado_angle_right").transform;
+        _tornado_unlace_right = GameObject.Find("tornado_unlace_right").transform;
+        _motion_twoHand_right = _pos_circle_right.GetComponent<MotionTrajectory>();
 
         //====
 
@@ -306,6 +317,7 @@ public class TwoHandControl : MonoBehaviour
         _far_edge_circle_A0 = GameObject.Find("far_edge_circle_A0").transform;
         _tornado_angle_A0 = GameObject.Find("tornado_angle_A0").transform;
         _tornado_unlace_A0 = GameObject.Find("tornado_unlace_A0").transform;
+        _motion_oneHand_left_0 = _pos_circle_A0.GetComponent<MotionTrajectory>();
 
         _pos_circle_A1 = GameObject.Find("pos_circle_A1").transform;
         _edge_circle_A1 = GameObject.Find("edge_circle_A1").transform;
@@ -313,6 +325,7 @@ public class TwoHandControl : MonoBehaviour
         _far_edge_circle_A1 = GameObject.Find("far_edge_circle_A1").transform;
         _tornado_angle_A1 = GameObject.Find("tornado_angle_A1").transform;
         _tornado_unlace_A1 = GameObject.Find("tornado_unlace_A1").transform;
+        _motion_oneHand_left_1 = _pos_circle_A1.GetComponent<MotionTrajectory>();
 
         _pos_circle_B0 = GameObject.Find("pos_circle_B0").transform;
         _edge_circle_B0 = GameObject.Find("edge_circle_B0").transform;
@@ -320,6 +333,7 @@ public class TwoHandControl : MonoBehaviour
         _far_edge_circle_B0 = GameObject.Find("far_edge_circle_B0").transform;
         _tornado_angle_B0 = GameObject.Find("tornado_angle_B0").transform;
         _tornado_unlace_B0 = GameObject.Find("tornado_unlace_B0").transform;
+        _motion_oneHand_right_0 = _pos_circle_B0.GetComponent<MotionTrajectory>();
 
         _pos_circle_B1 = GameObject.Find("pos_circle_B1").transform;
         _edge_circle_B1 = GameObject.Find("edge_circle_B1").transform;
@@ -327,6 +341,7 @@ public class TwoHandControl : MonoBehaviour
         _far_edge_circle_B1 = GameObject.Find("far_edge_circle_B1").transform;
         _tornado_angle_B1 = GameObject.Find("tornado_angle_B1").transform;
         _tornado_unlace_B1 = GameObject.Find("tornado_unlace_B1").transform;
+        _motion_oneHand_right_1 = _pos_circle_B1.GetComponent<MotionTrajectory>();
 
 
         //==================================================
@@ -882,8 +897,8 @@ public class TwoHandControl : MonoBehaviour
             float newLength = 0f;
             //------------------------------------------
 
-            _Model_left_0.kind = _eModelKind_Left_0;
-            _Model_left_1.kind = _eModelKind_Left_1;
+            _Model_left_0.kind = _motion_oneHand_left_0._eModel; //_eModelKind_Left_0;
+            _Model_left_1.kind = _motion_oneHand_left_1._eModel; //_eModelKind_Left_1;
             SetModel_OneHand(_Model_left_0, _Model_left_1);
             CalcHandPos_PlaneArea(_Model_left_0, handle, 
                                   _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, 
@@ -903,8 +918,8 @@ public class TwoHandControl : MonoBehaviour
             handle = _HANDLE_right.position;
             //upDir = _right_axis_up.position - _right_axis_o.position;
 
-            _Model_right_0.kind = _eModelKind_Right_0;
-            _Model_right_1.kind = _eModelKind_Right_1;
+            _Model_right_0.kind = _motion_oneHand_right_0._eModel; //_eModelKind_Right_0;
+            _Model_right_1.kind = _motion_oneHand_right_1._eModel; //_eModelKind_Right_1;
             SetModel_OneHand(_Model_right_0, _Model_right_1);
             CalcHandPos_PlaneArea(_Model_right_0, handle,
                                   _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
@@ -1050,7 +1065,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //-----------------------
 
-                Cut_HandOriginToHandEnd(_HANDLE_twoHand.position, _eHandOrigin, _eModelKind_Left_0, _eModelKind_Right_0);
+                Cut_HandOriginToHandEnd(_HANDLE_twoHand.position, _eHandOrigin, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel); //_eModelKind_Left_0, _eModelKind_Right_0);
 
                 //--------------------
                 //찌르기 모드로 연결하기 위한 핸들값 조정 
