@@ -698,7 +698,7 @@ namespace UtilGS9
             }
 
 
-            public void SetModel(Vector3 in_upDir, Vector3 in_center, float in_radius, Vector3 in_highest, Vector3 in_farEdge,
+            public void SetModel(Vector3 in_upDir, Vector3 in_center, float in_radius, Vector3 in_highest, float in_far_radius,
                           float in_tornadoAngle, Vector3 in_tornadoUnlace)
             {
                 switch (this.kind)
@@ -725,10 +725,7 @@ namespace UtilGS9
                         break;
                     case Geo.Model.eKind.Cylinder:
                         {
-
-                            float len_radius_far = (in_highest - in_farEdge).magnitude;
-                            this.cylinder.Set(in_upDir, in_center, in_radius, in_highest, len_radius_far);
-
+                            this.cylinder.Set(in_upDir, in_center, in_radius, in_highest, in_far_radius);
                         }
                         break;
                 }
