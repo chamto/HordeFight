@@ -1067,7 +1067,7 @@ public class TwoHandControl : MonoBehaviour
 
                 //-----------------------
 
-                Cut_HandOriginToHandEnd(_HANDLE_twoHand.position, _eHandOrigin, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel); //_eModelKind_Left_0, _eModelKind_Right_0);
+                Cut_TwoHand(_HANDLE_twoHand.position, _eHandOrigin, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel); //_eModelKind_Left_0, _eModelKind_Right_0);
 
                 //--------------------
                 //찌르기 모드로 연결하기 위한 핸들값 조정 
@@ -1169,9 +1169,11 @@ public class TwoHandControl : MonoBehaviour
     //handle 
     //eHandOrigin : 고정손
     //eModelLeft : 궤적모형 
-    public void Cut_HandOriginToHandEnd(Vector3 handle, ePart eHandOrigin, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight)
+    public void Cut_TwoHand(Vector3 handle, ePart eHandOrigin, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight)
     {
-        Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+        //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
+        Vector3 axis_up = _upDir_circle_left.position - _pos_circle_left.position; //임시로 왼쪽 upDir 사용 
+
         axis_up.Normalize();
 
         float new_leftLength = 0f;
