@@ -53,6 +53,11 @@ public class TwoHandControl : MonoBehaviour
 
     //------------------------------------------------------
 
+    public Transform _light_dir = null; //방향성 빛
+    public Transform _ground = null; //땅표면 
+
+    //------------------------------------------------------
+
     public Transform _tbody_dir = null;
     public Transform _shoulder_left = null;
     public Transform _shoulder_right = null;
@@ -80,6 +85,11 @@ public class TwoHandControl : MonoBehaviour
 
     public Transform _hand_left_spr = null;
     public Transform _hand_right_spr = null;
+
+    private Transform _hand_left_obj = null;
+    private Transform _hand_right_obj = null;
+    private Transform _hand_left_obj_shader = null;
+    private Transform _hand_right_obj_shader = null;
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 0.5f;
@@ -256,6 +266,13 @@ public class TwoHandControl : MonoBehaviour
 
         }
 
+        //--------------------------------------------------
+
+        _light_dir = GameObject.Find("light_dir").transform;
+        _ground = GameObject.Find("ground").transform;
+
+        //--------------------------------------------------
+
         _Model_left_0.branch = Geo.Model.eBranch.arm_left_0;
         _Model_left_1.branch = Geo.Model.eBranch.arm_left_0;
         _Model_right_0.branch = Geo.Model.eBranch.arm_right_0;
@@ -290,7 +307,8 @@ public class TwoHandControl : MonoBehaviour
         _hand_left_spr = _hand_left.GetComponentInChildren<SpriteRenderer>().transform;
         _hand_right_spr = _hand_right.GetComponentInChildren<SpriteRenderer>().transform;
 
-
+        _hand_left_obj = GameObject.Find("2d_spear").transform;
+        _hand_left_obj_shader = GameObject.Find("2d_spear_shader").transform;
         //==================================================
         //조종항목 - AroundCircle
 
@@ -594,7 +612,27 @@ public class TwoHandControl : MonoBehaviour
             //if(Vector3.Dot(Vector3.up, obj_up) < 0)
             //    _spr_object_left.color = Color.gray;
             //else
-                //_spr_object_left.color = Color.white;
+            //_spr_object_left.color = Color.white;
+
+            //그림자 표현  
+            //-----------------------------------
+            //평면과 광원사이의 최소거리 
+            Vector3 groundUp = Vector3.up;
+            Vector3 groundToObject = _hand_left_obj.position - _ground.position;
+            float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
+            //Vector3 perp_groundToObject = len_groundToObject * groundUp;
+
+            //t = len / sin@
+            float sinAngle = Geo.Angle360(-groundUp, _light_dir.position, Vector3.Cross(-groundUp, _light_dir.position));
+            sinAngle = 90f - sinAngle;
+            //if (0 == sinAngle)
+                //sinAngle = 1f;
+            float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+            //t = 0.4f;
+            //DebugWide.LogBlue(t + "  " + len_groundToObject + "  " + sinAngle + "   " + Mathf.Sin(sinAngle));
+            _hand_left_obj_shader.position = _hand_left_obj.position + t * _light_dir.position.normalized;
+            //-----------------------------------
+
 
         }
 
@@ -1337,7 +1375,38 @@ public class TwoHandControl : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
-        
+
+        //------------------------------------------------
+        //무기 그림자 표현 
+        DebugWide.DrawLine(Vector3.zero, _light_dir.position, Color.black);
+        DebugWide.DrawCircle(_light_dir.position, 0.1f, Color.black);
+
+        DebugWide.DrawLine(_ground.position + Vector3.forward * 5, _ground.position, Color.black);
+
+
+        //--
+        Vector3 groundUp = Vector3.up;
+        Vector3 groundToObject = _hand_left_obj.position - _ground.position;
+        float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
+        //Vector3 perp_groundToObject = len_groundToObject * groundUp;
+
+        //t = len / sin@
+        float sinAngle = Geo.Angle360(-groundUp, _light_dir.position, Vector3.Cross(-groundUp, _light_dir.position));
+        sinAngle = 90f - sinAngle;
+        //if (0 == sinAngle)
+            //sinAngle = 1f;
+        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+
+        //DebugWide.LogBlue(len_groundToObject + "   " + t + "   " + sinAngle + "   " + Mathf.Sin(sinAngle * Mathf.Deg2Rad));
+        Vector3 shaderPos = _hand_left_obj.position + t * _light_dir.position.normalized;
+        //--
+
+
+        DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj.position + len_groundToObject * Vector3.down, Color.black);
+        DebugWide.DrawLine(_hand_left_obj.position, shaderPos, Color.black);
+
+        //------------------------------------------------
+
         //if(true == _active_shoulder_autoRotate)
         {
             DebugWide.DrawCircle(_shoulder_left.position, _arm_left_min_length, Color.gray);
