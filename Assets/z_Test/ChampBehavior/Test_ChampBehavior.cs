@@ -88,6 +88,8 @@ public class TwoHandControl : MonoBehaviour
 
     private Transform _hand_left_obj = null;
     private Transform _hand_right_obj = null;
+    private Transform _hand_left_obj_end = null;
+    private Transform _hand_right_obj_end = null;
     private Transform _hand_left_obj_shader = null;
     private Transform _hand_right_obj_shader = null;
 
@@ -308,6 +310,7 @@ public class TwoHandControl : MonoBehaviour
         _hand_right_spr = _hand_right.GetComponentInChildren<SpriteRenderer>().transform;
 
         _hand_left_obj = GameObject.Find("2d_spear").transform;
+        _hand_left_obj_end = GameObject.Find("object_left_end").transform;
         _hand_left_obj_shader = GameObject.Find("2d_spear_shader").transform;
         //==================================================
         //조종항목 - AroundCircle
@@ -615,23 +618,34 @@ public class TwoHandControl : MonoBehaviour
             //_spr_object_left.color = Color.white;
 
             //그림자 표현  
-            //-----------------------------------
-            //평면과 광원사이의 최소거리 
-            Vector3 groundUp = Vector3.up;
-            Vector3 groundToObject = _hand_left_obj.position - _ground.position;
-            float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
-            //Vector3 perp_groundToObject = len_groundToObject * groundUp;
+            {
+                //-----------------------------------
+                //평면과 광원사이의 최소거리 
+                float len_groundToObj_start, len_groundToObj_end;
+                Vector3 start = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
+                Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
+                //Vector3 shader_shaft = Vector3.Cross(Vector3.forward, end - start);
+                Vector3 startToEnd = end - start;
+                float len_startToEnd = startToEnd.magnitude;
+                float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
+                //DebugWide.LogBlue(len_startToEnd  + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
-            //t = len / sin@
-            float sinAngle = Geo.Angle360(-groundUp, _light_dir.position, Vector3.Cross(-groundUp, _light_dir.position));
-            sinAngle = 90f - sinAngle;
-            //if (0 == sinAngle)
-                //sinAngle = 1f;
-            float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
-            //t = 0.4f;
-            //DebugWide.LogBlue(t + "  " + len_groundToObject + "  " + sinAngle + "   " + Mathf.Sin(sinAngle));
-            _hand_left_obj_shader.position = _hand_left_obj.position + t * _light_dir.position.normalized;
-            //-----------------------------------
+
+                float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd); // 땅의 축 up벡터로 고정 
+                _hand_left_obj_shader.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up);
+                _hand_left_obj_shader.position = start;
+
+                //높이에 따라 그림자 길이 조절 
+                Vector3 scale = _hand_left_obj_shader.localScale;
+                scale.z = rate;
+                _hand_left_obj_shader.localScale = scale;
+                //------
+                //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
+                //Vector3 temp2 = _hand_left_obj_shader.eulerAngles;
+                //temp2.x = 90f;
+                //_hand_left_obj_shader.eulerAngles = temp2;
+                //-----------------------------------    
+            }
 
 
         }
@@ -657,6 +671,26 @@ public class TwoHandControl : MonoBehaviour
     //======================================================================================================================================
     //======================================================================================================================================
     //======================================================================================================================================
+
+
+    public Vector3 CalcShaderPos(Vector3 lightDir, Vector3 ground , Vector3 objectPos, out float len_groundToObject)
+    {
+
+        //평면과 광원사이의 최소거리 
+        Vector3 groundUp = Vector3.up;
+        Vector3 groundToObject = objectPos - ground;
+        len_groundToObject = Vector3.Dot(groundToObject, groundUp);
+
+        //t = len / sin@
+        float sinAngle = Geo.Angle360(-groundUp, _light_dir.position, Vector3.Cross(-groundUp, _light_dir.position));
+        sinAngle = 90f - sinAngle;
+
+        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+
+        Vector3 nDir = VOp.Normalize(lightDir);
+
+        return objectPos + t * nDir;
+    }
 
 
     //어깨범위와 선분의 교차위치를 구한다. 어깨범위의 최소범위는 적용안됨 
@@ -1377,33 +1411,29 @@ public class TwoHandControl : MonoBehaviour
 	{
 
         //------------------------------------------------
-        //무기 그림자 표현 
-        DebugWide.DrawLine(Vector3.zero, _light_dir.position, Color.black);
-        DebugWide.DrawCircle(_light_dir.position, 0.1f, Color.black);
+        {
+            //무기 그림자 표현 
+            DebugWide.DrawLine(Vector3.zero, _light_dir.position, Color.black);
+            DebugWide.DrawCircle(_light_dir.position, 0.1f, Color.black);
 
-        DebugWide.DrawLine(_ground.position + Vector3.forward * 5, _ground.position, Color.black);
-
-
-        //--
-        Vector3 groundUp = Vector3.up;
-        Vector3 groundToObject = _hand_left_obj.position - _ground.position;
-        float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
-        //Vector3 perp_groundToObject = len_groundToObject * groundUp;
-
-        //t = len / sin@
-        float sinAngle = Geo.Angle360(-groundUp, _light_dir.position, Vector3.Cross(-groundUp, _light_dir.position));
-        sinAngle = 90f - sinAngle;
-        //if (0 == sinAngle)
-            //sinAngle = 1f;
-        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
-
-        //DebugWide.LogBlue(len_groundToObject + "   " + t + "   " + sinAngle + "   " + Mathf.Sin(sinAngle * Mathf.Deg2Rad));
-        Vector3 shaderPos = _hand_left_obj.position + t * _light_dir.position.normalized;
-        //--
+            DebugWide.DrawLine(_ground.position + Vector3.forward * 5, _ground.position, Color.black);
 
 
-        DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj.position + len_groundToObject * Vector3.down, Color.black);
-        DebugWide.DrawLine(_hand_left_obj.position, shaderPos, Color.black);
+            //--
+            float len_groundToObj_start, len_groundToObj_end; 
+            Vector3 shaderStart = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
+            Vector3 shaderEnd = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
+
+
+            //DebugWide.LogBlue(len_groundToObject + "   " + t + "   " + sinAngle + "   " + Mathf.Sin(sinAngle * Mathf.Deg2Rad));
+            //--
+
+            DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj.position + len_groundToObj_start * Vector3.down, Color.black);
+            DebugWide.DrawLine(_hand_left_obj_end.position, _hand_left_obj_end.position + len_groundToObj_end * Vector3.down, Color.black);
+            DebugWide.DrawLine(_hand_left_obj.position, shaderStart, Color.black);
+            DebugWide.DrawLine(shaderEnd, shaderStart, Color.red); //그림자 놓여질 위치 표현 
+        }
+
 
         //------------------------------------------------
 
