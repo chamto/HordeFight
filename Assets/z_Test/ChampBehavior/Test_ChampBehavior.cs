@@ -606,22 +606,21 @@ public class TwoHandControl : MonoBehaviour
         if(ePart.TwoHand == _part_control)
         {   //양손 칼 붙이기
             Vector3 hLhR = _hand_right.position - _hand_left.position;
-            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
-
-            float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-            //float angleW = Geo.Angle360_AxisRotate(Vector3.forward, hLhR, obj_shaft);
-
+            //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+            //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
             //_object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-            //_object_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
-            Quat myQuat = new Quat();
-            _object_left.rotation = myQuat.AngleAxis(angleW * Mathf.Deg2Rad, obj_shaft);
+
+            _object_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
+
+            //Quat myQuat = new Quat();
+            //_object_left.rotation = myQuat.AngleAxis(angleW * Mathf.Deg2Rad, obj_shaft);
             //_object_left.rotation = myQuat.FromToRotation(Vector3.forward, hLhR);
 
-            //DebugWide.LogBlue(angleW + "   " + _object_left.eulerAngles.x + "    " + _object_left.eulerAngles.y + "    " + _object_left.eulerAngles.z);
+            //DebugWide.LogBlue(angleW + "   " + angleW2);
 
             //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
             Vector3 temp = _object_left.eulerAngles;
-            temp.z = 0;
+            //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
             _object_left.eulerAngles = temp;
 
             //칼의 뒷면 표현 - 연구필요 
@@ -726,8 +725,8 @@ public class TwoHandControl : MonoBehaviour
         public Quaternion AngleAxis(float angle_rd , Vector3 axis)
         {
             // if axis of rotation is zero vector, just set to identity quat
-            float length = axis.sqrMagnitude;
-            if ( Misc.IsZero( length ) )
+            float sqrLength = axis.sqrMagnitude;
+            if ( Misc.IsZero( sqrLength ) )
             {
                 Identity();
                 return Quaternion.identity;
@@ -741,7 +740,7 @@ public class TwoHandControl : MonoBehaviour
             costheta = (float)System.Math.Cos(angle_rd);
 
 
-            float scaleFactor = sintheta / (float)System.Math.Sqrt( length );
+            float scaleFactor = sintheta / (float)System.Math.Sqrt( sqrLength );
 
             _w = costheta;
             _x = scaleFactor * axis.x;
