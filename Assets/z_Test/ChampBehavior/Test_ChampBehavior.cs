@@ -80,18 +80,20 @@ public class TwoHandControl : MonoBehaviour
     public Transform _target_1 = null;
     public Transform _target_2 = null;
 
-    public SpriteRenderer _spr_object_left = null;
-    public SpriteRenderer _spr_object_right = null;
-
     public Transform _hand_left_spr = null;
     public Transform _hand_right_spr = null;
 
     private Transform _hand_left_obj = null;
-    private Transform _hand_right_obj = null;
+    private Transform _hand_left_obj_up = null;
     private Transform _hand_left_obj_end = null;
-    private Transform _hand_right_obj_end = null;
     private Transform _hand_left_obj_shader = null;
+    private SpriteRenderer _hand_left_obj_spr = null;
+
+    private Transform _hand_right_obj = null;
+    private Transform _hand_right_obj_up = null;
+    private Transform _hand_right_obj_end = null;
     private Transform _hand_right_obj_shader = null;
+    private SpriteRenderer _hand_right_obj_spr = null;
 
     public float _shoulder_length = 0f;
     public float _arm_left_length = 0.5f;
@@ -107,7 +109,7 @@ public class TwoHandControl : MonoBehaviour
     public ePart _part_control = ePart.TwoHand;
     //public ePart _part_control = ePart.OneHand;
     public ePart _eHandOrigin = ePart.TwoHand_LeftO; //고정으로 잡는 손지정 
-
+    public bool _active_shadowObject = true;
 
     //경로모델
     //public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
@@ -310,8 +312,11 @@ public class TwoHandControl : MonoBehaviour
         _hand_right_spr = _hand_right.GetComponentInChildren<SpriteRenderer>().transform;
 
         _hand_left_obj = GameObject.Find("2d_spear").transform;
+        _hand_left_obj_up = GameObject.Find("object_left_up").transform;
         _hand_left_obj_end = GameObject.Find("object_left_end").transform;
         _hand_left_obj_shader = GameObject.Find("2d_spear_shader").transform;
+        _hand_left_obj_spr = _hand_left_obj.GetComponent<SpriteRenderer>();
+
         //==================================================
         //조종항목 - AroundCircle
 
@@ -606,6 +611,8 @@ public class TwoHandControl : MonoBehaviour
             float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
             _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
+            //DebugWide.LogBlue(angleW + "   " + obj_shaft);
+
             //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
             Vector3 temp = _object_left.eulerAngles;
             temp.z = 0;
@@ -618,6 +625,7 @@ public class TwoHandControl : MonoBehaviour
             //_spr_object_left.color = Color.white;
 
             //그림자 표현  
+            if(true == _active_shadowObject)
             {
                 //-----------------------------------
                 //평면과 광원사이의 최소거리 
@@ -631,8 +639,10 @@ public class TwoHandControl : MonoBehaviour
                 //DebugWide.LogBlue(len_startToEnd  + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
 
-                float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd); // 땅의 축 up벡터로 고정 
-                _hand_left_obj_shader.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up);
+                float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd); 
+                //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
+                //DebugWide.LogBlue(shader_angle);
+                _hand_left_obj_shader.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
                 _hand_left_obj_shader.position = start;
 
                 //높이에 따라 그림자 길이 조절 
@@ -661,9 +671,9 @@ public class TwoHandControl : MonoBehaviour
         //스프라이트 칼 뒷면느낌 나게 색 설정 
 
         //if (_object_left.rotation.eulerAngles.x < -90f)
-        //    _spr_object_left.color = Color.black;
+        //    _hand_left_obj_spr.color = Color.black;
         //else
-            //_spr_object_left.color = Color.white;
+            //_hand_left_obj_spr.color = Color.white;
 
         //==================================================
 	}
@@ -1414,6 +1424,7 @@ public class TwoHandControl : MonoBehaviour
 	{
 
         //------------------------------------------------
+        if(true == _active_shadowObject)
         {
             //무기 그림자 표현 
             DebugWide.DrawLine(Vector3.zero, _light_dir.position, Color.black);
