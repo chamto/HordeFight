@@ -614,7 +614,8 @@ public class TwoHandControl : MonoBehaviour
             //_object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
             //_object_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
             Quat myQuat = new Quat();
-            _object_left.rotation = myQuat.FromTo(Vector3.forward, hLhR);
+            _object_left.rotation = myQuat.AngleAxis(angleW * Mathf.Deg2Rad, obj_shaft);
+            //_object_left.rotation = myQuat.FromToRotation(Vector3.forward, hLhR);
 
             //DebugWide.LogBlue(angleW + "   " + _object_left.eulerAngles.x + "    " + _object_left.eulerAngles.y + "    " + _object_left.eulerAngles.z);
 
@@ -696,6 +697,11 @@ public class TwoHandControl : MonoBehaviour
             _w = w; _x = x; _y = y; _z = z;
         }
 
+        public void Identity()
+        {
+            _x = _y = _z = 0.0f;
+            _w = 1.0f;
+        } 
 
         public void Normalize()
         {
@@ -716,7 +722,37 @@ public class TwoHandControl : MonoBehaviour
 
         }  
 
-        public Quaternion FromTo(Vector3 from, Vector3 to)
+        //angle_rd : 라디안 값 넣어야함 
+        public Quaternion AngleAxis(float angle_rd , Vector3 axis)
+        {
+            // if axis of rotation is zero vector, just set to identity quat
+            float length = axis.sqrMagnitude;
+            if ( Misc.IsZero( length ) )
+            {
+                Identity();
+                return Quaternion.identity;
+            }
+
+            // take half-angle
+            angle_rd *= 0.5f;
+
+            float sintheta=0, costheta=0;
+            sintheta = (float)System.Math.Sin(angle_rd);
+            costheta = (float)System.Math.Cos(angle_rd);
+
+
+            float scaleFactor = sintheta / (float)System.Math.Sqrt( length );
+
+            _w = costheta;
+            _x = scaleFactor * axis.x;
+            _y = scaleFactor * axis.y;
+            _z = scaleFactor * axis.z;
+
+
+            return new Quaternion(_x, _y, _z, _w);
+        } 
+
+        public Quaternion FromToRotation(Vector3 from, Vector3 to)
         {
             
             // get axis of rotation
