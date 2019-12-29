@@ -109,7 +109,7 @@ public class TwoHandControl : MonoBehaviour
     public ePart _part_control = ePart.TwoHand;
     //public ePart _part_control = ePart.OneHand;
     public ePart _eHandOrigin = ePart.TwoHand_LeftO; //고정으로 잡는 손지정 
-    public bool _active_shadowObject = true;
+    public bool _active_shadowObject = false;
 
     //경로모델
     //public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
@@ -141,8 +141,8 @@ public class TwoHandControl : MonoBehaviour
 
     public string _1____________________ = "";
     public bool  _A_shoulder_autoRotate = false;
-    public float _angle_shoulderLeft_autoRotate = -10f; //왼쪽 어깨 자동회전 각도량
-    public float _angle_shoulderRight_autoRotate = -10f; //오른쪽 어깨 자동회전 각도량
+    public float _angle_shoulderLeft_autoRotate = -2; //왼쪽 어깨 자동회전 각도량
+    public float _angle_shoulderRight_autoRotate = -2f; //오른쪽 어깨 자동회전 각도량
 
     //======================================================
     public string _2_1__________________ = "";
@@ -465,6 +465,9 @@ public class TwoHandControl : MonoBehaviour
             _shoulder_left.Rotate(axis_up, _angle_shoulderLeft_autoRotate, Space.World);
 
 
+            //Transform ctr = GameObject.Find("ctr").transform;
+            //ctr.Rotate(axis_up, _angle_shoulderLeft_autoRotate, Space.World);
+
 
         }
 
@@ -604,14 +607,16 @@ public class TwoHandControl : MonoBehaviour
         {   //양손 칼 붙이기
             Vector3 hLhR = _hand_right.position - _hand_left.position;
             Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
-            //angleC의 각도가 0이 나올 경우 외적값이 0이 된다. 각도가 0일때 물건을 손에 붙이는 계산이 안되는 문제가 발생함
-            //물건 기준으로 외적값을 구해 사용하면 문제가 해결됨 
-            //Vector3 obj_up = Vector3.Cross(obj_shaft, hLhR);
 
             float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-            _object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+            //float angleW = Geo.Angle360_AxisRotate(Vector3.forward, hLhR, obj_shaft);
 
-            //DebugWide.LogBlue(angleW + "   " + obj_shaft);
+            //_object_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+            //_object_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
+            Quat myQuat = new Quat();
+            _object_left.rotation = myQuat.FromTo(Vector3.forward, hLhR);
+
+            //DebugWide.LogBlue(angleW + "   " + _object_left.eulerAngles.x + "    " + _object_left.eulerAngles.y + "    " + _object_left.eulerAngles.z);
 
             //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
             Vector3 temp = _object_left.eulerAngles;
@@ -682,6 +687,88 @@ public class TwoHandControl : MonoBehaviour
     //======================================================================================================================================
     //======================================================================================================================================
 
+    public class Quat
+    {
+        public float _x, _y, _z, _w;
+
+        public void Set(float w, float x, float y, float z)
+        {
+            _w = w; _x = x; _y = y; _z = z;
+        }
+
+
+        public void Normalize()
+        {
+            float lengthsq = _w*_w + _x*_x + _y*_y + _z*_z;
+
+            if ( Misc.IsZero( lengthsq ) )
+            {
+                _x = _y = _z = _w = 0f;
+            }
+            else
+            {
+                float factor = 1f/(float)System.Math.Sqrt( lengthsq );
+                _w *= factor;
+                _x *= factor;
+                _y *= factor;
+                _z *= factor;
+            }
+
+        }  
+
+        public Quaternion FromTo(Vector3 from, Vector3 to)
+        {
+            
+            // get axis of rotation
+            Vector3 axis = Vector3.Cross(from, to);
+
+
+            // get scaled cos of angle between vectors and set initial quaternion
+            Set(Vector3.Dot(from, to), axis.x, axis.y, axis.z);
+            // quaternion at this point is ||from||*||to||*( cos(theta), r*sin(theta) )
+
+            // normalize to remove ||from||*||to|| factor
+            Normalize();
+            // quaternion at this point is ( cos(theta), r*sin(theta) )
+            // what we want is ( cos(theta/2), r*sin(theta/2) )
+
+            // set up for half angle calculation
+            _w += 1.0f;
+
+            // now when we normalize, we'll be dividing by sqrt(2*(1+cos(theta))), which is 
+            // what we want for r*sin(theta) to give us r*sin(theta/2)  (see pages 487-488)
+            // 
+            // w will become 
+            //                 1+cos(theta)
+            //            ----------------------
+            //            sqrt(2*(1+cos(theta)))        
+            // which simplifies to
+            //                cos(theta/2)
+
+            // before we normalize, check if vectors are opposing
+            if (_w <=  float.Epsilon)
+            {
+                // rotate pi radians around orthogonal vector
+                // take cross product with x axis
+                if (from.z * from.z > from.x * from.x)
+                    Set(0.0f, 0.0f, from.z, -from.y);
+                // or take cross product with z axis
+                else
+                    Set(0.0f, from.y, -from.x, 0.0f);
+            }
+
+            // normalize again to get rotation quaternion
+            Normalize();
+
+            return new Quaternion(_x,_y,_z,_w);
+
+        } 
+    }
+
+
+
+
+      
 
     public Vector3 CalcShaderPos(Vector3 lightDir, Vector3 objDir, Vector3 ground , Vector3 objectPos, out float len_groundToObject)
     {
@@ -1424,6 +1511,24 @@ public class TwoHandControl : MonoBehaviour
 	{
 
         //------------------------------------------------
+
+        //무기 뒷면 
+        {
+        
+            DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj_end.position, Color.cyan);
+            DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj_up.position, Color.cyan);
+            DebugWide.DrawCircle(_hand_left_obj_up.position,0.1f, Color.cyan);
+
+            Vector3 hLhR = _hand_right.position - _hand_left.position;
+            Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+            float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+
+            DebugWide.DrawLine(_object_left.position, _object_left.position + obj_shaft * 3f, Color.red);
+
+            DebugWide.PrintText(_object_left.position + obj_shaft * 3f, Color.red, angleW + "");    
+        }
+
+
         if(true == _active_shadowObject)
         {
             //무기 그림자 표현 
@@ -1599,8 +1704,8 @@ public class TwoHandControl : MonoBehaviour
                     //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
 
                     //주변원의 중심에서 핸들까지 
-                    DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.red);
-                    DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.red);
+                    DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.gray);
+                    DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.gray);
 
                     //설정된 모델 그리기 
                     _Model_left_0.Draw(Color.yellow);
