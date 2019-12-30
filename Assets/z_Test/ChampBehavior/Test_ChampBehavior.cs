@@ -109,7 +109,7 @@ public class TwoHandControl : MonoBehaviour
     public ePart _part_control = ePart.TwoHand;
     //public ePart _part_control = ePart.OneHand;
     public ePart _eHandOrigin = ePart.TwoHand_LeftO; //고정으로 잡는 손지정 
-    public bool _active_shadowObject = false;
+    public bool _active_shadowObject = true;
 
     //경로모델
     //public Geo.Model.eKind _eModelKind_Left_0 = Geo.Model.eKind.Cylinder;
@@ -621,23 +621,37 @@ public class TwoHandControl : MonoBehaviour
             //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
             Vector3 temp = _object_left.eulerAngles;
             //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
-            _object_left.eulerAngles = temp;
 
-            //칼의 뒷면 표현 - 연구필요 
-            //if(Vector3.Dot(Vector3.up, obj_up) < 0)
-            //    _spr_object_left.color = Color.gray;
-            //else
-            //_spr_object_left.color = Color.white;
+            //Sprite sprite = Resources.
+            //DebugWide.LogBlue(_hand_left_obj_spr.sprite.
+
+            //칼의 뒷면 표현
+            if(Vector3.Dot(ConstV.v3_up, _hand_left_obj_up.position - _hand_left_obj.position) > 0)
+            //if (Vector3.Dot(_body_dir, hLhR) > 0)
+            {
+                //앞면
+                _hand_left_obj_spr.color = Color.white;
+                temp.z = 0;
+            }
+            else
+            {
+                //뒷면 
+                _hand_left_obj_spr.color = Color.gray;
+                temp.z = 180;
+            }
+            _object_left.eulerAngles = temp;
 
             //그림자 표현  
             if(true == _active_shadowObject)
             {
                 //-----------------------------------
                 //평면과 광원사이의 최소거리 
-                float len_groundToObj_start, len_groundToObj_end;
-                Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-                Vector3 end = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
-                //Vector3 shader_shaft = Vector3.Cross(Vector3.forward, end - start);
+                //float len_groundToObj_start, len_groundToObj_end;
+                //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
+                //Vector3 end = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
+                Vector3 start = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj.position);
+                Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
+
                 Vector3 startToEnd = end - start;
                 float len_startToEnd = startToEnd.magnitude;
                 float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
@@ -656,9 +670,17 @@ public class TwoHandControl : MonoBehaviour
                 _hand_left_obj_shader.localScale = scale;
                 //------
                 //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
-                //Vector3 temp2 = _hand_left_obj_shader.eulerAngles;
+                Vector3 temp2 = _hand_left_obj_shader.eulerAngles;
                 //temp2.x = 90f;
-                //_hand_left_obj_shader.eulerAngles = temp2;
+                if (Vector3.Dot(ConstV.v3_up, _hand_left_obj_up.position - _hand_left_obj.position) > 0)
+                {
+                    temp2.z = 0;
+                }
+                else
+                {
+                    temp2.z = 180f;
+                }
+                _hand_left_obj_shader.eulerAngles = temp2;
                 //-----------------------------------    
             }
 
@@ -672,13 +694,6 @@ public class TwoHandControl : MonoBehaviour
         angleY = Vector3.SignedAngle(Vector3.forward, (_hand_right.position - _shoulder_right.position), Vector3.up);
         _hand_right_spr.eulerAngles = new Vector3(90, angleY, 0);
 
-        //==================================================
-        //스프라이트 칼 뒷면느낌 나게 색 설정 
-
-        //if (_object_left.rotation.eulerAngles.x < -90f)
-        //    _hand_left_obj_spr.color = Color.black;
-        //else
-            //_hand_left_obj_spr.color = Color.white;
 
         //==================================================
 	}
@@ -801,7 +816,24 @@ public class TwoHandControl : MonoBehaviour
     }
 
 
+    public Vector3 CalcShaderPos(Vector3 lightDir, Vector3 ground, Vector3 objectPos)
+    {
+        
+        //평면과 광원사이의 최소거리 
+        Vector3 groundUp = ConstV.v3_up;
+        Vector3 groundToObject = objectPos - ground;
+        float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
 
+        //t = len / sin@
+        float sinAngle = Geo.Angle360(-groundUp, lightDir, Vector3.Cross(-groundUp, lightDir));
+        sinAngle = 90f - sinAngle;
+
+        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+
+        Vector3 nDir = VOp.Normalize(lightDir);
+
+        return objectPos + t * nDir;
+    }
 
       
 
