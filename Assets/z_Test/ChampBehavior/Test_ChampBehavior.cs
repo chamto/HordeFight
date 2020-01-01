@@ -624,6 +624,15 @@ public class TwoHandControl : MonoBehaviour
 
             //Sprite sprite = Resources.
             //DebugWide.LogBlue(_hand_left_obj_spr.sprite.
+            //_hand_left_obj_spr.getC
+            //SpriteRenderer renderer;
+            //_hand_left_obj_spr.material.mainTextureOffset = new Vector2(0,Time.time * 1);
+            // _hand_left_obj_spr.sharedMaterial.SetTextureOffset("_MainTex", new Vector2(0, Time.time * 0.5f));
+
+            //float aa = Time.time * 0.01f;
+            //if (1 < aa) aa = 1;
+            //_hand_left_obj.GetComponent<Renderer>().material.mainTextureOffset = new Vector2(0,aa);
+            //Vector2 [] ddd = _hand_left_obj.GetComponent<MeshFilter>().sharedMesh.uv;
 
             //칼의 뒷면 표현
             if(Vector3.Dot(ConstV.v3_up, _hand_left_obj_up.position - _hand_left_obj.position) > 0)
