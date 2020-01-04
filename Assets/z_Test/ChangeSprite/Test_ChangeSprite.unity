@@ -129,7 +129,7 @@ Mesh:
     firstVertex: 0
     vertexCount: 4
     localAABB:
-      m_Center: {x: 0.09375, y: 0.40625, z: 0}
+      m_Center: {x: 0, y: 0.40625, z: 0}
       m_Extent: {x: 0.09375, y: 0.40625, z: 0}
   m_Shapes:
     vertices: []
@@ -199,7 +199,7 @@ Mesh:
       format: 0
       dimension: 0
     m_DataSize: 128
-    _typelessdata: 0000000000000000000000000000000000000000000080bf6f6eee3e5eeac93d000000000000503f000000000000000000000000000080bf6f6eee3ebbd4133e0000403e00000000000000000000000000000000000080bf5150f03e5eeac93d0000403e0000503f000000000000000000000000000080bf5150f03ebbd4133e
+    _typelessdata: 0000c0bd00000000000000000000000000000000000080bf6f6eee3e5eeac93d0000c0bd0000503f000000000000000000000000000080bf6f6eee3ebbd4133e0000c03d00000000000000000000000000000000000080bf5150f03e5eeac93d0000c03d0000503f000000000000000000000000000080bf5150f03ebbd4133e
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -253,7 +253,7 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0.09375, y: 0.40625, z: 0}
+    m_Center: {x: 0, y: 0.40625, z: 0}
     m_Extent: {x: 0.09375, y: 0.40625, z: 0}
   m_MeshUsageFlags: 0
   m_BakedConvexCollisionMesh: 
@@ -604,11 +604,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _position: {x: 380, y: 28}
-  _size: {x: 3, y: 13}
-  _pivot: {x: 0, y: 0}
+  _size_vertice: {x: 3, y: 13}
+  _size_uv: {x: 3, y: 13}
+  _pivot: {x: 0.5, y: 0}
   _pixelsPerUnit: 16
-  topBottomCutting: {x: 0, y: 0}
-  spriteOrientation: 1
+  _world_width: 0.1875
+  _world_height: 0.8125
   _spriteMaterial: {fileID: 2100000, guid: e2e6dbab2fcf54191985576c65a5055e, type: 2}
   _Update_perform: 0
 --- !u!4 &1078429389
@@ -618,7 +619,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1078429387}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.51, y: 0, z: 0}
+  m_LocalPosition: {x: 0.473, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

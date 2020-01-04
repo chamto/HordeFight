@@ -9,30 +9,25 @@
 [ExecuteInEditMode]
 public class SpriteMesh : MonoBehaviour 
 {
-
-	public enum eOrientation
-	{
-		//TopLeft,
-        BottomLeft,
-		//MiddleCenter
-	}
-
+    
     //텍스쳐의 좌하단을 원점으로 y축이 위로 증가하는 좌표계를 사용 
     public Vector2 _position;
-    public Vector2 _size;
+    public Vector2 _size_vertice;
+    public Vector2 _size_uv;
     public Vector2 _pivot;
 
     public float _pixelsPerUnit = 16f; // 1 unit = size / pixelsPerUnit : 20200105 chamto
-	public Vector2 topBottomCutting;
-    public eOrientation spriteOrientation = eOrientation.BottomLeft;
 
+    public float _world_width = 0f;
+    public float _world_height = 0f;
 
     public Material _spriteMaterial;
 	private Mesh _mesh;
 	private MeshRenderer _renderer;
 
-    private Vector2 _pixelSize;
+    private Vector2 _pixelPos;
     private Vector2 _texSize;
+    private Vector2 _texelPerUvUnit;
 
 
 	void Awake()
@@ -78,8 +73,14 @@ public class SpriteMesh : MonoBehaviour
             _texSize.x = _renderer.sharedMaterial.mainTexture.width;
             _texSize.y = _renderer.sharedMaterial.mainTexture.height;
 
-            _pixelSize.x = _size.x / _pixelsPerUnit;
-            _pixelSize.y = _size.y / _pixelsPerUnit;
+            _pixelPos.x = _size_vertice.x / _pixelsPerUnit;
+            _pixelPos.y = _size_vertice.y / _pixelsPerUnit;
+
+            //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
+            _texelPerUvUnit = new Vector2(1f / _texSize.x, 1f / _texSize.y);
+
+            _world_width = _pixelPos.x * transform.localScale.x;
+            _world_height = _pixelPos.y * transform.localScale.y;
             //
 
 			this.UpdateMesh();
@@ -91,17 +92,6 @@ public class SpriteMesh : MonoBehaviour
 	{
 
 
-		//if (spriteOrientation == eOrientation.MiddleCenter) 
-        {
-			//_mesh.vertices = new Vector3[]
-			//{
-			//	new Vector3 (-_size.x, -_size.y) * _pixelsPerUnit * 0.5f, //left-down 0
-			//	new Vector3 (-_size.x, _size.y) * _pixelsPerUnit * 0.5f,  //left-up 1
-			//	new Vector3 (_size.x, -_size.y) * _pixelsPerUnit * 0.5f, //right-down 2
-			//	new Vector3 (_size.x, _size.y) * _pixelsPerUnit * 0.5f  //right-up 3
-			//};
-		} 
-        //else if(spriteOrientation == eOrientation.TopLeft)
 		{
 			//_mesh.vertices = new Vector3[]
 			//{
@@ -111,50 +101,52 @@ public class SpriteMesh : MonoBehaviour
 			//	new Vector3(_size.x, -topBottomCutting.y) * _pixelsPerUnit
 			//};
 		}
-        if (spriteOrientation == eOrientation.BottomLeft)
+
+
         {
-            
+
             //1  3
             //0  2
+            Vector3 pivotPos = new Vector3(_pixelPos.x * _pivot.x, _pixelPos.y * _pivot.y, 0);
+
             _mesh.vertices = new Vector3[]
             {
-                new Vector3(0, 0),  //0
-                new Vector3(0, _pixelSize.y), //1
-                new Vector3(_pixelSize.x, 0), //2
-                new Vector3(_pixelSize.x , _pixelSize.y ), //3
+                -pivotPos + new Vector3(0, 0),  //0
+                -pivotPos + new Vector3(0, _pixelPos.y), //1
+                -pivotPos + new Vector3(_pixelPos.x, 0), //2
+                -pivotPos + new Vector3(_pixelPos.x , _pixelPos.y ), //3
             };
 
 
+            //1  3
+            //0  2
+            _mesh.triangles = new int[] { 0, 1, 3, 0, 3, 2 };
+
         }
 		
-        //1  3
-        //0  2
-		_mesh.triangles = new int[] {0, 1, 3, 0, 3, 2};
-		
-		
-        //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
-        Vector2 texelPerUvUnit = new Vector2(1f/_texSize.x , 1f/ _texSize.y );
 
-
-        //1  3
-        //0  2
-        //정점배치 순서에 따라 uv 순서를 맞춘다 
-        _mesh.uv = new Vector2[]
         {
-            new Vector2(texelPerUvUnit.x * _position.x,
-                        (texelPerUvUnit.y * (_position.y + 0))),   //left-down 0
+            //1  3
+            //0  2
+            //정점배치 순서에 따라 uv 순서를 맞춘다 
+            _mesh.uv = new Vector2[]
+            {
+            new Vector2(_texelPerUvUnit.x * _position.x,
+                        (_texelPerUvUnit.y * (_position.y + 0))),   //left-down 0
             
-            new Vector2(texelPerUvUnit.x * _position.x,
-                        (texelPerUvUnit.y * (_position.y  + _size.y ))), //left-up 1
+            new Vector2(_texelPerUvUnit.x * _position.x,
+                        (_texelPerUvUnit.y * (_position.y  + _size_uv.y ))), //left-up 1
 
-            new Vector2(texelPerUvUnit.x * (_position.x + _size.x),
-                        (texelPerUvUnit.y * (_position.y + 0))),        //right-down 2
+            new Vector2(_texelPerUvUnit.x * (_position.x + _size_uv.x),
+                        (_texelPerUvUnit.y * (_position.y + 0))),        //right-down 2
 
 
-            new Vector2(texelPerUvUnit.x * (_position.x + _size.x),
-                        (texelPerUvUnit.y * (_position.y + _size.y ))), //right-up 3
+            new Vector2(_texelPerUvUnit.x * (_position.x + _size_uv.x),
+                        (_texelPerUvUnit.y * (_position.y + _size_uv.y ))), //right-up 3
 
-        };
+            };
+        }
+
 		
 		_mesh.RecalculateNormals ();
 		_mesh.RecalculateBounds ();
