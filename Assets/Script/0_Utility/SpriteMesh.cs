@@ -1,28 +1,39 @@
 ﻿using UnityEngine;
-using System.Collections;
+
+
+
+//유니티의 unit 단위 , pixelsPerUnit 구하기 정보가 아래 링크에 나와있다  
+//ref : https://blogs.unity3d.com/kr/2018/11/19/choosing-the-resolution-of-your-2d-art-assets/
 
 
 [ExecuteInEditMode]
 public class SpriteMesh : MonoBehaviour 
 {
 
-	public enum SpriteOrientation
+	public enum eOrientation
 	{
-		TopLeft,
-		MiddleCenter
+		//TopLeft,
+        BottomLeft,
+		//MiddleCenter
 	}
 
-	public Vector2 _spriteTopLeft;
-	public Vector2 _spriteSize;
-	public Material _spriteMaterial;
-	public float defCameraPixels = 768f;
-	public SpriteOrientation spriteOrientation;
+    //텍스쳐의 좌하단을 원점으로 y축이 위로 증가하는 좌표계를 사용 
+    public Vector2 _position;
+    public Vector2 _size;
+    public Vector2 _pivot;
+
+    public float _pixelsPerUnit = 16f; // 1 unit = size / pixelsPerUnit : 20200105 chamto
 	public Vector2 topBottomCutting;
+    public eOrientation spriteOrientation = eOrientation.BottomLeft;
 
-	protected Mesh _mesh;
-	protected MeshRenderer _renderer;
 
-	private float _pixelPerWorldUnit;
+    public Material _spriteMaterial;
+	private Mesh _mesh;
+	private MeshRenderer _renderer;
+
+    private Vector2 _pixelSize;
+    private Vector2 _texSize;
+
 
 	void Awake()
 	{
@@ -47,15 +58,8 @@ public class SpriteMesh : MonoBehaviour
 		_renderer.receiveShadows = false;
 		_renderer.sharedMaterial = _spriteMaterial;
 
-		//chamto 20160611
-		//각각의 단위가 존재
-		//하나는 화면의 세로 픽셀 개수
-		//하나는 3d카메라의 월드 세로 길이 (줄여서 월드길이)
-		//화면의 픽셀 하나에 대한 월드 길이를 계산할려면?  = 월드길이 / 픽셀 개수 
-		//전체월드길이에 대하여 픽셀개수로 나누면 하나의 픽셀에 대한 월드길이가 나온다.
-		//* 나눗셈은 등분하겠다는 의미임을 생각하자 !
-		_pixelPerWorldUnit = 
-			Camera.main.orthographicSize * 2 / defCameraPixels;
+		
+        //------------------------------------------------
 
 		_mesh = new Mesh ();
 		_mesh.name = "SpriteMesh";
@@ -70,6 +74,14 @@ public class SpriteMesh : MonoBehaviour
 	{
 		if (true == _Update_perform) 
 		{
+            //fixme : start 로 옮기기 
+            _texSize.x = _renderer.sharedMaterial.mainTexture.width;
+            _texSize.y = _renderer.sharedMaterial.mainTexture.height;
+
+            _pixelSize.x = _size.x / _pixelsPerUnit;
+            _pixelSize.y = _size.y / _pixelsPerUnit;
+            //
+
 			this.UpdateMesh();
 		}
 	}
@@ -78,54 +90,72 @@ public class SpriteMesh : MonoBehaviour
 	void UpdateMesh () 
 	{
 
-		if (spriteOrientation == SpriteOrientation.MiddleCenter) {
-			_mesh.vertices = new Vector3[]
-			{
-				new Vector3 (-_spriteSize.x, -_spriteSize.y) * _pixelPerWorldUnit * 0.5f, //left-down 0
-				new Vector3 (-_spriteSize.x, _spriteSize.y) * _pixelPerWorldUnit * 0.5f,  //left-up 1
-				new Vector3 (_spriteSize.x, -_spriteSize.y) * _pixelPerWorldUnit * 0.5f, //right-down 2
-				new Vector3 (_spriteSize.x, _spriteSize.y) * _pixelPerWorldUnit * 0.5f  //right-up 3
-			};
-		} else if(spriteOrientation == SpriteOrientation.TopLeft)
+
+		//if (spriteOrientation == eOrientation.MiddleCenter) 
+        {
+			//_mesh.vertices = new Vector3[]
+			//{
+			//	new Vector3 (-_size.x, -_size.y) * _pixelsPerUnit * 0.5f, //left-down 0
+			//	new Vector3 (-_size.x, _size.y) * _pixelsPerUnit * 0.5f,  //left-up 1
+			//	new Vector3 (_size.x, -_size.y) * _pixelsPerUnit * 0.5f, //right-down 2
+			//	new Vector3 (_size.x, _size.y) * _pixelsPerUnit * 0.5f  //right-up 3
+			//};
+		} 
+        //else if(spriteOrientation == eOrientation.TopLeft)
 		{
-			_mesh.vertices = new Vector3[]
-			{
-				new Vector3(0,-_spriteSize.y) * _pixelPerWorldUnit,
-				new Vector3(0, -topBottomCutting.y) * _pixelPerWorldUnit,
-				new Vector3(_spriteSize.x,-_spriteSize.y ) * _pixelPerWorldUnit,
-				new Vector3(_spriteSize.x, -topBottomCutting.y) * _pixelPerWorldUnit
-			};
+			//_mesh.vertices = new Vector3[]
+			//{
+			//	new Vector3(0,-_size.y) * _pixelsPerUnit,
+			//	new Vector3(0, -topBottomCutting.y) * _pixelsPerUnit,
+			//	new Vector3(_size.x,-_size.y ) * _pixelsPerUnit,
+			//	new Vector3(_size.x, -topBottomCutting.y) * _pixelsPerUnit
+			//};
 		}
+        if (spriteOrientation == eOrientation.BottomLeft)
+        {
+            
+            //1  3
+            //0  2
+            _mesh.vertices = new Vector3[]
+            {
+                new Vector3(0, 0),  //0
+                new Vector3(0, _pixelSize.y), //1
+                new Vector3(_pixelSize.x, 0), //2
+                new Vector3(_pixelSize.x , _pixelSize.y ), //3
+            };
+
+
+        }
 		
+        //1  3
+        //0  2
 		_mesh.triangles = new int[] {0, 1, 3, 0, 3, 2};
 		
-		float texWidth = _renderer.sharedMaterial.mainTexture.width;
-		float texHeight = _renderer.sharedMaterial.mainTexture.height;
-
-		//opengl의 텍스쳐좌표 원점은 dirextx와 달리 좌하단이다.
-		//유니티는 opengl의 텍스쳐좌표 방식을 사용하는것 같다.
-		//유니티의 월드좌표계는  dirextx의 왼손좌표계를 사용한다.
-		//텍스쳐좌표가 좌하단에서 부터 상단으로 증가되므로 텍스쳐가 뒤집혀 보이게 된다.
-		//이 때문에 세로축 uv값에 역수(1-uv)를 취하여 상/하를 다시 뒤집는다.  
-		Vector2 texelPerUvUnit = new Vector2(1f/texWidth , 1f/texHeight);
-
-		_mesh.uv = new Vector2[] 
-		{
-			new Vector2(texelPerUvUnit.x * _spriteTopLeft.x,
-			            1f- (texelPerUvUnit.y * (_spriteTopLeft.y + _spriteSize.y ))),	//left-up 1
-
-			new Vector2(texelPerUvUnit.x * _spriteTopLeft.x,
-			            1f- (texelPerUvUnit.y * (_spriteTopLeft.y + topBottomCutting.y))),					//left-down 0
-
-			new Vector2(texelPerUvUnit.x * (_spriteTopLeft.x + _spriteSize.x),			
-			            1f- (texelPerUvUnit.y * (_spriteTopLeft.y + _spriteSize.y ))),	//right-up 3
-
-			new Vector2(texelPerUvUnit.x * (_spriteTopLeft.x + _spriteSize.x),
-			            1f- (texelPerUvUnit.y * (_spriteTopLeft.y + topBottomCutting.y)))				//right-down 2
-		};
+		
+        //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
+        Vector2 texelPerUvUnit = new Vector2(1f/_texSize.x , 1f/ _texSize.y );
 
 
-		;
+        //1  3
+        //0  2
+        //정점배치 순서에 따라 uv 순서를 맞춘다 
+        _mesh.uv = new Vector2[]
+        {
+            new Vector2(texelPerUvUnit.x * _position.x,
+                        (texelPerUvUnit.y * (_position.y + 0))),   //left-down 0
+            
+            new Vector2(texelPerUvUnit.x * _position.x,
+                        (texelPerUvUnit.y * (_position.y  + _size.y ))), //left-up 1
+
+            new Vector2(texelPerUvUnit.x * (_position.x + _size.x),
+                        (texelPerUvUnit.y * (_position.y + 0))),        //right-down 2
+
+
+            new Vector2(texelPerUvUnit.x * (_position.x + _size.x),
+                        (texelPerUvUnit.y * (_position.y + _size.y ))), //right-up 3
+
+        };
+		
 		_mesh.RecalculateNormals ();
 		_mesh.RecalculateBounds ();
 
