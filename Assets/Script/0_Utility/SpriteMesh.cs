@@ -28,6 +28,7 @@ public class SpriteMesh : MonoBehaviour
 	private Mesh _mesh;
 	private MeshRenderer _renderer;
 
+    private Vector2 _originPixelPos;
     private Vector2 _pixelPos;
     private Vector2 _texSize;
     private Vector2 _texelPerUv;
@@ -77,8 +78,9 @@ public class SpriteMesh : MonoBehaviour
             _texSize.y = _renderer.sharedMaterial.mainTexture.height;
 
 
+            _originPixelPos = (_size_vertice / _pixelsPerUnit);
             _cuttingUnit = _cuttingRate * _size_vertice / _pixelsPerUnit;
-            _pixelPos = (_size_vertice / _pixelsPerUnit) - _cuttingUnit;
+            _pixelPos = _originPixelPos - _cuttingUnit;
 
 
             //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
@@ -97,10 +99,11 @@ public class SpriteMesh : MonoBehaviour
 	{
         
         {
-
+            
             //1  3
             //0  2
-            Vector3 pivotPos = new Vector3(_pixelPos.x * _pivot.x, _pixelPos.y * _pivot.y, 0);
+            Vector3 pivotPos = new Vector3(_originPixelPos.x * _pivot.x, _originPixelPos.y * _pivot.y, 0);
+
 
             _mesh.vertices = new Vector3[]
             {
