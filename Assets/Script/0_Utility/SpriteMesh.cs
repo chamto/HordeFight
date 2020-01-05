@@ -16,6 +16,9 @@ public class SpriteMesh : MonoBehaviour
     public Vector2 _size_uv;
     public Vector2 _pivot;
 
+    public Vector2 _cuttingRate; //0~1
+    public Vector2 _cuttingUnit; //절단길이 , unit 단위 
+
     public float _pixelsPerUnit = 16f; // 1 unit = size / pixelsPerUnit : 20200105 chamto
 
     public float _world_width = 0f;
@@ -27,7 +30,7 @@ public class SpriteMesh : MonoBehaviour
 
     private Vector2 _pixelPos;
     private Vector2 _texSize;
-    private Vector2 _texelPerUvUnit;
+    private Vector2 _texelPerUv;
 
 
 	void Awake()
@@ -73,11 +76,13 @@ public class SpriteMesh : MonoBehaviour
             _texSize.x = _renderer.sharedMaterial.mainTexture.width;
             _texSize.y = _renderer.sharedMaterial.mainTexture.height;
 
-            _pixelPos.x = _size_vertice.x / _pixelsPerUnit;
-            _pixelPos.y = _size_vertice.y / _pixelsPerUnit;
+
+            _cuttingUnit = _cuttingRate * _size_vertice / _pixelsPerUnit;
+            _pixelPos = (_size_vertice / _pixelsPerUnit) - _cuttingUnit;
+
 
             //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
-            _texelPerUvUnit = new Vector2(1f / _texSize.x, 1f / _texSize.y);
+            _texelPerUv = new Vector2(1f / _texSize.x, 1f / _texSize.y);
 
             _world_width = _pixelPos.x * transform.localScale.x;
             _world_height = _pixelPos.y * transform.localScale.y;
@@ -90,19 +95,7 @@ public class SpriteMesh : MonoBehaviour
 
 	void UpdateMesh () 
 	{
-
-
-		{
-			//_mesh.vertices = new Vector3[]
-			//{
-			//	new Vector3(0,-_size.y) * _pixelsPerUnit,
-			//	new Vector3(0, -topBottomCutting.y) * _pixelsPerUnit,
-			//	new Vector3(_size.x,-_size.y ) * _pixelsPerUnit,
-			//	new Vector3(_size.x, -topBottomCutting.y) * _pixelsPerUnit
-			//};
-		}
-
-
+        
         {
 
             //1  3
@@ -123,31 +116,31 @@ public class SpriteMesh : MonoBehaviour
             _mesh.triangles = new int[] { 0, 1, 3, 0, 3, 2 };
 
         }
-		
+
 
         {
             //1  3
             //0  2
             //정점배치 순서에 따라 uv 순서를 맞춘다 
-            _mesh.uv = new Vector2[]
-            {
-            new Vector2(_texelPerUvUnit.x * _position.x,
-                        (_texelPerUvUnit.y * (_position.y + 0))),   //left-down 0
-            
-            new Vector2(_texelPerUvUnit.x * _position.x,
-                        (_texelPerUvUnit.y * (_position.y  + _size_uv.y ))), //left-up 1
+            Vector2 cuttingToTex = _cuttingUnit * _pixelsPerUnit;
 
-            new Vector2(_texelPerUvUnit.x * (_position.x + _size_uv.x),
-                        (_texelPerUvUnit.y * (_position.y + 0))),        //right-down 2
+            Vector2[] uv = new Vector2[4];
+            uv[0] = new Vector2(_texelPerUv.x * _position.x,
+                                (_texelPerUv.y * (_position.y + 0)));
+            uv[1] = new Vector2(_texelPerUv.x * _position.x,
+                                (_texelPerUv.y * (_position.y + _size_uv.y - cuttingToTex.y)));
+            uv[2] = new Vector2(_texelPerUv.x * (_position.x + _size_uv.x - cuttingToTex.x),
+                                (_texelPerUv.y * (_position.y + 0)));
+            uv[3] = new Vector2(_texelPerUv.x * (_position.x + _size_uv.x - cuttingToTex.x),
+                                (_texelPerUv.y * (_position.y + _size_uv.y - cuttingToTex.y)));
 
+            //uv[1].y -= _cutting.y;
+            //uv[2].x -= _cutting.x;
+            //uv[3] -= _cutting;
 
-            new Vector2(_texelPerUvUnit.x * (_position.x + _size_uv.x),
-                        (_texelPerUvUnit.y * (_position.y + _size_uv.y ))), //right-up 3
-
-            };
+            _mesh.uv = uv;
         }
 
-		
 		_mesh.RecalculateNormals ();
 		_mesh.RecalculateBounds ();
 
