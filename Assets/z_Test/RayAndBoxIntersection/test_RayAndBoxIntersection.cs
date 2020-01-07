@@ -2,22 +2,46 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class test_RayAndBoxIntersection : MonoBehaviour {
+[ExecuteInEditMode]
+public class test_RayAndBoxIntersection : MonoBehaviour 
+{
+
+    private Transform _box_ori = null;
+    private Transform _box_size = null;
+    private Transform _ray_start = null;
+    private Transform _ray_end = null;
+
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start () 
+    {
+        _box_ori = GameObject.Find("box_ori").transform;
+        _box_size = GameObject.Find("box_size").transform;
+        _ray_start = GameObject.Find("ray_start").transform;
+        _ray_end = GameObject.Find("ray_end").transform;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
-	}
+	//void Update () {}
 
     private void OnDrawGizmos()
     {
-        //DebugWide.DrawCube(new Vector3(-1, 0, -1), new Vector3(2,0,2), Color.black);
-        //DebugWide.Dr
+        if (null == _box_ori) return;
+
+        Vector3 sizeHalf = _box_size.position * 0.5f;
+        Vector3 boxMin = _box_ori.position - sizeHalf;
+        Vector3 boxMax = _box_ori.position + sizeHalf;
+
+        DebugWide.DrawCube(_box_ori.position, _box_size.position, Color.black);
+        DebugWide.DrawLine(_ray_start.position, _ray_end.position, Color.green);
+
+
+        Vector3 hitPoint;
+        bool result = HitBoundingBox(boxMin, boxMax, _ray_start.position, _ray_end.position - _ray_start.position, out hitPoint);
+        if(result)
+        {
+            DebugWide.DrawCircle(hitPoint, 0.5f, Color.red);
+        }
     }
 
 
