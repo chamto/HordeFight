@@ -36,11 +36,13 @@ public class test_RayAndBoxIntersection : MonoBehaviour
         DebugWide.DrawLine(_ray_start.position, _ray_end.position, Color.green);
 
 
-        Vector3 hitPoint;
+        Vector3 hitPoint, hitPoint2;
         bool result = HitBoundingBox(boxMin, boxMax, _ray_start.position, _ray_end.position - _ray_start.position, out hitPoint);
+        result = HitBoundingBox(boxMin, boxMax, _ray_end.position, _ray_start.position - _ray_end.position, out hitPoint2);
         if(result)
         {
             DebugWide.DrawCircle(hitPoint, 0.5f, Color.red);
+            DebugWide.DrawCircle(hitPoint2, 0.5f, Color.blue);
         }
     }
 
@@ -57,19 +59,23 @@ public class test_RayAndBoxIntersection : MonoBehaviour
     //minB[NUMDIM], [NUMDIM];           /*box */
     //origin[NUMDIM], dir[NUMDIM];     /*ray */
     //double coord[NUMDIM];            /* hit point */
+    //
+    //반직선이 나오는 면의 hitPoint 를 계산하기 위해 서는 나오는 면에 대한 처리를 똑같이 한번더 해야함
+    //같은 처리이기 때문에 인수를 바꾸어 나오는 면에 대한 hitPoint 를 사용하기로 함  
     //======================================================
     public bool HitBoundingBox(Vector3 minB, Vector3 maxB, Vector3 origin, Vector3 dir, out Vector3 coord)
     {
+        
         const int NUMDIM = 3;
         const int RIGHT = 0;
         const int LEFT = 1;
         const int MIDDLE = 2;
 
         bool inside = true;
-        int[] quadrant = new int[NUMDIM];
-        int whichPlane;
+        int[] quadrant = new int[NUMDIM]; //사분면 
+        int whichPlane; //어느평면 
         Vector3 maxT = UtilGS9.ConstV.v3_zero;
-        Vector3 candidatePlane = UtilGS9.ConstV.v3_zero;
+        Vector3 candidatePlane = UtilGS9.ConstV.v3_zero; //후보 평면 
 
         coord = UtilGS9.ConstV.v3_zero;
 
@@ -89,12 +95,12 @@ public class test_RayAndBoxIntersection : MonoBehaviour
                 quadrant[i] = RIGHT;
                 candidatePlane[i] = maxB[i];
                 inside = false;
-            }
-            else
+
+            }else
             {
                 quadrant[i] = MIDDLE;
             }
-            
+
         }
 
         /* Ray origin inside bounding box */
@@ -104,19 +110,32 @@ public class test_RayAndBoxIntersection : MonoBehaviour
             return true;
         }
 
+        //반직선이 상자를 통과헤 지나간다면, 반직선이 상자에 들어가는 면 1개 , 나오는 면 1개가 존재하게 된다
+        //후보면3개중 1개만 통과하며, 나머지 면은 후보면값(min 또는 max)을 그대로 가지고 있게 된다 
+
+        //후보면의 t값 계산 : 각각의 후보면에서 (후보면 - ray시작점) 값이 가장 큰 것을 t로 삼는다 
+        //이는 ray시작점 --- 후보면 --- ray방향길이 일때의 t값만 써야하기 때문이다 
+        //반직선 시작점이 후보면 값보다 작을때, 상자를 통과한다. 이는 (후보면 - ray시작점) 값이 다른축의 값들 보다 크다는 뜻이다 
 
         /* Calculate T distances to candidate planes */
         for (int i = 0; i<NUMDIM; i++)
         {
             if (quadrant[i] != MIDDLE && dir[i] != 0f)
-                maxT[i] = (candidatePlane[i] - origin[i]) / dir[i];
+            {
+                //직선을 벡터로 표현한 수식을 t에 대하여 정리한 것 
+                //p = ori + t * dir  -->  t = (p - ori) / dir
+                maxT[i] = (candidatePlane[i] - origin[i]) / dir[i]; 
+            }
             else
                 maxT[i] = -1f;
         }
-            
+
+        //DebugWide.LogBlue(maxT);
 
         /* Get largest of the maxT's for final choice of intersection */
-        whichPlane = 0;
+        //총2번 루프 : [0] < [1](y평면)  , [1] < [2](z평면) , [0] < [2](z평면)
+        //maxT중 가장 큰값을 가진 평면을 찾는다. 
+        whichPlane = 0; //(x평면)
         for (int i = 1; i<NUMDIM; i++)
         {
             if (maxT[whichPlane] < maxT[i])
@@ -132,7 +151,7 @@ public class test_RayAndBoxIntersection : MonoBehaviour
             if (whichPlane != i)
             {
                 coord[i] = origin[i] + maxT[whichPlane] * dir[i];
-                if (coord[i] < minB[i] || coord[i] > maxB[i])
+                if (coord[i] < minB[i] || coord[i] > maxB[i]) //계산된 점이 평면 외부에 있는 경우 검사 
                     return false;
             }
             else
@@ -140,7 +159,9 @@ public class test_RayAndBoxIntersection : MonoBehaviour
                 coord[i] = candidatePlane[i];
             }
         }
-            
+           
+        //DebugWide.LogBlue(coord + "  cand: " + candidatePlane);
+
         return true;              /* ray hits box */
     }  
 }
