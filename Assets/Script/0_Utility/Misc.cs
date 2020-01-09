@@ -2162,7 +2162,7 @@ namespace UtilGS9
         //반직선이 나오는 면의 hitPoint 를 계산하기 위해 서는 나오는 면에 대한 처리를 똑같이 한번더 해야함
         //같은 처리이기 때문에 인수를 바꾸어 나오는 면에 대한 hitPoint 를 사용하기로 함  
         //======================================================
-        public bool IntersectRay_AABB(Vector3 minB, Vector3 maxB, Vector3 origin, Vector3 dir, out Vector3 coord)
+        static public bool IntersectRay_AABB(Vector3 minB, Vector3 maxB, Vector3 origin, Vector3 dir, out Vector3 coord)
         {
             
             const int NUMDIM = 3;
