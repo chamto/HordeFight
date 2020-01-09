@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UtilGS9;
 
 
 //유니티의 unit 단위 , pixelsPerUnit 구하기 정보가 아래 링크에 나와있다  
@@ -34,9 +34,9 @@ public class SpriteMesh : MonoBehaviour
 
     private Vector2 _vert_unit;
     private Vector2 _tex_unit;
-    private Vector2 _pixelPos;
+    private Vector2 _pixelPos = ConstV.v2_zero;
     private Vector2 _texSize;
-    private Vector2 _texelPerUv;
+    private Vector2 _texelPerUv = ConstV.v2_zero;
 
     //======================================================
 
@@ -83,6 +83,18 @@ public class SpriteMesh : MonoBehaviour
 		_mesh.name = "SpriteMesh";
 		mf.sharedMesh = _mesh;
 
+        //------------------------------------------------
+
+        _texSize.x = _renderer.sharedMaterial.mainTexture.width;
+        _texSize.y = _renderer.sharedMaterial.mainTexture.height;
+
+        for (int i = 0; i < 4;i++)
+        {
+            vertSize[i] = UtilGS9.ConstV.v3_zero;
+            texSize[i] = UtilGS9.ConstV.v3_zero;
+        }
+
+
         _update_perform = true;
 
 	}
@@ -92,23 +104,39 @@ public class SpriteMesh : MonoBehaviour
 	{
 		if (true == _update_perform) 
 		{
-            //fixme : start 로 옮기기 
-            _texSize.x = _renderer.sharedMaterial.mainTexture.width;
-            _texSize.y = _renderer.sharedMaterial.mainTexture.height;
-
-
+            
             _vert_unit = (_size_vertice / _pixelsPerUnit);
             _tex_unit = (_size_tex / _pixelsPerUnit);
             _cutting_vert = (_cuttingRate * _size_vertice) / _pixelsPerUnit;
             _cutting_tex = (_cuttingRate * _size_tex) / _pixelsPerUnit;
 
             //uv 값의 범위를 0~1 로 만들어주기 위한 비율값을 구한다 
-            _texelPerUv = new Vector2(1f / _texSize.x, 1f / _texSize.y);
+            _texelPerUv.x = 1f / _texSize.x;
+            _texelPerUv.y = 1f / _texSize.y;
 
-
-            _pixelPos = new Vector2(_vert_unit.x - _cutting_vert.x, _vert_unit.y - _cutting_vert.y);
+            _pixelPos.x = _vert_unit.x - _cutting_vert.x;
+            _pixelPos.y = _vert_unit.y - _cutting_vert.y;
             _world_width = _pixelPos.x * transform.localScale.x;
             _world_height = _pixelPos.y * transform.localScale.y;
+
+            //------------------------------------------------
+
+            pivotPos.x = _vert_unit.x * _pivot.x;
+            pivotPos.y = _vert_unit.y * _pivot.y;
+
+
+            vertSize[0] = ConstV.v3_zero;
+            vertSize[1] = new Vector3(0, _vert_unit.y); //1
+            vertSize[2] = new Vector3(_vert_unit.x, 0); //2
+            vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
+
+            texSize[0] = ConstV.v3_zero;
+            texSize[1] = new Vector3(0, _tex_unit.y); //1
+            texSize[2] = new Vector3(_tex_unit.x, 0); //2
+            texSize[3] = new Vector3(_tex_unit.x, _tex_unit.y); //3
+
+
+            //------------------------------------------------
 
 
             if(false == _enable_ray_cutting)
@@ -117,24 +145,31 @@ public class SpriteMesh : MonoBehaviour
                 this.UpdateMesh_RayCutting();
 		}
 	}
+
+
+    Vector3 pivotPos = UtilGS9.ConstV.v3_zero;
+    Vector3[] vertSize = new Vector3[4];
+    Vector3[] texSize = new Vector3[4];
+    Vector3[] pivot_vert = new Vector3[4];
+    Vector2[] uv = new Vector2[4];
     void UpdateMesh_AxisCutting()
     {
 
         //1  3
         //0  2
-        Vector3 pivotPos = new Vector3(_vert_unit.x * _pivot.x, _vert_unit.y * _pivot.y, 0);
+        //pivotPos = new Vector3(_vert_unit.x * _pivot.x, _vert_unit.y * _pivot.y, 0);
 
-        Vector3[] vertSize = new Vector3[4];
-        vertSize[0] = new Vector3(0, 0); //0
-        vertSize[1] = new Vector3(0, _vert_unit.y); //1
-        vertSize[2] = new Vector3(_vert_unit.x, 0); //2
-        vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
+        //Vector3[] vertSize = new Vector3[4];
+        //vertSize[0] = new Vector3(0, 0); //0
+        //vertSize[1] = new Vector3(0, _vert_unit.y); //1
+        //vertSize[2] = new Vector3(_vert_unit.x, 0); //2
+        //vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
 
-        Vector3[] texSize = new Vector3[4];
-        texSize[0] = new Vector3(0, 0); //0
-        texSize[1] = new Vector3(0, _tex_unit.y); //1
-        texSize[2] = new Vector3(_tex_unit.x, 0); //2
-        texSize[3] = new Vector3(_tex_unit.x, _tex_unit.y); //3
+        //Vector3[] texSize = new Vector3[4];
+        //texSize[0] = new Vector3(0, 0); //0
+        //texSize[1] = new Vector3(0, _tex_unit.y); //1
+        //texSize[2] = new Vector3(_tex_unit.x, 0); //2
+        //texSize[3] = new Vector3(_tex_unit.x, _tex_unit.y); //3
 
 
         if(0 > _cuttingRate.y)
@@ -168,7 +203,7 @@ public class SpriteMesh : MonoBehaviour
         }
 
 
-        Vector3[] pivot_vert = new Vector3[4];
+        //pivot_vert = new Vector3[4];
         pivot_vert[0] = -pivotPos + vertSize[0];
         pivot_vert[1] = -pivotPos + vertSize[1];
         pivot_vert[2] = -pivotPos + vertSize[2];
@@ -185,7 +220,7 @@ public class SpriteMesh : MonoBehaviour
         _mesh.triangles = new int[] { 0, 1, 3, 0, 3, 2 };
 
         //정점 설정에 맞게 UV비율 맞추기 
-        Vector2[] uv = new Vector2[4];
+        //Vector2[] uv = new Vector2[4];
         //uv[0] = this.ToTexPosXY(vertSize[0]);
         //uv[1] = this.ToTexPosXY(vertSize[1]);
         //uv[2] = this.ToTexPosXY(vertSize[2]);
@@ -215,15 +250,15 @@ public class SpriteMesh : MonoBehaviour
         
         //1  3
         //0  2
-        Vector3 pivotPos = new Vector3(_vert_unit.x * _pivot.x, _vert_unit.y * _pivot.y, 0);
+        //pivotPos = new Vector3(_vert_unit.x * _pivot.x, _vert_unit.y * _pivot.y, 0);
 
-        Vector3[] vertSize = new Vector3[4];
-        vertSize[0] = new Vector3(0, 0); //0
-        vertSize[1] = new Vector3(0, _vert_unit.y); //1
-        vertSize[2] = new Vector3(_vert_unit.x, 0); //2
-        vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
+        //Vector3[] vertSize = new Vector3[4];
+        //vertSize[0] = new Vector3(0, 0); //0
+        //vertSize[1] = new Vector3(0, _vert_unit.y); //1
+        //vertSize[2] = new Vector3(_vert_unit.x, 0); //2
+        //vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
 
-        Vector3[] pivot_vert = new Vector3[4];
+        //Vector3[] pivot_vert = new Vector3[4];
         pivot_vert[0] = -pivotPos + vertSize[0];
         pivot_vert[1] = -pivotPos + vertSize[1];
         pivot_vert[2] = -pivotPos + vertSize[2];
@@ -252,7 +287,7 @@ public class SpriteMesh : MonoBehaviour
         _mesh.triangles = new int[] { 0, 1, 3, 0, 3, 2 };
 
         //정점 설정에 맞게 UV비율 맞추기 
-        Vector2[] uv = new Vector2[4];
+        //Vector2[] uv = new Vector2[4];
         uv[0] = this.ToTexPosXY(vertSize[0]);
         uv[1] = this.ToTexPosXY(vertSize[1]);
         uv[2] = this.ToTexPosXY(vertSize[2]);

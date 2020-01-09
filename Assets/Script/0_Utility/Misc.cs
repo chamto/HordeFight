@@ -95,6 +95,8 @@ namespace UtilGS9
 
     public partial class ConstV
     {
+        static public readonly Vector2 v2_zero = Vector2.zero;
+
         static public readonly Vector3 v3_zero = Vector3.zero;
         static public readonly Vector3 v3_one = Vector3.one;
         static public readonly Vector3 v3_up = Vector3.up;
