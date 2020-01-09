@@ -28,7 +28,7 @@ public class SpriteMesh : MonoBehaviour
     public float _world_height = 0f;
     //======================================================
 
-    public Material _spriteMaterial;
+    private Material _spriteMaterial;
 	private Mesh _mesh;
 	private MeshRenderer _renderer;
 
@@ -38,21 +38,22 @@ public class SpriteMesh : MonoBehaviour
     private Vector2 _texSize;
     private Vector2 _texelPerUv;
 
+    //======================================================
+
     public Transform _ray_start = null;
     public Transform _ray_end = null;
     private Vector3 _hit_point_0;
     private Vector3 _hit_point_1;
 
-    public Transform _test_pos_0 = null;
+    public bool _update_perform = false;
+    public bool _enable_ray_cutting = false;
+
 
 	//void Awake()
     void Start()
 	{
-		if (_spriteMaterial == null || _spriteMaterial.mainTexture == null) 
-		{
-			Debug.LogError("null is material");
-			return;
-		}
+        //_spriteMaterial = GameObject.Instantiate<Material>(Resources.Load<Material>("Shader/WeaponSprite"));
+        _spriteMaterial = Resources.Load<Material>("Shader/WeaponSprite");
 
 		MeshFilter mf = gameObject.GetComponent<MeshFilter>();
 		if (mf == null) 
@@ -69,11 +70,12 @@ public class SpriteMesh : MonoBehaviour
 		_renderer.receiveShadows = false;
 		_renderer.sharedMaterial = _spriteMaterial;
 
+
+
         //------------------------------------------------
 
         _ray_start = GameObject.Find("ray_start").transform;
         _ray_end = GameObject.Find("ray_end").transform;
-        _test_pos_0 = GameObject.Find("test_pos_0").transform;
 
         //------------------------------------------------
 
@@ -81,15 +83,14 @@ public class SpriteMesh : MonoBehaviour
 		_mesh.name = "SpriteMesh";
 		mf.sharedMesh = _mesh;
 
-        _Update_perform = true;
-        //this.UpdateMesh_RayCutting ();
+        _update_perform = true;
 
 	}
 
-	public bool _Update_perform = false;
+	
 	void Update () 
 	{
-		if (true == _Update_perform) 
+		if (true == _update_perform) 
 		{
             //fixme : start 로 옮기기 
             _texSize.x = _renderer.sharedMaterial.mainTexture.width;
@@ -110,8 +111,10 @@ public class SpriteMesh : MonoBehaviour
             _world_height = _pixelPos.y * transform.localScale.y;
 
 
-            this.UpdateMesh_AxisCutting();
-            //this.UpdateMesh_RayCutting();
+            if(false == _enable_ray_cutting)
+                this.UpdateMesh_AxisCutting();
+            else
+                this.UpdateMesh_RayCutting();
 		}
 	}
     void UpdateMesh_AxisCutting()
@@ -201,7 +204,7 @@ public class SpriteMesh : MonoBehaviour
         _mesh.RecalculateBounds();
 
 
-        _Update_perform = false;
+        _update_perform = false;
 
     }
 
@@ -216,9 +219,9 @@ public class SpriteMesh : MonoBehaviour
 
         Vector3[] vertSize = new Vector3[4];
         vertSize[0] = new Vector3(0, 0); //0
-        vertSize[1] = new Vector3(0, _pixelPos.y); //1
-        vertSize[2] = new Vector3(_pixelPos.x, 0); //2
-        vertSize[3] = new Vector3(_pixelPos.x, _pixelPos.y); //3
+        vertSize[1] = new Vector3(0, _vert_unit.y); //1
+        vertSize[2] = new Vector3(_vert_unit.x, 0); //2
+        vertSize[3] = new Vector3(_vert_unit.x, _vert_unit.y); //3
 
         Vector3[] pivot_vert = new Vector3[4];
         pivot_vert[0] = -pivotPos + vertSize[0];
@@ -230,7 +233,7 @@ public class SpriteMesh : MonoBehaviour
         //시험삼아 반직선으로 정점상자 잘라내기 해봄 
         if(true == UtilGS9.Geo.IntersectRay_AABB(pivot_vert[0] + transform.position , pivot_vert[3] + transform.position ,_ray_start.position, _ray_end.position - _ray_start.position ,out _hit_point_0))
         {
-            _test_pos_0.position = _hit_point_0;
+            //_test_pos_0.position = _hit_point_0;
             pivot_vert[1] = _hit_point_0 - transform.position;
             vertSize[1] = pivot_vert[1] + pivotPos;
 
@@ -261,7 +264,7 @@ public class SpriteMesh : MonoBehaviour
 		_mesh.RecalculateBounds ();
 
 
-		_Update_perform = false;
+		_update_perform = false;
 
 	}
 
