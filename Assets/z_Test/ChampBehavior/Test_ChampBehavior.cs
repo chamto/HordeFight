@@ -88,6 +88,7 @@ public class TwoHandControl : MonoBehaviour
     private Transform _hand_left_obj_end = null;
     private Transform _hand_left_obj_shader = null;
     private SpriteRenderer _hand_left_obj_spr = null;
+    private MeshRenderer _hand_left_spear = null;
 
     private Transform _hand_right_obj = null;
     private Transform _hand_right_obj_up = null;
@@ -316,6 +317,7 @@ public class TwoHandControl : MonoBehaviour
         _hand_left_obj_end = GameObject.Find("object_left_end").transform;
         _hand_left_obj_shader = GameObject.Find("2d_spear_shader").transform;
         _hand_left_obj_spr = _hand_left_obj.GetComponent<SpriteRenderer>();
+        _hand_left_spear = GameObject.Find("2d_spear").GetComponent<MeshRenderer>();
 
         //==================================================
         //조종항목 - AroundCircle
@@ -622,12 +624,6 @@ public class TwoHandControl : MonoBehaviour
             Vector3 temp = _object_left.eulerAngles;
             //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
 
-            //Sprite sprite = Resources.
-            //DebugWide.LogBlue(_hand_left_obj_spr.sprite.
-            //_hand_left_obj_spr.getC
-            //SpriteRenderer renderer;
-            //_hand_left_obj_spr.material.mainTextureOffset = new Vector2(0,Time.time * 1);
-            // _hand_left_obj_spr.sharedMaterial.SetTextureOffset("_MainTex", new Vector2(0, Time.time * 0.5f));
 
             //float aa = Time.time * 0.01f;
             //if (1 < aa) aa = 1;
@@ -639,13 +635,15 @@ public class TwoHandControl : MonoBehaviour
             //if (Vector3.Dot(_body_dir, hLhR) > 0)
             {
                 //앞면
-                _hand_left_obj_spr.color = Color.white;
+                //_hand_left_obj_spr.color = Color.white;
+                //_hand_left_spear.sharedMaterial.color = Color.white;
                 temp.z = 0;
             }
             else
             {
                 //뒷면 
-                _hand_left_obj_spr.color = Color.gray;
+                //_hand_left_obj_spr.color = Color.gray;
+                //_hand_left_spear.sharedMaterial.color = Color.gray;
                 temp.z = 180;
             }
             _object_left.eulerAngles = temp;
@@ -655,16 +653,15 @@ public class TwoHandControl : MonoBehaviour
             {
                 //-----------------------------------
                 //평면과 광원사이의 최소거리 
-                //float len_groundToObj_start, len_groundToObj_end;
+                float len_groundToObj_start, len_groundToObj_end;
                 //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-                //Vector3 end = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
+                Vector3 end = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj_end.position, out len_groundToObj_end);
                 Vector3 start = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj.position);
-                Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
+                //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
 
                 Vector3 startToEnd = end - start;
                 float len_startToEnd = startToEnd.magnitude;
                 float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
-                //DebugWide.LogBlue(len_startToEnd  + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
 
                 float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd); 
@@ -690,6 +687,25 @@ public class TwoHandControl : MonoBehaviour
                     temp2.z = 180f;
                 }
                 _hand_left_obj_shader.eulerAngles = temp2;
+                //-----------------------------------  
+
+                //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
+
+                //땅을 통과하는 창 자르기 
+                SpriteMesh spriteMesh = _hand_left_obj.GetComponent<SpriteMesh>();
+                if (_ground.position.y > _hand_left_obj_end.position.y)
+                {
+                    float rate_viewLen = (_hand_left_obj_end.position - end).magnitude / 2.4f;
+                    spriteMesh._cuttingRate.y = -rate_viewLen;
+                    spriteMesh._update_perform = true; 
+
+                }else if(0 != spriteMesh._cuttingRate.y)
+                {
+                    spriteMesh._cuttingRate.y = 0;
+                    spriteMesh._update_perform = true;    
+                }
+
+
                 //-----------------------------------    
             }
 
@@ -833,15 +849,15 @@ public class TwoHandControl : MonoBehaviour
         Vector3 groundToObject = objectPos - ground;
         float len_groundToObject = Vector3.Dot(groundToObject, groundUp);
 
-        //t = len / sin@
+        //s = len / sin@
         float sinAngle = Geo.Angle360(-groundUp, lightDir, Vector3.Cross(-groundUp, lightDir));
         sinAngle = 90f - sinAngle;
 
-        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+        float s = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
 
         Vector3 nDir = VOp.Normalize(lightDir);
 
-        return objectPos + t * nDir;
+        return objectPos + s * nDir;
     }
 
       
@@ -857,15 +873,16 @@ public class TwoHandControl : MonoBehaviour
         Vector3 groundToObject = objectPos - ground;
         len_groundToObject = Vector3.Dot(groundToObject, groundUp);
 
-        //t = len / sin@
+        //s = len / sin@
         float sinAngle = Geo.Angle360(-groundUp, lightDir, Vector3.Cross(-groundUp, lightDir));
         sinAngle = 90f - sinAngle;
 
-        float t = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
+        //s : 삼각형의 빗면 
+        float s = len_groundToObject / Mathf.Sin(sinAngle * Mathf.Deg2Rad);
 
         Vector3 nDir = VOp.Normalize(lightDir);
 
-        return objectPos + t * nDir;
+        return objectPos + s * nDir;
     }
 
 

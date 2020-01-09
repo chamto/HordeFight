@@ -40,8 +40,8 @@ public class SpriteMesh : MonoBehaviour
 
     //======================================================
 
-    public Transform _ray_start = null;
-    public Transform _ray_end = null;
+    public Vector3 _ray_start = ConstV.v3_zero;
+    public Vector3 _ray_end = ConstV.v3_zero;
     private Vector3 _hit_point_0;
     private Vector3 _hit_point_1;
 
@@ -71,11 +71,10 @@ public class SpriteMesh : MonoBehaviour
 		_renderer.sharedMaterial = _spriteMaterial;
 
 
-
         //------------------------------------------------
 
-        _ray_start = GameObject.Find("ray_start").transform;
-        _ray_end = GameObject.Find("ray_end").transform;
+        //_ray_start = GameObject.Find("ray_start").transform;
+        //_ray_end = GameObject.Find("ray_end").transform;
 
         //------------------------------------------------
 
@@ -266,13 +265,13 @@ public class SpriteMesh : MonoBehaviour
 
         //1  3 상단 잘라내기 
         //시험삼아 반직선으로 정점상자 잘라내기 해봄 
-        if(true == UtilGS9.Geo.IntersectRay_AABB(pivot_vert[0] + transform.position , pivot_vert[3] + transform.position ,_ray_start.position, _ray_end.position - _ray_start.position ,out _hit_point_0))
+        if(true == UtilGS9.Geo.IntersectRay_AABB(pivot_vert[0] + transform.position , pivot_vert[3] + transform.position ,_ray_start, _ray_end - _ray_start ,out _hit_point_0))
         {
             //_test_pos_0.position = _hit_point_0;
             pivot_vert[1] = _hit_point_0 - transform.position;
             vertSize[1] = pivot_vert[1] + pivotPos;
 
-            UtilGS9.Geo.IntersectRay_AABB(pivot_vert[0] + transform.position, pivot_vert[3] + transform.position, _ray_end.position, _ray_start.position - _ray_end.position, out _hit_point_1);
+            UtilGS9.Geo.IntersectRay_AABB(pivot_vert[0] + transform.position, pivot_vert[3] + transform.position, _ray_end, _ray_start - _ray_end, out _hit_point_1);
             pivot_vert[3] = _hit_point_1 - transform.position;
             vertSize[3] = pivot_vert[3] + pivotPos;
         }
