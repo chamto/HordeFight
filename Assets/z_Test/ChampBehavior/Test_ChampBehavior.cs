@@ -23,14 +23,8 @@ public class Test_ChampBehavior : MonoBehaviour
 	}
 }
 
-//public class MotionTrajectory : MonoBehaviour
-//{
-//    //경로모델
-//    public Geo.Model.eKind eModel = Geo.Model.eKind.Circle;
-//    public float radius = 1f;
-//    public float tornado_angle = 360f;
 
-//}
+//=========================================================
 
 public class TwoHandControl : MonoBehaviour
 {
@@ -695,12 +689,13 @@ public class TwoHandControl : MonoBehaviour
                 SpriteMesh spriteMesh = _hand_left_obj.GetComponent<SpriteMesh>();
                 if (_ground.position.y > _hand_left_obj_end.position.y)
                 {
-                    float rate_viewLen = (_hand_left_obj_end.position - end).magnitude / 2.4f;
+                    float rate_viewLen = (_hand_left_obj_end.position - end).magnitude / 2.4f; //하드코딩
                     spriteMesh._cuttingRate.y = -rate_viewLen;
                     spriteMesh._update_perform = true; 
 
                 }else if(0 != spriteMesh._cuttingRate.y)
                 {
+                   //기존값이 남아있는 경우를 제거한다  
                     spriteMesh._cuttingRate.y = 0;
                     spriteMesh._update_perform = true;    
                 }
