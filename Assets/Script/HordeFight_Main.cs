@@ -145,6 +145,12 @@ namespace HordeFight
 
         public static void Init(GameObject parent)
         {
+
+            DateTime _startDateTime;
+            string _timeTemp = "";
+
+            //==============================================
+
             mainCamera = FindHierarchy<Camera>("Main Camera");
             canvasRoot = FindHierarchy<Canvas>("Canvas");
             gridRoot = FindHierarchy<Transform>("0_grid");
@@ -154,10 +160,14 @@ namespace HordeFight
 
             //==============================================
 
+            _startDateTime = DateTime.Now;
             SingleO.hierarchy.Init(); //계층도 읽어들이기 
+            _timeTemp += "  hierarchy.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            _startDateTime = DateTime.Now;
             SingleO.resourceManager.Init(); //스프라이트 로드 
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
-
+            _timeTemp += "  resourceManager. CalcViewportRect  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
             //==============================================
 
             cameraWalk = parent.AddComponent<CameraWalk>();
@@ -169,16 +179,27 @@ namespace HordeFight
 
             //==============================================
 
+            _startDateTime = DateTime.Now;
             gridManager = parent.AddComponent<GridManager>();
             gridManager.Init();
+            _timeTemp += "  GridManager.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            _startDateTime = DateTime.Now;
             objectManager = parent.AddComponent<ObjectManager>();
             objectManager.Init();
-            //campManager = parent.AddComponent<CampManager>();
+            _timeTemp += "  ObjectManager.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+            _startDateTime = DateTime.Now;
             pathFinder = parent.AddComponent<PathFinder>();
             pathFinder.Init();
+            _timeTemp += "  PathFinder.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+            DebugWide.LogBlue(_timeTemp);
+            //==============================================
 
         }
+
 
         //유니티 객체 
         static public Camera mainCamera = null; //"Main Camera"  
@@ -2912,13 +2933,19 @@ namespace HordeFight
         private SphereTree _sphereTree_being = new SphereTree(2000, new float[]{ 16, 10 ,5, 2 }, 0.5f);
         private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
+
         //private void Start()
         public void Init()
         {
+            DateTime _startDateTime;
+            string _timeTemp = "";
+
             //===============
             //해쉬와 문자열 설정
             //===============
 
+            //==============================================
+            _startDateTime = DateTime.Now;
             SingleO.hashMap.Add(Animator.StringToHash("idle"),"idle");
             SingleO.hashMap.Add(Animator.StringToHash("move"),"move");
             SingleO.hashMap.Add(Animator.StringToHash("block"),"block");
@@ -2926,11 +2953,18 @@ namespace HordeFight
             SingleO.hashMap.Add(Animator.StringToHash("fallDown"),"fallDown");
             SingleO.hashMap.Add(Animator.StringToHash("idle -> attack"),"idle -> attack");
             SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"),"attack -> idle");
-
+            _timeTemp += "  ObjectManager.hashMap.Add  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+            //==============================================
+            _startDateTime = DateTime.Now;
             this.Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            _timeTemp += "  ObjectManager.Create_ChampCamp  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+            //==============================================
+            _startDateTime = DateTime.Now;
             _aabbCulling.Initialize(_linearSearch_list); //aabb 컬링 초기화 
             DebugWide.LogBlue("Start_ObjectManager !! ");
-
+            _timeTemp += "  ObjectManager.aabbCulling.init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+            //==============================================
+            _startDateTime = DateTime.Now;
             //임시로 여기서 처리
             //구조타일 정보로 구트리정보를 만든다 
             foreach (KeyValuePair<Vector3Int, CellSpace> t in SingleO.gridManager._structTileList)
@@ -2941,6 +2975,10 @@ namespace HordeFight
                     _sphereTree_struct.AddIntegrateQ(model);
                 }
             }
+            _timeTemp += "  ObjectManager.sphereTree.init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            DebugWide.LogBlue(_timeTemp);
+            //==============================================
 
         }
 
@@ -4136,7 +4174,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab("0_champ/" +eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
-            //obj.AddComponent<SortingGroup>(); //drawcall(batches) 증가 문제로 주석  
+            ////obj.AddComponent<SortingGroup>(); //drawcall(batches) 증가 문제로 주석  
             Movement mov = obj.AddComponent<Movement>();
             mov._being = cha;
             obj.AddComponent<AI>();
@@ -4145,21 +4183,21 @@ namespace HordeFight
             cha._belongCamp = belongCamp;
             cha.transform.position = pos;
 
-            //==============================================
-            //가지(촉수) 등록
+            ////==============================================
+            ////가지(촉수) 등록
             Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
 
-            //==============================================
-            //구트리 등록 
+            ////==============================================
+            ////구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<ChampUnit>(cha);
-            //==============================================
+            ////==============================================
 
             cha._sphereModel = model;
             cha.Init();
 
-            //==============================================
+            ////==============================================
 
             _beings.Add(_id_sequence, cha);
             _linearSearch_list.Add(cha); //속도향상을 위해 중복된 데이터 추가
@@ -4191,7 +4229,8 @@ namespace HordeFight
 
             //==============================================
 
-            //_shots.Add(_id_shot_sequence, shot);
+            ///////_shots.Add(_id_shot_sequence, shot);
+
             _shots.Add(shot);
 
             return shot;
@@ -4295,8 +4334,13 @@ namespace HordeFight
 
         public void Create_ChampCamp()
         {
+            DateTime _startDateTime;
+            string _timeTemp = "";
+
             if (null == SingleO.unitRoot) return;
 
+            //==============================================
+            _startDateTime = DateTime.Now;
             string Blue_CampName = "Champ_Sky";
             string White_CampName = "Skel_Gray";
             string Obstacle_CampName = "ExitGoGe";
@@ -4314,9 +4358,14 @@ namespace HordeFight
             Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
             Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
             Camp camp_Obstacle = SingleO.campManager.GetCamp(Camp.eKind.Obstacle, Obstacle_CampName.GetHashCode());
+            _timeTemp += "  ObjectManager.Create_ChampCamp.CampInfo  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            //==============================================
+            _startDateTime = DateTime.Now;
+
             Being being = null;
             ChampUnit champ = null;
-
+            int numMax_create = 0;
             // -- 블루 진형 --
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(camp_position));
             champ._hp_max = 10000;
@@ -4336,7 +4385,11 @@ namespace HordeFight
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
-            for (int i = 0; i < 50; i++)
+
+            _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            numMax_create = 100;
+            for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
                 champ._hp_max = 30;
@@ -4350,11 +4403,12 @@ namespace HordeFight
             //===================================================
 
             // -- 휜색 진형 --
+            numMax_create = 0;
             camp_position = 0;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < numMax_create; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ._mt_range_min = 1f;
@@ -4364,7 +4418,8 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            for (int i = 0; i < 0; i++)
+            numMax_create = 0;
+            for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
@@ -4374,24 +4429,27 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            for (int i = 0; i < 0 ;i++)
+            numMax_create = 0;
+            for (int i = 0; i < numMax_create ;i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
             }
 
             //===================================================
 
-            // -- 발사체 미리 생성 --
+            _startDateTime = DateTime.Now;
 
-            for (int i = 0; i < 300;i++)
+            // -- 발사체 미리 생성 --
+            numMax_create = 300;
+            for (int i = 0; i < numMax_create;i++)
             {
                 //being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
                 being = Create_Shot(SingleO.shotRoot, Being.eKind.waterBolt, ConstV.v3_zero);
             }
-
+            _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Shot  : " +numMax_create+ " :  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
             //===================================================
 
-
+            DebugWide.LogBlue(_timeTemp);
         }
 
     }

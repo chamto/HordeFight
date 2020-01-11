@@ -954,9 +954,15 @@ namespace HordeFight
 
             //_sprParent = SingleO.hierarchy.GetTransformA(SingleO.hierarchy.GetFullPath(transform) + "/pos");
             //_shader = SingleO.hierarchy.GetTransformA(SingleO.hierarchy.GetFullPath(transform) + "/shader");
-            _sprParent = SingleO.hierarchy.GetTransformA(transform, "/pos");
-            _shader = SingleO.hierarchy.GetTransformA(transform, "/shader");
+
+            //_sprParent = SingleO.hierarchy.GetTransformA(transform, "/pos");
+            //_shader = SingleO.hierarchy.GetTransformA(transform, "/shader");
             //this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
+
+
+            _sprParent = SingleO.hierarchy.GetTransform(transform, "pos");
+            _shader = SingleO.hierarchy.GetTransform(transform, "shader");
+
 
         }
 
@@ -1390,11 +1396,12 @@ x        }
             //=====================================================
             // 전용 effect 설정 
 
-            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim").GetComponent<SpriteRenderer>();
-            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir").GetComponent<SpriteRenderer>();
-            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion").GetComponent<SpriteRenderer>();
-            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left").GetComponent<SpriteRenderer>();
-            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right").GetComponent<SpriteRenderer>();
+            Transform effectTr = SingleO.hierarchy.GetTransform(transform, "effect");
+            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "aim");
+            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "dir");
+            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "emotion");
+            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "hand_left");
+            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "hand_right");
 
             //아틀라스에서 가져온 sprite로 변경하여 시험 
             //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
@@ -1415,11 +1422,13 @@ x        }
 
             //=====================================================
             // 전용 ui 설정 
+
+            //todo : 성능이 무척 안좋은 처리 , 스프라이트HP바로 바꾸기 
             _ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
             _ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             _ui_circle.gameObject.SetActive(false);
             _ui_hp.gameObject.SetActive(false);
-            //SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
+            ////SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
         }
 
 

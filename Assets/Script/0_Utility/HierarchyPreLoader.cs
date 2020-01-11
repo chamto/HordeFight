@@ -11,6 +11,44 @@ public class HierarchyPreLoader
 	private Dictionary<int,Transform> _hashMap = new Dictionary<int, Transform> ();
 
 
+    //======================================================
+
+    //GetTransformA의 성능이 몹시 좋지 못하여 다른방식으로 만듬 
+    public Transform GetTransform(Transform parent, string child_name)
+    {
+        if (null != parent)
+        {
+            Transform[] list = parent.GetComponentsInChildren<Transform>(true);
+            for (int i = 0; i < list.Length; i++)
+            {
+                if (list[i].name == child_name)
+                    return list[i];
+            }
+        }
+        return null;
+    }
+    public TaaT GetTypeObject<TaaT>(Transform parent, string child_name) where TaaT : class
+    {
+        Transform f = this.GetTransform(parent, child_name);
+        if (null == f)
+            return null;
+
+        //GameObject 를 컴포넌트로 검색하면 에러남. GameObject 는 컴포넌트가 아니다
+        if (typeof(TaaT) == typeof(GameObject))
+        {
+            return f.gameObject as TaaT;
+        }
+
+        return f.GetComponent<TaaT>();
+    }
+
+    //======================================================
+
+
+    //======================================================
+    //아래의 소스는 성능이 안좋으니 제거하는 방향으로 가야 한다  
+    //todo : 사용하는 소스 부분 모두 제거하기 
+    //======================================================
     public void Init()
     {
         _hashMap.Clear();
@@ -80,7 +118,6 @@ public class HierarchyPreLoader
         //DebugWide.LogBlue(full_path); //chamto test
 
         return GetTransformA(full_path);
-
     }
 
     public GameObject GetGameObject(string full_path)
@@ -109,6 +146,8 @@ public class HierarchyPreLoader
 
         return f.GetComponentInChildren<TaaT>(true);
     }
+
+
 
 	//ref : http://answers.unity3d.com/questions/8500/how-can-i-get-the-full-path-to-a-gameobject.html
 	static public string FullPath(Transform tr)
