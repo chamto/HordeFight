@@ -157,6 +157,8 @@ namespace HordeFight
             unitRoot = FindHierarchy<Transform>("0_unit");
             shotRoot = FindHierarchy<Transform>("0_shot");
             debugRoot = FindHierarchy<Transform>("z_debug");
+            lightDir = FindHierarchy<Transform>("light_dir");
+            groundY = FindHierarchy<Transform>("groundY");
 
             //==============================================
 
@@ -208,7 +210,8 @@ namespace HordeFight
         static public Transform unitRoot = null; //"0_unit"
         static public Transform shotRoot = null; //"0_shot
         static public Transform debugRoot = null; //"z_debug
-
+        static public Transform lightDir = null; //"light_dir"
+        static public Transform groundY = null; //"groundY"
 
         //모노 객체 
         public static ObjectManager objectManager = null;
@@ -4187,7 +4190,7 @@ namespace HordeFight
             ////가지(촉수) 등록
             Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
             limbs_hand.Init();
-
+            cha._limbs = limbs_hand;
             ////==============================================
             ////구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);

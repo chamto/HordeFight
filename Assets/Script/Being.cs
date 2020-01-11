@@ -1358,8 +1358,9 @@ x        }
 
         //==================================================
 
-
-
+        //가지정보
+        public Limbs _limbs = null;
+        //==================================================
 
         public float attack_range_min
         {
@@ -1435,10 +1436,10 @@ x        }
         public override bool UpdateAll()
         {
             bool result = base.UpdateAll();
-            //if(true == result)
-            //{
-
-            //}
+            if(true == result)
+            {
+                _limbs.Update_All(); //가지들 갱신 
+            }
 
             return result;
         }
