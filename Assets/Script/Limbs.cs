@@ -107,6 +107,8 @@ namespace HordeFight
 
         public bool _active_shadowObject = true;
 
+        public bool _active_projectionSlope = true;
+        public float _boxSlope_angle = 75f;
 
         private Geo.Model _Model_left_0 = new Geo.Model(); //a
         private Geo.Model _Model_left_1 = new Geo.Model(); //a
@@ -333,6 +335,12 @@ namespace HordeFight
             //손 움직임 만들기 
             Update_HandControl();
 
+            //2d 게임에서의 높이표현 
+            if(_active_projectionSlope)
+            {
+                _hand_right.position = Project_BoxSlope(_hand_right.position, (_hand_right.position - _groundY).y);
+                _hand_left.position = Project_BoxSlope(_hand_left.position, (_hand_left.position - _groundY).y);
+            }
             //==================================================
             //손에 칼 붙이기
             Update_AttachHand();
@@ -346,6 +354,18 @@ namespace HordeFight
         }
 
         //==================================================
+
+        //2d 게임같은 높이값을 표현한다. 기울어진 투영상자의 빗면에 높이값을 투영한다.
+        //그 길이를 대상위치에 z축 값을 더한다  
+        public Vector3 Project_BoxSlope(Vector3 target, float heightY)
+        {
+            float angle = 90f - _boxSlope_angle;
+            float b = Mathf.Tan(angle * Mathf.Deg2Rad) * Mathf.Abs(heightY);
+
+            target.z += b;
+            return target;
+        }
+
 
         public void Rotate(Vector3 dir)
         {
