@@ -477,6 +477,7 @@ namespace HordeFight
         public Transform _transform = null;
 
         public eDirection8 _eDir8 = eDirection8.down;
+        //public float _dir_angleY = 0f;
         public Vector3 _direction = Vector3.back; //_eDir8과 같은 방향으로 설정한다  
 
         private float _speed_meterPerSecond = 1f;
@@ -536,7 +537,7 @@ namespace HordeFight
                 //회전쿼터니언을 추출해 방향값에 곱한다 => 새로운 방향 
                 _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos, _transform.position)) * _direction;
                 _eDir8 = Misc.GetDir8_AxisY(_direction);
-
+                //_dir_angleY = Geo.AngleSigned_AxisY(ConstV.v3_forward, _direction);
             }
             _elapsed_movingTime += Time.deltaTime;
 
@@ -1438,7 +1439,9 @@ x        }
             bool result = base.UpdateAll();
             if(true == result)
             {
+                
                 _limbs.Update_All(); //가지들 갱신 
+                _limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기 
             }
 
             return result;

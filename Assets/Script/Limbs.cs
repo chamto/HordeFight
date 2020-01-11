@@ -159,7 +159,6 @@ namespace HordeFight
         private Transform _tornado_unlace_B1 = null;
 
 
-
         //======================================================
 
         static public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
@@ -175,9 +174,9 @@ namespace HordeFight
 
         static public Limbs CreateLimbs_TwoHand(Transform parent)
         {
-            Limbs limbs = parent.gameObject.AddComponent<Limbs>();
-
+            
             GameObject limbPrefab = Limbs.CreatePrefab("limbs_twoHand", parent, "limbs_twoHand");
+            Limbs limbs = limbPrefab.AddComponent<Limbs>();
 
             return limbs;
         }
@@ -192,6 +191,7 @@ namespace HordeFight
             _Model_left_1.branch = Geo.Model.eBranch.arm_left_0;
             _Model_right_0.branch = Geo.Model.eBranch.arm_right_0;
             _Model_right_1.branch = Geo.Model.eBranch.arm_right_0;
+
 
 
             //==================================================
@@ -316,7 +316,7 @@ namespace HordeFight
         public void Update_All()
         {
             //몸 방향값 갱신 
-            _body_dir = (_tbody_dir.position - transform.position).normalized; //사용처가 없음 
+            //_body_dir = (_tbody_dir.position - transform.position).normalized; //사용처가 없음 
 
             _light_dir = SingleO.lightDir.position;
             _groundY = SingleO.groundY.position;
@@ -346,6 +346,14 @@ namespace HordeFight
         }
 
         //==================================================
+
+        public void Rotate(Vector3 dir)
+        {
+            Vector3 temp = transform.localEulerAngles;
+            temp.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, dir);
+            transform.localEulerAngles = temp;
+        }
+
 
         public void Update_HandControl()
         {
