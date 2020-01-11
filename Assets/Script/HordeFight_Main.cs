@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 //using UnityEngine.Assertions;
 using UnityEngine.Rendering;
+using UnityEngine.U2D;
 
 using UtilGS9;
 
@@ -19,11 +20,8 @@ namespace HordeFight
         void Start()
         {
             Misc.Init();
-            SingleO.Init(gameObject); //싱글톤 객체 생성 , 설정 
-            SingleO.hierarchy.Init(); //계층도 읽어들이기 
-            SingleO.resourceManager.Init(); //스프라이트 로드 
 
-            ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
+            SingleO.Init(gameObject); //싱글톤 객체 생성 , 초기화 
 
 
             SingleO.debugViewer._origin = SingleO.hierarchy.GetTransformA("z_debug/origin");
@@ -154,18 +152,31 @@ namespace HordeFight
             shotRoot = FindHierarchy<Transform>("0_shot");
             debugRoot = FindHierarchy<Transform>("z_debug");
 
+            //==============================================
 
-            gridManager = parent.AddComponent<GridManager>();
-            objectManager = parent.AddComponent<ObjectManager>();
-            //campManager = parent.AddComponent<CampManager>();
-            pathFinder = parent.AddComponent<PathFinder>();
+            SingleO.hierarchy.Init(); //계층도 읽어들이기 
+            SingleO.resourceManager.Init(); //스프라이트 로드 
+            ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
+
+            //==============================================
+
             cameraWalk = parent.AddComponent<CameraWalk>();
             touchEvent = parent.AddComponent<TouchEvent>();
             touchControl = parent.AddComponent<TouchControl>();
             uiMain = parent.AddComponent<UI_Main>();
             lineControl = parent.AddComponent<LineControl>();
-
             debugViewer = debugRoot.gameObject.AddComponent<DebugViewer>();
+
+            //==============================================
+
+            gridManager = parent.AddComponent<GridManager>();
+            gridManager.Init();
+            objectManager = parent.AddComponent<ObjectManager>();
+            objectManager.Init();
+            //campManager = parent.AddComponent<CampManager>();
+            pathFinder = parent.AddComponent<PathFinder>();
+            pathFinder.Init();
+
 
         }
 
@@ -664,9 +675,11 @@ namespace HordeFight
         //기본 동작 AniClip 목록 : base_idle , base_move , base_attack , base_fallDown
         private AnimationClip[] _baseAniClips = null;
 
+        public Dictionary<int, Sprite> _sprEffect = new Dictionary<int, Sprite>();
         public Dictionary<int, Sprite> _sprIcons = new Dictionary<int, Sprite>();
         public Dictionary<int, TileBase> _tileScripts = new Dictionary<int, TileBase>();
 
+        public SpriteAtlas _atlas_etc = null;
 
         //==================== Get / Set ====================
 
@@ -719,11 +732,23 @@ namespace HordeFight
             _baseAniClips = ConstV.FindAniBaseClips(loaded);
 
 
-            Sprite[] spres = Resources.LoadAll<Sprite>("Warcraft/Textures/Icons");
-            foreach(Sprite spr in spres)
-            {
-                _sprIcons.Add(spr.name.GetHashCode(), spr);
-            }
+            //DebugWide.LogBlue(spriteAtlas.spriteCount);
+            //spriteAtlas.GetSprite()
+
+            _atlas_etc = Resources.Load<SpriteAtlas>("Warcraft/Textures/Atlas/etc");
+
+            //Sprite[] spres = Resources.LoadAll<Sprite>("Warcraft/Textures/ETC/effect");
+            //foreach (Sprite spr in spres)
+            //{
+            //    _sprEffect.Add(spr.name.GetHashCode(), spr);
+            //}
+
+            //Sprite[] spres = Resources.LoadAll<Sprite>("Warcraft/Textures/ETC/Icons");
+            //foreach(Sprite spr in spres)
+            //{
+            //    _sprIcons.Add(spr.name.GetHashCode(), spr);
+            //}
+
 
             TileBase[] tiles = Resources.LoadAll<TileBase>("Warcraft/Palette/ScriptTile");
             foreach(TileBase r in tiles)
@@ -733,6 +758,31 @@ namespace HordeFight
             }
         }
 
+        public Sprite GetSprite_Effect(string spr_name)
+        {
+            int hash = spr_name.GetHashCode();
+            if(false == _sprEffect.Keys.Contains(hash))
+            {
+                Sprite sprite = _atlas_etc.GetSprite(spr_name);
+                if(null != sprite)
+                    _sprEffect.Add(hash, sprite);    
+            }
+
+            return _sprEffect[hash];
+        }
+
+        public Sprite GetSprite_Icons(string spr_name)
+        {
+            int hash = spr_name.GetHashCode();
+            if (false == _sprIcons.Keys.Contains(hash))
+            {
+                Sprite sprite = _atlas_etc.GetSprite(spr_name);
+                if (null != sprite)
+                    _sprIcons.Add(hash, sprite);
+            }
+
+            return _sprIcons[hash];
+        }
 
         public TileBase GetTileScript(int nameToHash)
         {
@@ -1933,7 +1983,8 @@ namespace HordeFight
             return _tilemap_fogOfWar;
         }
 
-		private void Start()
+		//private void Start()
+        public void Init()
 		{
             
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
@@ -2861,7 +2912,8 @@ namespace HordeFight
         private SphereTree _sphereTree_being = new SphereTree(2000, new float[]{ 16, 10 ,5, 2 }, 0.5f);
         private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
-        private void Start()
+        //private void Start()
+        public void Init()
         {
             //===============
             //해쉬와 문자열 설정
@@ -2875,7 +2927,7 @@ namespace HordeFight
             SingleO.hashMap.Add(Animator.StringToHash("idle -> attack"),"idle -> attack");
             SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"),"attack -> idle");
 
-            Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            this.Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
             _aabbCulling.Initialize(_linearSearch_list); //aabb 컬링 초기화 
             DebugWide.LogBlue("Start_ObjectManager !! ");
 
@@ -4084,7 +4136,7 @@ namespace HordeFight
 
             GameObject obj = CreatePrefab("0_champ/" +eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
-            obj.AddComponent<SortingGroup>();
+            //obj.AddComponent<SortingGroup>(); //drawcall(batches) 증가 문제로 주석  
             Movement mov = obj.AddComponent<Movement>();
             mov._being = cha;
             obj.AddComponent<AI>();
@@ -4092,6 +4144,10 @@ namespace HordeFight
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
             cha.transform.position = pos;
+
+            //==============================================
+            //가지(촉수) 등록
+            Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
 
             //==============================================
             //구트리 등록 
@@ -4280,7 +4336,7 @@ namespace HordeFight
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
                 champ._hp_max = 30;

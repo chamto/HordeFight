@@ -1329,7 +1329,7 @@ x        }
         public Inventory _inventory = null;
 
         //전용effect
-        private Transform[] _effect = new Transform[(int)eEffectKind.Max];
+        private SpriteRenderer[] _effect = new SpriteRenderer[(int)eEffectKind.Max];
         //public Transform _effect_aim = null; //조준
         //public Transform _effect_dir = null; //방향 
         //public Transform _effect_emotion = null; //감정 표현 
@@ -1389,19 +1389,29 @@ x        }
 
             //=====================================================
             // 전용 effect 설정 
-            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
-            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
-            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
-            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
-            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
 
-            //_effect_aim = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
-            //_effect_dir = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
-            //_effect_emotion = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
-            //_effect_hand_left = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
-            //_effect_hand_right = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
-            //if(null != _effect_emotion)
-                //_effect_emotion.gameObject.SetActive(true);
+            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim").GetComponent<SpriteRenderer>();
+            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir").GetComponent<SpriteRenderer>();
+            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion").GetComponent<SpriteRenderer>();
+            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left").GetComponent<SpriteRenderer>();
+            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right").GetComponent<SpriteRenderer>();
+
+            //아틀라스에서 가져온 sprite로 변경하여 시험 
+            //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
+            //_effect[(int)eEffectKind.Dir].sprite = SingleO.resourceManager.GetSprite_Effect("effect_dir");
+            //_effect[(int)eEffectKind.Emotion].sprite = SingleO.resourceManager.GetSprite_Effect("effect_surprise");
+            //_effect[(int)eEffectKind.Hand_Left].sprite = SingleO.resourceManager.GetSprite_Effect("effect_sheld_0");
+            //_effect[(int)eEffectKind.Hand_Right].sprite = SingleO.resourceManager.GetSprite_Effect("effect_attack");
+
+            //DebugWide.LogBlue(_effect[(int)eEffectKind.Dir].sprite.name); //chamto test
+
+            //_effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
+            //_effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
+            //_effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
+            //_effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
+            //_effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
+
+
 
             //=====================================================
             // 전용 ui 설정 
@@ -1489,7 +1499,7 @@ x        }
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
                 Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
 
-                this.SetActiveEffect(eEffectKind.Hand_Right, true);
+                //this.SetActiveEffect(eEffectKind.Hand_Right, true);
             }
         }
 
@@ -1506,7 +1516,7 @@ x        }
                 {
                     //DebugWide.LogYellow("OnAniState_End :" + hash_state); //chamto test
 
-                    this.SetActiveEffect(eEffectKind.Hand_Right, false);
+                    //this.SetActiveEffect(eEffectKind.Hand_Right, false);
 
                     _target.AddHP(-1);
                     ChampUnit target_champ = _target as ChampUnit;
@@ -1846,7 +1856,9 @@ x        }
         public Movement _move = null;
         public CellInfo _cellInfo = null;
 
-        public SortingGroup _sortingGroup = null;
+        //public SortingGroup _sortingGroup = null; 
+        //drawcall 증가문제로 제거 , 2가지 아틀라스의 sprite 를 사용하고, 이를 sortingGroup로 묶으면 drawcall 증가가 된다 
+        //ref : http://www.devkorea.co.kr/bbs/board.php?bo_table=m03_qna&wr_id=42809
 
         //==================================================
         //ai
@@ -1887,7 +1899,7 @@ x        }
             this.SetPos(_getPos3D);
             //=====================================================
 
-            _sortingGroup = GetComponent<SortingGroup>();
+            //_sortingGroup = GetComponent<SortingGroup>();
             _collider = GetComponent<SphereCollider>();
             _collider_radius = _collider.radius;
             _collider_sqrRadius = _collider_radius * _collider_radius;
@@ -2133,8 +2145,8 @@ x        }
 
         public void Update_SortingOrder(int add)
         {
-            //_sprRender.sortingOrder = GetSortingOrder(add);
-            _sortingGroup.sortingOrder = GetSortingOrder(add);
+            _sprRender.sortingOrder = GetSortingOrder(add);
+            //_sortingGroup.sortingOrder = GetSortingOrder(add);
         }
 
         //public void Update_Collision()

@@ -30,7 +30,8 @@ namespace HordeFight
         public Vector3Int TILE_BLOCK_SIZE =  new Vector3Int(TILE_BLOCK_WIDTH, TILE_BLOCK_HEIGHT, 1);
 
         // Use this for initialization
-        void Start()
+        //void Start()
+        public void Init()
         {
             LoadNodes(TILE_BLOCK_SIZE);
             LoadEdges(TILE_BLOCK_SIZE);
