@@ -4186,6 +4186,7 @@ namespace HordeFight
             ////==============================================
             ////가지(촉수) 등록
             Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
+            limbs_hand.Init();
 
             ////==============================================
             ////구트리 등록 
@@ -4388,7 +4389,7 @@ namespace HordeFight
 
             _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
-            numMax_create = 100;
+            numMax_create = 10;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
@@ -4403,11 +4404,11 @@ namespace HordeFight
             //===================================================
 
             // -- 휜색 진형 --
-            numMax_create = 0;
             camp_position = 0;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
+            numMax_create = 0;
             for (int i = 0; i < numMax_create; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
