@@ -23,10 +23,12 @@ namespace HordeFight
             None,
             OneHand,
             TwoHand,
+        }
 
+        public enum eStandard
+        {
             TwoHand_LeftO, //왼손기준이 되는 잡기(왼손이 고정)
             TwoHand_RightO, //오른손기준이 되는 잡기(오른손이 고정)
-
         }
 
         public enum eStance
@@ -102,7 +104,7 @@ namespace HordeFight
         public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
-        public ePart _eHandOrigin = ePart.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
+        public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
         public eStance _eStance = eStance.Cut; //자세 
 
         public bool _active_shadowObject = true;
@@ -170,7 +172,8 @@ namespace HordeFight
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
         public bool _stance_backAni = true;
         public float _amplitude_punch = 1f; //펀치 애니 진폭
-        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic;
+        //public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic; //수직 베기
+        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInOutSine; //수평 베기
 
         //======================================================
 
@@ -554,7 +557,7 @@ namespace HordeFight
 
                     float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, curTime / __progress_aniTime);
 
-                    _HANDLE_twoHand.position = Vector3.LerpUnclamped(_stance_start.position, _stance_end.position, inpol);
+                    _HANDLE_twoHand.position = Vector3.Slerp(_stance_start.position, _stance_end.position, inpol);
                 }
             }
         
@@ -659,7 +662,7 @@ namespace HordeFight
 
                     //-----------------------
 
-                    Cut_TwoHand(_HANDLE_twoHand.position, _eHandOrigin, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel); //_eModelKind_Left_0, _eModelKind_Right_0);
+                    Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel); //_eModelKind_Left_0, _eModelKind_Right_0);
 
                     //--------------------
                     //찌르기 모드로 연결하기 위한 핸들값 조정 
@@ -1037,7 +1040,7 @@ namespace HordeFight
         //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
         //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
         //handE : 위치를 구할려는 손 
-        public void ApplyHandPos_TwoHandLength(Vector3 handLeft_pos, float handLeft_length, Vector3 handRight_pos, float handRight_length, ePart eHandO, float twoLength)
+        public void ApplyHandPos_TwoHandLength(Vector3 handLeft_pos, float handLeft_length, Vector3 handRight_pos, float handRight_length, eStandard eHandS, float twoLength)
         {
 
             Vector3 handO; //Origin
@@ -1052,7 +1055,7 @@ namespace HordeFight
             float shE_min;
             float shE_max;
 
-            if (eHandO == ePart.TwoHand_LeftO)
+            if (eHandS == eStandard.TwoHand_LeftO)
             {
                 handO = handLeft_pos;
                 handE = handRight_pos;
@@ -1061,7 +1064,7 @@ namespace HordeFight
                 shE_min = _arm_right_min_length;
                 shE_max = _arm_right_max_length;
             }
-            else if (eHandO == ePart.TwoHand_RightO)
+            else if (eHandS == eStandard.TwoHand_RightO)
             {
                 handO = handRight_pos;
                 handE = handLeft_pos;
@@ -1101,7 +1104,7 @@ namespace HordeFight
 
             //====================
 
-            if (eHandO == ePart.TwoHand_LeftO)
+            if (eHandS == eStandard.TwoHand_LeftO)
             {
                 _arm_left_length = handLeft_length;
                 _hand_left.position = handO;
@@ -1109,7 +1112,7 @@ namespace HordeFight
                 _arm_right_length = new_handE_length;
                 _hand_right.position = new_handE_pos;
             }
-            if (eHandO == ePart.TwoHand_RightO)
+            if (eHandS == eStandard.TwoHand_RightO)
             {
                 _arm_right_length = handRight_length;
                 _hand_right.position = handO;
@@ -1123,7 +1126,7 @@ namespace HordeFight
         //handle 
         //eHandOrigin : 고정손
         //eModelLeft : 궤적모형 
-        public void Cut_TwoHand(Vector3 handle, ePart eHandOrigin, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight)
+        public void Cut_TwoHand(Vector3 handle, eStandard eHandStandard, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight)
         {
             //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
             Vector3 axis_up = _upDir_circle_left.position - _pos_circle_left.position; //임시로 왼쪽 upDir 사용 
@@ -1155,7 +1158,7 @@ namespace HordeFight
             //----------------------------
 
             ApplyHandPos_TwoHandLength(new_leftPos, new_leftLength, new_rightPos, new_rightLength,
-                                       eHandOrigin, _twoHand_length);
+                                       eHandStandard, _twoHand_length);
 
 
 
