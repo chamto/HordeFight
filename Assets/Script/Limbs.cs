@@ -320,7 +320,7 @@ namespace HordeFight
 
             //-------------------------
 
-
+            __progress_aniTime = _stance_aniTime_SE;
             //==================================================
 
         }
@@ -372,6 +372,7 @@ namespace HordeFight
 
         float __elapsedTime = 0f;
         float __aniProgDir = 1f;
+        float __progress_aniTime = 0f;
         public void Update_StanceAni()
         {
             if (_part_control == ePart.TwoHand)
@@ -380,50 +381,58 @@ namespace HordeFight
                 {
                     __elapsedTime += Time.deltaTime * __aniProgDir;
                     float curTime = __elapsedTime;
-                    float progress_aniTime = _stance_aniTime_SE;
+                    //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
 
                     //정방향 재생 , 동작시간 경과
                     if(0 < __aniProgDir && __elapsedTime > _stance_aniTime_SE)
                     {
-                        curTime = 1f;
+                        curTime = _stance_aniTime_SE;
 
                         //경직시간 경과  
                         if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
                         {
-                            curTime = 0f;
-
+                            
                             if(true == _stance_backAni)
                             {
                                 //재생방향 변경 
-                                __elapsedTime = _stance_aniTime_ES;
                                 __aniProgDir = -1f;
-                                curTime = __elapsedTime;
-                                progress_aniTime = _stance_aniTime_ES;
+                                __elapsedTime = _stance_aniTime_ES;
+                                curTime = _stance_aniTime_ES;
+                                __progress_aniTime = _stance_aniTime_ES;
                             }
                             else
                             {
-                                __elapsedTime = 0f;
                                 __aniProgDir = 1f;
-                                curTime = __elapsedTime;
-                                progress_aniTime = _stance_aniTime_SE;
+                                __elapsedTime = 0f;
+                                curTime = 0f;
+                                __progress_aniTime = _stance_aniTime_SE;
                             }
                         }
                     }
                     //역방향 재생 , 동작시간 경과 
                     if (0 > __aniProgDir && __elapsedTime < 0)
                     {
-                        __elapsedTime = 0f;
                         __aniProgDir = 1f;
+                        __elapsedTime = 0f;
+                        curTime = 0;
+                        __progress_aniTime = _stance_aniTime_SE;
                     }
 
                     //float inpol = curTime;
-                    float inpol = Interpolation.easeInElastic(0, 1f, curTime/progress_aniTime);
+                    //float inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
+                    //float inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
+                    //float inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
+                    //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
+
+                    float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, curTime / __progress_aniTime);
+
                     _HANDLE_twoHand.position = Vector3.LerpUnclamped(_stance_start.position, _stance_end.position, inpol);
                 }
             }
         
-
         }
+        public float _amplitude_punch = 1f; //펀치 애니 진폭
+        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic;
 
 
         //2d 게임같은 높이값을 표현한다. 기울어진 투영상자의 빗면에 높이값을 투영한다.

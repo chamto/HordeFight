@@ -4,6 +4,135 @@ namespace UtilGS9
 {
 	public class Interpolation
 	{
+
+        public enum eKind
+        {
+            linear,
+            clerp,
+            spring,
+            punch,
+
+            easeInQuad,
+            easeOutQuad,
+            easeInOutQuad,
+
+            easeInCubic,
+            easeOutCubic,
+            easeInOutCubic,
+
+            easeInQuart,
+            easeOutQuart,
+            easeInOutQuart,
+
+            easeInSine,
+            easeOutSine,
+            easeInOutSine,
+
+            easeInExpo,
+            easeOutExpo,
+            easeInOutExpo,
+
+            easeInCirc,
+            easeOutCirc,
+            easeInOutCirc,
+
+            easeInBounce,
+            easeOutBounce,
+            easeInOutBounce,
+
+            easeInBack,
+            easeOutBack,
+            easeInOutBack,
+
+            easeInElastic,
+            easeOutElastic,
+            easeInOutElastic,
+        }
+
+
+        static public float Calc(eKind kind, float start, float end, float value)
+        {
+            float rate = 0;
+            switch(kind)
+            {
+                case eKind.linear:
+                    return linear(start, end, value);
+                case eKind.clerp:
+                    return clerp(start, end, value);
+                case eKind.spring:
+                    return spring(start, end, value);
+                case eKind.punch:
+                    return punch(end, value); //end를 진폭값으로 사용 
+
+                case eKind.easeInQuad:
+                    return easeInQuad(start, end, value);
+                case eKind.easeOutQuad:
+                    return easeOutQuad(start, end, value);
+                case eKind.easeInOutQuad:
+                    return easeInOutQuad(start, end, value);
+
+                case eKind.easeInCubic:
+                    return easeInCubic(start, end, value);
+                case eKind.easeOutCubic:
+                    return easeOutCubic(start, end, value);
+                case eKind.easeInOutCubic:
+                    return easeInOutCubic(start, end, value);
+
+                case eKind.easeInQuart:
+                    return easeInQuart(start, end, value);
+                case eKind.easeOutQuart:
+                    return easeOutQuart(start, end, value);
+                case eKind.easeInOutQuart:
+                    return easeInOutQuart(start, end, value);
+
+                case eKind.easeInSine:
+                    return easeInSine(start, end, value);
+                case eKind.easeOutSine:
+                    return easeOutSine(start, end, value);
+                case eKind.easeInOutSine:
+                    return easeInOutSine(start, end, value);
+
+                case eKind.easeInExpo:
+                    return easeInExpo(start, end, value);
+                case eKind.easeOutExpo:
+                    return easeOutExpo(start, end, value);
+                case eKind.easeInOutExpo:
+                    return easeInOutExpo(start, end, value);
+
+                case eKind.easeInCirc:
+                    return easeInCirc(start, end, value);
+                case eKind.easeOutCirc:
+                    return easeOutCirc(start, end, value);
+                case eKind.easeInOutCirc:
+                    return easeInOutCirc(start, end, value);
+
+                case eKind.easeInBounce:
+                    return easeInBounce(start, end, value);
+                case eKind.easeOutBounce:
+                    return easeOutBounce(start, end, value);
+                case eKind.easeInOutBounce:
+                    return easeInOutBounce(start, end, value);
+
+                case eKind.easeInBack:
+                    return easeInBack(start, end, value);
+                case eKind.easeOutBack:
+                    return easeOutBack(start, end, value);
+                case eKind.easeInOutBack:
+                    return easeInOutBack(start, end, value);
+
+                case eKind.easeInElastic:
+                    return easeInElastic(start, end, value);
+                case eKind.easeOutElastic:
+                    return easeOutElastic(start, end, value);
+                case eKind.easeInOutElastic:
+                    return easeInOutElastic(start, end, value);
+            }
+
+            return rate;
+        }
+
+
+
 		static public float linear(float start, float end, float value){
 			return Mathf.Lerp(start, end, value);
 		}
