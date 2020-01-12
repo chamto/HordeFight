@@ -105,7 +105,7 @@ namespace HordeFight
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
-        public eStance _eStance = eStance.Cut; //자세 
+        public eStance _eStance = eStance.Sting; //자세 
 
         public bool _active_shadowObject = true;
 
@@ -187,6 +187,33 @@ namespace HordeFight
 
             //------------------------------------------------
 
+            //기본 손정보  출력 
+            //if(false)
+            {
+                Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
+                Vector3 hLsL = _hand_left.position - _shoulder_left.position;
+                Vector3 hRsR = _hand_right.position - _shoulder_right.position;
+                Vector3 hLhR = _hand_left.position - _hand_right.position;
+
+                DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
+                DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
+                DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
+                DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
+
+
+                DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
+                DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
+                DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
+
+                DebugWide.DrawCircle(_shoulder_left.position, _arm_left_min_length, Color.gray);
+                DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
+                DebugWide.DrawCircle(_shoulder_right.position, _arm_right_min_length, Color.gray);
+                DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.gray);
+
+            }
+
             //무기 뒷면 
             if(false)
             {
@@ -235,6 +262,9 @@ namespace HordeFight
                         DebugWide.DrawLine(_HANDLE_left.position, _target[0].position, Color.red);
                         DebugWide.DrawLine(_HANDLE_right.position, _target[1].position, Color.red);
 
+                        DebugWide.DrawCircle(_HANDLE_left.position, 0.05f, Color.green);
+                        DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
+
                         DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
                         DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
                     }
@@ -269,37 +299,10 @@ namespace HordeFight
                         _Model_right_0.Draw(Color.blue);
                     }
 
-
-
-
                 }
             }
 
-
-            //기본 손정보  출력 
-            //if(false)
-            {
-                Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
-                Vector3 hLsL = _hand_left.position - _shoulder_left.position;
-                Vector3 hRsR = _hand_right.position - _shoulder_right.position;
-                Vector3 hLhR = _hand_left.position - _hand_right.position;
-
-                DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
-                DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
-                DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
-                DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
-
-
-                DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
-                DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
-                DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
-                DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
-                DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
-
-                DebugWide.DrawCircle(_HANDLE_left.position, 0.05f, Color.green);
-                DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
-            }
-        }
+        }//end func
 
 
 
@@ -1171,8 +1174,8 @@ namespace HordeFight
             if (ePart.OneHand == _part_control)
             {   //한손 칼 붙이기 
 
-                //찌르기 
-                if (eStance.Sting == _eStance)
+                //베기
+                if (eStance.Cut == _eStance)
                 {
                     Vector3 handToTarget = _odir_left.position - _hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
@@ -1186,8 +1189,8 @@ namespace HordeFight
                     angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
                 }
-                //베기 
-                else if (eStance.Cut == _eStance)
+                //찌르기 
+                else if (eStance.Sting == _eStance)
                 {
                     Vector3 handToTarget = _target[0].position - _hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);

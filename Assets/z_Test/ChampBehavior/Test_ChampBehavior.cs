@@ -569,7 +569,7 @@ public class TwoHandControl : MonoBehaviour
         {   //한손 칼 붙이기 
 
 
-            //찌르기 
+            //베기 
             if(true == _switch_cutAndSting)
             {
                 Vector3 handToTarget = _odir_left.position - _hand_left.position;
@@ -584,7 +584,7 @@ public class TwoHandControl : MonoBehaviour
                 angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                 _object_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);    
             }
-            //베기 
+            //찌르기 
             else
             {
                 Vector3 handToTarget = _target_1.position - _hand_left.position;
