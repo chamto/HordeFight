@@ -169,8 +169,136 @@ namespace HordeFight
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
         public bool _stance_backAni = true;
+        public float _amplitude_punch = 1f; //펀치 애니 진폭
+        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic;
 
         //======================================================
+
+        public bool _show_gizmos = true;
+
+        //======================================================
+
+        private void OnDrawGizmos()
+        {
+            if (false == _show_gizmos) return;
+
+            //------------------------------------------------
+
+            //무기 뒷면 
+            if(false)
+            {
+                DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj_end.position, Color.cyan);
+                DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj_up.position, Color.cyan);
+                DebugWide.DrawCircle(_hand_left_obj_up.position, 0.1f, Color.cyan);
+
+                Vector3 hLhR = _hand_right.position - _hand_left.position;
+                Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+                float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+                DebugWide.DrawLine(_object_left.position, _object_left.position + obj_shaft * 3f, Color.red);
+                DebugWide.PrintText(_object_left.position + obj_shaft * 3f, Color.red, angleW + "");
+            }
+
+
+            if (true == _active_shadowObject)
+            {
+                //무기 그림자 표현 
+                DebugWide.DrawLine(Vector3.zero, _light_dir, Color.black);
+                DebugWide.DrawCircle(_light_dir, 0.1f, Color.black);
+                DebugWide.DrawLine(_groundY + Vector3.forward * 5, _groundY, Color.black);
+
+                //--
+                Vector3 objDir = _hand_right.position - _hand_left.position;
+                float len_groundToObj_start, len_groundToObj_end;
+                Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _hand_left_obj.position, out len_groundToObj_start);
+                Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, _hand_left_obj_end.position, out len_groundToObj_end);
+                //--
+
+                DebugWide.DrawLine(_hand_left_obj.position, _hand_left_obj.position + len_groundToObj_start * Vector3.down, Color.black);
+                DebugWide.DrawLine(_hand_left_obj_end.position, _hand_left_obj_end.position + len_groundToObj_end * Vector3.down, Color.black);
+                DebugWide.DrawLine(_hand_left_obj.position, shaderStart, Color.black);
+                DebugWide.DrawLine(_hand_left_obj_end.position, shaderEnd, Color.black);
+                DebugWide.DrawLine(shaderEnd, shaderStart, Color.red); //그림자 놓여질 위치 표현 
+            }
+
+
+            //손방향 조종
+            {
+                
+                //찌르기 
+                if (eStance.Sting == _eStance)
+                {
+                    if (_part_control == ePart.OneHand)
+                    {
+                        DebugWide.DrawLine(_HANDLE_left.position, _target[0].position, Color.red);
+                        DebugWide.DrawLine(_HANDLE_right.position, _target[1].position, Color.red);
+
+                        DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
+                        DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
+                    }
+
+                    if (_part_control == ePart.TwoHand)
+                    {
+                        DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
+                        DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
+                    }
+                }
+
+                //베기 
+                if (eStance.Cut == _eStance)
+                {
+                    if (_part_control == ePart.OneHand)
+                    {
+                        _Model_left_0.Draw(Color.yellow);
+                        _Model_left_1.Draw(Color.yellow);
+
+                        _Model_right_0.Draw(Color.blue);
+                        _Model_right_1.Draw(Color.blue);
+
+                    }
+                    if (_part_control == ePart.TwoHand)
+                    {
+                        //주변원의 중심에서 핸들까지 
+                        DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.gray);
+
+                        //설정된 모델 그리기 
+                        _Model_left_0.Draw(Color.yellow);
+                        _Model_right_0.Draw(Color.blue);
+                    }
+
+
+
+
+                }
+            }
+
+
+            //기본 손정보  출력 
+            //if(false)
+            {
+                Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
+                Vector3 hLsL = _hand_left.position - _shoulder_left.position;
+                Vector3 hRsR = _hand_right.position - _shoulder_right.position;
+                Vector3 hLhR = _hand_left.position - _hand_right.position;
+
+                DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
+                DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
+                DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
+                DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
+
+
+                DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
+                DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
+                DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
+
+                DebugWide.DrawCircle(_HANDLE_left.position, 0.05f, Color.green);
+                DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
+            }
+        }
+
+
 
         static public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
         {
@@ -431,8 +559,6 @@ namespace HordeFight
             }
         
         }
-        public float _amplitude_punch = 1f; //펀치 애니 진폭
-        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic;
 
 
         //2d 게임같은 높이값을 표현한다. 기울어진 투영상자의 빗면에 높이값을 투영한다.
