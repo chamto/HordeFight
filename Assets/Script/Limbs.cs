@@ -163,6 +163,15 @@ namespace HordeFight
 
         //======================================================
 
+        public Transform _stance_start;
+        public Transform _stance_end;
+        public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
+        public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
+        public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
+        public bool _stance_backAni = true;
+
+        //======================================================
+
         static public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
         {
             const string root = "Warcraft/Prefab/3_limbs/";
@@ -177,7 +186,7 @@ namespace HordeFight
         static public Limbs CreateLimbs_TwoHand(Transform parent)
         {
             
-            GameObject limbPrefab = Limbs.CreatePrefab("limbs_twoHand", parent, "limbs_twoHand");
+            GameObject limbPrefab = Limbs.CreatePrefab("limbs_twoHand", parent, "limbs");
             Limbs limbs = limbPrefab.AddComponent<Limbs>();
 
             return limbs;
@@ -254,7 +263,8 @@ namespace HordeFight
             _HANDLE_right = SingleO.hierarchy.GetTransform(_target[1], "handle_right");
             //-------------------------
 
-
+            _stance_start = SingleO.hierarchy.GetTransform(ctr, "stance_start");
+            _stance_end = SingleO.hierarchy.GetTransform(ctr, "stance_end");
 
             //==================================================
             //1차 자식 : path_circle 조종항목
@@ -332,10 +342,15 @@ namespace HordeFight
 
             //==================================================
 
+            //stance ani 재생 만들기 
+            //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
+            Update_StanceAni(); 
+
             //손 움직임 만들기 
             Update_HandControl();
 
             //2d 게임에서의 높이표현 
+            //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if(_active_projectionSlope)
             {
                 _hand_right.position = Project_BoxSlope(_hand_right.position, (_hand_right.position - _groundY).y);
@@ -354,6 +369,62 @@ namespace HordeFight
         }
 
         //==================================================
+
+        float __elapsedTime = 0f;
+        float __aniProgDir = 1f;
+        public void Update_StanceAni()
+        {
+            if (_part_control == ePart.TwoHand)
+            {
+                if (eStance.Cut == _eStance)
+                {
+                    __elapsedTime += Time.deltaTime * __aniProgDir;
+                    float curTime = __elapsedTime;
+                    float progress_aniTime = _stance_aniTime_SE;
+
+                    //정방향 재생 , 동작시간 경과
+                    if(0 < __aniProgDir && __elapsedTime > _stance_aniTime_SE)
+                    {
+                        curTime = 1f;
+
+                        //경직시간 경과  
+                        if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
+                        {
+                            curTime = 0f;
+
+                            if(true == _stance_backAni)
+                            {
+                                //재생방향 변경 
+                                __elapsedTime = _stance_aniTime_ES;
+                                __aniProgDir = -1f;
+                                curTime = __elapsedTime;
+                                progress_aniTime = _stance_aniTime_ES;
+                            }
+                            else
+                            {
+                                __elapsedTime = 0f;
+                                __aniProgDir = 1f;
+                                curTime = __elapsedTime;
+                                progress_aniTime = _stance_aniTime_SE;
+                            }
+                        }
+                    }
+                    //역방향 재생 , 동작시간 경과 
+                    if (0 > __aniProgDir && __elapsedTime < 0)
+                    {
+                        __elapsedTime = 0f;
+                        __aniProgDir = 1f;
+                    }
+
+                    //float inpol = curTime;
+                    float inpol = Interpolation.easeInElastic(0, 1f, curTime/progress_aniTime);
+                    _HANDLE_twoHand.position = Vector3.LerpUnclamped(_stance_start.position, _stance_end.position, inpol);
+                }
+            }
+        
+
+        }
+
 
         //2d 게임같은 높이값을 표현한다. 기울어진 투영상자의 빗면에 높이값을 투영한다.
         //그 길이를 대상위치에 z축 값을 더한다  

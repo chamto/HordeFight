@@ -4392,7 +4392,7 @@ namespace HordeFight
 
             _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
-            numMax_create = 10;
+            numMax_create = 1;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.peasant, camp_BLUE, camp_BLUE.RandPosition());
