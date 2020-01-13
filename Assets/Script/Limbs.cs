@@ -573,11 +573,41 @@ namespace HordeFight
 
                     float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, curTime / __progress_aniTime);
 
-                    //선형보간을 사용한다. (구면보간은 필요없음)  
-                    _HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
+                    //선형보간을 사용한다. 180도 이상 표현 못함  
+                    //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
+
+                    //구면 보간
+                    const int TORNADO_ROTATE_COUNT = 1;
+                    Vector3 arcUp = Vector3.Cross(_stance_start.position - transform.position, _body_dir);
+                    //_HANDLE_twoHand.position = InterpolationArc(transform.position, _stance_start.position, _stance_end.position, arcUp,inpol);
+                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _stance_start.position, _stance_end.position, arcUp, TORNADO_ROTATE_COUNT , inpol);
                 }
             }
         
+        }
+        //public int TORNADO_ROTATE_COUNT = 1;
+
+        //회오리를 이용한 구면 보간. 360도 이상 표현 가능 
+        //rotateCount : pos1 -> pos2 까지 몇번 회전 하는지 나타냄
+        //rotateCount = 0 : pos1 -> pos2 
+        //rotateCount = 1 : (pos1 -> pos2 -> pos1) 까지 회전
+        //rotateCount = 2 : (pos1 -> pos2 -> pos1) -> (pos1 -> pos2 -> pos1) 까지 회전
+        public Vector3 InterpolationTornado(Vector3 origin, Vector3 pos1, Vector3 pos2, Vector3 upDir, float rotateCount,  float t)
+        {
+            Vector3 startO = pos1 - origin;
+            float angle = UtilGS9.Geo.Angle360_AxisRotate(pos1 - origin, pos2 - origin, upDir);
+
+            return origin + Quaternion.AngleAxis(t * (angle + (360f * rotateCount)), upDir) * startO;
+        }
+
+        //호를 이용한 구면 보간. 360도 까지 표현 가능
+        public Vector3 InterpolationArc(Vector3 origin, Vector3 pos1, Vector3 pos2, Vector3 upDir, float t)
+        {
+
+            Vector3 startO = pos1 - origin;
+            float angle = UtilGS9.Geo.Angle360_AxisRotate(pos1 - origin, pos2 - origin, upDir);
+
+            return origin + Quaternion.AngleAxis( t * angle, upDir) * startO;
         }
 
 

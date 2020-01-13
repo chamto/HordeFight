@@ -260,8 +260,8 @@ public class DebugWide
         Vector3 prev = Vector3.zero;
         Vector3 cur = Vector3.zero;
         Vector3 startO = pos1 - origin;
-        float len = startO.magnitude;
-        startO /= len;
+        //float len = startO.magnitude;
+        //startO /= len; //노멀 구할 필요 없음 
 
         float angle = UtilGS9.Geo.Angle360_AxisRotate(pos1-origin, pos2-origin, upDir);
 
@@ -270,7 +270,8 @@ public class DebugWide
         {
             Vector3 tdDir = Quaternion.AngleAxis(angleDiv * i, upDir) * startO;
 
-            cur = origin + tdDir * len;
+            //cur = origin + tdDir * len;
+            cur = origin + tdDir;
 
             if (0 != i)
                 DebugWide.DrawLine(prev, cur, cc);
