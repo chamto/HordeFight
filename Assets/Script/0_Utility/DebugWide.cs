@@ -280,7 +280,7 @@ public class DebugWide
 
             prev = cur;
         }
-        //DebugWide.DrawLine(pos, pos + up, cc);
+        DebugWide.DrawLine(origin, origin + upDir, cc);
         DebugWide.DrawLine(origin, pos1, cc);
         DebugWide.DrawLine(origin, pos2, cc);
 

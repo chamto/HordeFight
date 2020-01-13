@@ -49,7 +49,8 @@ namespace HordeFight
 
         //------------------------------------------------------
 
-        public Transform _tbody_dir = null;
+        public Transform _tr_head_dir = null;
+        public Transform _tr_body_dir = null;
         public Transform _shoulder_left = null;
         public Transform _shoulder_right = null;
         public Transform _hand_left = null;
@@ -101,6 +102,7 @@ namespace HordeFight
         //public float _twoHand_length = 0.15f;
         public float _twoHand_length = 0.5f;
 
+        public Vector3 _head_dir = UtilGS9.ConstV.v3_zero;
         public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
@@ -236,7 +238,7 @@ namespace HordeFight
                 DebugWide.DrawCircle(_stance_end.position, 0.5f, Color.black);
                 DebugWide.DrawLine(_stance_start.position, _stance_end.position, Color.black);
                 //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
-                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(Vector3.forward, _stance_start.position), Color.red);
+                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(_stance_start.position - transform.position , _body_dir), Color.red);
             }
 
             if (true == _active_shadowObject)
@@ -356,8 +358,8 @@ namespace HordeFight
             //root->waist
             Transform waist = SingleO.hierarchy.GetTransform(root, "waist");
             //root->waist->body_dir
-            _tbody_dir = SingleO.hierarchy.GetTransform(root, "body_dir");
-
+            _tr_body_dir = SingleO.hierarchy.GetTransform(root, "body_dir");
+            _tr_head_dir = SingleO.hierarchy.GetTransform(root, "head_dir");
 
             //-------------------------
             _shoulder_left = SingleO.hierarchy.GetTransform(waist, "shoulder_left");
@@ -471,8 +473,9 @@ namespace HordeFight
 
         public void Update_All()
         {
-            //몸 방향값 갱신 
-            //_body_dir = (_tbody_dir.position - transform.position).normalized; //사용처가 없음 
+            //방향값 갱신 (정규화가 필요없다면 벡터로만 놔두기 
+            _head_dir = VOp.Normalize (_tr_head_dir.position - transform.position);
+            _body_dir = VOp.Normalize (_tr_body_dir.position - transform.position);
 
             _light_dir = SingleO.lightDir.position;
             _groundY = SingleO.groundY.position;
