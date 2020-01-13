@@ -105,7 +105,7 @@ namespace HordeFight
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
-        public eStance _eStance = eStance.Sting; //자세 
+        public eStance _eStance = eStance.Cut; //자세 
 
         public bool _active_shadowObject = true;
 
@@ -228,6 +228,16 @@ namespace HordeFight
                 DebugWide.PrintText(_object_left.position + obj_shaft * 3f, Color.red, angleW + "");
             }
 
+            //조종정보
+            if(true)
+            {
+                Vector3 up = Vector3.Cross(_stance_start.localPosition, _stance_end.localPosition);
+                up.Normalize();
+                DebugWide.DrawCircle(_stance_end.position, 0.5f, Color.black);
+                DebugWide.DrawLine(_stance_start.position, _stance_end.position, Color.black);
+                //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
+                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(Vector3.forward, _stance_start.position), Color.red);
+            }
 
             if (true == _active_shadowObject)
             {
@@ -560,7 +570,8 @@ namespace HordeFight
 
                     float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, curTime / __progress_aniTime);
 
-                    _HANDLE_twoHand.position = Vector3.Slerp(_stance_start.position, _stance_end.position, inpol);
+                    //선형보간을 사용한다. (구면보간은 필요없음)  
+                    _HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
                 }
             }
         
