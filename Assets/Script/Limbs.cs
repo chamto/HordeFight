@@ -502,7 +502,7 @@ namespace HordeFight
 
             //-------------------------
 
-            __progress_aniTime = _stance_aniTime_SE;
+            __entire_aniTime = _stance_aniTime_SE;
             //==================================================
 
         }
@@ -557,7 +557,8 @@ namespace HordeFight
 
         float __elapsedTime = 0f;
         float __aniProgDir = 1f;
-        float __progress_aniTime = 0f;
+        float __entire_aniTime = 0f;
+        //float __elapsedTime_upperBody = 0f;
         public void Update_StanceAni()
         {
             if (_part_control == ePart.TwoHand)
@@ -566,6 +567,7 @@ namespace HordeFight
                 {
                     __elapsedTime += Time.deltaTime * __aniProgDir;
                     float curTime = __elapsedTime;
+                    //__elapsedTime_upperBody += Time.deltaTime * __aniProgDir;
                     //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
 
                     //정방향 재생 , 동작시간 경과
@@ -583,14 +585,14 @@ namespace HordeFight
                                 __aniProgDir = -1f;
                                 __elapsedTime = _stance_aniTime_ES;
                                 curTime = _stance_aniTime_ES;
-                                __progress_aniTime = _stance_aniTime_ES;
+                                __entire_aniTime = _stance_aniTime_ES;
                             }
                             else
                             {
                                 __aniProgDir = 1f;
                                 __elapsedTime = 0f;
                                 curTime = 0f;
-                                __progress_aniTime = _stance_aniTime_SE;
+                                __entire_aniTime = _stance_aniTime_SE;
                             }
                         }
                     }
@@ -600,7 +602,7 @@ namespace HordeFight
                         __aniProgDir = 1f;
                         __elapsedTime = 0f;
                         curTime = 0;
-                        __progress_aniTime = _stance_aniTime_SE;
+                        __entire_aniTime = _stance_aniTime_SE;
                     }
 
                     //float inpol = curTime;
@@ -609,18 +611,62 @@ namespace HordeFight
                     //float inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
                     //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
 
-                    float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, curTime / __progress_aniTime);
+                    float t = curTime / __entire_aniTime;
+                    float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, t);
 
                     //선형보간을 사용한다. 180도 이상 표현 못함  
                     //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
 
                     //구면 보간
                     Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
-                    //_HANDLE_twoHand.position = InterpolationArc(transform.position, _stance_start.position, _stance_end.position, arcUp,inpol);
                     _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count , inpol);
+
+
+                    if(_active_rotate_upperBody)
+                    {
+                        //t = __elapsedTime_upperBody / _rotateTime_upperBody;
+                        //inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, t);
+                        Rotate_UpperBody(curTime/_rotateTime_upperBody);
+                    }
                 }
             }
         
+        }
+
+        public float _rotateTime_upperBody = 1f;
+        public float _rotateTime_foot = 1f;
+        public bool _active_rotate_upperBody = true;
+
+        public void Rotate_UpperBody(float t)
+        {
+            if (0 > t) t = 0;
+            else if (t > 1f) t = 1f;
+
+            //시작각도 
+            float startAngle = Geo.AngleSigned_AxisY(_foot_dir, _upperBody_start.position - transform.position);
+            //전체각도 
+            //float entireAngle = Geo.AngleSigned_AxisY(_upperBody_start.position - transform.position, _upperBody_end.position - transform.position);
+            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_upperBody_start.position - transform.position, _upperBody_end.position - transform.position, ConstV.v3_up);
+
+            Vector3 temp = _waist.localEulerAngles;
+            temp.y = startAngle + entireAngle * t;
+            _waist.localEulerAngles = temp;
+        }
+
+        private void Rotate_StanceAni()
+        {
+            //_tr_foot_dir.position = InterpolationArc(transform.position, _foot_start.position, _foot_end.position, ConstV.v3_up, _rotateTime_foot);
+
+            
+        }
+
+        public void Rotate(Vector3 dir)
+        {
+            
+
+            Vector3 temp = transform.localEulerAngles;
+            temp.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, dir);
+            transform.localEulerAngles = temp;
         }
 
 
@@ -657,14 +703,6 @@ namespace HordeFight
 
             target.z += b;
             return target;
-        }
-
-
-        public void Rotate(Vector3 dir)
-        {
-            Vector3 temp = transform.localEulerAngles;
-            temp.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, dir);
-            transform.localEulerAngles = temp;
         }
 
 
