@@ -172,8 +172,14 @@ namespace HordeFight
 
         //======================================================
 
-        public Transform _stance_start;
-        public Transform _stance_end;
+        public Transform _shoul_left_start;
+        public Transform _shoul_left_end;
+        public Transform _shoul_right_start;
+        public Transform _shoul_right_end;
+        public Transform _upperBody_start;
+        public Transform _upperBody_end;
+        public Transform _foot_start;
+        public Transform _foot_end;
         public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
@@ -239,12 +245,16 @@ namespace HordeFight
             //조종정보
             if(true)
             {
-                Vector3 up = Vector3.Cross(_stance_start.localPosition, _stance_end.localPosition);
-                up.Normalize();
-                DebugWide.DrawCircle(_stance_end.position, 0.5f, Color.black);
-                DebugWide.DrawLine(_stance_start.position, _stance_end.position, Color.black);
-                //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
-                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(_stance_start.position - transform.position , _foot_dir), Color.red);
+                if (_part_control == ePart.TwoHand)
+                {
+                    Vector3 up = Vector3.Cross(_shoul_left_start.localPosition, _shoul_left_end.localPosition);
+                    up.Normalize();
+                    DebugWide.DrawCircle(_shoul_left_end.position, 0.5f, Color.black);
+                    DebugWide.DrawLine(_shoul_left_start.position, _shoul_left_end.position, Color.black);
+                    //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
+                    DebugWide.DrawArc(transform.position, _shoul_left_start.position, _shoul_left_end.position, Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir), Color.red);    
+                }
+
             }
 
             if (true == _active_shadowObject)
@@ -418,8 +428,22 @@ namespace HordeFight
             _HANDLE_right = SingleO.hierarchy.GetTransform(_target[1], "handle_right");
             //-------------------------
 
-            _stance_start = SingleO.hierarchy.GetTransform(ctr, "stance_start");
-            _stance_end = SingleO.hierarchy.GetTransform(ctr, "stance_end");
+            //ctr->sh_left
+            Transform sh_left = SingleO.hierarchy.GetTransform(ctr, "sh_left");
+            _shoul_left_start = SingleO.hierarchy.GetTransform(sh_left, "dir_start");
+            _shoul_left_end = SingleO.hierarchy.GetTransform(sh_left, "dir_end");
+            //ctr->sh_right
+            Transform sh_right = SingleO.hierarchy.GetTransform(ctr, "sh_right");
+            _shoul_right_start = SingleO.hierarchy.GetTransform(sh_right, "dir_start");
+            _shoul_right_end = SingleO.hierarchy.GetTransform(sh_right, "dir_end");
+            //ctr->upperBody
+            Transform upperBody = SingleO.hierarchy.GetTransform(ctr, "upperBody");
+            _upperBody_start = SingleO.hierarchy.GetTransform(upperBody, "dir_start");
+            _upperBody_end = SingleO.hierarchy.GetTransform(upperBody, "dir_end");
+            //ctr->foot
+            Transform foot = SingleO.hierarchy.GetTransform(ctr, "foot");
+            _foot_start = SingleO.hierarchy.GetTransform(foot, "dir_start");
+            _foot_end = SingleO.hierarchy.GetTransform(foot, "dir_end");
 
             //==================================================
             //1차 자식 : path_circle 조종항목
@@ -588,9 +612,9 @@ namespace HordeFight
                     //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
 
                     //구면 보간
-                    Vector3 arcUp = Vector3.Cross(_stance_start.position - transform.position, _foot_dir);
+                    Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
                     //_HANDLE_twoHand.position = InterpolationArc(transform.position, _stance_start.position, _stance_end.position, arcUp,inpol);
-                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _stance_start.position, _stance_end.position, arcUp, _tornado_rotate_count , inpol);
+                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count , inpol);
                 }
             }
         
