@@ -49,8 +49,12 @@ namespace HordeFight
 
         //------------------------------------------------------
 
-        public Transform _tr_head_dir = null;
-        public Transform _tr_body_dir = null;
+        public Transform _tr_sight_dir = null;
+        public Transform _tr_upperBody_dir = null;
+        public Transform _tr_foot_dir = null;
+
+        public Transform _head = null;
+        public Transform _waist = null;
         public Transform _shoulder_left = null;
         public Transform _shoulder_right = null;
         public Transform _hand_left = null;
@@ -102,8 +106,9 @@ namespace HordeFight
         //public float _twoHand_length = 0.15f;
         public float _twoHand_length = 0.5f;
 
-        public Vector3 _head_dir = UtilGS9.ConstV.v3_zero;
-        public Vector3 _body_dir = UtilGS9.ConstV.v3_zero;
+        public Vector3 _sight_dir = UtilGS9.ConstV.v3_zero;
+        public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
+        public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
@@ -173,6 +178,7 @@ namespace HordeFight
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
         public bool _stance_backAni = true;
+        public int _tornado_rotate_count = 0;
         public float _amplitude_punch = 1f; //펀치 애니 진폭
         //public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic; //수직 베기
         public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInOutSine; //수평 베기
@@ -238,7 +244,7 @@ namespace HordeFight
                 DebugWide.DrawCircle(_stance_end.position, 0.5f, Color.black);
                 DebugWide.DrawLine(_stance_start.position, _stance_end.position, Color.black);
                 //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
-                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(_stance_start.position - transform.position , _body_dir), Color.red);
+                DebugWide.DrawArc(transform.position, _stance_start.position, _stance_end.position, Vector3.Cross(_stance_start.position - transform.position , _foot_dir), Color.red);
             }
 
             if (true == _active_shadowObject)
@@ -355,14 +361,18 @@ namespace HordeFight
             //1차 자식 : root
             //==================================================
             Transform root = SingleO.hierarchy.GetTransform(transform, "root");
+            //root->foot_dir
+            _tr_foot_dir = SingleO.hierarchy.GetTransform(root, "foot_dir");
             //root->waist
-            Transform waist = SingleO.hierarchy.GetTransform(root, "waist");
-            //root->waist->body_dir
-            _tr_body_dir = SingleO.hierarchy.GetTransform(root, "body_dir");
-            _tr_head_dir = SingleO.hierarchy.GetTransform(root, "head_dir");
+            _waist = SingleO.hierarchy.GetTransform(root, "waist");
+            _tr_upperBody_dir = SingleO.hierarchy.GetTransform(_waist, "upperBody_dir");
+            _head = SingleO.hierarchy.GetTransform(_waist, "head");
+            _tr_sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
+
+
 
             //-------------------------
-            _shoulder_left = SingleO.hierarchy.GetTransform(waist, "shoulder_left");
+            _shoulder_left = SingleO.hierarchy.GetTransform(_waist, "shoulder_left");
             //root->waist->shoulder_left->hand_left
             _hand_left = SingleO.hierarchy.GetTransform(_shoulder_left, "hand_left");
             //root->waist->shoulder_left->hand_left->object_left
@@ -378,7 +388,7 @@ namespace HordeFight
             _hand_left_obj_spr = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(_object_left, "spear");
 
             //-------------------------
-            _shoulder_right = SingleO.hierarchy.GetTransform(waist, "shoulder_right");
+            _shoulder_right = SingleO.hierarchy.GetTransform(_waist, "shoulder_right");
             //root->waist->shoulder_right->hand_right
             _hand_right = SingleO.hierarchy.GetTransform(_shoulder_right, "hand_right");
             //root->waist->shoulder_right->hand_right->object_right
@@ -473,9 +483,11 @@ namespace HordeFight
 
         public void Update_All()
         {
-            //방향값 갱신 (정규화가 필요없다면 벡터로만 놔두기 
-            _head_dir = VOp.Normalize (_tr_head_dir.position - transform.position);
-            _body_dir = VOp.Normalize (_tr_body_dir.position - transform.position);
+            //방향값 갱신
+            _foot_dir = VOp.Normalize(_tr_foot_dir.position - transform.position);
+            _upperBody_dir = VOp.Normalize(_tr_upperBody_dir.position - transform.position);
+            _sight_dir = VOp.Normalize (_tr_sight_dir.position - transform.position);
+
 
             _light_dir = SingleO.lightDir.position;
             _groundY = SingleO.groundY.position;
@@ -577,15 +589,14 @@ namespace HordeFight
                     //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
 
                     //구면 보간
-                    const int TORNADO_ROTATE_COUNT = 1;
-                    Vector3 arcUp = Vector3.Cross(_stance_start.position - transform.position, _body_dir);
+                    Vector3 arcUp = Vector3.Cross(_stance_start.position - transform.position, _foot_dir);
                     //_HANDLE_twoHand.position = InterpolationArc(transform.position, _stance_start.position, _stance_end.position, arcUp,inpol);
-                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _stance_start.position, _stance_end.position, arcUp, TORNADO_ROTATE_COUNT , inpol);
+                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _stance_start.position, _stance_end.position, arcUp, _tornado_rotate_count , inpol);
                 }
             }
         
         }
-        //public int TORNADO_ROTATE_COUNT = 1;
+
 
         //회오리를 이용한 구면 보간. 360도 이상 표현 가능 
         //rotateCount : pos1 -> pos2 까지 몇번 회전 하는지 나타냄
