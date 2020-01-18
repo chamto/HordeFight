@@ -247,12 +247,15 @@ namespace HordeFight
             {
                 if (_part_control == ePart.TwoHand)
                 {
-                    Vector3 up = Vector3.Cross(_shoul_left_start.localPosition, _shoul_left_end.localPosition);
-                    up.Normalize();
                     DebugWide.DrawCircle(_shoul_left_end.position, 0.5f, Color.black);
                     DebugWide.DrawLine(_shoul_left_start.position, _shoul_left_end.position, Color.black);
-                    //DebugWide.DrawCirclePlane(transform.position, 2f, up, Color.black);
-                    DebugWide.DrawArc(transform.position, _shoul_left_start.position, _shoul_left_end.position, Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir), Color.red);    
+
+                    Vector3 up = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
+                    DebugWide.DrawArc(transform.position, _shoul_left_start.position, _shoul_left_end.position, up, Color.red);    
+
+                    DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
+
+                    DebugWide.DrawArc(transform.position, _foot_start.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
                 }
 
             }

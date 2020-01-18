@@ -265,8 +265,9 @@ public class DebugWide
 
         float angle = UtilGS9.Geo.Angle360_AxisRotate(pos1-origin, pos2-origin, upDir);
 
-        float angleDiv = angle / 20f;
-        for (int i = 0; i < 20; i++)
+        int COUNT = 20;
+        float angleDiv = angle / COUNT;
+        for (int i = 0; i < COUNT; i++)
         {
             Vector3 tdDir = Quaternion.AngleAxis(angleDiv * i, upDir) * startO;
 
@@ -287,5 +288,45 @@ public class DebugWide
 
 #endif
     }
+
+    static public void DrawArc(Vector3 origin, Vector3 pos1, Vector3 pos2, Vector3 upDir, float length, Color cc , string text)
+    {
+#if UNITY_EDITOR
+        Vector3 prev = Vector3.zero;
+        Vector3 cur = Vector3.zero;
+        Vector3 startO = pos1 - origin;
+        startO = UtilGS9.VOp.Normalize(startO);
+
+        float angle = UtilGS9.Geo.Angle360_AxisRotate(pos1 - origin, pos2 - origin, upDir);
+
+        int COUNT = 20;
+        float angleDiv = angle / COUNT;
+        for (int i = 0; i <= COUNT; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(angleDiv * i, upDir) * startO;
+
+            cur = origin + tdDir * length;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            if (0 == i)
+            {
+                DebugWide.DrawLine(origin, cur, cc);
+                DebugWide.PrintText(cur, cc, text);
+            }
+                
+            if(COUNT == i)
+                DebugWide.DrawLine(origin, cur, cc);
+            //if (0 == i%5)
+            //DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+        DebugWide.DrawLine(origin, origin + upDir, cc);
+
+#endif
+    }
+
 }
 
