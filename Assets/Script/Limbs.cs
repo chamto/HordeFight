@@ -363,12 +363,11 @@ namespace HordeFight
             Transform root = SingleO.hierarchy.GetTransform(transform, "root");
             //root->foot_dir
             _tr_foot_dir = SingleO.hierarchy.GetTransform(root, "foot_dir");
+            _head = SingleO.hierarchy.GetTransform(root, "head");
+            _tr_sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
             //root->waist
             _waist = SingleO.hierarchy.GetTransform(root, "waist");
             _tr_upperBody_dir = SingleO.hierarchy.GetTransform(_waist, "upperBody_dir");
-            _head = SingleO.hierarchy.GetTransform(_waist, "head");
-            _tr_sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
-
 
 
             //-------------------------
