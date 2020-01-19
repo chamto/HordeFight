@@ -624,9 +624,18 @@ namespace HordeFight
 
                     if(_active_rotate_upperBody)
                     {
-                        //t = __elapsedTime_upperBody / _rotateTime_upperBody;
+                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
+                        if(0 > __aniProgDir && _rotateTime_upperBody > _stance_aniTime_ES)
+                        {
+                            t = curTime / _stance_aniTime_ES;
+                        }else
+                        {
+                            t = curTime / _rotateTime_upperBody;        
+                        }
+
+
                         //inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, t);
-                        Rotate_UpperBody(curTime/_rotateTime_upperBody);
+                        Rotate_UpperBody(t);
                     }
                 }
             }
