@@ -192,6 +192,7 @@ namespace HordeFight
         public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
         public bool _active_upperBody_rotate = true;
 
+        public Being _ref_being = null;
         public Movement _ref_movement = null;
 
         //======================================================
@@ -538,7 +539,8 @@ namespace HordeFight
 
             //stance ani 재생 만들기 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
-            Update_StanceAni(); 
+            //Update_StanceAni(); 
+            Update_Ani();
 
             //손 움직임 만들기 
             Update_HandControl();
@@ -565,20 +567,60 @@ namespace HordeFight
         }
 
         //==================================================
+        public enum eState
+        {
+            None = 0,
+
+            Start,
+            Running,
+            Waiting,
+            End,
+
+            Max,
+        }
+        public eState _state_current = eState.End;
+        public bool _active_loopAni = true;
+
+        public void Update_Ani()
+        {
+            switch (this._state_current)
+            {
+                case eState.Start:
+                    {
+                        __aniProgDir = 1f;
+                        __elapsedTime = 0f;
+                        __entire_aniTime = _stance_aniTime_SE;
+
+                        _state_current = eState.Running;
+                    }
+                    break;
+                case eState.Running:
+                    {
+                        Update_StanceAni();
+                    }
+                    break;
+                case eState.End:
+                    {
+                        if(_active_loopAni)
+                            _state_current = eState.Start;
+                    }
+                    break;
+            }
+        }
+
 
         float __elapsedTime = 0f;
         float __aniProgDir = 1f;
         float __entire_aniTime = 0f;
-        //float __elapsedTime_upperBody = 0f;
         public void Update_StanceAni()
         {
+            
             if (_part_control == ePart.TwoHand)
             {
                 if (eStance.Cut == _eStance)
                 {
                     __elapsedTime += Time.deltaTime * __aniProgDir;
                     float curTime = __elapsedTime;
-                    //__elapsedTime_upperBody += Time.deltaTime * __aniProgDir;
                     //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
 
                     //정방향 재생 , 동작시간 경과
@@ -600,20 +642,22 @@ namespace HordeFight
                             }
                             else
                             {
-                                __aniProgDir = 1f;
-                                __elapsedTime = 0f;
-                                curTime = 0f;
-                                __entire_aniTime = _stance_aniTime_SE;
+                                //__aniProgDir = 1f;
+                                //__elapsedTime = 0f;
+                                //curTime = 0f;
+                                //__entire_aniTime = _stance_aniTime_SE;
+                                _state_current = eState.End;
                             }
                         }
                     }
                     //역방향 재생 , 동작시간 경과 
                     if (0 > __aniProgDir && __elapsedTime < 0)
                     {
-                        __aniProgDir = 1f;
-                        __elapsedTime = 0f;
-                        curTime = 0;
-                        __entire_aniTime = _stance_aniTime_SE;
+                        //__aniProgDir = 1f;
+                        //__elapsedTime = 0f;
+                        //curTime = 0;
+                        //__entire_aniTime = _stance_aniTime_SE;
+                        _state_current = eState.End;
                     }
 
                     //float inpol = curTime;
@@ -650,6 +694,13 @@ namespace HordeFight
                         inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
                         UpperBody_RotateAni(inpol);
                     }
+
+                    //--------------------------------------
+                    //다리이동 애니 
+                    if(_active_footAni)
+                    {
+                        //Foot_MoveAni(curTime/_foot_moveTime);
+                    }
                 }//end - cut stance
             }//end - twohand
         }//end func
@@ -661,7 +712,11 @@ namespace HordeFight
 
         private void Foot_MoveAni(float t)
         {
-            
+            Vector3 move_dir = _foot_movePos.position - transform.position;
+
+            Vector3 ori = _ref_being.GetPos3D() - move_dir * t * Time.deltaTime;
+            _ref_being.SetPos(ori + move_dir * t * Time.deltaTime);
+            //_ref_movement.Move_Push(move_dir * t, 1, 1);
         }
 
         private void UpperBody_RotateAni(float t)

@@ -4191,6 +4191,7 @@ namespace HordeFight
             Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
             limbs_hand.Init();
             limbs_hand._ref_movement = mov;
+            limbs_hand._ref_being = cha;
             cha._limbs = limbs_hand;
             ////==============================================
             ////구트리 등록 
