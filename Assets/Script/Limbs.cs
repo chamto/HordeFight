@@ -261,7 +261,8 @@ namespace HordeFight
 
                     DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
 
-                    DebugWide.DrawArc(transform.position, _foot_start.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
+                    //Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
+                    DebugWide.DrawArc(transform.position, _tr_foot_dir.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
 
                     DebugWide.DrawLine(transform.position, _foot_movePos.position, Color.red);
                     DebugWide.DrawCircle(_foot_movePos.position, 0.1f, Color.red);
@@ -592,6 +593,7 @@ namespace HordeFight
                         __entire_aniTime = _stance_aniTime_SE;
 
                         __origin_footPos = _ref_being.GetPos3D();
+                        __origin_footDir = _foot_dir;
 
                         _state_current = eState.Running;
                     }
@@ -604,6 +606,7 @@ namespace HordeFight
                 case eState.End:
                     {
                         _ref_being.SetPos(__origin_footPos);
+                        _ref_movement.SetDirection(__origin_footDir);
 
                         if(_active_loopAni)
                             _state_current = eState.Start;
@@ -701,7 +704,7 @@ namespace HordeFight
 
                     //--------------------------------------
                     //다리이동 애니 
-                    if(_active_footAni)
+                    if(_active_foot_move)
                     {
                         if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
                         {
@@ -715,15 +718,52 @@ namespace HordeFight
                         inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
                         Foot_MoveAni(inpol);
                     }
+
+                    if (_active_foot_rotate)
+                    {
+                        if (0 > __aniProgDir && _foot_rotateTime > _stance_aniTime_ES)
+                        {
+                            t = curTime / _stance_aniTime_ES;
+                        }
+                        else
+                        {
+                            t = curTime / _foot_rotateTime;
+                        }
+
+                        inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
+                        Foot_RotateAni(inpol);
+                    }
                 }//end - cut stance
             }//end - twohand
         }//end func
 
 
         public float _foot_moveTime = 1f;
-        public float _foot_rotateTime = 1f;
         public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInBack;
-        public bool _active_footAni = true;
+        public bool _active_foot_move = true;
+
+        public float _foot_rotateTime = 1f;
+        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInBack;
+        public bool _active_foot_rotate = true;
+
+
+        private Vector3 __origin_footDir = ConstV.v3_zero;
+        private void Foot_RotateAni(float t)
+        {
+            if (0 > t) t = 0;
+            else if (t > 1f) t = 1f;
+
+            //감기는 방향 
+            Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_end.position - transform.position);
+
+            //전체각도 
+            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_dir, _foot_end.position - transform.position, winding);
+
+
+            Vector3 dir = Quaternion.AngleAxis(entireAngle * t, winding) * __origin_footDir;
+            //_ref_movement.SetDirection(dir);
+            _ref_being.SetIdleDir(dir);
+        }
 
         private Vector3 __origin_footPos = ConstV.v3_zero;
         private void Foot_MoveAni(float t)

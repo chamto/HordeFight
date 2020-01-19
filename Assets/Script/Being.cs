@@ -2678,7 +2678,17 @@ x        }
 
         }
 
+        public void SetIdleDir(Vector3 dir)
+        {
+            _move.SetDirection(dir);
 
+            if (true == IsActive_Animator())
+            {
+                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
+
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+            }
+        }
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
