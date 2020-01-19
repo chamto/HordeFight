@@ -578,7 +578,7 @@ namespace HordeFight
 
             Max,
         }
-        public eState _state_current = eState.End;
+        public eState _state_current = eState.Start;
         public bool _active_loopAni = true;
 
         public void Update_Ani()
@@ -591,6 +591,8 @@ namespace HordeFight
                         __elapsedTime = 0f;
                         __entire_aniTime = _stance_aniTime_SE;
 
+                        __origin_footPos = _ref_being.GetPos3D();
+
                         _state_current = eState.Running;
                     }
                     break;
@@ -601,6 +603,8 @@ namespace HordeFight
                     break;
                 case eState.End:
                     {
+                        _ref_being.SetPos(__origin_footPos);
+
                         if(_active_loopAni)
                             _state_current = eState.Start;
                     }
@@ -699,7 +703,17 @@ namespace HordeFight
                     //다리이동 애니 
                     if(_active_footAni)
                     {
-                        //Foot_MoveAni(curTime/_foot_moveTime);
+                        if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
+                        {
+                            t = curTime / _stance_aniTime_ES;
+                        }
+                        else
+                        {
+                            t = curTime / _foot_moveTime;
+                        }
+
+                        inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
+                        Foot_MoveAni(inpol);
                     }
                 }//end - cut stance
             }//end - twohand
@@ -708,14 +722,18 @@ namespace HordeFight
 
         public float _foot_moveTime = 1f;
         public float _foot_rotateTime = 1f;
+        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInBack;
         public bool _active_footAni = true;
 
+        private Vector3 __origin_footPos = ConstV.v3_zero;
         private void Foot_MoveAni(float t)
         {
+            if (0 > t) t = 0;
+            else if (t > 1f) t = 1f;
+
             Vector3 move_dir = _foot_movePos.position - transform.position;
 
-            Vector3 ori = _ref_being.GetPos3D() - move_dir * t * Time.deltaTime;
-            _ref_being.SetPos(ori + move_dir * t * Time.deltaTime);
+            _ref_being.SetPos(__origin_footPos + move_dir * t);
             //_ref_movement.Move_Push(move_dir * t, 1, 1);
         }
 
