@@ -644,7 +644,7 @@ namespace HordeFight
 
 
                         inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
-                        Rotate_UpperBody(inpol);
+                        UpperBody_RotateAni(inpol);
                     }
                 }//end - cut stance
             }//end - twohand
@@ -655,7 +655,14 @@ namespace HordeFight
         public float _foot_rotateTime = 1f;
         public bool _active_footAni = true;
 
-        public void Rotate_UpperBody(float t)
+        private void Foot_MoveAni(float t)
+        {
+            
+
+
+        }
+
+        private void UpperBody_RotateAni(float t)
         {
             if (0 > t) t = 0;
             else if (t > 1f) t = 1f;
@@ -671,12 +678,6 @@ namespace HordeFight
             _waist.localEulerAngles = temp;
         }
 
-        private void Rotate_StanceAni()
-        {
-            //_tr_foot_dir.position = InterpolationArc(transform.position, _foot_start.position, _foot_end.position, ConstV.v3_up, _rotateTime_foot);
-
-            
-        }
 
         public void Rotate(Vector3 dir)
         {
