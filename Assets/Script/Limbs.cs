@@ -49,38 +49,37 @@ namespace HordeFight
 
         //------------------------------------------------------
 
-        public Transform _tr_sight_dir = null;
-        public Transform _tr_upperBody_dir = null;
-        public Transform _tr_foot_dir = null;
+        private Transform _tr_sight_dir = null;
+        private Transform _tr_upperBody_dir = null;
+        private Transform _tr_foot_dir = null;
 
-        public Transform _head = null;
-        public Transform _waist = null;
-        public Transform _shoulder_left = null;
-        public Transform _shoulder_right = null;
-        public Transform _hand_left = null;
-        public Transform _hand_right = null;
-        public Transform _object_left = null;
-        public Transform _object_right = null;
-        public Transform _odir_left = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
-        public Transform _odir_right = null;
+        private Transform _head = null;
+        private Transform _waist = null;
+        private Transform _shoulder_left = null;
+        private Transform _shoulder_right = null;
+        private Transform _hand_left = null;
+        private Transform _hand_right = null;
+        private Transform _object_left = null;
+        private Transform _object_right = null;
+        private Transform _odir_left = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
+        private Transform _odir_right = null;
 
 
         //핸들 
-        public Transform _HANDLE_twoHand = null;
-        public Transform _HANDLE_oneHand = null;
-        public Transform _HANDLE_left = null;   //핸들
-        public Transform _HANDLE_right = null;
+        private Transform _HANDLE_twoHand = null;
+        private Transform _HANDLE_oneHand = null;
+        private Transform _HANDLE_left = null;   //핸들
+        private Transform _HANDLE_right = null;
 
         //찌르기용 핸들 
-        public Transform _hs_objectDir = null;
-        public Transform _hs_standard = null;
+        private Transform _hs_objectDir = null;
+        private Transform _hs_standard = null;
 
         //목표
-        public Transform[] _target = new Transform[2]; //임시 최대2개 목표 
+        private Transform[] _target = new Transform[2]; //임시 최대2개 목표 
 
-
-        public Transform _hand_left_spr = null;
-        public Transform _hand_right_spr = null;
+        private Transform _hand_left_spr = null;
+        private Transform _hand_right_spr = null;
 
         private Transform _hand_left_obj = null;
         private Transform _hand_left_obj_up = null;
@@ -172,22 +171,25 @@ namespace HordeFight
 
         //======================================================
 
-        public Transform _shoul_left_start;
-        public Transform _shoul_left_end;
-        public Transform _shoul_right_start;
-        public Transform _shoul_right_end;
-        public Transform _upperBody_start;
-        public Transform _upperBody_end;
-        public Transform _foot_start;
-        public Transform _foot_end;
+        private Transform _shoul_left_start;
+        private Transform _shoul_left_end;
+        private Transform _shoul_right_start;
+        private Transform _shoul_right_end;
+        private Transform _upperBody_start;
+        private Transform _upperBody_end;
+        private Transform _foot_start;
+        private Transform _foot_end;
         public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
-        public bool _stance_backAni = true;
+        public bool _active_stance_backAni = true; //역재생 활성 
         public int _tornado_rotate_count = 0;
         public float _amplitude_punch = 1f; //펀치 애니 진폭
-        //public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInElastic; //수직 베기
-        public Interpolation.eKind _ani_interpolationKind = Interpolation.eKind.easeInOutSine; //수평 베기
+        //public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInElastic; //수직 베기
+        public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInOutSine; //수평 베기
+        public float _upperBody_rotateTime = 1f; //상체회전시간 
+        public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
+        public bool _active_upperBody_rotate = true;
 
         //======================================================
 
@@ -579,7 +581,7 @@ namespace HordeFight
                         if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
                         {
                             
-                            if(true == _stance_backAni)
+                            if(true == _active_stance_backAni)
                             {
                                 //재생방향 변경 
                                 __aniProgDir = -1f;
@@ -612,7 +614,7 @@ namespace HordeFight
                     //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
 
                     float t = curTime / __entire_aniTime;
-                    float inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, t);
+                    float inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
 
                     //선형보간을 사용한다. 180도 이상 표현 못함  
                     //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
@@ -622,29 +624,29 @@ namespace HordeFight
                     _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count , inpol);
 
 
-                    if(_active_rotate_upperBody)
+                    if(_active_upperBody_rotate)
                     {
                         //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-                        if(0 > __aniProgDir && _rotateTime_upperBody > _stance_aniTime_ES)
+                        if(0 > __aniProgDir && _upperBody_rotateTime > _stance_aniTime_ES)
                         {
                             t = curTime / _stance_aniTime_ES;
                         }else
                         {
-                            t = curTime / _rotateTime_upperBody;        
+                            t = curTime / _upperBody_rotateTime;        
                         }
 
 
-                        //inpol = Interpolation.Calc(_ani_interpolationKind, 0, 1f, t);
-                        Rotate_UpperBody(t);
+                        inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
+                        Rotate_UpperBody(inpol);
                     }
                 }
             }
         
         }
 
-        public float _rotateTime_upperBody = 1f;
+        //public float _rotateTime_upperBody = 1f;
         public float _rotateTime_foot = 1f;
-        public bool _active_rotate_upperBody = true;
+        //public bool _active_rotate_upperBody = true;
 
         public void Rotate_UpperBody(float t)
         {
