@@ -179,6 +179,7 @@ namespace HordeFight
         private Transform _upperBody_end;
         private Transform _foot_start;
         private Transform _foot_end;
+        private Transform _foot_movePos;
         public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
@@ -258,6 +259,9 @@ namespace HordeFight
                     DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
 
                     DebugWide.DrawArc(transform.position, _foot_start.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
+
+                    DebugWide.DrawLine(transform.position, _foot_movePos.position, Color.red);
+                    DebugWide.DrawCircle(_foot_movePos.position, 0.1f, Color.red);
                 }
 
             }
@@ -449,6 +453,7 @@ namespace HordeFight
             Transform foot = SingleO.hierarchy.GetTransform(ctr, "foot");
             _foot_start = SingleO.hierarchy.GetTransform(foot, "dir_start");
             _foot_end = SingleO.hierarchy.GetTransform(foot, "dir_end");
+            _foot_movePos = SingleO.hierarchy.GetTransform(foot, "move_pos");
 
             //==================================================
             //1차 자식 : path_circle 조종항목
@@ -624,6 +629,8 @@ namespace HordeFight
                     _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count , inpol);
 
 
+                    //--------------------------------------
+                    //상체회전 애니 
                     if(_active_upperBody_rotate)
                     {
                         //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
@@ -639,14 +646,14 @@ namespace HordeFight
                         inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
                         Rotate_UpperBody(inpol);
                     }
-                }
-            }
-        
-        }
+                }//end - cut stance
+            }//end - twohand
+        }//end func
 
-        //public float _rotateTime_upperBody = 1f;
-        public float _rotateTime_foot = 1f;
-        //public bool _active_rotate_upperBody = true;
+
+        public float _foot_moveTime = 1f;
+        public float _foot_rotateTime = 1f;
+        public bool _active_footAni = true;
 
         public void Rotate_UpperBody(float t)
         {
