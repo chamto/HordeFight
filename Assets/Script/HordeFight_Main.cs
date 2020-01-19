@@ -4190,6 +4190,7 @@ namespace HordeFight
             ////가지(촉수) 등록
             Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
             limbs_hand.Init();
+            limbs_hand._ref_movement = mov;
             cha._limbs = limbs_hand;
             ////==============================================
             ////구트리 등록 

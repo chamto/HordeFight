@@ -192,6 +192,8 @@ namespace HordeFight
         public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
         public bool _active_upperBody_rotate = true;
 
+        public Movement _ref_movement = null;
+
         //======================================================
 
         public bool _show_gizmos = true;
@@ -558,6 +560,8 @@ namespace HordeFight
             //물건 움직임에 따라 손 스프라이트 표현 
             Update_HandAni();
             //==================================================
+
+            Rotate(_ref_movement._direction);
         }
 
         //==================================================
@@ -658,8 +662,6 @@ namespace HordeFight
         private void Foot_MoveAni(float t)
         {
             
-
-
         }
 
         private void UpperBody_RotateAni(float t)
