@@ -670,6 +670,7 @@ namespace HordeFight
             _eDir8 = Misc.GetDir8_AxisY(dir);
         }
 
+        //dir 이 정규화 되어 있다 가정함 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
         {
             _isNextMoving = true;

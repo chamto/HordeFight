@@ -53,6 +53,7 @@ namespace HordeFight
         private Transform _tr_upperBody_dir = null;
         private Transform _tr_foot_dir = null;
 
+        private Transform _root = null;
         private Transform _head = null;
         private Transform _waist = null;
         private Transform _shoulder_left = null;
@@ -264,6 +265,7 @@ namespace HordeFight
                     //Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
                     DebugWide.DrawArc(transform.position, _tr_foot_dir.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
 
+
                     DebugWide.DrawLine(transform.position, _foot_movePos.position, Color.red);
                     DebugWide.DrawCircle(_foot_movePos.position, 0.1f, Color.red);
                 }
@@ -383,13 +385,13 @@ namespace HordeFight
             //==================================================
             //1차 자식 : root
             //==================================================
-            Transform root = SingleO.hierarchy.GetTransform(transform, "root");
+            _root = SingleO.hierarchy.GetTransform(transform, "root");
             //root->foot_dir
-            _tr_foot_dir = SingleO.hierarchy.GetTransform(root, "foot_dir");
-            _head = SingleO.hierarchy.GetTransform(root, "head");
+            _tr_foot_dir = SingleO.hierarchy.GetTransform(_root, "foot_dir");
+            _head = SingleO.hierarchy.GetTransform(_root, "head");
             _tr_sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
             //root->waist
-            _waist = SingleO.hierarchy.GetTransform(root, "waist");
+            _waist = SingleO.hierarchy.GetTransform(_root, "waist");
             _tr_upperBody_dir = SingleO.hierarchy.GetTransform(_waist, "upperBody_dir");
 
 
@@ -592,8 +594,13 @@ namespace HordeFight
                         __elapsedTime = 0f;
                         __entire_aniTime = _stance_aniTime_SE;
 
-                        __origin_footPos = _ref_being.GetPos3D();
-                        __origin_footDir = _foot_dir;
+                        //if(_active_foot_move)
+                        {
+                            __cur_foot_move_inpol = 0f;
+                            __prev_foot_move_inpol = 0f;
+                        }
+                            
+                        //__origin_footDir = _foot_dir;
 
                         _state_current = eState.Running;
                     }
@@ -605,8 +612,8 @@ namespace HordeFight
                     break;
                 case eState.End:
                     {
-                        _ref_being.SetPos(__origin_footPos);
-                        _ref_movement.SetDirection(__origin_footDir);
+                        
+                        //_ref_movement.SetDirection(__origin_footDir);
 
                         if(_active_loopAni)
                             _state_current = eState.Start;
@@ -706,6 +713,7 @@ namespace HordeFight
                     //다리이동 애니 
                     if(_active_foot_move)
                     {
+                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
                         if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
                         {
                             t = curTime / _stance_aniTime_ES;
@@ -715,12 +723,13 @@ namespace HordeFight
                             t = curTime / _foot_moveTime;
                         }
 
-                        inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
-                        Foot_MoveAni(inpol);
+
+                        Foot_MoveAni(t);
                     }
 
                     if (_active_foot_rotate)
                     {
+                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
                         if (0 > __aniProgDir && _foot_rotateTime > _stance_aniTime_ES)
                         {
                             t = curTime / _stance_aniTime_ES;
@@ -739,12 +748,12 @@ namespace HordeFight
 
 
         public float _foot_moveTime = 1f;
-        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInBack;
+        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
         public bool _active_foot_move = true;
 
         public float _foot_rotateTime = 1f;
         public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInBack;
-        public bool _active_foot_rotate = true;
+        public bool _active_foot_rotate = false;
 
 
         private Vector3 __origin_footDir = ConstV.v3_zero;
@@ -765,16 +774,23 @@ namespace HordeFight
             _ref_being.SetIdleDir(dir);
         }
 
-        private Vector3 __origin_footPos = ConstV.v3_zero;
+        private float __prev_foot_move_inpol = 0f;
+        private float __cur_foot_move_inpol = 0f;
         private void Foot_MoveAni(float t)
         {
-            if (0 > t) t = 0;
-            else if (t > 1f) t = 1f;
+            __cur_foot_move_inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
+            
+            if (0 > __cur_foot_move_inpol) __cur_foot_move_inpol = 0;
+            else if (__cur_foot_move_inpol > 1f) __cur_foot_move_inpol = 1f;
+
+            float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol;
+
 
             Vector3 move_dir = _foot_movePos.position - transform.position;
+            _ref_being.SetPos(_ref_being.GetPos3D() + move_dir * tt_delta);
 
-            _ref_being.SetPos(__origin_footPos + move_dir * t);
-            //_ref_movement.Move_Push(move_dir * t, 1, 1);
+            __prev_foot_move_inpol = __cur_foot_move_inpol;
+
         }
 
         private void UpperBody_RotateAni(float t)
