@@ -631,8 +631,6 @@ namespace HordeFight
                 case eState.End:
                     {
                         
-                        //_ref_movement.SetDirection(__origin_footDir);
-
                         if(_active_loopAni)
                             _state_current = eState.Start;
                     }
@@ -730,6 +728,13 @@ namespace HordeFight
 
                         inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
                         UpperBody_RotateAni(inpol);
+                    }
+                    else
+                    {
+                        //상체회전 비활성시 기본값으로 초기화 한다 
+                        Vector3 temp = _waist.localEulerAngles;
+                        temp.y = 0;
+                        _waist.localEulerAngles = temp;
                     }
 
                     //--------------------------------------
