@@ -127,12 +127,12 @@ namespace HordeFight
         public float _arm_right_length = 0.7f;
         public float _arm_right_min_length = 0.2f;
         public float _arm_right_max_length = 1f;
-        //public float _twoHand_length = 0.15f;
-        public float _twoHand_length = 0.5f;
+        public float _twoHand_length = 0.2f;
+        //public float _twoHand_length = 0.5f;
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
-        public eStance _eStance = eStance.Cut; //자세 
+        public eStance _eStance = eStance.Sting; //자세 
 
         public bool _active_shadowObject = true;
 
