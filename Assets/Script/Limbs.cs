@@ -767,17 +767,17 @@ namespace HordeFight
                             t = curTime / _foot_rotateTime;
                         }
 
-                        Foot_RotateAni(t);
+                        Foot_RotateAni(t , _foot_rotate_count);
                     }
                 }//end - cut stance
             }//end - twohand
         }//end func
 
-
+        public float _foot_rotate_count = 0;
 
         private float __prev_foot_rotate_inpol = 0f;
         private float __cur_foot_rotate_inpol = 0f;
-        private void Foot_RotateAni(float t)
+        private void Foot_RotateAni(float t , float rotateCount)
         {
             __cur_foot_rotate_inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
 
@@ -791,7 +791,7 @@ namespace HordeFight
 
             //전체각도 
             float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_dir, _foot_end.position - transform.position, winding);
-
+            entireAngle = entireAngle + (360f * rotateCount);
 
             Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
             _ref_movement.SetDirection(dir);
