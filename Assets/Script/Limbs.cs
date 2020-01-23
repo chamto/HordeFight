@@ -43,6 +43,11 @@ namespace HordeFight
 
         //------------------------------------------------------
 
+        public Being _ref_being = null;
+        public Movement _ref_movement = null;
+
+        //------------------------------------------------------
+
         //todo : 그림자 설정은 나중에 따로 빼기 
         public Vector3 _light_dir; //방향성 빛
         public Vector3 _groundY; //땅표면 
@@ -181,9 +186,11 @@ namespace HordeFight
         private Transform _foot_start;
         private Transform _foot_end;
         private Transform _foot_movePos;
+
         public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
+        public bool _active_stance_ani = true; //재생 활성 
         public bool _active_stance_backAni = true; //역재생 활성 
         public int _tornado_rotate_count = 0;
         public float _amplitude_punch = 1f; //펀치 애니 진폭
@@ -193,8 +200,14 @@ namespace HordeFight
         public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
         public bool _active_upperBody_rotate = true;
 
-        public Being _ref_being = null;
-        public Movement _ref_movement = null;
+        public float _foot_moveTime = 1f;
+        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
+        public bool _active_foot_move = false;
+
+        public float _foot_rotateTime = 1f;
+        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
+        public bool _active_foot_rotate = true;
+
 
         //======================================================
 
@@ -679,21 +692,26 @@ namespace HordeFight
                         _state_current = eState.End;
                     }
 
-                    //float inpol = curTime;
-                    //float inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
-                    //float inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
-                    //float inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
-                    //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
+                    float t, inpol;
+                    if(_active_stance_ani)
+                    {
+                        //inpol = curTime;
+                        //inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
+                        //inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
+                        //inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
+                        //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
 
-                    float t = curTime / __entire_aniTime;
-                    float inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
+                        t = curTime / __entire_aniTime;
+                        inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
 
-                    //선형보간을 사용한다. 180도 이상 표현 못함  
-                    //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
+                        //선형보간을 사용한다. 180도 이상 표현 못함  
+                        //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
 
-                    //구면 보간
-                    Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
-                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count , inpol);
+                        //구면 보간
+                        Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
+                        _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count, inpol);
+    
+                    }
 
 
                     //--------------------------------------
@@ -744,21 +762,12 @@ namespace HordeFight
                             t = curTime / _foot_rotateTime;
                         }
 
-                        inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
-                        Foot_RotateAni(inpol);
+                        Foot_RotateAni(t);
                     }
                 }//end - cut stance
             }//end - twohand
         }//end func
 
-
-        public float _foot_moveTime = 1f;
-        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_move = false;
-
-        public float _foot_rotateTime = 1f;
-        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_rotate = true;
 
 
         private float __prev_foot_rotate_inpol = 0f;
