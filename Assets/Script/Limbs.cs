@@ -41,6 +41,19 @@ namespace HordeFight
             Max,
         }
 
+        public enum eState
+        {
+            None = 0,
+
+            Start,
+            Running,
+            Waiting,
+            End,
+
+            Max,
+        }
+
+
         //------------------------------------------------------
 
         public Being _ref_being = null;
@@ -51,6 +64,12 @@ namespace HordeFight
         //todo : 그림자 설정은 나중에 따로 빼기 
         public Vector3 _light_dir; //방향성 빛
         public Vector3 _groundY; //땅표면 
+
+        //------------------------------------------------------
+
+        public Vector3 _sight_dir = UtilGS9.ConstV.v3_zero;
+        public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
+        public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
         //------------------------------------------------------
 
@@ -110,10 +129,6 @@ namespace HordeFight
         public float _arm_right_max_length = 1f;
         //public float _twoHand_length = 0.15f;
         public float _twoHand_length = 0.5f;
-
-        public Vector3 _sight_dir = UtilGS9.ConstV.v3_zero;
-        public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
-        public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
@@ -187,30 +202,44 @@ namespace HordeFight
         private Transform _foot_end;
         private Transform _foot_movePos;
 
+        //ref : https://mentum.tistory.com/223
+        [Header("____ANI____")]
+        [Space]
+        public eState _state_current = eState.Start;
+        public bool _active_backAni = true; //역재생 활성 
+        public bool _active_loopAni = true;
+
+        [Header("____STANCE____")] 
+        [Space]
         public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
         public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
         public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
         public bool _active_stance_ani = true; //재생 활성 
-        public bool _active_stance_backAni = true; //역재생 활성 
-        public int _tornado_rotate_count = 0;
+        public int _stance_rotate_count = 0;
         public float _amplitude_punch = 1f; //펀치 애니 진폭
         //public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInElastic; //수직 베기
         public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInOutSine; //수평 베기
+
+        [Header("____UPPERBODY____")]
+        [Space]
         public float _upperBody_rotateTime = 1f; //상체회전시간 
         public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
         public bool _active_upperBody_rotate = true;
 
+        [Header("____FOOT____")]
+        [Space]
         public float _foot_moveTime = 1f;
         public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_move = false;
+        public bool _active_foot_move = true;
 
         public float _foot_rotateTime = 1f;
         public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
         public bool _active_foot_rotate = true;
-
+        public float _foot_rotate_count = 0;
 
         //======================================================
-
+        [Header("____ETC____")]
+        [Space]
         public bool _show_gizmos = true;
 
         //======================================================
@@ -585,19 +614,6 @@ namespace HordeFight
         }
 
         //==================================================
-        public enum eState
-        {
-            None = 0,
-
-            Start,
-            Running,
-            Waiting,
-            End,
-
-            Max,
-        }
-        public eState _state_current = eState.Start;
-        public bool _active_loopAni = true;
 
         public void Update_Ani()
         {
@@ -605,21 +621,21 @@ namespace HordeFight
             {
                 case eState.Start:
                     {
+                        //기본애니정보 초기화 
                         __aniProgDir = 1f;
                         __elapsedTime = 0f;
                         __entire_aniTime = _stance_aniTime_SE;
 
-                        //if(_active_foot_move)
+                        //다리이동,회전 초기화 
                         {
                             __cur_foot_move_inpol = 0f;
                             __prev_foot_move_inpol = 0f;
-                        }
-                            
-                        {
+
                             __cur_foot_rotate_inpol = 0f;
                             __prev_foot_rotate_inpol = 0f;
                         }
 
+                        //다음 상태로 변경
                         _state_current = eState.Running;
                     }
                     break;
@@ -662,7 +678,7 @@ namespace HordeFight
                         if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
                         {
                             
-                            if(true == _active_stance_backAni)
+                            if(true == _active_backAni)
                             {
                                 //재생방향 변경 
                                 __aniProgDir = -1f;
@@ -707,7 +723,7 @@ namespace HordeFight
 
                         //구면 보간
                         Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
-                        _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _tornado_rotate_count, inpol);
+                        _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _stance_rotate_count, inpol);
     
                     }
 
@@ -773,7 +789,6 @@ namespace HordeFight
             }//end - twohand
         }//end func
 
-        public float _foot_rotate_count = 0;
 
         private float __prev_foot_rotate_inpol = 0f;
         private float __cur_foot_rotate_inpol = 0f;
@@ -839,7 +854,6 @@ namespace HordeFight
         public void Rotate(Vector3 dir)
         {
             
-
             Vector3 temp = transform.localEulerAngles;
             temp.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, dir);
             transform.localEulerAngles = temp;
