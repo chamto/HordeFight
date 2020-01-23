@@ -262,12 +262,14 @@ namespace HordeFight
 
                     DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
 
-                    //Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
-                    DebugWide.DrawArc(transform.position, _tr_foot_dir.position, _foot_end.position, ConstV.v3_up, 3f, Color.red, "foot");
-
-
+                    //다리이동
                     DebugWide.DrawLine(transform.position, _foot_movePos.position, Color.red);
                     DebugWide.DrawCircle(_foot_movePos.position, 0.1f, Color.red);
+
+                    //다리회전
+                    Vector3 winding = Vector3.Cross( _foot_start.position - transform.position, _foot_dir);
+                    DebugWide.DrawArc(transform.position, _tr_foot_dir.position, _foot_end.position, winding, 3f, Color.red, "foot");
+
                 }
 
             }
@@ -600,7 +602,10 @@ namespace HordeFight
                             __prev_foot_move_inpol = 0f;
                         }
                             
-                        //__origin_footDir = _foot_dir;
+                        {
+                            __cur_foot_rotate_inpol = 0f;
+                            __prev_foot_rotate_inpol = 0f;
+                        }
 
                         _state_current = eState.Running;
                     }
@@ -749,29 +754,36 @@ namespace HordeFight
 
         public float _foot_moveTime = 1f;
         public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_move = true;
+        public bool _active_foot_move = false;
 
         public float _foot_rotateTime = 1f;
-        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInBack;
-        public bool _active_foot_rotate = false;
+        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
+        public bool _active_foot_rotate = true;
 
 
-        private Vector3 __origin_footDir = ConstV.v3_zero;
+        private float __prev_foot_rotate_inpol = 0f;
+        private float __cur_foot_rotate_inpol = 0f;
         private void Foot_RotateAni(float t)
         {
-            if (0 > t) t = 0;
-            else if (t > 1f) t = 1f;
+            __cur_foot_rotate_inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
+
+            if (0 > __cur_foot_rotate_inpol) __cur_foot_rotate_inpol = 0;
+            else if (__cur_foot_rotate_inpol > 1f) __cur_foot_rotate_inpol = 1f;
+
+            float tt_delta = __cur_foot_rotate_inpol - __prev_foot_rotate_inpol; //0~1 값을 프레임차이값으로 변환한다 
 
             //감기는 방향 
-            Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_end.position - transform.position);
+            Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
 
             //전체각도 
             float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_dir, _foot_end.position - transform.position, winding);
 
 
-            Vector3 dir = Quaternion.AngleAxis(entireAngle * t, winding) * __origin_footDir;
-            //_ref_movement.SetDirection(dir);
-            _ref_being.SetIdleDir(dir);
+            Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
+            _ref_movement.SetDirection(dir);
+            _ref_being.UpdateIdle();
+
+            __prev_foot_rotate_inpol = __cur_foot_rotate_inpol;
         }
 
         private float __prev_foot_move_inpol = 0f;
@@ -783,7 +795,7 @@ namespace HordeFight
             if (0 > __cur_foot_move_inpol) __cur_foot_move_inpol = 0;
             else if (__cur_foot_move_inpol > 1f) __cur_foot_move_inpol = 1f;
 
-            float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol;
+            float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol; //0~1 값을 프레임차이값으로 변환한다 
 
 
             Vector3 move_dir = _foot_movePos.position - transform.position;

@@ -2679,10 +2679,9 @@ x        }
 
         }
 
-        public void SetIdleDir(Vector3 dir)
+        public void UpdateIdle()
         {
-            _move.SetDirection(dir);
-
+            
             if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
