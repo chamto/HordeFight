@@ -310,7 +310,7 @@ namespace HordeFight
 
                     //다리회전
                     Vector3 winding = Vector3.Cross( _foot_start.position - transform.position, _foot_dir);
-                    DebugWide.DrawArc(transform.position, _tr_foot_dir.position, _foot_end.position, winding, 3f, Color.red, "foot");
+                    DebugWide.DrawArc(transform.position, _foot_start.position, _foot_end.position, winding, 3f, Color.red, "foot");
 
                 }
 
@@ -805,7 +805,7 @@ namespace HordeFight
             Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
 
             //전체각도 
-            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_dir, _foot_end.position - transform.position, winding);
+            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_start.position - transform.position, _foot_end.position - transform.position, winding);
             entireAngle = entireAngle + (360f * rotateCount);
 
             Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
