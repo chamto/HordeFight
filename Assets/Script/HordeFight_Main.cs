@@ -143,6 +143,22 @@ namespace HordeFight
             return null;
         } 
 
+        public static void Init_Tool(GameObject parent)
+        {
+            mainCamera = FindHierarchy<Camera>("Main Camera");
+            lightDir = FindHierarchy<Transform>("light_dir");
+            groundY = FindHierarchy<Transform>("groundY");
+
+            hierarchy = CSingleton<HierarchyPreLoader>.Instance;
+            SingleO.hierarchy.Init(); //계층도 읽어들이기 
+            resourceManager = CSingleton<ResourceManager>.Instance;
+            SingleO.resourceManager.Init(); //스프라이트 로드 
+
+            cameraWalk = parent.AddComponent<CameraWalk>();
+            touchEvent = parent.AddComponent<TouchEvent>();
+            touchControl = parent.AddComponent<TouchControl>();
+        }
+
         public static void Init(GameObject parent)
         {
 
@@ -160,13 +176,19 @@ namespace HordeFight
             lightDir = FindHierarchy<Transform>("light_dir");
             groundY = FindHierarchy<Transform>("groundY");
 
+            campManager = CSingleton<CampManager>.Instance;
+            cellPartition = CSingleton<CellSpacePartition>.Instance;
+            coroutine = CSingleton<WideCoroutine>.Instance;
+            hashMap = CSingleton<HashToStringMap>.Instance;
             //==============================================
 
             _startDateTime = DateTime.Now;
+            hierarchy = CSingleton<HierarchyPreLoader>.Instance;
             SingleO.hierarchy.Init(); //계층도 읽어들이기 
             _timeTemp += "  hierarchy.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
             _startDateTime = DateTime.Now;
+            resourceManager = CSingleton<ResourceManager>.Instance;
             SingleO.resourceManager.Init(); //스프라이트 로드 
             ResolutionController.CalcViewportRect(SingleO.canvasRoot, SingleO.mainCamera); //화면크기조정
             _timeTemp += "  resourceManager. CalcViewportRect  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
@@ -177,7 +199,9 @@ namespace HordeFight
             touchControl = parent.AddComponent<TouchControl>();
             uiMain = parent.AddComponent<UI_Main>();
             lineControl = parent.AddComponent<LineControl>();
-            debugViewer = debugRoot.gameObject.AddComponent<DebugViewer>();
+
+            if(null != (object)debugRoot)
+                debugViewer = debugRoot.gameObject.AddComponent<DebugViewer>();
 
             //==============================================
 
@@ -226,12 +250,12 @@ namespace HordeFight
 
 
         //일반 객체
-        public static CampManager campManager = CSingleton<CampManager>.Instance;
-        public static CellSpacePartition cellPartition = CSingleton<CellSpacePartition>.Instance;
-        public static ResourceManager resourceManager = CSingleton<ResourceManager>.Instance;
-        public static HierarchyPreLoader hierarchy = CSingleton<HierarchyPreLoader>.Instance;
-        public static WideCoroutine coroutine = CSingleton<WideCoroutine>.Instance;
-        public static HashToStringMap hashMap = CSingleton<HashToStringMap>.Instance;
+        public static CampManager campManager = null;
+        public static CellSpacePartition cellPartition = null;
+        public static ResourceManager resourceManager = null;
+        public static HierarchyPreLoader hierarchy = null;
+        public static WideCoroutine coroutine = null;
+        public static HashToStringMap hashMap = null;
 
     }
 
@@ -4833,7 +4857,7 @@ namespace HordeFight
             __startPos = hit.point;
             __startPos.y = 0f;
 
-
+            //DebugWide.LogBlue(hit + "  " + hit.transform.name);
             Being getBeing = hit.transform.GetComponent<Being>();
             if(null != (object)getBeing)
             {
@@ -4908,18 +4932,22 @@ namespace HordeFight
             {
                 //임시처리 
                 //최적화를 위해 주석처리 
-                Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Enemy, 
-                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
-                if(null != target)
+                if(null != SingleO.objectManager)
                 {
-                    if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
+                    Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Enemy,
+                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
+                    if (null != target)
                     {
-                        champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
-                    }
+                        if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
+                        {
+                            champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
+                        }
 
-                    //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
-                        
+                        //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
+
+                    }
                 }
+
 
                 //champSelected.Attack(champSelected._move._direction); //chamto test
 

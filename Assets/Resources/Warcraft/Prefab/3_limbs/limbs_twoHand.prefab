@@ -217,6 +217,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4817982266940270}
+  - component: {fileID: 114289402028019770}
   m_Layer: 0
   m_Name: limbs_twoHand
   m_TagString: Untagged
@@ -2930,6 +2931,59 @@ MonoBehaviour:
   _ray_end: {x: 0, y: 0, z: 0}
   _update_perform: 0
   _enable_ray_cutting: 0
+--- !u!114 &114289402028019770
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1158553055246282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68a1b43f1c3d74227a00377c8d75e039, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _ref_being: {fileID: 0}
+  _ref_movement: {fileID: 0}
+  _light_dir: {x: 0, y: 0, z: 0}
+  _groundY: {x: 0, y: 0, z: 0}
+  _sight_dir: {x: 0, y: 0, z: 0}
+  _upperBody_dir: {x: 0, y: 0, z: 0}
+  _foot_dir: {x: 0, y: 0, z: 0}
+  _shoulder_length: 0
+  _arm_left_length: 0.5
+  _arm_left_min_length: 0.2
+  _arm_left_max_length: 1
+  _arm_right_length: 0.7
+  _arm_right_min_length: 0.2
+  _arm_right_max_length: 1
+  _twoHand_length: 0.2
+  _part_control: 2
+  _eHandStandard: 0
+  _eStance: 1
+  _active_shadowObject: 1
+  _active_projectionSlope: 1
+  _boxSlope_angle: 75
+  _state_current: 1
+  _active_backAni: 1
+  _active_loopAni: 1
+  _stance_aniTime_SE: 1
+  _stance_aniTime_ES: 0.7
+  _stance_stiffTime_E: 0.1
+  _active_stance_ani: 1
+  _stance_rotate_count: 0
+  _amplitude_punch: 1
+  _stance_ani_interpolation: 15
+  _upperBody_rotateTime: 1
+  _upperBody_rotate_interpolation: 15
+  _active_upperBody_rotate: 1
+  _foot_moveTime: 1
+  _foot_move_interpolation: 13
+  _active_foot_move: 1
+  _foot_rotateTime: 1
+  _foot_rotate_interpolation: 13
+  _active_foot_rotate: 1
+  _foot_rotate_count: 0
+  _show_gizmos: 1
 --- !u!114 &114306031411323092
 MonoBehaviour:
   m_ObjectHideFlags: 1

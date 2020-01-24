@@ -247,7 +247,7 @@ namespace HordeFight
         private void OnDrawGizmos()
         {
             if (false == _show_gizmos) return;
-
+            if (null == _ref_being) return;
             //------------------------------------------------
 
             //기본 손정보  출력 
@@ -292,10 +292,11 @@ namespace HordeFight
             }
 
             //조종정보
-            if(true)
+            if(false)
             {
                 if (_part_control == ePart.TwoHand)
                 {
+                    
                     DebugWide.DrawCircle(_shoul_left_end.position, 0.5f, Color.black);
                     DebugWide.DrawLine(_shoul_left_start.position, _shoul_left_end.position, Color.black);
 
@@ -408,7 +409,8 @@ namespace HordeFight
         {
             
             GameObject limbPrefab = Limbs.CreatePrefab("limbs_twoHand", parent, "limbs");
-            Limbs limbs = limbPrefab.AddComponent<Limbs>();
+            //Limbs limbs = limbPrefab.AddComponent<Limbs>();
+            Limbs limbs = limbPrefab.GetComponent<Limbs>();
 
             return limbs;
         }

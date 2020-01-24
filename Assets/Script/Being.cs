@@ -631,34 +631,42 @@ namespace HordeFight
             Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
             Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
             //================================
-            //!!!! 셀에 원의 중점 기준으로만 등록되어 있어서 가져온 셀정보 외에서도 충돌가능원이 있을 가능성이 매우 높다. 즉 제대로 처리 할 수가 없다  
-            //새로운 위치로 이동이 가능한지 검사 
-            //CellSpace cell = SingleO.cellPartition.GetCellSpace(newPos); //원의 중점인 자기위치의 타일정보만 가져오는 결과가 됨
-            CellSpace cell = SingleO.cellPartition.GetCellSpace(newPosBounds); //객체 반지름의 경계면의 타일정보를 가져온다  
-            if (null != cell)
+
+            if(null != SingleO.cellPartition)
             {
-                //DebugWide.LogBlue(cell._childCount);
-                bool moveable = true;
-                Being cur = cell._children;
-                for (int i = 0; i < cell._childCount; i++)
+                //!!!! 셀에 원의 중점 기준으로만 등록되어 있어서 가져온 셀정보 외에서도 충돌가능원이 있을 가능성이 매우 높다. 즉 제대로 처리 할 수가 없다  
+                //새로운 위치로 이동이 가능한지 검사 
+                //CellSpace cell = SingleO.cellPartition.GetCellSpace(newPos); //원의 중점인 자기위치의 타일정보만 가져오는 결과가 됨
+                CellSpace cell = SingleO.cellPartition.GetCellSpace(newPosBounds); //객체 반지름의 경계면의 타일정보를 가져온다  
+                if (null != cell)
                 {
-                    if ((object)_being == (object)cur) continue;
-                    Vector3 between = cur.GetPos3D() - newPos;
-                    float sumRadius = cur._collider_radius + _being._collider_radius;
-                    if (between.sqrMagnitude <= sumRadius * sumRadius)
+                    //DebugWide.LogBlue(cell._childCount);
+                    bool moveable = true;
+                    Being cur = cell._children;
+                    for (int i = 0; i < cell._childCount; i++)
                     {
-                        moveable = false;
-                        break;
+                        if ((object)_being == (object)cur) continue;
+                        Vector3 between = cur.GetPos3D() - newPos;
+                        float sumRadius = cur._collider_radius + _being._collider_radius;
+                        if (between.sqrMagnitude <= sumRadius * sumRadius)
+                        {
+                            moveable = false;
+                            break;
+                        }
+
+
+                        cur = cell._children._next_sibling;
                     }
 
+                    if (true == moveable)//&& 3 > cell._childCount)
+                        _being.SetPos(newPos);
 
-                    cur = cell._children._next_sibling;
                 }
-
-                if (true == moveable)//&& 3 > cell._childCount)
-                    _being.SetPos(newPos);
-
+            }else
+            {
+                _being.SetPos(newPos);
             }
+
 
             //================================
 
@@ -1434,9 +1442,9 @@ x        }
 
             //todo : 성능이 무척 안좋은 처리 , 스프라이트HP바로 바꾸기 
             //_ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
-            _ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
+            //_ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
             //_ui_circle.gameObject.SetActive(false);
-            _ui_hp.gameObject.SetActive(false);
+            //_ui_hp.gameObject.SetActive(false);
             ////SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
         }
 
@@ -1554,7 +1562,7 @@ x        }
         public void ApplyUI_HPBar()
         {
             //HP갱신 
-            _ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
+            //_ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
         }
 
         bool __in_corutin_Damage = false;
@@ -1956,8 +1964,11 @@ x        }
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
-            int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
-            SingleO.cellPartition.AttachCellSpace(_getPos1D, this);
+            if(null != SingleO.cellPartition)
+            {
+                int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
+                SingleO.cellPartition.AttachCellSpace(_getPos1D, this);    
+            }
 
 
             //=====================================================
@@ -1995,7 +2006,8 @@ x        }
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
-            _sphereModel.SetPos(_getPos3D);
+            if(null != _sphereModel)
+                _sphereModel.SetPos(_getPos3D);
             //==============================================
 
             //!!!!! 경계상자 위치 갱신
@@ -2124,6 +2136,7 @@ x        }
         /// </summary>
         public void Update_CellSpace()
         {
+            if (null == SingleO.cellPartition) return;
 
             int _getPos1D = SingleO.cellPartition.ToPosition1D(_getPos3D);
             if (null == _cur_cell || _cur_cell._pos1d != _getPos1D)
