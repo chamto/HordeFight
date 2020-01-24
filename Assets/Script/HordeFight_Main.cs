@@ -4426,7 +4426,7 @@ namespace HordeFight
                 champ._hp_cur = 30;
                 //champ._mt_range_min = 0.3f;
                 //champ._mt_range_max = 0.5f;
-                //champ.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 camp_position++;
             }
 

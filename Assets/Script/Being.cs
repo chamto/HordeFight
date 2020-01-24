@@ -1322,8 +1322,9 @@ namespace HordeFight
             Aim,        //조준점
             Dir,        //방향
             Emotion,    //감정표현
-            Hand_Left,  //행동 왼손
-            Hand_Right, //행동 오른손
+            Circle,     //선택원
+            Bar_Red,    //생명바
+            Bar_Blue,   //체력바
 
             Max,
 x        }
@@ -1417,8 +1418,9 @@ x        }
             _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "aim");
             _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "dir");
             _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "emotion");
-            _effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "hand_left");
-            _effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "hand_right");
+            _effect[(int)eEffectKind.Circle] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "circle");
+            _effect[(int)eEffectKind.Bar_Red] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "bar_red");
+            _effect[(int)eEffectKind.Bar_Blue] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "bar_blue");
 
             //아틀라스에서 가져온 sprite로 변경하여 시험 
             //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
@@ -1454,7 +1456,8 @@ x        }
             bool result = base.UpdateAll();
             if(true == result)
             {
-                
+                ApplyUI_HPBar();
+
                 _limbs.Update_All(); //가지들 갱신 
                 //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기 
             }
@@ -1551,7 +1554,7 @@ x        }
                     if (null != target_champ)
                     {
                         StartCoroutine(target_champ.Damage());
-                        target_champ.ApplyUI_HPBar();
+                        //target_champ.ApplyUI_HPBar();
                     }
 
                 }
@@ -1563,6 +1566,10 @@ x        }
         {
             //HP갱신 
             //_ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
+            Vector2 temp = _effect[(int)eEffectKind.Bar_Red].size;
+            temp.x = (float)_hp_cur / (float)_hp_max;
+            _effect[(int)eEffectKind.Bar_Red].size = temp;
+
         }
 
         bool __in_corutin_Damage = false;
