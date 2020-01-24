@@ -103,8 +103,8 @@ namespace HordeFight
         //목표
         private Transform[] _target = new Transform[2]; //임시 최대2개 목표 
 
-        private Transform _hand_left_spr = null;
-        private Transform _hand_right_spr = null;
+        private Transform _hand_left_wrist = null;
+        private Transform _hand_right_wrist = null;
 
         private Transform _hand_left_obj = null;
         private Transform _hand_left_obj_up = null;
@@ -446,14 +446,14 @@ namespace HordeFight
             //root->waist->shoulder_left->hand_left->object_left
             _object_left = SingleO.hierarchy.GetTransform(_hand_left, "object_left");
             _odir_left = SingleO.hierarchy.GetTransform(_hand_left, "odir_left");
-            _hand_left_spr = SingleO.hierarchy.GetTransform(_hand_left, "spr");
+            _hand_left_wrist = SingleO.hierarchy.GetTransform(_hand_left, "wrist");
             _hand_left_obj_shader = SingleO.hierarchy.GetTransform(_hand_left, "shader");
             //-------------------------
             _hand_left_obj = SingleO.hierarchy.GetTransform(_object_left, "spear");
             _hand_left_obj_mesh = _hand_left_obj.GetComponent<MeshRenderer>();
             _hand_left_obj_up = SingleO.hierarchy.GetTransform(_object_left, "object_left_up");
             _hand_left_obj_end = SingleO.hierarchy.GetTransform(_hand_left_obj, "object_left_end");
-            _hand_left_obj_spr = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(_object_left, "spear");
+            //_hand_left_obj_spr = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(_object_left, "spear");
 
             //-------------------------
             _shoulder_right = SingleO.hierarchy.GetTransform(_waist, "shoulder_right");
@@ -462,7 +462,7 @@ namespace HordeFight
             //root->waist->shoulder_right->hand_right->object_right
             _object_right = SingleO.hierarchy.GetTransform(_hand_right, "object_right");
             _odir_right = SingleO.hierarchy.GetTransform(_hand_right, "odir_right");
-            _hand_right_spr = SingleO.hierarchy.GetTransform(_hand_right, "spr");
+            _hand_right_wrist = SingleO.hierarchy.GetTransform(_hand_right, "wrist");
             //-------------------------
 
 
@@ -1547,10 +1547,13 @@ namespace HordeFight
         public void Update_HandAni()
         {
             //주먹 회전 (어깨에서 손까지)
-            float angleY = Vector3.SignedAngle(Vector3.forward, (_hand_left.position - _shoulder_left.position), Vector3.up);
-            _hand_left_spr.eulerAngles = new Vector3(90, angleY, 0);
-            angleY = Vector3.SignedAngle(Vector3.forward, (_hand_right.position - _shoulder_right.position), Vector3.up);
-            _hand_right_spr.eulerAngles = new Vector3(90, angleY, 0);
+            float angleY = Geo.Angle360(ConstV.v3_forward, (_hand_left.position - _shoulder_left.position), ConstV.v3_up);
+            //float angleY = Vector3.SignedAngle(Vector3.forward, (_hand_left.position - _shoulder_left.position), Vector3.up);
+            _hand_left_wrist.eulerAngles = new Vector3(0, angleY, 0);
+
+            angleY = Geo.Angle360(ConstV.v3_forward, (_hand_right.position - _shoulder_right.position), ConstV.v3_up);
+            //angleY = Vector3.SignedAngle(Vector3.forward, (_hand_right.position - _shoulder_right.position), Vector3.up);
+            _hand_right_wrist.eulerAngles = new Vector3(0, angleY, 0);
         }
 
         public void Update_Shadow()

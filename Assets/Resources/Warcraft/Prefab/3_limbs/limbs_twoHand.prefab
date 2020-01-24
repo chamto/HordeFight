@@ -763,6 +763,21 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1483005492654116
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4208437885388802}
+  m_Layer: 0
+  m_Name: wrist
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1509407227133876
 GameObject:
   m_ObjectHideFlags: 1
@@ -1202,6 +1217,21 @@ GameObject:
   - component: {fileID: 4674617583318276}
   m_Layer: 0
   m_Name: handle_oneHand
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!1 &1862925834862624
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4845905473281426}
+  m_Layer: 0
+  m_Name: wrist
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1716,6 +1746,20 @@ Transform:
   m_Father: {fileID: 4581546067638846}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4208437885388802
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1483005492654116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4392025881467040}
+  m_Father: {fileID: 4579299150073872}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4220118930244964
 Transform:
   m_ObjectHideFlags: 1
@@ -1802,11 +1846,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1422349883726650}
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.50000024, z: 0.50000024}
   m_Children: []
-  m_Father: {fileID: 4374167261257638}
+  m_Father: {fileID: 4845905473281426}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!4 &4292080635933792
@@ -1909,7 +1953,7 @@ Transform:
   m_LocalPosition: {x: -0.4, y: 0.4, z: 0.75}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4286424566448926}
+  - {fileID: 4845905473281426}
   - {fileID: 4248732172932978}
   - {fileID: 4968645415743914}
   - {fileID: 4355733627471744}
@@ -1951,9 +1995,9 @@ Transform:
   m_GameObject: {fileID: 1223483513163784}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.5, y: 0.50000024, z: 0.50000024}
   m_Children: []
-  m_Father: {fileID: 4579299150073872}
+  m_Father: {fileID: 4208437885388802}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!4 &4416359058692320
@@ -2187,7 +2231,7 @@ Transform:
   m_LocalPosition: {x: 0.4, y: 0, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 4392025881467040}
+  - {fileID: 4208437885388802}
   - {fileID: 4708968453999160}
   - {fileID: 4875065376526650}
   - {fileID: 4071451966322574}
@@ -2574,6 +2618,20 @@ Transform:
   m_Father: {fileID: 4551375056150176}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4845905473281426
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1862925834862624}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 4286424566448926}
+  m_Father: {fileID: 4374167261257638}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4852758993935192
 Transform:
   m_ObjectHideFlags: 1
@@ -2866,8 +2924,8 @@ MonoBehaviour:
   _pixelsPerUnit: 16
   _cutting_vert: {x: 0, y: 0, z: 0}
   _cutting_tex: {x: 0, y: 0, z: 0}
-  _world_width: 0.375
-  _world_height: 1.3125
+  _world_width: 0.5
+  _world_height: 1.5625
   _ray_start: {x: 0, y: 0, z: 0}
   _ray_end: {x: 0, y: 0, z: 0}
   _update_perform: 0
