@@ -335,6 +335,7 @@ SpriteAtlas:
   - {fileID: 21300246, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300160, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300242, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300386, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300344, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300338, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300384, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -410,6 +411,8 @@ SpriteAtlas:
   - {fileID: 21300382, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300372, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300374, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300388, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300390, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   m_PackedSpriteNamesToIndex:
   - light_3
   - light_4
@@ -703,6 +706,7 @@ SpriteAtlas:
   - fireRedA_3_1
   - fireRedA_1_0
   - fireRedA_1_1
+  - circle
   - spear_0
   - spear_1
   - long_sword
@@ -778,5 +782,7 @@ SpriteAtlas:
   - sight_dir_0
   - aim_x_1
   - aim_1
+  - bar_blue
+  - bar_red
   m_Tag: etc
   m_IsVariant: 0

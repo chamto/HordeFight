@@ -4848,8 +4848,8 @@ namespace HordeFight
                     {
                         champ.GetComponent<AI>()._ai_running = true;
                         //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
-                        champ._ui_circle.gameObject.SetActive(false);
-                        champ._ui_hp.gameObject.SetActive(false);
+                        //champ._ui_circle.gameObject.SetActive(false);
+                        //champ._ui_hp.gameObject.SetActive(false);
                     }
                         
 
@@ -4863,8 +4863,8 @@ namespace HordeFight
                 {
                     _selected.GetComponent<AI>()._ai_running = false;
                     //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
-                    champ._ui_circle.gameObject.SetActive(true);
-                    champ._ui_hp.gameObject.SetActive(true);
+                    //champ._ui_circle.gameObject.SetActive(true);
+                    //champ._ui_hp.gameObject.SetActive(true);
                 }
 
                 SingleO.cameraWalk.SetTarget(_selected._transform);

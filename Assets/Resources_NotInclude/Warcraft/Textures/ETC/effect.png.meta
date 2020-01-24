@@ -195,6 +195,9 @@ TextureImporter:
     21300380: upperBody_dir_0
     21300382: sight_dir_0
     21300384: long_sword
+    21300386: circle
+    21300388: bar_blue
+    21300390: bar_red
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -3412,6 +3415,66 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: a60bdefec597747c7b364502353e78c9
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: circle
+      rect:
+        serializedVersion: 2
+        x: 486
+        y: 1
+        width: 15
+        height: 14
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 95164cef9d31f4b2fb4d7e89e087176a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bar_blue
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 11
+        width: 1
+        height: 3
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c226a4ccf880c4e8fbddffadc1288fde
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: bar_red
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 5
+        width: 1
+        height: 3
+      alignment: 6
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 487f1593e9a2642fa8a9c292e1740abd
       vertices: []
       indices: 
       edges: []

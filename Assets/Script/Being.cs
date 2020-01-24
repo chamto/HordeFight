@@ -1433,9 +1433,9 @@ x        }
             // 전용 ui 설정 
 
             //todo : 성능이 무척 안좋은 처리 , 스프라이트HP바로 바꾸기 
-            _ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
+            //_ui_circle = SingleO.lineControl.Create_Circle_AxisY(this.transform, _activeRange.radius, Color.green);
             _ui_hp = SingleO.lineControl.Create_LineHP_AxisY(this.transform);
-            _ui_circle.gameObject.SetActive(false);
+            //_ui_circle.gameObject.SetActive(false);
             _ui_hp.gameObject.SetActive(false);
             ////SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
         }
