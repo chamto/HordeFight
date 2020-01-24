@@ -607,7 +607,7 @@ namespace HordeFight
             Update_Shadow();
 
             //물건 움직임에 따라 손 스프라이트 표현 
-            Update_HandAni();
+            Update_HandWristAni();
             //==================================================
 
             Rotate(_ref_movement._direction);
@@ -1544,16 +1544,24 @@ namespace HordeFight
             }
         }
 
-        public void Update_HandAni()
+        //손,손목 애니 
+        public void Update_HandWristAni()
         {
             //주먹 회전 (어깨에서 손까지)
-            float angleY = Geo.Angle360(ConstV.v3_forward, (_hand_left.position - _shoulder_left.position), ConstV.v3_up);
-            //float angleY = Vector3.SignedAngle(Vector3.forward, (_hand_left.position - _shoulder_left.position), Vector3.up);
-            _hand_left_wrist.eulerAngles = new Vector3(0, angleY, 0);
+            //float angleY = Geo.Angle360(ConstV.v3_forward, (_hand_left.position - _shoulder_left.position), ConstV.v3_up);
+            //_hand_left_wrist.eulerAngles = new Vector3(0, angleY, 0);
+            //angleY = Geo.Angle360(ConstV.v3_forward, (_hand_right.position - _shoulder_right.position), ConstV.v3_up);
+            //_hand_right_wrist.eulerAngles = new Vector3(0, angleY, 0);
 
-            angleY = Geo.Angle360(ConstV.v3_forward, (_hand_right.position - _shoulder_right.position), ConstV.v3_up);
-            //angleY = Vector3.SignedAngle(Vector3.forward, (_hand_right.position - _shoulder_right.position), Vector3.up);
-            _hand_right_wrist.eulerAngles = new Vector3(0, angleY, 0);
+            _hand_left_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_hand_left.position - _shoulder_left.position));
+            Vector3 temp = _hand_left_wrist.eulerAngles;
+            temp.z = 0; //롤링효과 제거한다 
+            _hand_left_wrist.eulerAngles = temp;
+
+            _hand_right_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_hand_right.position - _shoulder_right.position));
+            temp = _hand_right_wrist.eulerAngles;
+            temp.z = 0;
+            _hand_right_wrist.eulerAngles = temp;
         }
 
         public void Update_Shadow()
