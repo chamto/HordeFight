@@ -56,7 +56,7 @@ namespace HordeFight
             Misc.Init();
             SingleO.Init_Tool(gameObject); //싱글톤 객체 생성 , 초기화 
 
-            GameObject gobj = GameObject.Find("Lothar");
+            GameObject gobj = GameObject.Find("lothar");
             CreateTestChamp(gobj.transform);
         }
 
