@@ -156,7 +156,7 @@ namespace HordeFight
 
             cameraWalk = parent.AddComponent<CameraWalk>();
             touchEvent = parent.AddComponent<TouchEvent>();
-            touchControl = parent.AddComponent<TouchControl>();
+            //touchControl = parent.AddComponent<TouchControl>();
         }
 
         public static void Init(GameObject parent)

@@ -8,7 +8,8 @@ namespace HordeFight
     public class Test_ChampBehavior : MonoBehaviour
     {
 
-        private ChampUnit _testChamp = null;
+        private ChampUnit _testChamp_0 = null;
+        private ChampUnit _testChamp_1 = null;
 
         string tempGui = "Cut and Sting";
         private void OnGUI()
@@ -25,7 +26,7 @@ namespace HordeFight
 
         }
 
-        public void CreateTestChamp(Transform champTR)
+        public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
         {
             GameObject obj = champTR.gameObject;
             ChampUnit cha = obj.AddComponent<ChampUnit>();
@@ -34,7 +35,7 @@ namespace HordeFight
             mov._being = cha;
             obj.AddComponent<AI>();
             cha._id = 0;
-            cha._kind = ChampUnit.eKind.lothar;
+            cha._kind = eKind;
             cha._belongCamp = null;
             cha.transform.position = champTR.position;
 
@@ -48,16 +49,21 @@ namespace HordeFight
             ////======================
 
             cha.Init();
-            _testChamp = cha;
+
+            return cha;
         }
 
         private void Start()
         {
             Misc.Init();
             SingleO.Init_Tool(gameObject); //싱글톤 객체 생성 , 초기화 
+            gameObject.AddComponent<TouchControlTool>();
 
             GameObject gobj = GameObject.Find("lothar");
-            CreateTestChamp(gobj.transform);
+            _testChamp_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
+
+            gobj = GameObject.Find("footman");
+            _testChamp_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
         }
 
 
@@ -67,8 +73,10 @@ namespace HordeFight
 
             //==================================================
 
-            _testChamp.UpdateAll();
-            _testChamp.Apply_UnityPosition();
+            _testChamp_0.UpdateAll();
+            _testChamp_1.UpdateAll();
+            _testChamp_0.Apply_UnityPosition();
+            _testChamp_1.Apply_UnityPosition();
 
             //==================================================
 
@@ -341,5 +349,133 @@ namespace HordeFight
 
     //=========================================================
 
+
+    public class TouchControlTool : MonoBehaviour
+    {
+        public Being _selected = null;
+
+        private void Start()
+        {
+            SingleO.touchEvent.Attach_SendObject(this.gameObject);
+        }
+
+        private void Update()
+        {
+            if (null == _selected) return;
+            if (_selected.isDeath())
+            {
+                _selected = null;
+            }
+
+        }
+
+        private Vector3 __startPos = ConstV.v3_zero;
+        private void TouchBegan()
+        {
+            ChampUnit champ = null;
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+            __startPos = hit.point;
+            __startPos.y = 0f;
+
+            //DebugWide.LogBlue(hit + "  " + hit.transform.name);
+            Being getBeing = hit.transform.GetComponent<Being>();
+            if (null != (object)getBeing)
+            {
+                //쓰러진 객체는 처리하지 않는다 
+                if (true == getBeing.isDeath()) return;
+
+                //전 객체 선택 해제 
+                if (null != (object)_selected)
+                {
+                    champ = _selected as ChampUnit;
+                    if (null != champ)
+                    {
+                        //champ.GetComponent<AI>()._ai_running = true;
+
+                        //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
+                        //champ._ui_circle.gameObject.SetActive(false);
+                        //champ._ui_hp.gameObject.SetActive(false);
+                    }
+
+
+                }
+
+                //새로운 객체 선택
+                _selected = getBeing;
+
+                champ = _selected as ChampUnit;
+                if (null != (object)champ)
+                {
+                    //_selected.GetComponent<AI>()._ai_running = false;
+                    //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
+                    //champ._ui_circle.gameObject.SetActive(true);
+                    //champ._ui_hp.gameObject.SetActive(true);
+                }
+
+                SingleO.cameraWalk.SetTarget(_selected._transform);
+            }
+
+            //===============================================
+
+            if (null == (object)_selected) return;
+
+            //챔프를 선택한 경우, 추가 처리 하지 않는다
+            if ((object)getBeing == (object)_selected) return;
+
+            //_selected.MoveToTarget(hit.point, 1f);
+
+
+        }
+        private void TouchMoved()
+        {
+            if (null == (object)_selected) return;
+
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+            Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
+
+            //_selected.Attack(hit.point - _selected.transform.position);
+            //_selected.Block_Forward(hit.point - _selected.transform.position);
+            _selected.Move_Forward(touchDir, 1f, true);
+
+            ChampUnit champSelected = _selected as ChampUnit;
+            if (null != (object)champSelected)
+            {
+                //임시처리 
+                //최적화를 위해 주석처리 
+                if (null != SingleO.objectManager)
+                {
+                    Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Enemy,
+                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
+                    if (null != target)
+                    {
+                        if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
+                        {
+                            champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
+                        }
+
+                        //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
+
+                    }
+                }
+
+
+                //champSelected.Attack(champSelected._move._direction); //chamto test
+
+            }
+
+
+
+            //View_AnimatorState();
+        }
+        private void TouchEnded()
+        {
+            if (null == (object)_selected) return;
+
+            _selected.Idle();
+
+        }
+
+
+    }//end class
 
 }
