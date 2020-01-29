@@ -952,16 +952,15 @@ namespace HordeFight
 
 
                     //-----------------------
-                    Vector3 leftToRight = newPos - _hand_left.position;
-                    Vector3 shaft_rot = Vector3.Cross(_hand_left.position, _shoulder_right.position);
-                    Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
-                    float length_min_twoHand = 0.1f;
-                    if (leftToRight.magnitude < length_min_twoHand)
-                    {   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
-
-                        _hand_left.position = _hand_left.position + rotateDir * 0.08f;
-                        //_handle_leftToRight.position = newLeftPos;
-                    }
+                    //Vector3 leftToRight = newPos - _hand_left.position;
+                    //Vector3 shaft_rot = Vector3.Cross(_hand_left.position, _shoulder_right.position);
+                    //Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
+                    //float length_min_twoHand = 0.1f;
+                    //if (leftToRight.magnitude < length_min_twoHand)
+                    //{   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
+                    //    _hand_left.position = _hand_left.position + rotateDir * 0.08f;
+                    //    //_handle_leftToRight.position = newLeftPos;
+                    //}
                     //-----------------------
 
                     _hand_right.position = newPos;
@@ -1053,12 +1052,10 @@ namespace HordeFight
 
                     if ((line_origin - posOnMaxCircle).sqrMagnitude > line_length * line_length)
                     {
-
                         newHand_pos = line_origin + n_line_dir * line_length;
                     }
                     else
                     {
-
                         newHand_pos = posOnMaxCircle;
                     }
                 }
@@ -1068,7 +1065,6 @@ namespace HordeFight
                     newHand_pos = line_origin + n_line_dir * line_length;
                     if ((newHand_pos - shoulder_pos).sqrMagnitude > sqr_arm_max_length)
                     {
-
                         newHand_pos = posOnMaxCircle;
                     }
 
@@ -1092,10 +1088,7 @@ namespace HordeFight
                 newHand_pos = line_origin + Quaternion.AngleAxis(-angleC, shaft_l) * n_targetToRSd * length_contactPt;
 
                 //-----------------------
-
-
             }
-
 
             newArm_length = (newHand_pos - shoulder_pos).magnitude;
             if (newArm_length > arm_max_length)
