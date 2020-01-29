@@ -9,7 +9,9 @@ using UtilGS9;
 [ExecuteInEditMode]
 public class SpriteMesh : MonoBehaviour 
 {
-    
+
+    public Sprite _sprite = null;
+
     //텍스쳐의 좌하단을 원점으로 y축이 위로 증가하는 좌표계를 사용 
     public Vector2 _position;
     public Vector2 _size_vertice;
@@ -93,6 +95,16 @@ public class SpriteMesh : MonoBehaviour
             texSize[i] = UtilGS9.ConstV.v3_zero;
         }
 
+
+        if(null != _sprite)
+        {
+            _position = _sprite.rect.position;
+            _size_vertice = _sprite.rect.size;
+            _size_tex = _sprite.rect.size;
+            _pivot = new Vector2(_sprite.pivot.x / _size_tex.x , _sprite.pivot.y / _size_tex.y); 
+
+            //DebugWide.LogBlue(_sprite.bounds  + "   " + _sprite.pivot + "   " +  _sprite.border);
+        }
 
         _update_perform = true;
 
