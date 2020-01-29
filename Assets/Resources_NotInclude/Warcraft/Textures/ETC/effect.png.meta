@@ -199,6 +199,7 @@ TextureImporter:
     21300388: bar_blue
     21300390: bar_red
     21300392: long_sword_p
+    21300394: long_sword_feder
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -3461,7 +3462,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: long_sword_p
+      name: long_sword_feder
       rect:
         serializedVersion: 2
         x: 445
