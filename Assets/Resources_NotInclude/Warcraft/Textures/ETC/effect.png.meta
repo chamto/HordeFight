@@ -198,6 +198,7 @@ TextureImporter:
     21300386: circle
     21300388: bar_blue
     21300390: bar_red
+    21300392: long_sword_p
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -2664,7 +2665,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 168
-        y: 26
+        y: 37
         width: 18
         height: 16
       alignment: 0
@@ -2684,7 +2685,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 198
-        y: 25
+        y: 36
         width: 21
         height: 15
       alignment: 0
@@ -2704,7 +2705,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 229
-        y: 26
+        y: 37
         width: 24
         height: 12
       alignment: 0
@@ -2724,7 +2725,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 264
-        y: 27
+        y: 38
         width: 17
         height: 14
       alignment: 0
@@ -2744,7 +2745,7 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 298
-        y: 24
+        y: 35
         width: 14
         height: 18
       alignment: 0
@@ -2763,8 +2764,8 @@ TextureImporter:
       name: goldMine_0
       rect:
         serializedVersion: 2
-        x: 434
-        y: 13
+        x: 768
+        y: 1
         width: 47
         height: 40
       alignment: 0
@@ -2920,26 +2921,6 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_165
-      rect:
-        serializedVersion: 2
-        x: 688
-        y: 2
-        width: 126
-        height: 23
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: ece267766fa3c46a1bf97916a5a70cfe
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
       name: forceHit_0_1
       rect:
         serializedVersion: 2
@@ -3083,8 +3064,8 @@ TextureImporter:
       name: sack_0
       rect:
         serializedVersion: 2
-        x: 499
-        y: 32
+        x: 289
+        y: 16
         width: 10
         height: 10
       alignment: 0
@@ -3103,8 +3084,8 @@ TextureImporter:
       name: sack_1
       rect:
         serializedVersion: 2
-        x: 502
-        y: 20
+        x: 293
+        y: 5
         width: 10
         height: 10
       alignment: 0
@@ -3123,8 +3104,8 @@ TextureImporter:
       name: sack_2
       rect:
         serializedVersion: 2
-        x: 523
-        y: 31
+        x: 306
+        y: 16
         width: 10
         height: 10
       alignment: 0
@@ -3243,7 +3224,7 @@ TextureImporter:
       name: effect_hand_0
       rect:
         serializedVersion: 2
-        x: 414
+        x: 400
         y: 49
         width: 9
         height: 11
@@ -3263,8 +3244,8 @@ TextureImporter:
       name: aim_x_0
       rect:
         serializedVersion: 2
-        x: 415
-        y: 3
+        x: 330
+        y: 50
         width: 5
         height: 5
       alignment: 0
@@ -3283,8 +3264,8 @@ TextureImporter:
       name: aim_x_1
       rect:
         serializedVersion: 2
-        x: 425
-        y: 4
+        x: 340
+        y: 51
         width: 3
         height: 3
       alignment: 0
@@ -3303,8 +3284,8 @@ TextureImporter:
       name: aim_1
       rect:
         serializedVersion: 2
-        x: 433
-        y: 4
+        x: 348
+        y: 51
         width: 3
         height: 3
       alignment: 0
@@ -3323,8 +3304,8 @@ TextureImporter:
       name: aim_0
       rect:
         serializedVersion: 2
-        x: 439
-        y: 3
+        x: 354
+        y: 50
         width: 5
         height: 5
       alignment: 0
@@ -3363,8 +3344,8 @@ TextureImporter:
       name: upperBody_dir_0
       rect:
         serializedVersion: 2
-        x: 385
-        y: 52
+        x: 582
+        y: 6
         width: 13
         height: 3
       alignment: 9
@@ -3383,8 +3364,8 @@ TextureImporter:
       name: sight_dir_0
       rect:
         serializedVersion: 2
-        x: 381
-        y: 48
+        x: 578
+        y: 2
         width: 1
         height: 12
       alignment: 7
@@ -3403,12 +3384,12 @@ TextureImporter:
       name: long_sword
       rect:
         serializedVersion: 2
-        x: 358
-        y: 28
+        x: 433
+        y: 13
         width: 8
-        height: 25
+        height: 31
       alignment: 9
-      pivot: {x: 0.5, y: 0}
+      pivot: {x: 0.5, y: 0.1}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3423,7 +3404,7 @@ TextureImporter:
       name: circle
       rect:
         serializedVersion: 2
-        x: 486
+        x: 557
         y: 1
         width: 15
         height: 14
@@ -3443,7 +3424,7 @@ TextureImporter:
       name: bar_blue
       rect:
         serializedVersion: 2
-        x: 509
+        x: 599
         y: 11
         width: 1
         height: 3
@@ -3463,7 +3444,7 @@ TextureImporter:
       name: bar_red
       rect:
         serializedVersion: 2
-        x: 509
+        x: 599
         y: 5
         width: 1
         height: 3
@@ -3475,6 +3456,26 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: 487f1593e9a2642fa8a9c292e1740abd
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: long_sword_p
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 8
+        width: 14
+        height: 47
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f17ff6959ff294f7fa012fe7e7edfb29
       vertices: []
       indices: 
       edges: []

@@ -73,7 +73,6 @@ SpriteAtlas:
   - {fileID: 21300038, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300142, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300038, guid: b433d4ab3779d42d29dc170cae423dcb, type: 3}
-  - {fileID: 21300330, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300038, guid: b5ee43f58eefc46cfb0325d7b323f373, type: 3}
   - {fileID: 21300016, guid: b5ee43f58eefc46cfb0325d7b323f373, type: 3}
   - {fileID: 21300018, guid: b5ee43f58eefc46cfb0325d7b323f373, type: 3}
@@ -120,6 +119,7 @@ SpriteAtlas:
   - {fileID: 21300014, guid: b433d4ab3779d42d29dc170cae423dcb, type: 3}
   - {fileID: 21300000, guid: b433d4ab3779d42d29dc170cae423dcb, type: 3}
   - {fileID: 21300000, guid: b5ee43f58eefc46cfb0325d7b323f373, type: 3}
+  - {fileID: 21300392, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300264, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300098, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300096, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
@@ -327,6 +327,7 @@ SpriteAtlas:
   - {fileID: 21300072, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300128, guid: 1b0657d751aea4e9eb147f21921b2a62, type: 3}
   - {fileID: 21300310, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300384, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300226, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300230, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300308, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -338,7 +339,6 @@ SpriteAtlas:
   - {fileID: 21300386, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300344, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300338, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
-  - {fileID: 21300384, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300336, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300154, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300216, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -444,7 +444,6 @@ SpriteAtlas:
   - flaming_2_15
   - ik_Lothar_71
   - Buildings_Humans_23
-  - effect_165
   - Buildings_Orcs_19
   - Buildings_Orcs_8
   - Buildings_Orcs_9
@@ -491,6 +490,7 @@ SpriteAtlas:
   - Buildings_Humans_8
   - Buildings_Humans_0
   - Buildings_Orcs_0
+  - long_sword_p
   - spellEffect_0_2
   - ik_Lothar_49
   - ik_Lothar_48
@@ -698,6 +698,7 @@ SpriteAtlas:
   - corpseB_1_0
   - ik_Lothar_64
   - sleep_4_0
+  - long_sword
   - fireBlueB_1_0
   - fireBlueB_3_0
   - sleep_3_0
@@ -709,7 +710,6 @@ SpriteAtlas:
   - circle
   - spear_0
   - spear_1
-  - long_sword
   - forceHit_0_1
   - effect_77
   - fireBlueA_1_0

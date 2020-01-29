@@ -2917,16 +2917,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56fc5866ed90545f2b47bd0de7185554, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _position: {x: 358, y: 28}
-  _size_vertice: {x: 8, y: 25}
-  _size_tex: {x: 8, y: 25}
-  _pivot: {x: 0.5, y: 0}
+  _position: {x: 358, y: 25}
+  _size_vertice: {x: 8, y: 31}
+  _size_tex: {x: 8, y: 31}
+  _pivot: {x: 0.5, y: 0.1}
   _cuttingRate: {x: 0, y: 0}
   _pixelsPerUnit: 16
   _cutting_vert: {x: 0, y: 0, z: 0}
   _cutting_tex: {x: 0, y: 0, z: 0}
   _world_width: 0.5
-  _world_height: 1.5625
+  _world_height: 1.6875
   _ray_start: {x: 0, y: 0, z: 0}
   _ray_end: {x: 0, y: 0, z: 0}
   _update_perform: 0
