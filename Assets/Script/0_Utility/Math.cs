@@ -354,7 +354,7 @@ namespace UtilGS9
         // Returns the minimum distance squared between line segment and point
         // Returns 판별식 t_c = (w⋅v)/(v⋅v)   [0~1 사이의 값] 487p 참고
         //-----------------------------------------------------------------------------
-        public float MinimumDistanceSquared(Vector3 point, out float t_c)
+        public float DistanceSquared(Vector3 point, out float t_c)
         {
             Vector3 w = point - origin;
             float proj = Vector3.Dot(w, direction);

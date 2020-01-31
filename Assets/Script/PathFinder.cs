@@ -169,7 +169,7 @@ namespace HordeFight
                     continue;
                 }
 
-                sqrDis = lineSeg.MinimumDistanceSquared(worldCellCenterPos, out t_c);
+                sqrDis = lineSeg.DistanceSquared(worldCellCenterPos, out t_c);
 
                 //선분에 멀리있는 셀들을 걸러낸다
                 if (CELL_SQUARED_RADIUS < sqrDis)
