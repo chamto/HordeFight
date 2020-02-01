@@ -16,15 +16,23 @@ public class HierarchyPreLoader
     //GetTransformA의 성능이 몹시 좋지 못하여 다른방식으로 만듬 
     public Transform GetTransform(Transform parent, string child_name)
     {
+        Transform[] list = null;
+
         if (null != parent)
         {
-            Transform[] list = parent.GetComponentsInChildren<Transform>(true);
+            list = parent.GetComponentsInChildren<Transform>(true);
             for (int i = 0; i < list.Length; i++)
             {
                 if (list[i].name == child_name)
                     return list[i];
             }
+        }else
+        {
+            GameObject obj = GameObject.Find(child_name);
+            if (null != (object)obj &&  null == (object)obj.transform.parent)
+                return obj.transform;
         }
+
         return null;
     }
     public TaaT GetTypeObject<TaaT>(Transform parent, string child_name) where TaaT : class
