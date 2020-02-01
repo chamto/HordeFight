@@ -14,13 +14,14 @@ public class HierarchyPreLoader
     //======================================================
 
     //GetTransformA의 성능이 몹시 좋지 못하여 다른방식으로 만듬 
-    public Transform GetTransform(Transform parent, string child_name)
+    public Transform GetTransform(Transform parent, string child_name, bool includeInactive = false)
     {
+        
         Transform[] list = null;
 
         if (null != parent)
         {
-            list = parent.GetComponentsInChildren<Transform>(true);
+            list = parent.GetComponentsInChildren<Transform>(includeInactive);
             for (int i = 0; i < list.Length; i++)
             {
                 if (list[i].name == child_name)

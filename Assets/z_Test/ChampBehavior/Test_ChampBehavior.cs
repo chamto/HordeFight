@@ -74,9 +74,10 @@ namespace HordeFight
             //==================================================
 
             _champ_0.UpdateAll();
-            _champ_1.UpdateAll();
             _champ_0.Apply_UnityPosition();
-            _champ_1.Apply_UnityPosition();
+
+            _champ_1.UpdateAll();
+            _champ_1.Apply_UnityPosition();    
 
             Collision_Sword(_champ_0, _champ_1);
             //==================================================
