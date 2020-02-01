@@ -678,6 +678,18 @@ namespace HordeFight
             _eDir8 = Misc.GetDir8_AxisY(dir);
         }
 
+        public void Move_LookAt(Vector3 moveDir, Vector3 lookAt, float meter, float perSecond)
+        {
+            SetDirection(lookAt);
+
+            _isNextMoving = true;
+            perSecond = 1f / perSecond;
+            //보간 없는 기본형
+            //this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            Vector3 newPos = _being.GetPos3D() + moveDir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            _being.SetPos(newPos);
+        }
+
         //dir 이 정규화 되어 있다 가정함 
         public void Move_Push(Vector3 dir, float meter, float perSecond)
         {
@@ -2738,6 +2750,30 @@ x        }
             //_sphereModel.SetPos(_getPos3D);
             //==============================================
 
+        }
+
+        public void Move_LookAt(Vector3 moveDir, Vector3 lookAtDir, float second)
+        {
+            moveDir.y = 0;
+            _move.SetNextMoving(false);
+            _move.Move_LookAt(moveDir,lookAtDir, 2f, second);
+
+            //아이들 상태에서 밀려 이동하는 걸 표현
+            _behaviorKind = Behavior.eKind.Move;
+
+            if (true == IsActive_Animator())
+            {
+                Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+
+                //int hash = Animator.StringToHash("move");
+                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
+            }
+
+            //==============================================
+            //!!!!! 구트리 위치 갱신 
+            //_sphereModel.SetPos(_transform.position);
+            //_sphereModel.SetPos(_getPos3D);
+            //==============================================
         }
 
         public void Move_Push(Vector3 dir, float second)

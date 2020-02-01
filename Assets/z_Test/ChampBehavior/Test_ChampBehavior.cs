@@ -8,8 +8,8 @@ namespace HordeFight
     public class Test_ChampBehavior : MonoBehaviour
     {
 
-        private ChampUnit _testChamp_0 = null;
-        private ChampUnit _testChamp_1 = null;
+        public ChampUnit _champ_0 = null;
+        public ChampUnit _champ_1 = null;
 
         string tempGui = "Cut and Sting";
         private void OnGUI()
@@ -60,10 +60,10 @@ namespace HordeFight
             gameObject.AddComponent<TouchControlTool>();
 
             GameObject gobj = GameObject.Find("lothar");
-            _testChamp_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
+            _champ_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
 
             gobj = GameObject.Find("footman");
-            _testChamp_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
+            _champ_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
         }
 
 
@@ -73,12 +73,12 @@ namespace HordeFight
 
             //==================================================
 
-            _testChamp_0.UpdateAll();
-            _testChamp_1.UpdateAll();
-            _testChamp_0.Apply_UnityPosition();
-            _testChamp_1.Apply_UnityPosition();
+            _champ_0.UpdateAll();
+            _champ_1.UpdateAll();
+            _champ_0.Apply_UnityPosition();
+            _champ_1.Apply_UnityPosition();
 
-            Collision_Sword(_testChamp_0, _testChamp_1);
+            Collision_Sword(_champ_0, _champ_1);
             //==================================================
 
         }
@@ -363,10 +363,12 @@ namespace HordeFight
     public class TouchControlTool : MonoBehaviour
     {
         public Being _selected = null;
+        private Test_ChampBehavior _test_ChampBehavior = null;
 
         private void Start()
         {
             SingleO.touchEvent.Attach_SendObject(this.gameObject);
+            _test_ChampBehavior = gameObject.GetComponent<Test_ChampBehavior>();
         }
 
         private void Update()
@@ -394,6 +396,7 @@ namespace HordeFight
                 //쓰러진 객체는 처리하지 않는다 
                 if (true == getBeing.isDeath()) return;
 
+                //------------------------------------------
                 //전 객체 선택 해제 
                 if (null != (object)_selected)
                 {
@@ -402,13 +405,9 @@ namespace HordeFight
                     {
                         //champ.GetComponent<AI>()._ai_running = true;
 
-                        //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
-                        //champ._ui_circle.gameObject.SetActive(false);
-                        //champ._ui_hp.gameObject.SetActive(false);
                     }
-
-
                 }
+                //------------------------------------------
 
                 //새로운 객체 선택
                 _selected = getBeing;
@@ -417,10 +416,9 @@ namespace HordeFight
                 if (null != (object)champ)
                 {
                     //_selected.GetComponent<AI>()._ai_running = false;
-                    //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
-                    //champ._ui_circle.gameObject.SetActive(true);
-                    //champ._ui_hp.gameObject.SetActive(true);
+
                 }
+                //------------------------------------------
 
                 SingleO.cameraWalk.SetTarget(_selected._transform);
             }
@@ -443,39 +441,24 @@ namespace HordeFight
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
             Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
 
-            //_selected.Attack(hit.point - _selected.transform.position);
-            //_selected.Block_Forward(hit.point - _selected.transform.position);
-            _selected.Move_Forward(touchDir, 1f, true);
 
+            ChampUnit champTarget = null;
             ChampUnit champSelected = _selected as ChampUnit;
             if (null != (object)champSelected)
             {
-                //임시처리 
-                //최적화를 위해 주석처리 
-                if (null != SingleO.objectManager)
+                if ((object)champSelected == (object)_test_ChampBehavior._champ_0)
                 {
-                    Being target = SingleO.objectManager.GetNearCharacter(champSelected, Camp.eRelation.Enemy,
-                                                                      champSelected.attack_range_min, champSelected.attack_range_max);
-                    if (null != target)
-                    {
-                        if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
-                        {
-                            champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
-                        }
-
-                        //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
-
-                    }
+                    champTarget = _test_ChampBehavior._champ_1;
                 }
-
-
-                //champSelected.Attack(champSelected._move._direction); //chamto test
-
+                else
+                {
+                    champTarget = _test_ChampBehavior._champ_0;
+                }
             }
 
 
+            _selected.Move_LookAt(touchDir, champTarget.GetPos3D() - champSelected.GetPos3D(), 1f);
 
-            //View_AnimatorState();
         }
         private void TouchEnded()
         {
