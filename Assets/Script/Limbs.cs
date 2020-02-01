@@ -415,6 +415,13 @@ namespace HordeFight
             return limbs;
         }
 
+        public LineSegment3 GetObjectLine()
+        {
+            LineSegment3 line = new LineSegment3(_hand_left.position, _hand_right.position);
+
+            return line;
+        }
+
 
         public void Init()
         {

@@ -78,11 +78,21 @@ namespace HordeFight
             _testChamp_0.Apply_UnityPosition();
             _testChamp_1.Apply_UnityPosition();
 
+            Collision_Sword(_testChamp_0, _testChamp_1);
             //==================================================
 
         }
 
 
+        public void Collision_Sword(ChampUnit unit0 , ChampUnit unit1)
+        {
+            float s, t;
+            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs.GetObjectLine(), unit1._limbs.GetObjectLine(),out s, out t);
+            if(sqrdis < 0.01f)
+            {
+                DebugWide.LogBlue("Collision!!");
+            }
+        }
 
         //======================================================================================================================================
         //======================================================================================================================================
