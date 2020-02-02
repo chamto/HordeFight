@@ -181,9 +181,9 @@ TextureImporter:
     21300352: sack_1
     21300354: sack_2
     21300356: effect_dir
-    21300358: effect_attack
+    21300358: sword_0
     21300360: effect_hand_1
-    21300362: effect_sheld_0
+    21300362: shield_0
     21300364: effect_4
     21300366: effect_surprise
     21300368: effect_hand_0
@@ -191,15 +191,21 @@ TextureImporter:
     21300372: aim_x_1
     21300374: aim_1
     21300376: aim_0
-    21300378: effect_sheld_1
+    21300378: shield_1
     21300380: upperBody_dir_0
     21300382: sight_dir_0
-    21300384: long_sword
+    21300384: longSword
     21300386: circle
     21300388: bar_blue
     21300390: bar_red
     21300392: long_sword_p
-    21300394: long_sword_feder
+    21300394: federschwert
+    21300396: staff_0
+    21300398: spear_2
+    21300400: shield_2
+    21300402: upperBody_dir_1
+    21300404: upperBody_dir_2
+    21300406: upperBody_dir_3
   externalObjects: {}
   serializedVersion: 5
   mipmaps:
@@ -2965,12 +2971,12 @@ TextureImporter:
       name: arrow_0
       rect:
         serializedVersion: 2
-        x: 370
+        x: 362
         y: 28
         width: 1
         height: 13
       alignment: 9
-      pivot: {x: 0.5, y: 0.95}
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -2985,12 +2991,12 @@ TextureImporter:
       name: arrow_1
       rect:
         serializedVersion: 2
-        x: 380
+        x: 372
         y: 28
         width: 3
         height: 13
       alignment: 9
-      pivot: {x: 0.5, y: 0}
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3142,15 +3148,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_attack
+      name: sword_0
       rect:
         serializedVersion: 2
         x: 377
         y: 10
         width: 7
         height: 12
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3169,8 +3175,8 @@ TextureImporter:
         y: 12
         width: 8
         height: 9
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -3182,7 +3188,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_sheld_0
+      name: shield_0
       rect:
         serializedVersion: 2
         x: 402
@@ -3225,8 +3231,8 @@ TextureImporter:
       name: effect_hand_0
       rect:
         serializedVersion: 2
-        x: 400
-        y: 49
+        x: 387
+        y: 28
         width: 9
         height: 11
       alignment: 9
@@ -3322,11 +3328,11 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: effect_sheld_1
+      name: shield_1
       rect:
         serializedVersion: 2
-        x: 399
-        y: 34
+        x: 401
+        y: 29
         width: 10
         height: 10
       alignment: 0
@@ -3382,7 +3388,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: long_sword
+      name: longSword
       rect:
         serializedVersion: 2
         x: 433
@@ -3462,7 +3468,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: long_sword_feder
+      name: federschwert
       rect:
         serializedVersion: 2
         x: 445
@@ -3477,6 +3483,126 @@ TextureImporter:
       tessellationDetail: 0
       bones: []
       spriteID: f17ff6959ff294f7fa012fe7e7edfb29
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: staff_0
+      rect:
+        serializedVersion: 2
+        x: 467
+        y: 15
+        width: 1
+        height: 13
+      alignment: 9
+      pivot: {x: 0.5, y: 0.3}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0a4ef3815dffd4f96a234c3ccf58253a
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: spear_2
+      rect:
+        serializedVersion: 2
+        x: 477
+        y: 15
+        width: 3
+        height: 13
+      alignment: 9
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 02ba43f16c98941af84a78bd92013bdb
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: shield_2
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 46
+        width: 15
+        height: 7
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 69f3eb0b7bd8549cbbe9f108233f7820
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: upperBody_dir_1
+      rect:
+        serializedVersion: 2
+        x: 582
+        y: 13
+        width: 13
+        height: 5
+      alignment: 9
+      pivot: {x: 0.5, y: 0.1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ca0b0ddfbf0e243b2b771c9035565262
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: upperBody_dir_2
+      rect:
+        serializedVersion: 2
+        x: 579
+        y: 22
+        width: 19
+        height: 7
+      alignment: 9
+      pivot: {x: 0.5, y: 1}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bc8b136f799c4478b9eac80a7315b2bc
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: upperBody_dir_3
+      rect:
+        serializedVersion: 2
+        x: 577
+        y: 34
+        width: 23
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ee3fdd12ee3d24cfab4d30f3c9a16a3d
       vertices: []
       indices: 
       edges: []

@@ -114,7 +114,52 @@ namespace UtilGS9
 
 namespace UtilGS9
 {
-    
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// 계층도상에서 이름으로 객체 가져오기 
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public class Hierarchy
+    {
+        static public Transform GetTransform(Transform parent, string child_name, bool includeInactive = false)
+        {
+
+            Transform[] list = null;
+
+            if (null != parent)
+            {
+                list = parent.GetComponentsInChildren<Transform>(includeInactive);
+                for (int i = 0; i < list.Length; i++)
+                {
+                    if (list[i].name == child_name)
+                        return list[i];
+                }
+            }
+            else
+            {
+                GameObject obj = GameObject.Find(child_name);
+                if (null != (object)obj && null == (object)obj.transform.parent)
+                    return obj.transform;
+            }
+
+            return null;
+        }
+        static public TaaT GetTypeObject<TaaT>(Transform parent, string child_name) where TaaT : class
+        {
+            Transform f = GetTransform(parent, child_name);
+            if (null == f)
+                return null;
+
+            //GameObject 를 컴포넌트로 검색하면 에러남. GameObject 는 컴포넌트가 아니다
+            if (typeof(TaaT) == typeof(GameObject))
+            {
+                return f.gameObject as TaaT;
+            }
+
+            return f.GetComponent<TaaT>();
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////
     /// <summary>
     /// 해쉬값과 문자열을 쌍으로 묶어 관리하는 객체

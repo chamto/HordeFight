@@ -84,30 +84,35 @@ namespace HordeFight
         private Transform _shoulder_left = null;
         private Transform _hand_left = null;
         private Transform _hand_left_wrist = null; //손목
-        private Transform _arm_left = null;
         private Transform _arm_left_up = null;
         private Transform _arm_left_dir = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
-        private Transform _arm_left_start = null;
-        private Transform _arm_left_end = null;
-        private Transform _arm_left_shader = null;
-        private SpriteMesh _arm_left_spr = null;
-        //private Transform _hand_left_obj = null;
-        //private SpriteRenderer _hand_left_obj_spr = null;
+
+        //private Transform _arm_left = null;
+        //private Transform _arm_left_start = null;
+        //private Transform _arm_left_end = null;
+        //private Transform _arm_left_shader = null;
+        //private SpriteMesh _arm_left_spr = null;
 
 
         private Transform _shoulder_right = null;
         private Transform _hand_right = null;
         private Transform _hand_right_wrist = null;
-        private Transform _arm_right = null;
         private Transform _arm_right_up = null;
         private Transform _arm_right_dir = null;
-        private Transform _arm_right_start = null;
-        private Transform _arm_right_end = null;
-        private Transform _arm_right_shader = null;
-        private SpriteMesh _arm_right_spr = null;
-        //private Transform _hand_right_obj = null;
-        //private SpriteRenderer _hand_right_obj_spr = null;
 
+        //private Transform _arm_right = null;
+        //private Transform _arm_right_start = null;
+        //private Transform _arm_right_end = null;
+        //private Transform _arm_right_shader = null;
+        //private SpriteMesh _arm_right_spr = null;
+
+
+        //무기정보
+        private List<ArmedInfo> _list_armedInfo = new List<ArmedInfo>();
+        public ArmedInfo.eIdx _equipment_handLeft = ArmedInfo.eIdx.Federschwert;
+        public ArmedInfo.eIdx _equipment_handRight = ArmedInfo.eIdx.None;
+        private ArmedInfo _armed_left = null;
+        private ArmedInfo _armed_right = null;
 
         //핸들 
         private Transform _HANDLE_twoHand = null;
@@ -291,13 +296,13 @@ namespace HordeFight
             {
                 //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_end.position, Color.cyan);
                 //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_up.position, Color.cyan);
-                DebugWide.DrawCircle(_arm_left_up.position, 0.1f, Color.cyan);
+                //DebugWide.DrawCircle(_arm_left_up.position, 0.1f, Color.cyan);
 
-                Vector3 hLhR = _hand_right.position - _hand_left.position;
-                Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
-                float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-                DebugWide.DrawLine(_arm_left.position, _arm_left.position + obj_shaft * 3f, Color.red);
-                DebugWide.PrintText(_arm_left.position + obj_shaft * 3f, Color.red, angleW + "");
+                //Vector3 hLhR = _hand_right.position - _hand_left.position;
+                //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+                //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+                //DebugWide.DrawLine(_arm_left.position, _arm_left.position + obj_shaft * 3f, Color.red);
+                //DebugWide.PrintText(_arm_left.position + obj_shaft * 3f, Color.red, angleW + "");
             }
 
             //조종정보
@@ -333,18 +338,24 @@ namespace HordeFight
                 DebugWide.DrawCircle(_light_dir, 0.1f, Color.black);
                 DebugWide.DrawLine(_groundY + Vector3.forward * 5, _groundY, Color.black);
 
-                //--
-                Vector3 objDir = _hand_right.position - _hand_left.position;
-                float len_groundToObj_start, len_groundToObj_end;
-                Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _arm_left.position, out len_groundToObj_start);
-                Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, _arm_left_end.position, out len_groundToObj_end);
-                //--
+                if (null != (object)_armed_left)
+                {
+                    Vector3 arm_left_end = _armed_left._arm_end.position;
 
-                DebugWide.DrawLine(_arm_left.position, _arm_left.position + len_groundToObj_start * Vector3.down, Color.black);
-                DebugWide.DrawLine(_arm_left_end.position, _arm_left_end.position + len_groundToObj_end * Vector3.down, Color.black);
-                DebugWide.DrawLine(_arm_left.position, shaderStart, Color.black);
-                DebugWide.DrawLine(_arm_left_end.position, shaderEnd, Color.black);
-                DebugWide.DrawLine(shaderEnd, shaderStart, Color.red); //그림자 놓여질 위치 표현 
+                    //--
+                    Vector3 objDir = _hand_right.position - _hand_left.position;
+                    float len_groundToObj_start, len_groundToObj_end;
+                    Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _hand_left.position, out len_groundToObj_start);
+                    Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, arm_left_end, out len_groundToObj_end);
+                    //--
+
+                    DebugWide.DrawLine(_hand_left.position, _hand_left.position + len_groundToObj_start * Vector3.down, Color.black);
+                    DebugWide.DrawLine(arm_left_end, arm_left_end + len_groundToObj_end * Vector3.down, Color.black);
+                    DebugWide.DrawLine(arm_left_end, shaderStart, Color.black);
+                    DebugWide.DrawLine(arm_left_end, shaderEnd, Color.black);
+                    DebugWide.DrawLine(shaderEnd, shaderStart, Color.red); //그림자 놓여질 위치 표현 
+                }
+                    
             }
 
 
@@ -463,14 +474,16 @@ namespace HordeFight
             _hand_left_wrist = SingleO.hierarchy.GetTransform(_hand_left, "wrist");
             _arm_left_up = SingleO.hierarchy.GetTransform(_hand_left, "arm_up");
             _arm_left_dir = SingleO.hierarchy.GetTransform(_hand_left, "arm_dir");
-            _arm_left = SingleO.hierarchy.GetTransform(_hand_left, "arm");
-            _arm_left_start = SingleO.hierarchy.GetTransform(_arm_left, "start");
-            _arm_left_end = SingleO.hierarchy.GetTransform(_arm_left, "end");
-            _arm_left_shader = SingleO.hierarchy.GetTransform(_arm_left, "shader");
-            if (null != (object)_arm_left)
-            {
-                _arm_left_spr = _arm_left.GetComponentInChildren<SpriteMesh>();
-            }
+
+
+            //_arm_left = SingleO.hierarchy.GetTransform(_hand_left, "arm");
+            //_arm_left_start = SingleO.hierarchy.GetTransform(_arm_left, "start");
+            //_arm_left_end = SingleO.hierarchy.GetTransform(_arm_left, "end");
+            //_arm_left_shader = SingleO.hierarchy.GetTransform(_arm_left, "shader");
+            //if (null != (object)_arm_left)
+            //{
+            //    _arm_left_spr = _arm_left.GetComponentInChildren<SpriteMesh>();
+            //}
 
 
             //-------------------------
@@ -480,18 +493,29 @@ namespace HordeFight
             _hand_right_wrist = SingleO.hierarchy.GetTransform(_hand_right, "wrist");
             _arm_right_up = SingleO.hierarchy.GetTransform(_hand_right, "arm_up");
             _arm_right_dir = SingleO.hierarchy.GetTransform(_hand_right, "arm_dir");
-            _arm_right = SingleO.hierarchy.GetTransform(_hand_right, "arm");
-            _arm_right_start = SingleO.hierarchy.GetTransform(_arm_right, "start");
-            _arm_right_end = SingleO.hierarchy.GetTransform(_arm_right, "end");
-            _arm_right_shader = SingleO.hierarchy.GetTransform(_arm_right, "shader");
-            if(null != (object)_arm_right)
-            {
-                _arm_right_spr = _arm_right.GetComponentInChildren<SpriteMesh>();    
-            }
+
+            //_arm_right = SingleO.hierarchy.GetTransform(_hand_right, "arm");
+            //_arm_right_start = SingleO.hierarchy.GetTransform(_arm_right, "start");
+            //_arm_right_end = SingleO.hierarchy.GetTransform(_arm_right, "end");
+            //_arm_right_shader = SingleO.hierarchy.GetTransform(_arm_right, "shader");
+            //if(null != (object)_arm_right)
+            //{
+            //    _arm_right_spr = _arm_right.GetComponentInChildren<SpriteMesh>();    
+            //}
 
 
             //-------------------------
 
+            //==================================================
+            //1차 자식 : arms
+            //==================================================
+            Transform arms = SingleO.hierarchy.GetTransform(transform, "arms");
+
+            foreach(ArmedInfo arin in arms.GetComponentsInChildren<ArmedInfo>(true))
+            {
+                arin.Init(arin.transform);
+                _list_armedInfo.Add(arin);    
+            }
 
 
             //==================================================
@@ -611,6 +635,10 @@ namespace HordeFight
 
             //==================================================
 
+            Update_Equipment();
+
+            //==================================================
+
             //stance ani 재생 만들기 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
             //Update_StanceAni(); 
@@ -640,9 +668,53 @@ namespace HordeFight
             Rotate(_ref_movement._direction);
         }
 
-        //==================================================
+		//==================================================
 
-        public void Update_Ani()
+        public void ActiveAll_Arms(bool value , ArmedInfo.eIdx except)
+        {
+            foreach(ArmedInfo arin in _list_armedInfo)
+            {
+                if (except == arin._eIdx) continue;
+
+                arin.SetActive(value);
+            }
+        }
+
+		public void Update_Equipment()
+        {
+            ArmedInfo.eIdx arin_left_idx = _equipment_handLeft;
+            ArmedInfo.eIdx arin_right_idx = _equipment_handRight;
+            if (null != (object)_armed_left)
+                arin_left_idx = _armed_left._eIdx;
+            if (null != (object)_armed_right)
+                arin_right_idx = _armed_right._eIdx;
+
+
+            //왼손 무기 장착
+            if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
+            {
+                ActiveAll_Arms(false, arin_right_idx);
+                _armed_left = _list_armedInfo[(int)_equipment_handLeft];
+                _armed_left.SetActive(true);
+
+            }
+            _armed_left._tr_arm.position = _hand_left.position;
+
+            //=============================================
+                
+            //오른손 무기 장착
+            //기존값과 비교 , 다른때만 갱신 
+            if (null == (object)_armed_right || _armed_right._eIdx != _equipment_handRight)
+            {
+                ActiveAll_Arms(false, arin_left_idx);
+                _armed_right = _list_armedInfo[(int)_equipment_handRight];
+                _armed_right.SetActive(true);
+            }
+            _armed_right._tr_arm.position = _hand_right.position;
+
+		}
+
+		public void Update_Ani()
         {
             switch (this._state_current)
             {
@@ -1509,14 +1581,14 @@ namespace HordeFight
                     Vector3 handToTarget = _arm_left_dir.position - _hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _arm_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     //======
 
                     handToTarget = _arm_right_dir.position - _hand_right.position;
                     obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _arm_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
                 }
                 //찌르기 
                 else if (eStance.Sting == _eStance)
@@ -1524,22 +1596,22 @@ namespace HordeFight
                     Vector3 handToTarget = _target[0].position - _hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _arm_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     handToTarget = _target[1].position - _hand_right.position;
                     obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _arm_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
                 }
 
             }
             if (ePart.TwoHand == _part_control)
             {   //양손 칼 붙이기
                 Vector3 hLhR = _hand_right.position - _hand_left.position;
-                _arm_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
+                _hand_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
 
                 //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
-                Vector3 temp = _arm_left.eulerAngles;
+                Vector3 temp = _hand_left.eulerAngles;
                 //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
 
 
@@ -1559,7 +1631,7 @@ namespace HordeFight
                     //_hand_left_obj_mesh.sharedMaterial.color = Color.gray;
                     temp.z = 180;
                 }
-                _arm_left.eulerAngles = temp;
+                _hand_left.eulerAngles = temp;
 
             }
         }
@@ -1591,12 +1663,15 @@ namespace HordeFight
             if (ePart.TwoHand == _part_control)
             {
                 //-----------------------------------
+                Vector3 arm_left_end = _armed_left._arm_end.position;
+                Transform arm_left_shadow = _armed_left._arm_shadow;
+
                 //평면과 광원사이의 최소거리 
                 Vector3 hLhR = _hand_right.position - _hand_left.position;
                 float len_groundToObj_start, len_groundToObj_end;
                 //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-                Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, _arm_left_end.position, out len_groundToObj_end);
-                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, _arm_left.position);
+                Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_left_end, out len_groundToObj_end);
+                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, _hand_left.position);
                 //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
 
                 Vector3 startToEnd = end - start;
@@ -1607,16 +1682,16 @@ namespace HordeFight
                 float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd);
                 //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
                 //DebugWide.LogBlue(shader_angle);
-                _arm_left_shader.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
-                _arm_left_shader.position = start;
+                arm_left_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
+                arm_left_shadow.position = start;
 
                 //높이에 따라 그림자 길이 조절 
-                Vector3 scale = _arm_left_shader.localScale;
+                Vector3 scale = arm_left_shadow.localScale;
                 scale.z = rate;
-                _arm_left_shader.localScale = scale;
+                arm_left_shadow.localScale = scale;
                 //------
                 //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
-                Vector3 temp2 = _arm_left_shader.eulerAngles;
+                Vector3 temp2 = arm_left_shadow.eulerAngles;
                 //temp2.x = 90f;
                 if (Vector3.Dot(ConstV.v3_up, _arm_left_up.position - _hand_left.position) > 0)
                 {
@@ -1626,16 +1701,16 @@ namespace HordeFight
                 {
                     temp2.z = 180f;
                 }
-                _arm_left_shader.eulerAngles = temp2;
+                arm_left_shadow.eulerAngles = temp2;
                 //-----------------------------------  
 
                 //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
                 //땅을 통과하는 창 자르기 
-                SpriteMesh spriteMesh = _arm_left_spr;
-                if (_groundY.y > _arm_left_end.position.y)
+                SpriteMesh spriteMesh = _armed_left._arm_spr;
+                if (_groundY.y > arm_left_end.y)
                 {
-                    float rate_viewLen = (_arm_left_end.position - end).magnitude / 2.4f; //하드코딩
+                    float rate_viewLen = (arm_left_end - end).magnitude / _armed_left._length;
                     spriteMesh._cuttingRate.y = -rate_viewLen;
                     spriteMesh._update_perform = true;
 
