@@ -111,8 +111,8 @@ namespace HordeFight
         private List<ArmedInfo> _list_armedInfo = new List<ArmedInfo>();
         public ArmedInfo.eIdx _equipment_handLeft = ArmedInfo.eIdx.Federschwert;
         public ArmedInfo.eIdx _equipment_handRight = ArmedInfo.eIdx.None;
-        private ArmedInfo _armed_left = null;
-        private ArmedInfo _armed_right = null;
+        public ArmedInfo _armed_left = null;
+        public ArmedInfo _armed_right = null;
 
         //핸들 
         private Transform _HANDLE_twoHand = null;
@@ -260,7 +260,7 @@ namespace HordeFight
             //------------------------------------------------
 
             //기본 손정보  출력 
-            //if(false)
+            if(false)
             {
                 Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
                 Vector3 hLsL = _hand_left.position - _shoulder_left.position;
@@ -288,7 +288,8 @@ namespace HordeFight
 
             //무기정보
             {
-                //DebugWide.DrawLine(_hand_left_obj_end, _hand_left.position, Color.green);
+                _armed_left.DrawInfo(Color.red);
+                _armed_right.DrawInfo(Color.red);
             }
 
             //무기 뒷면 
@@ -433,13 +434,6 @@ namespace HordeFight
             Limbs limbs = limbPrefab.GetComponent<Limbs>();
 
             return limbs;
-        }
-
-        public LineSegment3 GetObjectLine()
-        {
-            LineSegment3 line = new LineSegment3(_hand_left.position, _hand_right.position);
-
-            return line;
         }
 
 
@@ -699,8 +693,7 @@ namespace HordeFight
                 _armed_left.SetActive(true);
 
             }
-            _armed_left._tr_arm.position = _hand_left.position;
-            _armed_left._tr_arm.rotation = _hand_left.rotation;
+            _armed_left.Update_Info(_hand_left);
 
             //=============================================
                 
@@ -712,8 +705,7 @@ namespace HordeFight
                 _armed_right = _list_armedInfo[(int)_equipment_handRight];
                 _armed_right.SetActive(true);
             }
-            _armed_right._tr_arm.position = _hand_right.position;
-            _armed_right._tr_arm.rotation = _hand_right.rotation;
+            _armed_right.Update_Info(_hand_right);
 
 		}
 

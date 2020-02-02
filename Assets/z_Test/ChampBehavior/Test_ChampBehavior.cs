@@ -88,7 +88,7 @@ namespace HordeFight
         public void Collision_Sword(ChampUnit unit0 , ChampUnit unit1)
         {
             float s, t;
-            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs.GetObjectLine(), unit1._limbs.GetObjectLine(),out s, out t);
+            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs._armed_left._line, unit1._limbs._armed_left._line, out s, out t);
             if(sqrdis < 0.01f)
             {
                 DebugWide.LogBlue("Collision!!");

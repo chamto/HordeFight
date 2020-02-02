@@ -27,6 +27,7 @@ namespace HordeFight
         public Transform _arm_end = null;
         public Transform _arm_shadow = null;
         public SpriteMesh _arm_spr = null;
+        public LineSegment3 _line;
 
         //public int _idx = -1;
         public string _name = "";
@@ -48,12 +49,27 @@ namespace HordeFight
 
             //_idx = idx;
             _length = (_arm_start.position - _arm_end.position).magnitude;
+            _line = new LineSegment3(_arm_start.position, _arm_end.position);
+        }
+
+        public void Update_Info(Transform parent)
+        {
+            _tr_arm.position = parent.position;
+            _tr_arm.rotation = parent.rotation;
+
+            _line.origin = _arm_start.position;
+            _line.direction = _arm_end.position - _line.origin;
         }
 
         public void SetActive(bool value)
         {
             //_equipment = value;
             _go_arm.SetActive(value);
+        }
+
+        public void DrawInfo(Color color)
+        {
+            DebugWide.DrawLine(_arm_start.position, _arm_end.position, color);
         }
     }
 }
