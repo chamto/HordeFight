@@ -635,10 +635,6 @@ namespace HordeFight
 
             //==================================================
 
-            Update_Equipment();
-
-            //==================================================
-
             //stance ani 재생 만들기 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
             //Update_StanceAni(); 
@@ -657,6 +653,11 @@ namespace HordeFight
             //==================================================
             //손에 칼 붙이기
             Update_AttachHand();
+
+            //장비 장착(붙이기 처리 다음에 와야함)
+            Update_Equipment();
+
+            //==================================================
 
             //그림자 표현
             Update_Shadow();
@@ -699,6 +700,7 @@ namespace HordeFight
 
             }
             _armed_left._tr_arm.position = _hand_left.position;
+            _armed_left._tr_arm.rotation = _hand_left.rotation;
 
             //=============================================
                 
@@ -711,6 +713,7 @@ namespace HordeFight
                 _armed_right.SetActive(true);
             }
             _armed_right._tr_arm.position = _hand_right.position;
+            _armed_right._tr_arm.rotation = _hand_right.rotation;
 
 		}
 
