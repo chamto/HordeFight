@@ -412,6 +412,7 @@ namespace UtilGS9
             float denom = a * c - b * b;
             // parameters to compute s_c, t_c
             float sn, sd, tn, td;
+            //s_c = sn/sd , t_c = tn/td
 
             // if denom is zero, try finding closest point on segment1 to origin0
             //if ( ::IsZero(denom) )
@@ -509,4 +510,140 @@ namespace UtilGS9
 
 
     }//End Class
+
+
+    public class Plane
+    {
+        public Vector3 _normal;
+        public float _offset; //원점에서 얼마나 떨어져있는지 나타내는 값
+
+
+        public Plane()
+        {
+            _normal = new Vector3(0.0f, 1.0f, 0.0f);
+            _offset = 0.0f;
+        }
+        public Plane(float a, float b, float c, float d)
+        {
+            Set(a, b, c, d);
+        }
+        public Plane(Vector3 p0, Vector3 p1, Vector3 p2 )
+        {
+            Set(p0, p1, p2);
+        }
+    
+        public Vector3 GetPos()
+        {
+            return _normal * -_offset;
+        }
+
+        public void Transform(ref Quaternion rotate, ref Vector3 translate )
+        {
+            // transform to get normal
+            _normal = rotate * _normal;
+            
+            // transform to get offset
+            Vector3 newTrans = rotate * translate;
+            _offset = -1f * Vector3.Dot(newTrans , _normal ) + _offset;
+
+        }
+
+        // manipulators
+        //평면의 법선백터 : n(a,b,c)
+        //평면의 방정식 : ax + by + cz + d  = 0  , (d = -(ax0 + by0 + cz0))
+        //내적으로 표현 : n.dot(x,y,z) + d , d = -n.dot(x0,y0,z0)
+        public void Set(float a, float b, float c, float d)
+        {
+            // normalize for cheap distance checks
+            float lensq = a * a + b * b + c * c; //내적표현으로 보면 평면의 법선백터 제곱길이가 됨 
+                                                 // length of normal had better not be zero
+
+
+            // recover gracefully
+            //if ( ::IsZero(lensq))
+            if (lensq < float.Epsilon)
+            {
+                _normal = Vector3.up;
+                _offset = 0.0f;
+            }
+            else
+            {
+                float recip = 1f / (float)Math.Sqrt(lensq); //  [ 1f / sqrt(lensq) ] , 나눗셈 연산을 줄이기 위한 장치
+                _normal.Set(a * recip, b * recip, c * recip); //정규화되지 않은 법선벡터를 길이로 나누어 정규화함
+                _offset = d * recip; //원점에서 얼마나 떨어져있는지 나타내는 값을 계산 : 
+                                     // d값 안의 법선벡터가 정규화 되어있지 않기에 recip를 곱해 정규화 해준다. d = 평면법선.dot(평면위의 임의점) 
+            }
+        }
+
+        public void Set(Vector3 p0, Vector3 p1,Vector3 p2 )
+        {
+            // get plane vectors
+            Vector3 u = p1 - p0;
+            Vector3 v = p2 - p0;
+            Vector3 w = Vector3.Cross(u,v);
+
+            // normalize for cheap distance checks
+            float lensq = w.x * w.x + w.y * w.y + w.z * w.z;
+
+            // recover gracefully
+            ///if ( ::IsZero(lensq))
+            if (lensq < float.Epsilon)
+            {
+                _normal = Vector3.up;
+                _offset = 0.0f;
+            }
+            else
+            {
+                //float recip = 1.0f / lensq; //이건 아닌것 같음 
+                float recip = 1f / (float)Math.Sqrt(lensq);
+                _normal.Set(w.x * recip, w.y * recip, w.z * recip);
+                _offset = -1f * Vector3.Dot(_normal,p0);
+            }
+        }
+
+
+        // closest point
+        public Vector3 ClosestPoint(ref Vector3 point )
+        {
+            //point 위치에서 평면상 수직인 점으로 이동 
+            return point - Test(ref point)*_normal; 
+        }
+
+        // distance
+        public float Distance(ref Vector3 point)
+        {
+            return Math.Abs(Test(ref point));
+        }
+
+        // result of plane test
+        public float Test(ref Vector3 point )
+        {
+            return Vector3.Dot(_normal, point) + _offset;
+        }
+                
+        public void Draw(float length, Color cc)
+        {
+            Vector3 ori = GetPos();
+            DebugWide.DrawCircle(ori, 0.05f, cc);
+            DebugWide.DrawLine(ori, ori + _normal, cc);
+
+            //float length = 5f;
+            Vector3 leftUp, rightUp, leftDown, rightDown;
+            Vector3 left = Vector3.Cross(Vector3.forward, _normal);
+            Vector3 fwd = Vector3.Cross(left, _normal);
+            fwd.Normalize(); left.Normalize();
+
+            leftUp = fwd * length + left * length;
+            rightUp = fwd * length + -left * length;
+            leftDown = -fwd * length + left * length;
+            rightDown = -fwd * length + -left * length;
+
+            DebugWide.DrawLine(ori + leftUp, ori + rightUp, cc);
+            DebugWide.DrawLine(ori + leftUp, ori + leftDown, cc);
+            DebugWide.DrawLine(ori + leftDown, ori + rightDown, cc);
+            DebugWide.DrawLine(ori + rightUp, ori + rightDown, cc);
+        }
+
+    }//end class
+
 }
