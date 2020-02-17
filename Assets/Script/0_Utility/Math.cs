@@ -205,6 +205,9 @@ namespace UtilGS9
             }
         }
 
+        public Vector3 GetEndpoint0() { return origin; }
+        public Vector3 GetEndpoint1() { return origin + direction; }
+
         // ---------------------------------------------------------------------------
         // Returns the distance between two endpoints
         //-----------------------------------------------------------------------------
@@ -515,7 +518,7 @@ namespace UtilGS9
     public struct Plane
     {
         public Vector3 _normal;
-        public float _offset; //원점에서 얼마나 떨어져있는지 나타내는 값
+        public float _offset; //원점에서 그은 수선의 발이 평면과 수직인 거리 , 평면과 원점의 최소거리 
 
 
         //public Plane()
@@ -612,18 +615,20 @@ namespace UtilGS9
         public Vector3 ClosestPoint(ref Vector3 point )
         {
             //point 위치에서 평면상 수직인 점으로 이동 
-            return point - Test(ref point)*_normal; 
+            return point - Test(point)*_normal; 
         }
 
         // distance
-        public float Distance(ref Vector3 point)
+        public float Distance(Vector3 point)
         {
-            return Math.Abs(Test(ref point));
+            return Math.Abs(Test(point));
         }
 
         // result of plane test
-        public float Test(ref Vector3 point )
+        public float Test(Vector3 point )
         {
+            //법선벡터 방향으로 원점에서 point 까지의 거리 - 법선벡터 방향으로 원점에서 평면 까지의 거리 
+            // = 법선벡터 방향으로 평면에서 point 까지의 거리 
             return Vector3.Dot(_normal, point) + _offset;
         }
                 
@@ -679,6 +684,31 @@ namespace UtilGS9
             float s_c, t_c;
             return ( LineSegment3.DistanceSquared(mSegment, segment, out s_c, out t_c ) <= mRadius* mRadius );
 
+        }
+
+        //----------------------------------------------------------------------------
+        // @ IvCapsule::Classify()
+        // ---------------------------------------------------------------------------
+        // Return signed distance between capsule and plane
+        //-----------------------------------------------------------------------------
+        float Classify(ref Plane plane )
+        {
+            float s0 = plane.Test(mSegment.GetEndpoint0());
+            float s1 = plane.Test(mSegment.GetEndpoint1());
+
+            //평면 위쪽에 점이 있으면 그거리는 양수 , 평면 아랫쪽에 점이 있으면 그거리는 음수
+            //선분이 평면을 관통한다면 s0 * s1 값은 음수가 나와야 한다 
+            // points on opposite sides or intersecting plane
+            if (s0* s1 <= 0.0f )
+                return 0.0f;
+
+            //캡슐뚜껑이 닿은 경우 
+            // intersect if either endpoint is within radius distance of plane
+            if( Math.Abs(s0) <= mRadius || Math.Abs(s1) <= mRadius )
+                return 0.0f;
+
+            // return signed distance
+            return (Math.Abs(s0) < Mathf.Abs(s1) ? s0 : s1 ); //!! 캡슐뚜껑의 반지름 길이를 더하지 않고 반환하고 있다 
         }
     }
 
@@ -806,14 +836,14 @@ namespace UtilGS9
         //-------------------------------------------------------------------------------
         public float TriangleClassify( Vector3 P0, Vector3 P1,Vector3 P2, Plane plane )
         {
-            float test0 = plane.Test(ref P0);
-            float test1 = plane.Test(ref P1);
+            float test0 = plane.Test(P0);
+            float test1 = plane.Test(P1);
 
             // if two points lie on opposite sides of plane, intersect
             if (test0 * test1 < 0.0f)
                 return 0.0f;
 
-            float test2 = plane.Test(ref P2);
+            float test2 = plane.Test(P2);
 
             // if two points lie on opposite sides of plane, intersect
             if (test0 * test2 < 0.0f)
