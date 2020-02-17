@@ -428,7 +428,7 @@ namespace UtilGS9
                 // clamp s_c within [0,1]
                 sd = td = denom;
                 sn = b* e - c* d;
-            tn = a* e - b* d;
+                tn = a* e - b* d;
           
                 // clamp s_c to 0
                 if (sn< 0.0f)
@@ -512,23 +512,29 @@ namespace UtilGS9
     }//End Class
 
 
-    public class Plane
+    public struct Plane
     {
         public Vector3 _normal;
         public float _offset; //원점에서 얼마나 떨어져있는지 나타내는 값
 
 
-        public Plane()
+        //public Plane()
+        //{
+        //    _normal = new Vector3(0.0f, 1.0f, 0.0f);
+        //    _offset = 0.0f;
+        //}
+        public Plane(float a, float b, float c, float d)
         {
             _normal = new Vector3(0.0f, 1.0f, 0.0f);
             _offset = 0.0f;
-        }
-        public Plane(float a, float b, float c, float d)
-        {
+
             Set(a, b, c, d);
         }
         public Plane(Vector3 p0, Vector3 p1, Vector3 p2 )
         {
+            _normal = new Vector3(0.0f, 1.0f, 0.0f);
+            _offset = 0.0f;
+
             Set(p0, p1, p2);
         }
     
@@ -645,5 +651,231 @@ namespace UtilGS9
         }
 
     }//end class
+
+
+    //======================================================
+
+    public struct Capsule
+    {
+        public LineSegment3 mSegment;
+        public float mRadius;
+
+        bool Intersect(ref Capsule other )
+        {
+            //캡슐과 선분 충돌검사로 변형해 검사한다 , 소스캡슐의 반지름에 대상캡슐의 반지름을 더해서 대상캡슐의 선분값으로 비교가능하게 만든다. 
+            float radiusSum = mRadius + other.mRadius;
+
+            // if colliding
+            float s, t;
+            float distancesq = LineSegment3.DistanceSquared(mSegment, other.mSegment, out s, out t); 
+
+            return (distancesq <= radiusSum* radiusSum );
+        }
+
+        bool Intersect(ref LineSegment3 segment )
+        {
+            //선분과 선분의 최소거리는 서로의 직각인 선분이다 , 직각이 되는 선분의 길이를 캡슐의 반지름과 비교한다 
+            // test distance between segment and segment vs. radius
+            float s_c, t_c;
+            return ( LineSegment3.DistanceSquared(mSegment, segment, out s_c, out t_c ) <= mRadius* mRadius );
+
+        }
+    }
+
+
+
+    //======================================================
+
+    public struct Triangle
+    {
+
+        //-------------------------------------------------------------------------------
+        // @ ::IsPointInTriangle()
+        //-------------------------------------------------------------------------------
+        // Returns true if point on triangle plane lies inside triangle (3D version)
+        // Assumes triangle is not degenerate
+        //-------------------------------------------------------------------------------
+        public bool IsPointInTriangle(Vector3 point, Vector3 P0, Vector3 P1, Vector3 P2)
+        {
+            Vector3 v0 = P1 - P0;
+            Vector3 v1 = P2 - P1;
+            Vector3 n = Vector3.Cross(v0, v1);
+
+            //외적의 180도 기점으로 방향이 바뀌는 점을 이용 , 벡터v0이 나누는 공간에서 어느공간에 점이 있는지 테스트하게 된다  
+            Vector3 wTest = Vector3.Cross(v0, (point - P0));
+            if (Vector3.Dot(wTest, n) < 0.0f)
+            {
+                return false;
+            }
+
+            wTest = Vector3.Cross(v1, (point - P1));
+            if (Vector3.Dot(wTest, n) < 0.0f)
+            {
+                return false;
+            }
+
+            Vector3 v2 = P0 - P2;
+            wTest = Vector3.Cross(v2, (point - P2));
+            if (Vector3.Dot(wTest, n) < 0.0f)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+
+        //-------------------------------------------------------------------------------
+        // @ ::BarycentricCoordinates()
+        //-------------------------------------------------------------------------------
+        // Returns barycentric coordinates for point inside triangle (3D version)
+        // Assumes triangle is not degenerate
+        //
+        // 무게중심좌표 : t(u,v) = (1 - u - v)P0 + uP1 + vP2
+        //-------------------------------------------------------------------------------
+        public void BarycentricCoordinates(ref float r, ref float s, ref float t,
+                                     Vector3 point, Vector3 P0, Vector3 P1, Vector3 P2)
+        {
+            // get difference vectors
+            Vector3 u = P1 - P0;
+            Vector3 v = P2 - P0;
+            Vector3 w = point - P0;
+
+            // compute cross product to get area of parallelograms
+            Vector3 a = Vector3.Cross(u, w);
+            Vector3 b = Vector3.Cross(v, w);
+            Vector3 c = Vector3.Cross(u, v);
+
+            //외적의 값(평행사변형의 면적)을 이용하여 0~1 값의 비율로 만든다   
+            // compute barycentric coordinates as ratios of areas
+            float denom = 1.0f / c.magnitude;
+            s = b.magnitude * denom; //v
+            t = a.magnitude * denom; //u
+            r = 1.0f - s - t; //w
+        }
+
+
+        //-------------------------------------------------------------------------------
+        // @ ::TriangleIntersect()
+        //-------------------------------------------------------------------------------
+        // Returns true if ray intersects triangle
+        //-------------------------------------------------------------------------------
+        public bool TriangleIntersect(ref float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray )
+        {
+            // test ray direction against triangle
+            Vector3 e1 = P1 - P0;
+            Vector3 e2 = P2 - P0;
+            Vector3 p = Vector3.Cross(ray.direction, e2);
+            float a = Vector3.Dot(e1, p);
+
+            // if result zero, no intersection or infinite intersections
+            // (ray parallel to triangle plane)
+            //if ( ::IsZero(a) )
+            if (Math.Abs(a) < float.Epsilon)
+                return false;
+
+            // compute denominator
+            float f = 1.0f / a;
+
+            // compute barycentric coordinates
+            Vector3 s = ray.origin - P0;
+            float u = f * Vector3.Dot(s, p);
+
+            // ray falls outside triangle
+            if (u< 0.0f || u> 1.0f) 
+                return false;
+
+            Vector3 q = Vector3.Cross(s, e1);
+            float v = f * Vector3.Dot(ray.direction, q);
+
+            // ray falls outside triangle
+            if (v< 0.0f || u+v> 1.0f) 
+                return false;
+
+            // compute line parameter
+            t = f * Vector3.Dot(e2, q);
+
+            return (t >= 0.0f);
+        }
+
+
+        //-------------------------------------------------------------------------------
+        // @ ::TriangleClassify()
+        //-------------------------------------------------------------------------------
+        // Returns signed distance between plane and triangle
+        //-------------------------------------------------------------------------------
+        public float TriangleClassify( Vector3 P0, Vector3 P1,Vector3 P2, Plane plane )
+        {
+            float test0 = plane.Test(ref P0);
+            float test1 = plane.Test(ref P1);
+
+            // if two points lie on opposite sides of plane, intersect
+            if (test0 * test1 < 0.0f)
+                return 0.0f;
+
+            float test2 = plane.Test(ref P2);
+
+            // if two points lie on opposite sides of plane, intersect
+            if (test0 * test2 < 0.0f)
+                return 0.0f;
+            if (test1 * test2 < 0.0f)
+                return 0.0f;
+
+            // no intersection, return signed distance
+            if (test0 < 0.0f)
+            {
+                if (test0 < test1)
+                {
+                    if (test1 < test2)
+                        return test2;
+                    else
+                        return test1;
+                }
+                else if (test0 < test2)
+                {
+                    return test2;
+                }
+                else
+                {
+                    return test0;
+                }
+            }
+            else
+            {
+                if (test0 > test1)
+                {
+                    if (test1 > test2)
+                        return test2;
+                    else
+                        return test1;
+                }
+                else if (test0 > test2)
+                {
+                    return test2;
+                }
+                else
+                {
+                    return test0;
+                }
+            }
+
+        }
+
+    }//end class
+
+    //움직이는 선분의 교차요소 구하기
+    public struct MovingLineSegement3
+    {
+        public LineSegment3 start; //선분의 움직인 시작위치
+        public LineSegment3 end; //선분의 움직인 끝위치
+
+
+        static public bool Intersect(out Vector3 p0, out Vector3 p1, LineSegment3 src0, 
+                                     MovingLineSegement3 line0, MovingLineSegement3 line1)
+        {
+            p0 = p1 = Vector3.zero;
+            return false;
+        }
+    }
 
 }
