@@ -795,20 +795,25 @@ namespace UtilGS9
         // o - p0 = -td + u(p1-p0) + v(p2-p0)
         // < 행렬로 표현 >
         // o - p0 = [-d, (p1-p0), (p2-p0)] [t, u, v] 
+        // s = o - p0 , e1 = (p1-p0), e2 = (p2-p0)
         // s = [-d, e1, e2] [t, u, v]
         // < 크래머의 법칙으로 연립방정식의 해 구하기 >
         // [t, u, v] = 1/adj[-d, e1, e2] [ adj[s, e1, e2], adj[-d, s, e2], adj[-d, e1, s] ]
         //  < 행렬식를 기하학적 표현으로 바꾸기 , 스칼라삼중곱 >
         // p = d x e2 , q = s x e1
-        // adj[-d, e1, e2] = (e2 x -d) ⋅ e1 = (d x e2) ⋅ e1 = p ⋅ e1
-        // t = adj[s, e1, e2] = (s x e1) ⋅ e2 = q ⋅ e2
-        // u = adj[-d, s, e2] = (e2 x -d) ⋅ s = (d x e2) ⋅ s = p ⋅ s
-        // v = adj[-d, e1, s] = -d ⋅ (e1 x s) = -d ⋅ -(s x e1) = d ⋅ (s x e1) = q ⋅ d
+        // a = adj[-d, e1, e2] = (e2 x -d) ⋅ e1 = (d x e2) ⋅ e1 = p ⋅ e1
+        // a1 = adj[s, e1, e2] = (s x e1) ⋅ e2 = q ⋅ e2
+        // a2 = adj[-d, s, e2] = (e2 x -d) ⋅ s = (d x e2) ⋅ s = p ⋅ s
+        // a3 = adj[-d, e1, s] = -d ⋅ (e1 x s) = -d ⋅ -(s x e1) = d ⋅ (s x e1) = q ⋅ d
+        // t = a1 / a = q ⋅ e2 / a
+        // u = a2 / a = p ⋅ s / a
+        // v = a3 / a = q ⋅ d / a 
         //
         //-------------------------------------------------------------------------------
-        public bool TriangleIntersect(ref float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray )
+        static public bool TriangleIntersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray )
         {
             // test ray direction against triangle
+            t = 0f;
             Vector3 e1 = P1 - P0;
             Vector3 e2 = P2 - P0;
             Vector3 p = Vector3.Cross(ray.direction, e2);
@@ -844,6 +849,41 @@ namespace UtilGS9
             return (t >= 0.0f);
         }
 
+        static public bool TriangleIntersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, LineSegment3 line)
+        {
+            t = 0f;
+            Vector3 e1 = P1 - P0;
+            Vector3 e2 = P2 - P0;
+            Vector3 p = Vector3.Cross(line.direction, e2);
+            float a = Vector3.Dot(e1, p);
+
+            // if result zero, no intersection or infinite intersections
+            if (Math.Abs(a) < float.Epsilon)
+                return false;
+
+            // compute denominator
+            float f = 1.0f / a;
+
+            // compute barycentric coordinates
+            Vector3 s = line.origin - P0;
+            float u = f * Vector3.Dot(s, p);
+
+            // ray falls outside triangle
+            if (u < 0.0f || u > 1.0f)
+                return false;
+
+            Vector3 q = Vector3.Cross(s, e1);
+            float v = f * Vector3.Dot(line.direction, q);
+
+            // ray falls outside triangle
+            if (v < 0.0f || u + v > 1.0f)
+                return false;
+
+            // compute line parameter
+            t = f * Vector3.Dot(e2, q);
+
+            return (t >= 0.0f && t <= 1f);
+        }
 
         //-------------------------------------------------------------------------------
         // @ ::TriangleClassify()
@@ -908,6 +948,25 @@ namespace UtilGS9
         }
 
     }//end class
+
+
+    //사각꼴 , 테트리곤
+    public struct Tetragon
+    {
+        //-------------------------------------------------------------------------------
+        // @ 사각꼴과 선분 교차 검사
+        //-------------------------------------------------------------------------------
+        static public bool Intersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, Vector3 P3, LineSegment3 line)
+        {
+            //교차함수 분석결과 두번호출해야 한다. 삼각형의 무게중심좌표 방정식이 달라지기 때문에 어쩔 수 없다  
+            bool result = Triangle.TriangleIntersect(out t, P0, P1, P2, line);
+            if(false == result)
+                result = Triangle.TriangleIntersect(out t, P0, P2, P3, line);
+
+            return result;
+        }
+    }
+
 
     //움직이는 선분의 교차요소 구하기
     public struct MovingLineSegement3
