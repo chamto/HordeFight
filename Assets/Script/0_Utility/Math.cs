@@ -789,6 +789,22 @@ namespace UtilGS9
         // @ ::TriangleIntersect()
         //-------------------------------------------------------------------------------
         // Returns true if ray intersects triangle
+        //
+        // < 매개변수방정식 = 무게중심좌표 >
+        // o + t * d = (1-u-v) * p0 + u * p1 + v * p2
+        // o - p0 = -td + u(p1-p0) + v(p2-p0)
+        // < 행렬로 표현 >
+        // o - p0 = [-d, (p1-p0), (p2-p0)] [t, u, v] 
+        // s = [-d, e1, e2] [t, u, v]
+        // < 크래머의 법칙으로 연립방정식의 해 구하기 >
+        // [t, u, v] = 1/adj[-d, e1, e2] [ adj[s, e1, e2], adj[-d, s, e2], adj[-d, e1, s] ]
+        //  < 행렬식를 기하학적 표현으로 바꾸기 , 스칼라삼중곱 >
+        // p = d x e2 , q = s x e1
+        // adj[-d, e1, e2] = (e2 x -d) ⋅ e1 = (d x e2) ⋅ e1 = p ⋅ e1
+        // t = adj[s, e1, e2] = (s x e1) ⋅ e2 = q ⋅ e2
+        // u = adj[-d, s, e2] = (e2 x -d) ⋅ s = (d x e2) ⋅ s = p ⋅ s
+        // v = adj[-d, e1, s] = -d ⋅ (e1 x s) = -d ⋅ -(s x e1) = d ⋅ (s x e1) = q ⋅ d
+        //
         //-------------------------------------------------------------------------------
         public bool TriangleIntersect(ref float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray )
         {
