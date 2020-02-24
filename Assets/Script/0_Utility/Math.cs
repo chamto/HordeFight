@@ -631,6 +631,36 @@ namespace UtilGS9
             // = 법선벡터 방향으로 평면에서 point 까지의 거리 
             return Vector3.Dot(_normal, point) + _offset;
         }
+
+        //ref : http://geomalgorithms.com/a05-_intersect-1.html
+        //    Return: 0 = disjoint (no intersection)
+        //            1 =  intersection in the unique point *I0
+        //            2 = the  segment lies in the plane
+        static public int Intersect(out Vector3 I, LineSegment3 S, Plane Pn)
+        {
+            I = S.origin;
+            Vector3 u = S.direction;
+            Vector3 w = S.origin - Pn.GetPos();
+
+            float D = Vector3.Dot(Pn._normal, u);
+            float N = -Vector3.Dot(Pn._normal, w);
+
+            if (Mathf.Abs(D) < float.Epsilon)
+            {   // segment is parallel to plane
+                if (N == 0)                      // segment lies in plane
+                    return 2;
+                else
+                    return 0;                    // no intersection
+            }
+            // they are not parallel
+            // compute intersect param
+            float sI = N / D;
+            if (sI < 0 || sI > 1f)
+                return 0;                        // no intersection
+
+            I = S.origin + sI * u;               // compute segment intersect point
+            return 1;
+        }
                 
         public void Draw(float length, Color cc)
         {
@@ -857,9 +887,21 @@ namespace UtilGS9
             Vector3 p = Vector3.Cross(line.direction, e2);
             float a = Vector3.Dot(e1, p);
 
+            //삼각형과 선분의 무한교차 판별못함 
             // if result zero, no intersection or infinite intersections
             if (Math.Abs(a) < float.Epsilon)
+            {
+                //Vector3 oTo = line.origin - P0;
+                //float b = Vector3.Dot(oTo, p);
+                //if (Math.Abs(b) < float.Epsilon)
+                //{   //무한교차 가능 상태 
+                //    //DebugWide.LogBlue("infinite intersections");
+                //    //return true;
+                //}
+                    
                 return false;
+            }
+                
 
             // compute denominator
             float f = 1.0f / a;
@@ -867,7 +909,7 @@ namespace UtilGS9
             // compute barycentric coordinates
             Vector3 s = line.origin - P0;
             float u = f * Vector3.Dot(s, p);
-
+            //DebugWide.LogBlue(f + "  " + u);
             // ray falls outside triangle
             if (u < 0.0f || u > 1.0f)
                 return false;
