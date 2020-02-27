@@ -20,12 +20,34 @@ public class Test_LineCollision : MonoBehaviour
     private Transform _line2_end = null;
     private Transform _ts2 = null;
 
+    //===========================================
+
+    public struct TrTri
+    {
+        public Transform v0, v1, v2;
+        public TriTri_1.triangle tri;
+
+        public void Update()
+        {
+            tri.a = v0.position;
+            tri.b = v1.position;
+            tri.c = v2.position;
+        }
+    }
+
+    private TrTri _tri_0;
+    private TrTri _tri_1;
+
+
+    //===========================================
+
     private void OnDrawGizmos()
     {
         //if (null == (object)_line0_start)
         if(false == _init)
             return;
 
+        if(false)
         {
             float len;
             DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.red);
@@ -48,6 +70,11 @@ public class Test_LineCollision : MonoBehaviour
             //===============
 
             UtilGS9.Plane plane = new UtilGS9.Plane(_line0_start.position, _line0_end.position, _line1_start.position);
+            Vector3 contactPt;
+            if(0 != UtilGS9.Plane.Intersect(out contactPt, new LineSegment3(_line2_start.position, _line2_end.position), plane))
+            {
+                DebugWide.DrawCircle(contactPt, 0.1f, Color.gray);   
+            }
             plane.Draw(5,Color.gray);
 
             //===============
@@ -56,6 +83,16 @@ public class Test_LineCollision : MonoBehaviour
             DebugWide.DrawLine(_line0_start.position, _line1_start.position, Color.green);
             DebugWide.DrawLine(_line0_end.position, _line1_end.position, Color.green);
             DebugWide.DrawCircle(_ts2.position, 0.1f, Color.green);
+
+
+        }
+
+        //===============
+
+        if (true)
+        {
+            TriTri_1.Draw(_tri_0.tri, Color.blue);
+            TriTri_1.Draw(_tri_1.tri, Color.magenta);
         }
 
     }
@@ -81,12 +118,36 @@ public class Test_LineCollision : MonoBehaviour
         _line2_end = Hierarchy.GetTransform(line_2, "end");
         _ts2 = Hierarchy.GetTransform(line_2, "ts");
 
+        //===========================================
+
+        Transform tri_tri = Hierarchy.GetTransform(transform.parent, "tri_tri");
+        Transform tri = Hierarchy.GetTransform(tri_tri, "tri_0");
+        _tri_0.v0 = Hierarchy.GetTransform(tri, "v0");
+        _tri_0.v1 = Hierarchy.GetTransform(tri, "v1");
+        _tri_0.v2 = Hierarchy.GetTransform(tri, "v2");
+
+        tri = Hierarchy.GetTransform(tri_tri, "tri_1");
+        _tri_1.v0 = Hierarchy.GetTransform(tri, "v0");
+        _tri_1.v1 = Hierarchy.GetTransform(tri, "v1");
+        _tri_1.v2 = Hierarchy.GetTransform(tri, "v2");
+
+        //===========================================
+
 	}
 	
 	// Update is called once per frame
 	void Update () 
     {
-        
+
+        _tri_0.Update();
+        _tri_1.Update();
+        if(true == TriTri_1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
+        {
+            DebugWide.LogBlue("TriTri collision !!");
+        }
+
+        //===========================================
+
         float s, t;
         LineSegment3 unit0 = new LineSegment3(_line0_start.position, _line0_end.position);
         LineSegment3 unit1 = new LineSegment3(_line1_start.position, _line1_end.position);

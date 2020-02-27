@@ -1039,9 +1039,17 @@ namespace UtilGS9
         public struct triangle
         {
             public Vector3 a, b, c;
+
             public float pA, pB, pC, pD; // Plane normals
             //public float radius;
             //public Vector3 center;
+        }
+
+        static public void Draw(triangle tri, Color color)
+        {
+            DebugWide.DrawLine(tri.a, tri.b, color);
+            DebugWide.DrawLine(tri.a, tri.c, color);
+            DebugWide.DrawLine(tri.b, tri.c, color);
         }
 
         /********************************************************
@@ -1049,7 +1057,7 @@ namespace UtilGS9
         *  PURPOSE: Use parametrics to see where on the plane of
         * tri1 the line made by a->b intersect
         ******************************************************** */
-        Vector3 line_plane_collision(Vector3 a, Vector3 b, triangle tri1)
+        static Vector3 Line_plane_collision(Vector3 a, Vector3 b, triangle tri1)
         {
             float final_x, final_y, final_z, final_t;
             float t, i;
@@ -1093,7 +1101,7 @@ namespace UtilGS9
         *           as long as t lies between 0 and 1, the point
         *           lies between the vertices.
         ******************************************************** */
-        bool point_inbetween_vertices(Vector3 a, Vector3 b, triangle tri1)
+        static bool Point_inbetween_vertices(Vector3 a, Vector3 b, triangle tri1)
         {
             float t, i, final_t;
 
@@ -1118,7 +1126,7 @@ namespace UtilGS9
         *           inside the triangle 'tri' when both are
         *           "flattened" into 2D
         ********************************************************* */
-        bool point_inside_triangle(triangle tri, Vector3 vert, bool x, bool y, bool z)
+        static bool Point_inside_triangle(triangle tri, Vector3 vert, bool x, bool y, bool z)
         {
             float a1 = 0f , b1 = 0f, a2 = 0f, b2 = 0f, a3 = 0f, b3 = 0f, a4 = 0f, b4 = 0f;
             float center_x = 0f , center_y = 0f;
@@ -1341,44 +1349,62 @@ namespace UtilGS9
             }
         }//end func
 
-        public bool Triangles_colliding(triangle tri1, triangle tri2)
+
+        //================== Test ====================
+        static public bool Triangles_colliding(triangle tri1, triangle tri2)
         {
             bool temp = false; // default assignment
             Vector3 v1, v2, cross_v1xv2, p;
 
-            v1.x = tri1.b.x - tri1.a.x;
-            v1.y = tri1.b.y - tri1.a.y;
-            v1.z = tri1.b.z - tri1.a.z;
-            v2.x = tri1.c.x - tri1.a.x;
-            v2.y = tri1.c.y - tri1.a.y;
-            v2.z = tri1.c.z - tri1.a.z;
+            //v1.x = tri1.b.x - tri1.a.x;
+            //v1.y = tri1.b.y - tri1.a.y;
+            //v1.z = tri1.b.z - tri1.a.z;
+            v1 = (tri1.b - tri1.a);
 
-            cross_v1xv2.x = (v2.y * v1.z - v2.z * v1.y);
-            cross_v1xv2.y = -(v2.x * v1.z - v2.z * v1.x);
-            cross_v1xv2.z = (v2.x * v1.y - v2.y * v1.x);
+            //v2.x = tri1.c.x - tri1.a.x;
+            //v2.y = tri1.c.y - tri1.a.y;
+            //v2.z = tri1.c.z - tri1.a.z;
+            v2 = (tri1.c - tri1.a);
+
+
+            // i  j  k
+            //1x 1y 1z
+            //2x 2y 2z
+            //i(1y2z - 1z2y) - j(1x2z - 1z2x) + k(1x2y - 1y2x)
+
+            // i  j  k
+            //2x 2y 2z
+            //1x 1y 1z
+            //i(2y1z - 2z1y) - j(2x1z - 2z1x) + k(2x1y - 2y1x)
+
+            //cross_v1xv2.x = (v2.y * v1.z - v2.z * v1.y);
+            //cross_v1xv2.y = -(v2.x * v1.z - v2.z * v1.x);
+            //cross_v1xv2.z = (v2.x * v1.y - v2.y * v1.x);
+            ////cross_v1xv2 = Vector3.Cross(v1, v2);
+            cross_v1xv2 = Vector3.Cross(v2, v1);
 
             tri1.pA = cross_v1xv2.x;
             tri1.pB = cross_v1xv2.y;
             tri1.pC = cross_v1xv2.z;
-            tri1.pD += (-(tri1.a.x)) * (cross_v1xv2.x);
-            tri1.pD += (-(tri1.a.y)) * (cross_v1xv2.y);
-            tri1.pD += (-(tri1.a.z)) * (cross_v1xv2.z);
-
+            //tri1.pD += (-(tri1.a.x)) * (cross_v1xv2.x);
+            //tri1.pD += (-(tri1.a.y)) * (cross_v1xv2.y);
+            //tri1.pD += (-(tri1.a.z)) * (cross_v1xv2.z);
+            tri1.pD = -Vector3.Dot(tri1.a, cross_v1xv2);
 
             // Scroll thru 3 line segments of the other triangle
             // First iteration  (a,b)
-            p = line_plane_collision(tri2.a, tri2.b, tri1);
+            p = Line_plane_collision(tri2.a, tri2.b, tri1);
 
             // Determine which axis to project to
             // X is greatest
             if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, false, true, true);
+                temp = Point_inside_triangle(tri1, p, false, true, true);
             // Y is greatest
             else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, true, false, true);
+                temp = Point_inside_triangle(tri1, p, true, false, true);
             // Z is greatest
             else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
-                temp = point_inside_triangle(tri1, p, true, true, false);
+                temp = Point_inside_triangle(tri1, p, true, true, false);
 
             if (temp == true)
             {
@@ -1393,25 +1419,25 @@ namespace UtilGS9
                 // End vertical line segment check
 
                 // Now check for point on line segment
-                if (point_inbetween_vertices(tri2.a, tri2.b, tri1) == true)
+                if (Point_inbetween_vertices(tri2.a, tri2.b, tri1) == true)
                     return true;
                 else
                     return false;
             }
 
             // Second iteration (b,c)
-            p = line_plane_collision(tri2.b, tri2.c, tri1);
+            p = Line_plane_collision(tri2.b, tri2.c, tri1);
 
             // Determine which axis to project to
             // X is greatest
             if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, false, true, true);
+                temp = Point_inside_triangle(tri1, p, false, true, true);
             // Y is greatest
             else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, true, false, true);
+                temp = Point_inside_triangle(tri1, p, true, false, true);
             // Z is greatest
             else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
-                temp = point_inside_triangle(tri1, p, true, true, false);
+                temp = Point_inside_triangle(tri1, p, true, true, false);
 
             if (temp == true)
             {
@@ -1425,25 +1451,25 @@ namespace UtilGS9
                 }
 
                 // Now check for point on line segment
-                if (point_inbetween_vertices(tri2.b, tri2.c, tri1) == true)
+                if (Point_inbetween_vertices(tri2.b, tri2.c, tri1) == true)
                     return true;
                 else
                     return false;
             }
 
             // Third iteration  (c,a)
-            p = line_plane_collision(tri2.c, tri2.a, tri1);
+            p = Line_plane_collision(tri2.c, tri2.a, tri1);
 
             // Determine which axis to project to
             // X is greatest
             if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, false, true, true);
+                temp = Point_inside_triangle(tri1, p, false, true, true);
             // Y is greatest
             else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
-                temp = point_inside_triangle(tri1, p, true, false, true);
+                temp = Point_inside_triangle(tri1, p, true, false, true);
             // Z is greatest
             else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
-                temp = point_inside_triangle(tri1, p, true, true, false);
+                temp = Point_inside_triangle(tri1, p, true, true, false);
 
             if (temp == true)
             {
@@ -1457,7 +1483,7 @@ namespace UtilGS9
                 }
 
                 // Now check for point on line segment
-                if (point_inbetween_vertices(tri2.c, tri2.a, tri1) == true)
+                if (Point_inbetween_vertices(tri2.c, tri2.a, tri1) == true)
                     return true; // Intersection point is inside the triangle and on
                 else           // the line segment
                     return false;
