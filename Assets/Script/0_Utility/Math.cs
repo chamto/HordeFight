@@ -1025,4 +1025,447 @@ namespace UtilGS9
         }
     }
 
+
+    /* ************************************************************************
+    * Author: Kevin Kaiser  
+    * Copyright (C) 1999,2000 Kevin Kaiser 
+    * For use in 'Game Programming Gems'  
+    * ************************************************************************ */
+    public struct TriTri_1
+    {
+        public const int UP = 0;
+        public const int DOWN = 1;
+
+        public struct triangle
+        {
+            public Vector3 a, b, c;
+            public float pA, pB, pC, pD; // Plane normals
+            //public float radius;
+            //public Vector3 center;
+        }
+
+        /********************************************************
+        * FUNCTION: line_plane_collision()
+        *  PURPOSE: Use parametrics to see where on the plane of
+        * tri1 the line made by a->b intersect
+        ******************************************************** */
+        Vector3 line_plane_collision(Vector3 a, Vector3 b, triangle tri1)
+        {
+            float final_x, final_y, final_z, final_t;
+            float t, i;
+            Vector3 temp;
+
+            t = (float)0; i = (float)0;
+            i += (float)(tri1.pA * b.x) + (tri1.pB * b.y) + (tri1.pC * b.z) + (tri1.pD);
+            t += (float)(tri1.pA * (b.x * -1f)) + (tri1.pB * (b.y * -1f)) + (tri1.pC * (b.z * -1f));
+            t += (float)(tri1.pA * a.x) + (tri1.pB * a.y) + (tri1.pC * a.z);
+
+            // Be wary of possible divide-by-zeros here (i.e. if t==0)
+            final_t = (-i) / t;
+
+            // Vertical Line Segment
+            if ((a.x == b.x) && (a.z == b.z))
+            { // vertical line segment
+
+                temp.x = a.x;
+                temp.y = (-((tri1.pA * a.x) + (tri1.pC * a.z) + (tri1.pD))) / (tri1.pB);
+                temp.z = a.z;
+
+                return (temp);
+            }
+
+            final_x = (((a.x) * (final_t)) + ((b.x) * (1 - final_t)));
+            final_y = (((a.y) * (final_t)) + ((b.y) * (1 - final_t)));
+            final_z = (((a.z) * (final_t)) + ((b.z) * (1 - final_t)));
+
+            temp.x = final_x;
+            temp.y = final_y;
+            temp.z = final_z;
+
+            return (temp);
+        }
+
+
+        /********************************************************   
+        * FUNCTION: point_inbetween_vertices()
+        *  PURPOSE: Using parametrics, it is easy to determine   
+        *           whether a point lies between two vertices:
+        *           as long as t lies between 0 and 1, the point
+        *           lies between the vertices.
+        ******************************************************** */
+        bool point_inbetween_vertices(Vector3 a, Vector3 b, triangle tri1)
+        {
+            float t, i, final_t;
+
+            t = (float)0; i = (float)0;
+            i += (float)(tri1.pA * b.x) + (tri1.pB * b.y) + (tri1.pC * b.z) + (tri1.pD);
+            t += (float)(tri1.pA * (b.x * -1f)) + (tri1.pB * (b.y * -1f)) + (tri1.pC * (b.z * -1f));
+            t += (float)(tri1.pA * a.x) + (tri1.pB * a.y) + (tri1.pC * a.z);
+
+            // Be wary of possible divide-by-zeros here (i.e. if t==0)
+            final_t = (-i) / t;
+
+            if ((final_t >= 0) && (final_t <= 1))
+                return true;
+            else
+                return false;
+        }
+
+        /*
+        *********************************************************
+        * FUNCTION: point_inside_triangle()
+        *  PURPOSE: Determine whether the given point 'vert' lies
+        *           inside the triangle 'tri' when both are
+        *           "flattened" into 2D
+        ********************************************************* */
+        bool point_inside_triangle(triangle tri, Vector3 vert, bool x, bool y, bool z)
+        {
+            float a1 = 0f , b1 = 0f, a2 = 0f, b2 = 0f, a3 = 0f, b3 = 0f, a4 = 0f, b4 = 0f;
+            float center_x = 0f , center_y = 0f;
+            float m1 = 0f , m2 = 0f , m3 = 0f;
+            float bb1 = 0f , bb2 = 0f , bb3 = 0f;
+            int inside = 0, direction;
+            bool AB_vert, BC_vert, CA_vert;
+
+            // First make sure only one axis was "dropped"
+            if (((x == false) && (y == false)) || ((x == false) && (z == false))
+                || ((y == false) && (z == false)) || ((x == false) && (y == false) && (z == false)))
+            {
+
+                //printf("point_inside_triangle():more than one axis dropped, exiting\n");
+                return false;
+            }
+
+            if (x == false)
+            { // dropping x coordinate
+                a1 = tri.a.y;
+                b1 = tri.a.z;
+                a2 = tri.b.y;
+                b2 = tri.b.z;
+                a3 = tri.c.y;
+                b3 = tri.c.z;
+                a4 = vert.y;
+                b4 = vert.z;
+                inside = 0;
+            }
+            else if (y == false)
+            { // dropping y coordinate
+                a1 = tri.a.x;
+                b1 = tri.a.z;
+                a2 = tri.b.x;
+                b2 = tri.b.z;
+                a3 = tri.c.x;
+                b3 = tri.c.z;
+                a4 = vert.x;
+                b4 = vert.z;
+                inside = 0;
+            }
+            else if (z == false)
+            { // dropping z coordinate
+                a1 = tri.a.x;
+                b1 = tri.a.y;
+                a2 = tri.b.x;
+                b2 = tri.b.y;
+                a3 = tri.c.x;
+                b3 = tri.c.y;
+                a4 = vert.x;
+                b4 = vert.y;
+                inside = 0;
+            }
+
+//# ifdef DEBUG
+//            if (x == false)
+//            {
+//                drawline(0, a1, b1, 0, a2, b2);
+//                drawline(0, a2, b2, 0, a3, b3);
+//                drawline(0, a3, b3, 0, a1, b1);
+//            }
+//            else if (y == false)
+//            {
+//                drawline(a1, 0, b1, a2, 0, b2);
+//                drawline(a2, 0, b2, a3, 0, b3);
+//                drawline(a3, 0, b3, a1, 0, b1);
+//            }
+//            else if (z == false)
+//            {
+//                drawline(a1, b1, 0, a2, b2, 0);
+//                drawline(a2, b2, 0, a3, b3, 0);
+//                drawline(a3, b3, 0, a1, b1, 0);
+//            }
+//#endif
+
+            AB_vert = BC_vert = CA_vert = false;
+
+            // y=mx+b for outer 3 lines
+            if ((a2 - a1) != 0)
+            {
+                m1 = (b2 - b1) / (a2 - a1); // a->b
+                bb1 = (b1) - (m1 * a1);    // y/(mx) using vertex a
+            }
+            else if ((a2 - a1) == 0)
+            {
+                AB_vert = true;
+            }
+
+            if ((a3 - a2) != 0)
+            {
+                m2 = (b3 - b2) / (a3 - a2); // b->c
+                bb2 = (b2) - (m2 * a2);    // y/(mx) using vertex b
+            }
+            else if ((a3 - a2) == 0)
+            {
+                BC_vert = true;
+            }
+
+            if ((a1 - a3) != 0)
+            {
+                m3 = (b1 - b3) / (a1 - a3); // c->a
+                bb3 = (b3) - (m3 * a3);    // y/(mx) using vertex c
+            }
+            else if ((a1 - a3) == 0)
+            {
+                CA_vert = true;
+            }
+
+            // find average point of triangle (point is guaranteed
+            center_x = (a1 + a2 + a3) / 3f;        // to lie inside the triangle)
+            center_y = (b1 + b2 + b3) / 3f;
+
+//# ifdef DEBUG
+//            if (x == false)
+//            {
+//                drawcross(0, center_x, center_y, 2);
+//                drawcross(0, vert->y, vert->z, 1);
+//            }
+//            else if (y == FALSE)
+//            {
+//                drawcross(center_x, 0, center_y, 2);
+//                drawcross(vert->x, 0, vert->z, 1);
+//            }
+//            else if (z == FALSE)
+//            {
+//                drawcross(center_x, center_y, 0, 2);
+//                drawcross(vert->x, vert->y, 0, 1);
+//            }
+//            drawcross(vert->x, vert->y, vert->z, 1);
+//#endif
+
+
+            // See whether (center_x,center_y) is above or below the line,
+            // then set direction to UP if the point is above or DOWN if the
+            // point is below the line
+
+            // a->b
+            if (((m1 * center_x) + bb1) >= center_y)
+                direction = UP;
+            else
+                direction = DOWN;
+            if (AB_vert == true)
+            {
+                if ((a1 < a4) && (a1 < center_x)) // vert projected line
+                    inside++;
+                else if ((a1 > a4) && (a1 > center_x)) // vert projected line
+                    inside++;
+            }
+            else
+            {
+                if (direction == UP)
+                {
+                    if (b4 <= ((m1 * a4) + bb1)) // b4 less than y to be inside
+                        inside++;              // (line is above point)
+                }
+                else if (direction == DOWN)
+                {
+                    if (b4 >= ((m1 * a4) + bb1)) // b4 greater than y to be inside
+                        inside++;              // (line is below point)
+                }
+            }
+
+            // b->c
+            if (((m2 * center_x) + bb2) >= center_y)
+                direction = UP;
+            else
+                direction = DOWN;
+            if (BC_vert == true)
+            {
+                if ((a2 < a4) && (a2 < center_x)) // vert projected line
+                    inside++;
+                else if ((a2 > a4) && (a2 > center_x)) // vert projected line
+                    inside++;
+            }
+            else
+            {
+                if (direction == UP)
+                {
+                    if (b4 <= ((m2 * a4) + bb2)) // b4 less than y to be inside 
+                        inside++;              // (line is above point)
+                }
+                else if (direction == DOWN)
+                {
+                    if (b4 >= ((m2 * a4) + bb2)) // b4 greater than y to be inside
+                        inside++;              // (line is below point)
+                }
+            }
+            // c->a
+            if (((m3 * center_x) + bb3) >= center_y)
+                direction = UP;
+            else
+                direction = DOWN;
+            if (CA_vert == true)
+            {
+                if ((a3 < a4) && (a3 < center_x)) // vert projected line
+                    inside++;
+                else if ((a3 > a4) && (a3 > center_x)) // vert projected line
+                    inside++;
+            }
+            else
+            {
+                if (direction == UP)
+                {
+                    if (b4 <= ((m3 * a4) + bb3)) // b4 less than y to be inside 
+                        inside++;              // (line is above point)
+                }
+                else if (direction == DOWN)
+                {
+                    if (b4 >= ((m3 * a4) + bb3)) // b4 greater than y to be inside 
+                        inside++;              // (line is below point)
+                }
+            }
+            if (inside == 3)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }//end func
+
+        public bool Triangles_colliding(triangle tri1, triangle tri2)
+        {
+            bool temp = false; // default assignment
+            Vector3 v1, v2, cross_v1xv2, p;
+
+            v1.x = tri1.b.x - tri1.a.x;
+            v1.y = tri1.b.y - tri1.a.y;
+            v1.z = tri1.b.z - tri1.a.z;
+            v2.x = tri1.c.x - tri1.a.x;
+            v2.y = tri1.c.y - tri1.a.y;
+            v2.z = tri1.c.z - tri1.a.z;
+
+            cross_v1xv2.x = (v2.y * v1.z - v2.z * v1.y);
+            cross_v1xv2.y = -(v2.x * v1.z - v2.z * v1.x);
+            cross_v1xv2.z = (v2.x * v1.y - v2.y * v1.x);
+
+            tri1.pA = cross_v1xv2.x;
+            tri1.pB = cross_v1xv2.y;
+            tri1.pC = cross_v1xv2.z;
+            tri1.pD += (-(tri1.a.x)) * (cross_v1xv2.x);
+            tri1.pD += (-(tri1.a.y)) * (cross_v1xv2.y);
+            tri1.pD += (-(tri1.a.z)) * (cross_v1xv2.z);
+
+
+            // Scroll thru 3 line segments of the other triangle
+            // First iteration  (a,b)
+            p = line_plane_collision(tri2.a, tri2.b, tri1);
+
+            // Determine which axis to project to
+            // X is greatest
+            if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, false, true, true);
+            // Y is greatest
+            else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, true, false, true);
+            // Z is greatest
+            else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
+                temp = point_inside_triangle(tri1, p, true, true, false);
+
+            if (temp == true)
+            {
+                // Point needs to be checked to see if it lies between the two vertices
+                // First check for the special case of vertical line segments
+                if ((tri2.a.x == tri2.b.x) && (tri2.a.z == tri2.b.z))
+                {
+                    if (((tri2.a.y <= p.y) && (p.y <= tri2.b.y)) ||
+                        ((tri2.b.y <= p.y) && (p.y <= tri2.a.y)))
+                        return true;
+                }
+                // End vertical line segment check
+
+                // Now check for point on line segment
+                if (point_inbetween_vertices(tri2.a, tri2.b, tri1) == true)
+                    return true;
+                else
+                    return false;
+            }
+
+            // Second iteration (b,c)
+            p = line_plane_collision(tri2.b, tri2.c, tri1);
+
+            // Determine which axis to project to
+            // X is greatest
+            if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, false, true, true);
+            // Y is greatest
+            else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, true, false, true);
+            // Z is greatest
+            else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
+                temp = point_inside_triangle(tri1, p, true, true, false);
+
+            if (temp == true)
+            {
+                // Point needs to be checked to see if it lies between the two vertices
+                // First check for the special case of vertical line segments
+                if ((tri2.b.x == tri2.c.x) && (tri2.b.z == tri2.c.z))
+                {
+                    if (((tri2.b.y <= p.y) && (p.y <= tri2.c.y)) ||
+                        ((tri2.c.y <= p.y) && (p.y <= tri2.b.y)))
+                        return true;
+                }
+
+                // Now check for point on line segment
+                if (point_inbetween_vertices(tri2.b, tri2.c, tri1) == true)
+                    return true;
+                else
+                    return false;
+            }
+
+            // Third iteration  (c,a)
+            p = line_plane_collision(tri2.c, tri2.a, tri1);
+
+            // Determine which axis to project to
+            // X is greatest
+            if ((Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pB)) && (Mathf.Abs(tri1.pA) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, false, true, true);
+            // Y is greatest
+            else if ((Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pB) >= Mathf.Abs(tri1.pC)))
+                temp = point_inside_triangle(tri1, p, true, false, true);
+            // Z is greatest
+            else if ((Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pA)) && (Mathf.Abs(tri1.pC) >= Mathf.Abs(tri1.pB)))
+                temp = point_inside_triangle(tri1, p, true, true, false);
+
+            if (temp == true)
+            {
+                // Point needs to be checked to see if it lies between the two vertices
+                // First check for the special case of vertical line segments
+                if ((tri2.c.x == tri2.a.x) && (tri2.c.z == tri2.a.z))
+                {
+                    if (((tri2.c.y <= p.y) && (p.y <= tri2.a.y)) ||
+                        ((tri2.a.y <= p.y) && (p.y <= tri2.c.y)))
+                        return true;
+                }
+
+                // Now check for point on line segment
+                if (point_inbetween_vertices(tri2.c, tri2.a, tri1) == true)
+                    return true; // Intersection point is inside the triangle and on
+                else           // the line segment
+                    return false;
+            }
+            return false; // Default value/no collision
+        }
+
+
+    }//end struct
+
 }
