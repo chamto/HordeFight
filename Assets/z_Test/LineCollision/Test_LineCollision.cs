@@ -22,21 +22,44 @@ public class Test_LineCollision : MonoBehaviour
 
     //===========================================
 
+    //public struct TrTri
+    //{
+    //    public Transform v0, v1, v2;
+    //    public TriTri_Test1.triangle tri;
+
+    //    public void Update()
+    //    {
+    //        tri.a = v0.position;
+    //        tri.b = v1.position;
+    //        tri.c = v2.position;
+    //    }
+    //}
+
     public struct TrTri
     {
         public Transform v0, v1, v2;
-        public TriTri_1.triangle tri;
+        public TriTri_Test2.Triangle3 tri;
 
         public void Update()
         {
-            tri.a = v0.position;
-            tri.b = v1.position;
-            tri.c = v2.position;
+            tri.V[0] = v0.position;
+            tri.V[1] = v1.position;
+            tri.V[2] = v2.position;
+        }
+
+        public void Draw(Color color)
+        {
+            DebugWide.DrawLine(tri.V[0], tri.V[1], color);
+            DebugWide.DrawLine(tri.V[0], tri.V[2], color);
+            DebugWide.DrawLine(tri.V[1], tri.V[2], color);
         }
     }
 
     private TrTri _tri_0;
     private TrTri _tri_1;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intr;
+
+    //===========================================
 
 
     //===========================================
@@ -91,8 +114,24 @@ public class Test_LineCollision : MonoBehaviour
 
         if (true)
         {
-            TriTri_1.Draw(_tri_0.tri, Color.blue);
-            TriTri_1.Draw(_tri_1.tri, Color.magenta);
+            //TriTri_Test1.Draw(_tri_0.tri, Color.blue);
+            //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
+            _tri_0.Draw(Color.blue);
+            _tri_1.Draw(Color.magenta);
+
+            if(_intr.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
+            {
+                
+                string temp = string.Empty;
+                foreach(Vector3 p in _intr.mPoint)
+                {
+                    temp += p + " ";
+                }
+
+                DebugWide.LogBlue(_intr.mQuantity + "  " + _intr.mIntersectionType + "   " + _intr.mReportCoplanarIntersections
+                                  + "   " + temp);
+
+            }
         }
 
     }
@@ -133,7 +172,43 @@ public class Test_LineCollision : MonoBehaviour
 
         //===========================================
 
+        _tri_0.tri = TriTri_Test2.Triangle3.Zero();
+        _tri_1.tri = TriTri_Test2.Triangle3.Zero();
+        _intr = new TriTri_Test2.IntrTriangle3Triangle3(_tri_0.tri, _tri_1.tri);
+        //===========================================
+
+        //int[] a = new int[3] { 1, 2, 3 };
+        //PrintArray(1, a);
+        //int[] b = TestArray(ref a);
+        //b[0] = 4;
+        //PrintArray(2, a);
+        //함수인자배열에 out 사용은, 함수안에서 배열 모든요소값을 모두 할당하겠다는 의미가 있음 
+        //함수인자배열의 ref 사용은, 명시하지 않는것과 별다른 차이가 없음 
+        //c#의 배열은 동작할당된다. c++처럼 정적할당이 안됨  
+
+        //배열 정적할당하기
+        //https://docs.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/stackalloc
+
+        //===========================================
+
 	}
+
+    public int[] TestArray(ref int[] arr)
+    {
+        arr[0] = 8;
+
+        return arr;
+    }
+
+    public void PrintArray(int num, int[] arr)
+    {
+        string temp = string.Empty;
+        for (int i = 0; i < arr.Length;++i)
+        {
+            temp += arr[i] + " ";
+        }
+        DebugWide.LogBlue( num + "__ "+temp);
+    }
 	
 	// Update is called once per frame
 	void Update () 
@@ -141,7 +216,8 @@ public class Test_LineCollision : MonoBehaviour
 
         _tri_0.Update();
         _tri_1.Update();
-        if(true == TriTri_1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
+        //if(true == TriTri_Test1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
+        if (true == _intr.Find())
         {
             DebugWide.LogBlue("TriTri collision !!");
         }

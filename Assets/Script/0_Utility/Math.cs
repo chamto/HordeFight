@@ -1031,7 +1031,7 @@ namespace UtilGS9
     * Copyright (C) 1999,2000 Kevin Kaiser 
     * For use in 'Game Programming Gems'  
     * ************************************************************************ */
-    public struct TriTri_1
+    public struct TriTri_Test1
     {
         public const int UP = 0;
         public const int DOWN = 1;
@@ -1492,6 +1492,1126 @@ namespace UtilGS9
         }
 
 
-    }//end struct
+    }//end tritri_1
+
+
+    //******************************************************
+
+    // WildMagic5
+    // Geometric Tools, eberly
+    public struct TriTri_Test2
+    {
+        public enum eIntersectionType
+        {
+            EMPTY,
+            POINT,
+            SEGMENT,
+            RAY,
+            LINE,
+            POLYGON,
+            PLANE,
+            POLYHEDRON,
+            OTHER
+        }
+
+        public struct Query2
+        {
+            public int mNumVertices;
+            public Vector2[] mVertices;
+
+            public Query2(int numVertices, Vector2[] vertices)
+            {
+                mNumVertices = numVertices;
+                mVertices = vertices;
+            }
+
+            //행렬식값
+            float Det2(float x0, float y0, float x1, float y1)
+            {
+                return x0 * y1 - x1 * y0;
+            }
+
+            bool Sort(ref int v0, ref int v1)
+            {
+                int j0, j1;
+                bool positive;
+
+                if (v0 < v1)
+                {
+                    j0 = 0; j1 = 1; positive = true;
+                }
+                else
+                {
+                    j0 = 1; j1 = 0; positive = false;
+                }
+
+                int[] value = new int[2] { v0, v1 };
+                v0 = value[j0];
+                v1 = value[j1];
+                return positive;
+            }
+
+            public int ToLine(Vector2 test, int v0, int v1)
+            {
+                bool positive = Sort(ref v0, ref v1);
+
+                Vector2 vec0 = mVertices[v0];
+                Vector2 vec1 = mVertices[v1];
+
+                float x0 = test.x - vec0.x;
+                float y0 = test.y - vec0.y;
+                float x1 = vec1.x - vec0.x;
+                float y1 = vec1.y - vec0.y;
+
+                float det = Det2(x0, y0, x1, y1);
+                if (!positive)
+                {
+                    det = -det;
+                }
+
+                return (det > 0f ? +1 : (det < 0f ? -1 : 0));
+            }
+
+            public int ToTriangle(Vector2 test, int v0, int v1, int v2)
+            {
+                int sign0 = ToLine(test, v1, v2);
+                if (sign0 > 0)
+                {
+                    return +1;
+                }
+
+                int sign1 = ToLine(test, v0, v2);
+                if (sign1 < 0)
+                {
+                    return +1;
+                }
+
+                int sign2 = ToLine(test, v0, v1);
+                if (sign2 > 0)
+                {
+                    return +1;
+                }
+
+                //return ((sign0 && sign1 && sign2) ? -1 : 0);
+                return ((sign0 != 0 && sign1 != 0 && sign2 != 0) ? -1 : 0);
+            }
+        }//end query2
+
+        public struct Plane3
+        {
+            public Vector3 Normal;
+            public float Constant;
+
+            public Plane3(Vector3 p0, Vector3 p1, Vector3 p2)
+            {
+                Vector3 edge1 = p1 - p0;
+                Vector3 edge2 = p2 - p0;
+                Normal = Vector3.Cross(edge1, edge2);
+                Normal = UtilGS9.VOp.Normalize(Normal);
+
+                Constant = Vector3.Dot(Normal, p0);
+            }
+
+            public float DistanceTo(Vector3 p)
+            {
+                return Vector3.Dot(Normal, p) - Constant;
+            }
+        }
+
+        public struct Triangle2
+        {
+            public Vector2[] V; //[3]
+
+            //static public Triangle2 zero = new Triangle2(); //배열할당을 안하고 사용하는 문제 생김
+
+            static public Triangle2 Zero()
+            {
+                Triangle2 triangle2 = new Triangle2(ConstV.v2_zero, ConstV.v2_zero, ConstV.v2_zero);
+
+                return triangle2;
+            }
+
+            public Triangle2(Vector2 v0, Vector2 v1, Vector2 v2)
+            {
+                V = new Vector2[3];
+                V[0] = v0; V[1] = v1; V[2] = v2;
+            }
+
+        }
+
+        public struct Triangle3
+        {
+            public Vector3[] V; //[3] 
+
+            //static public Triangle3 zero = new Triangle3(); //배열할당을 안하고 사용하는 문제 생김
+
+            static public Triangle3 Zero()
+            {
+                Triangle3 triangle3 = new Triangle3(ConstV.v3_zero, ConstV.v3_zero, ConstV.v3_zero);
+
+                return triangle3;
+            }
+
+            public Triangle3(Vector3 v0, Vector3 v1, Vector3 v2)
+            {
+                V = new Vector3[3];
+                V[0] = v0; V[1] = v1; V[2] = v2;
+            }
+        }
+
+        public struct Segment2
+        {
+            public Vector2 P0, P1;
+
+            // Center-direction-extent representation.
+            public Vector2 Center;
+            public Vector2 Direction;
+            public float Extent;
+
+            public Segment2(Vector2 p0, Vector2 p1)
+            {
+                P0 = p0;
+                P1 = p1;
+
+                //ComputeCenterDirectionExtent();
+                Center = 0.5f * (P0 + P1);
+                Direction = P1 - P0;
+                Extent = 0.5f * Direction.magnitude;
+                Direction = VOp.Normalize(Direction);
+            }
+
+            void ComputeCenterDirectionExtent()
+            {
+                Center = 0.5f * (P0 + P1);
+                Direction = P1 - P0;
+                Extent = 0.5f * Direction.magnitude;
+                Direction = VOp.Normalize(Direction);
+            }
+        }
+
+        public struct Intersector1
+        {
+            // The intervals to intersect.
+            public float[] mU; //[2]
+            public float[] mV; //[2]
+
+            // Information about the intersection set.
+            public float mFirstTime, mLastTime;
+            public int mNumIntersections;
+            public float[] mIntersections; //[2]
+
+            public Intersector1(float u0, float u1, float v0, float v1)
+            {
+                //assertion(u0 <= u1 && v0 <= v1, "Malformed interval\n");
+                mU = new float[2];
+                mV = new float[2];
+
+                mU[0] = u0;
+                mU[1] = u1;
+                mV[0] = v0;
+                mV[1] = v1;
+                mFirstTime = 0f;
+                mLastTime = 0f;
+                mNumIntersections = 0;
+
+                mIntersections = new float[2];
+            }
+
+            public bool Find()
+            {
+                if (mU[1] < mV[0] || mU[0] > mV[1])
+                {
+                    mNumIntersections = 0;
+                }
+                else if (mU[1] > mV[0])
+                {
+                    if (mU[0] < mV[1])
+                    {
+                        mNumIntersections = 2;
+                        mIntersections[0] = (mU[0] < mV[0] ? mV[0] : mU[0]);
+                        mIntersections[1] = (mU[1] > mV[1] ? mV[1] : mU[1]);
+                        if (mIntersections[0] == mIntersections[1])
+                        {
+                            mNumIntersections = 1;
+                        }
+                    }
+                    else  // mU[0] == mV[1]
+                    {
+                        mNumIntersections = 1;
+                        mIntersections[0] = mU[0];
+                    }
+                }
+                else  // mU[1] == mV[0]
+                {
+                    mNumIntersections = 1;
+                    mIntersections[0] = mU[1];
+                }
+
+                return mNumIntersections > 0;
+            }
+
+        }
+
+        //수직내적 : 2차원상의 외적값 
+        static public float PerpDot(Vector2 v1, Vector2 v2)
+        {
+            return (v1.x * v2.y - v1.y * v2.x);
+        }
+
+        public struct IntrSegment2Triangle2
+        {
+            public eIntersectionType mIntersectionType;
+
+            // The objects to intersect.
+            public Segment2 mSegment;
+            public Triangle2 mTriangle;
+
+            // Information about the intersection set.
+            public int mQuantity;
+            public Vector2[] mPoint; //[2]
+
+            public IntrSegment2Triangle2(Segment2 segment , Triangle2 tri)
+            {
+                mSegment = segment;
+                mTriangle = tri;
+
+                mQuantity = 0;
+                mPoint = new Vector2[2]
+                { ConstV.v2_zero, ConstV.v2_zero };
+
+                mIntersectionType = eIntersectionType.EMPTY;
+            }
+
+            public bool Find()
+            {
+                float[] dist = new float[3];
+                int[] sign = new int[3];
+                int positive, negative, zero;
+                TriangleLineRelations(mSegment.Center, mSegment.Direction, mTriangle, 
+                                      dist, sign, out positive, out negative, out zero);
+
+                if (positive == 3 || negative == 3)
+                {
+                    // No intersections.
+                    mQuantity = 0;
+                    mIntersectionType = eIntersectionType.EMPTY;
+                }
+                else
+                {
+                    float[] param = new float[2];
+                    GetInterval(mSegment.Center, mSegment.Direction, mTriangle, dist, sign, param);
+
+                    Intersector1 intr = new Intersector1(
+                        param[0], param[1], -mSegment.Extent, +mSegment.Extent);
+
+                    intr.Find();
+
+                    mQuantity = intr.mNumIntersections;
+                    if (mQuantity == 2)
+                    {
+                        // Segment intersection.
+                        mIntersectionType = eIntersectionType.SEGMENT;
+                        mPoint[0] = mSegment.Center +
+                            intr.mIntersections[0] * mSegment.Direction;
+                        mPoint[1] = mSegment.Center +
+                            intr.mIntersections[1] * mSegment.Direction;
+                    }
+                    else if (mQuantity == 1)
+                    {
+                        // Point intersection.
+                        mIntersectionType = eIntersectionType.POINT;
+                        mPoint[0] = mSegment.Center +
+                            intr.mIntersections[0] * mSegment.Direction;
+                    }
+                    else
+                    {
+                        // No intersections.
+                        mIntersectionType = eIntersectionType.EMPTY;
+                    }
+                }
+
+                return mIntersectionType != eIntersectionType.EMPTY;
+            }//end func
+
+            //dist[3] , sign[3]
+            void TriangleLineRelations(Vector2 origin, Vector2 direction, Triangle2 triangle, 
+                                       float[] dist, int[] sign, 
+                                       out int positive, out int negative, out int zero)
+            {
+                positive = 0;
+                negative = 0;
+                zero = 0;
+                for (int i = 0; i< 3; ++i)
+                {
+                    Vector2 diff = triangle.V[i] - origin;
+                    dist[i] = TriTri_Test2.PerpDot(diff, direction);
+                    if (dist[i] > float.Epsilon)
+                    {
+                        sign[i] = 1;
+                        ++positive;
+                    }
+                    else if (dist[i] < -float.Epsilon)
+                    {
+                        sign[i] = -1;
+                        ++negative;
+                    }
+                    else
+                    {
+                        dist[i] = 0f;
+                        sign[i] = 0;
+                        ++zero;
+                    }
+                }
+            }//end func
+
+            //dist[3] , sign[3] , param[2]
+            void GetInterval(Vector2 origin, Vector2 direction, Triangle2 triangle,
+                float[] dist, int[] sign, float[] param)
+            {
+                // Project triangle onto line.
+                float[] proj = new float[3];
+                int i;
+                for (i = 0; i< 3; ++i)
+                {
+                    Vector2 diff = triangle.V[i] - origin;
+                    proj[i] = Vector2.Dot(direction , diff);
+                }
+
+                // Compute transverse intersections of triangle edges with line.
+                float numer, denom;
+                int i0, i1, i2;
+                int quantity = 0;
+                for (i0 = 2, i1 = 0; i1< 3; i0 = i1++)
+                {
+                    if (sign[i0]* sign[i1] < 0)
+                    {
+                        //assertion(quantity< 2, "Too many intersections\n");
+                        numer = dist[i0]*proj[i1] - dist[i1]*proj[i0];
+                        denom = dist[i0] - dist[i1];
+                        param[quantity++] = numer/denom;
+                    }
+                }
+
+                // Check for grazing contact.
+                if (quantity< 2)
+                {
+                    for (i0 = 1, i1 = 2, i2 = 0; i2< 3; i0 = i1, i1 = i2++)
+                    {
+                        if (sign[i2] == 0)
+                        {
+                            //assertion(quantity< 2, "Too many intersections\n");
+                            param[quantity++] = proj[i2];
+                        }
+                    }
+                }
+
+                // Sort.
+                //assertion(quantity >= 1, "Need at least one intersection\n");
+                if (quantity == 2)
+                {
+                    if (param[0] > param[1])
+                    {
+                        float save = param[0];
+                        param[0] = param[1];
+                        param[1] = save;
+                    }
+                }
+                else
+                {
+                    param[1] = param[0];
+                }
+            }//end func
+
+        }
+
+        public struct IntrTriangle2Triangle2
+        {
+
+            public Triangle2 mTriangle0;
+            public Triangle2 mTriangle1;
+
+
+            public int mQuantity;
+            public Vector2[] mPoint; //[6]
+
+            public IntrTriangle2Triangle2(Triangle2 t0 ,Triangle2 t1)
+            {
+                mTriangle0 = t0;
+                mTriangle1 = t1;
+
+                mQuantity = 0;
+                mPoint = new Vector2[6];
+
+                for (int i = 0; i < 6; i++)
+                {
+                    mPoint[i] = UtilGS9.ConstV.v3_zero;
+                }
+            }
+
+            public bool Find()
+            {
+                // The potential intersection is initialized to triangle1.  The set of
+                // vertices is refined based on clipping against each edge of triangle0.
+                mQuantity = 3;
+                for (int i = 0; i < 3; ++i)
+                {
+                    mPoint[i] = mTriangle1.V[i];
+                }
+
+                for (int i1 = 2, i0 = 0; i0 < 3; i1 = i0++)
+                {
+                    // Clip against edge <V0[i1],V0[i0]>.
+                    Vector2 N = new Vector2(
+                        mTriangle0.V[i1].y -mTriangle0.V[i0].y,
+                        mTriangle0.V[i0].x - mTriangle0.V[i1].x);
+                    float c = Vector2.Dot(N, mTriangle0.V[i1]);
+                    ClipConvexPolygonAgainstLine(N, c, ref mQuantity, ref mPoint);
+                    if (mQuantity == 0)
+                    {
+                        // Triangle completely clipped, no intersection occurs.
+                        return false;
+                    }
+                }
+
+                return true;
+            }//end func
+
+            void ClipConvexPolygonAgainstLine(Vector2 N, float c, ref int quantity,ref Vector2[] V) //[6]
+            {
+                // The input vertices are assumed to be in counterclockwise order.  The
+                // ordering is an invariant of this function.
+
+                // Test on which side of line the vertices are.
+                int positive = 0, negative = 0, pIndex = -1;
+                float[] test = new float[6];
+                int i;
+                for (i = 0; i < quantity; ++i)
+                {
+                    test[i] = Vector2.Dot(N, V[i]) - c;
+                    if (test[i] > 0f)
+                    {
+                        positive++;
+                        if (pIndex< 0)
+                        {
+                            pIndex = i;
+                        }
+                    }
+                    else if (test[i] < 0f)
+                    {
+                        negative++;
+                    }
+                }
+
+                if (positive > 0)
+                {
+                    if (negative > 0)
+                    {
+                        // Line transversely intersects polygon.
+                        Vector2[] CV = new Vector2[6];
+                        int cQuantity = 0, cur, prv;
+                        float t;
+
+                        if (pIndex > 0)
+                        {
+                            // First clip vertex on line.
+                            cur = pIndex;
+                            prv = cur - 1;
+                            t = test[cur]/(test[cur] - test[prv]);
+                            CV[cQuantity++] = V[cur] + t* (V[prv] - V[cur]);
+
+                            // Vertices on positive side of line.
+                            while (cur<quantity && test[cur]> 0f)
+                            {
+                                CV[cQuantity++] = V[cur++];
+                            }
+
+                            // Last clip vertex on line.
+                            if (cur<quantity)
+                            {
+                                prv = cur - 1;
+                            }
+                            else
+                            {
+                                cur = 0;
+                                prv = quantity - 1;
+                            }
+                            t = test[cur]/(test[cur] - test[prv]);
+                            CV[cQuantity++] = V[cur] + t* (V[prv]-V[cur]);
+                        }
+                        else  // pIndex is 0
+                        {
+                            // Vertices on positive side of line.
+                            cur = 0;
+                            while (cur<quantity && test[cur]> 0f)
+                            {
+                                CV[cQuantity++] = V[cur++];
+                            }
+
+                            // Last clip vertex on line.
+                            prv = cur - 1;
+                            t = test[cur]/(test[cur] - test[prv]);
+                            CV[cQuantity++] = V[cur] + t* (V[prv] - V[cur]);
+
+                            // Skip vertices on negative side.
+                            while (cur<quantity && test[cur] <= 0f)
+                            {
+                                ++cur;
+                            }
+
+                            // First clip vertex on line.
+                            if (cur<quantity)
+                            {
+                                prv = cur - 1;
+                                t = test[cur]/(test[cur] - test[prv]);
+                                CV[cQuantity++] = V[cur] + t* (V[prv] - V[cur]);
+
+                                // Vertices on positive side of line.
+                                while (cur<quantity && test[cur]> 0f)
+                                {
+                                    CV[cQuantity++] = V[cur++];
+                                }
+                            }
+                            else
+                            {
+                                // cur = 0
+                                prv = quantity - 1;
+                                t = test[0]/(test[0] - test[prv]);
+                                CV[cQuantity++] = V[0] + t* (V[prv] - V[0]);
+                            }
+                        }
+
+                        quantity = cQuantity;
+                        //memcpy(V, CV, cQuantity*sizeof(Vector2<Real>));
+                        CV.CopyTo(V, 0); //CV를 V에 복사 , V의 0인덱스 위치부터 복사한다 
+                    }
+                    // else polygon fully on positive side of line, nothing to do.
+                }
+                else
+                {
+                    // Polygon does not intersect positive side of line, clip all.
+                    quantity = 0;
+                }
+            }//end func
+        }//end IntrTri2_Tri2
+
+
+        public struct IntrTriangle3Triangle3
+        {
+
+            public Triangle3 mTriangle0;
+            public Triangle3 mTriangle1;
+
+            // Information about the intersection set.
+            public int mQuantity;
+            public Vector3[] mPoint; //[6]
+
+            public bool mReportCoplanarIntersections;  // default 'true'
+
+            public eIntersectionType mIntersectionType;
+
+            //--------------------------------------------------
+
+            public IntrTriangle3Triangle3(Triangle3 t0, Triangle3 t1)
+            {
+                mTriangle0 = t0;
+                mTriangle1 = t1;
+
+                mQuantity = 0;
+                mPoint = new Vector3[6];
+
+                for (int i = 0; i < 6; i++)
+                {
+                    mPoint[i] = UtilGS9.ConstV.v3_zero;
+                }
+
+                mReportCoplanarIntersections = true;
+                mIntersectionType = eIntersectionType.EMPTY;
+            }
+
+            // Input W must be a unit-length vector.  The output vectors {U,V} are
+            // unit length and mutually perpendicular, and {U,V,W} is an orthonormal
+            // basis.
+            void GenerateComplementBasis(out Vector3 u, out Vector3 v, Vector3 w)
+            {
+                float invLength;
+
+                if (Mathf.Abs(w.x) >= Mathf.Abs(w.y))
+                {
+                    // W.x or W.z is the largest magnitude component, swap them
+                    invLength = 1f / (float)Math.Sqrt(w.x * w.x + w.y * w.y);
+                    u.x = -w.z * invLength;
+                    u.y = 0f;
+                    u.z = +w.x * invLength;
+
+                    v.x = w.y * u.z;
+                    v.y = w.z * u.x - w.x * u.z;
+                    v.z = -w.y * u.x;
+                }
+                else
+                {
+                    // W.y or W.z is the largest magnitude component, swap them
+                    invLength = 1f / (float)Math.Sqrt(w.y * w.y + w.z * w.z);
+                    u.x = 0f;
+                    u.y = +w.z * invLength;
+                    u.z = -w.y * invLength;
+
+                    v.x = w.y * u.z - w.z * u.y;
+                    v.y = -w.x * u.z;
+                    v.z = w.x * u.y;
+                }
+            }
+
+
+
+            //=======================================
+
+
+            public bool Find()
+            {
+                int i, iM, iP;
+
+                // Get the plane of triangle0.
+                Plane3 plane0 = new Plane3(mTriangle0.V[0], mTriangle0.V[1], mTriangle0.V[2]);
+
+                // Compute the signed distances of triangle1 vertices to plane0.  Use
+                // an epsilon-thick plane test.
+                int pos1, neg1, zero1;
+                int[] sign1 = new int[3];
+                float[] dist1 = new float[3];
+
+                TrianglePlaneRelations(mTriangle1, plane0, dist1, sign1, out pos1, out neg1,
+                    out zero1);
+
+                if (pos1 == 3 || neg1 == 3)
+                {
+                    // Triangle1 is fully on one side of plane0.
+                    return false;
+                }
+
+                if (zero1 == 3)
+                {
+                    // Triangle1 is contained by plane0.
+                    if (mReportCoplanarIntersections)
+                    {
+                        return GetCoplanarIntersection(plane0, mTriangle0, mTriangle1);
+                    }
+                    return false;
+                }
+
+                // Check for grazing contact between triangle1 and plane0.
+                if (pos1 == 0 || neg1 == 0)
+                {
+                    if (zero1 == 2)
+                    {
+                        // An edge of triangle1 is in plane0.
+                        for (i = 0; i < 3; ++i)
+                        {
+                            if (sign1[i] != 0)
+                            {
+                                iM = (i + 2) % 3;
+                                iP = (i + 1) % 3;
+                                return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[iM], mTriangle1.V[iP]);
+                            }
+                        }
+                    }
+                    else // zero1 == 1
+                    {
+                        // A vertex of triangle1 is in plane0.
+                        for (i = 0; i < 3; ++i)
+                        {
+                            if (sign1[i] == 0)
+                            {
+                                return ContainsPoint(mTriangle0, plane0, mTriangle1.V[i]);
+                            }
+                        }
+                    }
+                }
+
+                // At this point, triangle1 tranversely intersects plane 0.  Compute the
+                // line segment of intersection.  Then test for intersection between this
+                // segment and triangle 0.
+                float t;
+                Vector3 intr0, intr1;
+                if (zero1 == 0)
+                {
+                    int iSign = (pos1 == 1 ? +1 : -1);
+                    for (i = 0; i < 3; ++i)
+                    {
+                        if (sign1[i] == iSign)
+                        {
+                            iM = (i + 2) % 3;
+                            iP = (i + 1) % 3;
+                            t = dist1[i] / (dist1[i] - dist1[iM]);
+                            intr0 = mTriangle1.V[i] + t * (mTriangle1.V[iM] -
+                                mTriangle1.V[i]);
+                            t = dist1[i] / (dist1[i] - dist1[iP]);
+                            intr1 = mTriangle1.V[i] + t * (mTriangle1.V[iP] -
+                                mTriangle1.V[i]);
+                            return IntersectsSegment(plane0, mTriangle0, intr0, intr1);
+                        }
+                    }
+                }
+
+                // zero1 == 1
+                for (i = 0; i < 3; ++i)
+                {
+                    if (sign1[i] == 0)
+                    {
+                        iM = (i + 2) % 3;
+                        iP = (i + 1) % 3;
+                        t = dist1[iM] / (dist1[iM] - dist1[iP]);
+                        intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] -
+                            mTriangle1.V[iM]);
+                        return IntersectsSegment(plane0, mTriangle0,
+                            mTriangle1.V[i], intr0);
+                    }
+                }
+
+                //assertion(false, "Should not get here\n");
+                return false;
+
+            }//end func
+
+            //distance[3] , sign[3]
+            void TrianglePlaneRelations(Triangle3 triangle, Plane3 plane,
+                                        float[] distance, int[] sign, out int positive, out int negative, out int zero)
+            {
+                // Compute the signed distances of triangle vertices to the plane.  Use
+                // an epsilon-thick plane test.
+                positive = 0;
+                negative = 0;
+                zero = 0;
+                for (int i = 0; i < 3; ++i)
+                {
+                    distance[i] = plane.DistanceTo(triangle.V[i]);
+                    if (distance[i] > float.Epsilon)
+                    {
+                        sign[i] = 1;
+                        positive++;
+                    }
+                    else if (distance[i] < -float.Epsilon)
+                    {
+                        sign[i] = -1;
+                        negative++;
+                    }
+                    else
+                    {
+                        distance[i] = 0f;
+                        sign[i] = 0;
+                        zero++;
+                    }
+                }
+            }//end func
+
+
+            bool GetCoplanarIntersection(Plane3 plane, Triangle3 tri0, Triangle3 tri1)
+            {
+                //*
+                // Project triangles onto coordinate plane most aligned with plane
+                // normal.
+                int maxNormal = 0;
+                float fmax = Mathf.Abs(plane.Normal.x);
+                float absMax = Mathf.Abs(plane.Normal.y);
+                if (absMax > fmax)
+                {
+                    maxNormal = 1;
+                    fmax = absMax;
+                }
+                absMax = Mathf.Abs(plane.Normal.z);
+                if (absMax > fmax)
+                {
+                    maxNormal = 2;
+                }
+
+                Triangle2 projTri0 = Triangle2.Zero(), projTri1 = Triangle2.Zero();
+
+                int i;
+
+                if (maxNormal == 0)
+                {
+                    // Project onto yz-plane.
+                    for (i = 0; i < 3; ++i)
+                    {
+                        projTri0.V[i].x = tri0.V[i].y;
+                        projTri0.V[i].y = tri0.V[i].z;
+                        projTri1.V[i].x = tri1.V[i].y;
+                        projTri1.V[i].y = tri1.V[i].z;
+                    }
+                }
+                else if (maxNormal == 1)
+                {
+                    // Project onto xz-plane.
+                    for (i = 0; i < 3; ++i)
+                    {
+                        projTri0.V[i].x = tri0.V[i].x;
+                        projTri0.V[i].y = tri0.V[i].z;
+                        projTri1.V[i].x = tri1.V[i].x;
+                        projTri1.V[i].y = tri1.V[i].z;
+                    }
+                }
+                else
+                {
+                    // Project onto xy-plane.
+                    for (i = 0; i < 3; ++i)
+                    {
+                        projTri0.V[i].x = tri0.V[i].x;
+                        projTri0.V[i].y = tri0.V[i].y;
+                        projTri1.V[i].x = tri1.V[i].x;
+                        projTri1.V[i].y = tri1.V[i].y;
+                    }
+                }
+
+                // 2D triangle intersection routines require counterclockwise ordering.
+                Vector2 save;
+                Vector2 edge0 = projTri0.V[1] - projTri0.V[0];
+                Vector2 edge1 = projTri0.V[2] - projTri0.V[0];
+                //if (edge0.DotPerp(edge1) < (Real)0)
+                if (TriTri_Test2.PerpDot(edge0, edge1) < 0f)
+                {
+                    // Triangle is clockwise, reorder it.
+                    save = projTri0.V[1];
+                    projTri0.V[1] = projTri0.V[2];
+                    projTri0.V[2] = save;
+                }
+
+                edge0 = projTri1.V[1] - projTri1.V[0];
+                edge1 = projTri1.V[2] - projTri1.V[0];
+                //if (edge0.DotPerp(edge1) < (Real)0)
+                if (TriTri_Test2.PerpDot(edge0, edge1) < 0f)
+                {
+                    // Triangle is clockwise, reorder it.
+                    save = projTri1.V[1];
+                    projTri1.V[1] = projTri1.V[2];
+                    projTri1.V[2] = save;
+                }
+
+                IntrTriangle2Triangle2 intr = new IntrTriangle2Triangle2(projTri0, projTri1);
+                if (!intr.Find())
+                {
+                    return false;
+                }
+
+                // Map 2D intersections back to the 3D triangle space.
+                mQuantity = intr.mQuantity;
+                if (maxNormal == 0)
+                {
+                    float invNX = 1f / plane.Normal.x;
+                    for (i = 0; i < mQuantity; i++)
+                    {
+                        mPoint[i].y = intr.mPoint[i].x;
+                        mPoint[i].z = intr.mPoint[i].y;
+                        mPoint[i].x = invNX * (plane.Constant -
+                                        plane.Normal.y * mPoint[i].y -
+                                               plane.Normal.z * mPoint[i].z);
+                    }
+                }
+                else if (maxNormal == 1)
+                {
+                    float invNY = 1f / plane.Normal.y;
+                    for (i = 0; i < mQuantity; i++)
+                    {
+                        mPoint[i].x = intr.mPoint[i].x;
+                        mPoint[i].z = intr.mPoint[i].y;
+                        mPoint[i].y = invNY * (plane.Constant -
+                                        plane.Normal.x * mPoint[i].x -
+                                               plane.Normal.z * mPoint[i].z);
+                    }
+                }
+                else
+                {
+                    float invNZ = 1f / plane.Normal.z;
+                    for (i = 0; i < mQuantity; i++)
+                    {
+                        mPoint[i].x = intr.mPoint[i].x;
+                        mPoint[i].y = intr.mPoint[i].y;
+                        mPoint[i].z = invNZ * (plane.Constant -
+                                        plane.Normal.x * mPoint[i].x -
+                                               plane.Normal.y * mPoint[i].y);
+                    }
+                }
+
+                mIntersectionType = eIntersectionType.PLANE;
+                //*/
+                return true;
+            }//end func
+
+
+            bool IntersectsSegment(Plane3 plane, Triangle3 triangle, Vector3 end0, Vector3 end1)
+            {
+                // Compute the 2D representations of the triangle vertices and the
+                // segment endpoints relative to the plane of the triangle.  Then
+                // compute the intersection in the 2D space.
+
+                // Project the triangle and segment onto the coordinate plane most
+                // aligned with the plane normal.
+                int maxNormal = 0;
+                float fmax = Mathf.Abs(plane.Normal.x);
+                float absMax = Mathf.Abs(plane.Normal.y);
+                if (absMax > fmax)
+                {
+                    maxNormal = 1;
+                    fmax = absMax;
+                }
+                absMax = Mathf.Abs(plane.Normal.z);
+                if (absMax > fmax)
+                {
+                    maxNormal = 2;
+                }
+
+                Triangle2 projTri = Triangle2.Zero();
+                Vector2 projEnd0 = ConstV.v2_zero, projEnd1 = ConstV.v2_zero;
+                int i;
+
+                if (maxNormal == 0)
+                {
+                    // Project onto yz-plane.
+                    for (i = 0; i< 3; ++i)
+                    {
+                        projTri.V[i].x = triangle.V[i].y;
+                        projTri.V[i].y = triangle.V[i].z;
+                        projEnd0.x = end0.y;
+                        projEnd0.y = end0.z;
+                        projEnd1.x = end1.y;
+                        projEnd1.y = end1.z;
+                    }
+                }
+                else if (maxNormal == 1)
+                {
+                    // Project onto xz-plane.
+                    for (i = 0; i< 3; ++i)
+                    {
+                        projTri.V[i].x = triangle.V[i].x;
+                        projTri.V[i].y = triangle.V[i].z;
+                        projEnd0.x = end0.x;
+                        projEnd0.y = end0.z;
+                        projEnd1.x = end1.x;
+                        projEnd1.y = end1.z;
+                    }
+                }
+                else
+                {
+                    // Project onto xy-plane.
+                    for (i = 0; i< 3; ++i)
+                    {
+                        projTri.V[i].x = triangle.V[i].x;
+                        projTri.V[i].y = triangle.V[i].y;
+                        projEnd0.x = end0.x;
+                        projEnd0.y = end0.y;
+                        projEnd1.x = end1.x;
+                        projEnd1.y = end1.y;
+                    }
+                }
+
+                Segment2 projSeg = new Segment2(projEnd0, projEnd1);
+                IntrSegment2Triangle2 calc = new IntrSegment2Triangle2(projSeg, projTri);
+                if (!calc.Find())
+                {
+                    return false;
+                }
+
+                Vector2[] intr = new Vector2[2];
+                if (calc.mIntersectionType == eIntersectionType.SEGMENT)
+                {
+                    mIntersectionType = eIntersectionType.SEGMENT;
+                    mQuantity = 2;
+                    intr[0] = calc.mPoint[0];
+                    intr[1] = calc.mPoint[1];
+                }
+                else
+                {
+                    //assertion(calc.GetIntersectionType() == IT_POINT, "Intersection must be a point\n");
+                    mIntersectionType = eIntersectionType.POINT;
+                    mQuantity = 1;
+                    intr[0] = calc.mPoint[0];
+                }
+
+                // Unproject the segment of intersection.
+                if (maxNormal == 0)
+                {
+                    float invNX = 1f / plane.Normal.x;
+                    for (i = 0; i<mQuantity; ++i)
+                    {
+                        mPoint[i].y = intr[i].x;
+                        mPoint[i].z = intr[i].y;
+                        mPoint[i].x = invNX * (plane.Constant -
+                            plane.Normal.y * mPoint[i].y -
+                            plane.Normal.z * mPoint[i].z);
+                    }
+                }
+                else if (maxNormal == 1)
+                {
+                    float invNY = 1f / plane.Normal.y;
+                    for (i = 0; i<mQuantity; ++i)
+                    {
+                        mPoint[i].x = intr[i].x;
+                        mPoint[i].z = intr[i].y;
+                        mPoint[i].y = invNY* (plane.Constant -
+                            plane.Normal.x * mPoint[i].x -
+                            plane.Normal.z * mPoint[i].z);
+                    }
+                }
+                else
+                {
+                    float invNZ = 1f / plane.Normal.z;
+                    for (i = 0; i<mQuantity; ++i)
+                    {
+                        mPoint[i].x = intr[i].x;
+                        mPoint[i].y = intr[i].y;
+                        mPoint[i].z = invNZ * (plane.Constant -
+                            plane.Normal.x * mPoint[i].x -
+                            plane.Normal.y * mPoint[i].y);
+                    }
+                }
+
+                return true;
+            }//end func
+
+            bool ContainsPoint(Triangle3 triangle, Plane3 plane, Vector3 point)
+            {
+                // Generate a coordinate system for the plane.  The incoming triangle has
+                // vertices <V0,V1,V2>.  The incoming plane has unit-length normal N.
+                // The incoming point is P.  V0 is chosen as the origin for the plane. The
+                // coordinate axis directions are two unit-length vectors, U0 and U1,
+                // constructed so that {U0,U1,N} is an orthonormal set.  Any point Q
+                // in the plane may be written as Q = V0 + x0*U0 + x1*U1.  The coordinates
+                // are computed as x0 = Dot(U0,Q-V0) and x1 = Dot(U1,Q-V0).
+                Vector3 U0, U1;
+                GenerateComplementBasis(out U0, out U1, plane.Normal);
+
+                // Compute the planar coordinates for the points P, V1, and V2.  To
+                // simplify matters, the origin is subtracted from the points, in which
+                // case the planar coordinates are for P-V0, V1-V0, and V2-V0.
+                Vector3 PmV0 = point - triangle.V[0];
+                Vector3 V1mV0 = triangle.V[1] - triangle.V[0];
+                Vector3 V2mV0 = triangle.V[2] - triangle.V[0];
+
+                // The planar representation of P-V0.
+                Vector2 ProjP = new Vector2(Vector2.Dot(U0, PmV0), Vector3.Dot(U1, PmV0));
+
+                // The planar representation of the triangle <V0-V0,V1-V0,V2-V0>.
+                Vector2[] ProjV = new Vector2[3]
+                    {
+                Vector2.zero,
+                new Vector2(Vector2.Dot(U0,V1mV0), Vector2.Dot(U1,V1mV0)),
+                new Vector2(Vector2.Dot(U0,V2mV0), Vector2.Dot(U1,V2mV0))
+                    };
+
+
+                // Test whether P-V0 is in the triangle <0,V1-V0,V2-V0>.
+                if (new Query2(3, ProjV).ToTriangle(ProjP, 0, 1, 2) <= 0)
+                {
+                    // Report the point of intersection to the caller.
+                    mIntersectionType = eIntersectionType.POINT;
+                    mQuantity = 1;
+                    mPoint[0] = point;
+                    return true;
+                }
+
+                return false;
+            }//end func
+
+        }//end IntrTri3_Tri3
+
+    }//end TriTri_Test2
 
 }
