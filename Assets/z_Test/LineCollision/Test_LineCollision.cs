@@ -35,29 +35,70 @@ public class Test_LineCollision : MonoBehaviour
     //    }
     //}
 
-    public struct TrTri
+    public struct Tri3
     {
         public Transform v0, v1, v2;
-        public TriTri_Test2.Triangle3 tri;
+        public TriTri_Test2.Triangle3 tri0;
 
         public void Update()
         {
-            tri.V[0] = v0.position;
-            tri.V[1] = v1.position;
-            tri.V[2] = v2.position;
+            tri0.V[0] = v0.position;
+            tri0.V[1] = v1.position;
+            tri0.V[2] = v2.position;
         }
 
         public void Draw(Color color)
         {
-            DebugWide.DrawLine(tri.V[0], tri.V[1], color);
-            DebugWide.DrawLine(tri.V[0], tri.V[2], color);
-            DebugWide.DrawLine(tri.V[1], tri.V[2], color);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[1], color);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[2], color);
+            DebugWide.DrawLine(tri0.V[1], tri0.V[2], color);
+        }
+
+    }
+
+    public struct Tetra3
+    {
+        //v0    v1
+        //
+        //v2    v3
+        //v0 - v1 - v2 , v2 - v1 - v3
+        public Transform v0, v1, v2, v3;
+        public TriTri_Test2.Triangle3 tri0;
+        public TriTri_Test2.Triangle3 tri1;
+
+        public void Update()
+        {
+            tri0.V[0] = v0.position;
+            tri0.V[1] = v1.position;
+            tri0.V[2] = v2.position;
+
+            tri1.V[0] = v2.position;
+            tri1.V[1] = v1.position;
+            tri1.V[2] = v3.position;
+        }
+
+        public void Draw(Color color)
+        {
+            DebugWide.DrawLine(tri0.V[0], tri0.V[1], color);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[2], color);
+            DebugWide.DrawLine(tri0.V[1], tri0.V[2], color);
+
+            DebugWide.DrawLine(tri1.V[0], tri1.V[2], color);
+            DebugWide.DrawLine(tri1.V[1], tri1.V[2], color);
         }
     }
 
-    private TrTri _tri_0;
-    private TrTri _tri_1;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intr;
+
+    private Tri3 _tri0;
+    private Tri3 _tri1;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intrTriTri;
+
+    private Tetra3 _tetra_0_1; //삼각형 0,1 합친모양의 사각형
+    private Tetra3 _tetra_2_3;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intr_0_2;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intr_0_3;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intr_1_2;
+    private TriTri_Test2.IntrTriangle3Triangle3 _intr_1_3;
 
     //===========================================
 
@@ -116,22 +157,28 @@ public class Test_LineCollision : MonoBehaviour
         {
             //TriTri_Test1.Draw(_tri_0.tri, Color.blue);
             //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
-            _tri_0.Draw(Color.blue);
-            _tri_1.Draw(Color.magenta);
 
-            if(_intr.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
-            {
-                
-                string temp = string.Empty;
-                foreach(Vector3 p in _intr.mPoint)
-                {
-                    temp += p + " ";
-                }
+            //if(_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
+            //{
+            //    string temp = string.Empty;
+            //    foreach(Vector3 p in _intrTriTri.mPoint)
+            //    {
+            //        temp += p + " ";
+            //    }
+            //    DebugWide.LogBlue(_intrTriTri.mQuantity + "  " + _intrTriTri.mIntersectionType + "   " + _intrTriTri.mReportCoplanarIntersections
+            //                      + "   " + temp);
+            //}
+            //_tri0.Draw(Color.blue);
+            //_tri1.Draw(Color.magenta);
+            //_intrTriTri.Draw(Color.red);
 
-                DebugWide.LogBlue(_intr.mQuantity + "  " + _intr.mIntersectionType + "   " + _intr.mReportCoplanarIntersections
-                                  + "   " + temp);
 
-            }
+            _tetra_0_1.Draw(Color.blue);
+            _tetra_2_3.Draw(Color.magenta);
+            _intr_0_2.Draw(Color.red);
+            _intr_0_3.Draw(Color.red);
+            _intr_1_2.Draw(Color.red);
+            _intr_1_3.Draw(Color.red);
         }
 
     }
@@ -161,20 +208,44 @@ public class Test_LineCollision : MonoBehaviour
 
         Transform tri_tri = Hierarchy.GetTransform(transform.parent, "tri_tri");
         Transform tri = Hierarchy.GetTransform(tri_tri, "tri_0");
-        _tri_0.v0 = Hierarchy.GetTransform(tri, "v0");
-        _tri_0.v1 = Hierarchy.GetTransform(tri, "v1");
-        _tri_0.v2 = Hierarchy.GetTransform(tri, "v2");
+        _tri0.v0 = Hierarchy.GetTransform(tri, "v0");
+        _tri0.v1 = Hierarchy.GetTransform(tri, "v1");
+        _tri0.v2 = Hierarchy.GetTransform(tri, "v2");
 
         tri = Hierarchy.GetTransform(tri_tri, "tri_1");
-        _tri_1.v0 = Hierarchy.GetTransform(tri, "v0");
-        _tri_1.v1 = Hierarchy.GetTransform(tri, "v1");
-        _tri_1.v2 = Hierarchy.GetTransform(tri, "v2");
+        _tri1.v0 = Hierarchy.GetTransform(tri, "v0");
+        _tri1.v1 = Hierarchy.GetTransform(tri, "v1");
+        _tri1.v2 = Hierarchy.GetTransform(tri, "v2");
 
         //===========================================
 
-        _tri_0.tri = TriTri_Test2.Triangle3.Zero();
-        _tri_1.tri = TriTri_Test2.Triangle3.Zero();
-        _intr = new TriTri_Test2.IntrTriangle3Triangle3(_tri_0.tri, _tri_1.tri);
+        Transform tetra_tetra = Hierarchy.GetTransform(transform.parent, "tetra_tetra");
+        Transform tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_0");
+        _tetra_0_1.v0 = Hierarchy.GetTransform(tetra, "v0");
+        _tetra_0_1.v1 = Hierarchy.GetTransform(tetra, "v1");
+        _tetra_0_1.v2 = Hierarchy.GetTransform(tetra, "v2");
+        _tetra_0_1.v3 = Hierarchy.GetTransform(tetra, "v3");
+
+        tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_1");
+        _tetra_2_3.v0 = Hierarchy.GetTransform(tetra, "v0");
+        _tetra_2_3.v1 = Hierarchy.GetTransform(tetra, "v1");
+        _tetra_2_3.v2 = Hierarchy.GetTransform(tetra, "v2");
+        _tetra_2_3.v3 = Hierarchy.GetTransform(tetra, "v3");
+
+        //===========================================
+
+        _tri0.tri0 = TriTri_Test2.Triangle3.Zero();
+        _tri1.tri0 = TriTri_Test2.Triangle3.Zero();
+        _intrTriTri = new TriTri_Test2.IntrTriangle3Triangle3(_tri0.tri0, _tri1.tri0);
+
+        _tetra_0_1.tri0 = TriTri_Test2.Triangle3.Zero();
+        _tetra_0_1.tri1 = TriTri_Test2.Triangle3.Zero();
+        _tetra_2_3.tri0 = TriTri_Test2.Triangle3.Zero();
+        _tetra_2_3.tri1 = TriTri_Test2.Triangle3.Zero();
+        _intr_0_2 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri0);
+        _intr_0_3 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri1);
+        _intr_1_2 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri0);
+        _intr_1_3 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri1);
         //===========================================
 
         //int[] a = new int[3] { 1, 2, 3 };
@@ -214,13 +285,23 @@ public class Test_LineCollision : MonoBehaviour
 	void Update () 
     {
 
-        _tri_0.Update();
-        _tri_1.Update();
+
         //if(true == TriTri_Test1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
-        if (true == _intr.Find())
-        {
-            DebugWide.LogBlue("TriTri collision !!");
-        }
+        //{
+        //    DebugWide.LogBlue("TriTri collision !!");
+        //}
+
+        //_tri0.Update();
+        //_tri1.Update();
+        //_intrTriTri.Find();
+
+        _tetra_0_1.Update();
+        _tetra_2_3.Update();
+        _intr_0_2.Find();
+        _intr_0_3.Find();
+        _intr_1_2.Find();
+        _intr_1_3.Find();
+
 
         //===========================================
 

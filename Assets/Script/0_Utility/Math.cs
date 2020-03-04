@@ -2164,10 +2164,42 @@ namespace UtilGS9
 
 
             //=======================================
+            public void Draw(Color color)
+            {
+                switch(mIntersectionType)
+                {
+                    case eIntersectionType.POINT:
+                        {
+                            DebugWide.DrawCircle(mPoint[0], 0.05f,color);
+                        }
+                        break;
+                    case eIntersectionType.SEGMENT:
+                        {
+                            DebugWide.DrawLine(mPoint[0],mPoint[1],color);    
 
+                        }
+                        break;
+                    case eIntersectionType.PLANE:
+                        {
+                            for (int i = 0; i < mQuantity; i++)
+                            {
+                                int i2 = i + 1;
+                                i2 = (i2 == mQuantity ? 0 : i2);
+                                DebugWide.DrawLine(mPoint[i], mPoint[i2], color);
+                            }
+                        }
+                        break;
+                }
+            }
 
             public bool Find()
             {
+                //----------
+                //검사전 초기화 
+                mQuantity = 0;
+                mIntersectionType = eIntersectionType.EMPTY; 
+                //----------
+
                 int i, iM, iP;
 
                 // Get the plane of triangle0.
