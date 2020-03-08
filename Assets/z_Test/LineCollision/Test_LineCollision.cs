@@ -128,14 +128,10 @@ public class Test_LineCollision : MonoBehaviour
         if(false == _init)
             return;
 
-        if(true)
+        if(false)
         {
-            
             DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.blue);
-            //DebugWide.DrawLine(__prevPos_s, __prevPos_e, Color.red);
-
             DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.magenta);
-
 
         }
 
@@ -147,8 +143,11 @@ public class Test_LineCollision : MonoBehaviour
             //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
         }
 
-        if (false)
+        //if (false)
         {
+            _tri0.Update();
+            _tri1.Update();
+            _intrTriTri.Find();    
             
             if (_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
             {
@@ -165,10 +164,10 @@ public class Test_LineCollision : MonoBehaviour
             _intrTriTri.Draw(Color.red);
 
         }
-        if(true)
+        if(false)
         {
             _tetra_0_1.Draw(Color.blue);
-            _tetra_2_3.Draw(Color.magenta);
+            _tetra_2_3.Draw(Color.white);
             _intr_0_2.Draw(Color.red);
             _intr_0_3.Draw(Color.red);
             _intr_1_2.Draw(Color.red);
@@ -255,24 +254,43 @@ public class Test_LineCollision : MonoBehaviour
 
 
     private Vector3 __prevPos_s, __prevPos_e;
-	private void Update()
+	private void Update6()
 	{
+
+        bool s0, s1;
+        s0 = Misc.IsZero(__prevPos_s - _line0_start.position) && Misc.IsZero(__prevPos_e - _line0_end.position);
+        s1 = Misc.IsZero(_line2_start.position - _line2_end.position) && Misc.IsZero(_line1_start.position - _line1_end.position);
 
         _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
         _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
         //_tetra_2_3.SetSegement(_line1_start.position * 0.9f, _line1_end.position, _line1_start.position, _line1_end.position);
 
-        _intr_0_2.Find();
-        _intr_0_3.Find();
-        _intr_1_2.Find();
-        _intr_1_3.Find();    
+        if(s0 && s1)
+        {   //선분과 선분
+            
+        }
+        else if(s0 || s1)
+        {   //선분과 삼각형
+            
+        }
+        else
+        {   //삼각형과 삼각형 
+
+            _intr_0_2.Find();
+            _intr_0_3.Find();
+            _intr_1_2.Find();
+            _intr_1_3.Find();        
+        }
+
+
+
 
         //-----
         __prevPos_s = _line0_start.position;
         __prevPos_e = _line0_end.position;
 	}
 
-	void Update2 () 
+	void Update () 
     {
 
         if(false)
@@ -283,14 +301,14 @@ public class Test_LineCollision : MonoBehaviour
             //}    
         }
 
-        if(false)
+        if(true)
         {
-            _tri0.Update();
-            _tri1.Update();
-            _intrTriTri.Find();    
+            //_tri0.Update();
+            //_tri1.Update();
+            //_intrTriTri.Find();    
         }
 
-        if(true)
+        if(false)
         {
             _tetra_0_1.Update();
             _tetra_2_3.Update();

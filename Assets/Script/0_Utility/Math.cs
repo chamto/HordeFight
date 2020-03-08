@@ -755,7 +755,7 @@ namespace UtilGS9
         // Returns true if point on triangle plane lies inside triangle (3D version)
         // Assumes triangle is not degenerate
         //-------------------------------------------------------------------------------
-        public bool IsPointInTriangle(Vector3 point, Vector3 P0, Vector3 P1, Vector3 P2)
+        static public bool IsPointInTriangle(Vector3 point, Vector3 P0, Vector3 P1, Vector3 P2)
         {
             Vector3 v0 = P1 - P0;
             Vector3 v1 = P2 - P1;
@@ -1533,22 +1533,34 @@ namespace UtilGS9
 
             bool Sort(ref int v0, ref int v1)
             {
-                int j0, j1;
-                bool positive;
+                //int j0, j1;
+                //bool positive;
 
-                if (v0 < v1)
+                //if (v0 < v1)
+                //{
+                //    j0 = 0; j1 = 1; positive = true;
+                //}
+                //else
+                //{
+                //    j0 = 1; j1 = 0; positive = false;
+                //}
+
+                //int[] value = new int[2] { v0, v1 };
+                //v0 = value[j0];
+                //v1 = value[j1];
+                //return positive;
+
+
+                if(v0 > v1)
                 {
-                    j0 = 0; j1 = 1; positive = true;
-                }
-                else
-                {
-                    j0 = 1; j1 = 0; positive = false;
+                    int temp = v0;
+                    v0 = v1;
+                    v1 = temp;
+
+                    return false;
                 }
 
-                int[] value = new int[2] { v0, v1 };
-                v0 = value[j0];
-                v1 = value[j1];
-                return positive;
+                return true;    
             }
 
             public int ToLine(Vector2 test, int v0, int v1)
@@ -1564,7 +1576,8 @@ namespace UtilGS9
                 float y1 = vec1.y - vec0.y;
 
                 float det = Det2(x0, y0, x1, y1);
-                if (!positive)
+                //if (!positive)
+                if (false == positive)
                 {
                     det = -det;
                 }
@@ -1617,7 +1630,12 @@ namespace UtilGS9
             {
                 return Vector3.Dot(Normal, p) - Constant;
             }
-        }
+
+			public override string ToString()
+			{
+                return " N:" + Normal + "   C:" + Constant;
+			}
+		}
 
         public struct Triangle2
         {
@@ -1690,6 +1708,11 @@ namespace UtilGS9
 
                 //V = new V012();
                 //V[0] = v0; V[1] = v1; V[2] = v2;
+            }
+
+            override public string ToString()
+            {
+                return V[0] + "   " + V[1] + "   " + V[2];
             }
         }
 
@@ -2276,7 +2299,7 @@ namespace UtilGS9
                 float[] dist1 = new float[3];
 
                 TrianglePlaneRelations(mTriangle1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
-                DebugWide.LogBlue("  po:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1); //chamto test
+                //DebugWide.LogBlue("  po:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1); //chamto test
 
                 // 삼각형의 정점이 모두 평면위쪽에 있거나 평면아래쪽에 있는 경우 
                 if (pos1 == 3 || neg1 == 3)
@@ -2327,8 +2350,8 @@ namespace UtilGS9
                         {
                             if (sign1[i] == 0)
                             {
-                                DebugWide.LogBlue("1_1---"); //chamto test
-                                return ContainsPoint(mTriangle0, plane0, mTriangle1.V[i]);
+                                DebugWide.LogBlue("1_1---  tr0:" + mTriangle0 +  "  tr1:" + mTriangle1 + "  pl0:" + plane0); //chamto test
+                                return ContainsPoint2(mTriangle0, mTriangle1.V[i]);
                             }
                         }
                     }
@@ -2369,6 +2392,11 @@ namespace UtilGS9
                             t = dist1[i] / (dist1[i] - dist1[iP]);
                             intr1 = mTriangle1.V[i] + t * (mTriangle1.V[iP] - mTriangle1.V[i]);
                             DebugWide.LogBlue("2---  " + dist1[i] + "   " + dist1[iM] +  "   " + dist1[iP]); //chamto test
+
+                            //intr0 과 intr1 이 같다면 점과 교차하는 처리를 한다 
+                            if(Misc.IsZero(intr0 - intr1))
+                                return ContainsPoint2(mTriangle0, intr1);
+                            
                             return IntersectsSegment(plane0, mTriangle0, intr0, intr1);
                         }
                     }
@@ -2409,7 +2437,7 @@ namespace UtilGS9
                 for (int i = 0; i < 3; ++i)
                 {
                     distance[i] = plane.DistanceTo(triangle.V[i]); //평면에서 점까지의 최소거리 (평면과 직각)
-                    DebugWide.LogBlue(plane.Normal + "   " + distance[i] + "  : " + i); //chamto test
+                    //DebugWide.LogBlue("  n:" + plane.Normal + "  tri1:" + triangle.V[i] + "   d:" + distance[i] + "  i:" + i); //chamto test
 
                     if (distance[i] > float.Epsilon) 
                     {   //평면위쪽
@@ -2695,6 +2723,25 @@ namespace UtilGS9
                 return true;
             }//end func
 
+            bool ContainsPoint2(Triangle3 triangle, Vector3 point)
+            {
+                if(Triangle.IsPointInTriangle(point,triangle.V[0],triangle.V[1],triangle.V[2]))
+                {
+                    // Report the point of intersection to the caller.
+                    mIntersectionType = eIntersectionType.POINT;
+                    mQuantity = 1;
+                    mPoint[0] = point;
+                    return true;
+                }
+
+                return false;
+            }
+
+            //함수에 버그 있음. tri0 으로 만든 평면영역에 tri1 의 꼭지점 하나만 속해있을때 
+            //  명백히 꼭지점이 tri0에 속해 있지 않은데 충돌된것으로 처리됨. 
+            //   아래 함수의 알고리즘으로 만들어지는 2차원 삼각형을 출력 하였을때 삼각형의 모양이 직선이었음
+            //   삼각형 모양으로 나오지 않는 것으로 보아 , 알고리즘에 문제가 있는 것으로 추정
+            //   다른 알고리즘으로 (IsPointInTriangle) 처리하면 정상적으로 처리된다 
             bool ContainsPoint(Triangle3 triangle, Plane3 plane, Vector3 point)
             {
                 // Generate a coordinate system for the plane.  The incoming triangle has
@@ -2720,14 +2767,24 @@ namespace UtilGS9
                 // The planar representation of the triangle <V0-V0,V1-V0,V2-V0>.
                 Vector2[] ProjV = new Vector2[3]
                     {
-                Vector2.zero,
-                new Vector2(Vector2.Dot(U0,V1mV0), Vector2.Dot(U1,V1mV0)),
-                new Vector2(Vector2.Dot(U0,V2mV0), Vector2.Dot(U1,V2mV0))
+                        ConstV.v2_zero,
+                        new Vector2(Vector2.Dot(U0,V1mV0), Vector2.Dot(U1,V1mV0)),
+                        new Vector2(Vector2.Dot(U0,V2mV0), Vector2.Dot(U1,V2mV0))
                     };
 
+                //----------
+                //chamto test
+                //DebugWide.LogBlue("  U0,1: " + U0 + "  " + U1 + "   N:" + plane.Normal);
+                //DebugWide.LogBlue("  projv: "+ProjV[1] + "  " + ProjV[2]);
+                //DebugWide.DrawCircle(ProjP, 0.05f, Color.black);
+                //DebugWide.DrawLine(ProjV[0], ProjV[1], Color.black);
+                //DebugWide.DrawLine(ProjV[1], ProjV[2], Color.black);
+                //DebugWide.DrawLine(ProjV[2], ProjV[0], Color.black);
+                //----------
 
                 // Test whether P-V0 is in the triangle <0,V1-V0,V2-V0>.
                 if (new Query2(3, ProjV).ToTriangle(ProjP, 0, 1, 2) <= 0)
+                //if(Triangle.IsPointInTriangle(point,triangle.V[0],triangle.V[1],triangle.V[2]))
                 {
                     // Report the point of intersection to the caller.
                     mIntersectionType = eIntersectionType.POINT;
