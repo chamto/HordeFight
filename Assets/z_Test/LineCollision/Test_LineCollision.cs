@@ -66,6 +66,17 @@ public class Test_LineCollision : MonoBehaviour
         public TriTri_Test2.Triangle3 tri0;
         public TriTri_Test2.Triangle3 tri1;
 
+        public void SetSegement(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
+        {
+            tri0.V[0] = seg0_e;
+            tri0.V[1] = seg0_s;
+            tri0.V[2] = seg1_s;
+
+            tri1.V[0] = seg0_e;
+            tri1.V[1] = seg1_s;
+            tri1.V[2] = seg1_e;
+        }
+
         public void Update()
         {
             tri0.V[0] = v0.position;
@@ -85,13 +96,19 @@ public class Test_LineCollision : MonoBehaviour
 
             DebugWide.DrawLine(tri1.V[0], tri1.V[2], color);
             DebugWide.DrawLine(tri1.V[1], tri1.V[2], color);
+
+            //선분출력
+            //DebugWide.DrawLine(tri0.V[1], tri0.V[0], Color.red);
+            //DebugWide.DrawLine(tri1.V[1], tri1.V[2], Color.red);
         }
     }
+
 
 
     private Tri3 _tri0;
     private Tri3 _tri1;
     private TriTri_Test2.IntrTriangle3Triangle3 _intrTriTri;
+
 
     private Tetra3 _tetra_0_1; //삼각형 0,1 합친모양의 사각형
     private Tetra3 _tetra_2_3;
@@ -111,68 +128,45 @@ public class Test_LineCollision : MonoBehaviour
         if(false == _init)
             return;
 
-        if(false)
+        if(true)
         {
-            float len;
-            DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.red);
-            len = (_line0_start.position - _line0_end.position).magnitude;
-            DebugWide.DrawCirclePlane(_line0_start.position,len,Vector3.up, Color.red);
-            DebugWide.DrawCircle(_line0_start.position, 0.1f, Color.red);
+            
+            DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.blue);
+            //DebugWide.DrawLine(__prevPos_s, __prevPos_e, Color.red);
 
-            //DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.green);
-            //len = (_line1_start.position - _line1_end.position).magnitude;
-            //DebugWide.DrawCirclePlane(_line1_start.position,len,Vector3.up, Color.green);
-            //DebugWide.DrawCircle(_line1_start.position, 0.1f, Color.green);
-
-
-            DebugWide.DrawLine(_ts0.position, _ts1.position, Color.magenta);
-
-            //===============
-
-            _model_1.cylinder.Draw(Color.green);
-
-            //===============
-
-            UtilGS9.Plane plane = new UtilGS9.Plane(_line0_start.position, _line0_end.position, _line1_start.position);
-            Vector3 contactPt;
-            if(0 != UtilGS9.Plane.Intersect(out contactPt, new LineSegment3(_line2_start.position, _line2_end.position), plane))
-            {
-                DebugWide.DrawCircle(contactPt, 0.1f, Color.gray);   
-            }
-            plane.Draw(5,Color.gray);
-
-            //===============
-            DebugWide.DrawLine(_line2_start.position, _line2_end.position, Color.green);
-            DebugWide.DrawLine(_line0_start.position, _line1_end.position, Color.green);
-            DebugWide.DrawLine(_line0_start.position, _line1_start.position, Color.green);
-            DebugWide.DrawLine(_line0_end.position, _line1_end.position, Color.green);
-            DebugWide.DrawCircle(_ts2.position, 0.1f, Color.green);
+            DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.magenta);
 
 
         }
 
         //===============
 
-        if (true)
+        if(false)
         {
             //TriTri_Test1.Draw(_tri_0.tri, Color.blue);
             //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
+        }
 
-            //if(_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
-            //{
-            //    string temp = string.Empty;
-            //    foreach(Vector3 p in _intrTriTri.mPoint)
-            //    {
-            //        temp += p + " ";
-            //    }
-            //    DebugWide.LogBlue(_intrTriTri.mQuantity + "  " + _intrTriTri.mIntersectionType + "   " + _intrTriTri.mReportCoplanarIntersections
-            //                      + "   " + temp);
-            //}
-            //_tri0.Draw(Color.blue);
-            //_tri1.Draw(Color.magenta);
-            //_intrTriTri.Draw(Color.red);
+        if (false)
+        {
+            
+            if (_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
+            {
+                string temp = string.Empty;
+                foreach (Vector3 p in _intrTriTri.mPoint)
+                {
+                    temp += p + " ";
+                }
+                DebugWide.LogBlue(_intrTriTri.mQuantity + "  " + _intrTriTri.mIntersectionType + "   " + _intrTriTri.mReportCoplanarIntersections
+                                  + "   " + temp);
+            }
+            _tri0.Draw(Color.blue);
+            _tri1.Draw(Color.magenta);
+            _intrTriTri.Draw(Color.red);
 
-
+        }
+        if(true)
+        {
             _tetra_0_1.Draw(Color.blue);
             _tetra_2_3.Draw(Color.magenta);
             _intr_0_2.Draw(Color.red);
@@ -248,21 +242,115 @@ public class Test_LineCollision : MonoBehaviour
         _intr_1_3 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri1);
         //===========================================
 
-        //int[] a = new int[3] { 1, 2, 3 };
-        //PrintArray(1, a);
-        //int[] b = TestArray(ref a);
-        //b[0] = 4;
-        //PrintArray(2, a);
-        //함수인자배열에 out 사용은, 함수안에서 배열 모든요소값을 모두 할당하겠다는 의미가 있음 
-        //함수인자배열의 ref 사용은, 명시하지 않는것과 별다른 차이가 없음 
-        //c#의 배열은 동작할당된다. c++처럼 정적할당이 안됨  
 
-        //배열 정적할당하기
-        //https://docs.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/stackalloc
 
         //===========================================
 
+        __prevPos_s = _line0_start.position;
+        __prevPos_e = _line0_end.position;
+
 	}
+
+
+
+
+    private Vector3 __prevPos_s, __prevPos_e;
+	private void Update()
+	{
+
+        _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
+        _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
+        //_tetra_2_3.SetSegement(_line1_start.position * 0.9f, _line1_end.position, _line1_start.position, _line1_end.position);
+
+        _intr_0_2.Find();
+        _intr_0_3.Find();
+        _intr_1_2.Find();
+        _intr_1_3.Find();    
+
+        //-----
+        __prevPos_s = _line0_start.position;
+        __prevPos_e = _line0_end.position;
+	}
+
+	void Update2 () 
+    {
+
+        if(false)
+        {
+            //if(true == TriTri_Test1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
+            //{
+            //    DebugWide.LogBlue("TriTri collision !!");
+            //}    
+        }
+
+        if(false)
+        {
+            _tri0.Update();
+            _tri1.Update();
+            _intrTriTri.Find();    
+        }
+
+        if(true)
+        {
+            _tetra_0_1.Update();
+            _tetra_2_3.Update();
+            _intr_0_2.Find();
+            _intr_0_3.Find();
+            _intr_1_2.Find();
+            _intr_1_3.Find();    
+        }
+
+
+
+        //===========================================
+
+        //float s, t;
+        //LineSegment3 unit0 = new LineSegment3(_line0_start.position, _line0_end.position);
+        //LineSegment3 unit1 = new LineSegment3(_line1_start.position, _line1_end.position);
+
+        //float sqrdis = LineSegment3.DistanceSquared(unit0, unit1, out s, out t);
+        //_ts0.position = unit0.direction * s + _line0_start.position;
+        //_ts1.position = unit1.direction * t + _line1_start.position;
+
+        //float line1_width = 0.1f;
+        //if (sqrdis < line1_width*line1_width)
+        //{
+        //    DebugWide.LogBlue("Collision!!" + "   s:" + s + "  t:" + t);
+
+        //    float len = (_line0_start.position - _line0_end.position).magnitude;
+        //    //Vector3 newDir = (_line1_end.position - _line0_start.position).normalized;
+        //    Vector3 newDir = (_ts1.position - _line0_start.position).normalized;
+        //    _line0_end.position = _line0_start.position + newDir * len;
+        //}
+
+        //_model_1.cylinder.Set(Vector3.up, _line1_start.position, line1_width, _line1_end.position, line1_width);
+
+        ////====================================
+
+        //float line_t = 0f;
+        //if(Tetragon.Intersect(out line_t, _line0_start.position, _line0_end.position, _line1_end.position , _line1_start.position,
+        //                      new LineSegment3(_line2_start.position, _line2_end.position)))
+        //{
+        //    _ts2.position = _line2_start.position + (_line2_end.position - _line2_start.position) * line_t;
+        //}
+
+
+	}
+
+
+
+    //======================================================
+    //int[] a = new int[3] { 1, 2, 3 };
+    //PrintArray(1, a);
+    //int[] b = TestArray(ref a);
+    //b[0] = 4;
+    //PrintArray(2, a);
+    //함수인자배열에 out 사용은, 함수안에서 배열 모든요소값을 모두 할당하겠다는 의미가 있음 
+    //함수인자배열의 ref 사용은, 명시하지 않는것과 별다른 차이가 없음 
+    //c#의 배열은 동작할당된다. c++처럼 정적할당이 안됨  
+
+    //배열 정적할당하기
+    //https://docs.microsoft.com/ko-kr/dotnet/csharp/language-reference/operators/stackalloc
 
     public int[] TestArray(ref int[] arr)
     {
@@ -270,72 +358,13 @@ public class Test_LineCollision : MonoBehaviour
 
         return arr;
     }
-
     public void PrintArray(int num, int[] arr)
     {
         string temp = string.Empty;
-        for (int i = 0; i < arr.Length;++i)
+        for (int i = 0; i < arr.Length; ++i)
         {
             temp += arr[i] + " ";
         }
-        DebugWide.LogBlue( num + "__ "+temp);
+        DebugWide.LogBlue(num + "__ " + temp);
     }
-	
-	// Update is called once per frame
-	void Update () 
-    {
-
-
-        //if(true == TriTri_Test1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
-        //{
-        //    DebugWide.LogBlue("TriTri collision !!");
-        //}
-
-        //_tri0.Update();
-        //_tri1.Update();
-        //_intrTriTri.Find();
-
-        _tetra_0_1.Update();
-        _tetra_2_3.Update();
-        _intr_0_2.Find();
-        _intr_0_3.Find();
-        _intr_1_2.Find();
-        _intr_1_3.Find();
-
-
-        //===========================================
-
-        float s, t;
-        LineSegment3 unit0 = new LineSegment3(_line0_start.position, _line0_end.position);
-        LineSegment3 unit1 = new LineSegment3(_line1_start.position, _line1_end.position);
-
-        float sqrdis = LineSegment3.DistanceSquared(unit0, unit1, out s, out t);
-        _ts0.position = unit0.direction * s + _line0_start.position;
-        _ts1.position = unit1.direction * t + _line1_start.position;
-
-        float line1_width = 0.1f;
-        if (sqrdis < line1_width*line1_width)
-        {
-            DebugWide.LogBlue("Collision!!" + "   s:" + s + "  t:" + t);
-
-            float len = (_line0_start.position - _line0_end.position).magnitude;
-            //Vector3 newDir = (_line1_end.position - _line0_start.position).normalized;
-            Vector3 newDir = (_ts1.position - _line0_start.position).normalized;
-            _line0_end.position = _line0_start.position + newDir * len;
-        }
-
-        _model_1.cylinder.Set(Vector3.up, _line1_start.position, line1_width, _line1_end.position, line1_width);
-
-        //====================================
-
-        float line_t = 0f;
-        if(Tetragon.Intersect(out line_t, _line0_start.position, _line0_end.position, _line1_end.position , _line1_start.position,
-                              new LineSegment3(_line2_start.position, _line2_end.position)))
-        {
-            _ts2.position = _line2_start.position + (_line2_end.position - _line2_start.position) * line_t;
-        }
-
-
-	}
-
 }

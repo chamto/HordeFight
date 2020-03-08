@@ -1600,7 +1600,7 @@ namespace UtilGS9
         public struct Plane3
         {
             public Vector3 Normal;
-            public float Constant;
+            public float Constant; //원점으로 부터 평면이 떨어져 있는 거리 
 
             public Plane3(Vector3 p0, Vector3 p1, Vector3 p2)
             {
@@ -1612,6 +1612,7 @@ namespace UtilGS9
                 Constant = Vector3.Dot(Normal, p0);
             }
 
+            //점이 평면에 직각인 거리 
             public float DistanceTo(Vector3 p)
             {
                 return Vector3.Dot(Normal, p) - Constant;
@@ -1641,7 +1642,37 @@ namespace UtilGS9
 
         public struct Triangle3
         {
-            public Vector3[] V; //[3] 
+            public struct V012
+            {
+                public Vector3 V0, V1, V2;
+                public Vector3 this[int index]
+                {
+                    get
+                    {
+                        switch (index)
+                        {
+                            case 0: return V0;
+                            case 1: return V1;
+                            case 2: return V2;
+                        }
+
+                        DebugWide.LogError("get 범위를 벗어나는 인덱스 " + index);
+                        return ConstV.v3_zero;
+                    }
+                    set
+                    {
+                        switch (index)
+                        {
+                            case 0: V0 = value; return;
+                            case 1: V1 = value; return;
+                            case 2: V2 = value; return;
+                        }
+                        DebugWide.LogError("set 범위를 벗어나는 인덱스 " + index);
+                    }
+                }
+            }
+            //public V012 V;
+            public Vector3[] V; //[3] //구조체의 배열 복사시 얇은복사를 하여 주소가 공유되는 문제 생김
 
             //static public Triangle3 zero = new Triangle3(); //배열할당을 안하고 사용하는 문제 생김
 
@@ -1656,6 +1687,9 @@ namespace UtilGS9
             {
                 V = new Vector3[3];
                 V[0] = v0; V[1] = v1; V[2] = v2;
+
+                //V = new V012();
+                //V[0] = v0; V[1] = v1; V[2] = v2;
             }
         }
 
@@ -1666,7 +1700,7 @@ namespace UtilGS9
             // Center-direction-extent representation.
             public Vector2 Center;
             public Vector2 Direction;
-            public float Extent;
+            public float Extent; //크기 : 선분길이의 반 
 
             public Segment2(Vector2 p0, Vector2 p1)
             {
@@ -1788,8 +1822,8 @@ namespace UtilGS9
                 int[] sign = new int[3];
                 int positive, negative, zero;
                 TriangleLineRelations(mSegment.Center, mSegment.Direction, mTriangle, 
-                                      dist, sign, out positive, out negative, out zero);
-
+                                      ref dist, ref sign, out positive, out negative, out zero);
+                //DebugWide.LogBlue(zero); //chamto test
                 if (positive == 3 || negative == 3)
                 {
                     // No intersections.
@@ -1799,7 +1833,7 @@ namespace UtilGS9
                 else
                 {
                     float[] param = new float[2];
-                    GetInterval(mSegment.Center, mSegment.Direction, mTriangle, dist, sign, param);
+                    GetInterval(mSegment.Center, mSegment.Direction, mTriangle, dist, sign, ref param);
 
                     Intersector1 intr = new Intersector1(
                         param[0], param[1], -mSegment.Extent, +mSegment.Extent);
@@ -1835,7 +1869,7 @@ namespace UtilGS9
 
             //dist[3] , sign[3]
             void TriangleLineRelations(Vector2 origin, Vector2 direction, Triangle2 triangle, 
-                                       float[] dist, int[] sign, 
+                                       ref float[] dist, ref int[] sign, 
                                        out int positive, out int negative, out int zero)
             {
                 positive = 0;
@@ -1843,20 +1877,26 @@ namespace UtilGS9
                 zero = 0;
                 for (int i = 0; i< 3; ++i)
                 {
+                    //!!! direction 가 0벡터인 경우의 예외처리가 없음. 즉 직선이 아닌 점으로 들어온 경우임 
+                    //!!! 0벡터로 인해 GetInterval 함수에서 에러가 발생한다 
                     Vector2 diff = triangle.V[i] - origin;
-                    dist[i] = TriTri_Test2.PerpDot(diff, direction);
+                    dist[i] = TriTri_Test2.PerpDot(diff, direction); //수직내적 : |a||b|sin@ , a와b벡터가 방향이 같으면 0 
+                    //DebugWide.LogGreen(dist[i] + "   " + diff + "   " + direction); //chamto test
+                    //직선의 방향으로 두개의 공간으로 나눈다
+                    // 윗공간은 sin@ 양수공간 , 아랫공간은 sin@ 음수공간
+                    // 직선이 삼각형의 변을 지나간다면 양수공간과 음수공간을 나누어서 지나가게 된다 
                     if (dist[i] > float.Epsilon)
-                    {
+                    {   //직선의 윗방향
                         sign[i] = 1;
                         ++positive;
                     }
                     else if (dist[i] < -float.Epsilon)
-                    {
+                    {   //직선의 아랫방향
                         sign[i] = -1;
                         ++negative;
                     }
                     else
-                    {
+                    {   //직선이 삼각형의 변과 겹쳐 지남
                         dist[i] = 0f;
                         sign[i] = 0;
                         ++zero;
@@ -1866,8 +1906,11 @@ namespace UtilGS9
 
             //dist[3] , sign[3] , param[2]
             void GetInterval(Vector2 origin, Vector2 direction, Triangle2 triangle,
-                float[] dist, int[] sign, float[] param)
+                float[] dist, int[] sign, ref float[] param)
             {
+
+                //DebugWide.LogGreen("seg-   ori:"+origin + "   dir:" + direction); //chamto test
+
                 // Project triangle onto line.
                 float[] proj = new float[3];
                 int i;
@@ -1883,28 +1926,49 @@ namespace UtilGS9
                 int quantity = 0;
                 for (i0 = 2, i1 = 0; i1< 3; i0 = i1++)
                 {
+                    //DebugWide.LogBlue(i0 + "   " + i1); //chamto test
+                    //2  0
+                    //0  1
+                    //1  2
+                    //두 부호의 곱이 음수라면 직선이 선분을 지난다 
                     if (sign[i0]* sign[i1] < 0)
                     {
                         //assertion(quantity< 2, "Too many intersections\n");
+                        //분석인 안되는 부분 .. - chamto  
                         numer = dist[i0]*proj[i1] - dist[i1]*proj[i0];
                         denom = dist[i0] - dist[i1];
+                        //DebugWide.LogBlue(" !!!   d0:"+ dist[i0] + "   p0:" + proj[i0] + "    d1:" + dist[i1] + "   p1:" + proj[i1]); //chamto test
+                        //DebugWide.LogBlue("  n:"+numer + "   d:" + denom + "   n/d:" + numer / denom);
                         param[quantity++] = numer/denom;
                     }
                 }
+                // - 1단계 : 두가지 상황을 가정
+                //  1.세개의 sign 값이 같은 부호를 가짐 : 직선이 삼각형을 지나지 않음 q = 0
+                //  2.두개의 sign 이 같은 부호이고 다른 한개의 sign 은 다른 부호를 가짐 : 직선이 두개의 선분을 지남 q = 2
 
+
+                //직선이 0개 또는 한개의 선분을 지나는 경우 
+                // - 2단계 : 세가지 상황을 가정 
+                //  1.두개의 sign 0값을 가지고, 하나의 부호있는 sign 값을 가짐 : 직선이 삼각형의 선분과 완전 겹침 q = 2
+                //  2.한개의 sign 0값을 가지고, 두개의 서로다른 부호의 sign 값을 가짐 : 직선이 한개의 선분과 정점을 통과함 q = 2
+                //  3.한개의 sign 0값을 가지고, 두개의 같은 부호의 sign 값을 가짐 : 직선이 한개의 정점만 지남 q = 1
                 // Check for grazing contact.
                 if (quantity< 2)
                 {
-                    for (i0 = 1, i1 = 2, i2 = 0; i2< 3; i0 = i1, i1 = i2++)
+                    //for (i0 = 1, i1 = 2, i2 = 0; i2< 3; i0 = i1, i1 = i2++)
+                    for (i2 = 0; i2 < 3; i2++)
                     {
                         if (sign[i2] == 0)
-                        {
+                        {   //삼각형의 정점과 직선이 겹치는 경우  
+
+                            //DebugWide.LogBlue(quantity);; //chamto test
                             //assertion(quantity< 2, "Too many intersections\n");
                             param[quantity++] = proj[i2];
                         }
                     }
                 }
 
+                //구한값이 2개인 경우 정렬을 한다
                 // Sort.
                 //assertion(quantity >= 1, "Need at least one intersection\n");
                 if (quantity == 2)
@@ -1917,7 +1981,7 @@ namespace UtilGS9
                     }
                 }
                 else
-                {
+                {   //같은 값으로 채움 
                     param[1] = param[0];
                 }
             }//end func
@@ -2211,15 +2275,17 @@ namespace UtilGS9
                 int[] sign1 = new int[3];
                 float[] dist1 = new float[3];
 
-                TrianglePlaneRelations(mTriangle1, plane0, dist1, sign1, out pos1, out neg1,
-                    out zero1);
+                TrianglePlaneRelations(mTriangle1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
+                DebugWide.LogBlue("  po:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1); //chamto test
 
+                // 삼각형의 정점이 모두 평면위쪽에 있거나 평면아래쪽에 있는 경우 
                 if (pos1 == 3 || neg1 == 3)
-                {
+                {   
                     // Triangle1 is fully on one side of plane0.
                     return false;
                 }
 
+                // 삼각형의 정점이 모두 평면에 있는 경우 
                 if (zero1 == 3)
                 {
                     // Triangle1 is contained by plane0.
@@ -2230,29 +2296,38 @@ namespace UtilGS9
                     return false;
                 }
 
+
+                // 평면이 가르는 한쪽영역에 삼각형이 위치하고 그 정점중 하나나 둘이 평면에 있는 모양 
                 // Check for grazing contact between triangle1 and plane0.
                 if (pos1 == 0 || neg1 == 0)
                 {
                     if (zero1 == 2)
-                    {
+                    {   //정점 두개가 평면에 있음
                         // An edge of triangle1 is in plane0.
                         for (i = 0; i < 3; ++i)
                         {
                             if (sign1[i] != 0)
                             {
+                                //0
+                                //1 2
+                                //i(0) => mp(2,1)
+                                //i(1) => mp(0,2)
+                                //i(2) => mp(1,0)
                                 iM = (i + 2) % 3;
                                 iP = (i + 1) % 3;
+                                DebugWide.LogBlue("1---"); //chamto test
                                 return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[iM], mTriangle1.V[iP]);
                             }
                         }
                     }
                     else // zero1 == 1
-                    {
+                    {   //정점 한개가 평면에 있음 
                         // A vertex of triangle1 is in plane0.
                         for (i = 0; i < 3; ++i)
                         {
                             if (sign1[i] == 0)
                             {
+                                DebugWide.LogBlue("1_1---"); //chamto test
                                 return ContainsPoint(mTriangle0, plane0, mTriangle1.V[i]);
                             }
                         }
@@ -2264,38 +2339,56 @@ namespace UtilGS9
                 // segment and triangle 0.
                 float t;
                 Vector3 intr0, intr1;
+                // 삼각형의 정점이 평면상에 하나도 없는 경우 
                 if (zero1 == 0)
                 {
+                    //삼각형이 평면에 수직으로 겹쳐진 모양을 가정
+                    // 두가지의 모양이 있다고 가정
+                    // 삼각형의 점정이 평면위쪽에 한개 나온 모양[+1] , 평면아래쪽에 한개 나온 모양[-1]
                     int iSign = (pos1 == 1 ? +1 : -1);
                     for (i = 0; i < 3; ++i)
                     {
                         if (sign1[i] == iSign)
                         {
+                            //i(0) => mp(2,1)
+                            //i(1) => mp(0,2)
+                            //i(2) => mp(1,0)
                             iM = (i + 2) % 3;
                             iP = (i + 1) % 3;
-                            t = dist1[i] / (dist1[i] - dist1[iM]);
-                            intr0 = mTriangle1.V[i] + t * (mTriangle1.V[iM] -
-                                mTriangle1.V[i]);
+
+                            //    di ---- vi
+                            //       | -
+                            //       |-
+                            // ------------- plan
+                            //      -|
+                            //     - |
+                            //viM ---- dim
+                            //삼각형의 닮음을 이용하여 t를 구함 
+                            t = dist1[i] / (dist1[i] - dist1[iM]); //d[im] 은 평면의 아래쪽이므로 음수다. 이는 d[i]와의 합을 의미 
+                            intr0 = mTriangle1.V[i] + t * (mTriangle1.V[iM] - mTriangle1.V[i]);
                             t = dist1[i] / (dist1[i] - dist1[iP]);
-                            intr1 = mTriangle1.V[i] + t * (mTriangle1.V[iP] -
-                                mTriangle1.V[i]);
+                            intr1 = mTriangle1.V[i] + t * (mTriangle1.V[iP] - mTriangle1.V[i]);
+                            DebugWide.LogBlue("2---  " + dist1[i] + "   " + dist1[iM] +  "   " + dist1[iP]); //chamto test
                             return IntersectsSegment(plane0, mTriangle0, intr0, intr1);
                         }
                     }
                 }
 
+                // 삼각형의 정점이 평면상에 하나 있는 경우 
                 // zero1 == 1
                 for (i = 0; i < 3; ++i)
                 {
+                    //삼각형의 정점중 하나가 평면에 접해있고 
+                    // 평면의 위쪽에 하나, 평면의 아래쪽에 하나의 정점이 있는 모양 
                     if (sign1[i] == 0)
-                    {
+                    {   //평면과 접점이라면 
+                        
                         iM = (i + 2) % 3;
                         iP = (i + 1) % 3;
                         t = dist1[iM] / (dist1[iM] - dist1[iP]);
-                        intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] -
-                            mTriangle1.V[iM]);
-                        return IntersectsSegment(plane0, mTriangle0,
-                            mTriangle1.V[i], intr0);
+                        intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] - mTriangle1.V[iM]);
+                        DebugWide.LogBlue("3---"); //chamto test
+                        return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[i], intr0);
                     }
                 }
 
@@ -2306,7 +2399,7 @@ namespace UtilGS9
 
             //distance[3] , sign[3]
             void TrianglePlaneRelations(Triangle3 triangle, Plane3 plane,
-                                        float[] distance, int[] sign, out int positive, out int negative, out int zero)
+                                        ref float[] distance, ref int[] sign, out int positive, out int negative, out int zero)
             {
                 // Compute the signed distances of triangle vertices to the plane.  Use
                 // an epsilon-thick plane test.
@@ -2315,19 +2408,21 @@ namespace UtilGS9
                 zero = 0;
                 for (int i = 0; i < 3; ++i)
                 {
-                    distance[i] = plane.DistanceTo(triangle.V[i]);
-                    if (distance[i] > float.Epsilon)
-                    {
+                    distance[i] = plane.DistanceTo(triangle.V[i]); //평면에서 점까지의 최소거리 (평면과 직각)
+                    DebugWide.LogBlue(plane.Normal + "   " + distance[i] + "  : " + i); //chamto test
+
+                    if (distance[i] > float.Epsilon) 
+                    {   //평면위쪽
                         sign[i] = 1;
                         positive++;
                     }
                     else if (distance[i] < -float.Epsilon)
-                    {
+                    {   //평면아래쪽
                         sign[i] = -1;
                         negative++;
                     }
                     else
-                    {
+                    {   //평면에 위치 
                         distance[i] = 0f;
                         sign[i] = 0;
                         zero++;
@@ -2476,18 +2571,18 @@ namespace UtilGS9
 
                 // Project the triangle and segment onto the coordinate plane most
                 // aligned with the plane normal.
-                int maxNormal = 0;
+                int maxNormal = 0; //노멀방향 x축
                 float fmax = Mathf.Abs(plane.Normal.x);
                 float absMax = Mathf.Abs(plane.Normal.y);
                 if (absMax > fmax)
                 {
-                    maxNormal = 1;
+                    maxNormal = 1; //노멀방향 y축 
                     fmax = absMax;
                 }
                 absMax = Mathf.Abs(plane.Normal.z);
                 if (absMax > fmax)
                 {
-                    maxNormal = 2;
+                    maxNormal = 2; //노멀방향 z축
                 }
 
                 Triangle2 projTri = Triangle2.Zero();
@@ -2533,8 +2628,10 @@ namespace UtilGS9
                         projEnd1.y = end1.y;
                     }
                 }
+                //DebugWide.LogBlue(end0 + "  " + end1); //chamto test
 
                 Segment2 projSeg = new Segment2(projEnd0, projEnd1);
+                //DebugWide.LogBlue(projEnd0 + "  " + projEnd1); //chamto test
                 IntrSegment2Triangle2 calc = new IntrSegment2Triangle2(projSeg, projTri);
                 if (!calc.Find())
                 {
