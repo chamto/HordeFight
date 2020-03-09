@@ -156,7 +156,7 @@ public class Test_LineCollision : MonoBehaviour
                 {
                     temp += p + " ";
                 }
-                DebugWide.LogBlue(_intrTriTri.mQuantity + "  " + _intrTriTri.mIntersectionType + "   " + _intrTriTri.mReportCoplanarIntersections
+                DebugWide.LogBlue(" *** "+ _intrTriTri.mQuantity + "  " + _intrTriTri.mIntersectionType + "   " + _intrTriTri.mReportCoplanarIntersections
                                   + "   " + temp);
             }
             _tri0.Draw(Color.blue);
