@@ -275,10 +275,10 @@ public class Test_LineCollision : MonoBehaviour
         {   //삼각형과 삼각형 
             //DebugWide.LogBlue("tri vs tri");
 
-            _intr_0_2.Find();
-            _intr_0_3.Find();
-            _intr_1_2.Find();
-            _intr_1_3.Find();        
+            //_intr_0_2.Find();
+            //_intr_0_3.Find();
+            //_intr_1_2.Find();
+            //_intr_1_3.Find();        
         }
 
 
@@ -304,17 +304,17 @@ public class Test_LineCollision : MonoBehaviour
         {
             _tri0.Update();
             _tri1.Update();
-            _intrTriTri.Find();    
+            _intrTriTri.Find_Twice();    
         }
 
         if(false)
         {
             _tetra_0_1.Update();
             _tetra_2_3.Update();
-            _intr_0_2.Find();
-            _intr_0_3.Find();
-            _intr_1_2.Find();
-            _intr_1_3.Find();    
+            //_intr_0_2.Find();
+            //_intr_0_3.Find();
+            //_intr_1_2.Find();
+            //_intr_1_3.Find();    
         }
 
 

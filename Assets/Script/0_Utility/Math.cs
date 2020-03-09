@@ -2283,10 +2283,19 @@ namespace UtilGS9
                 }
             }
 
+            //교차 검사를 두번하여 정확한 값을 찾는다 
+            public bool Find_Twice()
+            {
+                bool result = Find(mTriangle0, mTriangle1);
+                if(false == result)
+                    return Find(mTriangle1, mTriangle0);
+                
+                return result;
+            }
 
             //삼각형 형태가 아닌 것(선분,점)은 정상처리가 안된다
             //삼각형 형태만 처리 할 수 있다 
-            public bool Find()
+            public bool Find(Triangle3 tri0 , Triangle3 tri1)
             {
                 //----------
                 //검사전 초기화 
@@ -2297,8 +2306,8 @@ namespace UtilGS9
                 int i, iM, iP;
 
                 // Get the plane of triangle0.
-                Plane3 plane0 = new Plane3(mTriangle0.V[0], mTriangle0.V[1], mTriangle0.V[2]);
-                Plane3 plane1 = new Plane3(mTriangle1.V[0], mTriangle1.V[1], mTriangle1.V[2]);
+                Plane3 plane0 = new Plane3(tri0.V[0], tri0.V[1], tri0.V[2]);
+                //Plane3 plane1 = new Plane3(mTriangle1.V[0], mTriangle1.V[1], mTriangle1.V[2]);
 
                 // Compute the signed distances of triangle1 vertices to plane0.  Use
                 // an epsilon-thick plane test.
@@ -2310,7 +2319,7 @@ namespace UtilGS9
                 //int[] sign2 = new int[3];
                 //float[] dist2 = new float[3];
 
-                TrianglePlaneRelations(mTriangle1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
+                TrianglePlaneRelations(tri1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
                 //DebugWide.LogBlue("  po1:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1 + "  s0:" + sign1[0] + "  s1:" + sign1[1] + "  s2:" + sign1[2] ); //chamto test
 
                 //TrianglePlaneRelations(mTriangle0, plane1, ref dist2, ref sign2, out pos2, out neg2, out zero2);
@@ -2330,10 +2339,10 @@ namespace UtilGS9
                     if (mReportCoplanarIntersections)
                     {
                         //DebugWide.LogGreen("0_0---  "); //chamto test
-                        if (Misc.IsZero(mTriangle1.V[0] - mTriangle1.V[1]) && Misc.IsZero(mTriangle1.V[0] - mTriangle1.V[2]))
-                            return ContainsPoint2(mTriangle0, mTriangle1.V[0]);
+                        if (Misc.IsZero(tri1.V[0] - tri1.V[1]) && Misc.IsZero(tri1.V[0] - tri1.V[2]))
+                            return ContainsPoint2(tri0, tri1.V[0]);
                         
-                        return GetCoplanarIntersection(plane0, mTriangle0, mTriangle1);
+                        return GetCoplanarIntersection(plane0, tri0, tri1);
                     }
                     return false;
                 }
@@ -2376,10 +2385,10 @@ namespace UtilGS9
                                 iM = (i + 2) % 3;
                                 iP = (i + 1) % 3;
                                 //DebugWide.LogBlue("2---"); //chamto test
-                                if (Misc.IsZero(mTriangle1.V[iM] - mTriangle1.V[iP]))
-                                    return ContainsPoint2(mTriangle0, mTriangle1.V[iM]);
+                                if (Misc.IsZero(tri1.V[iM] - tri1.V[iP]))
+                                    return ContainsPoint2(tri0, tri1.V[iM]);
                                 
-                                return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[iM], mTriangle1.V[iP]);
+                                return IntersectsSegment(plane0, tri0, tri1.V[iM], tri1.V[iP]);
                             }
                         }
                     }
@@ -2391,7 +2400,7 @@ namespace UtilGS9
                             if (sign1[i] == 0)
                             {
                                 //DebugWide.LogGreen("1_1---  tr0:" + mTriangle0 +  "  tr1:" + mTriangle1 + "  pl0:" + plane0); //chamto test
-                                return ContainsPoint2(mTriangle0, mTriangle1.V[i]);
+                                return ContainsPoint2(tri0, tri1.V[i]);
                             }
                         }
                     }
@@ -2428,17 +2437,17 @@ namespace UtilGS9
                             //viM ---- dim
                             //삼각형의 닮음을 이용하여 t를 구함 
                             t = dist1[i] / (dist1[i] - dist1[iM]); //d[im] 은 평면의 아래쪽이므로 음수다. 이는 d[i]와의 합을 의미 
-                            intr0 = mTriangle1.V[i] + t * (mTriangle1.V[iM] - mTriangle1.V[i]);
+                            intr0 = tri1.V[i] + t * (tri1.V[iM] - tri1.V[i]);
                             t = dist1[i] / (dist1[i] - dist1[iP]);
-                            intr1 = mTriangle1.V[i] + t * (mTriangle1.V[iP] - mTriangle1.V[i]);
+                            intr1 = tri1.V[i] + t * (tri1.V[iP] - tri1.V[i]);
 
                             //DebugWide.LogBlue("3---  " + dist1[i] + "   " + dist1[iM] +  "   " + dist1[iP]); //chamto test
 
                             //intr0 과 intr1 이 같다면 점과 교차하는 처리를 한다 
                             if(Misc.IsZero(intr0 - intr1))
-                                return ContainsPoint2(mTriangle0, intr1);
+                                return ContainsPoint2(tri0, intr1);
                             
-                            return IntersectsSegment(plane0, mTriangle0, intr0, intr1);
+                            return IntersectsSegment(plane0, tri0, intr0, intr1);
                         }
                     }
                     return false;
@@ -2457,9 +2466,9 @@ namespace UtilGS9
                             iM = (i + 2) % 3;
                             iP = (i + 1) % 3;
                             t = dist1[iM] / (dist1[iM] - dist1[iP]);
-                            intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] - mTriangle1.V[iM]);
+                            intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
                             //DebugWide.LogBlue("4---"); //chamto test
-                            return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[i], intr0);
+                            return IntersectsSegment(plane0, tri0, tri1.V[i], intr0);
                         }
                     }
                 }
