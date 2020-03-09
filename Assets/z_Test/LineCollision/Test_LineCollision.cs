@@ -145,9 +145,6 @@ public class Test_LineCollision : MonoBehaviour
 
         //if (false)
         {
-            _tri0.Update();
-            _tri1.Update();
-            _intrTriTri.Find();    
             
             if (_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
             {
@@ -254,7 +251,7 @@ public class Test_LineCollision : MonoBehaviour
 
 
     private Vector3 __prevPos_s, __prevPos_e;
-	private void Update6()
+	private void Update222()
 	{
 
         bool s0, s1;
@@ -267,14 +264,16 @@ public class Test_LineCollision : MonoBehaviour
 
         if(s0 && s1)
         {   //선분과 선분
-            
+            //DebugWide.LogBlue("seg vs seg");
+            //LineSegment3.DistanceSquared
         }
         else if(s0 || s1)
         {   //선분과 삼각형
-            
+            //DebugWide.LogBlue("seg vs tri");
         }
         else
         {   //삼각형과 삼각형 
+            //DebugWide.LogBlue("tri vs tri");
 
             _intr_0_2.Find();
             _intr_0_3.Find();
@@ -303,9 +302,9 @@ public class Test_LineCollision : MonoBehaviour
 
         if(true)
         {
-            //_tri0.Update();
-            //_tri1.Update();
-            //_intrTriTri.Find();    
+            _tri0.Update();
+            _tri1.Update();
+            _intrTriTri.Find();    
         }
 
         if(false)

@@ -2306,14 +2306,15 @@ namespace UtilGS9
                 int[] sign1 = new int[3];
                 float[] dist1 = new float[3];
 
-                int pos2, neg2, zero2;
-                int[] sign2 = new int[3];
-                float[] dist2 = new float[3];
+                //int pos2, neg2, zero2;
+                //int[] sign2 = new int[3];
+                //float[] dist2 = new float[3];
 
                 TrianglePlaneRelations(mTriangle1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
-                //DebugWide.LogBlue("  po:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1); //chamto test
+                //DebugWide.LogBlue("  po1:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1 + "  s0:" + sign1[0] + "  s1:" + sign1[1] + "  s2:" + sign1[2] ); //chamto test
 
-                TrianglePlaneRelations(mTriangle0, plane1, ref dist2, ref sign2, out pos2, out neg2, out zero2);
+                //TrianglePlaneRelations(mTriangle0, plane1, ref dist2, ref sign2, out pos2, out neg2, out zero2);
+                //DebugWide.LogBlue("  po2:" + pos2 + "  ne:" + neg2 + "   ze:" + zero2 + "  s0:" + sign2[0] + "  s1:" + sign2[1] + "  s2:" + sign2[2] ); //chamto test
 
                 // 삼각형의 정점이 모두 평면위쪽에 있거나 평면아래쪽에 있는 경우 
                 if (pos1 == 3 || neg1 == 3)
@@ -2328,29 +2329,33 @@ namespace UtilGS9
                     // Triangle1 is contained by plane0.
                     if (mReportCoplanarIntersections)
                     {
-                        //DebugWide.LogGreen("0---  "); //chamto test
+                        //DebugWide.LogGreen("0_0---  "); //chamto test
+                        if (Misc.IsZero(mTriangle1.V[0] - mTriangle1.V[1]) && Misc.IsZero(mTriangle1.V[0] - mTriangle1.V[2]))
+                            return ContainsPoint2(mTriangle0, mTriangle1.V[0]);
+                        
                         return GetCoplanarIntersection(plane0, mTriangle0, mTriangle1);
                     }
                     return false;
                 }
 
+
                 //ㄱ. 삼각형0 의 평면을 구하고, 그 평면에 삼각형1의 교점이 있는지 검사하는 것만으로 충분하지 않음
                 //반대로 ㄴ. 삼각형1 의 평면을 구하고, 그 평면에 삼각형0의 교점이 있는지도 검사해야 한다 
                 //ㄱ 만 했을때 명백히 교점이 있는데도 없다고 나올 수 있다 
-                if (pos2 == 0 || neg2 == 0)
-                {
-                    if(zero2 == 1)
-                    {
-                        for (i = 0; i < 3; ++i)
-                        {
-                            if (sign2[i] == 0)
-                            {
-                                //DebugWide.LogBlue("1_0---  "); //chamto test
-                                return ContainsPoint2(mTriangle1, mTriangle0.V[i]);
-                            }
-                        }
-                    }
-                }
+                //if (pos2 == 0 || neg2 == 0)
+                //{
+                //    if(zero2 == 1)
+                //    {
+                //        for (i = 0; i < 3; ++i)
+                //        {
+                //            if (sign2[i] == 0)
+                //            {
+                //                DebugWide.LogBlue("1_0---  "); //chamto test
+                //                return ContainsPoint2(mTriangle1, mTriangle0.V[i]);
+                //            }
+                //        }
+                //    }
+                //}
 
                 // 평면이 가르는 한쪽영역에 삼각형이 위치하고 그 정점중 하나나 둘이 평면에 있는 모양 
                 // Check for grazing contact between triangle1 and plane0.
@@ -2371,11 +2376,14 @@ namespace UtilGS9
                                 iM = (i + 2) % 3;
                                 iP = (i + 1) % 3;
                                 //DebugWide.LogBlue("2---"); //chamto test
+                                if (Misc.IsZero(mTriangle1.V[iM] - mTriangle1.V[iP]))
+                                    return ContainsPoint2(mTriangle0, mTriangle1.V[iM]);
+                                
                                 return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[iM], mTriangle1.V[iP]);
                             }
                         }
                     }
-                    else // zero1 == 1
+                    else if(zero1 == 1)// zero1 == 1
                     {   //정점 한개가 평면에 있음 
                         // A vertex of triangle1 is in plane0.
                         for (i = 0; i < 3; ++i)
@@ -2433,27 +2441,30 @@ namespace UtilGS9
                             return IntersectsSegment(plane0, mTriangle0, intr0, intr1);
                         }
                     }
+                    return false;
                 }
 
                 // 삼각형의 정점이 평면상에 하나 있는 경우 
-                // zero1 == 1
-                for (i = 0; i < 3; ++i)
+                if(zero1 == 1)
                 {
-                    //삼각형의 정점중 하나가 평면에 접해있고 
-                    // 평면의 위쪽에 하나, 평면의 아래쪽에 하나의 정점이 있는 모양 
-                    if (sign1[i] == 0)
-                    {   //평면과 접점이라면 
-                        
-                        iM = (i + 2) % 3;
-                        iP = (i + 1) % 3;
-                        t = dist1[iM] / (dist1[iM] - dist1[iP]);
-                        intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] - mTriangle1.V[iM]);
-                        //DebugWide.LogBlue("4---"); //chamto test
-                        return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[i], intr0);
+                    for (i = 0; i < 3; ++i)
+                    {
+                        //삼각형의 정점중 하나가 평면에 접해있고 
+                        // 평면의 위쪽에 하나, 평면의 아래쪽에 하나의 정점이 있는 모양 
+                        if (sign1[i] == 0)
+                        {   //평면과 접점이라면 
+
+                            iM = (i + 2) % 3;
+                            iP = (i + 1) % 3;
+                            t = dist1[iM] / (dist1[iM] - dist1[iP]);
+                            intr0 = mTriangle1.V[iM] + t * (mTriangle1.V[iP] - mTriangle1.V[iM]);
+                            //DebugWide.LogBlue("4---"); //chamto test
+                            return IntersectsSegment(plane0, mTriangle0, mTriangle1.V[i], intr0);
+                        }
                     }
                 }
 
-                //assertion(false, "Should not get here\n");
+                //삼각형0 의 모양이 선분모양인 경우, 여기까지 올 수 있다 
                 return false;
 
             }//end func
