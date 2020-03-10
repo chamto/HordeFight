@@ -38,7 +38,7 @@ public class Test_LineCollision : MonoBehaviour
     public struct Tri3
     {
         public Transform v0, v1, v2;
-        public TriTri_Test2.Triangle3 tri0;
+        public Tri3_Tri3_Test2.Triangle3 tri0;
 
         public void Update()
         {
@@ -63,8 +63,8 @@ public class Test_LineCollision : MonoBehaviour
         //v2    v3
         //v0 - v1 - v2 , v2 - v1 - v3
         public Transform v0, v1, v2, v3;
-        public TriTri_Test2.Triangle3 tri0;
-        public TriTri_Test2.Triangle3 tri1;
+        public Tri3_Tri3_Test2.Triangle3 tri0;
+        public Tri3_Tri3_Test2.Triangle3 tri1;
 
         public void SetSegement(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
         {
@@ -107,15 +107,15 @@ public class Test_LineCollision : MonoBehaviour
 
     private Tri3 _tri0;
     private Tri3 _tri1;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intrTriTri;
+    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intrTriTri;
 
 
     private Tetra3 _tetra_0_1; //삼각형 0,1 합친모양의 사각형
     private Tetra3 _tetra_2_3;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intr_0_2;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intr_0_3;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intr_1_2;
-    private TriTri_Test2.IntrTriangle3Triangle3 _intr_1_3;
+    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_0_2;
+    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_0_3;
+    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_1_2;
+    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_1_3;
 
     //===========================================
 
@@ -149,7 +149,7 @@ public class Test_LineCollision : MonoBehaviour
             _tri1.Update();
             _intrTriTri.Find_Twice();    
 
-            if (_intrTriTri.mIntersectionType != TriTri_Test2.eIntersectionType.EMPTY)
+            if (_intrTriTri.mIntersectionType != Tri3_Tri3_Test2.eIntersectionType.EMPTY)
             {
                 string temp = string.Empty;
                 foreach (Vector3 p in _intrTriTri.mPoint)
@@ -267,18 +267,18 @@ public class Test_LineCollision : MonoBehaviour
 
         //===========================================
 
-        _tri0.tri0 = TriTri_Test2.Triangle3.Zero();
-        _tri1.tri0 = TriTri_Test2.Triangle3.Zero();
-        _intrTriTri = new TriTri_Test2.IntrTriangle3Triangle3(_tri0.tri0, _tri1.tri0);
+        _tri0.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _tri1.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _intrTriTri = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tri0.tri0, _tri1.tri0);
 
-        _tetra_0_1.tri0 = TriTri_Test2.Triangle3.Zero();
-        _tetra_0_1.tri1 = TriTri_Test2.Triangle3.Zero();
-        _tetra_2_3.tri0 = TriTri_Test2.Triangle3.Zero();
-        _tetra_2_3.tri1 = TriTri_Test2.Triangle3.Zero();
-        _intr_0_2 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri0);
-        _intr_0_3 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri1);
-        _intr_1_2 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri0);
-        _intr_1_3 = new TriTri_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri1);
+        _tetra_0_1.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _tetra_0_1.tri1 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _tetra_2_3.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _tetra_2_3.tri1 = Tri3_Tri3_Test2.Triangle3.Zero();
+        _intr_0_2 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri0);
+        _intr_0_3 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri1);
+        _intr_1_2 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri0);
+        _intr_1_3 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri1);
         //===========================================
 
 

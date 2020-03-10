@@ -487,6 +487,12 @@ namespace UtilGS9
             return vector3; 
 
         }
+
+        //수직내적 : 2차원상의 외적값 
+        static public float PerpDot(Vector2 v1, Vector2 v2)
+        {
+            return (v1.x * v2.y - v1.y * v2.x);
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////
