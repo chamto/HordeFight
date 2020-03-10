@@ -20,25 +20,21 @@ public class Test_LineCollision : MonoBehaviour
     private Transform _line2_end = null;
     private Transform _ts2 = null;
 
+    private Transform _ts_seg0_s = null;
+    private Transform _ts_seg0_e = null;
+    private Transform _ts_seg1_s = null;
+    private Transform _ts_seg1_e = null;
+
+    private Transform _ts_seg2_s = null;
+    private Transform _ts_seg2_e = null;
+    private Transform _ts_seg3_s = null;
+    private Transform _ts_seg3_e = null;
     //===========================================
-
-    //public struct TrTri
-    //{
-    //    public Transform v0, v1, v2;
-    //    public TriTri_Test1.triangle tri;
-
-    //    public void Update()
-    //    {
-    //        tri.a = v0.position;
-    //        tri.b = v1.position;
-    //        tri.c = v2.position;
-    //    }
-    //}
 
     public struct Tri3
     {
         public Transform v0, v1, v2;
-        public Tri3_Tri3_Test2.Triangle3 tri0;
+        public Triangle3 tri0;
 
         public void Update()
         {
@@ -55,67 +51,12 @@ public class Test_LineCollision : MonoBehaviour
         }
 
     }
-
-    public struct Tetra3
-    {
-        //v0    v1
-        //
-        //v2    v3
-        //v0 - v1 - v2 , v2 - v1 - v3
-        public Transform v0, v1, v2, v3;
-        public Tri3_Tri3_Test2.Triangle3 tri0;
-        public Tri3_Tri3_Test2.Triangle3 tri1;
-
-        public void SetSegement(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
-        {
-            tri0.V[0] = seg0_e;
-            tri0.V[1] = seg0_s;
-            tri0.V[2] = seg1_s;
-
-            tri1.V[0] = seg0_e;
-            tri1.V[1] = seg1_s;
-            tri1.V[2] = seg1_e;
-        }
-
-        public void Update()
-        {
-            tri0.V[0] = v0.position;
-            tri0.V[1] = v1.position;
-            tri0.V[2] = v2.position;
-
-            tri1.V[0] = v2.position;
-            tri1.V[1] = v1.position;
-            tri1.V[2] = v3.position;
-        }
-
-        public void Draw(Color color)
-        {
-            DebugWide.DrawLine(tri0.V[0], tri0.V[1], color);
-            DebugWide.DrawLine(tri0.V[0], tri0.V[2], color);
-            DebugWide.DrawLine(tri0.V[1], tri0.V[2], color);
-
-            DebugWide.DrawLine(tri1.V[0], tri1.V[2], color);
-            DebugWide.DrawLine(tri1.V[1], tri1.V[2], color);
-
-            //선분출력
-            //DebugWide.DrawLine(tri0.V[1], tri0.V[0], Color.red);
-            //DebugWide.DrawLine(tri1.V[1], tri1.V[2], Color.red);
-        }
-    }
-
 
 
     private Tri3 _tri0;
     private Tri3 _tri1;
-    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intrTriTri;
+    private IntrTriangle3Triangle3 _intrTriTri;
 
-
-    private Tetra3 _tetra_0_1; //삼각형 0,1 합친모양의 사각형
-    private Tetra3 _tetra_2_3;
-    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_0_2;
-    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_0_3;
-    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_1_2;
-    private Tri3_Tri3_Test2.IntrTriangle3Triangle3 _intr_1_3;
 
     //===========================================
 
@@ -127,29 +68,16 @@ public class Test_LineCollision : MonoBehaviour
         //if (null == (object)_line0_start)
         if(false == _init)
             return;
-
-        if(false)
-        {
-            DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.blue);
-            DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.magenta);
-
-        }
-
+        
         //===============
 
-        if(false)
-        {
-            //TriTri_Test1.Draw(_tri_0.tri, Color.blue);
-            //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
-        }
-
-        if (false)
+        //if (false)
         {
             _tri0.Update();
             _tri1.Update();
             _intrTriTri.Find_Twice();    
 
-            if (_intrTriTri.mIntersectionType != Tri3_Tri3_Test2.eIntersectionType.EMPTY)
+            if (_intrTriTri.mIntersectionType != eIntersectionType.EMPTY)
             {
                 string temp = string.Empty;
                 foreach (Vector3 p in _intrTriTri.mPoint)
@@ -164,55 +92,7 @@ public class Test_LineCollision : MonoBehaviour
             _intrTriTri.Draw(Color.red);
 
         }
-        //if(false)
-        {
-            {
-                bool s0, s1;
-                s0 = Misc.IsZero(__prevPos_s - _line0_start.position) && Misc.IsZero(__prevPos_e - _line0_end.position);
-                s1 = Misc.IsZero(_line2_start.position - _line1_start.position) && Misc.IsZero(_line2_end.position - _line1_end.position);
 
-                _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
-                _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
-                //_tetra_2_3.SetSegement(_line1_start.position * 0.9f, _line1_end.position, _line1_start.position, _line1_end.position);
-
-                if (s0 && s1)
-                {   //선분과 선분
-                    DebugWide.LogBlue("seg vs seg");
-                    //LineSegment3.DistanceSquared()
-                    Vector3 pt0, pt1;
-                    LineSegment3.ClosestPoints(out pt0, out pt1,
-                                               new LineSegment3(_line0_start.position, _line0_end.position),
-                                               new LineSegment3(_line1_start.position, _line1_end.position));
-
-                    DebugWide.DrawCircle(pt0, 0.05f, Color.red);
-                    DebugWide.DrawCircle(pt1, 0.05f, Color.red);
-                    DebugWide.DrawLine(pt0, pt1,Color.red);    
-                }
-                else
-                {   //삼각형과 삼각형 
-                    DebugWide.LogBlue("    tri vs tri");
-
-                    _intr_0_2.Find_Twice();
-                    _intr_0_3.Find_Twice();
-                    _intr_1_2.Find_Twice();
-                    _intr_1_3.Find_Twice();
-                }
-
-
-
-
-                //-----
-                __prevPos_s = _line0_start.position;
-                __prevPos_e = _line0_end.position;
-            }
-
-            _tetra_0_1.Draw(Color.blue);
-            _tetra_2_3.Draw(Color.white);
-            _intr_0_2.Draw(Color.red);
-            _intr_0_3.Draw(Color.red);
-            _intr_1_2.Draw(Color.red);
-            _intr_1_3.Draw(Color.red);
-        }
 
     }
 
@@ -254,94 +134,33 @@ public class Test_LineCollision : MonoBehaviour
 
         Transform tetra_tetra = Hierarchy.GetTransform(transform.parent, "tetra_tetra");
         Transform tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_0");
-        _tetra_0_1.v0 = Hierarchy.GetTransform(tetra, "v0");
-        _tetra_0_1.v1 = Hierarchy.GetTransform(tetra, "v1");
-        _tetra_0_1.v2 = Hierarchy.GetTransform(tetra, "v2");
-        _tetra_0_1.v3 = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg0_s = Hierarchy.GetTransform(tetra, "v0");
+        _ts_seg0_e = Hierarchy.GetTransform(tetra, "v1");
+        _ts_seg1_s = Hierarchy.GetTransform(tetra, "v2");
+        _ts_seg1_e = Hierarchy.GetTransform(tetra, "v3");
 
         tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_1");
-        _tetra_2_3.v0 = Hierarchy.GetTransform(tetra, "v0");
-        _tetra_2_3.v1 = Hierarchy.GetTransform(tetra, "v1");
-        _tetra_2_3.v2 = Hierarchy.GetTransform(tetra, "v2");
-        _tetra_2_3.v3 = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg2_s = Hierarchy.GetTransform(tetra, "v0");
+        _ts_seg2_e = Hierarchy.GetTransform(tetra, "v1");
+        _ts_seg3_s = Hierarchy.GetTransform(tetra, "v2");
+        _ts_seg3_e = Hierarchy.GetTransform(tetra, "v3");
 
         //===========================================
 
-        _tri0.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _tri1.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _intrTriTri = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tri0.tri0, _tri1.tri0);
-
-        _tetra_0_1.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _tetra_0_1.tri1 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _tetra_2_3.tri0 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _tetra_2_3.tri1 = Tri3_Tri3_Test2.Triangle3.Zero();
-        _intr_0_2 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri0);
-        _intr_0_3 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri0, _tetra_2_3.tri1);
-        _intr_1_2 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri0);
-        _intr_1_3 = new Tri3_Tri3_Test2.IntrTriangle3Triangle3(_tetra_0_1.tri1, _tetra_2_3.tri1);
-        //===========================================
-
-
+        _tri0.tri0 = Triangle3.Zero();
+        _tri1.tri0 = Triangle3.Zero();
+        _intrTriTri = new IntrTriangle3Triangle3(_tri0.tri0, _tri1.tri0);
 
         //===========================================
 
-        __prevPos_s = _line0_start.position;
-        __prevPos_e = _line0_end.position;
 
 	}
 
 
 
-
-    private Vector3 __prevPos_s, __prevPos_e;
-	private void Update111()
-	{
-
-        bool s0, s1;
-        s0 = Misc.IsZero(__prevPos_s - _line0_start.position) && Misc.IsZero(__prevPos_e - _line0_end.position);
-        s1 = Misc.IsZero(_line2_start.position - _line1_start.position) && Misc.IsZero(_line2_end.position - _line1_end.position);
-
-        _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
-        _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
-        //_tetra_2_3.SetSegement(_line1_start.position * 0.9f, _line1_end.position, _line1_start.position, _line1_end.position);
-
-        if(s0 && s1)
-        {   //선분과 선분
-            DebugWide.LogBlue("seg vs seg");
-            //LineSegment3.DistanceSquared()
-            Vector3 pt0, pt1;
-            LineSegment3.ClosestPoints(out pt0, out pt1, 
-                                       new LineSegment3(_line0_start.position, _line0_end.position),
-                                       new LineSegment3(_line1_start.position, _line1_end.position ));
-        }
-        else
-        {   //삼각형과 삼각형 
-            //DebugWide.LogBlue("tri vs tri");
-
-            _intr_0_2.Find_Twice();
-            _intr_0_3.Find_Twice();
-            _intr_1_2.Find_Twice();
-            _intr_1_3.Find_Twice();        
-        }
-
-
-
-
-        //-----
-        __prevPos_s = _line0_start.position;
-        __prevPos_e = _line0_end.position;
-	}
-
-	void Update333 () 
+	void Update () 
     {
 
-        if(false)
-        {
-            //if(true == TriTri_Test1.Triangles_colliding(_tri_0.tri, _tri_1.tri))
-            //{
-            //    DebugWide.LogBlue("TriTri collision !!");
-            //}    
-        }
 
 
         //===========================================

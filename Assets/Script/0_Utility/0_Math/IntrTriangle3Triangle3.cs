@@ -19,6 +19,39 @@ namespace UtilGS9
         OTHER
     }
 
+    public struct IntrPlane
+    {
+        public Vector3 _normal;
+        public float _offset; //원점으로 부터 평면이 떨어져 있는 거리 
+
+        public IntrPlane(Vector3 p0, Vector3 p1, Vector3 p2)
+        {
+            Vector3 edge1 = p1 - p0;
+            Vector3 edge2 = p2 - p0;
+            _normal = Vector3.Cross(edge1, edge2);
+            _normal = UtilGS9.VOp.Normalize(_normal);
+
+            _offset = Vector3.Dot(_normal, p0);
+
+            //이 처리가 있으면 [seg0 vs tri1] 상황에서 교점을 찾지 못하는 문제가 발생한다. 애션셜수학 코드의 평면코드는 안쓰는것으로 함 
+            //if (_normal.sqrMagnitude < float.Epsilon)
+            //{   //평면의 방향을 계산 할 수 없을때 
+            //    _normal = Vector3.up;
+            //    _offset = 0.0f;
+            //}
+        }
+
+        //점이 평면에 직각인 부호있는 거리
+        public float Test(Vector3 p)
+        {
+            return Vector3.Dot(_normal, p) - _offset;
+        }
+
+        public override string ToString()
+        {
+            return " N:" + _normal + "   C:" + _offset;
+        }
+    }
 
     public struct Triangle2
     {
@@ -690,7 +723,7 @@ namespace UtilGS9
             int i, iM, iP;
 
             // Get the plane of triangle0.
-            Plane plane0 = new Plane(tri0.V[0], tri0.V[1], tri0.V[2]);
+            IntrPlane plane0 = new IntrPlane(tri0.V[0], tri0.V[1], tri0.V[2]);
 
             // Compute the signed distances of triangle1 vertices to plane0.  Use
             // an epsilon-thick plane test.
@@ -854,7 +887,7 @@ namespace UtilGS9
         }//end func
 
         //distance[3] , sign[3]
-        void TrianglePlaneRelations(Triangle3 triangle, Plane plane,
+        void TrianglePlaneRelations(Triangle3 triangle, IntrPlane plane,
                                     ref float[] distance, ref int[] sign, out int positive, out int negative, out int zero)
         {
             // Compute the signed distances of triangle vertices to the plane.  Use
@@ -887,7 +920,7 @@ namespace UtilGS9
         }//end func
 
 
-        bool GetCoplanarIntersection(Plane plane, Triangle3 tri0, Triangle3 tri1)
+        bool GetCoplanarIntersection(IntrPlane plane, Triangle3 tri0, Triangle3 tri1)
         {
             //*
             // Project triangles onto coordinate plane most aligned with plane
@@ -983,7 +1016,7 @@ namespace UtilGS9
                 {
                     mPoint[i].y = intr.mPoint[i].x;
                     mPoint[i].z = intr.mPoint[i].y;
-                    mPoint[i].x = invNX * (-plane._offset -
+                    mPoint[i].x = invNX * (plane._offset -
                                     plane._normal.y * mPoint[i].y -
                                            plane._normal.z * mPoint[i].z);
                 }
@@ -995,7 +1028,7 @@ namespace UtilGS9
                 {
                     mPoint[i].x = intr.mPoint[i].x;
                     mPoint[i].z = intr.mPoint[i].y;
-                    mPoint[i].y = invNY * (-plane._offset -
+                    mPoint[i].y = invNY * (plane._offset -
                                     plane._normal.x * mPoint[i].x -
                                            plane._normal.z * mPoint[i].z);
                 }
@@ -1007,7 +1040,7 @@ namespace UtilGS9
                 {
                     mPoint[i].x = intr.mPoint[i].x;
                     mPoint[i].y = intr.mPoint[i].y;
-                    mPoint[i].z = invNZ * (-plane._offset -
+                    mPoint[i].z = invNZ * (plane._offset -
                                     plane._normal.x * mPoint[i].x -
                                            plane._normal.y * mPoint[i].y);
                 }
@@ -1019,7 +1052,7 @@ namespace UtilGS9
         }//end func
 
 
-        bool IntersectsSegment(Plane plane, Triangle3 triangle, Vector3 end0, Vector3 end1)
+        bool IntersectsSegment(IntrPlane plane, Triangle3 triangle, Vector3 end0, Vector3 end1)
         {
             // Compute the 2D representations of the triangle vertices and the
             // segment endpoints relative to the plane of the triangle.  Then
@@ -1118,7 +1151,7 @@ namespace UtilGS9
                 {
                     mPoint[i].y = intr[i].x;
                     mPoint[i].z = intr[i].y;
-                    mPoint[i].x = invNX * (-plane._offset -
+                    mPoint[i].x = invNX * (plane._offset -
                         plane._normal.y * mPoint[i].y -
                         plane._normal.z * mPoint[i].z);
                 }
@@ -1130,7 +1163,7 @@ namespace UtilGS9
                 {
                     mPoint[i].x = intr[i].x;
                     mPoint[i].z = intr[i].y;
-                    mPoint[i].y = invNY * (-plane._offset -
+                    mPoint[i].y = invNY * (plane._offset -
                         plane._normal.x * mPoint[i].x -
                         plane._normal.z * mPoint[i].z);
                 }
@@ -1142,7 +1175,7 @@ namespace UtilGS9
                 {
                     mPoint[i].x = intr[i].x;
                     mPoint[i].y = intr[i].y;
-                    mPoint[i].z = invNZ * (-plane._offset -
+                    mPoint[i].z = invNZ * (plane._offset -
                         plane._normal.x * mPoint[i].x -
                         plane._normal.y * mPoint[i].y);
                 }

@@ -750,19 +750,135 @@ namespace UtilGS9
 
 
     //움직이는 선분의 교차요소 구하기
-    public struct MovingLineSegement3
+    public class MovingLineSegement3
     {
-        public LineSegment3 start; //선분의 움직인 시작위치
-        public LineSegment3 end; //선분의 움직인 끝위치
+        
+        //public LineSegment3 _seg0;
+        //public LineSegment3 _seg1;
+        private LineSegment3 _prev_seg0;
+        private LineSegment3 _prev_seg1;
 
 
-        static public bool Intersect(out Vector3 p0, out Vector3 p1, LineSegment3 src0, 
-                                     MovingLineSegement3 line0, MovingLineSegement3 line1)
+        //삼각형 0,1 합친모양의 사각형
+        private Tetragon3 _tetr01; 
+        private Tetragon3 _tetr23;
+
+        private IntrTriangle3Triangle3 _intr_0_2;
+        private IntrTriangle3Triangle3 _intr_0_3;
+        private IntrTriangle3Triangle3 _intr_1_2;
+        private IntrTriangle3Triangle3 _intr_1_3;
+
+        public void Init()
         {
-            p0 = p1 = Vector3.zero;
-            return false;
+            _tetr01.tri0 = Triangle3.Zero();
+            _tetr01.tri1 = Triangle3.Zero();
+            _tetr23.tri0 = Triangle3.Zero();
+            _tetr23.tri1 = Triangle3.Zero();
+            _intr_0_2 = new IntrTriangle3Triangle3(_tetr01.tri0, _tetr23.tri0);
+            _intr_0_3 = new IntrTriangle3Triangle3(_tetr01.tri0, _tetr23.tri1);
+            _intr_1_2 = new IntrTriangle3Triangle3(_tetr01.tri1, _tetr23.tri0);
+            _intr_1_3 = new IntrTriangle3Triangle3(_tetr01.tri1, _tetr23.tri1);
+        }
+
+
+        public void Draw()
+        {
+            if (__s0 && __s1)
+            {   //선분과 선분
+
+                DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
+                DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
+                DebugWide.DrawLine(__cpPt0, __cpPt1,Color.red);    
+            }
+            else
+            {   //삼각형과 삼각형 
+
+                _tetr01.Draw(Color.blue);
+                _tetr23.Draw(Color.white);
+                _intr_0_2.Draw(Color.red);
+                _intr_0_3.Draw(Color.red);
+                _intr_1_2.Draw(Color.red);
+                _intr_1_3.Draw(Color.red);
+            }
+
+        }
+
+        bool __s0, __s1;
+        Vector3 __cpPt0, __cpPt1;
+        public void Update(LineSegment3 seg0, LineSegment3 seg1)
+        {
+
+            __s0 = Misc.IsZero(_prev_seg0.origin - seg0.origin) && Misc.IsZero(_prev_seg0.last - seg0.last);
+            __s1 = Misc.IsZero(_prev_seg1.origin - seg1.origin) && Misc.IsZero(_prev_seg1.last - seg1.last);
+
+            _tetr01.Set(_prev_seg0, seg0);
+            _tetr23.Set(_prev_seg1, seg1);
+
+
+            if (__s0 && __s1)
+            {   //선분과 선분
+                
+                LineSegment3.ClosestPoints(out __cpPt0, out __cpPt1, seg0, seg1);
+
+            }
+            else
+            {   //삼각형과 삼각형 
+                _intr_0_2.Find_Twice();
+                _intr_0_3.Find_Twice();
+                _intr_1_2.Find_Twice();
+                _intr_1_3.Find_Twice();
+            }
+
+            _prev_seg0 = seg0;
+            _prev_seg1 = seg1;
         }
     }
 
+
+    public struct Tetragon3
+    {
+        //v0    v1
+        //
+        //v2    v3
+        //v0 - v1 - v2 , v2 - v1 - v3
+        public Triangle3 tri0;
+        public Triangle3 tri1;
+
+        public void Set(LineSegment3 seg0 , LineSegment3 seg1)
+        {
+            tri0.V[0] = seg0.last;
+            tri0.V[1] = seg0.origin;
+            tri0.V[2] = seg1.origin;
+
+            tri1.V[0] = seg0.last;
+            tri1.V[1] = seg1.origin;
+            tri1.V[2] = seg1.last;
+        }
+
+        public void Set(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
+        {
+            tri0.V[0] = seg0_e;
+            tri0.V[1] = seg0_s;
+            tri0.V[2] = seg1_s;
+
+            tri1.V[0] = seg0_e;
+            tri1.V[1] = seg1_s;
+            tri1.V[2] = seg1_e;
+        }
+
+        public void Draw(Color color)
+        {
+            DebugWide.DrawLine(tri0.V[0], tri0.V[1], color);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[2], color);
+            DebugWide.DrawLine(tri0.V[1], tri0.V[2], color);
+
+            DebugWide.DrawLine(tri1.V[0], tri1.V[2], color);
+            DebugWide.DrawLine(tri1.V[1], tri1.V[2], color);
+
+            //선분출력
+            //DebugWide.DrawLine(tri0.V[1], tri0.V[0], Color.red);
+            //DebugWide.DrawLine(tri1.V[1], tri1.V[2], Color.red);
+        }
+    }
 
 }
