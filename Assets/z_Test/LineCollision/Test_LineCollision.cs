@@ -143,7 +143,7 @@ public class Test_LineCollision : MonoBehaviour
             //TriTri_Test1.Draw(_tri_1.tri, Color.magenta);
         }
 
-        //if (false)
+        if (false)
         {
             _tri0.Update();
             _tri1.Update();
@@ -164,8 +164,48 @@ public class Test_LineCollision : MonoBehaviour
             _intrTriTri.Draw(Color.red);
 
         }
-        if(false)
+        //if(false)
         {
+            {
+                bool s0, s1;
+                s0 = Misc.IsZero(__prevPos_s - _line0_start.position) && Misc.IsZero(__prevPos_e - _line0_end.position);
+                s1 = Misc.IsZero(_line2_start.position - _line1_start.position) && Misc.IsZero(_line2_end.position - _line1_end.position);
+
+                _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
+                _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
+                //_tetra_2_3.SetSegement(_line1_start.position * 0.9f, _line1_end.position, _line1_start.position, _line1_end.position);
+
+                if (s0 && s1)
+                {   //선분과 선분
+                    DebugWide.LogBlue("seg vs seg");
+                    //LineSegment3.DistanceSquared()
+                    Vector3 pt0, pt1;
+                    LineSegment3.ClosestPoints(out pt0, out pt1,
+                                               new LineSegment3(_line0_start.position, _line0_end.position),
+                                               new LineSegment3(_line1_start.position, _line1_end.position));
+
+                    DebugWide.DrawCircle(pt0, 0.05f, Color.red);
+                    DebugWide.DrawCircle(pt1, 0.05f, Color.red);
+                    DebugWide.DrawLine(pt0, pt1,Color.red);    
+                }
+                else
+                {   //삼각형과 삼각형 
+                    DebugWide.LogBlue("    tri vs tri");
+
+                    _intr_0_2.Find_Twice();
+                    _intr_0_3.Find_Twice();
+                    _intr_1_2.Find_Twice();
+                    _intr_1_3.Find_Twice();
+                }
+
+
+
+
+                //-----
+                __prevPos_s = _line0_start.position;
+                __prevPos_e = _line0_end.position;
+            }
+
             _tetra_0_1.Draw(Color.blue);
             _tetra_2_3.Draw(Color.white);
             _intr_0_2.Draw(Color.red);
@@ -254,12 +294,12 @@ public class Test_LineCollision : MonoBehaviour
 
 
     private Vector3 __prevPos_s, __prevPos_e;
-	private void Update2222()
+	private void Update111()
 	{
 
         bool s0, s1;
         s0 = Misc.IsZero(__prevPos_s - _line0_start.position) && Misc.IsZero(__prevPos_e - _line0_end.position);
-        s1 = Misc.IsZero(_line2_start.position - _line2_end.position) && Misc.IsZero(_line1_start.position - _line1_end.position);
+        s1 = Misc.IsZero(_line2_start.position - _line1_start.position) && Misc.IsZero(_line2_end.position - _line1_end.position);
 
         _tetra_0_1.SetSegement(__prevPos_s, __prevPos_e, _line0_start.position, _line0_end.position);
         _tetra_2_3.SetSegement(_line2_start.position, _line2_end.position, _line1_start.position, _line1_end.position);
@@ -267,8 +307,12 @@ public class Test_LineCollision : MonoBehaviour
 
         if(s0 && s1)
         {   //선분과 선분
-            //DebugWide.LogBlue("seg vs seg");
-            //LineSegment3.DistanceSquared
+            DebugWide.LogBlue("seg vs seg");
+            //LineSegment3.DistanceSquared()
+            Vector3 pt0, pt1;
+            LineSegment3.ClosestPoints(out pt0, out pt1, 
+                                       new LineSegment3(_line0_start.position, _line0_end.position),
+                                       new LineSegment3(_line1_start.position, _line1_end.position ));
         }
         else
         {   //삼각형과 삼각형 
@@ -288,7 +332,7 @@ public class Test_LineCollision : MonoBehaviour
         __prevPos_e = _line0_end.position;
 	}
 
-	void Update () 
+	void Update333 () 
     {
 
         if(false)
@@ -298,24 +342,6 @@ public class Test_LineCollision : MonoBehaviour
             //    DebugWide.LogBlue("TriTri collision !!");
             //}    
         }
-
-        if(true)
-        {
-            //_tri0.Update();
-            //_tri1.Update();
-            //_intrTriTri.Find_Twice();    
-        }
-
-        if(false)
-        {
-            _tetra_0_1.Update();
-            _tetra_2_3.Update();
-            //_intr_0_2.Find();
-            //_intr_0_3.Find();
-            //_intr_1_2.Find();
-            //_intr_1_3.Find();    
-        }
-
 
 
         //===========================================
