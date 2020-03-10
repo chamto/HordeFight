@@ -597,7 +597,7 @@ namespace UtilGS9
             // recover gracefully
             ///if ( ::IsZero(lensq))
             if (lensq < float.Epsilon)
-            {
+            {   //평면의 방향을 계산 할 수 없을때 
                 _normal = Vector3.up;
                 _offset = 0.0f;
             }
@@ -606,6 +606,7 @@ namespace UtilGS9
                 //float recip = 1.0f / lensq; //이건 아닌것 같음 
                 float recip = 1f / (float)Math.Sqrt(lensq);
                 _normal.Set(w.x * recip, w.y * recip, w.z * recip);
+                //_normal = w * recip;
                 _offset = -1f * Vector3.Dot(_normal,p0);
             }
         }

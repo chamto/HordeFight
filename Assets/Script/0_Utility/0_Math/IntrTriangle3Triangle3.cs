@@ -20,33 +20,6 @@ namespace UtilGS9
     }
 
 
-    public struct Plane3
-    {
-        public Vector3 Normal;
-        public float Constant; //원점으로 부터 평면이 떨어져 있는 거리 
-
-        public Plane3(Vector3 p0, Vector3 p1, Vector3 p2)
-        {
-            Vector3 edge1 = p1 - p0;
-            Vector3 edge2 = p2 - p0;
-            Normal = Vector3.Cross(edge1, edge2);
-            Normal = UtilGS9.VOp.Normalize(Normal);
-
-            Constant = Vector3.Dot(Normal, p0);
-        }
-
-        //점이 평면에 직각인 거리 
-        public float DistanceTo(Vector3 p)
-        {
-            return Vector3.Dot(Normal, p) - Constant;
-        }
-
-        public override string ToString()
-        {
-            return " N:" + Normal + "   C:" + Constant;
-        }
-    }
-
     public struct Triangle2
     {
         public Vector2[] V; //[3]
@@ -70,6 +43,7 @@ namespace UtilGS9
 
     public struct Triangle3
     {
+
         public struct V012
         {
             public Vector3 V0, V1, V2;
@@ -606,6 +580,7 @@ namespace UtilGS9
 
         public eIntersectionType mIntersectionType;
 
+
         //--------------------------------------------------
 
         public IntrTriangle3Triangle3(Triangle3 t0, Triangle3 t1)
@@ -623,6 +598,7 @@ namespace UtilGS9
 
             mReportCoplanarIntersections = true;
             mIntersectionType = eIntersectionType.EMPTY;
+
         }
 
         // Input W must be a unit-length vector.  The output vectors {U,V} are
@@ -714,15 +690,15 @@ namespace UtilGS9
             int i, iM, iP;
 
             // Get the plane of triangle0.
-            Plane3 plane0 = new Plane3(tri0.V[0], tri0.V[1], tri0.V[2]);
+            Plane plane0 = new Plane(tri0.V[0], tri0.V[1], tri0.V[2]);
 
             // Compute the signed distances of triangle1 vertices to plane0.  Use
             // an epsilon-thick plane test.
             int pos1, neg1, zero1;
-            int[] sign1 = new int[3];
-            float[] dist1 = new float[3];
+            int[] _sign1 = new int[3];
+            float[] _dist1 = new float[3];
 
-            TrianglePlaneRelations(tri1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
+            TrianglePlaneRelations(tri1, plane0, ref _dist1, ref _sign1, out pos1, out neg1, out zero1);
 
             //Plane3 plane1 = new Plane3(tri1.V[0], tri1.V[1], tri1.V[2]);
             //int pos2, neg2, zero2;
@@ -767,7 +743,7 @@ namespace UtilGS9
                     // An edge of triangle1 is in plane0.
                     for (i = 0; i < 3; ++i)
                     {
-                        if (sign1[i] != 0)
+                        if (_sign1[i] != 0)
                         {
                             //0
                             //1 2
@@ -792,7 +768,7 @@ namespace UtilGS9
                     // A vertex of triangle1 is in plane0.
                     for (i = 0; i < 3; ++i)
                     {
-                        if (sign1[i] == 0)
+                        if (_sign1[i] == 0)
                         {
                             //DebugWide.LogGreen("1_1---  tr0:" + tri0 +  "  tr1:" + tri1 + "  pl0:" + plane0); //chamto test
 
@@ -816,7 +792,7 @@ namespace UtilGS9
                 int iSign = (pos1 == 1 ? +1 : -1);
                 for (i = 0; i < 3; ++i)
                 {
-                    if (sign1[i] == iSign)
+                    if (_sign1[i] == iSign)
                     {
                         //i(0) => mp(2,1)
                         //i(1) => mp(0,2)
@@ -832,9 +808,9 @@ namespace UtilGS9
                         //     - |
                         //viM ---- dim
                         //삼각형의 닮음을 이용하여 t를 구함 
-                        t = dist1[i] / (dist1[i] - dist1[iM]); //d[im] 은 평면의 아래쪽이므로 음수다. 이는 d[i]와의 합을 의미 
+                        t = _dist1[i] / (_dist1[i] - _dist1[iM]); //d[im] 은 평면의 아래쪽이므로 음수다. 이는 d[i]와의 합을 의미 
                         intr0 = tri1.V[i] + t * (tri1.V[iM] - tri1.V[i]);
-                        t = dist1[i] / (dist1[i] - dist1[iP]);
+                        t = _dist1[i] / (_dist1[i] - _dist1[iP]);
                         intr1 = tri1.V[i] + t * (tri1.V[iP] - tri1.V[i]);
 
                         //DebugWide.DrawCircle(intr0,0.05f,Color.green);
@@ -857,12 +833,12 @@ namespace UtilGS9
                 {
                     //삼각형의 정점중 하나가 평면에 접해있고 
                     // 평면의 위쪽에 하나, 평면의 아래쪽에 하나의 정점이 있는 모양 
-                    if (sign1[i] == 0)
+                    if (_sign1[i] == 0)
                     {   //평면과 접점이라면 
 
                         iM = (i + 2) % 3;
                         iP = (i + 1) % 3;
-                        t = dist1[iM] / (dist1[iM] - dist1[iP]);
+                        t = _dist1[iM] / (_dist1[iM] - _dist1[iP]);
                         intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
 
                         //DebugWide.LogBlue("4---"); //chamto test
@@ -878,7 +854,7 @@ namespace UtilGS9
         }//end func
 
         //distance[3] , sign[3]
-        void TrianglePlaneRelations(Triangle3 triangle, Plane3 plane,
+        void TrianglePlaneRelations(Triangle3 triangle, Plane plane,
                                     ref float[] distance, ref int[] sign, out int positive, out int negative, out int zero)
         {
             // Compute the signed distances of triangle vertices to the plane.  Use
@@ -888,7 +864,7 @@ namespace UtilGS9
             zero = 0;
             for (int i = 0; i < 3; ++i)
             {
-                distance[i] = plane.DistanceTo(triangle.V[i]); //평면에서 점까지의 최소거리 (평면과 직각)
+                distance[i] = plane.Test(triangle.V[i]); //평면에서 점까지의 최소거리 (평면과 직각)
                                                                //DebugWide.LogBlue("  n:" + plane.Normal + "  tri1:" + triangle.V[i] + "   d:" + distance[i] + "  i:" + i); //chamto test
 
                 if (distance[i] > float.Epsilon)
@@ -911,20 +887,20 @@ namespace UtilGS9
         }//end func
 
 
-        bool GetCoplanarIntersection(Plane3 plane, Triangle3 tri0, Triangle3 tri1)
+        bool GetCoplanarIntersection(Plane plane, Triangle3 tri0, Triangle3 tri1)
         {
             //*
             // Project triangles onto coordinate plane most aligned with plane
             // normal.
             int maxNormal = 0;
-            float fmax = Mathf.Abs(plane.Normal.x);
-            float absMax = Mathf.Abs(plane.Normal.y);
+            float fmax = Mathf.Abs(plane._normal.x);
+            float absMax = Mathf.Abs(plane._normal.y);
             if (absMax > fmax)
             {
                 maxNormal = 1;
                 fmax = absMax;
             }
-            absMax = Mathf.Abs(plane.Normal.z);
+            absMax = Mathf.Abs(plane._normal.z);
             if (absMax > fmax)
             {
                 maxNormal = 2;
@@ -1002,38 +978,38 @@ namespace UtilGS9
             mQuantity = intr.mQuantity;
             if (maxNormal == 0)
             {
-                float invNX = 1f / plane.Normal.x;
+                float invNX = 1f / plane._normal.x;
                 for (i = 0; i < mQuantity; i++)
                 {
                     mPoint[i].y = intr.mPoint[i].x;
                     mPoint[i].z = intr.mPoint[i].y;
-                    mPoint[i].x = invNX * (plane.Constant -
-                                    plane.Normal.y * mPoint[i].y -
-                                           plane.Normal.z * mPoint[i].z);
+                    mPoint[i].x = invNX * (-plane._offset -
+                                    plane._normal.y * mPoint[i].y -
+                                           plane._normal.z * mPoint[i].z);
                 }
             }
             else if (maxNormal == 1)
             {
-                float invNY = 1f / plane.Normal.y;
+                float invNY = 1f / plane._normal.y;
                 for (i = 0; i < mQuantity; i++)
                 {
                     mPoint[i].x = intr.mPoint[i].x;
                     mPoint[i].z = intr.mPoint[i].y;
-                    mPoint[i].y = invNY * (plane.Constant -
-                                    plane.Normal.x * mPoint[i].x -
-                                           plane.Normal.z * mPoint[i].z);
+                    mPoint[i].y = invNY * (-plane._offset -
+                                    plane._normal.x * mPoint[i].x -
+                                           plane._normal.z * mPoint[i].z);
                 }
             }
             else
             {
-                float invNZ = 1f / plane.Normal.z;
+                float invNZ = 1f / plane._normal.z;
                 for (i = 0; i < mQuantity; i++)
                 {
                     mPoint[i].x = intr.mPoint[i].x;
                     mPoint[i].y = intr.mPoint[i].y;
-                    mPoint[i].z = invNZ * (plane.Constant -
-                                    plane.Normal.x * mPoint[i].x -
-                                           plane.Normal.y * mPoint[i].y);
+                    mPoint[i].z = invNZ * (-plane._offset -
+                                    plane._normal.x * mPoint[i].x -
+                                           plane._normal.y * mPoint[i].y);
                 }
             }
 
@@ -1043,7 +1019,7 @@ namespace UtilGS9
         }//end func
 
 
-        bool IntersectsSegment(Plane3 plane, Triangle3 triangle, Vector3 end0, Vector3 end1)
+        bool IntersectsSegment(Plane plane, Triangle3 triangle, Vector3 end0, Vector3 end1)
         {
             // Compute the 2D representations of the triangle vertices and the
             // segment endpoints relative to the plane of the triangle.  Then
@@ -1052,14 +1028,14 @@ namespace UtilGS9
             // Project the triangle and segment onto the coordinate plane most
             // aligned with the plane normal.
             int maxNormal = 0; //노멀방향 x축
-            float fmax = Mathf.Abs(plane.Normal.x);
-            float absMax = Mathf.Abs(plane.Normal.y);
+            float fmax = Mathf.Abs(plane._normal.x);
+            float absMax = Mathf.Abs(plane._normal.y);
             if (absMax > fmax)
             {
                 maxNormal = 1; //노멀방향 y축 
                 fmax = absMax;
             }
-            absMax = Mathf.Abs(plane.Normal.z);
+            absMax = Mathf.Abs(plane._normal.z);
             if (absMax > fmax)
             {
                 maxNormal = 2; //노멀방향 z축
@@ -1137,38 +1113,38 @@ namespace UtilGS9
             // Unproject the segment of intersection.
             if (maxNormal == 0)
             {
-                float invNX = 1f / plane.Normal.x;
+                float invNX = 1f / plane._normal.x;
                 for (i = 0; i < mQuantity; ++i)
                 {
                     mPoint[i].y = intr[i].x;
                     mPoint[i].z = intr[i].y;
-                    mPoint[i].x = invNX * (plane.Constant -
-                        plane.Normal.y * mPoint[i].y -
-                        plane.Normal.z * mPoint[i].z);
+                    mPoint[i].x = invNX * (-plane._offset -
+                        plane._normal.y * mPoint[i].y -
+                        plane._normal.z * mPoint[i].z);
                 }
             }
             else if (maxNormal == 1)
             {
-                float invNY = 1f / plane.Normal.y;
+                float invNY = 1f / plane._normal.y;
                 for (i = 0; i < mQuantity; ++i)
                 {
                     mPoint[i].x = intr[i].x;
                     mPoint[i].z = intr[i].y;
-                    mPoint[i].y = invNY * (plane.Constant -
-                        plane.Normal.x * mPoint[i].x -
-                        plane.Normal.z * mPoint[i].z);
+                    mPoint[i].y = invNY * (-plane._offset -
+                        plane._normal.x * mPoint[i].x -
+                        plane._normal.z * mPoint[i].z);
                 }
             }
             else
             {
-                float invNZ = 1f / plane.Normal.z;
+                float invNZ = 1f / plane._normal.z;
                 for (i = 0; i < mQuantity; ++i)
                 {
                     mPoint[i].x = intr[i].x;
                     mPoint[i].y = intr[i].y;
-                    mPoint[i].z = invNZ * (plane.Constant -
-                        plane.Normal.x * mPoint[i].x -
-                        plane.Normal.y * mPoint[i].y);
+                    mPoint[i].z = invNZ * (-plane._offset -
+                        plane._normal.x * mPoint[i].x -
+                        plane._normal.y * mPoint[i].y);
                 }
             }
 
