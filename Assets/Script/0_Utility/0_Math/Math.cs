@@ -511,6 +511,11 @@ namespace UtilGS9
             });
         }
 
+        public void Draw(Color color)
+        {
+            DebugWide.DrawLine(origin, last, color);
+        }
+
 
     }//End Class
 
@@ -750,11 +755,8 @@ namespace UtilGS9
 
 
     //움직이는 선분의 교차요소 구하기
-    public class MovingLineSegement3
+    public class MovingSegement3
     {
-        
-        //public LineSegment3 _seg0;
-        //public LineSegment3 _seg1;
         private LineSegment3 _prev_seg0;
         private LineSegment3 _prev_seg1;
 
@@ -768,8 +770,10 @@ namespace UtilGS9
         private IntrTriangle3Triangle3 _intr_1_2;
         private IntrTriangle3Triangle3 _intr_1_3;
 
-        public void Init()
+        public MovingSegement3()
         {
+            _tetr01 = new Tetragon3();
+            _tetr23 = new Tetragon3();
             _tetr01.tri0 = Triangle3.Zero();
             _tetr01.tri1 = Triangle3.Zero();
             _tetr23.tri0 = Triangle3.Zero();
@@ -786,15 +790,18 @@ namespace UtilGS9
             if (__s0 && __s1)
             {   //선분과 선분
 
+                _prev_seg0.Draw(Color.blue);
+                _prev_seg1.Draw(Color.magenta);
                 DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
                 DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
-                DebugWide.DrawLine(__cpPt0, __cpPt1,Color.red);    
+                DebugWide.DrawLine(__cpPt0, __cpPt1,Color.red);
+
             }
             else
             {   //삼각형과 삼각형 
 
                 _tetr01.Draw(Color.blue);
-                _tetr23.Draw(Color.white);
+                _tetr23.Draw(Color.magenta);
                 _intr_0_2.Draw(Color.red);
                 _intr_0_3.Draw(Color.red);
                 _intr_1_2.Draw(Color.red);
@@ -803,9 +810,23 @@ namespace UtilGS9
 
         }
 
+        public void Update_Tetra(Vector3 aV0, Vector3 aV1, Vector3 aV2, Vector3 aV3, 
+                                 Vector3 bV0, Vector3 bV1, Vector3 bV2, Vector3 bV3)
+        {
+            __s0 = __s1 = false;
+
+            _tetr01.Set(aV0, aV1, aV2, aV3);
+            _tetr23.Set(bV0, bV1, bV2, bV3);
+         
+            _intr_0_2.Find_Twice();
+            _intr_0_3.Find_Twice();
+            _intr_1_2.Find_Twice();
+            _intr_1_3.Find_Twice();
+        }
+
         bool __s0, __s1;
         Vector3 __cpPt0, __cpPt1;
-        public void Update(LineSegment3 seg0, LineSegment3 seg1)
+        public void Update_Move(LineSegment3 seg0, LineSegment3 seg1)
         {
 
             __s0 = Misc.IsZero(_prev_seg0.origin - seg0.origin) && Misc.IsZero(_prev_seg0.last - seg0.last);

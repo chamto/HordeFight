@@ -57,7 +57,7 @@ public class Test_LineCollision : MonoBehaviour
     private Tri3 _tri1;
     private IntrTriangle3Triangle3 _intrTriTri;
 
-
+    private MovingSegement3 _moveSegment = new MovingSegement3();
     //===========================================
 
 
@@ -71,7 +71,7 @@ public class Test_LineCollision : MonoBehaviour
         
         //===============
 
-        //if (false)
+        if (false)
         {
             _tri0.Update();
             _tri1.Update();
@@ -91,6 +91,19 @@ public class Test_LineCollision : MonoBehaviour
             _tri1.Draw(Color.magenta);
             _intrTriTri.Draw(Color.red);
 
+        }
+
+        //if(false)
+        {
+            //_moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
+            //_ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
+            _moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position), 
+                                     new LineSegment3(_line1_start.position, _line1_end.position));
+
+            //DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.blue);
+            //DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.magenta);
+
+            _moveSegment.Draw();
         }
 
 
