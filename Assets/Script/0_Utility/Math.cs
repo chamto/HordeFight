@@ -761,22 +761,34 @@ namespace UtilGS9
             Vector3 v1 = P2 - P1;
             Vector3 n = Vector3.Cross(v0, v1);
 
+            //DebugWide.DrawLine(P0, P0 + n, Color.green);
+            float F_Epsilon = 0.0000001f; //교점이 선분위에 있을때를 판별하기 위한 적당히 작은값 
+            //교점이 선분위에 있으면 외적의 값이 0에 가까워 진다 (같은 방향의 벡터 외적 , sin0 = 0) 
+            //외적값이 0에 가까운지로 교점이 선분위에 있는것을 검사한다 
+            //교점이 선분위에 있으면 내적테스트와 상관없이 통과시킨다 (wTest.sqrMagnitude <= F_Epsilon)
+
             //외적의 180도 기점으로 방향이 바뀌는 점을 이용 , 벡터v0이 나누는 공간에서 어느공간에 점이 있는지 테스트하게 된다  
             Vector3 wTest = Vector3.Cross(v0, (point - P0));
-            if (Vector3.Dot(wTest, n) < 0.0f)
+            //DebugWide.DrawLine(P0, P0 + wTest, Color.yellow);
+            //DebugWide.LogBlue("0 -> "+Vector3.Dot(wTest, n));
+            if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
             }
 
             wTest = Vector3.Cross(v1, (point - P1));
-            if (Vector3.Dot(wTest, n) < 0.0f)
+            //DebugWide.DrawLine(P1, P1 + wTest, Color.white);
+            //DebugWide.LogBlue("1 -> " + Vector3.Dot(wTest, n) + "    wT:" + wTest + "  " + wTest.sqrMagnitude);
+            if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
             }
 
             Vector3 v2 = P0 - P2;
             wTest = Vector3.Cross(v2, (point - P2));
-            if (Vector3.Dot(wTest, n) < 0.0f)
+            //DebugWide.DrawLine(P2, P2 + wTest, Color.cyan);
+            //DebugWide.LogBlue("2 -> " + Vector3.Dot(wTest, n));
+            if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
             }
@@ -2263,10 +2275,9 @@ namespace UtilGS9
                         break;
                     case eIntersectionType.SEGMENT:
                         {
-                            if (Misc.IsZero(mPoint[0] - mPoint[1]))
-                                DebugWide.DrawCircle(mPoint[0], 0.05f, color);
-                            else
-                                DebugWide.DrawLine(mPoint[0],mPoint[1],color);    
+                            DebugWide.DrawCircle(mPoint[0], 0.05f, color);
+                            DebugWide.DrawCircle(mPoint[1], 0.05f, color);
+                            DebugWide.DrawLine(mPoint[0],mPoint[1],color);    
 
                         }
                         break;
@@ -2307,7 +2318,6 @@ namespace UtilGS9
 
                 // Get the plane of triangle0.
                 Plane3 plane0 = new Plane3(tri0.V[0], tri0.V[1], tri0.V[2]);
-                //Plane3 plane1 = new Plane3(mTriangle1.V[0], mTriangle1.V[1], mTriangle1.V[2]);
 
                 // Compute the signed distances of triangle1 vertices to plane0.  Use
                 // an epsilon-thick plane test.
@@ -2315,14 +2325,14 @@ namespace UtilGS9
                 int[] sign1 = new int[3];
                 float[] dist1 = new float[3];
 
+                TrianglePlaneRelations(tri1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
+
+                //Plane3 plane1 = new Plane3(tri1.V[0], tri1.V[1], tri1.V[2]);
                 //int pos2, neg2, zero2;
                 //int[] sign2 = new int[3];
                 //float[] dist2 = new float[3];
-
-                TrianglePlaneRelations(tri1, plane0, ref dist1, ref sign1, out pos1, out neg1, out zero1);
-                //DebugWide.LogBlue("  po1:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1 + "  s0:" + sign1[0] + "  s1:" + sign1[1] + "  s2:" + sign1[2] ); //chamto test
-
-                //TrianglePlaneRelations(mTriangle0, plane1, ref dist2, ref sign2, out pos2, out neg2, out zero2);
+                //TrianglePlaneRelations(tri0, plane1, ref dist2, ref sign2, out pos2, out neg2, out zero2);
+                //DebugWide.LogGreen("  po1:" + pos1 + "  ne:" + neg1 + "   ze:" + zero1 + "  s0:" + sign1[0] + "  s1:" + sign1[1] + "  s2:" + sign1[2] ); //chamto test
                 //DebugWide.LogBlue("  po2:" + pos2 + "  ne:" + neg2 + "   ze:" + zero2 + "  s0:" + sign2[0] + "  s1:" + sign2[1] + "  s2:" + sign2[2] ); //chamto test
 
                 // 삼각형의 정점이 모두 평면위쪽에 있거나 평면아래쪽에 있는 경우 
@@ -2338,7 +2348,10 @@ namespace UtilGS9
                     // Triangle1 is contained by plane0.
                     if (mReportCoplanarIntersections)
                     {
-                        //DebugWide.LogGreen("0_0---  "); //chamto test
+                        //DebugWide.LogBlue("0_0---  "); //chamto test
+
+                        //[seg0 vs point1] 로 검사시 교차하지 않는데도  point1 위치를 교차점으로 결과가 나오는 문제있음 
+                        //비삼각형 모양중 점은 아주 특수하므로 잘못된 결과를 무시한다 
                         if (Misc.IsZero(tri1.V[0] - tri1.V[1]) && Misc.IsZero(tri1.V[0] - tri1.V[2]))
                             return ContainsPoint2(tri0, tri1.V[0]);
                         
@@ -2384,7 +2397,9 @@ namespace UtilGS9
                                 //i(2) => mp(1,0)
                                 iM = (i + 2) % 3;
                                 iP = (i + 1) % 3;
+
                                 //DebugWide.LogBlue("2---"); //chamto test
+
                                 if (Misc.IsZero(tri1.V[iM] - tri1.V[iP]))
                                     return ContainsPoint2(tri0, tri1.V[iM]);
                                 
@@ -2399,7 +2414,8 @@ namespace UtilGS9
                         {
                             if (sign1[i] == 0)
                             {
-                                //DebugWide.LogGreen("1_1---  tr0:" + mTriangle0 +  "  tr1:" + mTriangle1 + "  pl0:" + plane0); //chamto test
+                                //DebugWide.LogGreen("1_1---  tr0:" + tri0 +  "  tr1:" + tri1 + "  pl0:" + plane0); //chamto test
+
                                 return ContainsPoint2(tri0, tri1.V[i]);
                             }
                         }
@@ -2441,11 +2457,12 @@ namespace UtilGS9
                             t = dist1[i] / (dist1[i] - dist1[iP]);
                             intr1 = tri1.V[i] + t * (tri1.V[iP] - tri1.V[i]);
 
-                            //DebugWide.LogBlue("3---  " + dist1[i] + "   " + dist1[iM] +  "   " + dist1[iP]); //chamto test
+                            //DebugWide.DrawCircle(intr0,0.05f,Color.green);
+                            //DebugWide.LogBlue("3---  di:" + dist1[i] + "   dm:" + dist1[iM] +  "   dp:" + dist1[iP] + "   intr0:" + intr0 + "    intr1:" + intr1); //chamto test
 
                             //intr0 과 intr1 이 같다면 점과 교차하는 처리를 한다 
                             if(Misc.IsZero(intr0 - intr1))
-                                return ContainsPoint2(tri0, intr1);
+                                return ContainsPoint2(tri0, intr0);
                             
                             return IntersectsSegment(plane0, tri0, intr0, intr1);
                         }
@@ -2467,7 +2484,9 @@ namespace UtilGS9
                             iP = (i + 1) % 3;
                             t = dist1[iM] / (dist1[iM] - dist1[iP]);
                             intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
+
                             //DebugWide.LogBlue("4---"); //chamto test
+
                             return IntersectsSegment(plane0, tri0, tri1.V[i], intr0);
                         }
                     }
