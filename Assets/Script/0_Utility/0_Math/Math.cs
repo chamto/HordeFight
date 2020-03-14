@@ -788,6 +788,12 @@ namespace UtilGS9
 
         public void Draw()
         {
+            Vector3 meetPt;
+            if( true == GetMeetPoint(out meetPt))
+            {
+                DebugWide.DrawCircle(meetPt, 0.5f, Color.red); //chamto test
+            }
+            
             if (__s0 && __s1)
             {   //선분과 선분
 
@@ -815,36 +821,85 @@ namespace UtilGS9
 
         }
 
+        //ctp : 접촉점 
+        //stand : 정렬하기 위한 기준점 
+        public void SortMinMax_ContactPt(Vector3 ctP, Vector3 stand, 
+                                         ref Vector3 minV , ref Vector3 maxV , ref float minD , ref float maxD)
+        {
+            float a = (stand - ctP).sqrMagnitude;
+            if (a <= minD)
+            {
+                minV = ctP;
+                minD = a;
+            }
+            if (a > maxD)
+            {
+                maxV = ctP;
+                maxD = a;
+            }
+        }
+
         //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
         public bool GetMeetPoint(out Vector3 meetPt)
         {
+            bool result = false;
             meetPt = ConstV.v3_zero;
             if (__s0 && __s1)
             {
                 if(true == __intr_seg_seg)
                 {
                     meetPt = __cpPt0;
+                    result = true;
                 }
             }
             else
             {
                 
-                Vector3 minV, maxV;
+                Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
+                float minD = 1000000, maxD = 0;
 
-                if (eIntersectionType.POINT == _intr_0_2.mIntersectionType)
+                for (int i = 0; i < _intr_0_2.mQuantity;i++)
                 {
-                    minV = _intr_0_2.mPoint[0];
-                    maxV = minV;
+                    //점 , 선분일때문 처리 
+                    if(2 >= _intr_0_2.mQuantity)
+                    {
+                        SortMinMax_ContactPt(_intr_0_2.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
+                        result = true;
+                    }
                 }
-                if (eIntersectionType.SEGMENT == _intr_0_2.mIntersectionType)
+                for (int i = 0; i < _intr_0_3.mQuantity; i++)
                 {
-                    minV = _intr_0_2.mPoint[0];
-                    maxV = _intr_0_2.mPoint[1];
+                    //점 , 선분일때문 처리 
+                    if (2 >= _intr_0_3.mQuantity)
+                    {
+                        SortMinMax_ContactPt(_intr_0_3.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
+                        result = true;
+                    }
                 }
+                for (int i = 0; i < _intr_1_2.mQuantity; i++)
+                {
+                    //점 , 선분일때문 처리 
+                    if (2 >= _intr_1_2.mQuantity)
+                    {
+                        SortMinMax_ContactPt(_intr_1_2.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
+                        result = true;
+                    }
+                }
+                for (int i = 0; i < _intr_1_3.mQuantity; i++)
+                {
+                    //점 , 선분일때문 처리 
+                    if (2 >= _intr_1_3.mQuantity)
+                    {
+                        SortMinMax_ContactPt(_intr_1_3.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
+                        result = true;
+                    }
+                }
+
+                meetPt = minV + (maxV - minV) * 0.5f; //중간지점을 만나는 점으로 삼는다 
 
             }
 
-            return false;
+            return result;
         }
 
         public void Update_Tetra(Vector3 aV0, Vector3 aV1, Vector3 aV2, Vector3 aV3, 
@@ -914,15 +969,24 @@ namespace UtilGS9
         public Triangle3 tri0;
         public Triangle3 tri1;
 
+        public Vector3 corner0
+        {
+            get { return tri0.V[1]; }
+        }
+        public Vector3 corner1
+        {
+            get { return tri1.V[2]; }
+        }
+
         public void Set(LineSegment3 seg0 , LineSegment3 seg1)
         {
             tri0.V[0] = seg0.origin;
-            tri0.V[1] = seg0.last;
+            tri0.V[1] = seg0.last; //모서리
             tri0.V[2] = seg1.last;
 
             tri1.V[0] = seg0.origin;
             tri1.V[1] = seg1.last;
-            tri1.V[2] = seg1.origin;
+            tri1.V[2] = seg1.origin; //모서리 
         }
 
         public void Set(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)

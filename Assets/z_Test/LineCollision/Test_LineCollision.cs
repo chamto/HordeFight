@@ -95,11 +95,11 @@ public class Test_LineCollision : MonoBehaviour
 
         //if(false)
         {
-            //_moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
-            //_ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
+            _moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
+            _ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
 
-            _moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position), 
-                                     new LineSegment3(_line1_start.position, _line1_end.position));
+            //_moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position), 
+                                     //new LineSegment3(_line1_start.position, _line1_end.position));
 
             //DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.blue);
             //DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.magenta);
