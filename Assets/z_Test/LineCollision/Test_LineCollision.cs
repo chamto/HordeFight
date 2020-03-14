@@ -97,6 +97,7 @@ public class Test_LineCollision : MonoBehaviour
         {
             //_moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
             //_ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
+
             _moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position), 
                                      new LineSegment3(_line1_start.position, _line1_end.position));
 
@@ -147,16 +148,20 @@ public class Test_LineCollision : MonoBehaviour
 
         Transform tetra_tetra = Hierarchy.GetTransform(transform.parent, "tetra_tetra");
         Transform tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_0");
+
+        //v1  - v2
+        // |  /  |   
+        //v0  - v3
         _ts_seg0_s = Hierarchy.GetTransform(tetra, "v0");
         _ts_seg0_e = Hierarchy.GetTransform(tetra, "v1");
-        _ts_seg1_s = Hierarchy.GetTransform(tetra, "v2");
-        _ts_seg1_e = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg1_s = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg1_e = Hierarchy.GetTransform(tetra, "v2");
 
         tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_1");
         _ts_seg2_s = Hierarchy.GetTransform(tetra, "v0");
         _ts_seg2_e = Hierarchy.GetTransform(tetra, "v1");
-        _ts_seg3_s = Hierarchy.GetTransform(tetra, "v2");
-        _ts_seg3_e = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg3_s = Hierarchy.GetTransform(tetra, "v3");
+        _ts_seg3_e = Hierarchy.GetTransform(tetra, "v2");
 
         //===========================================
 

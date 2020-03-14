@@ -514,6 +514,7 @@ namespace UtilGS9
         public void Draw(Color color)
         {
             DebugWide.DrawLine(origin, last, color);
+            DebugWide.DrawCircle(origin, 0.05f, color);
         }
 
 
@@ -792,9 +793,13 @@ namespace UtilGS9
 
                 _prev_seg0.Draw(Color.blue);
                 _prev_seg1.Draw(Color.magenta);
-                DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
-                DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
-                DebugWide.DrawLine(__cpPt0, __cpPt1,Color.red);
+                if(true == __intr_seg_seg)
+                {
+                    DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
+                    //DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
+                    //DebugWide.DrawLine(__cpPt0, __cpPt1, Color.red);    
+                }
+
 
             }
             else
@@ -808,6 +813,38 @@ namespace UtilGS9
                 _intr_1_3.Draw(Color.red);
             }
 
+        }
+
+        //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
+        public bool GetMeetPoint(out Vector3 meetPt)
+        {
+            meetPt = ConstV.v3_zero;
+            if (__s0 && __s1)
+            {
+                if(true == __intr_seg_seg)
+                {
+                    meetPt = __cpPt0;
+                }
+            }
+            else
+            {
+                
+                Vector3 minV, maxV;
+
+                if (eIntersectionType.POINT == _intr_0_2.mIntersectionType)
+                {
+                    minV = _intr_0_2.mPoint[0];
+                    maxV = minV;
+                }
+                if (eIntersectionType.SEGMENT == _intr_0_2.mIntersectionType)
+                {
+                    minV = _intr_0_2.mPoint[0];
+                    maxV = _intr_0_2.mPoint[1];
+                }
+
+            }
+
+            return false;
         }
 
         public void Update_Tetra(Vector3 aV0, Vector3 aV1, Vector3 aV2, Vector3 aV3, 
@@ -825,7 +862,9 @@ namespace UtilGS9
         }
 
         bool __s0, __s1;
-        Vector3 __cpPt0, __cpPt1;
+        bool __intr_seg_seg = false;
+        float __cpS, __cpT;
+        Vector3 __cpPt0;
         public void Update_Move(LineSegment3 seg0, LineSegment3 seg1)
         {
 
@@ -838,8 +877,15 @@ namespace UtilGS9
 
             if (__s0 && __s1)
             {   //선분과 선분
-                
-                LineSegment3.ClosestPoints(out __cpPt0, out __cpPt1, seg0, seg1);
+
+                //LineSegment3.ClosestPoints(out __cpPt0, out __cpPt1, seg0, seg1);
+                __intr_seg_seg = false;
+                if(0.00001f > LineSegment3.DistanceSquared(seg0, seg1, out __cpS, out __cpT))
+                {
+                    __cpPt0 = seg0.origin + seg0.direction * __cpS;
+                    __intr_seg_seg = true;
+                }
+
 
             }
             else
@@ -858,47 +904,58 @@ namespace UtilGS9
 
     public struct Tetragon3
     {
-        //v0    v1
-        //
-        //v2    v3
-        //v0 - v1 - v2 , v2 - v1 - v3
+        //v1  - v2
+        // |  /  |   
+        //v0  - v3
+        //v0 - v1 - v2 , v0 - v2 - v3
+
+        //a0 - a1 - a2 , b0 - b1 - b2
+        //seg0 : a0 - a1 , seg1 : b2 - b1
         public Triangle3 tri0;
         public Triangle3 tri1;
 
         public void Set(LineSegment3 seg0 , LineSegment3 seg1)
         {
-            tri0.V[0] = seg0.last;
-            tri0.V[1] = seg0.origin;
-            tri0.V[2] = seg1.origin;
+            tri0.V[0] = seg0.origin;
+            tri0.V[1] = seg0.last;
+            tri0.V[2] = seg1.last;
 
-            tri1.V[0] = seg0.last;
-            tri1.V[1] = seg1.origin;
-            tri1.V[2] = seg1.last;
+            tri1.V[0] = seg0.origin;
+            tri1.V[1] = seg1.last;
+            tri1.V[2] = seg1.origin;
         }
 
         public void Set(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
         {
-            tri0.V[0] = seg0_e;
-            tri0.V[1] = seg0_s;
-            tri0.V[2] = seg1_s;
+            tri0.V[0] = seg0_s;
+            tri0.V[1] = seg0_e;
+            tri0.V[2] = seg1_e;
 
-            tri1.V[0] = seg0_e;
-            tri1.V[1] = seg1_s;
-            tri1.V[2] = seg1_e;
+            tri1.V[0] = seg0_s;
+            tri1.V[1] = seg1_e;
+            tri1.V[2] = seg1_s;
         }
 
         public void Draw(Color color)
         {
-            DebugWide.DrawLine(tri0.V[0], tri0.V[1], color);
-            DebugWide.DrawLine(tri0.V[0], tri0.V[2], color);
-            DebugWide.DrawLine(tri0.V[1], tri0.V[2], color);
+            //v1  - v2
+            // |  /  |   
+            //v0  - v3
+            Color cc = Color.gray;
+            //DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
+            DebugWide.DrawLine(tri0.V[1], tri0.V[2], cc);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[2], cc);
 
-            DebugWide.DrawLine(tri1.V[0], tri1.V[2], color);
-            DebugWide.DrawLine(tri1.V[1], tri1.V[2], color);
+            //DebugWide.DrawLine(tri1.V[2], tri1.V[1], color);
+            DebugWide.DrawLine(tri1.V[0], tri1.V[2], cc);
 
             //선분출력
-            //DebugWide.DrawLine(tri0.V[1], tri0.V[0], Color.red);
-            //DebugWide.DrawLine(tri1.V[1], tri1.V[2], Color.red);
+            cc = color;
+            DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
+            DebugWide.DrawLine(tri1.V[2], tri1.V[1], cc);
+            DebugWide.DrawCircle(tri0.V[0], 0.05f, cc); //선분 시작점
+            DebugWide.DrawCircle(tri1.V[2], 0.05f, cc); //선분 시작점
+
         }
     }
 
