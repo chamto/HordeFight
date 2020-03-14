@@ -858,37 +858,38 @@ namespace UtilGS9
                 Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
                 float minD = 1000000, maxD = 0;
 
-                for (int i = 0; i < _intr_0_2.mQuantity;i++)
+                int count = 2;
+                for (int i = 0; i < count;i++)
                 {
                     //점 , 선분일때문 처리 
-                    if(2 >= _intr_0_2.mQuantity)
+                    if(i < _intr_0_2.mQuantity)
                     {
                         SortMinMax_ContactPt(_intr_0_2.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
                         result = true;
                     }
                 }
-                for (int i = 0; i < _intr_0_3.mQuantity; i++)
+                for (int i = 0; i < count; i++)
                 {
                     //점 , 선분일때문 처리 
-                    if (2 >= _intr_0_3.mQuantity)
+                    if (i < _intr_0_3.mQuantity)
                     {
                         SortMinMax_ContactPt(_intr_0_3.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
                         result = true;
                     }
                 }
-                for (int i = 0; i < _intr_1_2.mQuantity; i++)
+                for (int i = 0; i < count; i++)
                 {
                     //점 , 선분일때문 처리 
-                    if (2 >= _intr_1_2.mQuantity)
+                    if (i < _intr_1_2.mQuantity)
                     {
                         SortMinMax_ContactPt(_intr_1_2.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
                         result = true;
                     }
                 }
-                for (int i = 0; i < _intr_1_3.mQuantity; i++)
+                for (int i = 0; i < count; i++)
                 {
                     //점 , 선분일때문 처리 
-                    if (2 >= _intr_1_3.mQuantity)
+                    if (i < _intr_1_3.mQuantity)
                     {
                         SortMinMax_ContactPt(_intr_1_3.mPoint[i], _tetr01.corner0, ref minV, ref maxV, ref minD, ref maxD);
                         result = true;
