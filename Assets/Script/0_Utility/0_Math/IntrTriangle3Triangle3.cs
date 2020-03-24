@@ -613,6 +613,15 @@ namespace UtilGS9
 
         public eIntersectionType mIntersectionType;
 
+        public override string ToString()
+        {
+            string temp =  "";
+            for(int i=0;i<6;i++)
+            {
+                temp += mPoint[i] + "  ";
+            }
+            return  mIntersectionType.ToString() + " q: " + mQuantity + "   pt: " + temp;
+        }
 
         //--------------------------------------------------
 

@@ -95,7 +95,8 @@ public class Test_LineCollision : MonoBehaviour
 
         //if(false)
         {
-            
+            DebugWide.DrawLine(_line0_start.position, _line0_end.position, Color.green);
+            DebugWide.DrawLine(_line1_start.position, _line1_end.position, Color.green);
             _moveSegment.Draw();
         }
 
@@ -144,16 +145,16 @@ public class Test_LineCollision : MonoBehaviour
         //v1  - v2
         // |  /  |   
         //v0  - v3
-        _ts_seg0_s = Hierarchy.GetTransform(tetra, "v0");
-        _ts_seg0_e = Hierarchy.GetTransform(tetra, "v1");
-        _ts_seg1_s = Hierarchy.GetTransform(tetra, "v3");
-        _ts_seg1_e = Hierarchy.GetTransform(tetra, "v2");
+        _ts_seg0_s = Hierarchy.GetTransform(tetra, "s0_s");
+        _ts_seg0_e = Hierarchy.GetTransform(tetra, "s0_e");
+        _ts_seg1_s = Hierarchy.GetTransform(tetra, "s1_s");
+        _ts_seg1_e = Hierarchy.GetTransform(tetra, "s1_e");
 
         tetra = Hierarchy.GetTransform(tetra_tetra, "tetra_1");
-        _ts_seg2_s = Hierarchy.GetTransform(tetra, "v0");
-        _ts_seg2_e = Hierarchy.GetTransform(tetra, "v1");
-        _ts_seg3_s = Hierarchy.GetTransform(tetra, "v3");
-        _ts_seg3_e = Hierarchy.GetTransform(tetra, "v2");
+        _ts_seg2_s = Hierarchy.GetTransform(tetra, "s0_s");
+        _ts_seg2_e = Hierarchy.GetTransform(tetra, "s0_e");
+        _ts_seg3_s = Hierarchy.GetTransform(tetra, "s1_s");
+        _ts_seg3_e = Hierarchy.GetTransform(tetra, "s1_e");
 
         //===========================================
 
@@ -176,8 +177,21 @@ public class Test_LineCollision : MonoBehaviour
 
         //_moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position),
                                  //new LineSegment3(_line1_start.position, _line1_end.position));
-        
 
+        LineSegment3 segA, segB;
+        _moveSegment.CalcSegment_FromContactPt(out segA, out segB);
+        _line0_start.position = segA.origin;
+        _line0_end.position = segA.last;
+        _line1_start.position = segB.origin;
+        _line1_end.position = segB.last;
+
+        _moveSegment.Update_After();
+        //Vector3 meetPt;
+        //if(true == _moveSegment.GetMeetPoint(out meetPt))
+        //{
+        //    float leng = (_line0_start.position - _line0_end.position).magnitude;
+        //    _line0_end.position = _line0_start.position + leng * (meetPt - _line0_start.position).normalized;
+        //}
         //===========================================
 
         //float s, t;
