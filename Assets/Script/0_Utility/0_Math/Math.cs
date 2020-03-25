@@ -876,8 +876,43 @@ namespace UtilGS9
             return result;
         }
 
-        //fixme : 알고리즘 문제 있음. 다시 작성하기 
         private void CalcSegment(Vector3 meetPt, LineSegment3 start, LineSegment3 end, out LineSegment3 newSeg)
+        {
+
+            Vector3 v_up = end.last - start.last;
+            Vector3 v_down = end.origin - start.origin;
+            float len_up = v_up.sqrMagnitude;
+            float len_down = v_down.sqrMagnitude;
+
+            Vector3 n_left = VOp.Normalize(start.direction);
+            Vector3 n_right = VOp.Normalize(end.direction);
+            float len_proj_left = Vector3.Dot(n_left, (meetPt - start.origin));
+            float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
+            float len_perp_left = ((n_left * len_proj_left) - meetPt).magnitude;
+            float len_perp_right = ((n_right * len_proj_right) - meetPt).magnitude;
+            float rate = len_proj_left / (len_proj_left + len_proj_right);
+
+            Vector3 origin, last;
+            float len_start = start.direction.magnitude;
+            //작은쪽을 선택 
+            if(len_up > len_down)
+            {
+                origin = v_down * rate + start.origin;
+
+                last = VOp.Normalize(meetPt - origin) * len_start + origin;
+
+            }else
+            {
+                origin = v_up * rate + start.last;
+
+                last = VOp.Normalize(meetPt - origin) * len_start + origin;
+            }
+            newSeg = new LineSegment3(origin, last);
+
+        }
+
+        //잘못작성된 알고리즘 
+        private void CalcSegment000(Vector3 meetPt, LineSegment3 start, LineSegment3 end, out LineSegment3 newSeg)
         {
             Vector3 v_top = end.last - start.last;
             Vector3 v_bottom = end.origin - start.origin;
@@ -1009,6 +1044,7 @@ namespace UtilGS9
 
                     }
                     //사각꼴과 사각꼴이 같은 평면에서 만난경우 
+                    //(false == __b_A && false == __b_B)
                     else
                     {
                         DebugWide.LogBlue("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
@@ -1017,6 +1053,7 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {   
+                    DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
                     Vector3 minV, maxV;
                     result = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 2);
                     meetPt = minV + (maxV - minV) * 0.5f; //중간지점을 만나는 점으로 삼는다 
