@@ -860,21 +860,25 @@ namespace UtilGS9
                 {
                     SortMinMax(_intr_0_2.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
+                    DebugWide.LogBlue("    i02:"+_intr_0_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_0_3.mQuantity)
                 {
                     SortMinMax(_intr_0_3.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
+                    DebugWide.LogBlue("    i03:" + _intr_0_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_1_2.mQuantity)
                 {
                     SortMinMax(_intr_1_2.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
+                    DebugWide.LogBlue("    i12:" + _intr_1_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_1_3.mQuantity)
                 {
                     SortMinMax(_intr_1_3.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
+                    DebugWide.LogBlue("    i13:" + _intr_1_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
             }
             return result;
@@ -892,8 +896,8 @@ namespace UtilGS9
             Vector3 n_right = VOp.Normalize(end.direction);
             float len_proj_left = Vector3.Dot(n_left, (meetPt - start.origin));
             float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
-            float len_perp_left = ((n_left * len_proj_left) - meetPt).magnitude;
-            float len_perp_right = ((n_right * len_proj_right) - meetPt).magnitude;
+            float len_perp_left = ((n_left * len_proj_left + start.origin) - meetPt).magnitude;
+            float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
             float rate = len_perp_left / (len_perp_left + len_perp_right);
 
             Vector3 origin, last;
