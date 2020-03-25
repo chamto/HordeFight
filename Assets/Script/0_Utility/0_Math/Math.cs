@@ -818,6 +818,10 @@ namespace UtilGS9
                 _intr_0_3.Draw(Color.red);
                 _intr_1_2.Draw(Color.red);
                 _intr_1_3.Draw(Color.red);
+
+                //min, max
+                DebugWide.DrawCircle(__minV, 0.02f, Color.white);
+                DebugWide.DrawCircle(__maxV, 0.04f, Color.white);
             }
 
         }
@@ -890,7 +894,7 @@ namespace UtilGS9
             float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
             float len_perp_left = ((n_left * len_proj_left) - meetPt).magnitude;
             float len_perp_right = ((n_right * len_proj_right) - meetPt).magnitude;
-            float rate = len_proj_left / (len_proj_left + len_proj_right);
+            float rate = len_perp_left / (len_perp_left + len_perp_right);
 
             Vector3 origin, last;
             float len_start = start.direction.magnitude;
@@ -911,42 +915,6 @@ namespace UtilGS9
 
         }
 
-        //잘못작성된 알고리즘 
-        private void CalcSegment000(Vector3 meetPt, LineSegment3 start, LineSegment3 end, out LineSegment3 newSeg)
-        {
-            Vector3 v_top = end.last - start.last;
-            Vector3 v_bottom = end.origin - start.origin;
-            float len_top = v_top.magnitude;
-            float len_bottom = v_bottom.magnitude;
-
-            if (len_top > float.Epsilon) 
-            {
-                v_top = v_top / len_top;
-                float len_s = Vector3.Dot(v_top, (meetPt - start.last));
-                float s = len_s / len_top;
-                v_top *= s;
-                v_top += start.last;
-            }else
-            {
-                v_top = start.last;
-            }
-            if (len_bottom > float.Epsilon)
-            {
-                v_bottom = v_bottom / len_bottom;
-                float len_t = Vector3.Dot(v_bottom, (meetPt - start.origin));
-                float t = len_t / len_bottom;
-                v_bottom *= t;
-                v_bottom += start.origin;
-            }
-            else
-            {
-                v_bottom = start.origin;
-            }
-
-            DebugWide.LogBlue(len_top + "   " + len_bottom); //chamto test
-
-            newSeg = new LineSegment3(v_bottom, v_top);
-        }
 
         //최종 접촉점을 지나는 선분을 구함
         public void CalcSegment_FromContactPt(out LineSegment3 segA , out LineSegment3 segB)
@@ -975,7 +943,7 @@ namespace UtilGS9
         }
 
 
-
+        Vector3 __minV, __maxV;
         //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
         public bool GetMeetPoint(out Vector3 meetPt)
         {
@@ -1017,28 +985,28 @@ namespace UtilGS9
                     if (__b_A || __b_B)
                     {
                         
-                        Vector3 minV , maxV;
+                        //Vector3 __minV , __maxV;
 
                         if(true == __b_A)
                         {
-                            result = GetMinMax_ContactPt(_cur_seg_B.origin, out minV, out maxV, 4);
-                            if(0 < Vector3.Dot(__dir_B, (minV-maxV)))
+                            result = GetMinMax_ContactPt(_prev_seg_B.origin, out __minV, out __maxV, 4);
+                            if(0 < Vector3.Dot(__dir_B, (__minV-__maxV)))
                             {
-                                meetPt = maxV;
+                                meetPt = __maxV;
                             }else
                             {
-                                meetPt = minV;
+                                meetPt = __minV;
                             }
                         }else
                         {
-                            result = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 4);
-                            if (0 < Vector3.Dot(__dir_A, (minV - maxV)))
+                            result = GetMinMax_ContactPt(_prev_seg_A.origin, out __minV, out __maxV, 4);
+                            if (0 < Vector3.Dot(__dir_A, (__minV - __maxV)))
                             {
-                                meetPt = maxV;
+                                meetPt = __maxV;
                             }
                             else
                             {
-                                meetPt = minV;
+                                meetPt = __minV;
                             }
                         }
 
