@@ -172,11 +172,11 @@ public class Test_LineCollision : MonoBehaviour
 	void Update () 
     {
 
-        _moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
-        _ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
+        //_moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
+        //_ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
 
-        //_moveSegment.Find(new LineSegment3(_line0_start.position, _line0_end.position),
-                                 //new LineSegment3(_line1_start.position, _line1_end.position));
+        _moveSegment.Find(new LineSegment3(_line0_start.position, _line0_end.position),
+                                 new LineSegment3(_line1_start.position, _line1_end.position));
 
         LineSegment3 segA, segB;
         _moveSegment.CalcSegment_FromContactPt(out segA, out segB);

@@ -151,56 +151,65 @@ namespace UtilGS9
         /// last : 선분의 끝점
         /// </summary>
         /// 
-        public Vector3 direction;
+        //public Vector3 direction;
         public Vector3 origin;
+        public Vector3 last;
 
         public LineSegment3(Vector3 in_origin, Vector3 in_last)
         {
             origin = in_origin;
-            direction = in_last - in_origin;
+            //direction = in_last - in_origin;
+            last = in_last;
         }
 
-        public Vector3 last
+        public Vector3 direction
         {
             get
             {
-                return origin + direction;
+                return last - origin;
             }
+        }
+        //public Vector3 last
+        //{
+        //    get
+        //    {
+        //        return origin + direction;
+        //    }
 
-            set
-            {
-                direction = value - origin;
-            }
-        }
-        public float last_x
-        {
-            set
-            {
-                direction.x = value - origin.x;
-            }
-        }
-        public float last_y
-        {
-            set
-            {
-                direction.y = value - origin.y;
-            }
-        }
-        public float last_z
-        {
-            set
-            {
-                direction.z = value - origin.z;
-            }
-        }
+        //    //set
+        //    //{
+        //    //    direction = value - origin;
+        //    //}
+        //}
+        //public float last_x
+        //{
+        //    set
+        //    {
+        //        direction.x = value - origin.x;
+        //    }
+        //}
+        //public float last_y
+        //{
+        //    set
+        //    {
+        //        direction.y = value - origin.y;
+        //    }
+        //}
+        //public float last_z
+        //{
+        //    set
+        //    {
+        //        direction.z = value - origin.z;
+        //    }
+        //}
 
         public static LineSegment3 zero
         {
             get
             {
                 LineSegment3 l = new LineSegment3();
-                l.direction = Vector3.zero;
-                l.origin = Vector3.zero;
+                l.last = ConstV.v3_zero;
+                l.origin = ConstV.v3_zero;
                 return l;
             }
         }
@@ -946,6 +955,9 @@ namespace UtilGS9
 
                 }
             }
+
+            _prev_seg_A = segA;
+            _prev_seg_B = segB;
         }
 
 
@@ -1037,6 +1049,17 @@ namespace UtilGS9
             }
 
             return result;
+        }
+
+        //작성중 **
+        //붙어있는 두선분을 떨어뜨리기
+        public void Dropping()
+        {
+            //방향성 정보가 없는 경우
+            Vector3 up = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
+            up = VOp.Normalize(up);
+            //_cur_seg_A.
+            //방향성 정보가 있는 경우 
         }
 
         public void Update_Tetra(Vector3 a0_s, Vector3 a0_e, Vector3 a1_s, Vector3 a1_e, 

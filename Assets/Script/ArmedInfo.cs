@@ -58,7 +58,8 @@ namespace HordeFight
             _tr_arm.rotation = parent.rotation;
 
             _line.origin = _arm_start.position;
-            _line.direction = _arm_end.position - _line.origin;
+            //_line.direction = _arm_end.position - _line.origin;
+            _line.last = _arm_end.position;
         }
 
         public void SetActive(bool value)
