@@ -792,6 +792,7 @@ namespace UtilGS9
             Vector3 meetPt;
             if( true == GetMeetPoint(out meetPt))
             {
+                //DebugWide.LogRed(meetPt); //chamto test
                 DebugWide.DrawCircle(meetPt, 0.5f, Color.red); //chamto test
             }
             
@@ -860,25 +861,25 @@ namespace UtilGS9
                 {
                     SortMinMax(_intr_0_2.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
-                    DebugWide.LogBlue("    i02:"+_intr_0_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
+                    //DebugWide.LogBlue("    i02:"+_intr_0_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_0_3.mQuantity)
                 {
                     SortMinMax(_intr_0_3.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
-                    DebugWide.LogBlue("    i03:" + _intr_0_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
+                    //DebugWide.LogBlue("    i03:" + _intr_0_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_1_2.mQuantity)
                 {
                     SortMinMax(_intr_1_2.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
-                    DebugWide.LogBlue("    i12:" + _intr_1_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
+                    //DebugWide.LogBlue("    i12:" + _intr_1_2.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
                 if (i < _intr_1_3.mQuantity)
                 {
                     SortMinMax(_intr_1_3.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
                     result = true;
-                    DebugWide.LogBlue("    i13:" + _intr_1_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
+                    //DebugWide.LogBlue("    i13:" + _intr_1_3.mPoint[i] + "   min:" + minV + "   max:" + maxV);
                 }
             }
             return result;
@@ -929,6 +930,7 @@ namespace UtilGS9
             Vector3 meetPt;
             if(true == GetMeetPoint(out meetPt))
             {
+                //DebugWide.LogRed(meetPt); //chamto test
                 if(true == __b_A && false == __b_B )
                 {
                     CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out segB);
@@ -1068,7 +1070,7 @@ namespace UtilGS9
         Vector3 __cpPt0;
         public Vector3 __dir_A = ConstV.v3_zero;
         public Vector3 __dir_B = ConstV.v3_zero;
-        public void Update_Move(LineSegment3 segA, LineSegment3 segB)
+        public void Find(LineSegment3 segA, LineSegment3 segB)
         {
 
             _cur_seg_A = segA;
@@ -1110,7 +1112,8 @@ namespace UtilGS9
             //_prev_seg_B = segB;
         }
 
-        public void Update_After()
+        //Find 이후 호출되어야 한다 
+        public void Find_After()
         {
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;

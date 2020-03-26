@@ -175,7 +175,7 @@ public class Test_LineCollision : MonoBehaviour
         _moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
         _ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
 
-        //_moveSegment.Update_Move(new LineSegment3(_line0_start.position, _line0_end.position),
+        //_moveSegment.Find(new LineSegment3(_line0_start.position, _line0_end.position),
                                  //new LineSegment3(_line1_start.position, _line1_end.position));
 
         LineSegment3 segA, segB;
@@ -185,7 +185,8 @@ public class Test_LineCollision : MonoBehaviour
         _line1_start.position = segB.origin;
         _line1_end.position = segB.last;
 
-        _moveSegment.Update_After();
+        //_moveSegment.Find_After(); //Find 와 짝으로 사용되어야 함 
+
         //Vector3 meetPt;
         //if(true == _moveSegment.GetMeetPoint(out meetPt))
         //{
