@@ -962,7 +962,7 @@ namespace UtilGS9
                 }
 
 
-                //Dropping();
+                Dropping();
             }
 
             _prev_seg_A = _cur_seg_A;
@@ -978,8 +978,10 @@ namespace UtilGS9
 
             float RADIUS = 0.01f;
             bool zero_a, zero_b;
-            zero_a = Misc.IsZero(__dir_A, 0.00001f);
-            zero_b = Misc.IsZero(__dir_B, 0.00001f);
+            float sensibility = float.Epsilon; //이 값이 크면 zero로 판단하는 영역이 커진다 
+            //float sensibility = 0.0000000001f;
+            zero_a = Misc.IsZero(__dir_A, sensibility);
+            zero_b = Misc.IsZero(__dir_B, sensibility);
             Vector3 n_dir;
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
@@ -995,15 +997,17 @@ namespace UtilGS9
             //방향성 정보가 있는 경우 
             else
             {
-                DebugWide.LogGreen("___non_zero");
+                //DebugWide.LogGreen("___non_zero" + __dir_A + "   " + __dir_B);
                 if (false == zero_a)
                 {
+                    DebugWide.LogGreen("___non_zero_a" + __dir_A);
                     n_dir = VOp.Normalize(__dir_A);
                     _cur_seg_A.origin = _cur_seg_A.origin + n_dir * -RADIUS;
                     _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
                 }
                 if (false == zero_b)
                 {
+                    DebugWide.LogGreen("___non_zero_b" + __dir_B);
                     n_dir = VOp.Normalize(__dir_B);
                     _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
                     _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
@@ -1035,17 +1039,17 @@ namespace UtilGS9
             }
             else
             {
-                if (0 != _intr_0_2.mQuantity ||
-                    0 != _intr_0_3.mQuantity ||
-                    0 != _intr_1_2.mQuantity ||
-                    0 != _intr_1_3.mQuantity)
-                {
-                    DebugWide.LogBlue("----- intr -----  " + __isSeg_A + "  " + __isSeg_B);
-                    DebugWide.LogBlue("intr_0_2  " + _intr_0_2.ToString());
-                    DebugWide.LogBlue("intr_0_3  " + _intr_0_3.ToString());
-                    DebugWide.LogBlue("intr_1_2  " + _intr_1_2.ToString());
-                    DebugWide.LogBlue("intr_1_3  " + _intr_1_3.ToString());
-                }
+                //if (0 != _intr_0_2.mQuantity ||
+                //    0 != _intr_0_3.mQuantity ||
+                //    0 != _intr_1_2.mQuantity ||
+                //    0 != _intr_1_3.mQuantity)
+                //{
+                //    DebugWide.LogBlue("----- intr -----  " + __isSeg_A + "  " + __isSeg_B);
+                //    DebugWide.LogBlue("intr_0_2  " + _intr_0_2.ToString());
+                //    DebugWide.LogBlue("intr_0_3  " + _intr_0_3.ToString());
+                //    DebugWide.LogBlue("intr_1_2  " + _intr_1_2.ToString());
+                //    DebugWide.LogBlue("intr_1_3  " + _intr_1_3.ToString());
+                //}
 
 
                 //사각꼴이 서로 같은 평면에서 만난경우
