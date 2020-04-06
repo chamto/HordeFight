@@ -935,13 +935,56 @@ namespace UtilGS9
 
         }
 
+        //fixedOriginPt : 고정된 새로운 선분의 출발점 
+        private void CalcSegment(bool allowFixed, Vector3 fixedOriginPt, Vector3 meetPt, LineSegment3 start, LineSegment3 end, out LineSegment3 newSeg)
+        {
+            Vector3 origin, last;
+            float len_start = start.direction.magnitude;
+
+            if(allowFixed)
+            {
+                origin = fixedOriginPt;
+                last = VOp.Normalize(meetPt - origin) * len_start + origin;    
+            }else
+            {
+                Vector3 v_up = end.last - start.last;
+                Vector3 v_down = end.origin - start.origin;
+                float len_up = v_up.sqrMagnitude;
+                float len_down = v_down.sqrMagnitude;
+
+                Vector3 n_left = VOp.Normalize(start.direction);
+                Vector3 n_right = VOp.Normalize(end.direction);
+                float len_proj_left = Vector3.Dot(n_left, (meetPt - start.origin));
+                float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
+                float len_perp_left = ((n_left * len_proj_left + start.origin) - meetPt).magnitude;
+                float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
+                float rate = len_perp_left / (len_perp_left + len_perp_right);
+
+
+                //작은쪽을 선택 
+                if (len_up > len_down)
+                {
+                    origin = v_down * rate + start.origin;
+
+                    last = VOp.Normalize(meetPt - origin) * len_start + origin;
+
+                }
+                else
+                {
+                    last = v_up * rate + start.last;
+
+                    origin = VOp.Normalize(meetPt - last) * len_start + last;
+                }
+            }
+
+
+            newSeg = new LineSegment3(origin, last);
+        }
 
         //최종 접촉점을 지나는 선분을 구함
         public void CalcSegment_FromContactPt()
         {
-            //segA = _cur_seg_A;
-            //segB = _cur_seg_B;
-
+            
             Vector3 meetPt;
             if(true == GetMeetPoint(out meetPt))
             {
@@ -969,6 +1012,34 @@ namespace UtilGS9
             _prev_seg_B = _cur_seg_B;
         }
 
+        public void CalcSegment_FromContactPt(bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+        {
+
+            Vector3 meetPt;
+            if (true == GetMeetPoint(out meetPt))
+            {
+                //DebugWide.LogRed(meetPt); //chamto test
+                if (true == __isSeg_A && false == __isSeg_B)
+                {
+                    CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                }
+                else if (false == __isSeg_A && true == __isSeg_B)
+                {
+                    CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                }
+                else if (false == __isSeg_A && false == __isSeg_B)
+                {
+                    CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                }
+
+                Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
+            }
+
+            _prev_seg_A = _cur_seg_A;
+            _prev_seg_B = _cur_seg_B;
+        }
+
 
         //붙어있는 두선분을 떨어뜨리기
         public void Dropping()
@@ -986,7 +1057,7 @@ namespace UtilGS9
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
             {
-                DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
+                //DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
                 n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
                 n_dir = VOp.Normalize(n_dir);
                 _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS;
@@ -997,26 +1068,116 @@ namespace UtilGS9
             //방향성 정보가 있는 경우 
             else
             {
-                //DebugWide.LogGreen("___non_zero" + __dir_A + "   " + __dir_B);
                 if (false == zero_a)
                 {
-                    DebugWide.LogGreen("___non_zero_a" + __dir_A);
+                    //DebugWide.LogGreen("___non_zero_a" + __dir_A);
                     n_dir = VOp.Normalize(__dir_A);
                     _cur_seg_A.origin = _cur_seg_A.origin + n_dir * -RADIUS;
                     _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
                 }
                 if (false == zero_b)
                 {
-                    DebugWide.LogGreen("___non_zero_b" + __dir_B);
+                    //DebugWide.LogGreen("___non_zero_b" + __dir_B);
                     n_dir = VOp.Normalize(__dir_B);
                     _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
                     _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
                 }
             }
 
-            //_prev_seg_A = _cur_seg_A;
-            //_prev_seg_B = _cur_seg_B;
+        }
 
+
+        public void Dropping(bool allowFixed_a, bool allowFixed_b, Vector3 meetPt, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+        {
+            __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
+            __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
+
+            float RADIUS = 0.01f;
+            float ANGLE = 0.1f;
+            bool zero_a, zero_b;
+            float sensibility = float.Epsilon; //이 값이 크면 zero로 판단하는 영역이 커진다 
+            //float sensibility = 0.0000000001f;
+            zero_a = Misc.IsZero(__dir_A, sensibility);
+            zero_b = Misc.IsZero(__dir_B, sensibility);
+            Vector3 n_dir;
+            //방향성 정보가 없는 경우
+            if (zero_a && zero_b)
+            {
+                //DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
+                n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
+                n_dir = VOp.Normalize(n_dir);
+
+
+                if (allowFixed_a)
+                {
+                    float len = _cur_seg_A.Length();
+                    _cur_seg_A.origin = fixedOriginPt_a;
+                    _cur_seg_A.last = fixedOriginPt_a + VOp.Normalize(meetPt - fixedOriginPt_a) * len;
+                    Vector3 axis = Vector3.Cross(_cur_seg_A.direction, n_dir);
+                    _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + fixedOriginPt_a;
+                }
+                else
+                {
+                    _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS;
+                    _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS;
+                }
+
+                //====
+                if (allowFixed_b)
+                {
+                    float len = _cur_seg_B.Length();
+                    _cur_seg_B.origin = fixedOriginPt_b;
+                    _cur_seg_B.last = fixedOriginPt_b + VOp.Normalize(meetPt - fixedOriginPt_b) * len;
+                    Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
+                    _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + fixedOriginPt_b;
+                }
+                else
+                {
+                    _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
+                    _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
+                }
+            }
+            //방향성 정보가 있는 경우 
+            else
+            {
+                if (false == zero_a)
+                {
+                    //DebugWide.LogGreen("___non_zero_a" + __dir_A);
+                    n_dir = VOp.Normalize(__dir_A);
+                    if(allowFixed_a)
+                    {
+                        float len = _cur_seg_A.Length();
+                        _cur_seg_A.origin = fixedOriginPt_a;
+                        _cur_seg_A.last = fixedOriginPt_a + VOp.Normalize(meetPt - fixedOriginPt_a) * len;
+                        Vector3 axis = Vector3.Cross(_cur_seg_A.direction, -n_dir);
+                        _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + fixedOriginPt_a;
+                    }
+                    else
+                    {
+                        _cur_seg_A.origin = _cur_seg_A.origin + n_dir * -RADIUS;
+                        _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
+                    }
+
+                }
+                if (false == zero_b)
+                {
+                    //DebugWide.LogGreen("___non_zero_b" + __dir_B);
+                    n_dir = VOp.Normalize(__dir_B);
+                    if (allowFixed_b)
+                    {
+                        float len = _cur_seg_B.Length();
+                        _cur_seg_B.origin = fixedOriginPt_b;
+                        _cur_seg_B.last = fixedOriginPt_b + VOp.Normalize(meetPt - fixedOriginPt_b) * len;
+                        Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
+                        _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + fixedOriginPt_b;
+                    }
+                    else
+                    {
+                        _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
+                        _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
+                    }
+                }
+            }
         }
 
 
@@ -1062,8 +1223,6 @@ namespace UtilGS9
                     if (__isSeg_A || __isSeg_B)
                     {
                         
-                        //Vector3 __minV , __maxV;
-
                         if(true == __isSeg_A)
                         {
                             result = GetMinMax_ContactPt(_prev_seg_B.origin, out __minV, out __maxV, 4);
@@ -1092,13 +1251,14 @@ namespace UtilGS9
                     //(false == __b_A && false == __b_B)
                     else
                     {
-                        DebugWide.LogBlue("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
+                        DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
+                        //todo : 두 평면의 겹치는 영역에서 한점을 선택해야 한다. 추후 필요하면 구현하기 
                     }
                 }
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {   
-                    DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
+                    //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
                     Vector3 minV, maxV;
                     result = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 2);
                     meetPt = minV + (maxV - minV) * 0.5f; //중간지점을 만나는 점으로 삼는다 

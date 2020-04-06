@@ -178,7 +178,8 @@ public class Test_LineCollision : MonoBehaviour
         _moveSegment.Find(new LineSegment3(_line0_start.position, _line0_end.position),
                                  new LineSegment3(_line1_start.position, _line1_end.position));
         
-        _moveSegment.CalcSegment_FromContactPt();
+        //_moveSegment.CalcSegment_FromContactPt();
+        _moveSegment.CalcSegment_FromContactPt(true, true, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
 
         //최종 계산된 선분 적용
         _line0_start.position = _moveSegment._cur_seg_A.origin;
