@@ -769,8 +769,8 @@ namespace UtilGS9
     {
         private LineSegment3 _prev_seg_A;
         private LineSegment3 _prev_seg_B;
-        private LineSegment3 _cur_seg_A;
-        private LineSegment3 _cur_seg_B;
+        public LineSegment3 _cur_seg_A;
+        public LineSegment3 _cur_seg_B;
 
         //삼각형 0,1 합친모양의 사각형
         private Tetragon3 _tetr01; 
@@ -805,7 +805,7 @@ namespace UtilGS9
                 DebugWide.DrawCircle(meetPt, 0.5f, Color.red); //chamto test
             }
             
-            if (__b_A && __b_B)
+            if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
                 _prev_seg_A.Draw(Color.blue);
@@ -894,6 +894,12 @@ namespace UtilGS9
             return result;
         }
 
+        // ** meetPt 를 지나는 적당한(근사값) 선분 구하기 ** 
+        // ** start 와 end 의 길이가 같다는 전제로 작성된 알고리즘 **
+        //선분이 start => end 로 이동시 사다리꼴 모양의 평면이 만들어진다 
+        //사다리꼴의 위쪽을 v_up , 아래쪽을 v_down 하자
+        //v_up 과 v_down 의 길이가 작은쪽을 기준으로 새로운 선분의 시작점을(origin) 구한다
+        //새로운 선분은 origin 에서 meetPt 를 지난다 
         private void CalcSegment(Vector3 meetPt, LineSegment3 start, LineSegment3 end, out LineSegment3 newSeg)
         {
 
@@ -921,9 +927,9 @@ namespace UtilGS9
 
             }else
             {
-                origin = v_up * rate + start.last;
+                last = v_up * rate + start.last;
 
-                last = VOp.Normalize(meetPt - origin) * len_start + origin;
+                origin = VOp.Normalize(meetPt - last) * len_start + last;
             }
             newSeg = new LineSegment3(origin, last);
 
@@ -931,33 +937,82 @@ namespace UtilGS9
 
 
         //최종 접촉점을 지나는 선분을 구함
-        public void CalcSegment_FromContactPt(out LineSegment3 segA , out LineSegment3 segB)
+        public void CalcSegment_FromContactPt()
         {
-            segA = _cur_seg_A;
-            segB = _cur_seg_B;
+            //segA = _cur_seg_A;
+            //segB = _cur_seg_B;
 
             Vector3 meetPt;
             if(true == GetMeetPoint(out meetPt))
             {
                 //DebugWide.LogRed(meetPt); //chamto test
-                if(true == __b_A && false == __b_B )
+                if(true == __isSeg_A && false == __isSeg_B )
                 {
-                    CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out segB);
+                    CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                 }
-                else if (false == __b_A && true == __b_B)
+                else if (false == __isSeg_A && true == __isSeg_B)
                 {
-                    CalcSegment(meetPt, _prev_seg_A, _cur_seg_A, out segA);
+                    CalcSegment(meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                 }
-                else if (false == __b_A && false == __b_B)
+                else if (false == __isSeg_A && false == __isSeg_B)
                 {
-                    CalcSegment(meetPt, _prev_seg_A, _cur_seg_A, out segA);
-                    CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out segB);    
+                    CalcSegment(meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);    
 
+                }
+
+
+                //Dropping();
+            }
+
+            _prev_seg_A = _cur_seg_A;
+            _prev_seg_B = _cur_seg_B;
+        }
+
+
+        //붙어있는 두선분을 떨어뜨리기
+        public void Dropping()
+        {
+            __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
+            __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
+
+            float RADIUS = 0.01f;
+            bool zero_a, zero_b;
+            zero_a = Misc.IsZero(__dir_A, 0.00001f);
+            zero_b = Misc.IsZero(__dir_B, 0.00001f);
+            Vector3 n_dir;
+            //방향성 정보가 없는 경우
+            if (zero_a && zero_b)
+            {
+                DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
+                n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
+                n_dir = VOp.Normalize(n_dir);
+                _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS;
+                _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS;
+                _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
+                _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
+            }
+            //방향성 정보가 있는 경우 
+            else
+            {
+                DebugWide.LogGreen("___non_zero");
+                if (false == zero_a)
+                {
+                    n_dir = VOp.Normalize(__dir_A);
+                    _cur_seg_A.origin = _cur_seg_A.origin + n_dir * -RADIUS;
+                    _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
+                }
+                if (false == zero_b)
+                {
+                    n_dir = VOp.Normalize(__dir_B);
+                    _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
+                    _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
                 }
             }
 
-            _prev_seg_A = segA;
-            _prev_seg_B = segB;
+            //_prev_seg_A = _cur_seg_A;
+            //_prev_seg_B = _cur_seg_B;
+
         }
 
 
@@ -970,7 +1025,7 @@ namespace UtilGS9
 
 
             //선분과 선분이 만난 경우 
-            if (__b_A && __b_B)
+            if (__isSeg_A && __isSeg_B)
             {
                 if(true == __intr_seg_seg)
                 {
@@ -985,7 +1040,7 @@ namespace UtilGS9
                     0 != _intr_1_2.mQuantity ||
                     0 != _intr_1_3.mQuantity)
                 {
-                    DebugWide.LogBlue("----- intr -----  " + __b_A + "  " + __b_B);
+                    DebugWide.LogBlue("----- intr -----  " + __isSeg_A + "  " + __isSeg_B);
                     DebugWide.LogBlue("intr_0_2  " + _intr_0_2.ToString());
                     DebugWide.LogBlue("intr_0_3  " + _intr_0_3.ToString());
                     DebugWide.LogBlue("intr_1_2  " + _intr_1_2.ToString());
@@ -1000,12 +1055,12 @@ namespace UtilGS9
                     eIntersectionType.PLANE == _intr_1_3.mIntersectionType  )
                 {
                     //선분과 사각꼴이 같은 평면에서 만난경우
-                    if (__b_A || __b_B)
+                    if (__isSeg_A || __isSeg_B)
                     {
                         
                         //Vector3 __minV , __maxV;
 
-                        if(true == __b_A)
+                        if(true == __isSeg_A)
                         {
                             result = GetMinMax_ContactPt(_prev_seg_B.origin, out __minV, out __maxV, 4);
                             if(0 < Vector3.Dot(__dir_B, (__minV-__maxV)))
@@ -1051,16 +1106,6 @@ namespace UtilGS9
             return result;
         }
 
-        //작성중 **
-        //붙어있는 두선분을 떨어뜨리기
-        public void Dropping()
-        {
-            //방향성 정보가 없는 경우
-            Vector3 up = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
-            up = VOp.Normalize(up);
-            //_cur_seg_A.
-            //방향성 정보가 있는 경우 
-        }
 
         public void Update_Tetra(Vector3 a0_s, Vector3 a0_e, Vector3 a1_s, Vector3 a1_e, 
                                  Vector3 b0_s, Vector3 b0_e, Vector3 b1_s, Vector3 b1_e)
@@ -1072,8 +1117,8 @@ namespace UtilGS9
             __dir_A = (a1_s - a0_s) + (a1_e - a0_e);
             __dir_B = (b1_s - b0_s) + (b1_e - b0_e);
             //선분상태인지 사각꼴 상태인지 검사 
-            __b_A = Misc.IsZero(a0_s - a1_s) && Misc.IsZero(a0_e - a1_e);
-            __b_B = Misc.IsZero(b0_s - b1_s) && Misc.IsZero(b0_e - b1_e);
+            __isSeg_A = Misc.IsZero(a0_s - a1_s) && Misc.IsZero(a0_e - a1_e);
+            __isSeg_B = Misc.IsZero(b0_s - b1_s) && Misc.IsZero(b0_e - b1_e);
 
             _tetr01.Set(a0_s, a0_e, a1_s, a1_e);
             _tetr23.Set(b0_s, b0_e, b1_s, b1_e);
@@ -1087,7 +1132,7 @@ namespace UtilGS9
             _prev_seg_B = new LineSegment3(b0_s, b0_e);
         }
 
-        bool __b_A, __b_B;
+        bool __isSeg_A, __isSeg_B;
         bool __intr_seg_seg = false;
         float __cpS, __cpT;
         Vector3 __cpPt0;
@@ -1103,14 +1148,14 @@ namespace UtilGS9
             __dir_A = (segA.origin - _prev_seg_A.origin) + (segA.last - _prev_seg_A.last);
             __dir_B = (segB.origin - _prev_seg_B.origin) + (segB.last - _prev_seg_B.last);
             //선분상태인지 사각꼴 상태인지 검사 
-            __b_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
-            __b_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
+            __isSeg_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
+            __isSeg_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
 
             _tetr01.Set(_prev_seg_A, segA);
             _tetr23.Set(_prev_seg_B, segB);
 
 
-            if (__b_A && __b_B)
+            if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
                 //LineSegment3.ClosestPoints(out __cpPt0, out __cpPt1, seg0, seg1);
@@ -1119,6 +1164,8 @@ namespace UtilGS9
                 {
                     __cpPt0 = segA.origin + segA.direction * __cpS;
                     __intr_seg_seg = true;
+
+                    //Dropping(); //두선분을 떨어뜨림 
                 }
 
 

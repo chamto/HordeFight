@@ -2635,6 +2635,16 @@ namespace UtilGS9
             return true;
         }
 
+        static public bool IsZero(Vector3 v3, float epsilon)
+        {
+            float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
+            if (0 > value) value *= -1f;
+            if (epsilon < value)
+                return false;
+
+            return true;
+        }
+
         static public Vector3 GetDir8_Normal3D_AxisY(eDirection8 eDirection)
         {
             return _dir8_normal3D_AxisY[(int)eDirection];
