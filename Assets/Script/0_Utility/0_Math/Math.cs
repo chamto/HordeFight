@@ -780,6 +780,7 @@ namespace UtilGS9
         private IntrTriangle3Triangle3 _intr_0_3;
         private IntrTriangle3Triangle3 _intr_1_2;
         private IntrTriangle3Triangle3 _intr_1_3;
+        private Vector3 _minV, _maxV;
 
         public MovingSegement3()
         {
@@ -795,14 +796,25 @@ namespace UtilGS9
             _intr_1_3 = new IntrTriangle3Triangle3(_tetr01.tri1, _tetr23.tri1);
         }
 
+        //CalcSegment_PushPoint 함수 호출전 초기값 prev 와 cur 을 같게 만들어 줘야 한다  
+        public void InitSegAB(LineSegment3 segA, LineSegment3 segB)
+        {
+            _cur_seg_A = segA;
+            _prev_seg_A = segA;
+
+            _cur_seg_B = segB;
+            _prev_seg_B = segB;
+        }
+
 
         public void Draw()
         {
-            Vector3 meetPt;
-            if( true == GetMeetPoint(out meetPt))
+            //Vector3 meetPt;
+            //if( true == GetMeetPoint(out meetPt))
+            if(__result_meet)
             {
                 //DebugWide.LogRed(meetPt); //chamto test
-                DebugWide.DrawCircle(meetPt, 0.5f, Color.red); //chamto test
+                DebugWide.DrawCircle(__meetPt, 0.5f, Color.red); //chamto test
             }
             
             if (__isSeg_A && __isSeg_B)
@@ -830,8 +842,8 @@ namespace UtilGS9
                 _intr_1_3.Draw(Color.red);
 
                 //min, max
-                DebugWide.DrawCircle(__minV, 0.02f, Color.white);
-                DebugWide.DrawCircle(__maxV, 0.04f, Color.white);
+                DebugWide.DrawCircle(_minV, 0.02f, Color.white);
+                DebugWide.DrawCircle(_maxV, 0.04f, Color.white);
             }
 
         }
@@ -960,7 +972,6 @@ namespace UtilGS9
                 float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
                 float rate = len_perp_left / (len_perp_left + len_perp_right);
 
-
                 //작은쪽을 선택 
                 if (len_up > len_down)
                 {
@@ -980,6 +991,7 @@ namespace UtilGS9
 
             newSeg = new LineSegment3(origin, last);
         }
+
 
         //최종 접촉점을 지나는 선분을 구함
         public void CalcSegment_FromContactPt()
@@ -1001,9 +1013,7 @@ namespace UtilGS9
                 {
                     CalcSegment(meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                     CalcSegment(meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);    
-
                 }
-
 
                 Dropping();
             }
@@ -1018,7 +1028,7 @@ namespace UtilGS9
             Vector3 meetPt;
             if (true == GetMeetPoint(out meetPt))
             {
-                //DebugWide.LogRed(meetPt); //chamto test
+                //DebugWide.LogRed("meetPt: " + meetPt); //chamto test
                 if (true == __isSeg_A && false == __isSeg_B)
                 {
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
@@ -1089,6 +1099,7 @@ namespace UtilGS9
 
         public void Dropping(bool allowFixed_a, bool allowFixed_b, Vector3 meetPt, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
+            //DebugWide.LogBlue("dropping -----");
             __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
@@ -1180,8 +1191,8 @@ namespace UtilGS9
             }
         }
 
-
-        Vector3 __minV, __maxV;
+        Vector3 __meetPt;
+        bool __result_meet = false;
         //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
         public bool GetMeetPoint(out Vector3 meetPt)
         {
@@ -1194,6 +1205,7 @@ namespace UtilGS9
             {
                 if(true == __intr_seg_seg)
                 {
+                    //DebugWide.LogBlue("!! 선분 vs 선분  ");
                     meetPt = __cpPt0;
                     result = true;
                 }
@@ -1219,30 +1231,31 @@ namespace UtilGS9
                     eIntersectionType.PLANE == _intr_1_2.mIntersectionType  ||
                     eIntersectionType.PLANE == _intr_1_3.mIntersectionType  )
                 {
+                    //DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
                     //선분과 사각꼴이 같은 평면에서 만난경우
                     if (__isSeg_A || __isSeg_B)
                     {
                         
                         if(true == __isSeg_A)
                         {
-                            result = GetMinMax_ContactPt(_prev_seg_B.origin, out __minV, out __maxV, 4);
-                            if(0 < Vector3.Dot(__dir_B, (__minV-__maxV)))
+                            result = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
+                            if(0 < Vector3.Dot(__dir_B, (_minV-_maxV)))
                             {
-                                meetPt = __maxV;
+                                meetPt = _maxV;
                             }else
                             {
-                                meetPt = __minV;
+                                meetPt = _minV;
                             }
                         }else
                         {
-                            result = GetMinMax_ContactPt(_prev_seg_A.origin, out __minV, out __maxV, 4);
-                            if (0 < Vector3.Dot(__dir_A, (__minV - __maxV)))
+                            result = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
+                            if (0 < Vector3.Dot(__dir_A, (_minV - _maxV)))
                             {
-                                meetPt = __maxV;
+                                meetPt = _maxV;
                             }
                             else
                             {
-                                meetPt = __minV;
+                                meetPt = _minV;
                             }
                         }
 
@@ -1251,7 +1264,7 @@ namespace UtilGS9
                     //(false == __b_A && false == __b_B)
                     else
                     {
-                        DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
+                        //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
                         //todo : 두 평면의 겹치는 영역에서 한점을 선택해야 한다. 추후 필요하면 구현하기 
                     }
                 }
@@ -1259,15 +1272,96 @@ namespace UtilGS9
                 else
                 {   
                     //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
-                    Vector3 minV, maxV;
-                    result = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 2);
-                    meetPt = minV + (maxV - minV) * 0.5f; //중간지점을 만나는 점으로 삼는다 
+                    result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    meetPt = _minV + (_maxV - _minV) * 0.5f; //중간지점을 만나는 점으로 삼는다 
                 }
                 
 
             }
 
+            __meetPt = meetPt;
+            __result_meet = result;
             return result;
+        }
+
+
+
+        //rate 0.5 : a,b 선분의 최소최대 교차영역의 중간지점을 접촉점으로 삼는다
+        //rate 0.0 : b 선분 최대
+        //rate 1.0 : a 선분 최대 
+        public void CalcSegment_PushPoint(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+        {
+            bool result = false;
+            Vector3 meetPt = ConstV.v3_zero;
+
+
+            //선분과 선분이 만난 경우 
+            if (__isSeg_A && __isSeg_B)
+            {
+                if (true == __intr_seg_seg)
+                {
+                    //DebugWide.LogBlue("!! 선분 vs 선분  ");
+                    meetPt = __cpPt0;
+                    result = true;
+                }
+            }
+            else
+            {
+                
+                //사각꼴이 서로 같은 평면에서 만난경우
+                if (eIntersectionType.PLANE == _intr_0_2.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_0_3.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_1_2.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_1_3.mIntersectionType)
+                {
+                    
+                    //선분과 사각꼴이 같은 평면에서 만난경우
+                    if (true == __isSeg_A && false == __isSeg_B)
+                    {
+                        //DebugWide.LogBlue("!! 선분 vs 사각꼴 ");
+                        result = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
+                    }
+                    else if (false == __isSeg_A && true == __isSeg_B)
+                    {
+                        //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
+                        result = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
+                    }
+                    //사각꼴과 사각꼴이 같은 평면에서 만난경우 
+                    else if (false == __isSeg_A && false == __isSeg_B)
+                    {
+                        //!!!! 초기에 prev 와 cur 을 같게 안만들어주면 여기로 처리가 들어오게 된다
+                        //  잘못된 정보에 의해 접촉한것으로 계산하게 되며 초기값에 의해 방향성을 가지게 되어 
+                        //  dropping 에서 잘못된 방향으로 무한히 떨어뜨리게 된다.
+                        //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
+                        result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 6);
+
+                    }
+                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+
+                }
+                //사각꼴(선분)이 서로 엇갈려 만난경우
+                else
+                {
+                    //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
+                    result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                }
+            }
+
+            if(result)
+            {
+                //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+
+                //DebugWide.LogRed("meetPt: " + meetPt); //chamto test
+                Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
+            }
+
+            _prev_seg_A = _cur_seg_A;
+            _prev_seg_B = _cur_seg_B;
+
+            __meetPt = meetPt;
+            __result_meet = result;
         }
 
 
@@ -1326,10 +1420,10 @@ namespace UtilGS9
                 __intr_seg_seg = false;
                 if(0.00001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT))
                 {
+                    //DebugWide.LogRed("-----find: DistanceSquared"); //chamto test
                     __cpPt0 = segA.origin + segA.direction * __cpS;
                     __intr_seg_seg = true;
 
-                    //Dropping(); //두선분을 떨어뜨림 
                 }
 
 
@@ -1347,11 +1441,11 @@ namespace UtilGS9
         }
 
         //Find 이후 호출되어야 한다 
-        public void Find_After()
-        {
-            _prev_seg_A = _cur_seg_A;
-            _prev_seg_B = _cur_seg_B;
-        }
+        //public void Find_After()
+        //{
+        //    _prev_seg_A = _cur_seg_A;
+        //    _prev_seg_B = _cur_seg_B;
+        //}
     }
 
 

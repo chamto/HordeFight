@@ -164,11 +164,18 @@ public class Test_LineCollision : MonoBehaviour
 
         //===========================================
 
+        //CalcSegment_PushPoint 함수 호출전 초기값 prev 와 cur 을 같게 만들어 줘야 한다  
+        _moveSegment.InitSegAB(new LineSegment3(_line0_start.position, _line0_end.position),
+                                 new LineSegment3(_line1_start.position, _line1_end.position));
+        
+
 
 	}
 
 
-
+    public float __RateAtoB = 0.5f;
+    public bool __AllowFixed_A = false;
+    public bool __AllowFixed_B = false;
 	void Update () 
     {
 
@@ -179,7 +186,9 @@ public class Test_LineCollision : MonoBehaviour
                                  new LineSegment3(_line1_start.position, _line1_end.position));
         
         //_moveSegment.CalcSegment_FromContactPt();
-        _moveSegment.CalcSegment_FromContactPt(true, true, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
+        //_moveSegment.CalcSegment_FromContactPt(false, false, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
+        _moveSegment.CalcSegment_PushPoint(__RateAtoB,__AllowFixed_A, __AllowFixed_B, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
+
 
         //최종 계산된 선분 적용
         _line0_start.position = _moveSegment._cur_seg_A.origin;
