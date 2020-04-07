@@ -14,13 +14,13 @@ namespace UtilGS9
     /// </summary>
     public struct Line3
     {
-        public Vector3 direction;
         public Vector3 origin;
+        public Vector3 direction;
 
-        public Line3(Vector3 pa_dir , Vector3 pa_ori )
+        public Line3(Vector3 ori, Vector3 dir )
         {
-            direction = pa_dir;
-            origin = pa_ori;
+            direction = dir;
+            origin = ori;
         }
 
         //두 직선의 교점을 구한다. 두 직선이 평행한 경우, 선과 선사이의 최소거리를 반환한다
@@ -38,7 +38,7 @@ namespace UtilGS9
             float e = Vector3.Dot(line1.direction, w0);
 
             float denom = a * c - b * b;
-
+            //DebugWide.LogBlue(denom + "  " + a + "  " + b + "  " + c + "   " + line1.direction);
 
             //if (ML.Util.IsZero(denom))
             if (Math.Abs(denom) < float.Epsilon)
@@ -58,13 +58,13 @@ namespace UtilGS9
 
     public struct Ray3
     {
-        public Vector3 direction;
         public Vector3 origin;
+        public Vector3 direction;
 
-        public Ray3(Vector3 pa_dir, Vector3 pa_ori)
+        public Ray3(Vector3 ori, Vector3 dir)
         {
-            direction = pa_dir;
-            origin = pa_ori;
+            direction = dir;
+            origin = ori;
         }
 
         //두 반직선의 교점을 구한다. 두 반직선이 평행한 경우, 선과 선사이의 최소거리를 반환한다
@@ -992,6 +992,27 @@ namespace UtilGS9
             newSeg = new LineSegment3(origin, last);
         }
 
+        //minSeg 선분에서 maxPt 를 지나는 새로운 선분을 구한다 
+        private void CalcSegment(bool allowFixed, Vector3 fixedOriginPt, Vector3 minPt, Vector3 maxPt, LineSegment3 minSeg , out LineSegment3 maxSeg)
+        {
+            Vector3 origin, last;
+            float len_curSeg = minSeg.direction.magnitude;
+
+            if (allowFixed)
+            {
+                origin = fixedOriginPt;
+                last = VOp.Normalize(maxPt - origin) * len_curSeg + origin;
+            }
+            else
+            {
+                Vector3 dir = maxPt - minPt;
+                origin = minSeg.origin + dir;
+                last = minSeg.last + dir;
+            }
+
+
+            maxSeg = new LineSegment3(origin, last);
+        }
 
         //최종 접촉점을 지나는 선분을 구함
         public void CalcSegment_FromContactPt()
@@ -1114,7 +1135,7 @@ namespace UtilGS9
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
             {
-                DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
+                //DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
                 n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
                 n_dir = VOp.Normalize(n_dir);
 
@@ -1153,7 +1174,7 @@ namespace UtilGS9
             {
                 if (false == zero_a)
                 {
-                    DebugWide.LogGreen("___non_zero_a" + __dir_A);
+                    //DebugWide.LogGreen("___non_zero_a" + __dir_A);
                     n_dir = VOp.Normalize(__dir_A);
                     if(allowFixed_a)
                     {
@@ -1172,7 +1193,7 @@ namespace UtilGS9
                 }
                 if (false == zero_b)
                 {
-                    DebugWide.LogGreen("___non_zero_b" + __dir_B);
+                    //DebugWide.LogGreen("___non_zero_b" + __dir_B);
                     n_dir = VOp.Normalize(__dir_B);
                     if (allowFixed_b)
                     {
@@ -1292,8 +1313,8 @@ namespace UtilGS9
         public void CalcSegment_PushPoint(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
             bool result = false;
+            bool result_2 = false;
             Vector3 meetPt = ConstV.v3_zero;
-
 
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
@@ -1338,19 +1359,32 @@ namespace UtilGS9
                     }
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
 
-                    if(result)
-                        DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
+                    //if(result)
+                        //DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
 
                 }
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    
                     result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    result_2 = true;
+
+                    //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
+                    if (true == __isSeg_A)
+                    {
+                        Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                        //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
+                    }
+                    if (true == __isSeg_B)
+                    {
+                        Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                        //DebugWide.LogRed("segB max : " + _maxV + "   " + _minV + "   " + __dir_A + "   " + _cur_seg_B.direction); //chamto test
+                    }
+
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
 
-                    if(result)
-                        DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
+                    //if(result)
+                        //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난경우 ");
                 }
             }
 
@@ -1366,7 +1400,21 @@ namespace UtilGS9
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                 } 
 
-                //DebugWide.LogRed("meetPt: " + meetPt); //chamto test
+                //사각꼴과 선분이 만난 경우, 새로운 max선분 구하기 
+                if(true == result_2)
+                {
+                    if (true == __isSeg_A)
+                    {
+                        CalcSegment(allowFixed_a, fixedOriginPt_a, _minV ,_maxV , _cur_seg_A, out _cur_seg_A);
+                    }
+                    if (true == __isSeg_B)
+                    {
+                        CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, _maxV, _cur_seg_B, out _cur_seg_B);
+                    }
+                }
+
+
+                //DebugWide.LogRed("meetPt: " + meetPt ); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
             }
 
