@@ -11,7 +11,9 @@ namespace HordeFight
         public ChampUnit _champ_0 = null;
         public ChampUnit _champ_1 = null;
 
-        string tempGui = "Cut and Sting";
+        private MovingSegement3 _movingSegment = new MovingSegement3();
+
+        //string tempGui = "Cut and Sting";
         private void OnGUI()
         {
 
@@ -23,7 +25,7 @@ namespace HordeFight
         private void OnDrawGizmos()
         {
 
-
+            _movingSegment.Draw();
         }
 
         public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
@@ -64,12 +66,42 @@ namespace HordeFight
 
             gobj = GameObject.Find("footman");
             _champ_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
+
+
+            _champ_0.UpdateAll();
+            _champ_1.UpdateAll();
+            _movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
         }
 
 
-
+        public float __RateAtoB = 0.5f;
+        public bool __AllowFixed_A = true;
+        public bool __AllowFixed_B = true;
         private void Update()
         {
+
+            //==================================================
+            //두 선분의 교차 계산 
+            _movingSegment.Find(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
+            //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
+                                                 //_champ_0._limbs._armed_left._line.origin, _champ_1._limbs._armed_left._line.origin);
+            bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
+                                                               _champ_0._limbs._hs_standard.position, _champ_1._limbs._hs_standard.position);
+            
+            //계산된 선분 적용 
+
+            //이렇게 적용하면 안됨 
+            //_champ_0._limbs._armed_left.SetArmPos(_movingSegment._cur_seg_A);
+            //_champ_1._limbs._armed_left.SetArmPos(_movingSegment._cur_seg_B);
+
+            if(recalc)
+            {
+                _champ_0._limbs._hs_standard.position = _movingSegment._cur_seg_A.origin;
+                _champ_0._limbs._hs_objectDir.position = _movingSegment._cur_seg_A.last;
+
+                _champ_1._limbs._hs_standard.position = _movingSegment._cur_seg_B.origin;
+                _champ_1._limbs._hs_objectDir.position = _movingSegment._cur_seg_B.last;    
+            }
 
             //==================================================
 
@@ -77,9 +109,10 @@ namespace HordeFight
             _champ_0.Apply_UnityPosition();
 
             _champ_1.UpdateAll();
-            _champ_1.Apply_UnityPosition();    
+            _champ_1.Apply_UnityPosition();
 
-            Collision_Sword(_champ_0, _champ_1);
+
+            //Collision_Sword(_champ_0, _champ_1);
             //==================================================
 
         }
@@ -87,6 +120,7 @@ namespace HordeFight
 
         public void Collision_Sword(ChampUnit unit0 , ChampUnit unit1)
         {
+            
             float s, t;
             float sqrdis = LineSegment3.DistanceSquared(unit0._limbs._armed_left._line, unit1._limbs._armed_left._line, out s, out t);
             if(sqrdis < 0.01f)

@@ -52,6 +52,13 @@ namespace HordeFight
             _line = new LineSegment3(_arm_start.position, _arm_end.position);
         }
 
+        //실제 갱신이 일어나지 않는 처리임 
+        //public void SetArmPos(LineSegment3 arm)
+        //{
+        //    _arm_start.position = arm.origin;
+        //    _arm_end.position = arm.last;
+        //}
+
         public void Update_Info(Transform parent)
         {
             _tr_arm.position = parent.position;

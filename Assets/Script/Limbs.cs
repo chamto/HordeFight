@@ -121,8 +121,8 @@ namespace HordeFight
         private Transform _HANDLE_right = null;
 
         //찌르기용 핸들 
-        private Transform _hs_objectDir = null;
-        private Transform _hs_standard = null;
+        public Transform _hs_objectDir = null;
+        public Transform _hs_standard = null;
 
         //목표
         private Transform[] _target = new Transform[2]; //임시 최대2개 목표 

@@ -1330,7 +1330,7 @@ namespace UtilGS9
         //rate 0.5 : a,b 선분의 최소최대 교차영역의 중간지점을 접촉점으로 삼는다
         //rate 0.0 : b 선분 최대
         //rate 1.0 : a 선분 최대 
-        public void CalcSegment_PushPoint(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+        public bool CalcSegment_PushPoint(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
             bool result = false;
             bool result_2 = false;
@@ -1448,6 +1448,8 @@ namespace UtilGS9
 
             __meetPt = meetPt;
             __result_meet = result;
+
+            return result;
         }
 
 
