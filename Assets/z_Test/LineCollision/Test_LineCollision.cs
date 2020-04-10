@@ -196,14 +196,7 @@ public class Test_LineCollision : MonoBehaviour
         _line1_start.position = _moveSegment._cur_seg_B.origin;
         _line1_end.position = _moveSegment._cur_seg_B.last;
 
-        //_moveSegment.Find_After(); //Find 와 짝으로 사용되어야 함 
 
-        //Vector3 meetPt;
-        //if(true == _moveSegment.GetMeetPoint(out meetPt))
-        //{
-        //    float leng = (_line0_start.position - _line0_end.position).magnitude;
-        //    _line0_end.position = _line0_start.position + leng * (meetPt - _line0_start.position).normalized;
-        //}
         //===========================================
 
         //float s, t;

@@ -613,33 +613,38 @@ namespace UtilGS9
             ///if ( ::IsZero(lensq))
             if (lensq < float.Epsilon)
             {   //평면의 방향을 계산 할 수 없을때 
-                _normal = Vector3.up;
+                //_normal = Vector3.up;
+                _normal = ConstV.v3_zero; //에러만 안나게 0값을 설정
                 _offset = 0.0f;
             }
             else
             {
                 //float recip = 1.0f / lensq; //이건 아닌것 같음 
-                float recip = 1f / (float)Math.Sqrt(lensq);
-                _normal.Set(w.x * recip, w.y * recip, w.z * recip);
-                //_normal = w * recip;
+                //float recip = 1f / (float)Math.Sqrt(lensq); lensq 가 0이 될때 NaN 에러가 발생하는 것으로 추정 
+                //DebugWide.LogRed(recip + "  " + lensq + "  ");
+                //_normal.Set(w.x * recip, w.y * recip, w.z * recip);
+                _normal = VOp.Normalize(w); //위 코드는 NaN 에러가 간혹발생 할수 있음. 예외처리가 들어간 코드로 변경 
+
                 _offset = -1f * Vector3.Dot(_normal,p0);
             }
         }
 
-
+        //점에서 평면까지의 최소거리에 있는 평면위의 점 
         // closest point
-        public Vector3 ClosestPoint(ref Vector3 point )
+        public Vector3 ClosestPoint(Vector3 point )
         {
-            //point 위치에서 평면상 수직인 점으로 이동 
+            //point 위치에서 평면상 수직인 점으로 이동(내림)
             return point - Test(point)*_normal; 
         }
 
+        //점에서 평면까지의 최소거리 
         // distance
         public float Distance(Vector3 point)
         {
             return Math.Abs(Test(point));
         }
 
+        //점에서 평면까지의 부호가 있는 최소거리 
         // result of plane test
         public float Test(Vector3 point )
         {
@@ -1123,20 +1128,36 @@ namespace UtilGS9
             __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
-            float RADIUS = 0.01f;
+            float RADIUS = 0.001f;
             float ANGLE = 0.1f;
             bool zero_a, zero_b;
             float sensibility = float.Epsilon; //이 값이 크면 zero로 판단하는 영역이 커진다 
-            //float sensibility = 0.0000000001f;
+            //float sensibility = 0.00000001f;
             zero_a = Misc.IsZero(__dir_A, sensibility);
             zero_b = Misc.IsZero(__dir_B, sensibility);
             Vector3 n_dir;
+
+            //-----
+            //꼬임이 바뀌었는지 검사
+            Plane plane = new Plane(_cur_seg_A.origin, _cur_seg_A.last, _cur_seg_B.origin);
+            float test = plane.Test(_cur_seg_B.last);
+            DebugWide.LogBlue("test:  " + test);
+            float sign = 1;
+            if (test >= 0)
+            {   //a위에b
+                sign = 1;
+            }
+            else if (test < 0)
+                sign = -1f;
+            //-----
+
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
             {
-                DebugWide.LogGreen("zero_a,b : " + __dir_A + "   " + __dir_B);
+                DebugWide.LogGreen("zero_a,b : "+ ToString(__dir_A) + "   " + ToString(__dir_B));
                 n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
                 n_dir = VOp.Normalize(n_dir);
+
 
 
                 if (allowFixed_a)
@@ -1149,8 +1170,8 @@ namespace UtilGS9
                 }
                 else
                 {
-                    _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS;
-                    _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS;
+                    _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS * sign;
+                    _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS * sign;
                 }
 
                 //====
@@ -1164,8 +1185,8 @@ namespace UtilGS9
                 }
                 else
                 {
-                    _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
-                    _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
+                    _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS * sign;
+                    _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS * sign;
                 }
             }
             //방향성 정보가 있는 경우 
@@ -1173,7 +1194,7 @@ namespace UtilGS9
             {
                 if (false == zero_a)
                 {
-                    DebugWide.LogGreen("___non_zero_a" + __dir_A);
+                    DebugWide.LogGreen("___non_zero_a" + ToString(__dir_A));
                     n_dir = VOp.Normalize(__dir_A);
                     if(allowFixed_a)
                     {
@@ -1192,7 +1213,7 @@ namespace UtilGS9
                 }
                 if (false == zero_b)
                 {
-                    DebugWide.LogGreen("___non_zero_b" + __dir_B);
+                    DebugWide.LogGreen("___non_zero_b" + ToString(__dir_B));
                     n_dir = VOp.Normalize(__dir_B);
                     if (allowFixed_b)
                     {
@@ -1320,14 +1341,14 @@ namespace UtilGS9
             {
                 if (true == __intr_seg_seg)
                 {
-                    DebugWide.LogBlue("!! 선분 vs 선분  ");
+                    DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     result = true;
                 }
             }
             else
             {
-                
+                //DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
                 //사각꼴이 서로 같은 평면에서 만난경우
                 if (eIntersectionType.PLANE == _intr_0_2.mIntersectionType ||
                     eIntersectionType.PLANE == _intr_0_3.mIntersectionType ||
@@ -1389,7 +1410,8 @@ namespace UtilGS9
 
             if(result)
             {
-                //선분이 아닐때만 선분계산을 한다 
+                //** 사각꼴(선분)이 서로 엇갈려 만난경우 : rateAtoB 값에 따라 밀어내기 처리를 한다 
+                //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
                 if (false == __isSeg_A)
                 {
                     CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
@@ -1399,7 +1421,7 @@ namespace UtilGS9
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                 } 
 
-                //사각꼴과 선분이 만난 경우, 새로운 max선분 구하기 
+                //기존 선분에서 meetPt를 지나는 새로운 선분 구한다 , prev 선분값을 cur 로 갱신한다  
                 if(true == result_2)
                 {
                     if (true == __isSeg_A)
@@ -1414,9 +1436,11 @@ namespace UtilGS9
                     }
                 }
 
-
+                //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
                 //DebugWide.LogRed("meetPt: " + meetPt ); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
+
+
             }
 
             _prev_seg_A = _cur_seg_A;
@@ -1437,19 +1461,30 @@ namespace UtilGS9
             __dir_A = (a1_s - a0_s) + (a1_e - a0_e);
             __dir_B = (b1_s - b0_s) + (b1_e - b0_e);
             //선분상태인지 사각꼴 상태인지 검사 
-            __isSeg_A = Misc.IsZero(a0_s - a1_s) && Misc.IsZero(a0_e - a1_e);
-            __isSeg_B = Misc.IsZero(b0_s - b1_s) && Misc.IsZero(b0_e - b1_e);
+            //__isSeg_A = Misc.IsZero(a0_s - a1_s) && Misc.IsZero(a0_e - a1_e);
+            //__isSeg_B = Misc.IsZero(b0_s - b1_s) && Misc.IsZero(b0_e - b1_e);
+            __isSeg_A = Misc.IsZero(__dir_A);
+            __isSeg_B = Misc.IsZero(__dir_B);
 
             _tetr01.Set(a0_s, a0_e, a1_s, a1_e);
             _tetr23.Set(b0_s, b0_e, b1_s, b1_e);
          
-            _intr_0_2.Find_Twice();
-            _intr_0_3.Find_Twice();
-            _intr_1_2.Find_Twice();
-            _intr_1_3.Find_Twice();
+
+            {
+                _intr_0_2.Find_Twice();
+                _intr_0_3.Find_Twice();
+                _intr_1_2.Find_Twice();
+                _intr_1_3.Find_Twice();    
+            }
 
             _prev_seg_A = new LineSegment3(a0_s, a0_e);
             _prev_seg_B = new LineSegment3(b0_s, b0_e);
+        }
+
+
+        public string ToString(Vector3 src)
+        {
+            return " ("+ src.x + ", " + src.y + ", " + src.z + ") ";
         }
 
         bool __isSeg_A, __isSeg_B;
@@ -1467,14 +1502,21 @@ namespace UtilGS9
             //선분의 이동방향
             __dir_A = (segA.origin - _prev_seg_A.origin) + (segA.last - _prev_seg_A.last);
             __dir_B = (segB.origin - _prev_seg_B.origin) + (segB.last - _prev_seg_B.last);
+
+            //방향값이 너무 작은 경우 zero 로 인식되는 문제가 있어, 정규화로 크기를 키운다 
+            __dir_A = VOp.Normalize(__dir_A); 
+            __dir_B = VOp.Normalize(__dir_B);
             //선분상태인지 사각꼴 상태인지 검사 
-            __isSeg_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
-            __isSeg_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
+            //__isSeg_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
+            //__isSeg_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
+            __isSeg_A = Misc.IsZero(__dir_A);
+            __isSeg_B = Misc.IsZero(__dir_B);
 
             _tetr01.Set(_prev_seg_A, segA);
             _tetr23.Set(_prev_seg_B, segB);
 
-
+            //DebugWide.LogBlue(ToString(__dir_A) + "   " + ToString(__dir_B));
+            //__isSeg_A = false; //chamto test
             if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
@@ -1483,18 +1525,16 @@ namespace UtilGS9
                 //if(0.00001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
                 //Dropping 으로 밀은후에도 값이 커 선분이 교차한것으로 나옴  
                 //Dropping zero 상태에 의해 조금씩 미는 효과가 생김 , 의도치 않은 것이므로 제거함 
-                if (float.Epsilon > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT))
-                //if(0.0000001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
+                //if (float.Epsilon > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT))
+                if(0.0000001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
                 {
                     DebugWide.LogRed("-----find: DistanceSquared"); //chamto test
                     __cpPt0 = segA.origin + segA.direction * __cpS;
                     __intr_seg_seg = true;
-
                 }
 
-
             }
-            else
+            //else
             {   //삼각형과 삼각형 
                 _intr_0_2.Find_Twice();
                 _intr_0_3.Find_Twice();
@@ -1502,16 +1542,8 @@ namespace UtilGS9
                 _intr_1_3.Find_Twice();
             }
 
-            //_prev_seg_A = segA;
-            //_prev_seg_B = segB;
         }
 
-        //Find 이후 호출되어야 한다 
-        //public void Find_After()
-        //{
-        //    _prev_seg_A = _cur_seg_A;
-        //    _prev_seg_B = _cur_seg_B;
-        //}
     }
 
 

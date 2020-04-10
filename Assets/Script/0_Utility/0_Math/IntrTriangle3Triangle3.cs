@@ -954,7 +954,7 @@ namespace UtilGS9
 
             if (maxNormal == 0)
             {
-                // Project onto yz-plane.
+                // Project onto yz-plane. x축에서 최대값
                 for (i = 0; i < 3; ++i)
                 {
                     projTri0.V[i].x = tri0.V[i].y;
@@ -965,7 +965,7 @@ namespace UtilGS9
             }
             else if (maxNormal == 1)
             {
-                // Project onto xz-plane.
+                // Project onto xz-plane. y축에서 최대값 
                 for (i = 0; i < 3; ++i)
                 {
                     projTri0.V[i].x = tri0.V[i].x;
@@ -974,9 +974,9 @@ namespace UtilGS9
                     projTri1.V[i].y = tri1.V[i].z;
                 }
             }
-            else
+            else 
             {
-                // Project onto xy-plane.
+                // Project onto xy-plane. z축에서 최대값 
                 for (i = 0; i < 3; ++i)
                 {
                     projTri0.V[i].x = tri0.V[i].x;
