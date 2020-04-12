@@ -1392,11 +1392,13 @@ namespace UtilGS9
                     //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                     if (true == __isSeg_A)
                     {
-                        Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                        //min 구하기 
+                        Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
                     }
                     if (true == __isSeg_B)
                     {
+                        //max 구하기
                         Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                         //DebugWide.LogRed("segB max : " + _maxV + "   " + _minV + "   " + __dir_A + "   " + _cur_seg_B.direction); //chamto test
                     }
@@ -1426,7 +1428,8 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A)
                     {
-                        CalcSegment(allowFixed_a, fixedOriginPt_a, _minV ,meetPt , _cur_seg_A, out _cur_seg_A);
+                        //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt ,_maxV , _cur_seg_A, out _cur_seg_A);
+                        CalcSegment(allowFixed_a, fixedOriginPt_a, _minV, meetPt, _cur_seg_A, out _cur_seg_A);
                         _prev_seg_A = _cur_seg_A;
                     }
                     if (true == __isSeg_B)

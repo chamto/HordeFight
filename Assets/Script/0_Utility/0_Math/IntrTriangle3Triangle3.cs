@@ -396,7 +396,7 @@ namespace UtilGS9
                     {   //삼각형의 정점과 직선이 겹치는 경우  
                         if (2 == quantity)
                         {
-                            DebugWide.LogWarning("  quantity:" + quantity + "   삼각형 형태가 아님!! ");
+                            DebugWide.LogWarning("dir : " + direction + "  quantity: " + quantity + "   삼각형 형태가 아님!! ");
                             return;
                         }
                         //DebugWide.LogBlue(quantity);; //chamto test
