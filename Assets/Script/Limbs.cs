@@ -71,21 +71,22 @@ namespace HordeFight
         public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
         public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
+        //private Vector3 _ 
         //------------------------------------------------------
 
         private Transform _tr_sight_dir = null;
         private Transform _tr_upperBody_dir = null;
         private Transform _tr_foot_dir = null;
 
-        private Transform _root = null;
-        private Transform _head = null;
-        private Transform _waist = null; //허리
+        private Transform _tr_root = null;
+        private Transform _tr_head = null;
+        private Transform _tr_waist = null; //허리
 
-        private Transform _shoulder_left = null;
-        private Transform _hand_left = null;
-        private Transform _hand_left_wrist = null; //손목
-        private Transform _arm_left_up = null;
-        private Transform _arm_left_dir = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
+        private Transform _tr_shoulder_left = null;
+        private Transform _tr_hand_left = null;
+        private Transform _tr_hand_left_wrist = null; //손목
+        private Transform _tr_arm_left_up = null;
+        private Transform _tr_arm_left_dir = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
 
         //private Transform _arm_left = null;
         //private Transform _arm_left_start = null;
@@ -94,11 +95,11 @@ namespace HordeFight
         //private SpriteMesh _arm_left_spr = null;
 
 
-        private Transform _shoulder_right = null;
-        private Transform _hand_right = null;
-        private Transform _hand_right_wrist = null;
-        private Transform _arm_right_up = null;
-        private Transform _arm_right_dir = null;
+        private Transform _tr_shoulder_right = null;
+        private Transform _tr_hand_right = null;
+        private Transform _tr_hand_right_wrist = null;
+        private Transform _tr_arm_right_up = null;
+        private Transform _tr_arm_right_dir = null;
 
         //private Transform _arm_right = null;
         //private Transform _arm_right_start = null;
@@ -262,27 +263,27 @@ namespace HordeFight
             //기본 손정보  출력 
             if(false)
             {
-                Vector3 sLsR = _shoulder_right.position - _shoulder_left.position;
-                Vector3 hLsL = _hand_left.position - _shoulder_left.position;
-                Vector3 hRsR = _hand_right.position - _shoulder_right.position;
-                Vector3 hLhR = _hand_left.position - _hand_right.position;
+                Vector3 sLsR = _tr_shoulder_right.position - _tr_shoulder_left.position;
+                Vector3 hLsL = _tr_hand_left.position - _tr_shoulder_left.position;
+                Vector3 hRsR = _tr_hand_right.position - _tr_shoulder_right.position;
+                Vector3 hLhR = _tr_hand_left.position - _tr_hand_right.position;
 
-                DebugWide.PrintText(_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
-                DebugWide.PrintText(_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
-                DebugWide.PrintText(_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
-                DebugWide.PrintText(_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
+                DebugWide.PrintText(_tr_shoulder_left.position + hLsL * 0.5f, Color.white, "armL " + _arm_left_length.ToString("00.00"));
+                DebugWide.PrintText(_tr_shoulder_right.position + hRsR * 0.5f, Color.white, "armR " + _arm_right_length.ToString("00.00"));
+                DebugWide.PrintText(_tr_shoulder_left.position + sLsR * 0.5f, Color.white, "shoulder " + _shoulder_length.ToString("00.00"));
+                DebugWide.PrintText(_tr_hand_right.position + hLhR * 0.5f, Color.white, "twoH " + hLhR.magnitude.ToString("00.00"));
 
 
-                DebugWide.DrawLine(_shoulder_left.position, _hand_left.position, Color.green);
-                DebugWide.DrawCircle(_hand_left.position, 0.05f, Color.green);
-                DebugWide.DrawLine(_shoulder_right.position, _hand_right.position, Color.green);
-                DebugWide.DrawCircle(_hand_right.position, 0.05f, Color.green);
-                DebugWide.DrawLine(_hand_right.position, _hand_left.position, Color.black);
+                DebugWide.DrawLine(_tr_shoulder_left.position, _tr_hand_left.position, Color.green);
+                DebugWide.DrawCircle(_tr_hand_left.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_tr_shoulder_right.position, _tr_hand_right.position, Color.green);
+                DebugWide.DrawCircle(_tr_hand_right.position, 0.05f, Color.green);
+                DebugWide.DrawLine(_tr_hand_right.position, _tr_hand_left.position, Color.black);
 
-                DebugWide.DrawCircle(_shoulder_left.position, _arm_left_min_length, Color.gray);
-                DebugWide.DrawCircle(_shoulder_left.position, _arm_left_length, Color.gray);
-                DebugWide.DrawCircle(_shoulder_right.position, _arm_right_min_length, Color.gray);
-                DebugWide.DrawCircle(_shoulder_right.position, _arm_right_length, Color.gray);
+                DebugWide.DrawCircle(_tr_shoulder_left.position, _arm_left_min_length, Color.gray);
+                DebugWide.DrawCircle(_tr_shoulder_left.position, _arm_left_length, Color.gray);
+                DebugWide.DrawCircle(_tr_shoulder_right.position, _arm_right_min_length, Color.gray);
+                DebugWide.DrawCircle(_tr_shoulder_right.position, _arm_right_length, Color.gray);
 
             }
 
@@ -344,13 +345,13 @@ namespace HordeFight
                     Vector3 arm_left_end = _armed_left._arm_end.position;
 
                     //--
-                    Vector3 objDir = _hand_right.position - _hand_left.position;
+                    Vector3 objDir = _tr_hand_right.position - _tr_hand_left.position;
                     float len_groundToObj_start, len_groundToObj_end;
-                    Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _hand_left.position, out len_groundToObj_start);
+                    Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _tr_hand_left.position, out len_groundToObj_start);
                     Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, arm_left_end, out len_groundToObj_end);
                     //--
 
-                    DebugWide.DrawLine(_hand_left.position, _hand_left.position + len_groundToObj_start * Vector3.down, Color.black);
+                    DebugWide.DrawLine(_tr_hand_left.position, _tr_hand_left.position + len_groundToObj_start * Vector3.down, Color.black);
                     DebugWide.DrawLine(arm_left_end, arm_left_end + len_groundToObj_end * Vector3.down, Color.black);
                     DebugWide.DrawLine(arm_left_end, shaderStart, Color.black);
                     DebugWide.DrawLine(arm_left_end, shaderEnd, Color.black);
@@ -452,22 +453,22 @@ namespace HordeFight
             //==================================================
             //1차 자식 : root
             //==================================================
-            _root = SingleO.hierarchy.GetTransform(transform, "root");
+            _tr_root = SingleO.hierarchy.GetTransform(transform, "root");
             //root->foot_dir
-            _tr_foot_dir = SingleO.hierarchy.GetTransform(_root, "foot_dir");
-            _head = SingleO.hierarchy.GetTransform(_root, "head");
-            _tr_sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
+            _tr_foot_dir = SingleO.hierarchy.GetTransform(_tr_root, "foot_dir");
+            _tr_head = SingleO.hierarchy.GetTransform(_tr_root, "head");
+            _tr_sight_dir = SingleO.hierarchy.GetTransform(_tr_head, "sight_dir");
             //root->waist
-            _waist = SingleO.hierarchy.GetTransform(_root, "waist");
-            _tr_upperBody_dir = SingleO.hierarchy.GetTransform(_waist, "upperBody_dir");
+            _tr_waist = SingleO.hierarchy.GetTransform(_tr_root, "waist");
+            _tr_upperBody_dir = SingleO.hierarchy.GetTransform(_tr_waist, "upperBody_dir");
 
 
             //-------------------------
-            _shoulder_left = SingleO.hierarchy.GetTransform(_waist, "shoulder_left");
-            _hand_left = SingleO.hierarchy.GetTransform(_shoulder_left, "hand_left");
-            _hand_left_wrist = SingleO.hierarchy.GetTransform(_hand_left, "wrist");
-            _arm_left_up = SingleO.hierarchy.GetTransform(_hand_left, "arm_up");
-            _arm_left_dir = SingleO.hierarchy.GetTransform(_hand_left, "arm_dir");
+            _tr_shoulder_left = SingleO.hierarchy.GetTransform(_tr_waist, "shoulder_left");
+            _tr_hand_left = SingleO.hierarchy.GetTransform(_tr_shoulder_left, "hand_left");
+            _tr_hand_left_wrist = SingleO.hierarchy.GetTransform(_tr_hand_left, "wrist");
+            _tr_arm_left_up = SingleO.hierarchy.GetTransform(_tr_hand_left, "arm_up");
+            _tr_arm_left_dir = SingleO.hierarchy.GetTransform(_tr_hand_left, "arm_dir");
 
 
             //_arm_left = SingleO.hierarchy.GetTransform(_hand_left, "arm");
@@ -482,11 +483,11 @@ namespace HordeFight
 
             //-------------------------
 
-            _shoulder_right = SingleO.hierarchy.GetTransform(_waist, "shoulder_right");
-            _hand_right = SingleO.hierarchy.GetTransform(_shoulder_right, "hand_right");
-            _hand_right_wrist = SingleO.hierarchy.GetTransform(_hand_right, "wrist");
-            _arm_right_up = SingleO.hierarchy.GetTransform(_hand_right, "arm_up");
-            _arm_right_dir = SingleO.hierarchy.GetTransform(_hand_right, "arm_dir");
+            _tr_shoulder_right = SingleO.hierarchy.GetTransform(_tr_waist, "shoulder_right");
+            _tr_hand_right = SingleO.hierarchy.GetTransform(_tr_shoulder_right, "hand_right");
+            _tr_hand_right_wrist = SingleO.hierarchy.GetTransform(_tr_hand_right, "wrist");
+            _tr_arm_right_up = SingleO.hierarchy.GetTransform(_tr_hand_right, "arm_up");
+            _tr_arm_right_dir = SingleO.hierarchy.GetTransform(_tr_hand_right, "arm_dir");
 
             //_arm_right = SingleO.hierarchy.GetTransform(_hand_right, "arm");
             //_arm_right_start = SingleO.hierarchy.GetTransform(_arm_right, "start");
@@ -622,9 +623,9 @@ namespace HordeFight
 
             //==================================================
 
-            if (null == (object)_shoulder_left || null == (object)_shoulder_right) return;
+            if (null == (object)_tr_shoulder_left || null == (object)_tr_shoulder_right) return;
 
-            Vector3 shLR = _shoulder_left.position - _shoulder_right.position;
+            Vector3 shLR = _tr_shoulder_left.position - _tr_shoulder_right.position;
             _shoulder_length = shLR.magnitude;
 
             //==================================================
@@ -641,8 +642,8 @@ namespace HordeFight
             //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if(_active_projectionSlope)
             {
-                _hand_right.position = Project_BoxSlope(_hand_right.position, (_hand_right.position - _groundY).y);
-                _hand_left.position = Project_BoxSlope(_hand_left.position, (_hand_left.position - _groundY).y);
+                _tr_hand_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
+                _tr_hand_left.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
             }
             //==================================================
             //손에 칼 붙이기
@@ -693,7 +694,7 @@ namespace HordeFight
                 _armed_left.SetActive(true);
 
             }
-            _armed_left.Update_Info(_hand_left);
+            _armed_left.Update_Info(_tr_hand_left);
 
             //=============================================
                 
@@ -705,7 +706,7 @@ namespace HordeFight
                 _armed_right = _list_armedInfo[(int)_equipment_handRight];
                 _armed_right.SetActive(true);
             }
-            _armed_right.Update_Info(_hand_right);
+            _armed_right.Update_Info(_tr_hand_right);
 
 		}
 
@@ -842,9 +843,9 @@ namespace HordeFight
                     else
                     {
                         //상체회전 비활성시 기본값으로 초기화 한다 
-                        Vector3 temp = _waist.localEulerAngles;
+                        Vector3 temp = _tr_waist.localEulerAngles;
                         temp.y = 0;
-                        _waist.localEulerAngles = temp;
+                        _tr_waist.localEulerAngles = temp;
                     }
 
                     //--------------------------------------
@@ -939,9 +940,9 @@ namespace HordeFight
             //float entireAngle = Geo.AngleSigned_AxisY(_upperBody_start.position - transform.position, _upperBody_end.position - transform.position);
             float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_upperBody_start.position - transform.position, _upperBody_end.position - transform.position, ConstV.v3_up);
 
-            Vector3 temp = _waist.localEulerAngles;
+            Vector3 temp = _tr_waist.localEulerAngles;
             temp.y = startAngle + entireAngle * t;
-            _waist.localEulerAngles = temp;
+            _tr_waist.localEulerAngles = temp;
         }
 
 
@@ -1001,13 +1002,13 @@ namespace HordeFight
                     Vector3 newLeftPos;
                     float newRightLength;
                     float newLeftLength;
-                    this.CalcHandPos(_HANDLE_left.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
-                    _hand_left.position = newLeftPos;
+                    this.CalcHandPos(_HANDLE_left.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
+                    _tr_hand_left.position = newLeftPos;
                     _arm_left_length = newLeftLength;
 
 
-                    this.CalcHandPos(_HANDLE_right.position, _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
-                    _hand_right.position = newRightPos;
+                    this.CalcHandPos(_HANDLE_right.position, _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
+                    _tr_hand_right.position = newRightPos;
                     _arm_right_length = newRightLength;
 
 
@@ -1031,16 +1032,18 @@ namespace HordeFight
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                     //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
+                    Vector3 leftPos, rightPos;
                     Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
                     Vector3 newPos;
                     float newLength;
-                    this.CalcHandPos(_hs_standard.position, _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
-                    _hand_left.position = newPos;
+                    this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
+                    //_hand_left.position = newPos;
+                    leftPos = newPos;
                     _arm_left_length = newLength;
 
 
                     this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
-                                                 _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+                                                 _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
 
 
                     //-----------------------
@@ -1055,7 +1058,8 @@ namespace HordeFight
                     //}
                     //-----------------------
 
-                    _hand_right.position = newPos;
+                    //_hand_right.position = newPos;
+                    rightPos = newPos;
                     _arm_right_length = newLength;
 
 
@@ -1071,8 +1075,8 @@ namespace HordeFight
 
                     //--------------------
                     //찌르기 모드로 연결하기 위한 핸들값 조정 
-                    _hs_standard.position = _hand_left.position;
-                    _hs_objectDir.position = _hand_right.position;
+                    _hs_standard.position = _tr_hand_left.position;
+                    _hs_objectDir.position = _tr_hand_right.position;
                 }//else end
             }
 
@@ -1399,17 +1403,17 @@ namespace HordeFight
                 _Model_left_1.kind = _motion_oneHand_left_1._eModel; //_eModelKind_Left_1;
                 SetModel_OneHand(_Model_left_0, _Model_left_1);
                 CalcHandPos_PlaneArea(_Model_left_0, handle,
-                                      _shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                      _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                       out newPos, out newLength);
 
                 _arm_left_length = newLength;
-                _hand_left.position = newPos;
+                _tr_hand_left.position = newPos;
 
 
                 CalcHandPos_PlaneArea(_Model_left_1, handle,
-                                      _shoulder_left.position, 1000, _arm_left_min_length,
+                                      _tr_shoulder_left.position, 1000, _arm_left_min_length,
                                       out newPos, out newLength);
-                _arm_left_dir.position = newPos;
+                _tr_arm_left_dir.position = newPos;
 
                 //------------------------------------------
 
@@ -1420,18 +1424,18 @@ namespace HordeFight
                 _Model_right_1.kind = _motion_oneHand_right_1._eModel; //_eModelKind_Right_1;
                 SetModel_OneHand(_Model_right_0, _Model_right_1);
                 CalcHandPos_PlaneArea(_Model_right_0, handle,
-                                      _shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                      _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                       out newPos, out newLength);
 
                 _arm_right_length = newLength;
-                _hand_right.position = newPos;
+                _tr_hand_right.position = newPos;
 
 
                 CalcHandPos_PlaneArea(_Model_right_1, handle,
-                                      _shoulder_right.position, 1000, _arm_right_min_length,
+                                      _tr_shoulder_right.position, 1000, _arm_right_min_length,
                                       out newPos, out newLength);
 
-                _arm_right_dir.position = newPos;
+                _tr_arm_right_dir.position = newPos;
 
             }
         }
@@ -1458,8 +1462,8 @@ namespace HordeFight
             {
                 handO = handLeft_pos;
                 handE = handRight_pos;
-                shO = _shoulder_left.position;
-                shE = _shoulder_right.position;
+                shO = _tr_shoulder_left.position;
+                shE = _tr_shoulder_right.position;
                 shE_min = _arm_right_min_length;
                 shE_max = _arm_right_max_length;
             }
@@ -1467,8 +1471,8 @@ namespace HordeFight
             {
                 handO = handRight_pos;
                 handE = handLeft_pos;
-                shO = _shoulder_right.position;
-                shE = _shoulder_left.position;
+                shO = _tr_shoulder_right.position;
+                shE = _tr_shoulder_left.position;
                 shE_min = _arm_left_min_length;
                 shE_max = _arm_left_max_length;
             }
@@ -1506,18 +1510,18 @@ namespace HordeFight
             if (eHandS == eStandard.TwoHand_LeftO)
             {
                 _arm_left_length = handLeft_length;
-                _hand_left.position = handO;
+                _tr_hand_left.position = handO;
 
                 _arm_right_length = new_handE_length;
-                _hand_right.position = new_handE_pos;
+                _tr_hand_right.position = new_handE_pos;
             }
             if (eHandS == eStandard.TwoHand_RightO)
             {
                 _arm_right_length = handRight_length;
-                _hand_right.position = handO;
+                _tr_hand_right.position = handO;
 
                 _arm_left_length = new_handE_length;
-                _hand_left.position = new_handE_pos;
+                _tr_hand_left.position = new_handE_pos;
             }
 
         }
@@ -1544,14 +1548,14 @@ namespace HordeFight
             _Model_left_0.kind = eModelLeft;
             this.SetModel_TwoHand(_Model_left_0, axis_up);
             this.CalcHandPos_PlaneArea(_Model_left_0, handle,
-                                       _shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
+                                       _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
 
 
 
             _Model_right_0.kind = eModelRight;
             this.SetModel_TwoHand(_Model_right_0, axis_up);
             this.CalcHandPos_PlaneArea(_Model_right_0, handle,
-                                       _shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
+                                       _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
 
             //----------------------------
@@ -1573,45 +1577,45 @@ namespace HordeFight
                 //베기
                 if (eStance.Cut == _eStance)
                 {
-                    Vector3 handToTarget = _arm_left_dir.position - _hand_left.position;
+                    Vector3 handToTarget = _tr_arm_left_dir.position - _tr_hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _tr_hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     //======
 
-                    handToTarget = _arm_right_dir.position - _hand_right.position;
+                    handToTarget = _tr_arm_right_dir.position - _tr_hand_right.position;
                     obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
                 }
                 //찌르기 
                 else if (eStance.Sting == _eStance)
                 {
-                    Vector3 handToTarget = _target[0].position - _hand_left.position;
+                    Vector3 handToTarget = _target[0].position - _tr_hand_left.position;
                     Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _tr_hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    handToTarget = _target[1].position - _hand_right.position;
+                    handToTarget = _target[1].position - _tr_hand_right.position;
                     obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    _hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    _tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
                 }
 
             }
             if (ePart.TwoHand == _part_control)
             {   //양손 칼 붙이기
-                Vector3 hLhR = _hand_right.position - _hand_left.position;
-                _hand_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
+                Vector3 hLhR = _tr_hand_right.position - _tr_hand_left.position;
+                _tr_hand_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
 
                 //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
-                Vector3 temp = _hand_left.eulerAngles;
+                Vector3 temp = _tr_hand_left.eulerAngles;
                 //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
 
 
                 //칼의 뒷면 표현
-                if (Vector3.Dot(ConstV.v3_up, _arm_left_up.position - _hand_left.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - _tr_hand_left.position) > 0)
                 //if (Vector3.Dot(_body_dir, hLhR) > 0)
                 {
                     //앞면
@@ -1626,7 +1630,7 @@ namespace HordeFight
                     //_hand_left_obj_mesh.sharedMaterial.color = Color.gray;
                     temp.z = 180;
                 }
-                _hand_left.eulerAngles = temp;
+                _tr_hand_left.eulerAngles = temp;
 
             }
         }
@@ -1640,15 +1644,15 @@ namespace HordeFight
             //angleY = Geo.Angle360(ConstV.v3_forward, (_hand_right.position - _shoulder_right.position), ConstV.v3_up);
             //_hand_right_wrist.eulerAngles = new Vector3(0, angleY, 0);
 
-            _hand_left_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_hand_left.position - _shoulder_left.position));
-            Vector3 temp = _hand_left_wrist.eulerAngles;
+            _tr_hand_left_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_tr_hand_left.position - _tr_shoulder_left.position));
+            Vector3 temp = _tr_hand_left_wrist.eulerAngles;
             temp.z = 0; //롤링효과 제거한다 
-            _hand_left_wrist.eulerAngles = temp;
+            _tr_hand_left_wrist.eulerAngles = temp;
 
-            _hand_right_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_hand_right.position - _shoulder_right.position));
-            temp = _hand_right_wrist.eulerAngles;
+            _tr_hand_right_wrist.rotation = Quaternion.FromToRotation(Vector3.forward, (_tr_hand_right.position - _tr_shoulder_right.position));
+            temp = _tr_hand_right_wrist.eulerAngles;
             temp.z = 0;
-            _hand_right_wrist.eulerAngles = temp;
+            _tr_hand_right_wrist.eulerAngles = temp;
         }
 
         public void Update_Shadow()
@@ -1662,11 +1666,11 @@ namespace HordeFight
                 Transform arm_left_shadow = _armed_left._arm_shadow;
 
                 //평면과 광원사이의 최소거리 
-                Vector3 hLhR = _hand_right.position - _hand_left.position;
+                Vector3 hLhR = _tr_hand_right.position - _tr_hand_left.position;
                 float len_groundToObj_start, len_groundToObj_end;
                 //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
                 Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_left_end, out len_groundToObj_end);
-                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, _hand_left.position);
+                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, _tr_hand_left.position);
                 //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
 
                 Vector3 startToEnd = end - start;
@@ -1688,7 +1692,7 @@ namespace HordeFight
                 //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
                 Vector3 temp2 = arm_left_shadow.eulerAngles;
                 //temp2.x = 90f;
-                if (Vector3.Dot(ConstV.v3_up, _arm_left_up.position - _hand_left.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - _tr_hand_left.position) > 0)
                 {
                     temp2.z = 0;
                 }
