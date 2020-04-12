@@ -802,14 +802,14 @@ namespace UtilGS9
         }
 
         //CalcSegment_PushPoint 함수 호출전 초기값 prev 와 cur 을 같게 만들어 줘야 한다  
-        public void InitSegAB(LineSegment3 segA, LineSegment3 segB)
-        {
-            _cur_seg_A = segA;
-            _prev_seg_A = segA;
+        //public void InitSegAB(LineSegment3 segA, LineSegment3 segB)
+        //{
+        //    _cur_seg_A = segA;
+        //    _prev_seg_A = segA;
 
-            _cur_seg_B = segB;
-            _prev_seg_B = segB;
-        }
+        //    _cur_seg_B = segB;
+        //    _prev_seg_B = segB;
+        //}
 
 
         public void Draw()
@@ -1494,15 +1494,18 @@ namespace UtilGS9
         Vector3 __cpPt0;
         public Vector3 __dir_A = ConstV.v3_zero;
         public Vector3 __dir_B = ConstV.v3_zero;
-        public void Find(LineSegment3 segA, LineSegment3 segB)
+        public void Find(LineSegment3 prev_segA, LineSegment3 prev_segB, LineSegment3 cur_segA, LineSegment3 cur_segB)
         {
 
-            _cur_seg_A = segA;
-            _cur_seg_B = segB;
+            _cur_seg_A = cur_segA;
+            _cur_seg_B = cur_segB;
+            _prev_seg_A = prev_segA;
+            _prev_seg_B = prev_segB;
+            //--------------------
 
             //선분의 이동방향
-            __dir_A = (segA.origin - _prev_seg_A.origin) + (segA.last - _prev_seg_A.last);
-            __dir_B = (segB.origin - _prev_seg_B.origin) + (segB.last - _prev_seg_B.last);
+            __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
+            __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
             //방향값이 너무 작은 경우 zero 로 인식되는 문제가 있어, 정규화로 크기를 키운다 
             __dir_A = VOp.Normalize(__dir_A); 
@@ -1513,8 +1516,8 @@ namespace UtilGS9
             __isSeg_A = Misc.IsZero(__dir_A);
             __isSeg_B = Misc.IsZero(__dir_B);
 
-            _tetr01.Set(_prev_seg_A, segA);
-            _tetr23.Set(_prev_seg_B, segB);
+            _tetr01.Set(_prev_seg_A, _cur_seg_A);
+            _tetr23.Set(_prev_seg_B, _cur_seg_B);
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
             if (__isSeg_A && __isSeg_B)
@@ -1527,10 +1530,10 @@ namespace UtilGS9
                 //if(0.00001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
 
                 //if (float.Epsilon > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT))
-                if(0.0000001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
+                if(0.0000001f > LineSegment3.DistanceSquared(_cur_seg_A, _cur_seg_B, out __cpS, out __cpT)) 
                 {
                     //DebugWide.LogRed("-----find: DistanceSquared"); //chamto test
-                    __cpPt0 = segA.origin + segA.direction * __cpS;
+                    __cpPt0 = _cur_seg_A.origin + _cur_seg_A.direction * __cpS;
                     __intr_seg_seg = true;
                 }
 

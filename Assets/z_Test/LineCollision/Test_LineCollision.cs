@@ -58,6 +58,10 @@ public class Test_LineCollision : MonoBehaviour
     private IntrTriangle3Triangle3 _intrTriTri;
 
     private MovingSegement3 _moveSegment = new MovingSegement3();
+    private LineSegment3 _cur_seg_A;
+    private LineSegment3 _cur_seg_B;
+    private LineSegment3 _prev_seg_A;
+    private LineSegment3 _prev_seg_B;
     //===========================================
 
 
@@ -165,9 +169,12 @@ public class Test_LineCollision : MonoBehaviour
         //===========================================
 
         //CalcSegment_PushPoint 함수 호출전 초기값 prev 와 cur 을 같게 만들어 줘야 한다  
-        _moveSegment.InitSegAB(new LineSegment3(_line0_start.position, _line0_end.position),
-                                 new LineSegment3(_line1_start.position, _line1_end.position));
-        
+        //_moveSegment.InitSegAB(new LineSegment3(_line0_start.position, _line0_end.position),
+        //new LineSegment3(_line1_start.position, _line1_end.position));
+        _cur_seg_A = new LineSegment3(_line0_start.position, _line0_end.position);
+        _cur_seg_B = new LineSegment3(_line1_start.position, _line1_end.position);
+        _prev_seg_A = _cur_seg_A;
+        _prev_seg_B = _cur_seg_B;
 
 
 	}
@@ -182,8 +189,10 @@ public class Test_LineCollision : MonoBehaviour
         //_moveSegment.Update_Tetra(_ts_seg0_s.position, _ts_seg0_e.position, _ts_seg1_s.position, _ts_seg1_e.position,
         //_ts_seg2_s.position, _ts_seg2_e.position, _ts_seg3_s.position, _ts_seg3_e.position);
 
-        _moveSegment.Find(new LineSegment3(_line0_start.position, _line0_end.position),
-                                 new LineSegment3(_line1_start.position, _line1_end.position));
+        _cur_seg_A = new LineSegment3(_line0_start.position, _line0_end.position);
+        _cur_seg_B = new LineSegment3(_line1_start.position, _line1_end.position);
+
+        _moveSegment.Find(_prev_seg_A, _prev_seg_B, _cur_seg_A, _cur_seg_B);
         
         //_moveSegment.CalcSegment_FromContactPt();
         //_moveSegment.CalcSegment_FromContactPt(false, false, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
@@ -196,7 +205,9 @@ public class Test_LineCollision : MonoBehaviour
         _line1_start.position = _moveSegment._cur_seg_B.origin;
         _line1_end.position = _moveSegment._cur_seg_B.last;
 
-
+        //이전 선분위치 갱신 
+        _prev_seg_A = _moveSegment._cur_seg_A;
+        _prev_seg_B = _moveSegment._cur_seg_B;
         //===========================================
 
         //float s, t;
