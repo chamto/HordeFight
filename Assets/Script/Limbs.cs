@@ -71,7 +71,8 @@ namespace HordeFight
         public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
         public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
-        //private Vector3 _ 
+        private Vector3 _hand_left = ConstV.v3_zero;
+        private Vector3 _hand_right = ConstV.v3_zero;
         //------------------------------------------------------
 
         private Transform _tr_sight_dir = null;
@@ -632,7 +633,6 @@ namespace HordeFight
 
             //stance ani 재생 만들기 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
-            //Update_StanceAni(); 
             Update_Ani();
 
             //손 움직임 만들기 
@@ -642,9 +642,20 @@ namespace HordeFight
             //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if(_active_projectionSlope)
             {
-                _tr_hand_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
-                _tr_hand_left.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
+                //_tr_hand_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
+                //_tr_hand_left.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
+                _tr_hand_left.position = Project_BoxSlope(_hand_left, (_hand_left - _groundY).y);
+                _tr_hand_right.position = Project_BoxSlope(_hand_right, (_hand_right - _groundY).y);
+
             }
+            else
+            {
+                //transform 적용 
+                _tr_hand_left.position = _hand_left;
+                _tr_hand_right.position = _hand_right;
+            }
+
+
             //==================================================
             //손에 칼 붙이기
             Update_AttachHand();
@@ -1003,12 +1014,14 @@ namespace HordeFight
                     float newRightLength;
                     float newLeftLength;
                     this.CalcHandPos(_HANDLE_left.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
-                    _tr_hand_left.position = newLeftPos;
+                    //_tr_hand_left.position = newLeftPos;
+                    _hand_left = newLeftPos;
                     _arm_left_length = newLeftLength;
 
 
                     this.CalcHandPos(_HANDLE_right.position, _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
-                    _tr_hand_right.position = newRightPos;
+                    //_tr_hand_right.position = newRightPos;
+                    _hand_right = newRightPos;
                     _arm_right_length = newRightLength;
 
 
@@ -1032,13 +1045,12 @@ namespace HordeFight
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                     //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
-                    Vector3 leftPos, rightPos;
                     Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
                     Vector3 newPos;
                     float newLength;
                     this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
                     //_hand_left.position = newPos;
-                    leftPos = newPos;
+                    _hand_left = newPos;
                     _arm_left_length = newLength;
 
 
@@ -1059,7 +1071,7 @@ namespace HordeFight
                     //-----------------------
 
                     //_hand_right.position = newPos;
-                    rightPos = newPos;
+                    _hand_right = newPos;
                     _arm_right_length = newLength;
 
 
@@ -1075,8 +1087,10 @@ namespace HordeFight
 
                     //--------------------
                     //찌르기 모드로 연결하기 위한 핸들값 조정 
-                    _hs_standard.position = _tr_hand_left.position;
-                    _hs_objectDir.position = _tr_hand_right.position;
+                    //_hs_standard.position = _tr_hand_left.position;
+                    //_hs_objectDir.position = _tr_hand_right.position;
+                    _hs_standard.position = _hand_left;
+                    _hs_objectDir.position = _hand_right;
                 }//else end
             }
 
@@ -1407,7 +1421,8 @@ namespace HordeFight
                                       out newPos, out newLength);
 
                 _arm_left_length = newLength;
-                _tr_hand_left.position = newPos;
+                //_tr_hand_left.position = newPos;
+                _hand_left = newPos;
 
 
                 CalcHandPos_PlaneArea(_Model_left_1, handle,
@@ -1428,7 +1443,8 @@ namespace HordeFight
                                       out newPos, out newLength);
 
                 _arm_right_length = newLength;
-                _tr_hand_right.position = newPos;
+                //_tr_hand_right.position = newPos;
+                _hand_right = newPos;
 
 
                 CalcHandPos_PlaneArea(_Model_right_1, handle,
@@ -1510,18 +1526,22 @@ namespace HordeFight
             if (eHandS == eStandard.TwoHand_LeftO)
             {
                 _arm_left_length = handLeft_length;
-                _tr_hand_left.position = handO;
+                //_tr_hand_left.position = handO;
+                _hand_left = handO;
 
                 _arm_right_length = new_handE_length;
-                _tr_hand_right.position = new_handE_pos;
+                //_tr_hand_right.position = new_handE_pos;
+                _hand_right = new_handE_pos;
             }
             if (eHandS == eStandard.TwoHand_RightO)
             {
                 _arm_right_length = handRight_length;
-                _tr_hand_right.position = handO;
+                //_tr_hand_right.position = handO;
+                _hand_right = handO;
 
                 _arm_left_length = new_handE_length;
-                _tr_hand_left.position = new_handE_pos;
+                //_tr_hand_left.position = new_handE_pos;
+                _hand_left = new_handE_pos;
             }
 
         }
