@@ -70,7 +70,7 @@ namespace HordeFight
 
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
-            _movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
+            //_movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
         }
 
 
@@ -82,18 +82,14 @@ namespace HordeFight
 
             //==================================================
             //두 선분의 교차 계산 
-            _movingSegment.Find(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
+            _movingSegment.Find(_champ_0._limbs._armed_left._prev_seg, _champ_1._limbs._armed_left._prev_seg, 
+                                _champ_0._limbs._armed_left._cur_seg, _champ_1._limbs._armed_left._cur_seg);
             //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
                                                  //_champ_0._limbs._armed_left._line.origin, _champ_1._limbs._armed_left._line.origin);
             bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
                                                                _champ_0._limbs._hs_standard.position, _champ_1._limbs._hs_standard.position);
             
             //계산된 선분 적용 
-
-            //이렇게 적용하면 안됨 
-            //_champ_0._limbs._armed_left.SetArmPos(_movingSegment._cur_seg_A);
-            //_champ_1._limbs._armed_left.SetArmPos(_movingSegment._cur_seg_B);
-
             if(recalc)
             {
                 _champ_0._limbs._hs_standard.position = _movingSegment._cur_seg_A.origin;
@@ -102,7 +98,8 @@ namespace HordeFight
                 _champ_1._limbs._hs_standard.position = _movingSegment._cur_seg_B.origin;
                 _champ_1._limbs._hs_objectDir.position = _movingSegment._cur_seg_B.last;    
             }
-
+            _champ_0._limbs._armed_left._prev_seg = _champ_0._limbs._armed_left._cur_seg;
+            _champ_1._limbs._armed_left._prev_seg = _champ_1._limbs._armed_left._cur_seg;
             //==================================================
 
             _champ_0.UpdateAll();
@@ -122,7 +119,7 @@ namespace HordeFight
         {
             
             float s, t;
-            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs._armed_left._line, unit1._limbs._armed_left._line, out s, out t);
+            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs._armed_left._cur_seg, unit1._limbs._armed_left._cur_seg, out s, out t);
             if(sqrdis < 0.01f)
             {
                 DebugWide.LogBlue("Collision!!");

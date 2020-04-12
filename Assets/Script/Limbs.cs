@@ -288,6 +288,7 @@ namespace HordeFight
 
             }
 
+
             //무기정보
             {
                 _armed_left.DrawInfo(Color.red);
@@ -635,9 +636,14 @@ namespace HordeFight
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
             Update_Ani();
 
+
+            //두 선분의 교차 계산 
+
+
             //손 움직임 만들기 
             Update_HandControl();
 
+            //-----------------
             //2d 게임에서의 높이표현 
             //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if(_active_projectionSlope)
@@ -654,7 +660,7 @@ namespace HordeFight
                 _tr_hand_left.position = _hand_left;
                 _tr_hand_right.position = _hand_right;
             }
-
+            //-----------------
 
             //==================================================
             //손에 칼 붙이기

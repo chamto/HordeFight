@@ -27,7 +27,8 @@ namespace HordeFight
         public Transform _arm_end = null;
         public Transform _arm_shadow = null;
         public SpriteMesh _arm_spr = null;
-        public LineSegment3 _line;
+        public LineSegment3 _cur_seg;
+        public LineSegment3 _prev_seg;
 
         //public int _idx = -1;
         public string _name = "";
@@ -49,7 +50,8 @@ namespace HordeFight
 
             //_idx = idx;
             _length = (_arm_start.position - _arm_end.position).magnitude;
-            _line = new LineSegment3(_arm_start.position, _arm_end.position);
+            _cur_seg = new LineSegment3(_arm_start.position, _arm_end.position);
+            _prev_seg = _cur_seg;
         }
 
         //실제 갱신이 일어나지 않는 처리임 
@@ -64,9 +66,9 @@ namespace HordeFight
             _tr_arm.position = parent.position;
             _tr_arm.rotation = parent.rotation;
 
-            _line.origin = _arm_start.position;
+            _cur_seg.origin = _arm_start.position;
             //_line.direction = _arm_end.position - _line.origin;
-            _line.last = _arm_end.position;
+            _cur_seg.last = _arm_end.position;
         }
 
         public void SetActive(bool value)
