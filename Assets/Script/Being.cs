@@ -3739,12 +3739,24 @@ namespace HordeFight
 
     public class CameraWalk : MonoBehaviour
     {
+
+        public enum eKind
+        {
+            Basic,
+            PixelPerfect,
+            Fallow,
+            MoveToFallow,
+        }
+
         private Camera _camera = null;
         public Transform _target = null;
 
-        public bool _enable_PixelPerfect = true;
+        public eKind _ekind = eKind.Fallow;
+        //public bool _enable_PixelPerfect = false;
         public float _PIXEL_PER_UNIT = 16f; //ppu
         public float _PIXEL_LENGTH = 0.0625f; //게임에서 사용하는 픽셀하나의 크기 
+        public float _FALLOW_RATE = 0.06f;
+        public float _MOVE_DIS = 10f;
 
         private void Start()
         {
@@ -3762,15 +3774,40 @@ namespace HordeFight
             Vector3 targetPos = _target.position;
             targetPos.y = _camera.transform.position.y;
 
-            if (true == _enable_PixelPerfect)
+
+            switch(_ekind)
             {
-                //픽셀퍼팩트 처리 : PIXEL_LENGTH 단위로 이동하게, 버림 처리한다 
-                _camera.transform.position = ToPixelPerfect(targetPos, _PIXEL_PER_UNIT);
-            }
-            else
-            {
-                _camera.transform.position = targetPos;
-            }
+                case eKind.Basic:
+                    {
+                        _camera.transform.position = targetPos;
+                        break;
+                    }
+                case eKind.PixelPerfect:
+                    {
+                        //픽셀퍼팩트 처리 : PIXEL_LENGTH 단위로 이동하게, 버림 처리한다 
+                        _camera.transform.position = ToPixelPerfect(targetPos, _PIXEL_PER_UNIT);
+                        break;
+                    }
+                case eKind.Fallow:
+                    {
+                        Vector3 dir = targetPos - _camera.transform.position;
+                        _camera.transform.position = _camera.transform.position + dir * _FALLOW_RATE;
+                            
+                        break;
+                    }
+                case eKind.MoveToFallow:
+                    {
+                        Vector3 dir = targetPos - _camera.transform.position;
+                        //DebugWide.LogBlue(dir.sqrMagnitude);
+                        if(dir.sqrMagnitude > _MOVE_DIS)
+                        {
+                            _camera.transform.position = _camera.transform.position + dir * _FALLOW_RATE;
+                        }
+
+                        break;
+                    }
+            }//end switch
+
 
         }
 
