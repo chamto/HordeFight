@@ -71,8 +71,8 @@ namespace HordeFight
         public Vector3 _upperBody_dir = UtilGS9.ConstV.v3_zero;
         public Vector3 _foot_dir = UtilGS9.ConstV.v3_zero;
 
-        private Vector3 _hand_left = ConstV.v3_zero;
-        private Vector3 _hand_right = ConstV.v3_zero;
+        public Vector3 _hand_left = ConstV.v3_zero;
+        public Vector3 _hand_right = ConstV.v3_zero;
         //------------------------------------------------------
 
         private Transform _tr_sight_dir = null;
@@ -84,7 +84,7 @@ namespace HordeFight
         private Transform _tr_waist = null; //허리
 
         private Transform _tr_shoulder_left = null;
-        private Transform _tr_hand_left = null;
+        public Transform _tr_hand_left = null;
         private Transform _tr_hand_left_wrist = null; //손목
         private Transform _tr_arm_left_up = null;
         private Transform _tr_arm_left_dir = null; //한손으로 쥐고 있었을 떄의 물체의 방향.
@@ -97,7 +97,7 @@ namespace HordeFight
 
 
         private Transform _tr_shoulder_right = null;
-        private Transform _tr_hand_right = null;
+        public Transform _tr_hand_right = null;
         private Transform _tr_hand_right_wrist = null;
         private Transform _tr_arm_right_up = null;
         private Transform _tr_arm_right_dir = null;
@@ -609,9 +609,45 @@ namespace HordeFight
 
             __entire_aniTime = _stance_aniTime_SE;
             //==================================================
+            _hand_left = _tr_hand_left.position;
+            _hand_right = _tr_hand_right.position;
+            //_cur_seg = new LineSegment3(_hs_standard.position, _hs_objectDir.position);
+            _cur_seg = new LineSegment3(_hand_left, _hand_right - _hand_left);
+            _prev_seg = _cur_seg;
 
         }
 
+        public  void Update_CurSeg()
+        {
+            if (null != (object)_armed_left)
+            {
+                //Vector3 n = _hs_objectDir.position - _hs_standard.position;
+                //n = VOp.Normalize(n);
+                Vector3 n = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
+                float len = 1f;
+                len = _armed_left._length;
+                _cur_seg = new LineSegment3(_tr_hand_left.position, _tr_hand_left.position + n * len);
+                //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
+            }
+        }
+        public void Update_PrevSeg()
+        {
+            if (null != (object)_armed_left)
+            {
+                //Vector3 n = _hs_objectDir.position - _hs_standard.position;
+                //n = VOp.Normalize(n);
+                Vector3 n = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
+                float len = 1f;
+                len = _armed_left._length;
+                _prev_seg = new LineSegment3(_tr_hand_left.position, _tr_hand_left.position + n * len);
+                //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
+            }
+        }
+
+        //public delegate void CallFunc(LineSegment3 seg);
+        //public CallFunc _callCurSeg = new CallFunc(CallCurSegUpdate);
+        public LineSegment3 _cur_seg;
+        public LineSegment3 _prev_seg;
         public void Update_All()
         {
             //방향값 갱신
@@ -637,7 +673,18 @@ namespace HordeFight
             Update_Ani();
 
 
-            //두 선분의 교차 계산 
+            //선분값 갱신 ..
+            //if(null != (object)_armed_left)
+            //{
+            //    //Vector3 n = _hs_objectDir.position - _hs_standard.position;
+            //    //n = VOp.Normalize(n);
+            //    Vector3 n = VOp.Normalize(_hand_right - _hand_left);
+            //    float len = 1f;
+            //    len = _armed_left._length;
+            //    _cur_seg = new LineSegment3(_hand_left, _hand_left + n * len);
+            //    //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
+            //}
+
 
 
             //손 움직임 만들기 
@@ -661,6 +708,10 @@ namespace HordeFight
                 _tr_hand_right.position = _hand_right;
             }
             //-----------------
+
+            //..
+            //_prev_seg = _cur_seg;
+            Update_PrevSeg();
 
             //==================================================
             //손에 칼 붙이기
@@ -1047,6 +1098,25 @@ namespace HordeFight
                 if (eStance.Sting == _eStance)
                 {   //찌르기 , 치기 
 
+
+                    //=======================================
+                    //test
+                    _hand_left = _tr_hand_left.position;
+                    _arm_left_length = (_tr_shoulder_left.position - _hand_left).magnitude;
+                    Vector3 dir = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
+                    _hand_right = _hand_left + dir * _twoHand_length;
+                    _arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
+
+                    //=======================================
+                    //test
+                    //Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
+                    //objectDir = VOp.Normalize(objectDir);
+                    //_hand_left = _hs_standard.position;
+                    //_arm_left_length = (_tr_shoulder_left.position - _hand_left).magnitude;
+                    //_hand_right = _hand_left + objectDir * _twoHand_length;
+                    //_arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
+                    //=======================================
+                    return;
                     //조종축 회전 테스트 코드 
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                     //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);

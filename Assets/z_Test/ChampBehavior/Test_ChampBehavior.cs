@@ -71,23 +71,75 @@ namespace HordeFight
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
             //_movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
+
         }
 
 
-        public float __RateAtoB = 0.5f;
+        //public void CallCurSegUpdate(LineSegment3 seg)
+        //{
+        //    _champ_0._limbs._hs_standard.position = seg_a.origin;
+        //    _champ_0._limbs._hs_objectDir.position = seg_a.last;
+
+        //    _champ_1._limbs._hs_standard.position = seg_b.origin;
+        //    _champ_1._limbs._hs_objectDir.position = seg_b.last;
+        //}
+
+        public float __RateAtoB = 1f;
         public bool __AllowFixed_A = true;
         public bool __AllowFixed_B = true;
-        private void Update()
-        {
+		private void Update()
+		{
 
+            _champ_0._limbs.Update_CurSeg();
+            _champ_1._limbs.Update_CurSeg();
+            //==================================================
+
+            _movingSegment.Find(_champ_0._limbs._prev_seg, _champ_1._limbs._prev_seg,
+                _champ_0._limbs._cur_seg, _champ_1._limbs._cur_seg);
+
+            bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
+                                                               _champ_0._limbs._tr_hand_left.position, _champ_1._limbs._tr_hand_left.position);
+            
+
+            //계산된 선분 적용 
+            if (recalc)
+            {
+                _champ_0._limbs._tr_hand_left.position = _movingSegment._cur_seg_A.origin;
+                _champ_0._limbs._tr_hand_right.position = _movingSegment._cur_seg_A.origin + VOp.Normalize(_movingSegment._cur_seg_A.direction) * _champ_0._limbs._twoHand_length;
+
+                _champ_1._limbs._tr_hand_left.position = _movingSegment._cur_seg_B.origin;
+                _champ_1._limbs._tr_hand_right.position = _movingSegment._cur_seg_B.origin + VOp.Normalize(_movingSegment._cur_seg_B.direction) * _champ_1._limbs._twoHand_length;
+            }
+
+            //==================================================
+
+            _champ_0.UpdateAll();
+            _champ_0.Apply_UnityPosition();
+
+            _champ_1.UpdateAll();
+            _champ_1.Apply_UnityPosition();
+
+            //==================================================
+            //_champ_0._limbs._armed_left._prev_seg = _champ_0._limbs._armed_left._cur_seg;
+            //_champ_1._limbs._armed_left._prev_seg = _champ_1._limbs._armed_left._cur_seg;
+            //==================================================
+		}
+		private void Update2()
+        {
+            
             //==================================================
             //두 선분의 교차 계산 
             _movingSegment.Find(_champ_0._limbs._armed_left._prev_seg, _champ_1._limbs._armed_left._prev_seg, 
                                 _champ_0._limbs._armed_left._cur_seg, _champ_1._limbs._armed_left._cur_seg);
+            //_movingSegment.Find(_champ_0._limbs._prev_seg, _champ_1._limbs._prev_seg,
+                                //_champ_0._limbs._cur_seg, _champ_1._limbs._cur_seg);
+            
             //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
                                                  //_champ_0._limbs._armed_left._line.origin, _champ_1._limbs._armed_left._line.origin);
             bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
                                                                _champ_0._limbs._hs_standard.position, _champ_1._limbs._hs_standard.position);
+            //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
+                                                               //_champ_0._limbs._hand_left, _champ_1._limbs._hand_left);
             
             //계산된 선분 적용 
             if(recalc)
@@ -100,6 +152,9 @@ namespace HordeFight
             }
             _champ_0._limbs._armed_left._prev_seg = _champ_0._limbs._armed_left._cur_seg;
             _champ_1._limbs._armed_left._prev_seg = _champ_1._limbs._armed_left._cur_seg;
+
+            //_champ_0._limbs._prev_seg = _champ_0._limbs._cur_seg;
+            //_champ_1._limbs._prev_seg = _champ_1._limbs._cur_seg;
             //==================================================
 
             _champ_0.UpdateAll();
