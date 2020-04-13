@@ -2885,7 +2885,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1128337871}
   m_Layer: 0
-  m_Name: obj111
+  m_Name: obj
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3238,7 +3238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1280823405}
   m_Layer: 0
-  m_Name: obj
+  m_Name: obj222
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

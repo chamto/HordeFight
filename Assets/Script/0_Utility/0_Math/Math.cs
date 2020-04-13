@@ -980,7 +980,7 @@ namespace UtilGS9
                 //NaN 예외처리 추가 
                 if(Misc.IsZero(len_perp_left + len_perp_right))
                 {
-                    DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
+                    //DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
                     rate = 0;
                 }
                     
@@ -1133,7 +1133,7 @@ namespace UtilGS9
 
         public void Dropping(bool allowFixed_a, bool allowFixed_b, Vector3 meetPt, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
-            DebugWide.LogBlue("dropping -----");
+            //DebugWide.LogBlue("dropping -----");
             __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
@@ -1165,7 +1165,7 @@ namespace UtilGS9
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
             {
-                DebugWide.LogGreen("zero_a,b : "+ VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
+                //DebugWide.LogGreen("zero_a,b : "+ VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
                 //return; //방향성 정보가 없는 경우 처리하지 않는다. 고정되어야 하는 상황에서 조금씩 이동되는 현상이 발생하는 원인임 
 
                 n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
@@ -1205,7 +1205,7 @@ namespace UtilGS9
             {
                 if (false == zero_a)
                 {
-                    DebugWide.LogGreen("___non_zero_a" + VOp.ToString(__dir_A));
+                    //DebugWide.LogGreen("___non_zero_a" + VOp.ToString(__dir_A));
                     n_dir = VOp.Normalize(__dir_A);
                     if(allowFixed_a)
                     {
@@ -1224,7 +1224,7 @@ namespace UtilGS9
                 }
                 if (false == zero_b)
                 {
-                    DebugWide.LogGreen("___non_zero_b" + VOp.ToString(__dir_B));
+                    //DebugWide.LogGreen("___non_zero_b" + VOp.ToString(__dir_B));
                     n_dir = VOp.Normalize(__dir_B);
                     if (allowFixed_b)
                     {
@@ -1352,7 +1352,7 @@ namespace UtilGS9
             {
                 if (true == __intr_seg_seg)
                 {
-                    DebugWide.LogBlue("!! 선분 vs 선분  ");    
+                    //DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     result = true;
                 }
@@ -1417,8 +1417,8 @@ namespace UtilGS9
 
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
 
-                    if(result)
-                        DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
+                    //if(result)
+                        //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
                 }
             }
 
@@ -1430,12 +1430,12 @@ namespace UtilGS9
                 if (false == __isSeg_A)
                 {
                     CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
-                    DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
+                    //DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
                 }
                 if (false == __isSeg_B)
                 {
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
-                    DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
+                    //DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
                 } 
 
                 //기존 선분에서 meetPt를 지나는 새로운 선분 구한다 , prev 선분값을 cur 로 갱신한다  
@@ -1455,7 +1455,7 @@ namespace UtilGS9
                 }
 
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
-                DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
+                //DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
 
             }
