@@ -886,7 +886,7 @@ namespace UtilGS9
                         intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
 
                         //DebugWide.LogBlue("4---"); //chamto test
-                        DebugWide.LogBlue("4---" + tri1.V[i] + "  " + intr0);
+                        //DebugWide.LogBlue("4---" + tri1.V[i] + "  " + intr0);
                         return IntersectsSegment(plane0, tri0, tri1.V[i], intr0);
                     }
                 }

@@ -976,9 +976,14 @@ namespace UtilGS9
                 float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
                 float rate = len_perp_left / (len_perp_left + len_perp_right);
 
+                 
                 //NaN 예외처리 추가 
                 if(Misc.IsZero(len_perp_left + len_perp_right))
+                {
+                    DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
                     rate = 0;
+                }
+                    
 
                 //작은쪽을 선택 
                 if (len_up > len_down)
@@ -1403,7 +1408,7 @@ namespace UtilGS9
                         //Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
                     }
-                    if (true == __isSeg_B)
+                    else if (true == __isSeg_B)
                     {
                         //max 구하기
                         Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
@@ -1425,12 +1430,12 @@ namespace UtilGS9
                 if (false == __isSeg_A)
                 {
                     CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
-                    DebugWide.LogRed("1 +++ meetPt: " + meetPt + "   " + _cur_seg_A + "   " + _cur_seg_B); //chamto test
+                    DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
                 }
                 if (false == __isSeg_B)
                 {
-                    DebugWide.LogRed("2");
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                    DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
                 } 
 
                 //기존 선분에서 meetPt를 지나는 새로운 선분 구한다 , prev 선분값을 cur 로 갱신한다  
@@ -1438,11 +1443,11 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A)
                     {
-                        //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt ,_maxV , _cur_seg_A, out _cur_seg_A);
-                        CalcSegment(allowFixed_a, fixedOriginPt_a, _minV, meetPt, _cur_seg_A, out _cur_seg_A);
+                        CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV ,meetPt , _cur_seg_A, out _cur_seg_A);
+                        //CalcSegment(allowFixed_a, fixedOriginPt_a, _minV, meetPt, _cur_seg_A, out _cur_seg_A);
                         _prev_seg_A = _cur_seg_A;
                     }
-                    if (true == __isSeg_B)
+                    else if (true == __isSeg_B)
                     {
                         CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
                         _prev_seg_B = _cur_seg_B;
@@ -1450,7 +1455,7 @@ namespace UtilGS9
                 }
 
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
-                DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "   " + _cur_seg_B); //chamto test
+                DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
 
             }
@@ -1517,8 +1522,8 @@ namespace UtilGS9
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
             //방향값이 너무 작은 경우 zero 로 인식되는 문제가 있어, 정규화로 크기를 키운다 
-            __dir_A = VOp.Normalize(__dir_A); 
-            __dir_B = VOp.Normalize(__dir_B);
+            //__dir_A = VOp.Normalize(__dir_A); 
+            //__dir_B = VOp.Normalize(__dir_B);
             //선분상태인지 사각꼴 상태인지 검사 
             //__isSeg_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
             //__isSeg_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
