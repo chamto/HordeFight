@@ -976,6 +976,10 @@ namespace UtilGS9
                 float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
                 float rate = len_perp_left / (len_perp_left + len_perp_right);
 
+                //NaN 예외처리 추가 
+                if(Misc.IsZero(len_perp_left + len_perp_right))
+                    rate = 0;
+
                 //작은쪽을 선택 
                 if (len_up > len_down)
                 {
@@ -1124,7 +1128,7 @@ namespace UtilGS9
 
         public void Dropping(bool allowFixed_a, bool allowFixed_b, Vector3 meetPt, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
-            //DebugWide.LogBlue("dropping -----");
+            DebugWide.LogBlue("dropping -----");
             __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
@@ -1133,32 +1137,34 @@ namespace UtilGS9
             bool zero_a, zero_b;
             float sensibility = float.Epsilon; //이 값이 크면 zero로 판단하는 영역이 커진다 
             //float sensibility = 0.00000001f;
+            //__dir_A = VOp.Normalize(__dir_A); //방향값 증폭 
+            //__dir_B = VOp.Normalize(__dir_B);
             zero_a = Misc.IsZero(__dir_A, sensibility);
             zero_b = Misc.IsZero(__dir_B, sensibility);
             Vector3 n_dir;
 
             //-----
             //꼬임이 바뀌었는지 검사
-            Plane plane = new Plane(_cur_seg_A.origin, _cur_seg_A.last, _cur_seg_B.origin);
-            float test = plane.Test(_cur_seg_B.last);
-            //DebugWide.LogBlue("test:  " + test);
+            //Plane plane = new Plane(_cur_seg_A.origin, _cur_seg_A.last, _cur_seg_B.origin);
+            //float test = plane.Test(_cur_seg_B.last);
+            ////DebugWide.LogBlue("test:  " + test);
             float sign = 1;
-            if (test >= 0)
-            {   //a위에b
-                sign = 1;
-            }
-            else if (test < 0)
-                sign = -1f;
+            //if (test >= 0)
+            //{   //a위에b
+            //    sign = 1;
+            //}
+            //else if (test < 0)
+                //sign = -1f;
             //-----
 
             //방향성 정보가 없는 경우
             if (zero_a && zero_b)
             {
-                //DebugWide.LogGreen("zero_a,b : "+ ToString(__dir_A) + "   " + ToString(__dir_B));
+                DebugWide.LogGreen("zero_a,b : "+ VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
+                //return; //방향성 정보가 없는 경우 처리하지 않는다. 고정되어야 하는 상황에서 조금씩 이동되는 현상이 발생하는 원인임 
+
                 n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
                 n_dir = VOp.Normalize(n_dir);
-
-
 
                 if (allowFixed_a)
                 {
@@ -1194,7 +1200,7 @@ namespace UtilGS9
             {
                 if (false == zero_a)
                 {
-                    //DebugWide.LogGreen("___non_zero_a" + ToString(__dir_A));
+                    DebugWide.LogGreen("___non_zero_a" + VOp.ToString(__dir_A));
                     n_dir = VOp.Normalize(__dir_A);
                     if(allowFixed_a)
                     {
@@ -1213,7 +1219,7 @@ namespace UtilGS9
                 }
                 if (false == zero_b)
                 {
-                    //DebugWide.LogGreen("___non_zero_b" + ToString(__dir_B));
+                    DebugWide.LogGreen("___non_zero_b" + VOp.ToString(__dir_B));
                     n_dir = VOp.Normalize(__dir_B);
                     if (allowFixed_b)
                     {
@@ -1341,7 +1347,7 @@ namespace UtilGS9
             {
                 if (true == __intr_seg_seg)
                 {
-                    //DebugWide.LogBlue("!! 선분 vs 선분  ");    
+                    DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     result = true;
                 }
@@ -1394,6 +1400,7 @@ namespace UtilGS9
                     {
                         //min 구하기 
                         Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                        //Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
                     }
                     if (true == __isSeg_B)
@@ -1405,21 +1412,24 @@ namespace UtilGS9
 
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
 
-                    //if(result)
-                        //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
+                    if(result)
+                        DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
                 }
             }
 
             if(result)
             {
+                
                 //** 사각꼴(선분)이 서로 엇갈려 만난경우 : rateAtoB 값에 따라 밀어내기 처리를 한다 
                 //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
                 if (false == __isSeg_A)
                 {
                     CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    DebugWide.LogRed("1 +++ meetPt: " + meetPt + "   " + _cur_seg_A + "   " + _cur_seg_B); //chamto test
                 }
                 if (false == __isSeg_B)
                 {
+                    DebugWide.LogRed("2");
                     CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                 } 
 
@@ -1440,9 +1450,8 @@ namespace UtilGS9
                 }
 
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
-                //DebugWide.LogRed("meetPt: " + meetPt ); //chamto test
+                DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "   " + _cur_seg_B); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
-
 
             }
 
@@ -1529,8 +1538,8 @@ namespace UtilGS9
                 //Dropping zero 상태에 의해 조금씩 미는 효과가 생김 , 의도치 않은 것이므로 제거함 
                 //if(0.00001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
 
-                //if (float.Epsilon > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT))
-                if(0.0000001f > LineSegment3.DistanceSquared(_cur_seg_A, _cur_seg_B, out __cpS, out __cpT)) 
+                if (float.Epsilon > LineSegment3.DistanceSquared(_cur_seg_A, _cur_seg_B, out __cpS, out __cpT))
+                //if(0.0000001f > LineSegment3.DistanceSquared(_cur_seg_A, _cur_seg_B, out __cpS, out __cpT)) 
                 {
                     //DebugWide.LogRed("-----find: DistanceSquared"); //chamto test
                     __cpPt0 = _cur_seg_A.origin + _cur_seg_A.direction * __cpS;

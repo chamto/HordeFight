@@ -881,10 +881,12 @@ namespace UtilGS9
                         iM = (i + 2) % 3;
                         iP = (i + 1) % 3;
                         t = _dist1[iM] / (_dist1[iM] - _dist1[iP]);
+                        //if (Misc.IsZero((_dist1[iM] - _dist1[iP])))
+                            //t = 0;
                         intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
 
                         //DebugWide.LogBlue("4---"); //chamto test
-
+                        DebugWide.LogBlue("4---" + tri1.V[i] + "  " + intr0);
                         return IntersectsSegment(plane0, tri0, tri1.V[i], intr0);
                     }
                 }
