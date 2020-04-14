@@ -767,6 +767,71 @@ namespace UtilGS9
 
     //======================================================
 
+    public struct Tetragon3
+    {
+        //v1  - v2
+        // |  /  |   
+        //v0  - v3
+        //v0 - v1 - v2 , v0 - v2 - v3
+
+        //a0 - a1 - a2 , b0 - b1 - b2
+        //seg0 : a0 - a1 , seg1 : b2 - b1
+        public Triangle3 tri0;
+        public Triangle3 tri1;
+
+        public Vector3 corner0
+        {
+            get { return tri0.V[1]; }
+        }
+        public Vector3 corner1
+        {
+            get { return tri1.V[2]; }
+        }
+
+        public void Set(LineSegment3 seg0, LineSegment3 seg1)
+        {
+            tri0.V[0] = seg0.origin;
+            tri0.V[1] = seg0.last; //모서리
+            tri0.V[2] = seg1.last;
+
+            tri1.V[0] = seg0.origin;
+            tri1.V[1] = seg1.last;
+            tri1.V[2] = seg1.origin; //모서리 
+        }
+
+        public void Set(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
+        {
+            tri0.V[0] = seg0_s;
+            tri0.V[1] = seg0_e;
+            tri0.V[2] = seg1_e;
+
+            tri1.V[0] = seg0_s;
+            tri1.V[1] = seg1_e;
+            tri1.V[2] = seg1_s;
+        }
+
+        public void Draw(Color color)
+        {
+            //v1  - v2
+            // |  /  |   
+            //v0  - v3
+            Color cc = Color.gray;
+            //DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
+            DebugWide.DrawLine(tri0.V[1], tri0.V[2], cc);
+            DebugWide.DrawLine(tri0.V[0], tri0.V[2], cc);
+
+            //DebugWide.DrawLine(tri1.V[2], tri1.V[1], color);
+            DebugWide.DrawLine(tri1.V[0], tri1.V[2], cc);
+
+            //선분출력
+            cc = color;
+            DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
+            DebugWide.DrawLine(tri1.V[2], tri1.V[1], cc);
+            DebugWide.DrawCircle(tri0.V[0], 0.05f, cc); //선분 시작점
+            DebugWide.DrawCircle(tri1.V[2], 0.05f, cc); //선분 시작점
+
+        }
+    }
 
 
     //움직이는 선분의 교차요소 구하기
@@ -1562,73 +1627,8 @@ namespace UtilGS9
 
         }
 
-    }
+    }//end class
 
 
-    public struct Tetragon3
-    {
-        //v1  - v2
-        // |  /  |   
-        //v0  - v3
-        //v0 - v1 - v2 , v0 - v2 - v3
-
-        //a0 - a1 - a2 , b0 - b1 - b2
-        //seg0 : a0 - a1 , seg1 : b2 - b1
-        public Triangle3 tri0;
-        public Triangle3 tri1;
-
-        public Vector3 corner0
-        {
-            get { return tri0.V[1]; }
-        }
-        public Vector3 corner1
-        {
-            get { return tri1.V[2]; }
-        }
-
-        public void Set(LineSegment3 seg0 , LineSegment3 seg1)
-        {
-            tri0.V[0] = seg0.origin;
-            tri0.V[1] = seg0.last; //모서리
-            tri0.V[2] = seg1.last;
-
-            tri1.V[0] = seg0.origin;
-            tri1.V[1] = seg1.last;
-            tri1.V[2] = seg1.origin; //모서리 
-        }
-
-        public void Set(Vector3 seg0_s, Vector3 seg0_e, Vector3 seg1_s, Vector3 seg1_e)
-        {
-            tri0.V[0] = seg0_s;
-            tri0.V[1] = seg0_e;
-            tri0.V[2] = seg1_e;
-
-            tri1.V[0] = seg0_s;
-            tri1.V[1] = seg1_e;
-            tri1.V[2] = seg1_s;
-        }
-
-        public void Draw(Color color)
-        {
-            //v1  - v2
-            // |  /  |   
-            //v0  - v3
-            Color cc = Color.gray;
-            //DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
-            DebugWide.DrawLine(tri0.V[1], tri0.V[2], cc);
-            DebugWide.DrawLine(tri0.V[0], tri0.V[2], cc);
-
-            //DebugWide.DrawLine(tri1.V[2], tri1.V[1], color);
-            DebugWide.DrawLine(tri1.V[0], tri1.V[2], cc);
-
-            //선분출력
-            cc = color;
-            DebugWide.DrawLine(tri0.V[0], tri0.V[1], cc);
-            DebugWide.DrawLine(tri1.V[2], tri1.V[1], cc);
-            DebugWide.DrawCircle(tri0.V[0], 0.05f, cc); //선분 시작점
-            DebugWide.DrawCircle(tri1.V[2], 0.05f, cc); //선분 시작점
-
-        }
-    }
 
 }
