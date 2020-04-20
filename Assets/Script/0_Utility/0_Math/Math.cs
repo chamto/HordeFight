@@ -850,7 +850,7 @@ namespace UtilGS9
         private IntrTriangle3Triangle3 _intr_0_3;
         private IntrTriangle3Triangle3 _intr_1_2;
         private IntrTriangle3Triangle3 _intr_1_3;
-        private Vector3 _minV, _maxV;
+        public Vector3 _minV, _maxV;
 
         public MovingSegement3()
         {
@@ -1014,6 +1014,122 @@ namespace UtilGS9
             }
             newSeg = new LineSegment3(origin, last);
 
+        }
+
+        public enum eCalcMethod
+        {
+            Move, //meetPt 방향으로 계산
+            Fixed_Rotate,
+            Around_Rotate,
+        }
+
+        private void CalcSubSegment(eCalcMethod eCalc, Vector3 meetPt, LineSegment3 p_root, LineSegment3 p_start, LineSegment3 end, out LineSegment3 newSeg)
+        {
+            Vector3 originSub = ConstV.v3_zero, lastSub = ConstV.v3_zero;
+            float len_start = p_start.direction.magnitude;
+
+            switch (eCalc)
+            {
+                case eCalcMethod.Move:
+                case eCalcMethod.Around_Rotate:
+                    {
+                        Vector3 v_up = end.last - p_start.last;
+                        Vector3 v_down = end.origin - p_start.origin;
+                        float len_up = v_up.sqrMagnitude;
+                        float len_down = v_down.sqrMagnitude;
+
+                        Vector3 n_left = VOp.Normalize(p_start.direction);
+                        Vector3 n_right = VOp.Normalize(end.direction);
+                        float len_proj_left = Vector3.Dot(n_left, (meetPt - p_start.origin));
+                        float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
+                        float len_perp_left = ((n_left * len_proj_left + p_start.origin) - meetPt).magnitude;
+                        float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
+                        float rate = len_perp_left / (len_perp_left + len_perp_right);
+
+
+                        //NaN 예외처리 추가 
+                        if (Misc.IsZero(len_perp_left + len_perp_right))
+                        {
+                            //DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
+                            rate = 0;
+                        }
+
+
+                        //작은쪽을 선택 
+                        if (len_up > len_down)
+                        {
+                            originSub = v_down * rate + p_start.origin;
+
+                            lastSub = VOp.Normalize(meetPt - originSub) * len_start + originSub;
+
+                        }
+                        else
+                        {
+                            lastSub = v_up * rate + p_start.last;
+
+                            originSub = VOp.Normalize(meetPt - lastSub) * len_start + lastSub;
+                        }
+                    }
+                    break;
+                case eCalcMethod.Fixed_Rotate:
+                    {
+                        originSub = p_root.origin;
+                        lastSub = VOp.Normalize(meetPt - originSub) * len_start + originSub;    
+                    }
+                    break;
+            }
+
+            //추가처리 
+            if (eCalcMethod.Around_Rotate == eCalc)
+            {
+                float len_root = p_root.direction.magnitude;
+                Vector3 p_dis_l = p_root.last - p_start.last;
+                Vector3 p_dis_o = p_root.last - p_start.origin;
+
+                //현재 구한 origin 에서의 root_last
+                Vector3 root_lastPos = originSub + p_dis_o;
+
+                //root 의 거리에 맞도록 root_last 위치를 구함 
+                Vector3 new_root_dir = VOp.Normalize(root_lastPos - p_root.origin);
+                root_lastPos = p_root.origin + new_root_dir * len_root;
+
+                //root_last 를 기준으로 sub 위치를 다시 구함 
+                lastSub = root_lastPos + (-p_dis_l);
+                originSub = root_lastPos + (-p_dis_o);
+
+            }
+
+
+            newSeg = new LineSegment3(originSub, lastSub);
+        }
+
+
+        private void CalcSubSegment(eCalcMethod eCalc, Vector3 minPt, Vector3 maxPt,  LineSegment3 p_root, LineSegment3 p_minSeg, out LineSegment3 maxSeg)
+        {
+            Vector3 originSub = ConstV.v3_zero, lastSub = ConstV.v3_zero;
+
+            switch(eCalc)
+            {
+                case eCalcMethod.Move:
+                case eCalcMethod.Around_Rotate:
+                    {
+                        Vector3 dir = maxPt - minPt;
+                        originSub = p_minSeg.origin + dir;
+                        lastSub = p_minSeg.last + dir;        
+                    }
+                    break;
+                case eCalcMethod.Fixed_Rotate:
+                    {
+                        float len_curSeg = p_minSeg.direction.magnitude;
+
+                        originSub = p_root.origin;
+                        lastSub = VOp.Normalize(maxPt - originSub) * len_curSeg + originSub;
+                    }
+                    break;
+            }
+
+
+            maxSeg = new LineSegment3(originSub, lastSub);
         }
 
         //fixedOriginPt : 고정된 새로운 선분의 출발점 
@@ -1308,6 +1424,148 @@ namespace UtilGS9
             }
         }
 
+        public void DroppingSub(eCalcMethod eCalc_a, eCalcMethod eCalc_b, Vector3 meetPt, LineSegment3 root_a, LineSegment3 root_b)
+        {
+            //DebugWide.LogBlue("dropping -----");
+            __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
+            __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
+
+            float RADIUS = 0.001f;
+            float ANGLE = 0.1f;
+            bool zero_a, zero_b;
+            float sensibility = float.Epsilon; //이 값이 크면 zero로 판단하는 영역이 커진다 
+
+            zero_a = Misc.IsZero(__dir_A, sensibility);
+            zero_b = Misc.IsZero(__dir_B, sensibility);
+            Vector3 n_dir;
+
+
+            float sign = 1;
+
+
+            //방향성 정보가 없는 경우
+            if (zero_a && zero_b)
+            {
+                //DebugWide.LogGreen("zero_a,b : "+ VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
+                //return; //방향성 정보가 없는 경우 처리하지 않는다. 고정되어야 하는 상황에서 조금씩 이동되는 현상이 발생하는 원인임 
+
+                n_dir = Vector3.Cross(_cur_seg_A.direction, _cur_seg_B.direction);
+                n_dir = VOp.Normalize(n_dir);
+
+                switch(eCalc_a)
+                {
+                    case eCalcMethod.Move:
+                        {
+                            _cur_seg_A.origin = _cur_seg_A.origin + n_dir * RADIUS * sign;
+                            _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS * sign;
+                        }
+                        break;
+                    case eCalcMethod.Fixed_Rotate:
+                        {
+                            float len = _cur_seg_A.Length();
+                            _cur_seg_A.origin = root_a.origin;
+                            _cur_seg_A.last = root_a.origin + VOp.Normalize(meetPt - root_a.origin) * len;
+                            Vector3 axis = Vector3.Cross(_cur_seg_A.direction, n_dir);
+                            _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + root_a.origin;
+                        }
+                        break;
+                    case eCalcMethod.Around_Rotate:
+                        {
+                            
+                        }
+                        break;
+
+                }
+
+                //====
+                switch (eCalc_b)
+                {
+                    case eCalcMethod.Move:
+                        {
+                            _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS * sign;
+                            _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS * sign;
+                        }
+                        break;
+                    case eCalcMethod.Fixed_Rotate:
+                        {
+                            float len = _cur_seg_B.Length();
+                            _cur_seg_B.origin = root_b.origin;
+                            _cur_seg_B.last = root_b.origin + VOp.Normalize(meetPt - root_b.origin) * len;
+                            Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
+                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + root_b.origin;
+                        }
+                        break;
+                    case eCalcMethod.Around_Rotate:
+                        {}
+                        break;
+
+                }
+
+            }
+            //방향성 정보가 있는 경우 
+            else
+            {
+                if (false == zero_a)
+                {
+                    //DebugWide.LogGreen("___non_zero_a" + VOp.ToString(__dir_A));
+                    n_dir = VOp.Normalize(__dir_A);
+                    switch (eCalc_a)
+                    {
+                        case eCalcMethod.Move:
+                            {
+                                _cur_seg_A.origin = _cur_seg_A.origin + n_dir * -RADIUS;
+                                _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
+                            }
+                            break;
+                        case eCalcMethod.Fixed_Rotate:
+                            {
+                                float len = _cur_seg_A.Length();
+                                _cur_seg_A.origin = root_a.origin;
+                                _cur_seg_A.last = root_a.origin + VOp.Normalize(meetPt - root_a.origin) * len;
+                                Vector3 axis = Vector3.Cross(_cur_seg_A.direction, -n_dir);
+                                _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + root_a.origin;
+                            }
+                            break;
+                        case eCalcMethod.Around_Rotate:
+                            {
+                                
+                            }
+                            break;
+
+                    }
+
+                }
+
+                //DebugWide.LogGreen("___non_zero_b" + VOp.ToString(__dir_B));
+                n_dir = VOp.Normalize(__dir_B);
+                switch (eCalc_b)
+                {
+                    case eCalcMethod.Move:
+                        {
+                            _cur_seg_B.origin = _cur_seg_B.origin + n_dir * -RADIUS;
+                            _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
+                        }
+                        break;
+                    case eCalcMethod.Fixed_Rotate:
+                        {
+                            float len = _cur_seg_B.Length();
+                            _cur_seg_B.origin = root_b.origin;
+                            _cur_seg_B.last = root_b.origin + VOp.Normalize(meetPt - root_b.origin) * len;
+                            Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
+                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + root_b.origin;
+                        }
+                        break;
+                    case eCalcMethod.Around_Rotate:
+                        {
+
+                        }
+                        break;
+
+                }
+
+            }
+        }
+
         Vector3 __meetPt;
         bool __result_meet = false;
         //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
@@ -1419,6 +1677,7 @@ namespace UtilGS9
                 {
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
+                    _minV = _maxV = meetPt;
                     result = true;
                 }
             }
@@ -1535,6 +1794,166 @@ namespace UtilGS9
         }
 
 
+        public bool CalcSubSegment_PushPoint(float rateAtoB, eCalcMethod eCalc_a, eCalcMethod eCalc_b, LineSegment3 root_a, LineSegment3 root_b)
+        {
+            bool result = false;
+            bool result_2 = false;
+            Vector3 meetPt = ConstV.v3_zero;
+
+            //선분과 선분이 만난 경우 
+            if (__isSeg_A && __isSeg_B)
+            {
+                if (true == __intr_seg_seg)
+                {
+                    //DebugWide.LogBlue("!! 선분 vs 선분  ");    
+                    meetPt = __cpPt0;
+                    _minV = _maxV = meetPt;
+                    result = true;
+                }
+            }
+            else
+            {
+                //DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
+                //사각꼴이 서로 같은 평면에서 만난경우
+                if (eIntersectionType.PLANE == _intr_0_2.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_0_3.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_1_2.mIntersectionType ||
+                    eIntersectionType.PLANE == _intr_1_3.mIntersectionType)
+                {
+
+                    //선분과 사각꼴이 같은 평면에서 만난경우
+                    if (true == __isSeg_A && false == __isSeg_B)
+                    {
+                        //DebugWide.LogBlue("!! 선분 vs 사각꼴 ");
+                        result = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
+                    }
+                    else if (false == __isSeg_A && true == __isSeg_B)
+                    {
+                        //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
+                        result = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
+                    }
+                    //사각꼴과 사각꼴이 같은 평면에서 만난경우 
+                    else if (false == __isSeg_A && false == __isSeg_B)
+                    {
+                        
+                        //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
+                        result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 6);
+
+                    }
+                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+
+                    //if(result)
+                    //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
+
+                }
+                //사각꼴(선분)이 서로 엇갈려 만난경우
+                else
+                {
+                    result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    result_2 = true;
+
+                    //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
+                    if (true == __isSeg_A)
+                    {
+                        switch(eCalc_a)
+                        {
+                            case eCalcMethod.Move:
+                            case eCalcMethod.Fixed_Rotate:
+                                {
+                                    //min 구하기 
+                                    Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                                }
+                                break;
+                            case eCalcMethod.Around_Rotate:
+                                {
+                                    float len = (root_a.origin - _maxV).magnitude;
+                                    Geo.IntersectLineSegment(_maxV, len, _prev_seg_B, out _minV);
+                                }
+                                break;
+                        }
+
+                        //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
+                    }
+                    else if (true == __isSeg_B)
+                    {
+                        switch (eCalc_b)
+                        {
+                            case eCalcMethod.Move:
+                            case eCalcMethod.Fixed_Rotate:
+                                {
+                                    //max 구하기
+                                    Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                                }
+                                break;
+                            case eCalcMethod.Around_Rotate:
+                                {
+                                    float len = (root_a.origin - _minV).magnitude;
+                                    Geo.IntersectLineSegment(_minV, len, _prev_seg_B, out _maxV);
+                                }
+                                break;
+                        }
+
+                        //DebugWide.LogRed("segB max : " + _maxV + "   " + _minV + "   " + __dir_A + "   " + _cur_seg_B.direction); //chamto test
+                    }
+
+                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+
+                    //if(result)
+                    //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
+                }
+            }
+
+            if (result)
+            {
+
+                //** 사각꼴(선분)이 서로 엇갈려 만난경우 : rateAtoB 값에 따라 밀어내기 처리를 한다 
+                //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
+                if (false == __isSeg_A)
+                {
+                    CalcSubSegment(eCalc_a, meetPt, root_a, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    //DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
+                }
+                if (false == __isSeg_B)
+                {
+                    CalcSubSegment(eCalc_b, meetPt, root_b, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                    //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                    //DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
+                }
+
+                //기존 선분에서 meetPt를 지나는 새로운 선분 구한다 , prev 선분값을 cur 로 갱신한다  
+                if (true == result_2)
+                {
+                    if (true == __isSeg_A)
+                    {
+                        CalcSubSegment(eCalc_a, _maxV, meetPt, root_a, _cur_seg_A, out _cur_seg_A);
+                        //CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV, meetPt, _cur_seg_A, out _cur_seg_A);
+                        _prev_seg_A = _cur_seg_A;
+                    }
+                    else if (true == __isSeg_B)
+                    {
+                        CalcSubSegment(eCalc_b, _minV, meetPt, root_b, _cur_seg_B, out _cur_seg_B);
+                        //CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
+                        _prev_seg_B = _cur_seg_B;
+                    }
+                }
+
+                //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
+                //DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
+                DroppingSub(eCalc_a, eCalc_b, meetPt, root_a, root_b);
+                //Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
+
+            }
+
+            _prev_seg_A = _cur_seg_A;
+            _prev_seg_B = _cur_seg_B;
+
+            __meetPt = meetPt;
+            __result_meet = result;
+
+            return result;
+        }
+
         public void Update_Tetra(Vector3 a0_s, Vector3 a0_e, Vector3 a1_s, Vector3 a1_e, 
                                  Vector3 b0_s, Vector3 b0_e, Vector3 b1_s, Vector3 b1_e)
         {
@@ -1628,7 +2047,6 @@ namespace UtilGS9
         }
 
     }//end class
-
 
 
 }

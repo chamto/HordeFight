@@ -2123,16 +2123,16 @@ namespace UtilGS9
 
         //segment_dir : 정규화된 값을 넣어야 한다 
         //intersection_firstPoint : 반직선이 원과 충돌한 첫번째 위치를 반환
-        static public bool IntersectLineSegment(Vector3 sphere_center, float sphere_radius, Vector3 segment_origin, Vector3 segment_dir, float segment_distance, out Vector3 intersection_firstPoint)
+        static public bool IntersectLineSegment(Vector3 sphere_center, float sphere_radius, LineSegment3 segment, out Vector3 intersection_firstPoint)
         {
             Vector3 sect;
-            bool hit = IntersectRay(sphere_center, sphere_radius, segment_origin, segment_dir, out sect);
+            bool hit = IntersectRay(sphere_center, sphere_radius, segment.origin, segment.direction, out sect);
 
             intersection_firstPoint = ConstV.v3_zero;
             if (hit)
             {
-                float d = VOp.Minus(segment_origin , sect).sqrMagnitude;
-                if (d > (segment_distance * segment_distance)) return false;
+                float d = VOp.Minus(segment.origin , sect).sqrMagnitude;
+                if (d > (segment.direction.sqrMagnitude)) return false;
                 intersection_firstPoint = sect;
                 return true;
             }

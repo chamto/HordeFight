@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-public class Test_LineCollision : MonoBehaviour 
+//선분 vs 선분  충돌 버젼
+public class Test_LineCollision_0 : MonoBehaviour 
 {
     private bool _init = false;
     private Transform _line0_start = null;
@@ -272,5 +273,195 @@ public class Test_LineCollision : MonoBehaviour
             temp += arr[i] + " ";
         }
         DebugWide.LogBlue(num + "__ " + temp);
+    }
+}
+
+
+public class Test_LineCollision : MonoBehaviour 
+{
+    private MovingModel _movingModel = new MovingModel();
+
+	private void OnDrawGizmos()
+	{
+        _movingModel.Draw();
+	}
+
+	private void Start()
+	{
+        _movingModel.Init(transform.parent);
+	}
+
+	private void Update()
+	{
+        _movingModel.Update();
+	}
+}
+
+//움직이는 모형의 교차검사 
+public class MovingModel
+{
+    public struct TR_Segment
+    {
+        public Transform start;
+        public Transform end;
+    }
+    public class Frame
+    {
+        public const int MAX_LEAF_NUMBER = 5;
+
+        //public LineSegment3 _prev;
+        //public LineSegment3 _cur;
+
+        public LineSegment3[] _prev_seg = null;
+        public LineSegment3[] _cur_seg = null;
+        public TR_Segment[] _tr_seg = null; 
+
+        public void Draw(Color color)
+        {
+            if (null == _tr_seg) return;
+
+            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            {
+                DebugWide.DrawLine(_tr_seg[i].start.position, _tr_seg[i].end.position, color);
+            }
+        }
+
+
+        public void Init(Transform tr_frame)
+        {
+            _prev_seg = new LineSegment3[MAX_LEAF_NUMBER];
+            _cur_seg = new LineSegment3[MAX_LEAF_NUMBER];
+
+            _tr_seg = new TR_Segment[MAX_LEAF_NUMBER];
+
+            Transform seg = null;
+            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            {
+                seg = Hierarchy.GetTransform(tr_frame, "seg_"+i);
+                if(null != (object)seg)
+                {
+                    _tr_seg[i].start = Hierarchy.GetTransform(seg, "start");
+                    _tr_seg[i].end = Hierarchy.GetTransform(seg, "end");
+
+                    _cur_seg[i].origin = _tr_seg[i].start.position;
+                    _cur_seg[i].last = _tr_seg[i].end.position;
+                    _prev_seg[i] = _cur_seg[i];
+                }
+            }
+
+
+            //_cur = _seg[0];
+            //_prev = _cur;
+        }//end init
+
+        public void Update()
+        {
+            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            {
+                _cur_seg[i].origin = _tr_seg[i].start.position;
+                _cur_seg[i].last = _tr_seg[i].end.position;
+            }
+        }
+
+        public void After_Update()
+        {
+            for (int i = 0; i < MAX_LEAF_NUMBER; i++)
+            {
+                _prev_seg[i] = _cur_seg[i];
+            }
+        }
+
+    }//end class
+
+    public MovingSegement3 _movingSegment = new MovingSegement3();
+    public Frame _frame_sword_A = new Frame();
+    public Frame _frame_sword_B = new Frame();
+
+    public void Draw()
+    {
+        _frame_sword_A.Draw(Color.blue);
+        _frame_sword_B.Draw(Color.magenta);
+    }
+
+    public void Init(Transform root)
+    {
+        Transform model = Hierarchy.GetTransform(root, "model");
+        Transform frame = null;
+        frame = Hierarchy.GetTransform(model, "frame_0");
+        _frame_sword_A.Init(frame);
+        frame = Hierarchy.GetTransform(model, "frame_1");
+        _frame_sword_B.Init(frame);
+    }
+
+    public float __RateAtoB = 0.5f;
+    public bool __AllowFixed_A = false;
+    public bool __AllowFixed_B = false;
+    public void Update()
+    {
+        _frame_sword_A.Update();
+        _frame_sword_B.Update();
+        //=================================================
+
+        MovingSegement3.eCalcMethod eCalc_a;
+        MovingSegement3.eCalcMethod eCalc_b;
+        LineSegment3 prev_A, cur_A;
+        LineSegment3 prev_B, cur_B;
+        Vector3 fixed_A = _frame_sword_A._cur_seg[0].origin;
+        Vector3 fixed_B = _frame_sword_B._cur_seg[0].origin;
+        Vector3 stand = _frame_sword_A._prev_seg[0].origin;
+        bool recalc = false;
+        float min_len = 1000000f;
+        //for (int i = 0; i < Frame.MAX_LEAF_NUMBER - 1; i++)
+        //{
+            //for (int j = i + 1; j < Frame.MAX_LEAF_NUMBER; j++)
+        for (int i = 0; i < Frame.MAX_LEAF_NUMBER ; i++)
+        {
+            for (int j = 0; j < Frame.MAX_LEAF_NUMBER; j++)
+            {
+                prev_A = _frame_sword_A._prev_seg[i];
+                cur_A = _frame_sword_A._cur_seg[i];    
+
+                prev_B = _frame_sword_B._prev_seg[j];
+                cur_B = _frame_sword_B._cur_seg[j];
+
+                _movingSegment.Find(prev_A, prev_B, cur_A, cur_B);
+
+                //recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
+                //fixed_A, fixed_B);
+
+                //=============
+                if (0 == i)
+                    eCalc_a = MovingSegement3.eCalcMethod.Fixed_Rotate;
+                else 
+                    eCalc_a = MovingSegement3.eCalcMethod.Around_Rotate;
+
+                if (0 == j)
+                    eCalc_b = MovingSegement3.eCalcMethod.Fixed_Rotate;
+                else
+                    eCalc_b = MovingSegement3.eCalcMethod.Around_Rotate;
+                //=============
+
+                recalc = _movingSegment.CalcSubSegment_PushPoint(__RateAtoB, eCalc_a, eCalc_b,
+                                                                 _frame_sword_A._prev_seg[0], _frame_sword_B._prev_seg[0]);
+
+                if(recalc)
+                {
+                    //결과들중 최소거리의 선분 하나 선택
+                    float new_len = (_movingSegment._minV - stand).sqrMagnitude; 
+                    if(min_len > new_len)
+                    {
+                        min_len = new_len; 
+
+                        //todo..
+                    }
+
+                }
+            }
+        }
+
+        //=================================================
+        _frame_sword_A.After_Update();
+        _frame_sword_B.After_Update();
+
     }
 }
