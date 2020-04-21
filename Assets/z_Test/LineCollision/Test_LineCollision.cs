@@ -280,6 +280,7 @@ public class Test_LineCollision_0 : MonoBehaviour
 public class Test_LineCollision : MonoBehaviour 
 {
     private MovingModel _movingModel = new MovingModel();
+    public float __RateAtoB = 0.5f;
 
 	private void OnDrawGizmos()
 	{
@@ -288,11 +289,13 @@ public class Test_LineCollision : MonoBehaviour
 
 	private void Start()
 	{
+        //gameObject.AddComponent<MovingModel>();
         _movingModel.Init(transform.parent);
 	}
 
 	private void Update()
 	{
+        _movingModel.__RateAtoB = __RateAtoB;
         _movingModel.Update();
 	}
 }
@@ -309,8 +312,7 @@ public class MovingModel
     {
         public const int MAX_LEAF_NUMBER = 5;
 
-        //public LineSegment3 _prev;
-        //public LineSegment3 _cur;
+        public Transform _tr_frame = null;
 
         public LineSegment3[] _prev_seg = null;
         public LineSegment3[] _cur_seg = null;
@@ -319,6 +321,11 @@ public class MovingModel
         public void Draw(Color color)
         {
             if (null == _tr_seg) return;
+
+            for (int i = 0; i < MAX_LEAF_NUMBER; i++)
+            {
+                DebugWide.DrawLine(_prev_seg[i].origin, _prev_seg[i].last, Color.gray);
+            }
 
             for (int i = 0; i < MAX_LEAF_NUMBER;i++)
             {
@@ -334,6 +341,7 @@ public class MovingModel
 
             _tr_seg = new TR_Segment[MAX_LEAF_NUMBER];
 
+            _tr_frame = tr_frame;
             Transform seg = null;
             for (int i = 0; i < MAX_LEAF_NUMBER;i++)
             {
@@ -349,9 +357,6 @@ public class MovingModel
                 }
             }
 
-
-            //_cur = _seg[0];
-            //_prev = _cur;
         }//end init
 
         public void Update()
@@ -381,6 +386,13 @@ public class MovingModel
     {
         _frame_sword_A.Draw(Color.blue);
         _frame_sword_B.Draw(Color.magenta);
+
+        if(__update)
+        {
+            DebugWide.DrawLine(__calc_rootSeg_a.origin, __calc_rootSeg_a.last, Color.red);
+            DebugWide.DrawLine(__calc_rootSeg_b.origin, __calc_rootSeg_b.last, Color.red);    
+        }
+
     }
 
     public void Init(Transform root)
@@ -393,9 +405,18 @@ public class MovingModel
         _frame_sword_B.Init(frame);
     }
 
+    public void GetRootSegment_AroundRotate(out LineSegment3 cur_root, LineSegment3 cur_subSeg, LineSegment3 prev_root, LineSegment3 prev_subSeg)
+    {
+        cur_root.origin = prev_root.origin;
+        Vector3 dir_o = prev_root.last - prev_subSeg.origin;
+        cur_root.last = cur_subSeg.origin + dir_o;
+    }
+
     public float __RateAtoB = 0.5f;
-    public bool __AllowFixed_A = false;
-    public bool __AllowFixed_B = false;
+    //public bool __AllowFixed_A = false;
+    //public bool __AllowFixed_B = false;
+    bool __update = false;
+    LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
     public void Update()
     {
         _frame_sword_A.Update();
@@ -410,7 +431,10 @@ public class MovingModel
         Vector3 fixed_B = _frame_sword_B._cur_seg[0].origin;
         Vector3 stand = _frame_sword_A._prev_seg[0].origin;
         bool recalc = false;
+        __update = false;
         float min_len = 1000000f;
+
+
         //for (int i = 0; i < Frame.MAX_LEAF_NUMBER - 1; i++)
         //{
             //for (int j = i + 1; j < Frame.MAX_LEAF_NUMBER; j++)
@@ -446,18 +470,43 @@ public class MovingModel
 
                 if(recalc)
                 {
+                    __update = true;
+
                     //결과들중 최소거리의 선분 하나 선택
                     float new_len = (_movingSegment._minV - stand).sqrMagnitude; 
                     if(min_len > new_len)
                     {
-                        min_len = new_len; 
+                        min_len = new_len;
 
-                        //todo..
+                        __calc_rootSeg_a = _movingSegment._cur_seg_A;
+                        __calc_rootSeg_b = _movingSegment._cur_seg_B;
+                        if(0 != i )
+                        {
+                            this.GetRootSegment_AroundRotate(out __calc_rootSeg_a, _movingSegment._cur_seg_A,
+                                                             _frame_sword_A._prev_seg[0], _frame_sword_A._prev_seg[i]);    
+                        }
+                        if (0 != j)
+                        {
+                            this.GetRootSegment_AroundRotate(out __calc_rootSeg_b, _movingSegment._cur_seg_B,
+                                                             _frame_sword_B._prev_seg[0], _frame_sword_B._prev_seg[j]);
+                        }
+
                     }
-
                 }
             }
+        }//end for
+
+        //=================================================
+        //적용 
+        if(__update)
+        {
+            _frame_sword_A._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_a.direction);
+            _frame_sword_A._tr_frame.position = __calc_rootSeg_a.origin;
+
+            _frame_sword_B._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_b.direction);
+            _frame_sword_B._tr_frame.position = __calc_rootSeg_b.origin;    
         }
+
 
         //=================================================
         _frame_sword_A.After_Update();

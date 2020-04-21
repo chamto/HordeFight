@@ -1103,7 +1103,6 @@ namespace UtilGS9
             newSeg = new LineSegment3(originSub, lastSub);
         }
 
-
         private void CalcSubSegment(eCalcMethod eCalc, Vector3 minPt, Vector3 maxPt,  LineSegment3 p_root, LineSegment3 p_minSeg, out LineSegment3 maxSeg)
         {
             Vector3 originSub = ConstV.v3_zero, lastSub = ConstV.v3_zero;
