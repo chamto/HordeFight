@@ -310,7 +310,8 @@ public class MovingModel
     }
     public class Frame
     {
-        public const int MAX_LEAF_NUMBER = 5;
+        public const int MAX_SEGMENT_NUMBER = 5;
+        public int _seg_count = 0;
 
         public Transform _tr_frame = null;
 
@@ -322,12 +323,12 @@ public class MovingModel
         {
             if (null == _tr_seg) return;
 
-            for (int i = 0; i < MAX_LEAF_NUMBER; i++)
+            for (int i = 0; i < _seg_count; i++)
             {
                 DebugWide.DrawLine(_prev_seg[i].origin, _prev_seg[i].last, Color.gray);
             }
 
-            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            for (int i = 0; i < _seg_count;i++)
             {
                 DebugWide.DrawLine(_tr_seg[i].start.position, _tr_seg[i].end.position, color);
             }
@@ -336,18 +337,23 @@ public class MovingModel
 
         public void Init(Transform tr_frame)
         {
-            _prev_seg = new LineSegment3[MAX_LEAF_NUMBER];
-            _cur_seg = new LineSegment3[MAX_LEAF_NUMBER];
+            _prev_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
+            _cur_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
 
-            _tr_seg = new TR_Segment[MAX_LEAF_NUMBER];
+            _tr_seg = new TR_Segment[MAX_SEGMENT_NUMBER];
 
             _tr_frame = tr_frame;
             Transform seg = null;
-            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            for (int i = 0; i < MAX_SEGMENT_NUMBER;i++)
             {
-                seg = Hierarchy.GetTransform(tr_frame, "seg_"+i);
+                if(0 == i)
+                    seg = Hierarchy.GetTransform(tr_frame, "root");
+                else
+                    seg = Hierarchy.GetTransform(tr_frame, "sub_"+(i-1));
+                
                 if(null != (object)seg)
                 {
+                    _seg_count++;
                     _tr_seg[i].start = Hierarchy.GetTransform(seg, "start");
                     _tr_seg[i].end = Hierarchy.GetTransform(seg, "end");
 
@@ -361,7 +367,7 @@ public class MovingModel
 
         public void Update()
         {
-            for (int i = 0; i < MAX_LEAF_NUMBER;i++)
+            for (int i = 0; i < _seg_count;i++)
             {
                 _cur_seg[i].origin = _tr_seg[i].start.position;
                 _cur_seg[i].last = _tr_seg[i].end.position;
@@ -370,7 +376,7 @@ public class MovingModel
 
         public void After_Update()
         {
-            for (int i = 0; i < MAX_LEAF_NUMBER; i++)
+            for (int i = 0; i < _seg_count; i++)
             {
                 _prev_seg[i] = _cur_seg[i];
             }
@@ -438,9 +444,9 @@ public class MovingModel
         //for (int i = 0; i < Frame.MAX_LEAF_NUMBER - 1; i++)
         //{
             //for (int j = i + 1; j < Frame.MAX_LEAF_NUMBER; j++)
-        for (int i = 0; i < Frame.MAX_LEAF_NUMBER ; i++)
+        for (int i = 0; i < _frame_sword_A._seg_count ; i++)
         {
-            for (int j = 0; j < Frame.MAX_LEAF_NUMBER; j++)
+            for (int j = 0; j < _frame_sword_B._seg_count; j++)
             {
                 prev_A = _frame_sword_A._prev_seg[i];
                 cur_A = _frame_sword_A._cur_seg[i];    
