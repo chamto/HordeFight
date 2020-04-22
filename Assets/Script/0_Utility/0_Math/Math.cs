@@ -1019,8 +1019,8 @@ namespace UtilGS9
         public enum eCalcMethod
         {
             Move, //meetPt 방향으로 계산
-            Fixed_Rotate,
-            Around_Rotate,
+            Rotate_Root,
+            Rotate_Sub,
         }
 
         private void CalcSubSegment(eCalcMethod eCalc, Vector3 meetPt, LineSegment3 p_root, LineSegment3 p_start, LineSegment3 end, out LineSegment3 newSeg)
@@ -1031,7 +1031,7 @@ namespace UtilGS9
             switch (eCalc)
             {
                 case eCalcMethod.Move:
-                case eCalcMethod.Around_Rotate:
+                case eCalcMethod.Rotate_Sub:
                     {
                         Vector3 v_up = end.last - p_start.last;
                         Vector3 v_down = end.origin - p_start.origin;
@@ -1071,7 +1071,7 @@ namespace UtilGS9
                         }
                     }
                     break;
-                case eCalcMethod.Fixed_Rotate:
+                case eCalcMethod.Rotate_Root:
                     {
                         originSub = p_root.origin;
                         lastSub = VOp.Normalize(meetPt - originSub) * len_start + originSub;    
@@ -1080,7 +1080,7 @@ namespace UtilGS9
             }
 
             //추가처리 
-            if (eCalcMethod.Around_Rotate == eCalc)
+            if (eCalcMethod.Rotate_Sub == eCalc)
             {
                 float len_root = p_root.direction.magnitude;
                 Vector3 p_dis_l = p_root.last - p_start.last;
@@ -1110,14 +1110,14 @@ namespace UtilGS9
             switch(eCalc)
             {
                 case eCalcMethod.Move:
-                case eCalcMethod.Around_Rotate:
+                case eCalcMethod.Rotate_Sub:
                     {
                         Vector3 dir = maxPt - minPt;
                         originSub = p_minSeg.origin + dir;
                         lastSub = p_minSeg.last + dir;        
                     }
                     break;
-                case eCalcMethod.Fixed_Rotate:
+                case eCalcMethod.Rotate_Root:
                     {
                         float len_curSeg = p_minSeg.direction.magnitude;
 
@@ -1423,7 +1423,7 @@ namespace UtilGS9
             }
         }
 
-        public void DroppingSub(eCalcMethod eCalc_a, eCalcMethod eCalc_b, Vector3 meetPt, LineSegment3 root_a, LineSegment3 root_b)
+        public void DroppingSub(eCalcMethod eCalc_a, eCalcMethod eCalc_b, Vector3 meetPt, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
             //DebugWide.LogBlue("dropping -----");
             __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
@@ -1459,18 +1459,28 @@ namespace UtilGS9
                             _cur_seg_A.last = _cur_seg_A.last + n_dir * RADIUS * sign;
                         }
                         break;
-                    case eCalcMethod.Fixed_Rotate:
+                    case eCalcMethod.Rotate_Root:
                         {
                             float len = _cur_seg_A.Length();
-                            _cur_seg_A.origin = root_a.origin;
-                            _cur_seg_A.last = root_a.origin + VOp.Normalize(meetPt - root_a.origin) * len;
+                            _cur_seg_A.origin = fixedOriginPt_a;
+                            _cur_seg_A.last = fixedOriginPt_a + VOp.Normalize(meetPt - fixedOriginPt_a) * len;
                             Vector3 axis = Vector3.Cross(_cur_seg_A.direction, n_dir);
-                            _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + root_a.origin;
+                            _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + _cur_seg_A.origin;
                         }
                         break;
-                    case eCalcMethod.Around_Rotate:
+                    case eCalcMethod.Rotate_Sub:
                         {
-                            
+                            //현재 루트선분을 구한다
+                            Vector3 root_o = fixedOriginPt_a;
+                            Vector3 root_l = _cur_seg_A.last + __root_dis_l_a;
+                            Vector3 root_dir = root_l - root_o;
+                            //루트선분 회전
+                            float len = root_dir.magnitude;
+                            Vector3 axis = Vector3.Cross(root_dir, n_dir);
+                            root_l = Quaternion.AngleAxis(ANGLE, axis) * root_dir + root_o;
+                            //회전위치 기준으로 서브위치 다시 구함 
+                            _cur_seg_A.origin = root_l + (- __root_dis_o_a);
+                            _cur_seg_A.last = root_l + (- __root_dis_l_a);
                         }
                         break;
 
@@ -1485,17 +1495,29 @@ namespace UtilGS9
                             _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS * sign;
                         }
                         break;
-                    case eCalcMethod.Fixed_Rotate:
+                    case eCalcMethod.Rotate_Root:
                         {
                             float len = _cur_seg_B.Length();
-                            _cur_seg_B.origin = root_b.origin;
-                            _cur_seg_B.last = root_b.origin + VOp.Normalize(meetPt - root_b.origin) * len;
+                            _cur_seg_B.origin = fixedOriginPt_b;
+                            _cur_seg_B.last = fixedOriginPt_b + VOp.Normalize(meetPt - fixedOriginPt_b) * len;
                             Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
-                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + root_b.origin;
+                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + _cur_seg_B.origin;
                         }
                         break;
-                    case eCalcMethod.Around_Rotate:
-                        {}
+                    case eCalcMethod.Rotate_Sub:
+                        {
+                            //현재 루트선분을 구한다
+                            Vector3 root_o = fixedOriginPt_b;
+                            Vector3 root_l = _cur_seg_B.last + __root_dis_l_b;
+                            Vector3 root_dir = root_l - root_o;
+                            //루트선분 회전
+                            float len = root_dir.magnitude;
+                            Vector3 axis = Vector3.Cross(root_dir, -n_dir);
+                            root_l = Quaternion.AngleAxis(ANGLE, axis) * root_dir + root_o;
+                            //회전위치 기준으로 서브위치 다시 구함 
+                            _cur_seg_B.origin = root_l + (-__root_dis_o_b);
+                            _cur_seg_B.last = root_l + (-__root_dis_l_b);
+                        }
                         break;
 
                 }
@@ -1516,18 +1538,28 @@ namespace UtilGS9
                                 _cur_seg_A.last = _cur_seg_A.last + n_dir * -RADIUS;
                             }
                             break;
-                        case eCalcMethod.Fixed_Rotate:
+                        case eCalcMethod.Rotate_Root:
                             {
                                 float len = _cur_seg_A.Length();
-                                _cur_seg_A.origin = root_a.origin;
-                                _cur_seg_A.last = root_a.origin + VOp.Normalize(meetPt - root_a.origin) * len;
+                                _cur_seg_A.origin = fixedOriginPt_a;
+                                _cur_seg_A.last = fixedOriginPt_a + VOp.Normalize(meetPt - fixedOriginPt_a) * len;
                                 Vector3 axis = Vector3.Cross(_cur_seg_A.direction, -n_dir);
-                                _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + root_a.origin;
+                                _cur_seg_A.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_A.direction + fixedOriginPt_a;
                             }
                             break;
-                        case eCalcMethod.Around_Rotate:
+                        case eCalcMethod.Rotate_Sub:
                             {
-                                
+                                //현재 루트선분을 구한다
+                                Vector3 root_o = fixedOriginPt_a;
+                                Vector3 root_l = _cur_seg_A.last + __root_dis_l_a;
+                                Vector3 root_dir = root_l - root_o;
+                                //루트선분 회전
+                                float len = root_dir.magnitude;
+                                Vector3 axis = Vector3.Cross(root_dir, -n_dir);
+                                root_l = Quaternion.AngleAxis(ANGLE, axis) * root_dir + root_o;
+                                //회전위치 기준으로 서브위치 다시 구함 
+                                _cur_seg_A.origin = root_l + (-__root_dis_o_a);
+                                _cur_seg_A.last = root_l + (-__root_dis_l_a);
                             }
                             break;
 
@@ -1545,18 +1577,28 @@ namespace UtilGS9
                             _cur_seg_B.last = _cur_seg_B.last + n_dir * -RADIUS;
                         }
                         break;
-                    case eCalcMethod.Fixed_Rotate:
+                    case eCalcMethod.Rotate_Root:
                         {
                             float len = _cur_seg_B.Length();
-                            _cur_seg_B.origin = root_b.origin;
-                            _cur_seg_B.last = root_b.origin + VOp.Normalize(meetPt - root_b.origin) * len;
+                            _cur_seg_B.origin = fixedOriginPt_b;
+                            _cur_seg_B.last = fixedOriginPt_b + VOp.Normalize(meetPt - fixedOriginPt_b) * len;
                             Vector3 axis = Vector3.Cross(_cur_seg_B.direction, -n_dir);
-                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + root_b.origin;
+                            _cur_seg_B.last = Quaternion.AngleAxis(ANGLE, axis) * _cur_seg_B.direction + fixedOriginPt_b;
                         }
                         break;
-                    case eCalcMethod.Around_Rotate:
+                    case eCalcMethod.Rotate_Sub:
                         {
-
+                            //현재 루트선분을 구한다
+                            Vector3 root_o = fixedOriginPt_b;
+                            Vector3 root_l = _cur_seg_B.last + __root_dis_l_b;
+                            Vector3 root_dir = root_l - root_o;
+                            //루트선분 회전
+                            float len = root_dir.magnitude;
+                            Vector3 axis = Vector3.Cross(root_dir, -n_dir);
+                            root_l = Quaternion.AngleAxis(ANGLE, axis) * root_dir + root_o;
+                            //회전위치 기준으로 서브위치 다시 구함 
+                            _cur_seg_B.origin = root_l + (-__root_dis_o_b);
+                            _cur_seg_B.last = root_l + (-__root_dis_l_b);
                         }
                         break;
 
@@ -1793,11 +1835,21 @@ namespace UtilGS9
         }
 
 
-        public bool CalcSubSegment_PushPoint(float rateAtoB, eCalcMethod eCalc_a, eCalcMethod eCalc_b, LineSegment3 root_a, LineSegment3 root_b)
+        Vector3 __root_dis_l_a ;
+        Vector3 __root_dis_l_b ;
+        Vector3 __root_dis_o_a ;
+        Vector3 __root_dis_o_b ;
+        public bool CalcSubSegment_PushPoint(float rateAtoB, eCalcMethod eCalc_a, eCalcMethod eCalc_b, LineSegment3 p_root_a, LineSegment3 p_root_b)
         {
             bool result = false;
             bool result_2 = false;
             Vector3 meetPt = ConstV.v3_zero;
+
+            //서브선분과 루트선분의 거리차이를 미리 구해 놓는다 
+            __root_dis_l_a = p_root_a.last - _prev_seg_A.last;
+            __root_dis_l_b = p_root_b.last - _prev_seg_B.last;
+            __root_dis_o_a = p_root_a.last - _prev_seg_A.origin;
+            __root_dis_o_b = p_root_b.last - _prev_seg_B.origin;
 
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
@@ -1857,15 +1909,15 @@ namespace UtilGS9
                         switch(eCalc_a)
                         {
                             case eCalcMethod.Move:
-                            case eCalcMethod.Fixed_Rotate:
+                            case eCalcMethod.Rotate_Root:
                                 {
                                     //min 구하기 
                                     Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                                 }
                                 break;
-                            case eCalcMethod.Around_Rotate:
+                            case eCalcMethod.Rotate_Sub:
                                 {
-                                    float len = (root_a.origin - _maxV).magnitude;
+                                    float len = (p_root_a.origin - _maxV).magnitude;
                                     Geo.IntersectLineSegment(_maxV, len, _prev_seg_B, out _minV);
                                 }
                                 break;
@@ -1878,15 +1930,15 @@ namespace UtilGS9
                         switch (eCalc_b)
                         {
                             case eCalcMethod.Move:
-                            case eCalcMethod.Fixed_Rotate:
+                            case eCalcMethod.Rotate_Root:
                                 {
                                     //max 구하기
                                     Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                                 }
                                 break;
-                            case eCalcMethod.Around_Rotate:
+                            case eCalcMethod.Rotate_Sub:
                                 {
-                                    float len = (root_a.origin - _minV).magnitude;
+                                    float len = (p_root_a.origin - _minV).magnitude;
                                     Geo.IntersectLineSegment(_minV, len, _prev_seg_B, out _maxV);
                                 }
                                 break;
@@ -1909,13 +1961,13 @@ namespace UtilGS9
                 //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
                 if (false == __isSeg_A)
                 {
-                    CalcSubSegment(eCalc_a, meetPt, root_a, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    CalcSubSegment(eCalc_a, meetPt, p_root_a, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                     //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                     //DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
                 }
                 if (false == __isSeg_B)
                 {
-                    CalcSubSegment(eCalc_b, meetPt, root_b, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                    CalcSubSegment(eCalc_b, meetPt, p_root_b, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                     //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                     //DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
                 }
@@ -1925,13 +1977,13 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A)
                     {
-                        CalcSubSegment(eCalc_a, _maxV, meetPt, root_a, _cur_seg_A, out _cur_seg_A);
+                        CalcSubSegment(eCalc_a, _maxV, meetPt, p_root_a, _cur_seg_A, out _cur_seg_A);
                         //CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV, meetPt, _cur_seg_A, out _cur_seg_A);
                         _prev_seg_A = _cur_seg_A;
                     }
                     else if (true == __isSeg_B)
                     {
-                        CalcSubSegment(eCalc_b, _minV, meetPt, root_b, _cur_seg_B, out _cur_seg_B);
+                        CalcSubSegment(eCalc_b, _minV, meetPt, p_root_b, _cur_seg_B, out _cur_seg_B);
                         //CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
                         _prev_seg_B = _cur_seg_B;
                     }
@@ -1939,7 +1991,7 @@ namespace UtilGS9
 
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
                 //DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
-                DroppingSub(eCalc_a, eCalc_b, meetPt, root_a, root_b);
+                DroppingSub(eCalc_a, eCalc_b, meetPt, p_root_a.origin, p_root_b.origin);
                 //Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
 
             }

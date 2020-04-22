@@ -455,14 +455,14 @@ public class MovingModel
 
                 //=============
                 if (0 == i)
-                    eCalc_a = MovingSegement3.eCalcMethod.Fixed_Rotate;
+                    eCalc_a = MovingSegement3.eCalcMethod.Rotate_Root;
                 else 
-                    eCalc_a = MovingSegement3.eCalcMethod.Around_Rotate;
+                    eCalc_a = MovingSegement3.eCalcMethod.Rotate_Sub;
 
                 if (0 == j)
-                    eCalc_b = MovingSegement3.eCalcMethod.Fixed_Rotate;
+                    eCalc_b = MovingSegement3.eCalcMethod.Rotate_Root;
                 else
-                    eCalc_b = MovingSegement3.eCalcMethod.Around_Rotate;
+                    eCalc_b = MovingSegement3.eCalcMethod.Rotate_Sub;
                 //=============
 
                 recalc = _movingSegment.CalcSubSegment_PushPoint(__RateAtoB, eCalc_a, eCalc_b,
