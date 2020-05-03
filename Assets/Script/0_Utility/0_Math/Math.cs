@@ -1023,7 +1023,7 @@ namespace UtilGS9
             Rotate_Sub,
         }
 
-        private void CalcSubSegment(eCalcMethod eCalc, Vector3 meetPt, LineSegment3 p_root, LineSegment3 p_start, LineSegment3 end, out LineSegment3 newSeg)
+        private void CalcSubSegment(eCalcMethod eCalc, Vector3 fixedOriginPt, Vector3 meetPt, LineSegment3 p_root, LineSegment3 p_start, LineSegment3 end, out LineSegment3 newSeg)
         {
             Vector3 originSub = ConstV.v3_zero, lastSub = ConstV.v3_zero;
             float len_start = p_start.direction.magnitude;
@@ -1073,7 +1073,7 @@ namespace UtilGS9
                     break;
                 case eCalcMethod.Rotate_Root:
                     {
-                        originSub = p_root.origin;
+                        originSub = fixedOriginPt;
                         lastSub = VOp.Normalize(meetPt - originSub) * len_start + originSub;    
                     }
                     break;
@@ -1103,7 +1103,7 @@ namespace UtilGS9
             newSeg = new LineSegment3(originSub, lastSub);
         }
 
-        private void CalcSubSegment(eCalcMethod eCalc, Vector3 minPt, Vector3 maxPt,  LineSegment3 p_root, LineSegment3 p_minSeg, out LineSegment3 maxSeg)
+        private void CalcSubSegment(eCalcMethod eCalc, Vector3 fixedOriginPt, Vector3 minPt, Vector3 maxPt,  LineSegment3 p_root, LineSegment3 p_minSeg, out LineSegment3 maxSeg)
         {
             Vector3 originSub = ConstV.v3_zero, lastSub = ConstV.v3_zero;
 
@@ -1121,7 +1121,7 @@ namespace UtilGS9
                     {
                         float len_curSeg = p_minSeg.direction.magnitude;
 
-                        originSub = p_root.origin;
+                        originSub = fixedOriginPt;
                         lastSub = VOp.Normalize(maxPt - originSub) * len_curSeg + originSub;
                     }
                     break;
@@ -1839,13 +1839,18 @@ namespace UtilGS9
         Vector3 __root_dis_l_b ;
         Vector3 __root_dis_o_a ;
         Vector3 __root_dis_o_b ;
-        public bool CalcSubSegment_PushPoint(float rateAtoB, eCalcMethod eCalc_a, eCalcMethod eCalc_b, LineSegment3 p_root_a, LineSegment3 p_root_b)
+        LineSegment3 __p_root_a;
+        LineSegment3 __p_root_b;
+        public bool CalcSubSegment_PushPoint(float rateAtoB, eCalcMethod eCalc_a, eCalcMethod eCalc_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b,
+                                             LineSegment3 p_root_a, LineSegment3 p_root_b)
         {
             bool result = false;
             bool result_2 = false;
             Vector3 meetPt = ConstV.v3_zero;
 
             //서브선분과 루트선분의 거리차이를 미리 구해 놓는다 
+            __p_root_a = p_root_a;
+            __p_root_b = p_root_b;
             __root_dis_l_a = p_root_a.last - _prev_seg_A.last;
             __root_dis_l_b = p_root_b.last - _prev_seg_B.last;
             __root_dis_o_a = p_root_a.last - _prev_seg_A.origin;
@@ -1910,17 +1915,18 @@ namespace UtilGS9
                         {
                             case eCalcMethod.Move:
                             case eCalcMethod.Rotate_Root:
+                            case eCalcMethod.Rotate_Sub:
                                 {
                                     //min 구하기 
                                     Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                                 }
                                 break;
-                            case eCalcMethod.Rotate_Sub:
-                                {
-                                    float len = (p_root_a.origin - _maxV).magnitude;
-                                    Geo.IntersectLineSegment(_maxV, len, _prev_seg_B, out _minV);
-                                }
-                                break;
+                            //case eCalcMethod.Rotate_Sub:
+                                //{
+                                //    float len = (p_root_a.origin - _maxV).magnitude;
+                                //    Geo.IntersectLineSegment(_maxV, len, _cur_seg_B, out _minV);
+                                //}
+                                //break;
                         }
 
                         //DebugWide.LogRed("segA max : " + _maxV + "   " + _minV + "   " + __dir_B); //chamto test
@@ -1931,17 +1937,18 @@ namespace UtilGS9
                         {
                             case eCalcMethod.Move:
                             case eCalcMethod.Rotate_Root:
+                            case eCalcMethod.Rotate_Sub:
                                 {
                                     //max 구하기
                                     Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                                 }
                                 break;
-                            case eCalcMethod.Rotate_Sub:
-                                {
-                                    float len = (p_root_a.origin - _minV).magnitude;
-                                    Geo.IntersectLineSegment(_minV, len, _prev_seg_B, out _maxV);
-                                }
-                                break;
+                            //case eCalcMethod.Rotate_Sub:
+                                //{
+                                //    float len = (p_root_a.origin - _minV).magnitude;
+                                //    Geo.IntersectLineSegment(_minV, len, _prev_seg_B, out _maxV);
+                                //}
+                                //break;
                         }
 
                         //DebugWide.LogRed("segB max : " + _maxV + "   " + _minV + "   " + __dir_A + "   " + _cur_seg_B.direction); //chamto test
@@ -1961,13 +1968,13 @@ namespace UtilGS9
                 //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
                 if (false == __isSeg_A)
                 {
-                    CalcSubSegment(eCalc_a, meetPt, p_root_a, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+                    CalcSubSegment(eCalc_a, fixedOriginPt_a, meetPt, p_root_a, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                     //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
                     //DebugWide.LogBlue("1 +++ : " +  _prev_seg_A + "  |||  " + _cur_seg_A); //chamto test
                 }
                 if (false == __isSeg_B)
                 {
-                    CalcSubSegment(eCalc_b, meetPt, p_root_b, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+                    CalcSubSegment(eCalc_b, fixedOriginPt_b, meetPt, p_root_b, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                     //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
                     //DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
                 }
@@ -1977,13 +1984,13 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A)
                     {
-                        CalcSubSegment(eCalc_a, _maxV, meetPt, p_root_a, _cur_seg_A, out _cur_seg_A);
+                        CalcSubSegment(eCalc_a, fixedOriginPt_a, _maxV, meetPt, p_root_a, _cur_seg_A, out _cur_seg_A);
                         //CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV, meetPt, _cur_seg_A, out _cur_seg_A);
                         _prev_seg_A = _cur_seg_A;
                     }
                     else if (true == __isSeg_B)
                     {
-                        CalcSubSegment(eCalc_b, _minV, meetPt, p_root_b, _cur_seg_B, out _cur_seg_B);
+                        CalcSubSegment(eCalc_b, fixedOriginPt_b, _minV, meetPt, p_root_b, _cur_seg_B, out _cur_seg_B);
                         //CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
                         _prev_seg_B = _cur_seg_B;
                     }
@@ -1991,7 +1998,7 @@ namespace UtilGS9
 
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
                 //DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
-                DroppingSub(eCalc_a, eCalc_b, meetPt, p_root_a.origin, p_root_b.origin);
+                DroppingSub(eCalc_a, eCalc_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
                 //Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
 
             }

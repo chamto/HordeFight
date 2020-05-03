@@ -4,7 +4,7 @@ using UnityEngine;
 using UtilGS9;
 
 //선분 vs 선분  충돌 버젼
-public class Test_LineCollision_0 : MonoBehaviour 
+public class Test_LineCollision : MonoBehaviour 
 {
     private bool _init = false;
     private Transform _line0_start = null;
@@ -277,7 +277,7 @@ public class Test_LineCollision_0 : MonoBehaviour
 }
 
 
-public class Test_LineCollision : MonoBehaviour 
+public class Test_LineCollision2 : MonoBehaviour 
 {
     private MovingModel _movingModel = new MovingModel();
     public float __RateAtoB = 0.5f;
@@ -471,7 +471,9 @@ public class MovingModel
                     eCalc_b = MovingSegement3.eCalcMethod.Rotate_Sub;
                 //=============
 
-                recalc = _movingSegment.CalcSubSegment_PushPoint(__RateAtoB, eCalc_a, eCalc_b,
+                recalc = _movingSegment.CalcSubSegment_PushPoint(__RateAtoB, eCalc_a, eCalc_b, 
+                                                                 _frame_sword_A._cur_seg[i].origin,
+                                                                 _frame_sword_B._cur_seg[j].origin,
                                                                  _frame_sword_A._prev_seg[0], _frame_sword_B._prev_seg[0]);
 
                 if(recalc)
