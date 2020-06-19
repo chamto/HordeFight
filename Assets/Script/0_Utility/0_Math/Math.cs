@@ -1707,8 +1707,8 @@ namespace UtilGS9
         //rate 1.0 : a 선분 최대 
         public bool CalcSegment_PushPoint(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
         {
-            bool result = false;
-            bool result_2 = false;
+            bool result_contact = false;
+            bool is_cross_contact = false;
             Vector3 meetPt = ConstV.v3_zero;
 
             //선분과 선분이 만난 경우 
@@ -1719,7 +1719,7 @@ namespace UtilGS9
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     _minV = _maxV = meetPt;
-                    result = true;
+                    result_contact = true;
                 }
             }
             else
@@ -1736,12 +1736,12 @@ namespace UtilGS9
                     if (true == __isSeg_A && false == __isSeg_B)
                     {
                         //DebugWide.LogBlue("!! 선분 vs 사각꼴 ");
-                        result = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
+                        result_contact = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
                     }
                     else if (false == __isSeg_A && true == __isSeg_B)
                     {
                         //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
-                        result = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
+                        result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
                     }
                     //사각꼴과 사각꼴이 같은 평면에서 만난경우 
                     else if (false == __isSeg_A && false == __isSeg_B)
@@ -1750,7 +1750,7 @@ namespace UtilGS9
                         //  잘못된 정보에 의해 접촉한것으로 계산하게 되며 초기값에 의해 방향성을 가지게 되어 
                         //  dropping 에서 잘못된 방향으로 무한히 떨어뜨리게 된다.
                         //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
-                        result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 6);
+                        result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 6);
 
                     }
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
@@ -1762,8 +1762,8 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    result = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
-                    result_2 = true;
+                    result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    is_cross_contact = true;
 
                     //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                     if (true == __isSeg_A)
@@ -1787,10 +1787,10 @@ namespace UtilGS9
                 }
             }
 
-            if(result)
+            if(result_contact)
             {
-                
-                //** 사각꼴(선분)이 서로 엇갈려 만난경우 : rateAtoB 값에 따라 밀어내기 처리를 한다 
+                // <<<<<< 1. 움직인 선분의 범위 재조정 >>>>>>
+                //** 사각꼴(선분)이 서로 엇갈려 만난경우 : rateAtoB 값에 따라 밀어내기 처리를 한다
                 //사각꼴에서 meetPt를 지나는 새로운 선분 구한다
                 if (false == __isSeg_A)
                 {
@@ -1803,8 +1803,9 @@ namespace UtilGS9
                     //DebugWide.LogBlue("2 +++ : " + _prev_seg_B + "  |||  " + _cur_seg_B); //chamto test
                 } 
 
+                // <<<<<<  2. 고정된 선분의 위치 재조정 >>>>>>
                 //기존 선분에서 meetPt를 지나는 새로운 선분 구한다 , prev 선분값을 cur 로 갱신한다  
-                if(true == result_2)
+                if(true == is_cross_contact)
                 {
                     if (true == __isSeg_A)
                     {
@@ -1831,9 +1832,9 @@ namespace UtilGS9
             _prev_seg_B = _cur_seg_B;
 
             __meetPt = meetPt;
-            __result_meet = result;
+            __result_meet = result_contact;
 
-            return result;
+            return result_contact;
         }
 
 
