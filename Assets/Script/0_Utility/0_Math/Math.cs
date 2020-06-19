@@ -935,7 +935,7 @@ namespace UtilGS9
             }
         }
 
-        //count : 찾은 접촉점(최대6개)에 대하여 검색할 최대 개수 지정
+        //count : 삼각형 vs 삼각형의 찾은 접촉점(최대6개)에 대하여 검색할 최대 개수 지정 , 삼각형 2개가 합쳐진 사각형이 대상이 아님  
         // 예) 찾은 접촉점이 점과 선분에 해당한다면 개수를 2로 지정 , 3이상은 평면
         public bool GetMinMax_ContactPt(Vector3 comparisonSt, out Vector3 minV, out Vector3 maxV , int count)
         {
@@ -1822,6 +1822,8 @@ namespace UtilGS9
                 //** 사각꼴(선분)이 같은 평면에서 만난 경우 : 떨어뜨리기 처리를 한다 
                 //DebugWide.LogRed("meetPt: " + meetPt  + "   " + _cur_seg_A + "  |||  " + _cur_seg_B); //chamto test
                 Dropping(allowFixed_a, allowFixed_b, meetPt, fixedOriginPt_a, fixedOriginPt_b);
+
+                //todo : 칼타기 처리 추가 하기 , 반사벡터 이용하기 
 
             }
 
