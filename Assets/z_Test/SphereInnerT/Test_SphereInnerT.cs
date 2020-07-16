@@ -43,6 +43,13 @@ public class Test_SphereInnerT : MonoBehaviour
         DebugWide.DrawLine(_sub_start.position, _sub_end.position, Color.magenta);
 
 
+        Vector3 n_seg1 = (_seg1_end.position - _seg1_start.position).normalized;
+        Vector3 b_pos = _seg1_start.position + n_seg1 * __b_minus;
+        //Vector3 b_pos = _seg1_start.position + n_seg1 * __b_plus;
+        DebugWide.DrawLine(_seg1_start.position, b_pos, Color.red);
+        DebugWide.DrawLine(_root_start.position, b_pos, Color.red);
+        DebugWide.DrawLine(_root_start.position, _seg0_start.position, Color.red);
+
     }
 
 	// Use this for initialization
@@ -98,6 +105,10 @@ public class Test_SphereInnerT : MonoBehaviour
         float b_plus = (-dt1 + root) / 2f;
         float b_minus = (-dt1 - root) / 2f;
 
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus);
+        __b_plus = b_plus;
+        __b_minus = b_minus;
+
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus );
 	}
+    float __b_plus = 0, __b_minus = 0; 
 }
