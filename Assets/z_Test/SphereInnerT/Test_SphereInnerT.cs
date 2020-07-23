@@ -105,8 +105,61 @@ public class Test_SphereInnerT : MonoBehaviour
         _seg1_end = Hierarchy.GetTransform(seg1, "end");
 	}
 	
-	// Update is called once per frame
-	void Update () 
+    //T가드의 최대이동 제약이 있는 알고리즘 
+    void Update()
+    {
+        //1# root_start , seg_start 사이의 거리 
+        LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
+        float c = (_T0_root_start.position - _seg0_start.position).magnitude;
+
+        //2# root_start , sub 선분의 접촉점 사이의 거리 
+        Vector3 pt_min, pt_max;
+        LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
+        LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
+        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+
+        float a = (_T0_root_start.position - pt_min).magnitude;
+
+        //3# seg_start , seg 선분의 접촉점 사이의 거리용
+        //코사인 제2법칙 이용
+        LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
+        Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
+        float cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+        cosA = (float)Math.Cos(cosA * Mathf.Deg2Rad);
+
+        float dt1 = -2f * c * cosA;
+        //float dt2 = c * c - a * a;
+
+        //이차방정식의 근의공식 이용
+        float root = 0;
+        float b_1 = (-dt1 + root) / 2f;
+
+        //코사인 제2법칙으로 cosA를 다시 구함 
+        cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
+        float new_angle = (float)Math.Acos(cosA);
+        new_angle = new_angle * Mathf.Rad2Deg;
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(new_angle, up_seg1_AB) * ls_AB.direction;
+
+
+        __mt_0 = pt_min;
+        //__mt_1 = new_dir_ls_seg1; //길이가 b_1 이 아니기 때문에 다른 결과가 나온다 
+        __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1; 
+
+
+        //=======================
+
+        Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
+        Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
+        float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
+
+        _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
+
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + new_angle + "  cosA :" + cosA);
+
+    }
+
+    //T가드의 최대이동 제약이 없는 알고리즘 
+	void Update_0 () 
     {
         //1# root_start , seg_start 사이의 거리 
         LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
@@ -123,8 +176,8 @@ public class Test_SphereInnerT : MonoBehaviour
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
         //코사인 제2법칙 이용
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
-        Vector3 up_seg1_AB = Vector3.Cross(ls_seg1.direction, ls_AB.direction);
-        float cosA = UtilGS9.Geo.AngleSigned(ls_seg1.direction, ls_AB.direction, up_seg1_AB);
+        Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
+        float cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
         cosA = (float)Math.Cos(cosA * Mathf.Deg2Rad);
 
         float dt1 = -2f * c * cosA;
@@ -135,11 +188,11 @@ public class Test_SphereInnerT : MonoBehaviour
         float b_plus = (-dt1 + root) / 2f;
         float b_minus = (-dt1 - root) / 2f;
 
-        __b_plus = b_plus;
-        __b_minus = b_minus;
+        //__b_plus = b_plus;
+        //__b_minus = b_minus;
 
         __mt_0 = pt_min;
-        __mt_1 = ls_seg1.origin + ls_seg1.direction.normalized * __b_minus; //임시 , 플러스인 경우도 있음 
+        __mt_1 = ls_seg1.origin + ls_seg1.direction.normalized * b_minus; //임시 , 플러스인 경우도 있음 
 
         //=======================
 
@@ -156,6 +209,6 @@ public class Test_SphereInnerT : MonoBehaviour
         DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus + "  angle_t : " + angle_t);
 
 	}
-    float __b_plus = 0, __b_minus = 0;
+    //float __b_plus = 0, __b_minus = 0;
     Vector3 __mt_0, __mt_1;
 }
