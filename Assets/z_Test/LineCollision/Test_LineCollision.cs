@@ -4,7 +4,7 @@ using UnityEngine;
 using UtilGS9;
 
 //선분 vs 선분  충돌 버젼
-public class Test_LineCollision : MonoBehaviour 
+public class Test_LineCollision_000 : MonoBehaviour 
 {
     private bool _init = false;
     private Transform _line0_start = null;
@@ -277,7 +277,7 @@ public class Test_LineCollision : MonoBehaviour
 }
 
 
-public class Test_LineCollision2 : MonoBehaviour 
+public class Test_LineCollision : MonoBehaviour 
 {
     private MovingModel _movingModel = new MovingModel();
     public float __RateAtoB = 0.5f;
@@ -343,13 +343,17 @@ public class MovingModel
             _tr_seg = new TR_Segment[MAX_SEGMENT_NUMBER];
 
             _tr_frame = tr_frame;
+            Transform root = null;
             Transform seg = null;
             for (int i = 0; i < MAX_SEGMENT_NUMBER;i++)
             {
-                if(0 == i)
+                if (0 == i)
+                {
                     seg = Hierarchy.GetTransform(tr_frame, "root");
+                    root = seg;
+                }
                 else
-                    seg = Hierarchy.GetTransform(tr_frame, "sub_"+(i-1));
+                    seg = Hierarchy.GetTransform(root, "sub_"+(i-1));
                 
                 if(null != (object)seg)
                 {
