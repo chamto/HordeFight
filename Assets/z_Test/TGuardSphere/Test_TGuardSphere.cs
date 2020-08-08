@@ -4,7 +4,7 @@ using UnityEngine;
 using UtilGS9;
 using System;
 
-public class Test_SphereInnerT : MonoBehaviour 
+public class Test_TGuardSphere : MonoBehaviour 
 {
 
     public Transform _T0 = null;
@@ -104,9 +104,74 @@ public class Test_SphereInnerT : MonoBehaviour
         _seg1_start = Hierarchy.GetTransform(seg1, "start");
         _seg1_end = Hierarchy.GetTransform(seg1, "end");
 	}
-	
-    //T가드의 최대이동 제약이 있는 알고리즘 
+
+    //비율값에 따라 angle_1 을 변환한다 
+    public float __rate = 1;
     void Update()
+    {
+        //1# root_start , seg_start 사이의 거리 
+        LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
+        float c = (_T0_root_start.position - _seg0_start.position).magnitude;
+
+        //2# root_start , sub 선분의 접촉점 사이의 거리 
+        Vector3 pt_min, pt_max;
+        LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
+        LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
+        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+
+        float a = (_T0_root_start.position - pt_min).magnitude;
+
+        //3# seg_start , seg 선분의 접촉점 사이의 거리용
+        //코사인 제2법칙 이용
+        LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
+        Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
+        float angle_0 = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+        float cosA = (float)Math.Cos(angle_0 * Mathf.Deg2Rad);
+
+        float dt1 = -2f * c * cosA; //dt1 : -2cCosA
+        float dt2 = c * c - a * a; 
+
+        //이차방정식의 근의공식 이용
+        float disc = dt1 * dt1 - 4 * dt2;
+        float b_1 = (-dt1 + (float)Math.Sqrt(disc)) / 2f;
+
+        //판별값이 0 보다 작다면 해가 없는 상태이다 
+        //disc 를 0으로 설정해 이동가능 최대치를 구한다
+        if(disc < 0)
+        {
+            b_1 = (-dt1 + 0) / 2f;
+
+            //코사인 제2법칙으로 cosA를 다시 구함 
+            cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
+            angle_0 = (float)Math.Acos(cosA);
+            angle_0 = angle_0 * Mathf.Rad2Deg;    
+        }
+
+
+        //angle_0 = angle_0 * __rate; //각도에 비율값을 적용한다 
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_0, up_seg1_AB) * ls_AB.direction;
+
+
+        __mt_0 = pt_min;
+        //__mt_1 = new_dir_ls_seg1; //길이가 b_1 이 아니기 때문에 다른 결과가 나온다 
+        __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
+        //pt_max = __mt_1;
+
+        //=======================
+
+        Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
+        Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
+        float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
+
+        _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
+
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA);
+
+    }
+
+
+    //T가드의 최대이동 제약이 있는 알고리즘 
+    void Update_1()
     {
         //1# root_start , seg_start 사이의 거리 
         LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
@@ -196,6 +261,8 @@ public class Test_SphereInnerT : MonoBehaviour
 
         //=======================
 
+        float disc = dt1 * dt1 - 4 * dt2; //판별값 : b*b-4ac
+
         Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
         Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
         float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
@@ -206,7 +273,7 @@ public class Test_SphereInnerT : MonoBehaviour
         //ref : https://m.blog.naver.com/PostView.nhn?blogId=sipack7297&logNo=220428447625&proxyReferer=https:%2F%2Fwww.google.com%2F
 
 
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus + "  angle_t : " + angle_t);
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus + "  angle_t : " + angle_t + "  판별값 : " + disc);
 
 	}
     //float __b_plus = 0, __b_minus = 0;
