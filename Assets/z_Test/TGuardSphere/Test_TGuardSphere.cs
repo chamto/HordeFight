@@ -118,8 +118,11 @@ public class Test_TGuardSphere : MonoBehaviour
         LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
         LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
         LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+        Vector3 dir_rootS_min = pt_min - _T0_root_start.position;
+        float a = (dir_rootS_min).magnitude;
 
-        float a = (_T0_root_start.position - pt_min).magnitude;
+        float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction); //근의공식 부호 결정 
+        if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
@@ -136,7 +139,9 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //이차방정식의 근의공식 이용
         float disc = dt1 * dt1 - 4 * dt2;
-        float b_1 = (-dt1 + (float)Math.Sqrt(disc)) / 2f;
+        //float b_1 = (-dt1 - (float)Math.Sqrt(disc)) / 2f; //가까운점 
+        //float b_1 = (-dt1 + (float)Math.Sqrt(disc)) / 2f; //먼점
+        float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
 
         //판별값이 0 보다 작다면 해가 없는 상태이다 
         //disc 를 0으로 설정해 이동가능 최대치를 구한다
@@ -163,13 +168,13 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //=======================
 
-        Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
+        //Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
         Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
         float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
 
         _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
 
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA + "  disc :" + disc);
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign );
 
     }
 
