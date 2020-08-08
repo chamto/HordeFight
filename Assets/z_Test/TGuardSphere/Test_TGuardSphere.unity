@@ -240,6 +240,7 @@ MonoBehaviour:
   _seg0_end: {fileID: 0}
   _seg1_start: {fileID: 0}
   _seg1_end: {fileID: 0}
+  __rate: 1
 --- !u!4 &233163649
 Transform:
   m_ObjectHideFlags: 0

@@ -106,7 +106,7 @@ public class Test_TGuardSphere : MonoBehaviour
 	}
 
     //비율값에 따라 angle_1 을 변환한다 
-    public float __rate = 1;
+    public float __rate = 1f;
     void Update()
     {
         //1# root_start , seg_start 사이의 거리 
@@ -122,12 +122,15 @@ public class Test_TGuardSphere : MonoBehaviour
         float a = (_T0_root_start.position - pt_min).magnitude;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
-        //코사인 제2법칙 이용
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
         Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
         float angle_0 = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
-        float cosA = (float)Math.Cos(angle_0 * Mathf.Deg2Rad);
 
+        //** 각도에 비율값을 적용한다 **
+        angle_0 = angle_0 * __rate; 
+
+        //코사인 제2법칙 이용
+        float cosA = (float)Math.Cos(angle_0 * Mathf.Deg2Rad);
         float dt1 = -2f * c * cosA; //dt1 : -2cCosA
         float dt2 = c * c - a * a; 
 
@@ -140,15 +143,16 @@ public class Test_TGuardSphere : MonoBehaviour
         if(disc < 0)
         {
             b_1 = (-dt1 + 0) / 2f;
+            if (b_1 < 0) b_1 = 0f; //길이가 음수로 나올수 없다 
 
             //코사인 제2법칙으로 cosA를 다시 구함 
             cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
+            cosA = Mathf.Clamp(cosA, -1f, 1f);
             angle_0 = (float)Math.Acos(cosA);
             angle_0 = angle_0 * Mathf.Rad2Deg;    
         }
 
 
-        //angle_0 = angle_0 * __rate; //각도에 비율값을 적용한다 
         Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_0, up_seg1_AB) * ls_AB.direction;
 
 
@@ -165,7 +169,7 @@ public class Test_TGuardSphere : MonoBehaviour
 
         _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
 
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA);
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA + "  disc :" + disc);
 
     }
 
