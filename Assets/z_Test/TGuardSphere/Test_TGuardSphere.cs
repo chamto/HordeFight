@@ -152,9 +152,7 @@ public class Test_TGuardSphere : MonoBehaviour
 
 
         //** 각도에 비율값을 적용한다 **
-        //angle_0 = angle_0 * rateAtoB; 
         float angle_rate = angle_firstPt + angle_all * rateAtoB;
-
         //DebugWide.LogBlue(angle_cosA + "  " + angle_firstPt + "  " + angle_all + "  " + angle_rate);
 
         //코사인 제2법칙 이용
@@ -197,17 +195,7 @@ public class Test_TGuardSphere : MonoBehaviour
 
             b_1 = c * cosA;
         }
-        //if(disc < 0)
-        //{
-        //    b_1 = (-dt1 + 0) / 2f; //disc = 0
-        //    if (b_1 < 0) b_1 = 0f; //길이가 음수로 나올수 없다 
 
-        //    //코사인 제2법칙으로 cosA를 다시 구함 
-        //    cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
-        //    cosA = Mathf.Clamp(cosA, -1f, 1f);
-        //    angle_0 = (float)Math.Acos(cosA);
-        //    angle_0 = angle_0 * Mathf.Rad2Deg;    
-        //}
 
         //각도는 항상 양수 , up벡터로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 조금씩 변경된다 
         //Vector3 up_seg0_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
@@ -219,9 +207,7 @@ public class Test_TGuardSphere : MonoBehaviour
 
 
         __mt_0 = pt_min;
-        //__mt_1 = new_dir_ls_seg1; //길이가 b_1 이 아니기 때문에 다른 결과가 나온다 
         __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
-        //pt_max = __mt_1;
 
         //=======================
 
