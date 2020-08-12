@@ -140,15 +140,25 @@ public class Test_TGuardSphere : MonoBehaviour
         if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
+        Vector3 dir_ptmin = pt_min - _seg0_start.position;
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
-        Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
-        float angle_0 = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+        Vector3 up_seg0_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
+        Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, dir_ptmin);
+        //float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+
+        Vector3 up_seg2_AB = Vector3.Cross(dir_ptmin, ls_AB.direction);
+        float angle_firstPt = UtilGS9.Geo.AngleSigned(dir_ptmin, ls_AB.direction, up_seg2_AB);
+        float angle_all = UtilGS9.Geo.AngleSigned(dir_ptmin, ls_seg1.direction, up_seg1_AB);
+
 
         //** 각도에 비율값을 적용한다 **
-        angle_0 = angle_0 * rateAtoB; 
+        //angle_0 = angle_0 * rateAtoB; 
+        float angle_rate = angle_firstPt + angle_all * rateAtoB;
+
+        //DebugWide.LogBlue(angle_cosA + "  " + angle_firstPt + "  " + angle_all + "  " + angle_rate);
 
         //코사인 제2법칙 이용
-        float cosA = (float)Math.Cos(angle_0 * Mathf.Deg2Rad);
+        float cosA = (float)Math.Cos(angle_rate * Mathf.Deg2Rad);
         float dt1 = -2f * c * cosA; //dt1 : -2cCosA
         float dt2 = c * c - a * a; 
 
@@ -180,8 +190,10 @@ public class Test_TGuardSphere : MonoBehaviour
             cosA = (float)Math.Sqrt(dt2 / (c*c));
             //DebugWide.LogBlue(cosA);
             cosA = Mathf.Clamp(cosA, -1f, 1f);
-            angle_0 = (float)Math.Acos(cosA);
-            angle_0 = angle_0 * Mathf.Rad2Deg;
+            angle_rate = (float)Math.Acos(cosA);
+            angle_rate = angle_rate * Mathf.Rad2Deg;
+
+            if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_rate *= -1f; //음수각도인지 찾는다 
 
             b_1 = c * cosA;
         }
@@ -197,8 +209,13 @@ public class Test_TGuardSphere : MonoBehaviour
         //    angle_0 = angle_0 * Mathf.Rad2Deg;    
         //}
 
+        //각도는 항상 양수 , up벡터로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 조금씩 변경된다 
+        //Vector3 up_seg0_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
+        //if (angle_rate < 0) angle_rate *= -1f;
+        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg0_AB) * ls_AB.direction; 
 
-        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_0, up_seg1_AB) * ls_AB.direction;
+        //up벡터 고정 , 음양각도로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 고정적으로 보인다 
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
 
 
         __mt_0 = pt_min;
@@ -208,14 +225,13 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //=======================
 
-        //Vector3 dir_root = _T0_root_end.position - _T0_root_start.position;
         Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
         float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
 
         _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
         //_T0_root.rotation = Quaternion.AngleAxis(angle_t , up_t) * _T0_root.rotation;
 
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign );
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_rate + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign );
 
     }
 
