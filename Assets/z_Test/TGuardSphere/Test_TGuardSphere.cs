@@ -135,7 +135,8 @@ public class Test_TGuardSphere : MonoBehaviour
         Vector3 dir_rootS_min = pt_min - _T0_root_start.position;
         float a = (dir_rootS_min).magnitude;
 
-        float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction); //근의공식 부호 결정 
+        //근의공식 부호 결정 
+        float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction); 
         if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
@@ -151,25 +152,50 @@ public class Test_TGuardSphere : MonoBehaviour
         float dt1 = -2f * c * cosA; //dt1 : -2cCosA
         float dt2 = c * c - a * a; 
 
-        //이차방정식의 근의공식 이용
+        //이차방정식의 근의공식 이용 , disc = 판별값 
         float disc = dt1 * dt1 - 4 * dt2;
         //float b_1 = (-dt1 - (float)Math.Sqrt(disc)) / 2f; //가까운점 
         //float b_1 = (-dt1 + (float)Math.Sqrt(disc)) / 2f; //먼점
         float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
 
+        //선분의 이동방향을 통한 T가드와 접촉이 가능한지 검사 <실패>
+        //able 이 0보다 작다면 선분0에서 선분1의 궤적이 T가드를 향하지 않은 것이다 
+        //float len_seg0 = (_seg0_start.position - _seg0_end.position).magnitude;
+        //Vector3 seg1_end = _seg1_end.position - _seg1_start.position;
+        //seg1_end = VOp.Normalize(seg1_end);
+        //seg1_end = seg1_end * len_seg0 + _seg1_start.position;
+        //Vector3 dir_seg0_1 = seg1_end - _seg0_end.position;
+        //Vector3 dir_minPt = pt_min - _seg0_start.position;
+        //dir_minPt = VOp.Normalize(dir_minPt);
+        //dir_minPt = dir_minPt * len_seg0;
+        //Vector3 dir_min_seg1 = seg1_end - dir_minPt;
+        //float able = Vector3.Dot(dir_seg0_1, dir_min_seg1);
+        //DebugWide.LogBlue(able);
+
         //판별값이 0 보다 작다면 해가 없는 상태이다 
         //disc 를 0으로 설정해 이동가능 최대치를 구한다
-        if(disc < 0)
+        //if(disc < 0 || able < 0 || b_1 < 0)
+        if (disc < 0 || b_1 < 0)
         {
-            b_1 = (-dt1 + 0) / 2f;
-            if (b_1 < 0) b_1 = 0f; //길이가 음수로 나올수 없다 
-
-            //코사인 제2법칙으로 cosA를 다시 구함 
-            cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
+            cosA = (float)Math.Sqrt(dt2 / (c*c));
+            //DebugWide.LogBlue(cosA);
             cosA = Mathf.Clamp(cosA, -1f, 1f);
             angle_0 = (float)Math.Acos(cosA);
-            angle_0 = angle_0 * Mathf.Rad2Deg;    
+            angle_0 = angle_0 * Mathf.Rad2Deg;
+
+            b_1 = c * cosA;
         }
+        //if(disc < 0)
+        //{
+        //    b_1 = (-dt1 + 0) / 2f; //disc = 0
+        //    if (b_1 < 0) b_1 = 0f; //길이가 음수로 나올수 없다 
+
+        //    //코사인 제2법칙으로 cosA를 다시 구함 
+        //    cosA = (-(a * a) + (b_1 * b_1) + (c * c)) / (2 * b_1 * c);
+        //    cosA = Mathf.Clamp(cosA, -1f, 1f);
+        //    angle_0 = (float)Math.Acos(cosA);
+        //    angle_0 = angle_0 * Mathf.Rad2Deg;    
+        //}
 
 
         Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_0, up_seg1_AB) * ls_AB.direction;
@@ -187,6 +213,7 @@ public class Test_TGuardSphere : MonoBehaviour
         float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
 
         _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
+        //_T0_root.rotation = Quaternion.AngleAxis(angle_t , up_t) * _T0_root.rotation;
 
         DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign );
 
