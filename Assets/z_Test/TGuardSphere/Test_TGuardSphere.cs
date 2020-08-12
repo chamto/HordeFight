@@ -21,9 +21,11 @@ public class Test_TGuardSphere : MonoBehaviour
     public Transform _T1_sub_start = null;
     public Transform _T1_sub_end = null;
 
+    public Transform _seg0 = null;
     public Transform _seg0_start = null;
     public Transform _seg0_end = null;
 
+    public Transform _seg1 = null;
     public Transform _seg1_start = null;
     public Transform _seg1_end = null;
 
@@ -96,19 +98,31 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //------------
 
-        seg0 = Hierarchy.GetTransform(null, "seg_0");
-        seg1 = Hierarchy.GetTransform(null, "seg_1");
+        _seg0 = Hierarchy.GetTransform(null, "seg_0");
+        _seg1 = Hierarchy.GetTransform(null, "seg_1");
 
-        _seg0_start = Hierarchy.GetTransform(seg0, "start");
-        _seg0_end = Hierarchy.GetTransform(seg0, "end");
-        _seg1_start = Hierarchy.GetTransform(seg1, "start");
-        _seg1_end = Hierarchy.GetTransform(seg1, "end");
+        _seg0_start = Hierarchy.GetTransform(_seg0, "start");
+        _seg0_end = Hierarchy.GetTransform(_seg0, "end");
+        _seg1_start = Hierarchy.GetTransform(_seg1, "start");
+        _seg1_end = Hierarchy.GetTransform(_seg1, "end");
 	}
+
 
     //비율값에 따라 angle_1 을 변환한다 
     public float __rate = 1f;
     void Update()
     {
+        Update_3(__rate, _T0_root_start.position, _seg0_start.position);
+    }
+
+
+    public void Update_3(float rateAtoB, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+    {
+        _T0_root_start.position = fixedOriginPt_a;
+        _seg0_start.position = fixedOriginPt_b;
+        _T1.position = _T0.position;
+        _seg1.position = _seg0.position;
+
         //1# root_start , seg_start 사이의 거리 
         LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
         float c = (_T0_root_start.position - _seg0_start.position).magnitude;
@@ -130,7 +144,7 @@ public class Test_TGuardSphere : MonoBehaviour
         float angle_0 = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
 
         //** 각도에 비율값을 적용한다 **
-        angle_0 = angle_0 * __rate; 
+        angle_0 = angle_0 * rateAtoB; 
 
         //코사인 제2법칙 이용
         float cosA = (float)Math.Cos(angle_0 * Mathf.Deg2Rad);
