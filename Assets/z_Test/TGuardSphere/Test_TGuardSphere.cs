@@ -144,7 +144,7 @@ public class Test_TGuardSphere : MonoBehaviour
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
         Vector3 up_seg0_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
         Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, dir_ptmin);
-        //float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+        float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
 
         Vector3 up_seg2_AB = Vector3.Cross(dir_ptmin, ls_AB.direction);
         float angle_firstPt = UtilGS9.Geo.AngleSigned(dir_ptmin, ls_AB.direction, up_seg2_AB);
@@ -192,18 +192,24 @@ public class Test_TGuardSphere : MonoBehaviour
             angle_rate = angle_rate * Mathf.Rad2Deg;
 
             if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_rate *= -1f; //음수각도인지 찾는다 
+            //float angle_diff = angle_cosA - angle_rate;
+            //float angle_ori = angle_rate;
+            //angle_rate = angle_firstPt + (angle_all-angle_diff) * rateAtoB;
+            //DebugWide.LogBlue("  cosA: "+angle_cosA + "  fpt: " + angle_firstPt + "  all: " + angle_all + "  " + angle_rate + "  diff: " + angle_diff + "  ori: " + angle_ori);
 
             b_1 = c * cosA;
         }
 
 
         //각도는 항상 양수 , up벡터로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 조금씩 변경된다 
-        //Vector3 up_seg0_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
+        //Vector3 up_seg = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
         //if (angle_rate < 0) angle_rate *= -1f;
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg0_AB) * ls_AB.direction; 
+        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
         //up벡터 고정 , 음양각도로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 고정적으로 보인다 
-        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
+        Vector3 up_seg = Vector3.Cross(dir_ptmin, ls_seg1.direction);
+        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
 
         __mt_0 = pt_min;
