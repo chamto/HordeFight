@@ -152,13 +152,39 @@ public class Test_TGuardSphere : MonoBehaviour
 
 
         //** 각도에 비율값을 적용한다 **
-        float angle_rate = angle_firstPt + angle_all * rateAtoB;
-        //DebugWide.LogBlue(angle_cosA + "  " + angle_firstPt + "  " + angle_all + "  " + angle_rate);
+        //float angle_rate = angle_firstPt + angle_all * rateAtoB;
 
         //코사인 제2법칙 이용
+        float dt2 = c * c - a * a; 
+
+        //---------------------------------------
+        //# 이동가능 최대각도 구함 
+        float cosA_max = (float)Math.Sqrt(dt2 / (c * c));
+        cosA_max = Mathf.Clamp(cosA_max, -1f, 1f);
+        float angle_cosA_max = (float)Math.Acos(cosA_max);
+        angle_cosA_max = angle_cosA_max * Mathf.Rad2Deg;
+
+        if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_cosA_max *= -1f; //음수각도인지 찾는다 
+
+        float angle_diff = 0;
+        if(angle_cosA > angle_cosA_max && angle_cosA > 0)
+        {
+            angle_diff = angle_cosA - angle_cosA_max;
+        }
+        if(angle_cosA < angle_cosA_max && angle_cosA < 0)
+        {
+            angle_diff = angle_cosA - angle_cosA_max;
+        }
+
+        //if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_diff *= -1f; //음수각도인지 찾는다 
+
+        float angle_rate = angle_firstPt + (angle_all - angle_diff) * rateAtoB;
+        DebugWide.LogBlue("  fpt : " + angle_firstPt + " +( all: " + angle_all + "  " +  "  diff: " + angle_diff + " ) * " + __rate + "  = rate: "+ angle_rate +  "  cosA: " + angle_cosA + "  cosAMax: " + angle_cosA_max);
+        //---------------------------------------
+
         float cosA = (float)Math.Cos(angle_rate * Mathf.Deg2Rad);
         float dt1 = -2f * c * cosA; //dt1 : -2cCosA
-        float dt2 = c * c - a * a; 
+
 
         //이차방정식의 근의공식 이용 , disc = 판별값 
         float disc = dt1 * dt1 - 4 * dt2;
@@ -185,19 +211,13 @@ public class Test_TGuardSphere : MonoBehaviour
         //if(disc < 0 || able < 0 || b_1 < 0)
         if (disc < 0 || b_1 < 0)
         {
-            cosA = (float)Math.Sqrt(dt2 / (c*c));
-            //DebugWide.LogBlue(cosA);
-            cosA = Mathf.Clamp(cosA, -1f, 1f);
-            angle_rate = (float)Math.Acos(cosA);
-            angle_rate = angle_rate * Mathf.Rad2Deg;
-
-            if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_rate *= -1f; //음수각도인지 찾는다 
-            //float angle_diff = angle_cosA - angle_rate;
-            //float angle_ori = angle_rate;
-            //angle_rate = angle_firstPt + (angle_all-angle_diff) * rateAtoB;
-            //DebugWide.LogBlue("  cosA: "+angle_cosA + "  fpt: " + angle_firstPt + "  all: " + angle_all + "  " + angle_rate + "  diff: " + angle_diff + "  ori: " + angle_ori);
-
-            b_1 = c * cosA;
+            //cosA = (float)Math.Sqrt(dt2 / (c*c));
+            //cosA = Mathf.Clamp(cosA, -1f, 1f);
+            //angle_rate = (float)Math.Acos(cosA);
+            //angle_rate = angle_rate * Mathf.Rad2Deg;
+            //if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_rate *= -1f; //음수각도인지 찾는다 
+          
+            b_1 = c * cosA_max;
         }
 
 
@@ -207,9 +227,9 @@ public class Test_TGuardSphere : MonoBehaviour
         //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
         //up벡터 고정 , 음양각도로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 고정적으로 보인다 
-        Vector3 up_seg = Vector3.Cross(dir_ptmin, ls_seg1.direction);
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
-        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
+        //Vector3 up_seg = Vector3.Cross(dir_ptmin, ls_seg1.direction); //fixme : 외적값이 0 되는 문제는 잡히지만 잘못된 각도로 회전하는 문제 발생 
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
+        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
 
         __mt_0 = pt_min;
