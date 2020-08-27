@@ -192,45 +192,20 @@ public class Test_TGuardSphere : MonoBehaviour
         //float b_1 = (-dt1 + (float)Math.Sqrt(disc)) / 2f; //먼점
         float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
 
-        //선분의 이동방향을 통한 T가드와 접촉이 가능한지 검사 <실패>
-        //able 이 0보다 작다면 선분0에서 선분1의 궤적이 T가드를 향하지 않은 것이다 
-        //float len_seg0 = (_seg0_start.position - _seg0_end.position).magnitude;
-        //Vector3 seg1_end = _seg1_end.position - _seg1_start.position;
-        //seg1_end = VOp.Normalize(seg1_end);
-        //seg1_end = seg1_end * len_seg0 + _seg1_start.position;
-        //Vector3 dir_seg0_1 = seg1_end - _seg0_end.position;
-        //Vector3 dir_minPt = pt_min - _seg0_start.position;
-        //dir_minPt = VOp.Normalize(dir_minPt);
-        //dir_minPt = dir_minPt * len_seg0;
-        //Vector3 dir_min_seg1 = seg1_end - dir_minPt;
-        //float able = Vector3.Dot(dir_seg0_1, dir_min_seg1);
-        //DebugWide.LogBlue(able);
 
         //판별값이 0 보다 작다면 해가 없는 상태이다 
         //disc 를 0으로 설정해 이동가능 최대치를 구한다
-        //if(disc < 0 || able < 0 || b_1 < 0)
         if (disc < 0 || b_1 < 0)
         {
-            //cosA = (float)Math.Sqrt(dt2 / (c*c));
-            //cosA = Mathf.Clamp(cosA, -1f, 1f);
-            //angle_rate = (float)Math.Acos(cosA);
-            //angle_rate = angle_rate * Mathf.Rad2Deg;
-            //if (Vector3.Dot(up_seg1_AB, up_seg0_AB) < 0) angle_rate *= -1f; //음수각도인지 찾는다 
-          
             b_1 = c * cosA_max;
         }
 
 
-        //각도는 항상 양수 , up벡터로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 조금씩 변경된다 
+        //각도는 항상 양수 
         Vector3 up_seg = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
         if (angle_rate < 0) angle_rate *= -1f;
         Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
-        //up벡터를 잘못설정함 : cosA 를 도출하는 up벡터는 한가지 밖에 없음 
-        //up벡터 고정 , 음양각도로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 고정적으로 보인다 
-        //Vector3 up_seg = Vector3.Cross(dir_ptmin, ls_seg1.direction); //fixme : 외적값이 0 되는 문제는 잡히지만 잘못된 각도로 회전하는 문제 발생 
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; //x
 
         __mt_0 = pt_min;
         __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
