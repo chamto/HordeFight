@@ -170,7 +170,7 @@ public class Test_TGuardSphere : MonoBehaviour
         if(angle_cosA > angle_cosA_max && angle_cosA > 0)
         {
             angle_diff = angle_cosA - angle_cosA_max;
-        }
+        } 
         if(angle_cosA < angle_cosA_max && angle_cosA < 0)
         {
             angle_diff = angle_cosA - angle_cosA_max;
@@ -222,15 +222,15 @@ public class Test_TGuardSphere : MonoBehaviour
 
 
         //각도는 항상 양수 , up벡터로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 조금씩 변경된다 
-        //Vector3 up_seg = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
-        //if (angle_rate < 0) angle_rate *= -1f;
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
+        Vector3 up_seg = Vector3.Cross(ls_AB.direction, ls_seg1.direction); 
+        if (angle_rate < 0) angle_rate *= -1f;
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
 
+        //up벡터를 잘못설정함 : cosA 를 도출하는 up벡터는 한가지 밖에 없음 
         //up벡터 고정 , 음양각도로 회전방향지정 방식 : 범위를 벗어날 경우 , 이동가능 최대치가 고정적으로 보인다 
         //Vector3 up_seg = Vector3.Cross(dir_ptmin, ls_seg1.direction); //fixme : 외적값이 0 되는 문제는 잡히지만 잘못된 각도로 회전하는 문제 발생 
-        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; 
         //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg) * ls_AB.direction; 
-
+        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_rate, up_seg1_AB) * ls_AB.direction; //x
 
         __mt_0 = pt_min;
         __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
