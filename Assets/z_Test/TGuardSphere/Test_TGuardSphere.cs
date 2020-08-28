@@ -203,6 +203,7 @@ public class Test_TGuardSphere : MonoBehaviour
             dt1 = -2f * c * cosA; //dt1 : -2cCosA
             //이차방정식의 근의공식 이용 , disc = 판별값 
             disc = dt1 * dt1 - 4 * dt2;
+            if (disc < 0) disc = 0;
             b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
 
             angle_apply = angle_seg_rate;
