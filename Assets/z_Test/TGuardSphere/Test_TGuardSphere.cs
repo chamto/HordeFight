@@ -112,9 +112,119 @@ public class Test_TGuardSphere : MonoBehaviour
     public float __rate = 1f;
     void Update()
     {
-        Update_3(__rate, _T0_root_start.position, _seg0_start.position);
+        Update_4(__rate, _T0_root_start.position, _seg0_start.position);
     }
 
+    public void Update_4(float rateAtoB, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+    {
+        _T0_root_start.position = fixedOriginPt_a;
+        _seg0_start.position = fixedOriginPt_b;
+        _T1.position = _T0.position;
+        _seg1.position = _seg0.position;
+
+        //1# root_start , seg_start 사이의 거리 
+        LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
+        float c = (_T0_root_start.position - _seg0_start.position).magnitude;
+
+        //2# root_start , sub 선분의 접촉점 사이의 거리 
+        Vector3 pt_min, pt_max;
+        LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
+        LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
+        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+        Vector3 dir_rootS_min = pt_min - _T0_root_start.position;
+        float a = (dir_rootS_min).magnitude;
+
+        //근의공식 부호 결정 
+        float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction);
+        if (value_sign > 0) value_sign = -1; else value_sign = 1;
+
+        //3# seg_start , seg 선분의 접촉점 사이의 거리용
+        Vector3 dir_ptmin = pt_min - _seg0_start.position;
+        LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
+        Vector3 up_AB_seg1 = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
+        Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
+
+        float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
+
+
+        //---------------------------------------
+        //코사인 제2법칙 이용
+        float dt2 = c * c - a * a;
+
+        //---------------------------------------
+        //# 이동가능 최대값 구함 
+        float cosA_max = (float)Math.Sqrt(dt2 / (c * c));
+        cosA_max = Mathf.Clamp(cosA_max, -1f, 1f);
+        float angle_cosA_max = (float)Math.Acos(cosA_max);
+        angle_cosA_max = angle_cosA_max * Mathf.Rad2Deg;
+        float b_max = c * cosA_max; //최대각도에서의 b길이 
+
+        //-----------------
+        //ㄱ , ㄴ ,  theta 구하기 
+        float gi = dir_ptmin.magnitude; //ㄱ
+        float ni = b_max; //ㄴ 
+
+        Vector3 pt_seg1 = ls_seg1.origin + ls_seg1.direction.normalized * gi;
+        Vector3 dir_min_seg0 = -dir_ptmin;
+        Vector3 dir_seg01 = pt_seg1 - pt_min;
+        Vector3 up_seg01 = Vector3.Cross(dir_min_seg0, dir_seg01);
+        float angle_cosTheta = Geo.AngleSigned(dir_min_seg0, dir_seg01, up_seg01);
+        float cosTheta = (float)Math.Cos(angle_cosTheta * Mathf.Deg2Rad);
+        //-----------------
+        //ㄷ 구하기 
+        float d1 = -2f * gi * cosTheta;
+        float d2 = gi * gi - ni * ni;
+        float disc0 = d1 * d1 - 4 * d2;
+        float di = (-d1 + 1f * (float)Math.Sqrt(disc0)) / 2f;
+        //-----------------
+        //seg01max up벡터 구하기
+        Vector3 pt_seg01max = pt_min + dir_seg01.normalized * di;
+        Vector3 dir_seg01max = pt_seg01max - ls_seg0.origin;
+        Vector3 up_seg01max = Vector3.Cross(ls_AB.direction, dir_seg01max);
+        //-----------------
+
+        //해결책찾기 : dir_seg_max 를 구하는데 up_AB_seg1 이 값을 사용하는 것은 정확하게 계산하는 것이 아님. 
+        Vector3 dir_seg_max = Quaternion.AngleAxis(angle_cosA_max, up_seg01max) * ls_AB.direction;
+        pt_max = ls_seg1.origin + dir_seg_max.normalized * b_max;
+
+        //---------------------------------------
+        //비율값으로 새로운 선분구함 
+        Vector3 pt_rate = pt_min + (pt_max - pt_min) * rateAtoB;
+
+        //---------------------------------------
+        float cosA = (float)Math.Cos(angle_cosA * Mathf.Deg2Rad);
+        float dt1 = -2f * c * cosA; //dt1 : -2cCosA
+
+        //이차방정식의 근의공식 이용 , disc = 판별값 
+        float disc = dt1 * dt1 - 4 * dt2;
+        float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
+
+        //판별값이 0 보다 작다면 해가 없는 상태이다 
+        if (disc < 0 || b_1 < 0)
+        {
+            //최대각도로 다시 지정 
+            angle_cosA = angle_cosA_max; 
+            b_1 = b_max;
+            up_AB_seg1 = up_seg01max; //임시 
+        }
+
+
+        Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_cosA, up_AB_seg1) * ls_AB.direction;
+
+
+        __mt_0 = pt_min;
+        __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
+
+        //=======================
+
+        Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
+        float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
+
+        _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
+
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + 0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign);
+
+    }
 
     public void Update_3(float rateAtoB, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
     {
