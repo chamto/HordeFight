@@ -146,8 +146,8 @@ public class Test_TGuardSphere : MonoBehaviour
         Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
 
         float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
-        float angle_firstPt = UtilGS9.Geo.AngleSigned(ls_AB.direction, dir_ptmin , up_AB_ptmin);
-        float angle_all = UtilGS9.Geo.AngleSigned(dir_ptmin, ls_seg1.direction, up_AB_ptmin);
+        //float angle_firstPt = UtilGS9.Geo.AngleSigned(ls_AB.direction, dir_ptmin , up_AB_ptmin);
+        //float angle_all = UtilGS9.Geo.AngleSigned(dir_ptmin, ls_seg1.direction, up_AB_ptmin);
 
 
         //코사인 제2법칙 이용
@@ -162,21 +162,21 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //---------------------------------------
         //** 비율값이 적용된 각도를 구한다 **
-        if (Vector3.Dot(up_AB_ptmin, up_AB_seg1) < 0) angle_cosA_max *= -1f; //음수각도인지 찾는다 
+        //if (Vector3.Dot(up_AB_ptmin, up_AB_seg1) < 0) angle_cosA_max *= -1f; //음수각도인지 찾는다 
 
-        float angle_diff = 0;
-        if(angle_cosA > angle_cosA_max && angle_cosA > 0)
-        {
-            angle_diff = angle_cosA - angle_cosA_max;
-        } 
-        if(angle_cosA < angle_cosA_max && angle_cosA < 0)
-        {
-            angle_diff = angle_cosA - angle_cosA_max;
-        }
+        //float angle_diff = 0;
+        //if(angle_cosA > angle_cosA_max && angle_cosA > 0)
+        //{
+        //    angle_diff = angle_cosA - angle_cosA_max;
+        //} 
+        //if(angle_cosA < angle_cosA_max && angle_cosA < 0)
+        //{
+        //    angle_diff = angle_cosA - angle_cosA_max;
+        //}
 
-
-        float angle_rate = angle_firstPt + (angle_all - angle_diff) * rateAtoB;
-        DebugWide.LogBlue("  fpt : " + angle_firstPt + " +( all: " + angle_all + "  " +  "  diff: " + angle_diff + " ) * " + __rate + "  = rate: "+ angle_rate +  "  cosA: " + angle_cosA + "  cosAMax: " + angle_cosA_max);
+        float angle_rate = 0f;
+        //float angle_rate = angle_firstPt + (angle_all - angle_diff) * rateAtoB;
+        //DebugWide.LogBlue("  fpt : " + angle_firstPt + " +( all: " + angle_all + "  " +  "  diff: " + angle_diff + " ) * " + __rate + "  = rate: "+ angle_rate +  "  cosA: " + angle_cosA + "  cosAMax: " + angle_cosA_max);
         //---------------------------------------
 
         //float cosA = (float)Math.Cos(angle_rate * Mathf.Deg2Rad);
@@ -193,6 +193,9 @@ public class Test_TGuardSphere : MonoBehaviour
         //disc 를 0으로 설정해 이동가능 최대치를 구한다
         if (disc < 0 || b_1 < 0)
         {
+            angle_cosA = angle_cosA_max; //최대각도로 다시 지정 
+            //if (angle_cosA < 0) angle_cosA *= -1f;
+
             b_1 = c * cosA_max;
         }
 
