@@ -11,6 +11,8 @@ namespace HordeFight
         public ChampUnit _champ_0 = null;
         public ChampUnit _champ_1 = null;
 
+        public Transform _effect = null;
+
         private MovingSegement3 _movingSegment = new MovingSegement3();
 
         //string tempGui = "Cut and Sting";
@@ -67,6 +69,8 @@ namespace HordeFight
             gobj = GameObject.Find("footman");
             _champ_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
 
+            _effect = Hierarchy.GetTransform(gobj.transform, "emotion");
+
 
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
@@ -89,6 +93,14 @@ namespace HordeFight
         public bool __AllowFixed_B = true;
 		private void Update()
 		{
+
+            if(null != _effect)
+            {
+                _effect.Rotate(ConstV.v3_up, -3f);
+            }
+
+
+            //==================================================
 
             _champ_0._limbs.Update_CurSeg();
             _champ_1._limbs.Update_CurSeg();
