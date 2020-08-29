@@ -79,7 +79,7 @@ public class Test_TGuardSphere : MonoBehaviour
 	void Start () 
     {
         _init = true;
-        Transform t0sub, t1sub, seg0 , seg1;
+        Transform t0sub, t1sub;
         _T0 = Hierarchy.GetTransform(null, "T_0");	
         _T0_root = Hierarchy.GetTransform(_T0, "root");
         t0sub = Hierarchy.GetTransform(_T0_root, "sub_0");
