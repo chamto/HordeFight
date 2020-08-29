@@ -436,6 +436,83 @@ namespace UtilGS9
 			if (value < 1) return -0.5f * (a * Mathf.Pow(2, 10 * (value-=1)) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p)) + start;
 			return a * Mathf.Pow(2, -10 * (value-=1)) * Mathf.Sin((value * d - s) * (2 * Mathf.PI) / p) * 0.5f + end + start;
 		}
-	}
-}
+
+
+		//============================
+
+		
+        //percentage : 0~1당 , 1을 넘어가는 값을 넣으면 정상동작 안함 
+        static public void CalcShakePosition(Transform thisTransform, Vector3 start, Vector3 end, float percentage)
+		{
+			//impact:
+            if (percentage <= float.Epsilon) 
+            {
+                thisTransform.Translate(end);
+			}
+			
+			//reset:
+            thisTransform.position=start;
+			
+			//generate:
+			float diminishingControl = 1-percentage; //퍼센트가 1을 넘어가면 값이 0으로 되게 한다. 퍼센트의 최대값이 1일때만 해
+            Vector3 v_rand = UtilGS9.ConstV.v3_zero;
+			v_rand.x= UnityEngine.Random.Range(-end.x*diminishingControl, end.x*diminishingControl);
+			v_rand.y= UnityEngine.Random.Range(-end.y*diminishingControl, end.y*diminishingControl);
+			v_rand.z= UnityEngine.Random.Range(-end.z*diminishingControl, end.z*diminishingControl);
+
+			//apply:	
+            thisTransform.position+=v_rand;
+			
+		}	
+
+        static public void CalcShakeScale(Transform thisTransform, Vector3 start, Vector3 end, float percentage)
+		{
+			//impact:
+            if (percentage <= float.Epsilon)
+            {
+                thisTransform.localScale = end;
+            }
+			
+			//reset:
+			thisTransform.localScale=start; //초기값
+			
+			//generate:
+			float diminishingControl = 1-percentage;
+            Vector3 v_rand = UtilGS9.ConstV.v3_zero;
+			v_rand.x= UnityEngine.Random.Range(-end.x*diminishingControl, end.x*diminishingControl);
+			v_rand.y= UnityEngine.Random.Range(-end.y*diminishingControl, end.y*diminishingControl);
+			v_rand.z= UnityEngine.Random.Range(-end.z*diminishingControl, end.z*diminishingControl);
+            //DebugWide.LogBlue(v_rand + "  " + percentage);
+			//apply:
+            thisTransform.localScale+=v_rand;
+		}
+
+        static public void CalcShakeRotation(Transform thisTransform, Vector3 start, Vector3 end, float percentage)
+		{
+			//impact:
+            if (percentage <= float.Epsilon)
+            {
+                thisTransform.Rotate(end);
+            }
+			
+			//reset:
+			thisTransform.eulerAngles=start;
+			
+			//generate:
+			float diminishingControl = 1-percentage;
+            Vector3 v_rand = UtilGS9.ConstV.v3_zero;
+			v_rand.x= UnityEngine.Random.Range(-end.x*diminishingControl, end.x*diminishingControl);
+			v_rand.y= UnityEngine.Random.Range(-end.y*diminishingControl, end.y*diminishingControl);
+			v_rand.z= UnityEngine.Random.Range(-end.z*diminishingControl, end.z*diminishingControl);
+
+			//apply:
+            thisTransform.Rotate(v_rand);
+			
+		}//end func
+	
+		
+
+	}//end class
+
+}//end namespace
 
