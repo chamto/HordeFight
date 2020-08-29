@@ -4218,6 +4218,10 @@ namespace HordeFight
             //limbs_hand._ref_being = cha;
             //cha._limbs = limbs_hand;
             ////==============================================
+            //effectIcon 등록 
+            CreatePrefab("3_part/effectIcon" , obj.transform, "effectIcon");
+
+            //==============================================
             ////구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
