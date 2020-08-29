@@ -4437,7 +4437,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            numMax_create = 0;
+            numMax_create = 10;
             for (int i = 0; i < numMax_create; i++)
             { 
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
@@ -4448,7 +4448,7 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            numMax_create = 0;
+            numMax_create = 10;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
