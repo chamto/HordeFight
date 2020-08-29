@@ -1471,8 +1471,12 @@ x        }
             {
                 ApplyUI_HPBar();
 
-                _limbs.Update_All(); //가지들 갱신 
-                //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기 
+                if(null != (object)_limbs)
+                {
+                    _limbs.Update_All(); //가지들 갱신 
+                                         //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기     
+                }
+
             }
 
             return result;

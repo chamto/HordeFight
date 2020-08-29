@@ -4212,11 +4212,11 @@ namespace HordeFight
 
             ////==============================================
             ////가지(촉수) 등록
-            Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
-            limbs_hand.Init();
-            limbs_hand._ref_movement = mov;
-            limbs_hand._ref_being = cha;
-            cha._limbs = limbs_hand;
+            //Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
+            //limbs_hand.Init();
+            //limbs_hand._ref_movement = mov;
+            //limbs_hand._ref_being = cha;
+            //cha._limbs = limbs_hand;
             ////==============================================
             ////구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
