@@ -1364,7 +1364,7 @@ x        }
         public Inventory _inventory = null;
 
         //전용effect
-        private SpriteRenderer[] _effect = new SpriteRenderer[(int)eEffectKind.Max];
+        private Transform[] _effect = new Transform[(int)eEffectKind.Max];
         //public Transform _effect_aim = null; //조준
         //public Transform _effect_dir = null; //방향 
         //public Transform _effect_emotion = null; //감정 표현 
@@ -1426,13 +1426,14 @@ x        }
             //=====================================================
             // 전용 effect 설정 
 
-            Transform effectTr = SingleO.hierarchy.GetTransform(transform, "effect");
-            _effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "aim");
-            _effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "dir");
-            _effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "emotion");
-            _effect[(int)eEffectKind.Circle] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "circle");
-            _effect[(int)eEffectKind.Bar_Red] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "bar_red");
-            _effect[(int)eEffectKind.Bar_Blue] = SingleO.hierarchy.GetTypeObject<SpriteRenderer>(effectTr, "bar_blue");
+
+            Transform effectTr = Hierarchy.GetTransform(transform, "effect");
+            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "spr");
+            _effect[(int)eEffectKind.Dir] = Hierarchy.GetTransform(effectTr, "dir");
+            _effect[(int)eEffectKind.Emotion] = Hierarchy.GetTransform(effectTr, "emotion");
+            _effect[(int)eEffectKind.Circle] = Hierarchy.GetTransform(effectTr, "circle");
+            _effect[(int)eEffectKind.Bar_Red] = Hierarchy.GetTransform(effectTr, "bar_red");
+            _effect[(int)eEffectKind.Bar_Blue] = Hierarchy.GetTransform(effectTr, "bar_blue");
 
             //아틀라스에서 가져온 sprite로 변경하여 시험 
             //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
@@ -1578,9 +1579,14 @@ x        }
         {
             //HP갱신 
             //_ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
-            Vector2 temp = _effect[(int)eEffectKind.Bar_Red].size;
-            temp.x = (float)_hp_cur / (float)_hp_max;
-            _effect[(int)eEffectKind.Bar_Red].size = temp;
+
+            //Vector2 temp = _effect[(int)eEffectKind.Bar_Red].size;
+            //temp.x = (float)_hp_cur / (float)_hp_max;
+            //_effect[(int)eEffectKind.Bar_Red].size = temp;
+
+            //Vector2 temp = _effect[(int)eEffectKind.Bar_Red].localScale;
+            //temp.x = (float)_hp_cur / (float)_hp_max;
+            //_effect[(int)eEffectKind.Bar_Red].localScale = temp;
 
         }
 
