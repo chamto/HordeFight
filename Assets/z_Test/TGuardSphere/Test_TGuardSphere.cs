@@ -121,6 +121,7 @@ public class Test_TGuardSphere : MonoBehaviour
         _seg0_start.position = fixedOriginPt_b;
         _T1.position = _T0.position;
         _seg1.position = _seg0.position;
+        rateAtoB = Mathf.Clamp(rateAtoB, 0, 1f);
 
         //1# root_start , seg_start 사이의 거리 
         LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
@@ -142,10 +143,16 @@ public class Test_TGuardSphere : MonoBehaviour
         Vector3 dir_ptmin = pt_min - _seg0_start.position;
         LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
         Vector3 up_AB_seg1 = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
-        Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
+        //Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
 
-        float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
-
+        //---------------------------------------
+        //선분1 이 최소선분 위에 있으면 최소선분으로 고정함   
+        Vector3 t1 = Vector3.Cross(ls_seg0.direction, dir_ptmin);
+        Vector3 t2 = Vector3.Cross(dir_ptmin, ls_seg1.direction);
+        if (Vector3.Dot(t1, t2) < 0) 
+        {
+            rateAtoB = 0;
+        }
 
         //---------------------------------------
         //코사인 제2법칙 이용
@@ -174,7 +181,8 @@ public class Test_TGuardSphere : MonoBehaviour
 
         //---
         //비율적용된 각도값이 아닌 원래 각도값의 판별값을 이용한다.
-        //비율적용된 각도값의 판별값을 사용하면 비율값에 따라 최대범위가 늘어진다  
+        //비율적용된 각도값의 판별값을 사용하면 비율값에 따라 최대범위가 늘어진다
+        float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
         cosA = (float)Math.Cos(angle_cosA * Mathf.Deg2Rad);
         dt1 = -2f * c * cosA;
         float disc2 = dt1 * dt1 - 4 * dt2;
