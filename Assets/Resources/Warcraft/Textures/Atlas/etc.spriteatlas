@@ -331,6 +331,7 @@ SpriteAtlas:
   - {fileID: 21300226, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300230, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300308, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300408, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300322, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300164, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300246, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -363,6 +364,7 @@ SpriteAtlas:
   - {fileID: 21300134, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300132, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300136, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
+  - {fileID: 21300410, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300108, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300116, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
   - {fileID: 21300110, guid: 8db6c461ce16b40fe8ce7a28edd4ebb3, type: 3}
@@ -708,6 +710,7 @@ SpriteAtlas:
   - fireBlueB_1_0
   - fireBlueB_3_0
   - sleep_3_0
+  - effect_stun_0
   - pop_0_1
   - fireRedA_3_0
   - fireRedA_3_1
@@ -740,6 +743,7 @@ SpriteAtlas:
   - effect_67
   - effect_66
   - effect_68
+  - effect_stun_1
   - force_0_0
   - effect_58
   - effect_55
