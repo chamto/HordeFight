@@ -1339,7 +1339,7 @@ namespace HordeFight
             Bar_Blue,   //체력바
 
             Max,
-x        }
+        }
 
 
         //==================================================
@@ -1365,11 +1365,9 @@ x        }
 
         //전용effect
         private Transform[] _effect = new Transform[(int)eEffectKind.Max];
-        //public Transform _effect_aim = null; //조준
-        //public Transform _effect_dir = null; //방향 
-        //public Transform _effect_emotion = null; //감정 표현 
-        //public Transform _effect_hand_left = null; //왼손 
-        //public Transform _effect_hand_right = null; //오른손
+        private SpriteRenderer _bar_red = null;
+        private SpriteRenderer _bar_blue = null;
+
 
         //전용UI
         //public int _UIID_circle_collider = -1;
@@ -1427,13 +1425,16 @@ x        }
             // 전용 effect 설정 
 
 
-            Transform effectTr = Hierarchy.GetTransform(transform, "effect");
-            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "spr");
+            Transform effectTr = Hierarchy.GetTransform(transform, "effectIcon");
+            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "aim");
             _effect[(int)eEffectKind.Dir] = Hierarchy.GetTransform(effectTr, "dir");
             _effect[(int)eEffectKind.Emotion] = Hierarchy.GetTransform(effectTr, "emotion");
             _effect[(int)eEffectKind.Circle] = Hierarchy.GetTransform(effectTr, "circle");
             _effect[(int)eEffectKind.Bar_Red] = Hierarchy.GetTransform(effectTr, "bar_red");
             _effect[(int)eEffectKind.Bar_Blue] = Hierarchy.GetTransform(effectTr, "bar_blue");
+
+            _bar_red = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Red], "spr");
+            _bar_blue = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Blue], "spr");
 
             //아틀라스에서 가져온 sprite로 변경하여 시험 
             //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
@@ -1474,7 +1475,7 @@ x        }
                 if(null != (object)_limbs)
                 {
                     _limbs.Update_All(); //가지들 갱신 
-                                         //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기     
+                    //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기     
                 }
 
             }
@@ -1588,9 +1589,9 @@ x        }
             //temp.x = (float)_hp_cur / (float)_hp_max;
             //_effect[(int)eEffectKind.Bar_Red].size = temp;
 
-            //Vector2 temp = _effect[(int)eEffectKind.Bar_Red].localScale;
-            //temp.x = (float)_hp_cur / (float)_hp_max;
-            //_effect[(int)eEffectKind.Bar_Red].localScale = temp;
+            Vector2 temp = _bar_red.size;
+            temp.x = (float)_hp_cur / (float)_hp_max;
+            _bar_red.size = temp;
 
         }
 
