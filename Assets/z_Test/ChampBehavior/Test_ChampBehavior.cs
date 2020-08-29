@@ -88,6 +88,7 @@ namespace HordeFight
         //    _champ_1._limbs._hs_objectDir.position = seg_b.last;
         //}
 
+        private float __time_elapsed = 0;
         public float __RateAtoB = 1f;
         public bool __AllowFixed_A = true;
         public bool __AllowFixed_B = true;
@@ -96,7 +97,21 @@ namespace HordeFight
 
             if(null != _effect)
             {
-                _effect.Rotate(ConstV.v3_up, -3f);
+                //_effect.Rotate(ConstV.v3_up, -3f);
+
+                Transform champ0_ani = Hierarchy.GetTransform(_champ_0.transform, "animator");
+                if (1 < __time_elapsed) __time_elapsed = 0f;
+                //Interpolation.CalcShakePosition(champ0_ani.transform,_champ_0.transform.position , new Vector3(0, 0, 0.1f), __time_elapsed);
+                //Interpolation.CalcShakeRotation(champ0_ani.transform, new Vector3(90f, 0 ,0) , new Vector3(90f, 20, 0), __time_elapsed);
+                //Interpolation.CalcShakeScale(champ0_ani.transform, ConstV.v3_one,  new Vector3(0f, 0, 0.2f), __time_elapsed);
+
+                //Interpolation.CalcShakePosition(_effect, _champ_1.transform.position, new Vector3(0.1f, 0, 0.2f), __time_elapsed);
+                Interpolation.CalcShakeRotation(_effect, _champ_1.transform.eulerAngles, new Vector3(0, 45f, 0), __time_elapsed);
+                //Interpolation.CalcShakeScale(_effect, _champ_1.transform.localScale, new Vector3(0.2f, 0, 0.2f), __time_elapsed);
+
+                __time_elapsed += Time.deltaTime;
+
+
             }
 
 
