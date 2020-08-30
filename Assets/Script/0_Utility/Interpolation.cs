@@ -440,6 +440,24 @@ namespace UtilGS9
 
 		//============================
 
+        static public void CalcScale(Transform thisTransform, Vector3 start, Vector3 end, float percentage , eKind kind, bool reverse)
+        {
+
+            //calculate:
+            Vector3 vv = ConstV.v3_zero; 
+            vv.x = Calc(kind, start.x, end.x, percentage);
+            vv.y = Calc(kind, start.y, end.y, percentage);
+            vv.z = Calc(kind, start.z, end.z, percentage);
+
+            //apply:
+            thisTransform.localScale = vv;
+
+            //dial in:
+            if (percentage >= 1f)
+            {
+                thisTransform.localScale = end;
+            }
+        }
 		
         //percentage : 0~1당 , 1을 넘어가는 값을 넣으면 정상동작 안함 
         static public void CalcShakePosition(Transform thisTransform, Vector3 start, Vector3 end, float percentage)
