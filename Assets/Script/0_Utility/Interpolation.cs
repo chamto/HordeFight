@@ -440,6 +440,29 @@ namespace UtilGS9
 
 		//============================
 
+
+        static public void CalcPosition(Transform thisTransform, Vector3 start, Vector3 end, float percentage, eKind kind, bool reverse)
+        {
+            if (reverse) percentage = 1f - percentage;
+
+            //calculate:
+            Vector3 vv = ConstV.v3_zero; 
+            vv.x = Calc(kind, start.x,end.x,percentage);
+            vv.y = Calc(kind, start.y,end.y,percentage);
+            vv.z = Calc(kind, start.z,end.z,percentage);
+            
+            //apply:    
+            thisTransform.position=vv;
+
+                
+            //dial in:
+            if(percentage >= 1)
+            {
+                thisTransform.position=end;
+            }
+                
+        }   
+
         static public void CalcScale(Transform thisTransform, Vector3 start, Vector3 end, float percentage , eKind kind, bool reverse)
         {
             if (reverse) percentage = 1f - percentage;
@@ -460,6 +483,28 @@ namespace UtilGS9
             }
         }
 		
+        static public void CalcRotation(Transform thisTransform, Vector3 start, Vector3 end, float percentage, eKind kind, bool reverse)
+        {
+            if (reverse) percentage = 1f - percentage;
+            
+            //calculate:
+            Vector3 vv = ConstV.v3_zero; 
+            vv.x = Calc(kind, start.x, end.x, percentage);
+            vv.y = Calc(kind, start.y, end.y, percentage);
+            vv.z = Calc(kind, start.z, end.z, percentage);
+
+            //apply:
+            thisTransform.rotation = Quaternion.Euler(vv);
+
+
+            //dial in:
+            if (percentage >= 1)
+            {
+                thisTransform.rotation = Quaternion.Euler(end);
+            }
+
+        }
+
         //percentage : 0~1당 , 1을 넘어가는 값을 넣으면 정상동작 안함 
         static public void CalcShakePosition(Transform thisTransform, Vector3 start, Vector3 end, float percentage)
 		{
