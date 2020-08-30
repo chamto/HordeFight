@@ -88,6 +88,8 @@ namespace HordeFight
         //    _champ_1._limbs._hs_objectDir.position = seg_b.last;
         //}
 
+        public Interpolation.eKind __interKind = Interpolation.eKind.spring;
+        private bool __reverse = false;
         private float __time_elapsed = 0;
         public float __RateAtoB = 1f;
         public bool __AllowFixed_A = true;
@@ -100,12 +102,16 @@ namespace HordeFight
                 //_effect.Rotate(ConstV.v3_up, -3f);
 
                 Transform champ0_ani = Hierarchy.GetTransform(_champ_0.transform, "ani_spr");
-                if (1 < __time_elapsed) __time_elapsed = 0f;
+                if (1 < __time_elapsed) 
+                {
+                    __reverse = !__reverse;
+                    __time_elapsed = 0f;
+                }
                 //Interpolation.CalcShakePosition(champ0_ani.transform,_champ_0.transform.position , new Vector3(0, 0, 0.1f), __time_elapsed);
                 //Interpolation.CalcShakeRotation(champ0_ani.transform, new Vector3(0f, 0 ,0) , new Vector3(0f, 0, 90), __time_elapsed);
                 //Interpolation.CalcShakeScale(champ0_ani.transform, ConstV.v3_one,  new Vector3(0f, 0, 0.2f), __time_elapsed);
-                Interpolation.CalcScale(champ0_ani.transform, ConstV.v3_one, new Vector3(1.5f, 1, 1f), __time_elapsed, 
-                                        Interpolation.eKind.easeOutBounce, false);
+                Interpolation.CalcScale(champ0_ani.transform, ConstV.v3_one, new Vector3(1f, 1, 1.4f), __time_elapsed, 
+                                        __interKind, __reverse);
 
 
                 //Interpolation.CalcShakePosition(_effect, _champ_1.transform.position, new Vector3(0.1f, 0, 0.2f), __time_elapsed);

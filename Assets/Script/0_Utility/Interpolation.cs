@@ -442,6 +442,7 @@ namespace UtilGS9
 
         static public void CalcScale(Transform thisTransform, Vector3 start, Vector3 end, float percentage , eKind kind, bool reverse)
         {
+            if (reverse) percentage = 1f - percentage;
 
             //calculate:
             Vector3 vv = ConstV.v3_zero; 
