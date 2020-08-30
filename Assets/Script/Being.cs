@@ -988,8 +988,8 @@ namespace HordeFight
             //this.gameObject.SetActive(false); //start 함수 호출하는 메시지가 비활성객체에는 전달이 안된다
 
 
-            _sprParent = SingleO.hierarchy.GetTransform(transform, "pos");
-            _shader = SingleO.hierarchy.GetTransform(transform, "shader");
+            _sprParent = Hierarchy.GetTransform(transform, "ani_spr");
+            _shader = Hierarchy.GetTransform(transform, "shader");
 
 
         }

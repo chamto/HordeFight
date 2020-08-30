@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4332396189838116}
   m_Layer: 0
-  m_Name: pos
+  m_Name: ani_spr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
