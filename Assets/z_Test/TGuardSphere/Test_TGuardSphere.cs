@@ -131,7 +131,8 @@ public class Test_TGuardSphere : MonoBehaviour
         Vector3 pt_min, pt_max;
         LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
         LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
-        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0); //최소값이 t가드 위에 있음 
+        //LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_seg0, ls_sub); //잘못된방식 : 이렇게 하면 최소값이 선분0위에 있게 됨
         Vector3 dir_rootS_min = pt_min - _T0_root_start.position;
         float a = (dir_rootS_min).magnitude;
 
