@@ -29,6 +29,9 @@ public class TGS_Info
     public Transform _Tctl_sub_start = null;
     public Transform _Tctl_sub_end = null;
 
+    public Vector3 _mt0 = ConstV.v3_zero;
+    public Vector3 _mt1 = ConstV.v3_zero;
+
     public void Draw()
     {
         if (false == _init) return;
@@ -52,11 +55,14 @@ public class TGS_Info
 
         //-----------------
 
-        //DebugWide.DrawLine(_T1_root_start.position, _T1_root_end.position, Color.blue);
-        //DebugWide.DrawLine(_T1_sub_start.position, _T1_sub_end.position, Color.blue);
+        DebugWide.DrawLine(_T1_root_start.position, _T1_root_end.position, Color.blue);
+        DebugWide.DrawLine(_T1_sub_start.position, _T1_sub_end.position, Color.blue);
 
         //-----------------
 
+        //DebugWide.DrawLine(_seg1_start.position, _mt1, Color.red);
+        DebugWide.DrawLine(_T0_root_start.position, _mt1, Color.red);
+        //DebugWide.DrawLine(_T0_root_start.position, _seg0_start.position, Color.red);
 
     }
 
@@ -258,36 +264,42 @@ public class Test_TGuardSphere2 : MonoBehaviour
         //DebugWide.LogBlue(_tgs0._seg0_start);
         //_tgs0.Update(__rate, _tgs0._T0_root_start.position, _tgs0._seg0_start.position);
         //_tgs1.Update(__rate, _tgs1._T0_root_start.position, _tgs1._seg0_start.position);
+        Calc_TGSvsTGS(__rate, _tgs0, _tgs1);
 
     }
 
-    public void Calc_TGSvsTGS(float rateAtoB, Vector3 fixedOriginPt_a, Vector3 fixedOriginPt_b)
+    //tgs1 의 지나간 궤적에 따라 tgs0 의 움직임 계산 
+    public void Calc_TGSvsTGS(float rateAtoB, TGS_Info tgs0 , TGS_Info tgs1)
     {
-       /* _T0_root_start.position = fixedOriginPt_a;
-        _seg0_start.position = fixedOriginPt_b;
-        _T1.position = _T0.position;
-        _seg1.position = _seg0.position;
+       
+        tgs0._T1_root.position = tgs0._T0_root.position;
+        tgs1._T1_root.position = tgs1._T0_root.position;
+        tgs0._T1_root.rotation = tgs0._T0_root.rotation;
+        tgs1._T1_root.rotation = tgs1._T0_root.rotation;
+        tgs0._mt1 = tgs0._T0_root.position;
+        tgs1._mt1 = tgs1._T0_root.position;
         rateAtoB = Mathf.Clamp(rateAtoB, 0, 1f);
 
-        //1# root_start , seg_start 사이의 거리 
-        LineSegment3 ls_AB = new LineSegment3(_seg0_start.position, _T0_root_start.position);
-        float c = (_T0_root_start.position - _seg0_start.position).magnitude;
+        //------
 
-        //2# root_start , sub 선분의 접촉점 사이의 거리 
         Vector3 pt_min, pt_max;
-        LineSegment3 ls_sub = new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
-        LineSegment3 ls_seg0 = new LineSegment3(_seg0_start.position, _seg0_end.position);
+        LineSegment3 ls_AB = new LineSegment3(tgs1._T0_root_start.position, tgs0._T0_root_start.position);
+        LineSegment3 ls_sub = new LineSegment3(tgs0._T0_sub_start.position, tgs0._T0_sub_end.position);
+        LineSegment3 ls_seg0 = new LineSegment3(tgs1._T0_sub_start.position, tgs1._T0_sub_end.position);
+        LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position);
         LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
-        Vector3 dir_rootS_min = pt_min - _T0_root_start.position;
-        float a = (dir_rootS_min).magnitude;
+        Vector3 dir_rootS_min = pt_min - tgs0._T0_root_start.position;
+
+        float c = ls_AB.Length(); //1# root_start , seg_start 사이의 거리 
+        float a = (dir_rootS_min).magnitude; //2# root_start , sub 선분의 접촉점 사이의 거리 
 
         //근의공식 부호 결정 
         float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction);
         if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
-        Vector3 dir_ptmin = pt_min - _seg0_start.position;
-        LineSegment3 ls_seg1 = new LineSegment3(_seg1_start.position, _seg1_end.position);
+        Vector3 dir_ptmin = pt_min - tgs1._T0_root_start.position;
+
         Vector3 up_AB_seg1 = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
         //Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
 
@@ -374,18 +386,18 @@ public class Test_TGuardSphere2 : MonoBehaviour
         Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_apply, up_seg_rate) * ls_AB.direction;
 
 
-        __mt_0 = pt_min;
-        __mt_1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
+        tgs0._mt0 = pt_min;
+        tgs0._mt1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
 
         //=======================
 
-        Vector3 up_t = Vector3.Cross(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position);
-        float angle_t = Geo.AngleSigned(__mt_0 - _T0_root_start.position, __mt_1 - _T0_root_start.position, up_t);
+        Vector3 up_t = Vector3.Cross(tgs0._mt0 - tgs0._T0_root_start.position, tgs0._mt1 - tgs0._T0_root_start.position);
+        float angle_t = Geo.AngleSigned(tgs0._mt0 - tgs0._T0_root_start.position, tgs0._mt1 - tgs0._T0_root_start.position, up_t);
 
-        _T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * _T0_root.rotation;
+        tgs0._T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tgs0._T0_root.rotation;
 
         //DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + 0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign);
-*/
+
     }
 
 }
