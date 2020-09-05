@@ -138,7 +138,8 @@ public class Test_TGuardSphere2 : MonoBehaviour
         
         if (true == _tgs0._init)
         {
-            Test_0(_tgs0, _tgs1);
+            //Test_0(_tgs0, _tgs1);
+            Calc_TGSvsTGS(__rate, _tgs0, _tgs1);
 
             _tgs0.Draw();
             _tgs1.Draw();    
@@ -229,21 +230,32 @@ public class Test_TGuardSphere2 : MonoBehaviour
     {
        
         tgs0._T1_root.position = tgs0._T0_root.position;
-        tgs1._T1_root.position = tgs1._T0_root.position;
         tgs0._T1_root.rotation = tgs0._T0_root.rotation;
+        tgs0._Tctl_root.position = tgs0._T0_root.position;
+        tgs0._Tctl_root.rotation = tgs0._T0_root.rotation;
+
+        tgs1._T1_root.position = tgs1._T0_root.position;
         tgs1._T1_root.rotation = tgs1._T0_root.rotation;
+
         tgs0._mt1 = tgs0._T0_root.position;
         tgs1._mt1 = tgs1._T0_root.position;
+
         rateAtoB = Mathf.Clamp(rateAtoB, 0, 1f);
 
         //------
 
         Vector3 pt_min, pt_max;
-        LineSegment3 ls_AB = new LineSegment3(tgs1._T0_root_start.position, tgs0._T0_root_start.position);
-        LineSegment3 ls_sub = new LineSegment3(tgs0._T0_sub_start.position, tgs0._T0_sub_end.position);
-        LineSegment3 ls_seg0 = new LineSegment3(tgs1._T0_sub_start.position, tgs1._T0_sub_end.position);
-        LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position);
-        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
+        LineSegment3 ls_tgs0_t0_sub = new LineSegment3(tgs0._T0_sub_start.position, tgs0._T0_sub_end.position);
+        LineSegment3 ls_tgs1_t0_sub = new LineSegment3(tgs1._T0_sub_start.position, tgs1._T0_sub_end.position);
+        LineSegment3 ls_AB = new LineSegment3(tgs1._Tctl_sub_start.position, tgs0._T0_root_start.position); //row 
+        LineSegment3 ls_seg0 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._T0_sub_end.position); //row 
+        LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position); //row
+
+
+        DebugWide.DrawLine(ls_seg0.origin, ls_seg0.last, Color.cyan); //row
+        DebugWide.DrawLine(ls_AB.origin, ls_AB.last, Color.red);
+
+        LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_tgs0_t0_sub, ls_seg0);
         Vector3 dir_rootS_min = pt_min - tgs0._T0_root_start.position;
 
         float c = ls_AB.Length(); //1# root_start , seg_start 사이의 거리 
@@ -254,18 +266,21 @@ public class Test_TGuardSphere2 : MonoBehaviour
         if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
-        Vector3 dir_ptmin = pt_min - tgs1._T0_root_start.position;
+        //Vector3 dir_ptmin = pt_min - tgs1._T0_root_start.position;
+        //Vector3 dir_ptmin = pt_min - tgs1._Tctl_sub_start.position;
+        Vector3 dir_ptmin = pt_min - tgs1._T0_sub_start.position;
+        //Vector3 dir_ptmin2 = pt_min - tgs1._T0_sub_start.position;
 
-        Vector3 up_AB_seg1 = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
-        //Vector3 up_AB_ptmin = Vector3.Cross(ls_AB.direction, dir_ptmin);
+
 
         //---------------------------------------
         //선분1 이 최소선분 위에 있으면 최소선분으로 고정함   
-        Vector3 t1 = Vector3.Cross(ls_seg0.direction, dir_ptmin);
-        Vector3 t2 = Vector3.Cross(dir_ptmin, ls_seg1.direction);
-        if (Vector3.Dot(t1, t2) < 0)
+        //Vector3 t1 = Vector3.Cross(ls_tgs1_t0_sub.direction, dir_ptmin);
+        //Vector3 t1 = Vector3.Cross(ls_seg0.direction, dir_ptmin);
+        //Vector3 t2 = Vector3.Cross(dir_ptmin, ls_seg1.direction);
+        //if (Vector3.Dot(t1, t2) < 0)
         {
-            rateAtoB = 0;
+            //rateAtoB = 0;
         }
 
         //---------------------------------------
@@ -293,18 +308,19 @@ public class Test_TGuardSphere2 : MonoBehaviour
 
         float angle_apply = angle_seg_rate;
 
+
         //---
         //비율적용된 각도값이 아닌 원래 각도값의 판별값을 이용한다.
         //비율적용된 각도값의 판별값을 사용하면 비율값에 따라 최대범위가 늘어진다
+        Vector3 up_AB_seg1 = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
         float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
         cosA = (float)Math.Cos(angle_cosA * Mathf.Deg2Rad);
         dt1 = -2f * c * cosA;
         float disc2 = dt1 * dt1 - 4 * dt2;
         //판별값이 0 보다 작다면 해가 없는 상태이다 
-        //if (disc < 0 || b_1 < 0)
         if (disc2 < 0 || b_1 < 0)
         {
-
+            
             //---------------------------------------
             //# 이동가능 최대값 구함 
             float cosA_max = (float)Math.Sqrt(dt2 / (c * c));
@@ -312,6 +328,8 @@ public class Test_TGuardSphere2 : MonoBehaviour
             float angle_cosA_max = (float)Math.Acos(cosA_max);
             angle_cosA_max = angle_cosA_max * Mathf.Rad2Deg;
             float b_max = c * cosA_max; //최대각도에서의 b길이 
+
+            DebugWide.LogBlue(disc2 + "  " + angle_cosA_max + "   " + b_max);
 
             //dir_seg_max 를 구하는데 up_AB_seg1 이 값을 사용하여 근사값 사용 
             Vector3 dir_seg_max = Quaternion.AngleAxis(angle_cosA_max, up_AB_seg1) * ls_AB.direction;
@@ -331,9 +349,6 @@ public class Test_TGuardSphere2 : MonoBehaviour
             angle_apply = angle_seg_rate;
             //---------------------------------------
 
-            //최대각도로 다시 지정 
-            //angle_apply = angle_cosA_max; 
-            //b_1 = b_max;
 
         }
 
@@ -352,7 +367,7 @@ public class Test_TGuardSphere2 : MonoBehaviour
 
         tgs0._T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tgs0._T0_root.rotation;
 
-        //DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + 0 + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign);
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_apply + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign);
 
     }
 
