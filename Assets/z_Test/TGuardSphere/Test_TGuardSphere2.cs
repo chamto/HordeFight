@@ -60,6 +60,8 @@ public class TGS_Info
 
         //-----------------
 
+        DebugWide.DrawCircle(_mt0, 0.05f, Color.red);
+
         //DebugWide.DrawLine(_seg1_start.position, _mt1, Color.red);
         DebugWide.DrawLine(_T0_root_start.position, _mt1, Color.red);
         //DebugWide.DrawLine(_T0_root_start.position, _seg0_start.position, Color.red);
@@ -109,13 +111,6 @@ public class Test_TGuardSphere2 : MonoBehaviour
     TGS_Info _tgs0 = new TGS_Info();
     TGS_Info _tgs1 = new TGS_Info();
 
-    //private bool _init = false;
-
-    private void OnDrawGizmos()
-    {
-        _tgs0.Draw();
-        _tgs1.Draw();
-    }
 
 	// Use this for initialization
 	void Start () 
@@ -134,10 +129,22 @@ public class Test_TGuardSphere2 : MonoBehaviour
     {
         
         //Calc_TGSvsTGS(__rate, _tgs0, _tgs1);
-        Test_0(_tgs0, _tgs1);
+        //Test_0(_tgs0, _tgs1);
 
     }
 
+    private void OnDrawGizmos()
+    {
+        
+        if (true == _tgs0._init)
+        {
+            Test_0(_tgs0, _tgs1);
+
+            _tgs0.Draw();
+            _tgs1.Draw();    
+        }
+
+    }
 
     //테스트를 위한 최소한의 알고리즘 
     void Test_0(TGS_Info tgs0, TGS_Info tgs1)
@@ -151,10 +158,29 @@ public class Test_TGuardSphere2 : MonoBehaviour
         tgs1._mt1 = tgs1._T0_root.position;
 
         Vector3 pt_min, pt_max;
-        LineSegment3 ls_AB = new LineSegment3(tgs1._T0_root_start.position, tgs0._T0_root_start.position);
         LineSegment3 ls_sub = new LineSegment3(tgs0._T0_sub_start.position, tgs0._T0_sub_end.position);
-        LineSegment3 ls_seg0 = new LineSegment3(tgs1._T0_sub_start.position, tgs1._T0_sub_end.position);
-        LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position);
+
+        //T0_sub 선분과 Tctl_sub 선분의 시작점이 "t가드 vs 선분" 알고리즘에서는 서로만나는 점에 착안하여,
+        //"t가드 vs t가드" 알고리즘에서 서로만나지 않는 t가드sub의 시작점을 만나게 수정하였음 
+        //이때 두가지 방식으로 시작점을 만나게 할 수 있다.
+        //Tctl_sub 선분이 온전한 row 방식이 각도계산시 정상적으로 나오므로 row를 사용함 
+
+        //row
+        LineSegment3 ls_AB = new LineSegment3(tgs1._Tctl_sub_start.position, tgs0._T0_root_start.position); //row 
+        LineSegment3 ls_seg0 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._T0_sub_end.position); //row 
+        LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position); //row
+
+        //high
+        //LineSegment3 ls_AB = new LineSegment3(tgs1._T0_sub_start.position, tgs0._T0_root_start.position); //high
+        //LineSegment3 ls_seg0 = new LineSegment3(tgs1._T0_sub_start.position, tgs1._T0_sub_end.position); //high
+        //LineSegment3 ls_seg1 = new LineSegment3(tgs1._T0_sub_start.position, tgs1._Tctl_sub_end.position); //high
+
+        //------
+        DebugWide.DrawLine(ls_seg0.origin, ls_seg0.last, Color.cyan); //row
+        DebugWide.DrawLine(ls_seg1.origin, ls_seg1.last, Color.cyan); //high
+        DebugWide.DrawLine(ls_AB.origin, ls_AB.last, Color.red);
+        //------
+
         LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_sub, ls_seg0);
         Vector3 dir_rootS_min = pt_min - tgs0._T0_root_start.position;
 
@@ -164,14 +190,16 @@ public class Test_TGuardSphere2 : MonoBehaviour
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
         //코사인 제2법칙 이용
         Vector3 up_seg1_AB = Vector3.Cross(ls_AB.direction, ls_seg1.direction);
-        float cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
-        cosA = (float)Math.Cos(cosA * Mathf.Deg2Rad);
+        float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_seg1_AB);
+        float cosA = (float)Math.Cos(angle_cosA * Mathf.Deg2Rad);
+
 
         float dt1 = -2f * c * cosA;
         float dt2 = c * c - a * a;
-
+        DebugWide.LogBlue(dt1 + "  " + dt2);
         //이차방정식의 근의공식 이용
-        float root = (float)Math.Sqrt(dt1 * dt1 - 4 * dt2);
+        float disc = dt1 * dt1 - 4 * dt2; //판별값 : b*b-4ac
+        float root = (float)Math.Sqrt(disc);
         float b_plus = (-dt1 + root) / 2f;
         float b_minus = (-dt1 - root) / 2f;
 
@@ -186,10 +214,15 @@ public class Test_TGuardSphere2 : MonoBehaviour
 
         tgs0._T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tgs0._T0_root.rotation;
 
-        float disc = dt1 * dt1 - 4 * dt2; //판별값 : b*b-4ac
-        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus + "  angle_t : " + angle_t + "  판별값 : " + disc);
+
+        DebugWide.LogBlue("c : " + c + "  a : " + a + "   b+ : " + b_plus + "  b- : " + b_minus + "  angle : " + angle_cosA + "  판별값 : " + disc);
 
     }
+
+
+    //==========
+
+
 
     //tgs1 의 지나간 궤적에 따라 tgs0 의 움직임 계산 
     public void Calc_TGSvsTGS(float rateAtoB, TGS_Info tgs0 , TGS_Info tgs1)
