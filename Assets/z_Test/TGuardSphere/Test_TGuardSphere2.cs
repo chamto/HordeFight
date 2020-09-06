@@ -46,7 +46,7 @@ public class TGS_Info
 
         DebugWide.DrawLine(_Tctl_root_start.position, _Tctl_root_end.position, Color.gray);
         DebugWide.DrawLine(_Tctl_sub_start.position, _Tctl_sub_end.position, Color.gray);
-        DebugWide.DrawCircle(_Tctl_root_end.position, 0.1f, Color.gray);
+        DebugWide.DrawCircle(_Tctl_root_end.position, 0.05f, Color.gray);
 
         //-----------------
 
@@ -60,7 +60,7 @@ public class TGS_Info
 
         //-----------------
 
-        DebugWide.DrawCircle(_mt0, 0.05f, Color.red);
+        DebugWide.DrawCircle(_mt0, 0.02f, Color.red);
 
         //DebugWide.DrawLine(_seg1_start.position, _mt1, Color.red);
         DebugWide.DrawLine(_T0_root_start.position, _mt1, Color.red);
@@ -251,10 +251,11 @@ public class Test_TGuardSphere2 : MonoBehaviour
         LineSegment3 ls_AB = new LineSegment3(tgs1._Tctl_sub_start.position, tgs0._T0_root_start.position); //row 
         LineSegment3 ls_seg0 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._T0_sub_end.position); //row 
         LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position); //row
-
+        float lensqr_tgs1_t0_sub = ls_tgs1_t0_sub.LengthSquared();
 
         //DebugWide.DrawLine(ls_seg0.origin, ls_seg0.last, Color.cyan); //row
         //DebugWide.DrawLine(ls_AB.origin, ls_AB.last, Color.red);
+
 
         LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_tgs0_t0_sub, ls_seg0);
         Vector3 dir_rootS_min = pt_min - tgs0._T0_root_start.position;
@@ -278,6 +279,7 @@ public class Test_TGuardSphere2 : MonoBehaviour
         if (Vector3.Dot(t1, t2) < 0)
         {
             rateAtoB = 0;
+            DebugWide.LogYellow("최소선분으로 고정 !! ");
         }
 
         //---------------------------------------
@@ -316,11 +318,13 @@ public class Test_TGuardSphere2 : MonoBehaviour
         float disc_ori = dt1 * dt1 - 4 * dt2;
         //판별값이 0 보다 작다면 해가 없는 상태이다  
         //disc 가 양수면서 b_1이 음수인 경우가 있다. 판별값이 양수라도 길이가 음수가 나올 수 있다 
-        if (disc_ori < 0 || b_1 < 0 || disc < 0)
+        //tgs1_t0_sub 를 넘는 b 의 길이는 처리 하면 안됨 
+        if (disc_ori < 0 || b_1 < 0 || disc < 0 || (b_1*b_1) > lensqr_tgs1_t0_sub)
         {
             //임시처리 - tctl의 값이 계산 할 수 없는 영역에 있는 경우 처리를 못해준다 
             tgs1._Tctl_root.position = __prev_ctl_root_pos;
             tgs1._Tctl_root.rotation = __prev_ctl_root_rot;
+            DebugWide.LogYellow("처리 할 수 없는 상태 ==================");
             return; //길이가 음수면 처리 할 수 없는 상태임
 
             //---------------------------------------
@@ -361,7 +365,7 @@ public class Test_TGuardSphere2 : MonoBehaviour
 
         tgs0._mt0 = pt_min;
         tgs0._mt1 = ls_seg1.origin + new_dir_ls_seg1.normalized * b_1;
-
+        DebugWide.DrawCircle(tgs0._mt1, 0.05f, Color.red);
         //=======================
 
         Vector3 up_t = Vector3.Cross(tgs0._mt0 - tgs0._T0_root_start.position, tgs0._mt1 - tgs0._T0_root_start.position);
