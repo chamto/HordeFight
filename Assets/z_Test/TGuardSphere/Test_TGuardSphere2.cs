@@ -224,11 +224,12 @@ public class Test_TGuardSphere2 : MonoBehaviour
     //==========
 
 
-
+    Vector3 __prev_ctl_root_pos = ConstV.v3_zero;
+    Quaternion __prev_ctl_root_rot = Quaternion.identity;
     //tgs1 의 지나간 궤적에 따라 tgs0 의 움직임 계산 
     public void Calc_TGSvsTGS(float rateAtoB, TGS_Info tgs0 , TGS_Info tgs1)
     {
-       
+        
         tgs0._T1_root.position = tgs0._T0_root.position;
         tgs0._T1_root.rotation = tgs0._T0_root.rotation;
         tgs0._Tctl_root.position = tgs0._T0_root.position;
@@ -305,9 +306,8 @@ public class Test_TGuardSphere2 : MonoBehaviour
         //이차방정식의 근의공식 이용 , disc = 판별값 
         float disc = dt1 * dt1 - 4 * dt2;
         float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
-
+        //DebugWide.LogBlue(disc + "  " + b_1);
         float angle_apply = angle_seg_rate;
-
 
         //---
         //비율적용된 각도값이 아닌 원래 각도값의 판별값을 이용한다.
@@ -316,27 +316,33 @@ public class Test_TGuardSphere2 : MonoBehaviour
         float angle_cosA = UtilGS9.Geo.AngleSigned(ls_AB.direction, ls_seg1.direction, up_AB_seg1);
         cosA = (float)Math.Cos(angle_cosA * Mathf.Deg2Rad);
         dt1 = -2f * c * cosA;
-        float disc2 = dt1 * dt1 - 4 * dt2;
-        //판별값이 0 보다 작다면 해가 없는 상태이다 
-        if (disc2 < 0 || b_1 < 0)
+        float disc_ori = dt1 * dt1 - 4 * dt2;
+        //판별값이 0 보다 작다면 해가 없는 상태이다  
+        //disc 가 양수면서 b_1이 음수인 경우가 있다. 판별값이 양수라도 길이가 음수가 나올 수 있다 
+        if (disc_ori < 0 || b_1 < 0 || disc < 0)
         {
-            
+            //임시처리 - tctl의 값이 계산할수 없는 영역에 있는 경우 처리를 못해준다 
+            tgs1._Tctl_root.position = __prev_ctl_root_pos;
+            tgs1._Tctl_root.rotation = __prev_ctl_root_rot;
+            return; //길이가 음수면 처리 할 수 없는 상태임
+
             //---------------------------------------
             //# 이동가능 최대값 구함 
-            float cosA_max = (float)Math.Sqrt(dt2 / (c * c));
+            float cosA_max_sqr = dt2 / (c * c);
+            float cosA_max = (float)Math.Sqrt(cosA_max_sqr);
             cosA_max = Mathf.Clamp(cosA_max, -1f, 1f);
             float angle_cosA_max = (float)Math.Acos(cosA_max);
             angle_cosA_max = angle_cosA_max * Mathf.Rad2Deg;
             float b_max = c * cosA_max; //최대각도에서의 b길이 
 
-            DebugWide.LogBlue(disc2 + "  " + angle_cosA_max + "   " + b_max);
+            DebugWide.LogBlue(disc_ori + "  " + angle_cosA_max + "   " + b_max + "   " + cosA_max + "  " + cosA_max_sqr + "  " + b_1);
 
             //dir_seg_max 를 구하는데 up_AB_seg1 이 값을 사용하여 근사값 사용 
             Vector3 dir_seg_max = Quaternion.AngleAxis(angle_cosA_max, up_AB_seg1) * ls_AB.direction;
             pt_max = ls_seg1.origin + dir_seg_max.normalized * b_max;
 
             pt_rate = pt_min + (pt_max - pt_min) * rateAtoB;
-            dir_seg_rate = pt_rate - ls_seg0.origin;
+            dir_seg_rate = pt_rate - ls_seg1.origin;
             up_seg_rate = Vector3.Cross(ls_AB.direction, dir_seg_rate);
             angle_seg_rate = UtilGS9.Geo.AngleSigned(ls_AB.direction, dir_seg_rate, up_seg_rate);
             cosA = (float)Math.Cos(angle_seg_rate * Mathf.Deg2Rad);
@@ -353,7 +359,6 @@ public class Test_TGuardSphere2 : MonoBehaviour
         }
 
 
-        //Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_apply, up_AB_seg1) * ls_AB.direction;
         Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_apply, up_seg_rate) * ls_AB.direction;
 
 
@@ -368,6 +373,9 @@ public class Test_TGuardSphere2 : MonoBehaviour
         tgs0._T1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tgs0._T0_root.rotation;
 
         DebugWide.LogBlue("c : " + c + "  a : " + a + "   b_one : " + b_1 + "  new_angle : " + angle_apply + "  cosA :" + cosA + "  disc :" + disc + "  value_sign :" + value_sign);
+
+        __prev_ctl_root_pos = tgs1._Tctl_root.position;
+        __prev_ctl_root_rot = tgs1._Tctl_root.rotation;
 
     }
 
