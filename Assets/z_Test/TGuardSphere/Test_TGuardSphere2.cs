@@ -253,8 +253,8 @@ public class Test_TGuardSphere2 : MonoBehaviour
         LineSegment3 ls_seg1 = new LineSegment3(tgs1._Tctl_sub_start.position, tgs1._Tctl_sub_end.position); //row
 
 
-        DebugWide.DrawLine(ls_seg0.origin, ls_seg0.last, Color.cyan); //row
-        DebugWide.DrawLine(ls_AB.origin, ls_AB.last, Color.red);
+        //DebugWide.DrawLine(ls_seg0.origin, ls_seg0.last, Color.cyan); //row
+        //DebugWide.DrawLine(ls_AB.origin, ls_AB.last, Color.red);
 
         LineSegment3.ClosestPoints(out pt_min, out pt_max, ls_tgs0_t0_sub, ls_seg0);
         Vector3 dir_rootS_min = pt_min - tgs0._T0_root_start.position;
