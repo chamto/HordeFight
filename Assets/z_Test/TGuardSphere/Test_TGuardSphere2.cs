@@ -267,21 +267,17 @@ public class Test_TGuardSphere2 : MonoBehaviour
         if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
         //3# seg_start , seg 선분의 접촉점 사이의 거리용
-        //Vector3 dir_ptmin = pt_min - tgs1._T0_root_start.position;
-        //Vector3 dir_ptmin = pt_min - tgs1._Tctl_sub_start.position;
-        Vector3 dir_ptmin = pt_min - tgs1._T0_sub_start.position;
-        //Vector3 dir_ptmin2 = pt_min - tgs1._T0_sub_start.position;
-
+        Vector3 dir_ptmin_1 = pt_min - tgs1._T0_sub_start.position;
+        Vector3 dir_ptmin_2 = pt_min - tgs1._Tctl_sub_start.position;
 
 
         //---------------------------------------
         //선분1 이 최소선분 위에 있으면 최소선분으로 고정함   
-        //Vector3 t1 = Vector3.Cross(ls_tgs1_t0_sub.direction, dir_ptmin);
-        //Vector3 t1 = Vector3.Cross(ls_seg0.direction, dir_ptmin);
-        //Vector3 t2 = Vector3.Cross(dir_ptmin, ls_seg1.direction);
-        //if (Vector3.Dot(t1, t2) < 0)
+        Vector3 t1 = Vector3.Cross(ls_tgs1_t0_sub.direction, dir_ptmin_1);
+        Vector3 t2 = Vector3.Cross(dir_ptmin_2, ls_seg1.direction);
+        if (Vector3.Dot(t1, t2) < 0)
         {
-            //rateAtoB = 0;
+            rateAtoB = 0;
         }
 
         //---------------------------------------
@@ -290,7 +286,8 @@ public class Test_TGuardSphere2 : MonoBehaviour
 
         //---------------------------------------
         //비율값으로 새로운 선분구함 
-        Vector3 pt_seg1 = ls_seg1.origin + ls_seg1.direction.normalized * dir_ptmin.magnitude;
+        //Vector3 len_ptmin_ = pt_min - tgs1._T0_sub_start.position;
+        Vector3 pt_seg1 = ls_seg1.origin + ls_seg1.direction.normalized * dir_ptmin_2.magnitude;
         Vector3 pt_rate = pt_min + (pt_seg1 - pt_min) * rateAtoB;
 
         //-----------------
@@ -321,7 +318,7 @@ public class Test_TGuardSphere2 : MonoBehaviour
         //disc 가 양수면서 b_1이 음수인 경우가 있다. 판별값이 양수라도 길이가 음수가 나올 수 있다 
         if (disc_ori < 0 || b_1 < 0 || disc < 0)
         {
-            //임시처리 - tctl의 값이 계산할수 없는 영역에 있는 경우 처리를 못해준다 
+            //임시처리 - tctl의 값이 계산 할 수 없는 영역에 있는 경우 처리를 못해준다 
             tgs1._Tctl_root.position = __prev_ctl_root_pos;
             tgs1._Tctl_root.rotation = __prev_ctl_root_rot;
             return; //길이가 음수면 처리 할 수 없는 상태임
