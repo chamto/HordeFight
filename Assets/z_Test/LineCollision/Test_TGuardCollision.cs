@@ -34,6 +34,11 @@ public class MovingModel
     {
         public Transform start;
         public Transform end;
+
+        public LineSegment3 ToSegment()
+        {
+            return new LineSegment3(start.position, end.position);
+        }
     }
     public class Frame
     {
@@ -142,31 +147,51 @@ public class MovingModel
         _frame_sword_B.Init(frame);
     }
 
-    public void GetRootSegment_AroundRotate(out LineSegment3 cur_root, LineSegment3 cur_subSeg, LineSegment3 prev_root, LineSegment3 prev_subSeg)
-    {
-        cur_root.origin = prev_root.origin;
-        Vector3 dir_o = prev_root.last - prev_subSeg.origin;
-        cur_root.last = cur_subSeg.origin + dir_o;
-    }
 
-    public float __RateAtoB = 0.5f;
-    //public bool __AllowFixed_A = false;
-    //public bool __AllowFixed_B = false;
-    bool __update = false;
-    LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
     public void Update()
     {
         _frame_sword_A.Update();
         _frame_sword_B.Update();
         //=================================================
 
-        MovingSegement3.eCalcMethod eCalc_a;
-        MovingSegement3.eCalcMethod eCalc_b;
         LineSegment3 prev_A, cur_A;
         LineSegment3 prev_B, cur_B;
-        Vector3 fixed_A = _frame_sword_A._cur_seg[0].origin;
-        Vector3 fixed_B = _frame_sword_B._cur_seg[0].origin;
-        Vector3 stand = _frame_sword_A._prev_seg[0].origin;
+
+        int idx = 1;
+
+        prev_A = _frame_sword_A._prev_seg[idx];
+        cur_A = _frame_sword_A._cur_seg[idx];
+
+        prev_B = _frame_sword_B._prev_seg[idx];
+        cur_B = _frame_sword_B._cur_seg[idx];
+
+        _movingSegment.Find(prev_A, prev_B, cur_A, cur_B);
+
+        _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
+
+        //_movingSegment._cur_seg_A = _frame_sword_A._tr_seg[idx].ToSegment();
+        //_movingSegment._prev_seg_A = _movingSegment._cur_seg_A;
+        //_movingSegment._cur_seg_B = _frame_sword_B._tr_seg[idx].ToSegment();
+        //_movingSegment._prev_seg_B = _movingSegment._cur_seg_B;
+
+        //=================================================
+        //_frame_sword_A.After_Update();
+        //_frame_sword_B.After_Update();
+    }
+
+    private const int ROOT0 = 0;
+    public float __RateAtoB = 0.5f;
+    bool __update = false;
+    LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
+    public void Update_tt()
+    {
+        _frame_sword_A.Update();
+        _frame_sword_B.Update();
+        //=================================================
+
+        LineSegment3 prev_A, cur_A;
+        LineSegment3 prev_B, cur_B;
+        Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
         bool recalc = false;
         __update = false;
         float min_len = 1000000f;
@@ -187,25 +212,19 @@ public class MovingModel
 
                 _movingSegment.Find(prev_A, prev_B, cur_A, cur_B);
 
-                //recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
-                //fixed_A, fixed_B);
 
                 //=============
-                if (0 == i)
-                    eCalc_a = MovingSegement3.eCalcMethod.Rotate_Root;
-                else 
-                    eCalc_a = MovingSegement3.eCalcMethod.Rotate_Sub;
 
-                if (0 == j)
-                    eCalc_b = MovingSegement3.eCalcMethod.Rotate_Root;
-                else
-                    eCalc_b = MovingSegement3.eCalcMethod.Rotate_Sub;
+                recalc = _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB,
+                                                              _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
+
+                _movingSegment._cur_seg_A = _frame_sword_A._tr_seg[i].ToSegment();
+                _movingSegment._prev_seg_A = _movingSegment._cur_seg_A;
+                 
+                _movingSegment._cur_seg_B = _frame_sword_B._tr_seg[j].ToSegment();
+                _movingSegment._prev_seg_B = _movingSegment._cur_seg_B;
+
                 //=============
-
-                recalc = _movingSegment.CalcSubSegment_PushPoint(__RateAtoB, eCalc_a, eCalc_b, 
-                                                                 _frame_sword_A._cur_seg[i].origin,
-                                                                 _frame_sword_B._cur_seg[j].origin,
-                                                                 _frame_sword_A._prev_seg[0], _frame_sword_B._prev_seg[0]);
 
                 if(recalc)
                 {
@@ -219,16 +238,6 @@ public class MovingModel
 
                         __calc_rootSeg_a = _movingSegment._cur_seg_A;
                         __calc_rootSeg_b = _movingSegment._cur_seg_B;
-                        if(0 != i )
-                        {
-                            this.GetRootSegment_AroundRotate(out __calc_rootSeg_a, _movingSegment._cur_seg_A,
-                                                             _frame_sword_A._prev_seg[0], _frame_sword_A._prev_seg[i]);    
-                        }
-                        if (0 != j)
-                        {
-                            this.GetRootSegment_AroundRotate(out __calc_rootSeg_b, _movingSegment._cur_seg_B,
-                                                             _frame_sword_B._prev_seg[0], _frame_sword_B._prev_seg[j]);
-                        }
 
                     }
                 }
@@ -239,11 +248,11 @@ public class MovingModel
         //적용 
         if(__update)
         {
-            _frame_sword_A._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_a.direction);
-            _frame_sword_A._tr_frame.position = __calc_rootSeg_a.origin;
+            //_frame_sword_A._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_a.direction);
+            //_frame_sword_A._tr_frame.position = __calc_rootSeg_a.origin;
 
-            _frame_sword_B._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_b.direction);
-            _frame_sword_B._tr_frame.position = __calc_rootSeg_b.origin;    
+            //_frame_sword_B._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_b.direction);
+            //_frame_sword_B._tr_frame.position = __calc_rootSeg_b.origin;    
         }
 
 
