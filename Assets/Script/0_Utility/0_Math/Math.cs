@@ -851,6 +851,7 @@ namespace UtilGS9
         private IntrTriangle3Triangle3 _intr_1_2;
         private IntrTriangle3Triangle3 _intr_1_3;
         public Vector3 _minV, _maxV;
+        public Vector3 _meetPt;
 
         public MovingSegement3()
         {
@@ -886,7 +887,7 @@ namespace UtilGS9
                 DebugWide.DrawCircle(_maxV, 0.04f, Color.white);
 
                 //meetPt
-                DebugWide.DrawCircle(__meetPt, 0.5f, Color.red); //chamto test
+                DebugWide.DrawCircle(_meetPt, 0.5f, Color.red); //chamto test
             }
             
             if (__isSeg_A && __isSeg_B)
@@ -1311,7 +1312,6 @@ namespace UtilGS9
 
 
 
-        Vector3 __meetPt;
         bool __result_meet = false;
         //두 움직이는 선분이 만나는 하나의 교점. 교차객체에서 교점정보를 분석해 하나의 만나는 점을 찾음 
         public bool GetMeetPoint(out Vector3 meetPt)
@@ -1399,7 +1399,7 @@ namespace UtilGS9
 
             }
 
-            __meetPt = meetPt;
+            _meetPt = meetPt;
             __result_meet = result;
             return result;
         }
@@ -1535,7 +1535,7 @@ namespace UtilGS9
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
 
-            __meetPt = meetPt;
+            _meetPt = meetPt;
             __result_meet = result_contact;
 
             return result_contact;
@@ -1624,23 +1624,24 @@ namespace UtilGS9
             if (result_contact)
             {
                 //해당 루트에 바로적용된다 - 임시처리 
-                CalcTGuard(_minV, meetPt, root_0.position, root_0, _cur_seg_B);
+                //CalcTGuard(_minV, meetPt, root_0.position, root_0, _prev_seg_A, _cur_seg_B, out _cur_seg_A);
                 //CalcTGuard(_maxV, meetPt, root_1.position, root_1, _cur_seg_A);
             }
 
-            //_prev_seg_A = _cur_seg_A;
-            //_prev_seg_B = _cur_seg_B;
+            _prev_seg_A = _cur_seg_A;
+            _prev_seg_B = _cur_seg_B;
 
-            __meetPt = meetPt;
+            _meetPt = meetPt;
             __result_meet = result_contact;
 
             return result_contact;
         }
 
         //t0 구할대상 , t1 움직이는 T가드  
-        private void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_rate, 
-                                Vector3 pos_t0_root, Transform tr_t0_root,
-                                LineSegment3 t1_sub_end)
+        public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_rate, 
+                               Vector3 pos_t0_root, Transform tr_t0_root, Transform tr_t1_root,
+                                LineSegment3 t0_sub_start,
+                               LineSegment3 t1_sub_end) //out LineSegment3 newSeg)
         {
             //---------------------------------------
 
@@ -1676,7 +1677,14 @@ namespace UtilGS9
             Vector3 up_t = Vector3.Cross(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root);
             float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root, up_t);
 
-            tr_t0_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
+            //--------
+            tr_t1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
+
+            //Vector3 ori, last;
+            //Quaternion rota = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
+            //ori = rota * t0_sub_start.origin;
+            //last = rota * t0_sub_start.last;
+            //newSeg = new LineSegment3(ori, last);
 
             //---------------------------------------
 
