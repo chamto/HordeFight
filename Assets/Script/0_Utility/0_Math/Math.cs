@@ -1641,7 +1641,7 @@ namespace UtilGS9
         public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_rate, 
                                Vector3 pos_t0_root, Transform tr_t0_root, Transform tr_t1_root,
                                 LineSegment3 t0_sub_start,
-                               LineSegment3 t1_sub_end) //out LineSegment3 newSeg)
+                               LineSegment3 t1_sub_end, out LineSegment3 newSeg)
         {
             //---------------------------------------
 
@@ -1676,15 +1676,18 @@ namespace UtilGS9
 
             Vector3 up_t = Vector3.Cross(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root);
             float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root, up_t);
-
+            DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green);
             //--------
             tr_t1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
 
-            //Vector3 ori, last;
-            //Quaternion rota = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
-            //ori = rota * t0_sub_start.origin;
-            //last = rota * t0_sub_start.last;
-            //newSeg = new LineSegment3(ori, last);
+            //--------
+
+            Vector3 ori, last;
+            Quaternion rota = Quaternion.AngleAxis(angle_t, up_t);// * tr_t0_root.rotation;
+            ori = rota * t0_sub_start.origin;
+            last = rota * t0_sub_start.last;
+            newSeg = new LineSegment3(ori, last);
+            //DebugWide.DrawLine(ori, last, Color.white);
 
             //---------------------------------------
 
