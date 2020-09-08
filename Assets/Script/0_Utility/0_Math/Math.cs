@@ -1682,12 +1682,24 @@ namespace UtilGS9
 
             //--------
 
+            //trs부모 * trs자식 * vertex
+            //  2        1      대상정점   <=  정점에 적용되는 순서 , s크기 <= r회전 <= t이동 순으로 곱해진다  
+            //t0_sub_start = t부모 * trs자식 * vertex
+            //r부모 * t부모 * trs자식 * vertex : 현재 부모의 trs순서가 안맞아 문제가 생김 , r이 먼저 곱해져야 하는데 t가 먼저 곱해짐 
+            //r부모 * t0_sub_start : 이상태임
+
             Vector3 ori, last;
-            Quaternion rota = Quaternion.AngleAxis(angle_t, up_t);// * tr_t0_root.rotation;
-            ori = rota * t0_sub_start.origin;
-            last = rota * t0_sub_start.last;
+            Quaternion rota = Quaternion.AngleAxis(angle_t, up_t);
+
+            //trs 순서가 안맞아 문제가 있는 계산
+            //ori = rota * (t0_sub_start.origin);
+            //last = rota * (t0_sub_start.last);
+
+            //t부모를 제거한후 r부모를 적용한다. 그다음 t부모를 다시 적용한다 
+            ori = (rota * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root; 
+            last = (rota * (t0_sub_start.last - pos_t0_root)) + pos_t0_root; 
+
             newSeg = new LineSegment3(ori, last);
-            //DebugWide.DrawLine(ori, last, Color.white);
 
             //---------------------------------------
 
