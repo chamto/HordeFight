@@ -175,8 +175,10 @@ public class MovingModel
         //_movingSegment._prev_seg_B = _movingSegment._cur_seg_B;
 
         //=================================================
-        //_frame_sword_A.After_Update();
-        //_frame_sword_B.After_Update();
+        _frame_sword_A._cur_seg[idx] = _movingSegment._cur_seg_A;
+        _frame_sword_B._cur_seg[idx] = _movingSegment._cur_seg_B;
+        _frame_sword_A.After_Update();
+        _frame_sword_B.After_Update();
     }
 
     private const int ROOT0 = 0;
