@@ -38,6 +38,16 @@ public class Test_TGuardSphere3 : MonoBehaviour
         public Vector3 _mt_rate = ConstV.v3_zero;
         public Vector3 _mt_max = ConstV.v3_zero;
 
+        public LineSegment3 ToRoot_Prev()
+        {
+            return new LineSegment3(_T0_root_start.position, _T0_root_end.position);
+        }
+        public LineSegment3 ToRoot_Cur()
+        {
+            return new LineSegment3(_Tctl_root_start.position, _Tctl_root_end.position);
+        }
+
+
         public LineSegment3 ToSeg_Prev()
         {
             return new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
@@ -164,6 +174,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
             cur_A = _tgs0.ToSeg_Cur();
             prev_B = _tgs1.ToSeg_Prev();
             cur_B = _tgs1.ToSeg_Cur();
+
+            //prev_A = _tgs0.ToRoot_Prev();
+            //cur_A = _tgs0.ToRoot_Cur();
+            //prev_B = _tgs1.ToRoot_Prev();
+            //cur_B = _tgs1.ToRoot_Cur();
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
