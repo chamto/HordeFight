@@ -1638,10 +1638,10 @@ namespace UtilGS9
         }
 
         //t0 구할대상 , t1 움직이는 T가드  
-        public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_rate, 
-                               Vector3 pos_t0_root, Transform tr_t0_root, Transform tr_t1_root,
-                                LineSegment3 t0_sub_start,
-                               LineSegment3 t1_sub_end, out LineSegment3 newSeg)
+        public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_last, 
+                               Vector3 pos_t0_root,
+                                LineSegment3 t0_sub_start, LineSegment3 t1_sub_end, 
+                               out LineSegment3 newSeg, out Quaternion localRot)
         {
             //---------------------------------------
 
@@ -1657,7 +1657,7 @@ namespace UtilGS9
             float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction);
             if (value_sign > 0) value_sign = -1; else value_sign = 1;
 
-            Vector3 dir_seg_rate = meetPt_rate - t1_sub_end.origin;
+            Vector3 dir_seg_rate = meetPt_last - t1_sub_end.origin;
             Vector3 up_seg_rate = Vector3.Cross(ls_AB.direction, dir_seg_rate);
             float angle_seg_rate = UtilGS9.Geo.AngleSigned(ls_AB.direction, dir_seg_rate, up_seg_rate);
 
@@ -1678,7 +1678,8 @@ namespace UtilGS9
             float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root, up_t);
             DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green);
             //--------
-            tr_t1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
+
+            //tr_t1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
 
             //--------
 
@@ -1689,15 +1690,15 @@ namespace UtilGS9
             //r부모 * t0_sub_start : 이상태임
 
             Vector3 ori, last;
-            Quaternion rota = Quaternion.AngleAxis(angle_t, up_t);
+            localRot = Quaternion.AngleAxis(angle_t, up_t);
 
             //trs 순서가 안맞아 문제가 있는 계산
             //ori = rota * (t0_sub_start.origin);
             //last = rota * (t0_sub_start.last);
 
             //t부모를 제거한후 r부모를 적용한다. 그다음 t부모를 다시 적용한다 
-            ori = (rota * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root; 
-            last = (rota * (t0_sub_start.last - pos_t0_root)) + pos_t0_root; 
+            ori = (localRot * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root; 
+            last = (localRot * (t0_sub_start.last - pos_t0_root)) + pos_t0_root; 
 
             newSeg = new LineSegment3(ori, last);
 
