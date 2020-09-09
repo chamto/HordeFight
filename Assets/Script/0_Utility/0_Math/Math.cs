@@ -1625,41 +1625,20 @@ namespace UtilGS9
             __localRota_B = Quaternion.identity;
             if (result_contact)
             {
-
-                //CalcTGuard(_maxV, _minV, root_0.position, _cur_seg_A, _cur_seg_B, out _cur_seg_A, out __localRota_A);
-                //CalcTGuard(_minV, _maxV, root_1.position, _cur_seg_B, _cur_seg_A, out _cur_seg_B, out __localRota_B);
-
                 LineSegment3 newSegA, newSegB;
-                CalcTGuard_FirstToLast(_maxV, _minV, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                CalcTGuard_FirstToLast(_maxV, _minV, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+
+                //CalcTGuard(_maxV, _minV, root_0.position, _prev_seg_A, _cur_seg_B, out newSegA, out __localRota_A);
+                //CalcTGuard(_maxV, _minV, root_1.position, _prev_seg_B, _cur_seg_A, out newSegB, out __localRota_B);
+
+                meetPt = _maxV + (_minV - _maxV) * rateAtoB;
+                Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
+                //Vector3 meetRate = CalcTGuard_MeetPt(_maxV, _minV, root_1.position, _cur_seg_A);
+                CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                CalcTGuard_FirstToLast(_maxV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+
                 _cur_seg_A = newSegA;
                 _cur_seg_B = newSegB;
 
-                if (false == __isSeg_A)
-                {
-                    //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
-
-                }
-                if (false == __isSeg_B)
-                {
-                    //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
-
-                }
-
-
-                if (true == is_cross_contact)
-                {
-                    if (true == __isSeg_A)
-                    {
-                        //CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV, meetPt, _cur_seg_A, out _cur_seg_A);
-
-                    }
-                    else if (true == __isSeg_B)
-                    {
-                        //CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
-
-                    }
-                }
             }
 
             _prev_seg_A = _cur_seg_A;
@@ -1740,6 +1719,43 @@ namespace UtilGS9
             new_t0_sub = new LineSegment3(ori, last);
 
             //---------------------------------------
+
+        }
+
+        public Vector3 CalcTGuard_MeetPt(Vector3 meetPt_first, Vector3 meetPt_last,
+                               Vector3 pos_t0_root,
+                                LineSegment3 t1_sub_end)
+        {
+            LineSegment3 ls_AB = new LineSegment3(t1_sub_end.origin, pos_t0_root);
+            Vector3 dir_rootS_min = meetPt_first - pos_t0_root;
+
+            //코사인 제2법칙 이용
+            float c = ls_AB.Length(); //1# root_start , seg_start 사이의 거리 
+            float a = (dir_rootS_min).magnitude; //2# root_start , sub 선분의 접촉점 사이의 거리 
+            float dt2 = c * c - a * a;
+
+            //근의공식 부호 결정 
+            float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction);
+            if (value_sign > 0) value_sign = -1; else value_sign = 1;
+
+            Vector3 dir_seg_rate = meetPt_last - t1_sub_end.origin;
+            Vector3 up_seg_rate = Vector3.Cross(ls_AB.direction, dir_seg_rate);
+            float angle_seg_rate = UtilGS9.Geo.AngleSigned(ls_AB.direction, dir_seg_rate, up_seg_rate);
+
+            float cosA = (float)Math.Cos(angle_seg_rate * Mathf.Deg2Rad);
+            float dt1 = -2f * c * cosA; //dt1 : -2cCosA
+
+            //이차방정식의 근의공식 이용 , disc = 판별값 
+            float disc = dt1 * dt1 - 4 * dt2;
+            float b_1 = (-dt1 + value_sign * (float)Math.Sqrt(disc)) / 2f; //가까운점 
+
+            //---------------------------------------
+
+            Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_seg_rate, up_seg_rate) * ls_AB.direction;
+            Vector3 meetPt_rate2 = t1_sub_end.origin + VOp.Normalize(new_dir_ls_seg1) * b_1;
+            DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green); //chamto test
+
+            return meetPt_rate2;
 
         }
 
