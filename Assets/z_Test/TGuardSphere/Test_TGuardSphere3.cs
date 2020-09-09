@@ -62,7 +62,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             DebugWide.DrawLine(_Tctl_root_start.position, _Tctl_root_end.position, Color.gray);
             DebugWide.DrawLine(_Tctl_sub_start.position, _Tctl_sub_end.position, Color.gray);
-            DebugWide.DrawCircle(_Tctl_root_end.position, 0.05f, Color.gray);
+            //DebugWide.DrawCircle(_Tctl_root_end.position, 0.05f, Color.gray);
 
             //-----------------
 
@@ -76,9 +76,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             //-----------------
 
-            DebugWide.DrawCircle(_mt_min, 0.02f, Color.red);
-            DebugWide.DrawCircle(_mt_rate, 0.04f, Color.red);
-            DebugWide.DrawCircle(_mt_max, 0.06f, Color.red);
+            //DebugWide.DrawCircle(_mt_min, 0.02f, Color.red);
+            //DebugWide.DrawCircle(_mt_rate, 0.04f, Color.red);
+            //DebugWide.DrawCircle(_mt_max, 0.06f, Color.red);
 
             //DebugWide.DrawLine(_seg1_start.position, _mt1, Color.red);
             //DebugWide.DrawLine(_T0_root_start.position, _mt_max, Color.red);
@@ -168,19 +168,14 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
             bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T1_root, _tgs1._T1_root);
-
-            //LineSegment3 newSeg = new LineSegment3();
-            //Quaternion localRot = Quaternion.identity;
             if(true == contact)
             {
-                //_movTgs.CalcTGuard(_movTgs._maxV, _movTgs._minV, _tgs0._T0_root.position, 
-                                   //cur_A, cur_B, out newSeg, out localRot);
+                //_tgs0._mt_min = _movTgs._minV;
+                //_tgs0._mt_rate = _movTgs._meetPt;
+                //_tgs0._mt_max = _movTgs._maxV; 
 
-                _tgs0._mt_min = _movTgs._minV;
-                _tgs0._mt_rate = _movTgs._meetPt;
-                _tgs0._mt_max = _movTgs._maxV; 
-
-                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                //_tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
 
             }
 
@@ -188,7 +183,13 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _tgs0.Draw();
             _tgs1.Draw();    
-            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); //계산된 선분이 실제적용된것과 일치하는지 확인  
+            DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+            DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+            DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
+            //계산된 선분이 실제적용된것과 일치하는지 확인  
+            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); 
+            DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
         }
 
     }

@@ -1627,8 +1627,9 @@ namespace UtilGS9
                 //CalcTGuard(_minV, meetPt, root_0.position, root_0, _prev_seg_A, _cur_seg_B, out _cur_seg_A);
                 //CalcTGuard(_maxV, meetPt, root_1.position, root_1, _cur_seg_A);
 
-                CalcTGuard(_maxV, _minV, root_0.position,
-                           _cur_seg_A, _cur_seg_B, out _cur_seg_A, out __localRota_A);
+                //CalcTGuard(_maxV, _minV, root_0.position, _cur_seg_A, _cur_seg_B, out _cur_seg_A, out __localRota_A);
+
+                CalcTGuard(_minV, _maxV, root_1.position, _cur_seg_B, _cur_seg_A, out _cur_seg_B, out __localRota_B);
 
                 if (false == __isSeg_A)
                 {
