@@ -1621,15 +1621,19 @@ namespace UtilGS9
                 }
             }
 
+            __localRota_A = Quaternion.identity;
+            __localRota_B = Quaternion.identity;
             if (result_contact)
             {
-                //해당 루트에 바로적용된다 - 임시처리 
-                //CalcTGuard(_minV, meetPt, root_0.position, root_0, _prev_seg_A, _cur_seg_B, out _cur_seg_A);
-                //CalcTGuard(_maxV, meetPt, root_1.position, root_1, _cur_seg_A);
 
                 //CalcTGuard(_maxV, _minV, root_0.position, _cur_seg_A, _cur_seg_B, out _cur_seg_A, out __localRota_A);
+                //CalcTGuard(_minV, _maxV, root_1.position, _cur_seg_B, _cur_seg_A, out _cur_seg_B, out __localRota_B);
 
-                CalcTGuard(_minV, _maxV, root_1.position, _cur_seg_B, _cur_seg_A, out _cur_seg_B, out __localRota_B);
+                LineSegment3 newSegA, newSegB;
+                CalcTGuard_FirstToLast(_maxV, _minV, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                CalcTGuard_FirstToLast(_maxV, _minV, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+                _cur_seg_A = newSegA;
+                _cur_seg_B = newSegB;
 
                 if (false == __isSeg_A)
                 {
@@ -1674,7 +1678,7 @@ namespace UtilGS9
         public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_last, 
                                Vector3 pos_t0_root,
                                 LineSegment3 t0_sub_start, LineSegment3 t1_sub_end, 
-                               out LineSegment3 newSeg, out Quaternion localRot)
+                               out LineSegment3 new_t0_sub, out Quaternion localRot)
         {
             //---------------------------------------
 
@@ -1704,26 +1708,26 @@ namespace UtilGS9
             //---------------------------------------
 
             Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_seg_rate, up_seg_rate) * ls_AB.direction;
-
-            Vector3 meetPt_rate2 = t1_sub_end.origin + new_dir_ls_seg1.normalized * b_1;
+            Vector3 meetPt_rate2 = t1_sub_end.origin + VOp.Normalize(new_dir_ls_seg1) * b_1;
+            DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green); //chamto test
 
             Vector3 up_t = Vector3.Cross(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root);
             float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_rate2 - pos_t0_root, up_t);
-            DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green);
+
             //--------
 
             //tr_t1_root.rotation = Quaternion.AngleAxis(angle_t, up_t) * tr_t0_root.rotation;
 
             //--------
 
+            Vector3 ori, last;
+            localRot = Quaternion.AngleAxis(angle_t, up_t);
+
             //trs부모 * trs자식 * vertex
             //  2        1      대상정점   <=  정점에 적용되는 순서 , s크기 <= r회전 <= t이동 순으로 곱해진다  
             //t0_sub_start = t부모 * trs자식 * vertex
             //r부모 * t부모 * trs자식 * vertex : 현재 부모의 trs순서가 안맞아 문제가 생김 , r이 먼저 곱해져야 하는데 t가 먼저 곱해짐 
             //r부모 * t0_sub_start : 이상태임
-
-            Vector3 ori, last;
-            localRot = Quaternion.AngleAxis(angle_t, up_t);
 
             //trs 순서가 안맞아 문제가 있는 계산
             //ori = rota * (t0_sub_start.origin);
@@ -1733,12 +1737,37 @@ namespace UtilGS9
             ori = (localRot * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root; 
             last = (localRot * (t0_sub_start.last - pos_t0_root)) + pos_t0_root; 
 
-            newSeg = new LineSegment3(ori, last);
+            new_t0_sub = new LineSegment3(ori, last);
 
             //---------------------------------------
 
         }
 
+        public void CalcTGuard_FirstToLast(Vector3 meetPt_first, Vector3 meetPt_last,
+                               Vector3 pos_t0_root,
+                                LineSegment3 t0_sub_start,
+                               out LineSegment3 new_t0_sub, out Quaternion localRot)
+        {
+            //---------------------------------------
+
+
+            Vector3 up_t = Vector3.Cross(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root);
+            float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root, up_t);
+            localRot = Quaternion.AngleAxis(angle_t, up_t);
+
+            //--------
+
+            Vector3 ori, last;
+
+            //t부모를 제거한후 r부모를 적용한다. 그다음 t부모를 다시 적용한다 
+            ori = (localRot * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root;
+            last = (localRot * (t0_sub_start.last - pos_t0_root)) + pos_t0_root;
+
+            new_t0_sub = new LineSegment3(ori, last);
+
+            //---------------------------------------
+
+        }
 
         //==================================================
 
