@@ -1626,6 +1626,35 @@ namespace UtilGS9
                 //해당 루트에 바로적용된다 - 임시처리 
                 //CalcTGuard(_minV, meetPt, root_0.position, root_0, _prev_seg_A, _cur_seg_B, out _cur_seg_A);
                 //CalcTGuard(_maxV, meetPt, root_1.position, root_1, _cur_seg_A);
+
+                CalcTGuard(_maxV, _minV, root_0.position,
+                           _cur_seg_A, _cur_seg_B, out _cur_seg_A, out __localRota_A);
+
+                if (false == __isSeg_A)
+                {
+                    //CalcSegment(allowFixed_a, fixedOriginPt_a, meetPt, _prev_seg_A, _cur_seg_A, out _cur_seg_A);
+
+                }
+                if (false == __isSeg_B)
+                {
+                    //CalcSegment(allowFixed_b, fixedOriginPt_b, meetPt, _prev_seg_B, _cur_seg_B, out _cur_seg_B);
+
+                }
+
+
+                if (true == is_cross_contact)
+                {
+                    if (true == __isSeg_A)
+                    {
+                        //CalcSegment(allowFixed_a, fixedOriginPt_a, _maxV, meetPt, _cur_seg_A, out _cur_seg_A);
+
+                    }
+                    else if (true == __isSeg_B)
+                    {
+                        //CalcSegment(allowFixed_b, fixedOriginPt_b, _minV, meetPt, _cur_seg_B, out _cur_seg_B);
+
+                    }
+                }
             }
 
             _prev_seg_A = _cur_seg_A;
@@ -1636,6 +1665,9 @@ namespace UtilGS9
 
             return result_contact;
         }
+
+        public Quaternion __localRota_A = Quaternion.identity;
+        public Quaternion __localRota_B = Quaternion.identity;
 
         //t0 구할대상 , t1 움직이는 T가드  
         public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_last, 

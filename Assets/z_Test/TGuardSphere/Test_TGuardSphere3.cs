@@ -169,18 +169,18 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T1_root, _tgs1._T1_root);
 
-            LineSegment3 newSeg = new LineSegment3();
-            Quaternion localRot = Quaternion.identity;
+            //LineSegment3 newSeg = new LineSegment3();
+            //Quaternion localRot = Quaternion.identity;
             if(true == contact)
             {
-                _movTgs.CalcTGuard(_movTgs._maxV, _movTgs._minV, _tgs0._T0_root.position, 
-                                   cur_A, cur_B, out newSeg, out localRot);
+                //_movTgs.CalcTGuard(_movTgs._maxV, _movTgs._minV, _tgs0._T0_root.position, 
+                                   //cur_A, cur_B, out newSeg, out localRot);
 
                 _tgs0._mt_min = _movTgs._minV;
                 _tgs0._mt_rate = _movTgs._meetPt;
                 _tgs0._mt_max = _movTgs._maxV; 
 
-                _tgs0._T1_root.rotation = localRot * _tgs0._T0_root.rotation; //실제적용 
+                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
 
             }
 
@@ -188,7 +188,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _tgs0.Draw();
             _tgs1.Draw();    
-            DebugWide.DrawLine(newSeg.origin, newSeg.last, Color.white); //계산된 선분이 실제적용된것과 일치하는지 확인  
+            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); //계산된 선분이 실제적용된것과 일치하는지 확인  
         }
 
     }
