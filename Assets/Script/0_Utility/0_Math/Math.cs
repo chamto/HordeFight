@@ -1630,14 +1630,22 @@ namespace UtilGS9
                 //CalcTGuard(_maxV, _minV, root_0.position, _prev_seg_A, _cur_seg_B, out newSegA, out __localRota_A);
                 //CalcTGuard(_maxV, _minV, root_1.position, _prev_seg_B, _cur_seg_A, out newSegB, out __localRota_B);
 
-                meetPt = _maxV + (_minV - _maxV) * rateAtoB;
-                Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
-                //Vector3 meetRate = CalcTGuard_MeetPt(_maxV, _minV, root_1.position, _cur_seg_A);
-                CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                CalcTGuard_FirstToLast(_maxV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-
-                _cur_seg_A = newSegA;
-                _cur_seg_B = newSegB;
+                //meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                //Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_0.position, _cur_seg_B);
+                if (true == __isSeg_A)
+                {
+                    meetPt = _maxV + (_minV - _maxV) * rateAtoB;
+                    Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
+                    CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    _cur_seg_A = newSegA;
+                }
+                else if (true == __isSeg_B)
+                {
+                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                    Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_1.position, _cur_seg_A);
+                    CalcTGuard_FirstToLast(_minV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+                    _cur_seg_B = newSegB;
+                }
 
             }
 
