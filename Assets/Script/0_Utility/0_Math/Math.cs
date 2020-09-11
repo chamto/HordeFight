@@ -1625,27 +1625,47 @@ namespace UtilGS9
             __localRota_B = Quaternion.identity;
             if (result_contact)
             {
-                LineSegment3 newSegA, newSegB;
+                LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
                 //CalcTGuard(_maxV, _minV, root_0.position, _prev_seg_A, _cur_seg_B, out newSegA, out __localRota_A);
                 //CalcTGuard(_maxV, _minV, root_1.position, _prev_seg_B, _cur_seg_A, out newSegB, out __localRota_B);
+
+
+                if(false == __isSeg_A)
+                {
+                    Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
+                    CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                }
+                if(false == __isSeg_B)
+                {
+
+                    //Vector3 firstPt = CalcTGuard_FirstPt2(meetPt, _prev_seg_B, _cur_seg_B); //오차때문에 meetPt에서 못만난다 
+                    Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_1.position, _prev_seg_B);
+                    CalcTGuard_FirstToLast(firstPt, meetPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+
+                    //meetPt = _maxV + (_minV - _maxV) * rateAtoB; //1 -> min
+                    //Vector3 meetRate = CalcTGuard_MeetPt(firstPt, meetPt, root_1.position, _cur_seg_A);
+                    //CalcTGuard_FirstToLast(firstPt, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+
+                }
 
                 //meetPt = _minV + (_maxV - _minV) * rateAtoB;
                 //Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_0.position, _cur_seg_B);
                 if (true == __isSeg_A)
                 {
-                    meetPt = _maxV + (_minV - _maxV) * rateAtoB;
-                    Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
-                    CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                    _cur_seg_A = newSegA;
+                    //meetPt = _maxV + (_minV - _maxV) * rateAtoB;
+                    //Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
+                    //CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 else if (true == __isSeg_B)
                 {
-                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
-                    Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_1.position, _cur_seg_A);
-                    CalcTGuard_FirstToLast(_minV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-                    _cur_seg_B = newSegB;
+                    //meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                    //Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_1.position, _cur_seg_A);
+                    //CalcTGuard_FirstToLast(_minV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
                 }
+
+                _cur_seg_A = newSegA;
+                _cur_seg_B = newSegB;
 
             }
 
@@ -1745,6 +1765,7 @@ namespace UtilGS9
             //근의공식 부호 결정 
             float value_sign = Vector3.Dot(dir_rootS_min, -ls_AB.direction);
             if (value_sign > 0) value_sign = -1; else value_sign = 1;
+            //value_sign *= -1; //chamto test
 
             Vector3 dir_seg_rate = meetPt_last - t1_sub_end.origin;
             Vector3 up_seg_rate = Vector3.Cross(ls_AB.direction, dir_seg_rate);
@@ -1763,8 +1784,105 @@ namespace UtilGS9
             Vector3 meetPt_rate2 = t1_sub_end.origin + VOp.Normalize(new_dir_ls_seg1) * b_1;
             DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green); //chamto test
 
+            DebugWide.DrawLine(meetPt_rate2, pos_t0_root, Color.red); //a
+            DebugWide.DrawLine(meetPt_rate2, t1_sub_end.origin, Color.red); //b
+            DebugWide.DrawLine(pos_t0_root, t1_sub_end.origin, Color.red); //c
+
+            float d_a = (meetPt_rate2 - pos_t0_root).magnitude;
+            float d_b = (meetPt_rate2 - t1_sub_end.origin).magnitude;
+            float d_c = (pos_t0_root - t1_sub_end.origin).magnitude;
+            DebugWide.LogBlue(d_a + "  " + d_b + "   " + d_c);
+            DebugWide.LogBlue(value_sign + "   " + b_1 + "   " + disc);
+
+            DebugWide.DrawCircle(pos_t0_root, d_a, Color.green);
+
             return meetPt_rate2;
 
+        }
+
+        public Vector3 CalcTGuard_FirstPt2(Vector3 meetPt, LineSegment3 start, LineSegment3 end)
+        {
+            Vector3 origin, last;
+            float len_start = start.direction.magnitude;
+            Vector3 v_up = end.last - start.last;
+            Vector3 v_down = end.origin - start.origin;
+            float len_up = v_up.sqrMagnitude;
+            float len_down = v_down.sqrMagnitude;
+
+            Vector3 n_left = VOp.Normalize(start.direction);
+            Vector3 n_right = VOp.Normalize(end.direction);
+            float len_proj_left = Vector3.Dot(n_left, (meetPt - start.origin));
+            float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
+            float len_perp_left = ((n_left * len_proj_left + start.origin) - meetPt).magnitude;
+            float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
+            float rate = len_perp_left / (len_perp_left + len_perp_right);
+
+
+            //NaN 예외처리 추가 
+            if (Misc.IsZero(len_perp_left + len_perp_right))
+            {
+                //DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
+                rate = 0;
+            }
+
+
+            //작은쪽을 선택 
+            if (len_up > len_down)
+            {
+                origin = v_down * rate + start.origin;
+
+                last = VOp.Normalize(meetPt - origin) * len_start + origin;
+
+            }
+            else
+            {
+                last = v_up * rate + start.last;
+
+                origin = VOp.Normalize(meetPt - last) * len_start + last;
+            }
+
+            Vector3 fpt = len_proj_left * n_left + start.origin;
+
+            //DebugWide.DrawLine(origin, last, Color.red);
+            DebugWide.DrawCircle(origin, 0.01f, Color.black);
+            DebugWide.DrawCircle(last, 0.01f, Color.black);
+            DebugWide.DrawCircle(fpt, 0.08f, Color.cyan); //chamto test 
+
+            return fpt;
+        }
+
+        public Vector3 CalcTGuard_FirstPt(Vector3 meetPt, Vector3 pos_t0_root,
+                                LineSegment3 t0_sub_prev)
+        {
+            float a = (meetPt - pos_t0_root).magnitude;
+
+            float sqrlen0 = (t0_sub_prev.origin - meetPt).sqrMagnitude;
+            float sqrlen1 = (t0_sub_prev.last - meetPt).sqrMagnitude;
+
+            LineSegment3 seg = t0_sub_prev;
+            if(sqrlen0 > sqrlen1)
+            {
+                seg.origin = t0_sub_prev.last;
+                seg.last = t0_sub_prev.origin;
+            }
+
+            Vector3 pt_first;
+            if(true == Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first))
+            {
+                DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
+
+                //DebugWide.DrawLine(pos_t0_root, meetPt, Color.cyan);
+                //DebugWide.DrawLine(pos_t0_root, pt_first, Color.cyan);
+                //float aa = (pt_first - pos_t0_root).magnitude;
+
+                //DebugWide.DrawCircle(pos_t0_root, a, Color.cyan); //chamto test
+                //DebugWide.DrawCircle(pos_t0_root, aa, Color.black); //chamto test
+
+                //DebugWide.LogBlue(a + "  " + aa);
+            }
+
+
+            return pt_first;
         }
 
         public void CalcTGuard_FirstToLast(Vector3 meetPt_first, Vector3 meetPt_last,
@@ -1792,6 +1910,8 @@ namespace UtilGS9
             //---------------------------------------
 
         }
+
+
 
         //==================================================
 
