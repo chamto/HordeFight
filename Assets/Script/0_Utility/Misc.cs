@@ -2126,7 +2126,7 @@ namespace UtilGS9
         static public bool IntersectLineSegment(Vector3 sphere_center, float sphere_radius, LineSegment3 segment, out Vector3 intersection_firstPoint)
         {
             Vector3 sect;
-            bool hit = IntersectRay(sphere_center, sphere_radius, segment.origin, segment.direction, out sect);
+            bool hit = IntersectRay2(sphere_center, sphere_radius, segment.origin, VOp.Normalize(segment.direction), out sect);
 
             intersection_firstPoint = ConstV.v3_zero;
             if (hit)
