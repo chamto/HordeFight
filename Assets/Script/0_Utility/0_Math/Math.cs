@@ -1633,8 +1633,8 @@ namespace UtilGS9
 
                 //if(false == __isSeg_A)
                 {
-                    Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
-                    CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    //Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
+                    //CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
                 {
@@ -1886,12 +1886,13 @@ namespace UtilGS9
                 //Vector3 n_left = VOp.Normalize(t0_sub_prev.direction);
                 //float len_proj_left = Vector3.Dot(n_left, (meetPt - t0_sub_prev.origin));
                 //pt_first = len_proj_left * n_left + t0_sub_prev.origin;
-                //float aa = (pt_first - pos_t0_root).magnitude;
-                //DebugWide.LogBlue(a + "   " + aa);
+                float aa = (pt_first - pos_t0_root).magnitude;
+                DebugWide.LogBlue(a + "   " + aa);
                 DebugWide.DrawCircle(pt_first, 0.08f, Color.yellow); //chamto test    
             }
             //DebugWide.DrawCircle(pos_t0_root, a, Color.cyan); //chamto test
 
+            //DebugWide.LogBlue(pt_first);
 
             return pt_first;
         }

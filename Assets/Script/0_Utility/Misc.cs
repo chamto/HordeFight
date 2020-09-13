@@ -2061,6 +2061,7 @@ namespace UtilGS9
             if (proj < 0.0f && wsq > rsq || dsq < 0.0f)
             {
                 //원과 교차하지 않는다면, 원과 가장 가까운 선분위의 점을 반환 
+                //ray_origin + ( v * proj)
                 intersection_firstPoint = VOp.Plus(ray_origin, VOp.Multiply(v, proj)); 
                 return false;
             }
@@ -2128,12 +2129,12 @@ namespace UtilGS9
             Vector3 sect;
             bool hit = IntersectRay2(sphere_center, sphere_radius, segment.origin, VOp.Normalize(segment.direction), out sect);
 
-            intersection_firstPoint = ConstV.v3_zero;
+            intersection_firstPoint = sect;
             if (hit)
             {
                 float d = VOp.Minus(segment.origin , sect).sqrMagnitude;
                 if (d > (segment.direction.sqrMagnitude)) return false;
-                intersection_firstPoint = sect;
+                //intersection_firstPoint = sect;
                 return true;
             }
             return false;
