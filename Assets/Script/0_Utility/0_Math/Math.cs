@@ -1631,12 +1631,12 @@ namespace UtilGS9
                 //CalcTGuard(_maxV, _minV, root_1.position, _prev_seg_B, _cur_seg_A, out newSegB, out __localRota_B);
 
 
-                if(false == __isSeg_A)
+                //if(false == __isSeg_A)
                 {
                     Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
                     CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
-                if(false == __isSeg_B)
+                //if(false == __isSeg_B)
                 {
 
                     //Vector3 firstPt = CalcTGuard_FirstPt2(meetPt, _prev_seg_B, _cur_seg_B); //오차때문에 meetPt에서 못만난다 
@@ -1869,17 +1869,28 @@ namespace UtilGS9
             Vector3 pt_first;
             if(true == Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first))
             {
-                DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
+                
 
                 //DebugWide.DrawLine(pos_t0_root, meetPt, Color.cyan);
                 //DebugWide.DrawLine(pos_t0_root, pt_first, Color.cyan);
                 //float aa = (pt_first - pos_t0_root).magnitude;
 
-                //DebugWide.DrawCircle(pos_t0_root, a, Color.cyan); //chamto test
+
                 //DebugWide.DrawCircle(pos_t0_root, aa, Color.black); //chamto test
 
                 //DebugWide.LogBlue(a + "  " + aa);
+
+                DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
+            }else
+            {
+                //Vector3 n_left = VOp.Normalize(t0_sub_prev.direction);
+                //float len_proj_left = Vector3.Dot(n_left, (meetPt - t0_sub_prev.origin));
+                //pt_first = len_proj_left * n_left + t0_sub_prev.origin;
+                //float aa = (pt_first - pos_t0_root).magnitude;
+                //DebugWide.LogBlue(a + "   " + aa);
+                DebugWide.DrawCircle(pt_first, 0.08f, Color.yellow); //chamto test    
             }
+            //DebugWide.DrawCircle(pos_t0_root, a, Color.cyan); //chamto test
 
 
             return pt_first;
@@ -1892,11 +1903,16 @@ namespace UtilGS9
         {
             //---------------------------------------
 
-
+            float angle_t = 0;
+            localRot = Quaternion.identity;
             Vector3 up_t = Vector3.Cross(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root);
-            float angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root, up_t);
-            localRot = Quaternion.AngleAxis(angle_t, up_t);
+            if(false == Misc.IsZero(up_t))
+            {
+                angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root, up_t);
+                localRot = Quaternion.AngleAxis(angle_t, up_t);    
+            }
 
+            //DebugWide.LogBlue(" --  "+ up_t + "  " + angle_t);
             //--------
 
             Vector3 ori, last;
