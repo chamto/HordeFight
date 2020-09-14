@@ -936,10 +936,17 @@ namespace UtilGS9
             }
         }
 
+        //!!! count 2 일때, 즉 선분검사시 제대로 정렬을 못해줌. 대체함수 사용하기 
         //count : 삼각형 vs 삼각형의 찾은 접촉점(최대6개)에 대하여 검색할 최대 개수 지정 , 삼각형 2개가 합쳐진 사각형이 대상이 아님  
         // 예) 찾은 접촉점이 점과 선분에 해당한다면 개수를 2로 지정 , 3이상은 평면
         public bool GetMinMax_ContactPt(Vector3 comparisonSt, out Vector3 minV, out Vector3 maxV , int count)
         {
+
+            //_intr_0_2.Draw(Color.black);
+            //_intr_0_3.Draw(Color.black);
+            //_intr_1_2.Draw(Color.black);
+            //_intr_1_3.Draw(Color.black);
+
             bool result = false;
             minV = ConstV.v3_zero;
             maxV = ConstV.v3_zero;
@@ -947,6 +954,16 @@ namespace UtilGS9
             //int count = 2;
             for (int i = 0; i < count;i++)
             {
+                //DebugWide.DrawLine(comparisonSt, _intr_0_2.mPoint[i], Color.green);
+                //DebugWide.DrawLine(comparisonSt, _intr_0_3.mPoint[i], Color.green);
+                //DebugWide.DrawLine(comparisonSt, _intr_1_2.mPoint[i], Color.green);
+                //DebugWide.DrawLine(comparisonSt, _intr_1_3.mPoint[i], Color.green);
+                //DebugWide.PrintText(_intr_0_2.mPoint[i], Color.green , (comparisonSt- _intr_0_2.mPoint[i]).magnitude + "");
+                //DebugWide.PrintText(_intr_0_3.mPoint[i], Color.green , (comparisonSt - _intr_0_3.mPoint[i]).magnitude + "");
+                //DebugWide.PrintText(_intr_1_2.mPoint[i], Color.green , (comparisonSt - _intr_1_2.mPoint[i]).magnitude + "");
+                //DebugWide.PrintText(_intr_1_3.mPoint[i], Color.green , (comparisonSt - _intr_1_3.mPoint[i]).magnitude + "");
+
+                
                 //교점이 점 , 선분일때 처리 
                 if(i < _intr_0_2.mQuantity)
                 {
@@ -974,6 +991,86 @@ namespace UtilGS9
                 }
             }
             return result;
+        }
+
+        //선분과 점 처리 전용함수 
+        public bool GetMinMax_Segement(Vector3 dir, out Vector3 min , out Vector3 max)
+        {
+            //_tetr01.Draw(Color.blue);
+            //_tetr23.Draw(Color.magenta);
+
+            bool contact = false;
+            Vector3[] arr = new Vector3[8];
+            arr[0] = _intr_0_2.mPoint[0];
+            arr[1] = _intr_0_2.mPoint[1];    
+            arr[2] = _intr_0_3.mPoint[0];
+            arr[3] = _intr_0_3.mPoint[1];
+            arr[4] = _intr_1_2.mPoint[0];
+            arr[5] = _intr_1_2.mPoint[1];
+            arr[6] = _intr_1_3.mPoint[0];
+            arr[7] = _intr_1_3.mPoint[1];
+
+            min = ConstV.v3_zero;
+            max = ConstV.v3_zero;
+
+            if (1 <= _intr_0_2.mQuantity || 1 <= _intr_0_3.mQuantity || 1 <= _intr_1_2.mQuantity || 1 <= _intr_1_3.mQuantity)
+            {
+                contact = true;
+
+                //선택정렬을 한다 
+                Vector3 temp;
+                for (int a = 1; a < 8; a++)
+                {
+                    for (int i = a; i < 8; i++)
+                    {
+                        if (0 > Vector3.Dot(dir, arr[i] - arr[a - 1]))
+                        {
+                            temp = arr[a - 1];
+                            arr[a - 1] = arr[i];
+                            arr[i] = temp;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 8; i++)
+                {
+                    //DebugWide.LogBlue(i + "  " + arr[i]);
+                    if (!Misc.IsZero(arr[i]))
+                    {
+                        min = arr[i];
+                        break;
+                    }
+                }
+                for (int i = 0; i < 8; i++)
+                {
+                    if (!Misc.IsZero(arr[7 - i]))
+                    {
+                        max = arr[7 - i];
+                        break;
+                    }
+                }
+            }//end if
+                
+            if(true == contact)
+            {
+                for (int i = 0; i < 8; i++)
+                {
+                    Color color = Color.green;
+                    if (Misc.IsZero(arr[i]))
+                        color = Color.black;
+                    DebugWide.DrawCircle(arr[i], 0.01f + 0.005f * i, color);
+                }
+                DebugWide.DrawCircle(min, 0.03f, Color.red);
+                DebugWide.DrawCircle(max, 0.07f, Color.red);
+
+                _intr_0_2.Draw(Color.black);
+                _intr_0_3.Draw(Color.black);
+                _intr_1_2.Draw(Color.black);
+                _intr_1_3.Draw(Color.black);
+            }
+
+            return contact;
+
         }
 
         // ** meetPt 를 지나는 적당한(근사값) 선분 구하기 ** 
@@ -1599,8 +1696,12 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    result_contact = GetMinMax_Segement(__dir_A, out _minV, out _maxV); 
+                    //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
+                    //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
                     is_cross_contact = true;
+
+                    //DebugWide.LogBlue(_minV + " " + _maxV);
 
                     //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                     if (true == __isSeg_A)
@@ -1615,6 +1716,7 @@ namespace UtilGS9
                     }
 
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
+
 
                     //if(result)
                     //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
@@ -1633,8 +1735,8 @@ namespace UtilGS9
 
                 //if(false == __isSeg_A)
                 {
-                    //Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
-                    //CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
+                    CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
                 {
@@ -1869,30 +1971,16 @@ namespace UtilGS9
             Vector3 pt_first;
             if(true == Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first))
             {
-                
-
-                //DebugWide.DrawLine(pos_t0_root, meetPt, Color.cyan);
-                //DebugWide.DrawLine(pos_t0_root, pt_first, Color.cyan);
-                //float aa = (pt_first - pos_t0_root).magnitude;
-
-
-                //DebugWide.DrawCircle(pos_t0_root, aa, Color.black); //chamto test
-
-                //DebugWide.LogBlue(a + "  " + aa);
-
                 DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
             }else
             {
                 //Vector3 n_left = VOp.Normalize(t0_sub_prev.direction);
                 //float len_proj_left = Vector3.Dot(n_left, (meetPt - t0_sub_prev.origin));
                 //pt_first = len_proj_left * n_left + t0_sub_prev.origin;
-                float aa = (pt_first - pos_t0_root).magnitude;
-                DebugWide.LogBlue(a + "   " + aa);
+                //float aa = (pt_first - pos_t0_root).magnitude;
+                //DebugWide.LogBlue(a + "   " + aa);
                 DebugWide.DrawCircle(pt_first, 0.08f, Color.yellow); //chamto test    
             }
-            //DebugWide.DrawCircle(pos_t0_root, a, Color.cyan); //chamto test
-
-            //DebugWide.LogBlue(pt_first);
 
             return pt_first;
         }
