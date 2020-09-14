@@ -685,13 +685,13 @@ namespace UtilGS9
             {
                 case eIntersectionType.POINT:
                     {
-                        DebugWide.DrawCircle(mPoint[0], 0.05f, color);
+                        DebugWide.DrawCircle(mPoint[0], 0.01f, color);
                     }
                     break;
                 case eIntersectionType.SEGMENT:
                     {
-                        DebugWide.DrawCircle(mPoint[0], 0.05f, color);
-                        DebugWide.DrawCircle(mPoint[1], 0.05f, color);
+                        DebugWide.DrawCircle(mPoint[0], 0.01f, color);
+                        DebugWide.DrawCircle(mPoint[1], 0.01f, color);
                         DebugWide.DrawLine(mPoint[0], mPoint[1], color);
 
                     }
@@ -727,6 +727,7 @@ namespace UtilGS9
             //검사전 초기화 
             mQuantity = 0;
             mIntersectionType = eIntersectionType.EMPTY;
+            for (int a = 0; a < 6; a++) mPoint[a] = ConstV.v3_zero;
             //----------
 
             int i, iM, iP;
