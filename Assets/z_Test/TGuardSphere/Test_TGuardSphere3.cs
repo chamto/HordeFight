@@ -185,12 +185,20 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T1_root, _tgs1._T1_root);
+            //bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T1_root, _tgs1._T1_root);
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T0_root, _tgs1._T0_root);
             if(true == contact)
             {
                 
                 _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
                 _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                //_tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                //_tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+
+                //_tgs0._Tctl_root.position = _tgs0._T0_root.position;
+                //_tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
+                //_tgs1._Tctl_root.position = _tgs1._T0_root.position;
+                //_tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
 
             }
 
