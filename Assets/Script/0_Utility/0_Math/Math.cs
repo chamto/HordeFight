@@ -1051,27 +1051,27 @@ namespace UtilGS9
                 }
             }//end if
                 
-            if(true == contact)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    Color color = Color.green;
-                    if (Misc.IsZero(arr[i]))
-                        color = Color.black;
-                    if(Misc.IsZero(arr[i]-min))
-                        color = Color.black;
-                    if (Misc.IsZero(arr[i] - max))
-                        color = Color.black;
-                    DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
-                }
-                //DebugWide.DrawCircle(min, 0.03f, Color.red);
-                //DebugWide.DrawCircle(max, 0.07f, Color.red);
+            //if(true == contact)
+            //{
+            //    for (int i = 0; i < 8; i++)
+            //    {
+            //        Color color = Color.green;
+            //        if (Misc.IsZero(arr[i]))
+            //            color = Color.black;
+            //        if(Misc.IsZero(arr[i]-min))
+            //            color = Color.black;
+            //        if (Misc.IsZero(arr[i] - max))
+            //            color = Color.black;
+            //        DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
+            //    }
+            //    //DebugWide.DrawCircle(min, 0.03f, Color.red);
+            //    //DebugWide.DrawCircle(max, 0.07f, Color.red);
 
-                _intr_0_2.Draw(Color.black);
-                _intr_0_3.Draw(Color.black);
-                _intr_1_2.Draw(Color.black);
-                _intr_1_3.Draw(Color.black);
-            }
+            //    _intr_0_2.Draw(Color.black);
+            //    _intr_0_3.Draw(Color.black);
+            //    _intr_1_2.Draw(Color.black);
+            //    _intr_1_3.Draw(Color.black);
+            //}
 
             return contact;
 
@@ -1567,7 +1567,8 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+                    result_contact = GetMinMax_Segement(__dir_A, out _minV, out _maxV); 
                     is_cross_contact = true;
 
                     //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
@@ -1727,7 +1728,7 @@ namespace UtilGS9
                     if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
                     {
                         meetPt = limit;
-                        DebugWide.DrawCircle(limit, 0.04f, Color.white);
+                        //DebugWide.DrawCircle(limit, 0.04f, Color.white);
                     }
                     if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
                     {
@@ -1735,9 +1736,12 @@ namespace UtilGS9
                         if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
                             meetPt = limit;
                         
-                        DebugWide.DrawCircle(limit, 0.05f, Color.white);
+                        //DebugWide.DrawCircle(limit, 0.05f, Color.white);
                     }
-                        
+
+                    //float ta = (meetPt - root_0.position).magnitude;
+                    //float tb = (meetPt - root_1.position).magnitude;
+                    //DebugWide.LogBlue(ta + "   " + tb);
 
                     //if(result)
                     //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
