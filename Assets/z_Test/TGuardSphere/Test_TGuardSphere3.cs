@@ -170,15 +170,18 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
+
+            prev_A = _tgs0.ToRoot_Prev();
+            cur_A = _tgs0.ToRoot_Cur();
+            prev_B = _tgs1.ToRoot_Prev();
+            cur_B = _tgs1.ToRoot_Cur();
+            Vector3 dirMeet = prev_A.direction +  prev_B.direction + cur_A.direction + cur_B.direction;
+
+
             prev_A = _tgs0.ToSeg_Prev();
             cur_A = _tgs0.ToSeg_Cur();
             prev_B = _tgs1.ToSeg_Prev();
             cur_B = _tgs1.ToSeg_Cur();
-
-            //prev_A = _tgs0.ToRoot_Prev();
-            //cur_A = _tgs0.ToRoot_Cur();
-            //prev_B = _tgs1.ToRoot_Prev();
-            //cur_B = _tgs1.ToRoot_Cur();
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
@@ -202,6 +205,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //계산된 선분이 실제적용된것과 일치하는지 확인  
             DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); 
             DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+
+            //DebugWide.DrawLine(_movTgs._meetPt, _movTgs._meetPt + dirMeet, Color.black);
+            //DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, 0.04f, Color.black);
+            //DebugWide.DrawCircle(_movTgs._cur_seg_A.last, 0.04f, Color.black);
+            //DebugWide.LogBlue(_movTgs._cur_seg_A);
         }
 
     }

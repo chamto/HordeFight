@@ -1058,10 +1058,14 @@ namespace UtilGS9
                     Color color = Color.green;
                     if (Misc.IsZero(arr[i]))
                         color = Color.black;
-                    DebugWide.DrawCircle(arr[i], 0.01f + 0.005f * i, color);
+                    if(Misc.IsZero(arr[i]-min))
+                        color = Color.black;
+                    if (Misc.IsZero(arr[i] - max))
+                        color = Color.black;
+                    DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
                 }
-                DebugWide.DrawCircle(min, 0.03f, Color.red);
-                DebugWide.DrawCircle(max, 0.07f, Color.red);
+                //DebugWide.DrawCircle(min, 0.03f, Color.red);
+                //DebugWide.DrawCircle(max, 0.07f, Color.red);
 
                 _intr_0_2.Draw(Color.black);
                 _intr_0_3.Draw(Color.black);
@@ -1708,15 +1712,32 @@ namespace UtilGS9
                     {
                         //min 구하기 
                         Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                        DebugWide.LogBlue("aaa ");
                     }
                     else if (true == __isSeg_B)
                     {
                         //max 구하기
                         Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                        DebugWide.LogBlue("bbb ");
                     }
 
                     meetPt = _minV + (_maxV - _minV) * rateAtoB;
 
+                    Vector3 limit;
+                    if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
+                    {
+                        meetPt = limit;
+                        DebugWide.DrawCircle(limit, 0.04f, Color.white);
+                    }
+                    if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
+                    {
+                        //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
+                        if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
+                            meetPt = limit;
+                        
+                        DebugWide.DrawCircle(limit, 0.05f, Color.white);
+                    }
+                        
 
                     //if(result)
                     //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 ");
@@ -1782,6 +1803,46 @@ namespace UtilGS9
 
         public Quaternion __localRota_A = Quaternion.identity;
         public Quaternion __localRota_B = Quaternion.identity;
+
+
+        public bool CalcLimit(Vector3 meetPt, Vector3 min, Vector3 max,
+                               Vector3 pos_t_root,
+                                 LineSegment3 t_sub, out Vector3 limitPt)
+        {
+
+            //균등하지 않은 T서브일 수 있음 , min에서 가까운 T서브의 한쪽끝점을 사용한다
+            Vector3 subPt = t_sub.origin;
+            if((min-t_sub.origin).sqrMagnitude > (min-t_sub.last).sqrMagnitude)
+            {
+                subPt = t_sub.last;
+            }
+
+            //원인모를 오차를 제거해 본다 0.002
+            float a = (subPt - pos_t_root).magnitude - 0.002f; //삼각형내의 최대 길이 
+
+            if((meetPt - pos_t_root).sqrMagnitude < a*a)
+            {
+                limitPt = ConstV.v3_zero;
+                return false;
+            }
+
+            Vector3 n_ab = VOp.Normalize(min - max);
+            float ab2 = Vector3.Dot(n_ab, (pos_t_root - max));
+            Vector3 b2 = max + n_ab * ab2;
+
+
+            //피타고라스의 정리를 이용 
+            float pb2 = a*a - (b2 - pos_t_root).sqrMagnitude;
+            pb2 = (float)Math.Sqrt(pb2);
+            limitPt = b2 + (-n_ab * pb2);
+
+            //DebugWide.LogBlue((limitPt - pos_t_root).magnitude + "   " + a);
+            //DebugWide.DrawLine(max, b2, Color.green);
+            //DebugWide.DrawLine(b2, pos_t_root, Color.green);
+            //DebugWide.DrawLine(p , pos_t_root, Color.magenta);
+
+            return true;
+        }
 
         //t0 구할대상 , t1 움직이는 T가드  
         public void CalcTGuard(Vector3 meetPt_first, Vector3 meetPt_last, 
@@ -1971,7 +2032,7 @@ namespace UtilGS9
             Vector3 pt_first;
             if(true == Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first))
             {
-                DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
+                //DebugWide.DrawCircle(pt_first, 0.08f, Color.cyan); //chamto test    
             }else
             {
                 //Vector3 n_left = VOp.Normalize(t0_sub_prev.direction);
@@ -1979,7 +2040,8 @@ namespace UtilGS9
                 //pt_first = len_proj_left * n_left + t0_sub_prev.origin;
                 //float aa = (pt_first - pos_t0_root).magnitude;
                 //DebugWide.LogBlue(a + "   " + aa);
-                DebugWide.DrawCircle(pt_first, 0.08f, Color.yellow); //chamto test    
+
+                //DebugWide.DrawCircle(pt_first, 0.08f, Color.yellow); //chamto test    
             }
 
             return pt_first;
@@ -1999,6 +2061,7 @@ namespace UtilGS9
             {
                 angle_t = Geo.AngleSigned(meetPt_first - pos_t0_root, meetPt_last - pos_t0_root, up_t);
                 localRot = Quaternion.AngleAxis(angle_t, up_t);    
+                //DebugWide.LogBlue(meetPt_first + "   " + meetPt_last + " ---  "+ up_t + "  " + angle_t);
             }
 
             //DebugWide.LogBlue(" --  "+ up_t + "  " + angle_t);
