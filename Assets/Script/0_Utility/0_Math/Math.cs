@@ -1754,8 +1754,6 @@ namespace UtilGS9
             {
                 LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
-                //CalcTGuard(_maxV, _minV, root_0.position, _prev_seg_A, _cur_seg_B, out newSegA, out __localRota_A);
-                //CalcTGuard(_maxV, _minV, root_1.position, _prev_seg_B, _cur_seg_A, out newSegB, out __localRota_B);
 
 
                 //if(false == __isSeg_A)
@@ -1766,13 +1764,8 @@ namespace UtilGS9
                 //if(false == __isSeg_B)
                 {
 
-                    //Vector3 firstPt = CalcTGuard_FirstPt2(meetPt, _prev_seg_B, _cur_seg_B); //오차때문에 meetPt에서 못만난다 
                     Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, meetPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-
-                    //meetPt = _maxV + (_minV - _maxV) * rateAtoB; //1 -> min
-                    //Vector3 meetRate = CalcTGuard_MeetPt(firstPt, meetPt, root_1.position, _cur_seg_A);
-                    //CalcTGuard_FirstToLast(firstPt, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
 
                 }
 
@@ -1967,56 +1960,6 @@ namespace UtilGS9
 
         }
 
-        public Vector3 CalcTGuard_FirstPt2(Vector3 meetPt, LineSegment3 start, LineSegment3 end)
-        {
-            Vector3 origin, last;
-            float len_start = start.direction.magnitude;
-            Vector3 v_up = end.last - start.last;
-            Vector3 v_down = end.origin - start.origin;
-            float len_up = v_up.sqrMagnitude;
-            float len_down = v_down.sqrMagnitude;
-
-            Vector3 n_left = VOp.Normalize(start.direction);
-            Vector3 n_right = VOp.Normalize(end.direction);
-            float len_proj_left = Vector3.Dot(n_left, (meetPt - start.origin));
-            float len_proj_right = Vector3.Dot(n_right, (meetPt - end.origin));
-            float len_perp_left = ((n_left * len_proj_left + start.origin) - meetPt).magnitude;
-            float len_perp_right = ((n_right * len_proj_right + end.origin) - meetPt).magnitude;
-            float rate = len_perp_left / (len_perp_left + len_perp_right);
-
-
-            //NaN 예외처리 추가 
-            if (Misc.IsZero(len_perp_left + len_perp_right))
-            {
-                //DebugWide.LogYellow("prev: " + start + " cur: " + end + "  left: " + len_perp_left +"   right: "+ len_perp_right);
-                rate = 0;
-            }
-
-
-            //작은쪽을 선택 
-            if (len_up > len_down)
-            {
-                origin = v_down * rate + start.origin;
-
-                last = VOp.Normalize(meetPt - origin) * len_start + origin;
-
-            }
-            else
-            {
-                last = v_up * rate + start.last;
-
-                origin = VOp.Normalize(meetPt - last) * len_start + last;
-            }
-
-            Vector3 fpt = len_proj_left * n_left + start.origin;
-
-            //DebugWide.DrawLine(origin, last, Color.red);
-            DebugWide.DrawCircle(origin, 0.01f, Color.black);
-            DebugWide.DrawCircle(last, 0.01f, Color.black);
-            DebugWide.DrawCircle(fpt, 0.08f, Color.cyan); //chamto test 
-
-            return fpt;
-        }
 
         public Vector3 CalcTGuard_FirstPt(Vector3 meetPt, Vector3 pos_t0_root,
                                 LineSegment3 t0_sub_prev)
