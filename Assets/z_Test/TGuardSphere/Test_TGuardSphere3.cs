@@ -155,9 +155,20 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
     }
 
+    public bool __drawMode_stopTime = true;
+    private void OnDrawGizmos()
+    {
+        if(true == __drawMode_stopTime)
+        {
+            Draw_StopTime();
+        }
+        else{
+            Draw_RealTime();
+        }
+    }
 
     //실시간 계산 
-    private void OnDrawGizmos()
+    private void Draw_RealTime()
     {
 
         if (true == _tgs0._init)
@@ -200,8 +211,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             }
             else
             {
-                _tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
-                _tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;
+                //_tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
+                //_tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;
             }
 
             //------------
@@ -219,7 +230,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
     }
 
     //정지 계산 
-    private void OnDrawGizmos2()
+    private void Draw_StopTime()
     {
         
         if (true == _tgs0._init)
