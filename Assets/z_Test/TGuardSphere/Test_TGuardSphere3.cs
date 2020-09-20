@@ -161,9 +161,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         if (true == _tgs0._init)
         {
             __rate = Mathf.Clamp(__rate, 0, 1f);
-            _tgs0._T1_root.position = _tgs0._T0_root.position;
             _tgs0._T1_root.rotation = _tgs0._T0_root.rotation;
-            _tgs1._T1_root.position = _tgs1._T0_root.position;
             _tgs1._T1_root.rotation = _tgs1._T0_root.rotation;
 
             //------------
@@ -171,11 +169,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
 
-            prev_A = _tgs0.ToRoot_Prev();
-            cur_A = _tgs0.ToRoot_Cur();
-            prev_B = _tgs1.ToRoot_Prev();
-            cur_B = _tgs1.ToRoot_Cur();
-            Vector3 dirMeet = prev_A.direction +  prev_B.direction + cur_A.direction + cur_B.direction;
+            //prev_A = _tgs0.ToRoot_Prev();
+            //cur_A = _tgs0.ToRoot_Cur();
+            //prev_B = _tgs1.ToRoot_Prev();
+            //cur_B = _tgs1.ToRoot_Cur();
+            //Vector3 dirMeet = prev_A.direction +  prev_B.direction + cur_A.direction + cur_B.direction;
 
 
             prev_A = _tgs0.ToSeg_Prev();
@@ -190,25 +188,29 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if(true == contact)
             {
                 
-                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
-                //_tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                //_tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                //_tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                //_tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
 
-                //_tgs0._Tctl_root.position = _tgs0._T0_root.position;
-                //_tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
-                //_tgs1._Tctl_root.position = _tgs1._T0_root.position;
-                //_tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
+                _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                _tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
+                _tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
 
+                DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+                DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+                DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
+            }else
+            {
+                _tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
+                _tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;    
             }
 
             //------------
 
             _tgs0.Draw();
             _tgs1.Draw();    
-            DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-            DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-            DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
 
             //계산된 선분이 실제적용된것과 일치하는지 확인  
             DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); 
