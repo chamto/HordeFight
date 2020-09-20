@@ -1713,6 +1713,7 @@ namespace UtilGS9
                     {
                         //min 구하기 
                         Line3.ClosestPoints(out _minV, out _minV, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                        //Line3.ClosestPoints(out _maxV, out _maxV, new Line3(_minV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         DebugWide.LogBlue("aaa ");
                     }
                     else if (true == __isSeg_B)
@@ -1758,31 +1759,36 @@ namespace UtilGS9
 
                 //if(false == __isSeg_A)
                 {
+                    __dir_A = VOp.Normalize(__dir_A);
+                    //Vector3 dropPt = meetPt + -__dir_A * 0.01f; //chamto test
                     Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
                     CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
                 {
-
+                    __dir_B = VOp.Normalize(__dir_B);
+                    //Vector3 dropPt = meetPt + -__dir_B * 0f; 
                     Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, meetPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
 
                 }
 
-                //meetPt = _minV + (_maxV - _minV) * rateAtoB;
-                //Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_0.position, _cur_seg_B);
-                if (true == __isSeg_A)
-                {
-                    //meetPt = _maxV + (_minV - _maxV) * rateAtoB;
-                    //Vector3 meetRate = CalcTGuard_MeetPt(_maxV, meetPt, root_0.position, _cur_seg_B);
-                    //CalcTGuard_FirstToLast(_maxV, meetRate, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                }
-                else if (true == __isSeg_B)
-                {
-                    //meetPt = _minV + (_maxV - _minV) * rateAtoB;
-                    //Vector3 meetRate = CalcTGuard_MeetPt(_minV, meetPt, root_1.position, _cur_seg_A);
-                    //CalcTGuard_FirstToLast(_minV, meetRate, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-                }
+
+                //if(true == is_cross_contact)
+                //{
+                //    if (true == __isSeg_A)
+                //    {
+                        
+                //        Vector3 lastPt = CalcTGuard_LastPt(_minV, meetPt, root_0.position, _cur_seg_B);
+                //        CalcTGuard_FirstToLast(_minV, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                //    }
+                //    else if (true == __isSeg_B)
+                //    {
+                //        Vector3 lastPt = CalcTGuard_LastPt(_minV, meetPt, root_1.position, _cur_seg_A);
+                //        CalcTGuard_FirstToLast(_minV, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+                //    }    
+                //}
+
 
                 _cur_seg_A = newSegA;
                 _cur_seg_B = newSegB;
@@ -1910,7 +1916,7 @@ namespace UtilGS9
 
         }
 
-        public Vector3 CalcTGuard_MeetPt(Vector3 meetPt_first, Vector3 meetPt_last,
+        public Vector3 CalcTGuard_LastPt(Vector3 meetPt_first, Vector3 meetPt_last,
                                Vector3 pos_t0_root,
                                 LineSegment3 t1_sub_end)
         {
@@ -1942,19 +1948,17 @@ namespace UtilGS9
 
             Vector3 new_dir_ls_seg1 = Quaternion.AngleAxis(angle_seg_rate, up_seg_rate) * ls_AB.direction;
             Vector3 meetPt_rate2 = t1_sub_end.origin + VOp.Normalize(new_dir_ls_seg1) * b_1;
+
             DebugWide.DrawCircle(meetPt_rate2, 0.08f, Color.green); //chamto test
-
-            DebugWide.DrawLine(meetPt_rate2, pos_t0_root, Color.red); //a
-            DebugWide.DrawLine(meetPt_rate2, t1_sub_end.origin, Color.red); //b
-            DebugWide.DrawLine(pos_t0_root, t1_sub_end.origin, Color.red); //c
-
-            float d_a = (meetPt_rate2 - pos_t0_root).magnitude;
-            float d_b = (meetPt_rate2 - t1_sub_end.origin).magnitude;
-            float d_c = (pos_t0_root - t1_sub_end.origin).magnitude;
-            DebugWide.LogBlue(d_a + "  " + d_b + "   " + d_c);
-            DebugWide.LogBlue(value_sign + "   " + b_1 + "   " + disc);
-
-            DebugWide.DrawCircle(pos_t0_root, d_a, Color.green);
+            //DebugWide.DrawLine(meetPt_rate2, pos_t0_root, Color.red); //a
+            //DebugWide.DrawLine(meetPt_rate2, t1_sub_end.origin, Color.red); //b
+            //DebugWide.DrawLine(pos_t0_root, t1_sub_end.origin, Color.red); //c
+            //float d_a = (meetPt_rate2 - pos_t0_root).magnitude;
+            //float d_b = (meetPt_rate2 - t1_sub_end.origin).magnitude;
+            //float d_c = (pos_t0_root - t1_sub_end.origin).magnitude;
+            //DebugWide.LogBlue(d_a + "  " + d_b + "   " + d_c);
+            //DebugWide.LogBlue(value_sign + "   " + b_1 + "   " + disc);
+            //DebugWide.DrawCircle(pos_t0_root, d_a, Color.green);
 
             return meetPt_rate2;
 
