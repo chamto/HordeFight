@@ -1759,14 +1759,16 @@ namespace UtilGS9
 
                 //if(false == __isSeg_A)
                 {
-                    __dir_A = VOp.Normalize(__dir_A);
+                    //__dir_A = VOp.Normalize(__dir_A);
                     //Vector3 dropPt = meetPt + -__dir_A * 0.01f; //chamto test
-                    Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_0.position, _prev_seg_A);
-                    CalcTGuard_FirstToLast(firstPt, meetPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    Vector3 dir = VOp.Normalize( _minV - _maxV);
+                    Vector3 lastPt = meetPt + dir * 0.001f; //dropping 처리 
+                    Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_0.position, _prev_seg_A);
+                    CalcTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
                 {
-                    __dir_B = VOp.Normalize(__dir_B);
+                    //__dir_B = VOp.Normalize(__dir_B);
                     //Vector3 dropPt = meetPt + -__dir_B * 0f; 
                     Vector3 firstPt = CalcTGuard_FirstPt(meetPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, meetPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
