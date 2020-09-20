@@ -155,20 +155,103 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
     }
 
-    public bool __drawMode_stopTime = true;
+    public enum eModeKind
+    {
+        StopTime,
+        RealTime,
+        FrameStep,
+    }
+    public bool __nextFrame = false;
+    public eModeKind __drawMode_stopTime = eModeKind.StopTime;
     private void OnDrawGizmos()
     {
-        if(true == __drawMode_stopTime)
+        switch(__drawMode_stopTime)
         {
-            Draw_StopTime();
+            case eModeKind.StopTime:
+                Draw_StopTime();
+                break;
+            case eModeKind.RealTime:
+                Draw_RealTime();
+                break;
+            case eModeKind.FrameStep:
+                Draw_FrameStep();
+                break;
         }
-        else{
-            Draw_RealTime();
-        }
+
     }
 
-    //실시간 계산 
-    private void Draw_RealTime()
+
+    //프레임 한단계씩 계산
+	public void Draw_FrameStep()
+	{
+        
+        if (true == _tgs0._init)
+        {
+            __rate = Mathf.Clamp(__rate, 0, 1f);
+            _tgs0._T1_root.rotation = _tgs0._T0_root.rotation;
+            _tgs1._T1_root.rotation = _tgs1._T0_root.rotation;
+
+            //------------
+
+            LineSegment3 prev_A, cur_A;
+            LineSegment3 prev_B, cur_B;
+
+            //prev_A = _tgs0.ToRoot_Prev();
+            //cur_A = _tgs0.ToRoot_Cur();
+            //prev_B = _tgs1.ToRoot_Prev();
+            //cur_B = _tgs1.ToRoot_Cur();
+
+            prev_A = _tgs0.ToSeg_Prev();
+            cur_A = _tgs0.ToSeg_Cur();
+            prev_B = _tgs1.ToSeg_Prev();
+            cur_B = _tgs1.ToSeg_Cur();
+
+            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+
+
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T0_root, _tgs1._T0_root);
+            if (true == contact)
+            {
+
+                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+
+                if (true == __nextFrame)
+                {
+                    __nextFrame = false;
+
+                    _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                    _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                    //_tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
+                    //_tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
+                }
+
+                DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+                DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+                DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
+            }
+            else
+            {
+                //_tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
+                //_tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;
+            }
+
+            //------------
+
+
+            _tgs0.Draw();
+            _tgs1.Draw();
+
+
+            //계산된 선분이 실제적용된것과 일치하는지 확인  
+            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
+            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+        }
+	}
+
+	//실시간 계산 
+	private void Draw_RealTime()
     {
 
         if (true == _tgs0._init)
@@ -186,7 +269,6 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //cur_A = _tgs0.ToRoot_Cur();
             //prev_B = _tgs1.ToRoot_Prev();
             //cur_B = _tgs1.ToRoot_Cur();
-
 
             prev_A = _tgs0.ToSeg_Prev();
             cur_A = _tgs0.ToSeg_Cur();
