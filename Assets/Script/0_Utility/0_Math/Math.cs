@@ -1771,8 +1771,8 @@ namespace UtilGS9
                     Vector3 lastPt = meetPt;
                     if (false == __isSeg_A)
                     {
-                        lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
-                        DebugWide.DrawCircle(lastPt, 0.01f, Color.blue);
+                        //lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.blue);
                     }
 
                     Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_0.position, _prev_seg_A);
@@ -1783,8 +1783,8 @@ namespace UtilGS9
                     Vector3 lastPt = meetPt;
                     if (false == __isSeg_B)
                     {
-                        lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리 
-                        DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
+                        //lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리 
+                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
                     }
                     Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);

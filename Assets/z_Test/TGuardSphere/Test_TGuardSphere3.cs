@@ -193,6 +193,20 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             //------------
 
+            ////각도전진 시험
+            //if (true == __nextFrame)
+            //{
+            //    __nextFrame = false;
+
+            //    Vector3 ori = _tgs0._T0_root_start.position;
+            //    Vector3 start = _tgs0._Tctl_root_end.position;
+            //    Vector3 end = _tgs0._T0_root_end.position;
+            //    Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
+            //    _tgs0._Tctl_root.rotation *= Quaternion.AngleAxis(0.5f, up_angle);
+            //}
+
+            //------------
+
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
 
@@ -213,17 +227,19 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if (true == contact)
             {
 
-                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                //_tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                //_tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+
+                _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
+                _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
 
                 if (true == __nextFrame)
                 {
                     __nextFrame = false;
 
-                    _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                    _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
-                    //_tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
-                    //_tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
+
+                    _tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
+                    _tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
                 }
 
                 DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
@@ -304,8 +320,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
 
             //계산된 선분이 실제적용된것과 일치하는지 확인  
-            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
+            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
 
         }
 
