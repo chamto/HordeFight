@@ -2130,13 +2130,29 @@ namespace UtilGS9
             bool hit = IntersectRay2(sphere_center, sphere_radius, segment.origin, VOp.Normalize(segment.direction), out sect);
 
             intersection_firstPoint = sect;
-            if (hit)
+            Vector3 dir_ori_inter = sect - segment.origin;
+            if(0 > Vector3.Dot(dir_ori_inter, segment.direction ))
             {
-                float d = VOp.Minus(segment.origin , sect).sqrMagnitude;
-                if (d > (segment.direction.sqrMagnitude)) return false;
-                //intersection_firstPoint = sect;
-                return true;
+                intersection_firstPoint = segment.origin;
+            }else
+            {
+                if (dir_ori_inter.sqrMagnitude > (segment.direction.sqrMagnitude))
+                {
+                    intersection_firstPoint = segment.last;
+                }else
+                {
+                    return hit;
+                }
             }
+
+            //if (hit)
+            //{
+            //    float d = VOp.Minus(segment.origin , sect).sqrMagnitude;
+            //    if (d > (segment.direction.sqrMagnitude)) return false;
+             
+            //    return true;
+            //}
+
             return false;
         }
 
