@@ -1651,8 +1651,9 @@ namespace UtilGS9
             Vector3 meetPt = ConstV.v3_zero;
 
             float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
-            DebugWide.DrawLine(_meetPt, _meetPt+VOp.Normalize(__cur_A_B_order) * 1.5f, Color.red);
+            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__cur_A_B_order) * 1.5f, Color.red);
 
+            //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
@@ -1720,27 +1721,27 @@ namespace UtilGS9
                             //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분이 통과되었다는 의미가됨 
                             if (0 > orderValue)
                             {
-                                //__cur_A_B_order = __prev_A_B_order; //기존방향으로 바꾼다 
                                 DebugWide.LogBlue("선분 순서가 바뀌었음  aaa ");
                             }
-                            else
+                            //else
                             {
                                 //min 구하기 
                                 Vector3 none;
                                 Line3.ClosestPoints(out _minV, out none, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
-                                //DebugWide.LogBlue("aaa ");
+                                DebugWide.LogBlue("aaa ");
                             }
 
                         }
                         else if (true == __isSeg_B)
                         {
+                            
                             //선분의 순서가 바뀌었는지 검사 
                             //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분이 통과되었다는 의미가됨 
                             if (0 > orderValue)
                             {
-                                //__cur_A_B_order = __prev_A_B_order; //기존방향으로 바꾼다 
                                 DebugWide.LogBlue("선분 순서가 바뀌었음  bbb ");
-                            }else
+                            }
+                            //else
                             {
                                 //max 구하기
                                 Vector3 none;
@@ -1756,19 +1757,19 @@ namespace UtilGS9
 
 
                     //한계위치 검사
-                    Vector3 limit;
-                    if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
-                    {
-                        meetPt = limit;
-                        //DebugWide.DrawCircle(limit, 0.04f, Color.white);
-                    }
-                    if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
-                    {
-                        //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
-                        if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
-                            meetPt = limit;
-                        //DebugWide.DrawCircle(limit, 0.05f, Color.white);
-                    }
+                    //Vector3 limit;
+                    //if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
+                    //{
+                    //    meetPt = limit;
+                    //    //DebugWide.DrawCircle(limit, 0.04f, Color.white);
+                    //}
+                    //if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
+                    //{
+                    //    //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
+                    //    if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
+                    //        meetPt = limit;
+                    //    //DebugWide.DrawCircle(limit, 0.05f, Color.white);
+                    //}
 
                     //float ta = (meetPt - root_0.position).magnitude;
                     //float tb = (meetPt - root_1.position).magnitude;
@@ -1799,11 +1800,14 @@ namespace UtilGS9
                 //if(false == __isSeg_A)
                 {
                     Vector3 lastPt = meetPt;
-                    //if (false == __isSeg_A)
-                    //{
-                    //    //lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
-                    //    //DebugWide.DrawCircle(lastPt, 0.01f, Color.blue);
-                    //}
+                    if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
+                    {
+                        //lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+
+                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.blue);
+                        //DebugWide.LogRed("dropping a");
+                    }
 
                     Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_0.position, _prev_seg_A);
                     CalcTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
@@ -1811,11 +1815,14 @@ namespace UtilGS9
                 //if(false == __isSeg_B)
                 {
                     Vector3 lastPt = meetPt;
-                    //if (false == __isSeg_B)
-                    //{
-                    //    //lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리 
-                    //    //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
-                    //}
+                    if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
+                    {
+                        //lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
+
+                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
+                        //DebugWide.LogRed("dropping b");
+                    }
                     Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
 
@@ -1857,7 +1864,7 @@ namespace UtilGS9
             if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
                 __prev_A_B_order = __cur_A_B_order;
 
-            DebugWide.DrawLine(_meetPt, _meetPt+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.black);
+            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.black);
 
             return result_contact;
         }

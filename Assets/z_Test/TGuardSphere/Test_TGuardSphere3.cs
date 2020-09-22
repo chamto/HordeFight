@@ -38,21 +38,21 @@ public class Test_TGuardSphere3 : MonoBehaviour
         public Vector3 _mt_rate = ConstV.v3_zero;
         public Vector3 _mt_max = ConstV.v3_zero;
 
-        public LineSegment3 ToRoot_Prev()
+        public LineSegment3 ToRoot_T0()
         {
             return new LineSegment3(_T0_root_start.position, _T0_root_end.position);
         }
-        public LineSegment3 ToRoot_Cur()
+        public LineSegment3 ToRoot_Tctl()
         {
             return new LineSegment3(_Tctl_root_start.position, _Tctl_root_end.position);
         }
 
 
-        public LineSegment3 ToSeg_Prev()
+        public LineSegment3 ToSeg_T0()
         {
             return new LineSegment3(_T0_sub_start.position, _T0_sub_end.position);
         }
-        public LineSegment3 ToSeg_Cur()
+        public LineSegment3 ToSeg_Tctl()
         {
             return new LineSegment3(_Tctl_sub_start.position, _Tctl_sub_end.position);
         }
@@ -132,8 +132,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
     }//end class
 
-    TGS_Info _tgs0 = new TGS_Info();
-    TGS_Info _tgs1 = new TGS_Info();
+    TGS_Info _tgs_A = new TGS_Info();
+    TGS_Info _tgs_B = new TGS_Info();
     public MovingSegement3 _movTgs = new MovingSegement3();
 
 	// Use this for initialization
@@ -141,9 +141,15 @@ public class Test_TGuardSphere3 : MonoBehaviour
     {
         Transform tgs_root = null;
         tgs_root = Hierarchy.GetTransform(null, "TGS_0");
-        _tgs0.Init(tgs_root);
+        _tgs_A.Init(tgs_root);
         tgs_root = Hierarchy.GetTransform(null, "TGS_1");
-        _tgs1.Init(tgs_root);
+        _tgs_B.Init(tgs_root);
+
+
+        //realTime , frameStep init
+        __seg_prev_A = _tgs_A.ToSeg_T0();
+        __seg_prev_B = _tgs_B.ToSeg_T0();
+
 	}
 
 
@@ -185,11 +191,13 @@ public class Test_TGuardSphere3 : MonoBehaviour
 	public void Draw_FrameStep()
 	{
         
-        if (true == _tgs0._init)
+        if (true == _tgs_A._init)
         {
             __rate = Mathf.Clamp(__rate, 0, 1f);
-            _tgs0._T1_root.rotation = _tgs0._T0_root.rotation;
-            _tgs1._T1_root.rotation = _tgs1._T0_root.rotation;
+            _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
+            _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
             //------------
 
@@ -210,36 +218,26 @@ public class Test_TGuardSphere3 : MonoBehaviour
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
 
-            //prev_A = _tgs0.ToRoot_Prev();
-            //cur_A = _tgs0.ToRoot_Cur();
-            //prev_B = _tgs1.ToRoot_Prev();
-            //cur_B = _tgs1.ToRoot_Cur();
-
-            prev_A = _tgs0.ToSeg_Prev();
-            cur_A = _tgs0.ToSeg_Cur();
-            prev_B = _tgs1.ToSeg_Prev();
-            cur_B = _tgs1.ToSeg_Cur();
+            cur_A = _tgs_A.ToSeg_T0();
+            cur_B = _tgs_B.ToSeg_T0();
+            prev_A = __seg_prev_A;
+            prev_B = __seg_prev_B;
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T0_root, _tgs1._T0_root);
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
-
-                //_tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                //_tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
-
-                _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
-
+                
                 if (true == __nextFrame)
                 {
                     __nextFrame = false;
 
 
-                    _tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
-                    _tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
+                    _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                    _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+
                 }
 
                 DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
@@ -247,81 +245,68 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
             }
-            else
-            {
-                //_tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
-                //_tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;
-            }
+
+            __seg_prev_A = _tgs_A.ToSeg_T0();
+            __seg_prev_B = _tgs_B.ToSeg_T0();
 
             //------------
 
+            _tgs_A.Draw();
+            _tgs_B.Draw();
 
-            _tgs0.Draw();
-            _tgs1.Draw();
-
-
-            //계산된 선분이 실제적용된것과 일치하는지 확인  
-            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
         }
 	}
+
+
+    private LineSegment3 __seg_prev_A = new LineSegment3();
+    private LineSegment3 __seg_prev_B = new LineSegment3();
 
 	//실시간 계산 
 	private void Draw_RealTime()
     {
 
-        if (true == _tgs0._init)
+        if (true == _tgs_A._init)
         {
             __rate = Mathf.Clamp(__rate, 0, 1f);
-            _tgs0._T1_root.rotation = _tgs0._T0_root.rotation;
-            _tgs1._T1_root.rotation = _tgs1._T0_root.rotation;
+            _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
+            _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
             //------------
 
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
 
-            //prev_A = _tgs0.ToRoot_Prev();
-            //cur_A = _tgs0.ToRoot_Cur();
-            //prev_B = _tgs1.ToRoot_Prev();
-            //cur_B = _tgs1.ToRoot_Cur();
 
-            prev_A = _tgs0.ToSeg_Prev();
-            cur_A = _tgs0.ToSeg_Cur();
-            prev_B = _tgs1.ToSeg_Prev();
-            cur_B = _tgs1.ToSeg_Cur();
+            cur_A = _tgs_A.ToSeg_T0();
+            cur_B = _tgs_B.ToSeg_T0();
+            prev_A = __seg_prev_A;
+            prev_B = __seg_prev_B;
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T0_root, _tgs1._T0_root);
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
 
-                _tgs0._T0_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                _tgs1._T0_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
-                _tgs0._Tctl_root.rotation = _tgs0._T0_root.rotation;
-                _tgs1._Tctl_root.rotation = _tgs1._T0_root.rotation;
+                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+
 
                 DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
                 DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
                 DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
             }
-            else
-            {
-                //_tgs0._T0_root.rotation = _tgs0._Tctl_root.rotation;
-                //_tgs1._T0_root.rotation = _tgs1._Tctl_root.rotation;
-            }
 
+
+            __seg_prev_A = _movTgs._cur_seg_A;
+            __seg_prev_B = _movTgs._cur_seg_B;
             //------------
 
-            _tgs0.Draw();
-            _tgs1.Draw();
-
-
-            //계산된 선분이 실제적용된것과 일치하는지 확인  
-            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+            _tgs_A.Draw();
+            _tgs_B.Draw();
 
         }
 
@@ -331,11 +316,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
     private void Draw_StopTime()
     {
         
-        if (true == _tgs0._init)
+        if (true == _tgs_A._init)
         {
             __rate = Mathf.Clamp(__rate, 0, 1f);
-            _tgs0._T1_root.rotation = _tgs0._T0_root.rotation;
-            _tgs1._T1_root.rotation = _tgs1._T0_root.rotation;
+            _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
 
             //------------
 
@@ -349,20 +334,20 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //Vector3 dirMeet = prev_A.direction +  prev_B.direction + cur_A.direction + cur_B.direction;
 
 
-            prev_A = _tgs0.ToSeg_Prev();
-            cur_A = _tgs0.ToSeg_Cur();
-            prev_B = _tgs1.ToSeg_Prev();
-            cur_B = _tgs1.ToSeg_Cur();
+            prev_A = _tgs_A.ToSeg_T0();
+            cur_A = _tgs_A.ToSeg_Tctl();
+            prev_B = _tgs_B.ToSeg_T0();
+            cur_B = _tgs_B.ToSeg_Tctl();
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs0._T0_root, _tgs1._T0_root);
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if(true == contact)
             {
                 
-                _tgs0._T1_root.rotation = _movTgs.__localRota_A * _tgs0._T0_root.rotation; //실제적용 
-                _tgs1._T1_root.rotation = _movTgs.__localRota_B * _tgs1._T0_root.rotation; //실제적용 
+                _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
 
                 DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
@@ -373,8 +358,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             //------------
 
-            _tgs0.Draw();
-            _tgs1.Draw();    
+            _tgs_A.Draw();
+            _tgs_B.Draw();    
 
 
             //계산된 선분이 실제적용된것과 일치하는지 확인  
