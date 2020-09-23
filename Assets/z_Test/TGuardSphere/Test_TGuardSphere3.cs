@@ -164,7 +164,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
     public enum eModeKind
     {
         StopTime,
-        RealTime,
+        RealTime_1,
+        RealTime_2,
         FrameStep,
     }
     public bool __nextFrame = false;
@@ -176,8 +177,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
             case eModeKind.StopTime:
                 Draw_StopTime();
                 break;
-            case eModeKind.RealTime:
-                Draw_RealTime();
+            case eModeKind.RealTime_1:
+                Draw_RealTime_1();
+                break;
+            case eModeKind.RealTime_2:
+                Draw_RealTime_2();
                 break;
             case eModeKind.FrameStep:
                 Draw_FrameStep();
@@ -222,38 +226,46 @@ public class Test_TGuardSphere3 : MonoBehaviour
             cur_B = _tgs_B.ToSeg_T0();
             prev_A = __seg_prev_A;
             prev_B = __seg_prev_B;
+            DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
+            DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
-
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
-            if (true == contact)
+            if (true == __nextFrame)
             {
-                
-                if (true == __nextFrame)
-                {
-                    __nextFrame = false;
+                __nextFrame = false;
 
+
+                bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+                if (true == contact)
+                {
 
                     _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
                     _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
+                    DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+                    DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+                    DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
                 }
 
-                DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-                DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-                DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+                //__seg_prev_A = _tgs_A.ToSeg_T0();
+                //__seg_prev_B = _tgs_B.ToSeg_T0();
+                __seg_prev_A = _movTgs._prev_seg_A;
+                __seg_prev_B = _movTgs._prev_seg_B;
 
             }
 
-            __seg_prev_A = _tgs_A.ToSeg_T0();
-            __seg_prev_B = _tgs_B.ToSeg_T0();
+
 
             //------------
 
             _tgs_A.Draw();
             _tgs_B.Draw();
 
+
+            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
+            DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
         }
 	}
 
@@ -262,7 +274,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
     private LineSegment3 __seg_prev_B = new LineSegment3();
 
 	//실시간 계산 
-	private void Draw_RealTime()
+	private void Draw_RealTime_1()
     {
 
         if (true == _tgs_A._init)
@@ -283,6 +295,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             cur_B = _tgs_B.ToSeg_T0();
             prev_A = __seg_prev_A;
             prev_B = __seg_prev_B;
+            DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
+            DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
@@ -301,8 +315,66 @@ public class Test_TGuardSphere3 : MonoBehaviour
             }
 
 
-            __seg_prev_A = _movTgs._cur_seg_A;
-            __seg_prev_B = _movTgs._cur_seg_B;
+            //__seg_prev_A = _tgs_A.ToSeg_T0();
+            //__seg_prev_B = _tgs_B.ToSeg_T0();
+            __seg_prev_A = _movTgs._prev_seg_A;
+            __seg_prev_B = _movTgs._prev_seg_B;
+
+
+
+            //------------
+
+            _tgs_A.Draw();
+            _tgs_B.Draw();
+
+
+            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
+            DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+
+        }
+
+    }
+
+    private void Draw_RealTime_2()
+    {
+
+        if (true == _tgs_A._init)
+        {
+            __rate = Mathf.Clamp(__rate, 0, 1f);
+            _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
+            _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
+
+            //------------
+
+            LineSegment3 prev_A, cur_A;
+            LineSegment3 prev_B, cur_B;
+
+
+            prev_A = _tgs_A.ToSeg_T0();
+            prev_B = _tgs_B.ToSeg_T0();
+            cur_A = _tgs_A.ToSeg_Tctl();
+            cur_B = _tgs_B.ToSeg_Tctl();
+
+
+            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+
+            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            if (true == contact)
+            {
+
+                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+
+                _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
+                _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
+
+                DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+                DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+                DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+
+            }
+
+
             //------------
 
             _tgs_A.Draw();
@@ -311,6 +383,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         }
 
     }
+
 
     //정지 계산 
     private void Draw_StopTime()
