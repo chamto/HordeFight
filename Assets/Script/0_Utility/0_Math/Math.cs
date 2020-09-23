@@ -1809,7 +1809,7 @@ namespace UtilGS9
                         //DebugWide.LogRed("dropping a");
                     }
 
-                    Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_0.position, _prev_seg_A);
+                    Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
                     CalcTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
@@ -1823,7 +1823,7 @@ namespace UtilGS9
                         //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
                         //DebugWide.LogRed("dropping b");
                     }
-                    Vector3 firstPt = CalcTGuard_FirstPt(lastPt, root_1.position, _prev_seg_B);
+                    Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
                     CalcTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
 
                 }
@@ -2041,7 +2041,7 @@ namespace UtilGS9
             LineSegment3 seg = t0_sub_prev;
 
             //방향결정하는 방법을 찾지 못함 , 두가지 상황이 모두 성립하므로 더 적합한것을 선택해야 한다 
-            //if(sqrlen0 > sqrlen1)
+            if(sqrlen0 > sqrlen1)
             {
                 seg.origin = t0_sub_prev.last;
                 seg.last = t0_sub_prev.origin;
@@ -2072,6 +2072,36 @@ namespace UtilGS9
             }
 
             return pt_first;
+        }
+
+        public Vector3 CalcTGuard_FirstPt2(Vector3 meetPt, Vector3 pos_t0_root,
+                                LineSegment3 t0_sub_prev)
+        {
+            float a = (meetPt - pos_t0_root).magnitude;
+
+
+            //선분의 시작점이 원의 안쪽으로 들어가 접촉점 계산이 잘못되는 문제해결을 위해 선분연장 
+            //한계검사를 통해 meetPt값이 조절되지 않으면 연장된 선분에 의해 교점검사 실패시 범위를 넘어가는 값이 나올 수 있다 
+            LineSegment3 seg = t0_sub_prev;
+            seg.last = seg.last + seg.direction;
+            seg.origin = seg.origin + -seg.direction; 
+
+            //원과 접하는 두개의 교점을 찾느다 이중 meetPT와 가까운 교점이 찾으려는 점이다 , CalcTGuard_FirstPt 함수의 문제를 해결 
+            Vector3 pt_first1, pt_first2;
+            Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first1);
+            seg.origin = t0_sub_prev.last;
+            seg.last = t0_sub_prev.origin;
+            Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first2);
+
+            float sqrlen1 = (pt_first1 - meetPt).sqrMagnitude;
+            float sqrlen2 = (pt_first2 - meetPt).sqrMagnitude;
+            Vector3 closePt = pt_first1;
+            if (sqrlen1 > sqrlen2)
+                closePt = pt_first2;
+
+            DebugWide.DrawCircle(closePt, 0.08f, Color.cyan); //chamto test        
+
+            return closePt;
         }
 
         public void CalcTGuard_FirstToLast(Vector3 meetPt_first, Vector3 meetPt_last,
