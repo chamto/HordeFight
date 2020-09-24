@@ -1661,7 +1661,8 @@ namespace UtilGS9
             Vector3 meetPt = ConstV.v3_zero;
 
             float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
-            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
 
             //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
             //선분과 선분이 만난 경우 
@@ -1819,8 +1820,19 @@ namespace UtilGS9
                         //DebugWide.LogRed("dropping a");
                     }
 
-                    Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
-                    RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
+                    //{
+                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                    //    Vector3 firstPt = CalcTGuard_FirstPt2(_minV, root_0.position, _cur_seg_A);
+                    //    RotateTGuard_FirstToLast(firstPt, _minV, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
+                    //    DebugWide.LogBlue("--------aaaaa");
+                    //}else
+                    {
+                        Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
+                        RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);    
+                    }
+
+
                 }
                 //if(false == __isSeg_B)
                 {
@@ -1833,8 +1845,19 @@ namespace UtilGS9
                         //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
                         //DebugWide.LogRed("dropping b");
                     }
-                    Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
-                    RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+
+                    //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
+                    //{
+                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                    //    Vector3 firstPt = CalcTGuard_FirstPt2(_maxV, root_1.position, _cur_seg_B);
+                    //    RotateTGuard_FirstToLast(firstPt, _maxV, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
+                    //    //DebugWide.LogBlue("bbbbb");
+                    //}else
+                    {
+                        Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
+                        RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);    
+                    }
+
 
                 }
 
@@ -1875,7 +1898,8 @@ namespace UtilGS9
             if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
                 __prev_A_B_order = __cur_A_B_order;
 
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
 
             return result_contact;
         }
@@ -2099,18 +2123,25 @@ namespace UtilGS9
 
             //원과 접하는 두개의 교점을 찾느다 이중 meetPT와 가까운 교점이 찾으려는 점이다 , CalcTGuard_FirstPt 함수의 문제를 해결 
             Vector3 pt_first1, pt_first2;
-            Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first1);
+            bool r1 = Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first1);
             seg.origin = t0_sub_prev.last;
             seg.last = t0_sub_prev.origin;
-            Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first2);
+            bool r2 = Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first2);
 
             float sqrlen1 = (pt_first1 - meetPt).sqrMagnitude;
             float sqrlen2 = (pt_first2 - meetPt).sqrMagnitude;
+            bool r = r1;
             Vector3 closePt = pt_first1;
             if (sqrlen1 > sqrlen2)
+            {
                 closePt = pt_first2;
-
-            DebugWide.DrawCircle(closePt, 0.08f, Color.cyan); //chamto test        
+                r = r2;
+            }
+                
+            if(true == r)
+                DebugWide.DrawCircle(closePt, 0.06f, Color.cyan); //chamto test        
+            else
+                DebugWide.DrawCircle(closePt, 0.06f, Color.yellow); //chamto test        
 
             return closePt;
         }
@@ -2212,7 +2243,8 @@ namespace UtilGS9
             _tetr23.Set(_prev_seg_B, _cur_seg_B);
 
             Vector3 pt_start, pt_end;
-            LineSegment3.ClosestPoints(out pt_start, out pt_end, _prev_seg_A, _prev_seg_B);
+            //LineSegment3.ClosestPoints(out pt_start, out pt_end, _prev_seg_A, _prev_seg_B);
+            LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_end - pt_start;
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
