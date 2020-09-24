@@ -263,7 +263,6 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _tgs_A.Draw();
             _tgs_B.Draw();
 
-
             DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
             DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
         }
@@ -439,6 +438,13 @@ public class Test_TGuardSphere3 : MonoBehaviour
             DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white); 
             DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
 
+
+            LineSegment3 rooA = _tgs_A.ToRoot_T0().Rotate(_tgs_A._T0_root.position, _movTgs.__localRota_A);
+            rooA.Draw(Color.white);
+
+            LineSegment3 rooB = _tgs_B.ToRoot_T0().Rotate(_tgs_B._T0_root.position, _movTgs.__localRota_B);
+            rooB.Draw(Color.white);
+
             //DebugWide.DrawLine(_movTgs._meetPt, _movTgs._meetPt + dirMeet, Color.black);
             //DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, 0.04f, Color.black);
             //DebugWide.DrawCircle(_movTgs._cur_seg_A.last, 0.04f, Color.black);
@@ -446,7 +452,6 @@ public class Test_TGuardSphere3 : MonoBehaviour
         }
 
     }
-
 
     //==========
 
