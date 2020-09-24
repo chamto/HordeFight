@@ -450,11 +450,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _movTgs._cur_seg_A.Draw(Color.white);
             _movTgs._cur_seg_B.Draw(Color.white);
 
-            LineSegment3 rooA = _tgs_A.ToRoot_T0().Rotate(_tgs_A._T0_root.position, _movTgs.__localRota_A);
-            rooA.Draw(Color.white);
-
-            LineSegment3 rooB = _tgs_B.ToRoot_T0().Rotate(_tgs_B._T0_root.position, _movTgs.__localRota_B);
-            rooB.Draw(Color.white);
+            //LineSegment3 rooA = _tgs_A.ToRoot_T0().Rotate(_tgs_A._T0_root.position, _movTgs.__localRota_A);
+            //rooA.Draw(Color.white);
+            //LineSegment3 rooB = _tgs_B.ToRoot_T0().Rotate(_tgs_B._T0_root.position, _movTgs.__localRota_B);
+            //rooB.Draw(Color.white);
 
             //DebugWide.DrawLine(_movTgs._meetPt, _movTgs._meetPt + dirMeet, Color.black);
             //DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, 0.04f, Color.black);
