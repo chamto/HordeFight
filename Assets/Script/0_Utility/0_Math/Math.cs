@@ -510,6 +510,16 @@ namespace UtilGS9
         }   // End of ::DistanceSquared()
 
 
+        public LineSegment3 Rotate(Vector3 pos_ori, Quaternion rot)
+        {
+
+            Vector3 o, l;
+            o = (rot * (this.origin - pos_ori)) + pos_ori;
+            l = (rot * (this.last - pos_ori)) + pos_ori;
+
+            return new LineSegment3(o, l);
+        }
+
         public override string ToString()
         {
             return string.Format("origin: {0}, last: {1}, direction: {2}", new object[]
@@ -523,7 +533,7 @@ namespace UtilGS9
         public void Draw(Color color)
         {
             DebugWide.DrawLine(origin, last, color);
-            DebugWide.DrawCircle(origin, 0.05f, color);
+            //DebugWide.DrawCircle(origin, 0.05f, color);
         }
 
 
@@ -1651,7 +1661,7 @@ namespace UtilGS9
             Vector3 meetPt = ConstV.v3_zero;
 
             float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
-            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__cur_A_B_order) * 1.5f, Color.red);
+            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
 
             //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
             //선분과 선분이 만난 경우 
@@ -1851,6 +1861,7 @@ namespace UtilGS9
 
             }
 
+
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
 
@@ -1864,7 +1875,7 @@ namespace UtilGS9
             if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
                 __prev_A_B_order = __cur_A_B_order;
 
-            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.black);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
 
             return result_contact;
         }
