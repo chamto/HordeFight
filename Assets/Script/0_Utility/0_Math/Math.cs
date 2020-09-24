@@ -1820,7 +1820,7 @@ namespace UtilGS9
                     }
 
                     Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
-                    CalcTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
                 }
                 //if(false == __isSeg_B)
                 {
@@ -1834,7 +1834,7 @@ namespace UtilGS9
                         //DebugWide.LogRed("dropping b");
                     }
                     Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
-                    CalcTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+                    RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
 
                 }
 
@@ -2115,7 +2115,7 @@ namespace UtilGS9
             return closePt;
         }
 
-        public void CalcTGuard_FirstToLast(Vector3 meetPt_first, Vector3 meetPt_last,
+        public void RotateTGuard_FirstToLast(Vector3 meetPt_first, Vector3 meetPt_last,
                                Vector3 pos_t0_root,
                                 LineSegment3 t0_sub_start,
                                out LineSegment3 new_t0_sub, out Quaternion localRot)
@@ -2135,13 +2135,7 @@ namespace UtilGS9
             //DebugWide.LogBlue(" --  "+ up_t + "  " + angle_t);
             //--------
 
-            Vector3 ori, last;
-
-            //t부모를 제거한후 r부모를 적용한다. 그다음 t부모를 다시 적용한다 
-            ori = (localRot * (t0_sub_start.origin - pos_t0_root)) + pos_t0_root;
-            last = (localRot * (t0_sub_start.last - pos_t0_root)) + pos_t0_root;
-
-            new_t0_sub = new LineSegment3(ori, last);
+            new_t0_sub = t0_sub_start.Rotate(pos_t0_root, localRot);
 
             //---------------------------------------
 
