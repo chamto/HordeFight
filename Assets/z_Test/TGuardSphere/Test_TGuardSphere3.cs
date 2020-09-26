@@ -153,6 +153,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
         __prev_A_rot = _tgs_A._T0_root.rotation;
         __prev_B_rot = _tgs_B._T0_root.rotation;
 
+        //_movTgs.__localRota_A = Quaternion.identity;
+        //_movTgs.__localRota_B = Quaternion.identity;
+
 	}
 
 
@@ -205,22 +208,21 @@ public class Test_TGuardSphere3 : MonoBehaviour
             __rate = Mathf.Clamp(__rate, 0, 1f);
             _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
-            _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
-            _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
+            //_tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
+            //_tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
             //------------
 
             ////각도전진 시험
-            //if (true == __nextFrame)
-            //{
-            //    __nextFrame = false;
-
-            //    Vector3 ori = _tgs0._T0_root_start.position;
-            //    Vector3 start = _tgs0._Tctl_root_end.position;
-            //    Vector3 end = _tgs0._T0_root_end.position;
-            //    Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
-            //    _tgs0._Tctl_root.rotation *= Quaternion.AngleAxis(0.5f, up_angle);
-            //}
+            if (true == __nextFrame)
+            {
+                __nextFrame = false;
+                Vector3 ori = _tgs_A._T0_root.position;
+                Vector3 start = _tgs_A._T0_root_end.position;
+                Vector3 end = _tgs_A._Tctl_root_end.position;
+                Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(0.5f, up_angle);
+            }
 
             //------------
 
@@ -236,9 +238,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
 
-            if (true == __nextFrame)
+            //if (true == __nextFrame)
             {
-                __nextFrame = false;
+                //__nextFrame = false;
 
 
                 bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
@@ -313,15 +315,17 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if (true == contact)
             {
 
+                //잘못된 코드 , cur 선분에 적용 
                 //_tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
                 //_tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+
+                //prev 선분에 적용 
                 _tgs_A._T0_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
                 _tgs_B._T0_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
 
                 DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
                 DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
                 DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
-
             }
 
 
@@ -339,8 +343,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _tgs_B.Draw();
 
 
-            DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+            _movTgs._prev_seg_A.Draw(Color.white);
+            _movTgs._prev_seg_B.Draw(Color.white);
+            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
+            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
 
         }
 
@@ -402,7 +408,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         
         if (true == _tgs_A._init)
         {
-            __rate = Mathf.Clamp(__rate, 0, 1f);
+            //__rate = Mathf.Clamp(__rate, 0, 1f);
             _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
 

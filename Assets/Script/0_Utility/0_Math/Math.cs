@@ -1660,17 +1660,25 @@ namespace UtilGS9
             bool is_cross_contact = false;
             Vector3 meetPt = ConstV.v3_zero;
 
+            Vector3 pt_start, pt_end;
+            LineSegment3.ClosestPoints(out pt_start, out pt_end, _prev_seg_A, _prev_seg_B);
+            __prev_A_B_order = pt_end - pt_start;
+            //LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
+            //__cur_A_B_order = pt_end - pt_start;
+            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+
             float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
-            //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+            //__prev_A_B_order = __cur_A_B_order; //갱신 
 
             //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
+                
                 if (true == __intr_seg_seg)
                 {
-                    //DebugWide.LogBlue("!! 선분 vs 선분  ");    
+                    DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     _minV = _maxV = meetPt;
                     result_contact = true;
@@ -1723,16 +1731,23 @@ namespace UtilGS9
 
                     //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
 
+                    //DebugWide.LogBlue(result_contact + "-----");
+                    //if (0.00001f > __prev_A_B_order.sqrMagnitude)
+                    //{
+                    //    DebugWide.LogRed(" -------------- seg seg -------------!!");
+                    //}
+
                     if(true == result_contact)
                     {
+
                         //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                         if (true == __isSeg_A)
                         {
                             //선분의 순서가 바뀌었는지 검사 
-                            //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분이 통과되었다는 의미가됨 
+                            //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분을 밀고 있다는 의미가 됨
                             if (0 > orderValue)
                             {
-                                DebugWide.LogBlue("선분 순서가 바뀌었음  aaa ");
+                                //DebugWide.LogRed("선분 순서가 바뀌었음  aaa ");
                             }
                             //else
                             {
@@ -1747,10 +1762,10 @@ namespace UtilGS9
                         {
                             
                             //선분의 순서가 바뀌었는지 검사 
-                            //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분이 통과되었다는 의미가됨 
+                            //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분을 밀고 있다는 의미가 됨
                             if (0 > orderValue)
                             {
-                                DebugWide.LogBlue("선분 순서가 바뀌었음  bbb ");
+                                //DebugWide.LogRed("선분 순서가 바뀌었음  bbb ");
                             }
                             //else
                             {
@@ -1768,19 +1783,19 @@ namespace UtilGS9
 
 
                     //한계위치 검사
-                    //Vector3 limit;
-                    //if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
-                    //{
-                    //    meetPt = limit;
-                    //    //DebugWide.DrawCircle(limit, 0.04f, Color.white);
-                    //}
-                    //if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
-                    //{
-                    //    //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
-                    //    if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
-                    //        meetPt = limit;
-                    //    //DebugWide.DrawCircle(limit, 0.05f, Color.white);
-                    //}
+                    Vector3 limit;
+                    if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
+                    {
+                        meetPt = limit;
+                        //DebugWide.DrawCircle(limit, 0.04f, Color.white);
+                    }
+                    if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
+                    {
+                        //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
+                        if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
+                            meetPt = limit;
+                        //DebugWide.DrawCircle(limit, 0.05f, Color.white);
+                    }
 
                     //float ta = (meetPt - root_0.position).magnitude;
                     //float tb = (meetPt - root_1.position).magnitude;
@@ -1791,15 +1806,15 @@ namespace UtilGS9
                 }
             }
 
-            __localRota_A = Quaternion.identity;
-            __localRota_B = Quaternion.identity;
+            //__localRota_A = Quaternion.identity;
+            //__localRota_B = Quaternion.identity;
             if (result_contact)
             {
                 LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
-                //const float DROPPING = 0.01f;
-                //Vector3 drop_dir = VOp.Normalize(_maxV - _minV);
-                //float drop_sign = 1f;
+                const float DROPPING = 0.02f;
+                Vector3 drop_dir = VOp.Normalize(_maxV - _minV);
+                float drop_sign = 1f;
                 //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
                 //Vector3 centerB = (_prev_seg_B.origin + _prev_seg_B.last) * 0.5f;
                 ////prevB 선분의 방향이 prevA 선분의 방향보다 뒤에 있는 경우
@@ -1811,13 +1826,13 @@ namespace UtilGS9
                 //if(false == __isSeg_A)
                 {
                     Vector3 lastPt = meetPt;
-                    if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
+                    if (false == __isSeg_A && true == __isSeg_B)
                     {
-                        //lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+                        lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
 
                         //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.blue);
-                        //DebugWide.LogRed("dropping a");
+                        DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
+                        DebugWide.LogRed("방향보정 dropping a");
                     }
 
                     //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
@@ -1837,14 +1852,14 @@ namespace UtilGS9
                 //if(false == __isSeg_B)
                 {
                     Vector3 lastPt = meetPt;
-                    if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
-                    {
-                        //lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
+                    //if (true == __isSeg_A && false == __isSeg_B)
+                    //{
+                    //      lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
 
-                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //DebugWide.DrawCircle(lastPt, 0.01f, Color.magenta);
-                        //DebugWide.LogRed("dropping b");
-                    }
+                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                    //    DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
+                    //    //DebugWide.LogRed("dropping b");
+                    //}
 
                     //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
                     //{
@@ -1882,11 +1897,23 @@ namespace UtilGS9
                 _cur_seg_A = newSegA;
                 _cur_seg_B = newSegB;
 
-            }
 
+
+                LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
+                __cur_A_B_order = pt_end - pt_start;
+                DebugWide.LogBlue("cur dir " + __cur_A_B_order.magnitude);
+                if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
+                {
+                    DebugWide.LogRed("방향이 바뀌었음 ");
+
+                }
+
+            }
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
 
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
+
 
             _meetPt = meetPt;
             __result_meet = result_contact;
@@ -1895,14 +1922,19 @@ namespace UtilGS9
             //{
             //    DebugWide.LogRed("__cur_A_B_order ------------------ !!!! 00");
             //}
-            if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
-                __prev_A_B_order = __cur_A_B_order;
+            //if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
+                //__prev_A_B_order = __cur_A_B_order;
 
             //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
-            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            __count++;
+            if(true == result_contact)
+                DebugWide.LogBlue(__count +"   "+result_contact + " ----------------------"); //chamto test
 
             return result_contact;
         }
+
+        int __count = 0;
 
         public Quaternion __localRota_A = Quaternion.identity;
         public Quaternion __localRota_B = Quaternion.identity;
@@ -2138,10 +2170,10 @@ namespace UtilGS9
                 r = r2;
             }
                 
-            if(true == r)
-                DebugWide.DrawCircle(closePt, 0.06f, Color.cyan); //chamto test        
-            else
-                DebugWide.DrawCircle(closePt, 0.06f, Color.yellow); //chamto test        
+            //if(true == r)
+            //    DebugWide.DrawCircle(closePt, 0.06f, Color.cyan); //chamto test        
+            //else
+                //DebugWide.DrawCircle(closePt, 0.06f, Color.yellow); //chamto test        
 
             return closePt;
         }
@@ -2244,8 +2276,8 @@ namespace UtilGS9
 
             Vector3 pt_start, pt_end;
             //LineSegment3.ClosestPoints(out pt_start, out pt_end, _prev_seg_A, _prev_seg_B);
-            LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-            __cur_A_B_order = pt_end - pt_start;
+            ////LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
+            //__cur_A_B_order = pt_end - pt_start;
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
             if (__isSeg_A && __isSeg_B)
