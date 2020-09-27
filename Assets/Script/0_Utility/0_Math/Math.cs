@@ -1658,17 +1658,18 @@ namespace UtilGS9
         {
             bool result_contact = false;
             bool is_cross_contact = false;
+            Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
 
             Vector3 pt_start, pt_end;
-            LineSegment3.ClosestPoints(out pt_start, out pt_end, _prev_seg_A, _prev_seg_B);
-            __prev_A_B_order = pt_end - pt_start;
+            LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
+            __cur_A_B_order = pt_end - pt_start;
             //LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
             //__cur_A_B_order = pt_end - pt_start;
-            DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
-            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+            //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.8f, Color.red);
 
-            float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
+            //float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
             //__prev_A_B_order = __cur_A_B_order; //갱신 
 
             //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
@@ -1698,12 +1699,12 @@ namespace UtilGS9
                     if (true == __isSeg_A && false == __isSeg_B)
                     {
                         //DebugWide.LogBlue("!! 선분 vs 사각꼴 ");
-                        result_contact = GetMinMax_ContactPt(_prev_seg_B.origin, out _minV, out _maxV, 4);
+                        result_contact = GetMinMax_ContactPt(_prev_seg_B.origin, out minV, out maxV, 4);
                     }
                     else if (false == __isSeg_A && true == __isSeg_B)
                     {
                         //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
-                        result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out _minV, out _maxV, 4);
+                        result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out minV, out maxV, 4);
                     }
                     //사각꼴과 사각꼴이 같은 평면에서 만난경우 
                     else if (false == __isSeg_A && false == __isSeg_B)
@@ -1712,10 +1713,10 @@ namespace UtilGS9
                         //  잘못된 정보에 의해 접촉한것으로 계산하게 되며 초기값에 의해 방향성을 가지게 되어 
                         //  dropping 에서 잘못된 방향으로 무한히 떨어뜨리게 된다.
                         //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
-                        result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 6);
+                        result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 6);
 
                     }
-                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                    meetPt = minV + (maxV - minV) * rateAtoB;
 
                     //if(result_contact)
                         //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
@@ -1724,7 +1725,7 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    result_contact = GetMinMax_Segement(__dir_A, out _minV, out _maxV);
+                    result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
                     //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
                     is_cross_contact = true;
@@ -1745,7 +1746,7 @@ namespace UtilGS9
                         {
                             //선분의 순서가 바뀌었는지 검사 
                             //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분을 밀고 있다는 의미가 됨
-                            if (0 > orderValue)
+                            //if (0 > orderValue)
                             {
                                 //DebugWide.LogRed("선분 순서가 바뀌었음  aaa ");
                             }
@@ -1753,7 +1754,7 @@ namespace UtilGS9
                             {
                                 //min 구하기 
                                 Vector3 none;
-                                Line3.ClosestPoints(out _minV, out none, new Line3(_maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                                Line3.ClosestPoints(out minV, out none, new Line3(maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                                 DebugWide.LogBlue("aaa ");
                             }
 
@@ -1763,7 +1764,7 @@ namespace UtilGS9
                             
                             //선분의 순서가 바뀌었는지 검사 
                             //교점이 생긴 순간에서 선분의 방향이 바뀌었다면, 선분을 밀고 있다는 의미가 됨
-                            if (0 > orderValue)
+                            //if (0 > orderValue)
                             {
                                 //DebugWide.LogRed("선분 순서가 바뀌었음  bbb ");
                             }
@@ -1771,28 +1772,28 @@ namespace UtilGS9
                             {
                                 //max 구하기
                                 Vector3 none;
-                                Line3.ClosestPoints(out _maxV, out none, new Line3(_minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                                Line3.ClosestPoints(out maxV, out none, new Line3(minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                                 DebugWide.LogBlue("bbb ");
                             }
                         }
                     }
 
 
-                    meetPt = _minV + (_maxV - _minV) * rateAtoB;
+                    meetPt = minV + (maxV - minV) * rateAtoB;
 
 
 
                     //한계위치 검사
                     Vector3 limit;
-                    if (CalcLimit(meetPt, _minV, _maxV, root_0.position, _cur_seg_A, out limit))
+                    if (CalcLimit(meetPt, minV, maxV, root_0.position, _cur_seg_A, out limit))
                     {
                         meetPt = limit;
                         //DebugWide.DrawCircle(limit, 0.04f, Color.white);
                     }
-                    if(CalcLimit(meetPt, _minV, _maxV, root_1.position, _cur_seg_B, out limit))
+                    if(CalcLimit(meetPt, minV, maxV, root_1.position, _cur_seg_B, out limit))
                     {
                         //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
-                        if((meetPt-_minV).sqrMagnitude > (limit - _minV).sqrMagnitude)
+                        if((meetPt-minV).sqrMagnitude > (limit - minV).sqrMagnitude)
                             meetPt = limit;
                         //DebugWide.DrawCircle(limit, 0.05f, Color.white);
                     }
@@ -1813,7 +1814,7 @@ namespace UtilGS9
                 LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
                 const float DROPPING = 0.02f;
-                Vector3 drop_dir = VOp.Normalize(_maxV - _minV);
+                Vector3 drop_dir = VOp.Normalize(maxV - minV);
                 float drop_sign = 1f;
                 //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
                 //Vector3 centerB = (_prev_seg_B.origin + _prev_seg_B.last) * 0.5f;
@@ -1826,14 +1827,21 @@ namespace UtilGS9
                 //if(false == __isSeg_A)
                 {
                     Vector3 lastPt = meetPt;
-                    //if (false == __isSeg_A && true == __isSeg_B)
-                    //{
-                    //    lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+                    if (false == __isSeg_A && true == __isSeg_B)
+                    {
 
-                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                    //    DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
-                    //    DebugWide.LogRed("방향보정 dropping a");
-                    //}
+                        if(0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                        {
+                            DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
+                            drop_sign = -1f;
+                        }
+
+                        lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+
+                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
+                        DebugWide.LogRed("방향보정 dropping a");
+                    }
 
                     //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
                     //{
@@ -1852,14 +1860,21 @@ namespace UtilGS9
                 //if(false == __isSeg_B)
                 {
                     Vector3 lastPt = meetPt;
-                    //if (true == __isSeg_A && false == __isSeg_B)
-                    //{
-                    //      lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
+                    if (true == __isSeg_A && false == __isSeg_B)
+                    {
 
-                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                    //    DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
-                    //    //DebugWide.LogRed("dropping b");
-                    //}
+                        if (0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                        {
+                            DebugWide.LogRed("min max 방향이 달라졌음 ! bb");
+                            drop_sign = -1f;
+                        }
+
+                          lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
+
+                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
+                        DebugWide.LogRed("방향보정 dropping b");
+                    }
 
                     //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
                     //{
@@ -1900,24 +1915,29 @@ namespace UtilGS9
 
 
                 LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-                __cur_A_B_order = pt_end - pt_start;
-                DebugWide.LogBlue("cur dir " + __cur_A_B_order.magnitude);
-                if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
-                {
-                    if(float.Epsilon < __cur_A_B_order.magnitude)
-                        DebugWide.LogRed("서로 붙었음");
-                    else
-                        DebugWide.LogRed("방향이 바뀌었음 ");
+                __cur_A_B_order2 = pt_end - pt_start;
 
+                DebugWide.LogBlue("cur dir " + __cur_A_B_order2.magnitude);
+                if (0.00001f > __cur_A_B_order2.magnitude)
+                    DebugWide.LogRed("서로 붙었음");
+                
+                if(0 > Vector3.Dot(__cur_A_B_order, __cur_A_B_order2))
+                {
+                    DebugWide.LogRed("방향이 바뀌었음 ");
                 }
 
+                __min_max.origin = minV;
+                __min_max.last = maxV;
+
             }
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order2) * 1.5f, Color.black);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 1f, Color.green);
 
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
 
-
+            _minV = minV;
+            _maxV = maxV;
             _meetPt = meetPt;
             __result_meet = result_contact;
 
@@ -1925,8 +1945,8 @@ namespace UtilGS9
             //{
             //    DebugWide.LogRed("__cur_A_B_order ------------------ !!!! 00");
             //}
-            //if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
-                //__prev_A_B_order = __cur_A_B_order;
+            if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
+                __prev_A_B_order = __cur_A_B_order;
 
             //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.5f, Color.black);
             //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
@@ -1937,6 +1957,7 @@ namespace UtilGS9
             return result_contact;
         }
 
+        LineSegment3 __min_max = new LineSegment3();
         int __count = 0;
 
         public Quaternion __localRota_A = Quaternion.identity;
@@ -2252,6 +2273,7 @@ namespace UtilGS9
         public Vector3 __dir_B = ConstV.v3_zero;
         public Vector3 __prev_A_B_order = ConstV.v3_zero;
         public Vector3 __cur_A_B_order = ConstV.v3_zero;
+        public Vector3 __cur_A_B_order2 = ConstV.v3_zero;
         public void Find(LineSegment3 prev_segA, LineSegment3 prev_segB, LineSegment3 cur_segA, LineSegment3 cur_segB)
         {
 
