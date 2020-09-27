@@ -1826,14 +1826,14 @@ namespace UtilGS9
                 //if(false == __isSeg_A)
                 {
                     Vector3 lastPt = meetPt;
-                    if (false == __isSeg_A && true == __isSeg_B)
-                    {
-                        lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+                    //if (false == __isSeg_A && true == __isSeg_B)
+                    //{
+                    //    lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
 
-                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
-                        DebugWide.LogRed("방향보정 dropping a");
-                    }
+                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                    //    DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
+                    //    DebugWide.LogRed("방향보정 dropping a");
+                    //}
 
                     //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
                     //{
@@ -1904,7 +1904,10 @@ namespace UtilGS9
                 DebugWide.LogBlue("cur dir " + __cur_A_B_order.magnitude);
                 if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
                 {
-                    DebugWide.LogRed("방향이 바뀌었음 ");
+                    if(float.Epsilon < __cur_A_B_order.magnitude)
+                        DebugWide.LogRed("서로 붙었음");
+                    else
+                        DebugWide.LogRed("방향이 바뀌었음 ");
 
                 }
 

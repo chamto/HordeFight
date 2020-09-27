@@ -174,7 +174,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
         RealTime_2,
         FrameStep,
     }
+
+    public bool __prevFrame = false;
     public bool __nextFrame = false;
+    public float __angle = 0.05f;
+
     public eModeKind __drawMode_stopTime = eModeKind.StopTime;
     private void OnDrawGizmos()
     {
@@ -213,6 +217,17 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             //------------
 
+            //각도후진 시험 
+            if (true == __prevFrame)
+            {
+                __prevFrame = false;
+                Vector3 ori = _tgs_A._T0_root.position;
+                Vector3 start = _tgs_A._T0_root_end.position;
+                Vector3 end = _tgs_A._Tctl_root_end.position;
+                Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, -up_angle);
+            }
+
             ////각도전진 시험
             if (true == __nextFrame)
             {
@@ -221,7 +236,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 Vector3 start = _tgs_A._T0_root_end.position;
                 Vector3 end = _tgs_A._Tctl_root_end.position;
                 Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
-                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(0.5f, up_angle);
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, up_angle);
             }
 
             //------------
