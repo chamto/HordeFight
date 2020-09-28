@@ -11,6 +11,9 @@ public class Test_TGuardCollision : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
+        _movingModel.__RateAtoB = __RateAtoB;
+        _movingModel.Update();
+
         _movingModel.Draw();
 	}
 
@@ -22,8 +25,8 @@ public class Test_TGuardCollision : MonoBehaviour
 
 	private void Update()
 	{
-        _movingModel.__RateAtoB = __RateAtoB;
-        _movingModel.Update();
+        //_movingModel.__RateAtoB = __RateAtoB;
+        //_movingModel.Update();
 	}
 }
 
@@ -101,7 +104,7 @@ public class MovingModel
 
         }//end init
 
-        public void Update()
+        public void Cur_Update()
         {
             for (int i = 0; i < _seg_count;i++)
             {
@@ -110,7 +113,7 @@ public class MovingModel
             }
         }
 
-        public void After_Update()
+        public void Prev_Update()
         {
             for (int i = 0; i < _seg_count; i++)
             {
@@ -129,29 +132,32 @@ public class MovingModel
         _frame_sword_A.Draw(Color.blue);
         _frame_sword_B.Draw(Color.magenta);
 
-        if(__update)
-        {
-            DebugWide.DrawLine(__calc_rootSeg_a.origin, __calc_rootSeg_a.last, Color.red);
-            DebugWide.DrawLine(__calc_rootSeg_b.origin, __calc_rootSeg_b.last, Color.red);    
-        }
-
     }
 
+
+    public bool __init = false;
     public void Init(Transform root)
     {
+        __init = true;
         Transform model = Hierarchy.GetTransform(root, "model");
         Transform frame = null;
         frame = Hierarchy.GetTransform(model, "frame_0");
         _frame_sword_A.Init(frame);
         frame = Hierarchy.GetTransform(model, "frame_1");
         _frame_sword_B.Init(frame);
+
+        __prev_A_rot = _frame_sword_A._tr_frame.rotation;
+        __prev_B_rot = _frame_sword_B._tr_frame.rotation;
     }
 
-
-    public void Update()
+    private Quaternion __prev_A_rot = Quaternion.identity;
+    private Quaternion __prev_B_rot = Quaternion.identity;
+    private Quaternion __min_A_rot = Quaternion.identity;
+    private Quaternion __min_B_rot = Quaternion.identity;
+    public void Update_2()
     {
-        _frame_sword_A.Update();
-        _frame_sword_B.Update();
+        _frame_sword_A.Cur_Update();
+        _frame_sword_B.Cur_Update();
         //=================================================
 
         LineSegment3 prev_A, cur_A;
@@ -170,38 +176,47 @@ public class MovingModel
         bool contact = _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
         if (true == contact)
         {
-            _frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_sword_A._tr_frame.rotation; //실제적용 
-            _frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * _frame_sword_B._tr_frame.rotation;
+            //_frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_sword_A._tr_frame.rotation; //실제적용 
+            //_frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * _frame_sword_B._tr_frame.rotation;
+
+            _frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * __prev_A_rot; //실제적용 
+            _frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * __prev_B_rot;
         }
 
         //=================================================
+        __prev_A_rot = _frame_sword_A._tr_frame.rotation;
+        __prev_B_rot = _frame_sword_B._tr_frame.rotation;
+
         _frame_sword_A._cur_seg[idx] = _movingSegment._cur_seg_A;
         _frame_sword_B._cur_seg[idx] = _movingSegment._cur_seg_B;
-        _frame_sword_A.After_Update();
-        _frame_sword_B.After_Update();
+        _frame_sword_A.Prev_Update();
+        _frame_sword_B.Prev_Update();
     }
 
     private const int ROOT0 = 0;
     public float __RateAtoB = 0.5f;
     bool __update = false;
-    LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
-    public void Update_tt()
+    //LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
+    public void Update()
     {
-        _frame_sword_A.Update();
-        _frame_sword_B.Update();
+
+        if (false == __init) return;
+
+        _frame_sword_A.Cur_Update();
+        _frame_sword_B.Cur_Update();
         //=================================================
 
         LineSegment3 prev_A, cur_A;
         LineSegment3 prev_B, cur_B;
-        Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
+        //Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
         bool recalc = false;
         __update = false;
         float min_len = 1000000f;
+        __min_A_rot = Quaternion.identity;
+        __min_B_rot = Quaternion.identity;
 
 
-        //for (int i = 0; i < Frame.MAX_LEAF_NUMBER - 1; i++)
-        //{
-            //for (int j = i + 1; j < Frame.MAX_LEAF_NUMBER; j++)
+        //DebugWide.LogBlue(_frame_sword_A._seg_count);
         for (int i = 0; i < _frame_sword_A._seg_count ; i++)
         {
             for (int j = 0; j < _frame_sword_B._seg_count; j++)
@@ -220,11 +235,6 @@ public class MovingModel
                 recalc = _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB,
                                                               _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
 
-                _movingSegment._cur_seg_A = _frame_sword_A._tr_seg[i].ToSegment();
-                _movingSegment._prev_seg_A = _movingSegment._cur_seg_A;
-                 
-                _movingSegment._cur_seg_B = _frame_sword_B._tr_seg[j].ToSegment();
-                _movingSegment._prev_seg_B = _movingSegment._cur_seg_B;
 
                 //=============
 
@@ -232,16 +242,33 @@ public class MovingModel
                 {
                     __update = true;
 
+                    Vector3 n_left = VOp.Normalize(prev_A.direction);
+                    float len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_A.origin));
+                    Vector3 pt_proj_A = len_proj_left * n_left + prev_A.origin;
+
+                    n_left = VOp.Normalize(prev_B.direction);
+                    len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_B.origin));
+                    Vector3 pt_proj_B = len_proj_left * n_left + prev_B.origin;
+
+                    //meet으로부터 더 먼 점을 선택 , 기준이 되는 공통의 선분위의 점을 찾는다 
+                    Vector3 stand = pt_proj_B;
+                    if((pt_proj_A - _movingSegment._meetPt).sqrMagnitude > (pt_proj_B - _movingSegment._meetPt).sqrMagnitude)
+                    {
+                        stand = pt_proj_A;
+                    }
+
                     //결과들중 최소거리의 선분 하나 선택
-                    float new_len = (_movingSegment._minV - stand).sqrMagnitude; 
+                    float new_len = (_movingSegment._meetPt - stand).sqrMagnitude; 
                     if(min_len > new_len)
                     {
                         min_len = new_len;
 
-                        __calc_rootSeg_a = _movingSegment._cur_seg_A;
-                        __calc_rootSeg_b = _movingSegment._cur_seg_B;
+                        __min_A_rot = _movingSegment.__localRota_A;
+                        __min_B_rot = _movingSegment.__localRota_B;
 
                     }
+
+                    DebugWide.DrawCircle(_movingSegment._meetPt, 0.05f, Color.red);
                 }
             }
         }//end for
@@ -250,17 +277,18 @@ public class MovingModel
         //적용 
         if(__update)
         {
-            //_frame_sword_A._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_a.direction);
-            //_frame_sword_A._tr_frame.position = __calc_rootSeg_a.origin;
 
-            //_frame_sword_B._tr_frame.rotation = Quaternion.FromToRotation(Vector3.forward, __calc_rootSeg_b.direction);
-            //_frame_sword_B._tr_frame.position = __calc_rootSeg_b.origin;    
+            _frame_sword_A._tr_frame.rotation = __min_A_rot * __prev_A_rot; //실제적용 
+            _frame_sword_B._tr_frame.rotation = __min_B_rot * __prev_B_rot;
+
         }
 
+        __prev_A_rot = _frame_sword_A._tr_frame.rotation;
+        __prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
         //=================================================
-        _frame_sword_A.After_Update();
-        _frame_sword_B.After_Update();
+        _frame_sword_A.Prev_Update();
+        _frame_sword_B.Prev_Update();
 
     }
 }
