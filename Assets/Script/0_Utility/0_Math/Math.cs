@@ -1061,27 +1061,27 @@ namespace UtilGS9
                 
             //_tetr01.Draw(Color.blue);
             //_tetr23.Draw(Color.magenta);
-            if(true == contact)
-            {
-                //for (int i = 0; i < 8; i++)
-                //{
-                //    Color color = Color.green;
-                //    if (Misc.IsZero(arr[i]))
-                //        color = Color.black;
-                //    if(Misc.IsZero(arr[i]-min))
-                //        color = Color.black;
-                //    if (Misc.IsZero(arr[i] - max))
-                //        color = Color.black;
-                //    DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
-                //}
-                //DebugWide.DrawCircle(min, 0.03f, Color.red);
-                //DebugWide.DrawCircle(max, 0.07f, Color.red);
+            //if(true == contact)
+            //{
+            //    //for (int i = 0; i < 8; i++)
+            //    //{
+            //    //    Color color = Color.green;
+            //    //    if (Misc.IsZero(arr[i]))
+            //    //        color = Color.black;
+            //    //    if(Misc.IsZero(arr[i]-min))
+            //    //        color = Color.black;
+            //    //    if (Misc.IsZero(arr[i] - max))
+            //    //        color = Color.black;
+            //    //    DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
+            //    //}
+            //    //DebugWide.DrawCircle(min, 0.03f, Color.red);
+            //    //DebugWide.DrawCircle(max, 0.07f, Color.red);
 
-                _intr_0_2.Draw(Color.black);
-                _intr_0_3.Draw(Color.black);
-                _intr_1_2.Draw(Color.black);
-                _intr_1_3.Draw(Color.black);
-            }
+            //    //_intr_0_2.Draw(Color.black);
+            //    //_intr_0_3.Draw(Color.black);
+            //    //_intr_1_2.Draw(Color.black);
+            //    //_intr_1_3.Draw(Color.black);
+            //}
 
             return contact;
 
@@ -1667,7 +1667,7 @@ namespace UtilGS9
             //LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
             //__cur_A_B_order = pt_end - pt_start;
             //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1.8f, Color.red);
+            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1f, Color.red);
 
             //float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
             //__prev_A_B_order = __cur_A_B_order; //갱신 
@@ -1813,7 +1813,7 @@ namespace UtilGS9
             {
                 LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
-                const float DROPPING = 0.02f;
+                const float DROPPING = 0.01f;
                 Vector3 drop_dir = VOp.Normalize(maxV - minV);
                 float drop_sign = 1f;
                 //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
@@ -1921,7 +1921,7 @@ namespace UtilGS9
                 if (0.00001f > __cur_A_B_order2.magnitude)
                     DebugWide.LogRed("서로 붙었음");
                 
-                if(0 > Vector3.Dot(__cur_A_B_order, __cur_A_B_order2))
+                if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
                 {
                     DebugWide.LogRed("방향이 바뀌었음 ");
                 }
@@ -1930,8 +1930,9 @@ namespace UtilGS9
                 __min_max.last = maxV;
 
             }
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order2) * 1.5f, Color.black);
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 1f, Color.green);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1f, Color.red);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order2) * 0.7f, Color.black);
+            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 0.4f, Color.green);
 
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
