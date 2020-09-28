@@ -1676,18 +1676,17 @@ namespace UtilGS9
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
-                
                 if (true == __intr_seg_seg)
                 {
-                    DebugWide.LogBlue("!! 선분 vs 선분  ");    
+                    DebugWide.LogGreen("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
-                    _minV = _maxV = meetPt;
+                    minV = maxV = meetPt;
                     result_contact = true;
                 }
             }
             else
             {
-                //DebugWide.LogBlue("!! 사각꼴(선분) vs 사각꼴(선분)  ");
+                //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분)  ");
                 //사각꼴이 서로 같은 평면에서 만난경우
                 if (eIntersectionType.PLANE == _intr_0_2.mIntersectionType ||
                     eIntersectionType.PLANE == _intr_0_3.mIntersectionType ||
@@ -2292,11 +2291,11 @@ namespace UtilGS9
             //__dir_A = VOp.Normalize(__dir_A); 
             //__dir_B = VOp.Normalize(__dir_B);
             //선분상태인지 사각꼴 상태인지 검사 
-            //__isSeg_A = Misc.IsZero(_prev_seg_A.origin - segA.origin) && Misc.IsZero(_prev_seg_A.last - segA.last);
-            //__isSeg_B = Misc.IsZero(_prev_seg_B.origin - segB.origin) && Misc.IsZero(_prev_seg_B.last - segB.last);
+            //__isSeg_A = Misc.IsZero(_prev_seg_A.origin - _cur_seg_A.origin) && Misc.IsZero(_prev_seg_A.last - _cur_seg_A.last);
+            //__isSeg_B = Misc.IsZero(_prev_seg_B.origin - _cur_seg_B.origin) && Misc.IsZero(_prev_seg_B.last - _cur_seg_B.last);
             __isSeg_A = Misc.IsZero(__dir_A);
             __isSeg_B = Misc.IsZero(__dir_B);
-
+            //DebugWide.LogBlue(__isSeg_A + "  " + __isSeg_B); //chamto test
             _tetr01.Set(_prev_seg_A, _cur_seg_A);
             _tetr23.Set(_prev_seg_B, _cur_seg_B);
 
@@ -2322,7 +2321,7 @@ namespace UtilGS9
                 //}
 
                 LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-                if(float.Epsilon > (pt_end - pt_start).sqrMagnitude)
+                if(0.000001f > (pt_end - pt_start).sqrMagnitude)
                 {
                     __cpPt0 = pt_start;
                     __intr_seg_seg = true;
