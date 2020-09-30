@@ -157,7 +157,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
         LineSegment3.ClosestPoints(out pt_start, out pt_end, __seg_prev_A, __seg_prev_B);
         _movTgs.__prev_A_B_order = pt_end - pt_start;
 
-
+        _movTgs._radius_A = 0.1f;
+        _movTgs._radius_B = 0.1f;
 	}
 
 
@@ -209,9 +210,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
         _tgs_A.Draw();
         _tgs_B.Draw();
 
-        DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-        DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-        DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
         DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
         DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);

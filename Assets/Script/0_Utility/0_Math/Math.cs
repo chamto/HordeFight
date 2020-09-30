@@ -54,6 +54,16 @@ namespace UtilGS9
 
         }
 
+        static public Vector3 ClosestPoint(Line3 l, Vector3 point)
+        {
+            Vector3 w = point - l.origin;
+            float vsq = Vector3.Dot(l.direction, l.direction);
+            float proj =  Vector3.Dot(w, l.direction);
+
+            return l.origin + (proj/vsq) * l.direction;
+
+        } 
+
     }
 
     public struct Ray3
@@ -862,6 +872,8 @@ namespace UtilGS9
         private IntrTriangle3Triangle3 _intr_1_3;
         public Vector3 _minV, _maxV;
         public Vector3 _meetPt;
+        public float _radius_A = 0f;
+        public float _radius_B = 0f;
 
         public MovingSegement3()
         {
@@ -1661,27 +1673,64 @@ namespace UtilGS9
             Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
 
-            Vector3 pt_start, pt_end;
-            LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-            __cur_A_B_order = pt_end - pt_start;
-            //LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-            //__cur_A_B_order = pt_end - pt_start;
-            //DebugWide.DrawLine(_prev_seg_A.origin, _prev_seg_A.origin+VOp.Normalize(__prev_A_B_order) * 1.5f, Color.red);
-            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order) * 1f, Color.red);
+            Vector3 pt_close_A, pt_close_B;
+            LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+            __cur_A_B_order = pt_close_B - pt_close_A;
 
-            //float orderValue = Vector3.Dot(__cur_A_B_order, __prev_A_B_order);
-            //__prev_A_B_order = __cur_A_B_order; //갱신 
 
-            //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
             //선분과 선분이 만난 경우 
-            if (__isSeg_A && __isSeg_B)
+            //if (__isSeg_A && __isSeg_B)
+            if (true == __intr_seg_seg)
             {
-                if (true == __intr_seg_seg)
+                //if (true == __intr_seg_seg)
                 {
                     DebugWide.LogGreen("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
                     minV = maxV = meetPt;
                     result_contact = true;
+
+
+                    float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
+                    Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
+                    Vector3 meetPt_A = pt_close_A + (n_close_BA * penetration);
+
+                    DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
+                    DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
+                    DebugWide.LogBlue(__cur_A_B_order.magnitude);
+
+
+                    //===============
+                    Vector3 up_center = Vector3.Cross(root_0.rotation * ConstV.v3_forward, n_close_BA);
+                    Vector3 pt_center = Line3.ClosestPoint(new Line3(root_0.position, up_center), pt_close_A);
+
+                    //===============
+                    //코사인 제2법칙 이용, a 와 c 는 길이가 같은점을 이용하여 식을 정리 
+                    //    0
+                    //  a   b
+                    // 0  c   0
+                    //
+                    // a2 = b2+c2-2bc*cosa
+                    // a2 - b2 - c2 = -2bc * cosa
+                    // (a2 - b2 - c2)/-2bc = cosa
+                    // a == c
+                    // b/2c = cosa
+                    float c = (pt_close_A - pt_center).magnitude;
+                    float b = penetration;
+                    float cos_a = b / (2 * c);
+                    float angle_a = Mathf.Acos(cos_a) * Mathf.Rad2Deg;
+
+                    Vector3 up = Vector3.Cross((pt_center-pt_close_A),(meetPt_A-pt_close_A));
+                    Vector3 dir_rot = Quaternion.AngleAxis(angle_a, up) * (( pt_center - pt_close_A).normalized * b);
+
+                    DebugWide.LogBlue(angle_a + "  " + penetration);
+                    DebugWide.DrawCircle(pt_close_A + dir_rot, _radius_A, Color.yellow);
+                    DebugWide.DrawLine(pt_center, pt_close_A, Color.yellow);
+                    DebugWide.DrawLine(meetPt_A, pt_close_A, Color.green);
+                    DebugWide.DrawLine(pt_close_A+dir_rot, pt_close_A, Color.black);
+
+                    //===============
+                    //RotateTGuard_FirstToLast(pt_close_A, meetPt_A, root_0.position, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
+                    RotateTGuard_FirstToLast(pt_close_A, pt_close_A+dir_rot, pt_center, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
                 }
             }
             else
@@ -1797,141 +1846,143 @@ namespace UtilGS9
                         //DebugWide.DrawCircle(limit, 0.05f, Color.white);
                     }
 
-                    //float ta = (meetPt - root_0.position).magnitude;
-                    //float tb = (meetPt - root_1.position).magnitude;
-                    //DebugWide.LogBlue(ta + "   " + tb);
-
-                    //if(result_contact)
-                        //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우 " + __isSeg_A + "  " + __isSeg_B);
                 }
+
+                //==================================================
+
+
+
+                if (result_contact)
+                {
+                    DebugWide.LogGreen("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);    
+
+                    LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
+
+                    const float DROPPING = 0.01f;
+                    Vector3 drop_dir = VOp.Normalize(maxV - minV);
+                    float drop_sign = 1f;
+                    //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
+                    //Vector3 centerB = (_prev_seg_B.origin + _prev_seg_B.last) * 0.5f;
+                    ////prevB 선분의 방향이 prevA 선분의 방향보다 뒤에 있는 경우
+                    //if(0 > Vector3.Dot(centerB - centerA, __dir_A))
+                    //{
+                    //    drop_sign = -1f; 
+                    //}
+
+                    //if(false == __isSeg_A)
+                    {
+                        Vector3 lastPt = meetPt;
+                        if (false == __isSeg_A && true == __isSeg_B)
+                        {
+
+                            if(0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                            {
+                                DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
+                                drop_sign = -1f;
+                            }
+
+                            lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
+
+                            //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                            //DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
+                            DebugWide.LogRed("방향보정 dropping a");
+                        }
+
+                        //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
+                        //{
+                        //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //    Vector3 firstPt = CalcTGuard_FirstPt2(_minV, root_0.position, _cur_seg_A);
+                        //    RotateTGuard_FirstToLast(firstPt, _minV, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
+                        //    DebugWide.LogBlue("--------aaaaa");
+                        //}else
+                        {
+                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
+                            RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);    
+                        }
+
+
+                    }
+                    //if(false == __isSeg_B)
+                    {
+                        Vector3 lastPt = meetPt;
+                        if (true == __isSeg_A && false == __isSeg_B)
+                        {
+
+                            if (0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                            {
+                                DebugWide.LogRed("min max 방향이 달라졌음 ! bb");
+                                drop_sign = -1f;
+                            }
+
+                              lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
+
+                            //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                            //DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
+                            DebugWide.LogRed("방향보정 dropping b");
+                        }
+
+                        //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
+                        //{
+                        //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
+                        //    Vector3 firstPt = CalcTGuard_FirstPt2(_maxV, root_1.position, _cur_seg_B);
+                        //    RotateTGuard_FirstToLast(firstPt, _maxV, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
+                        //    //DebugWide.LogBlue("bbbbb");
+                        //}else
+                        {
+                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
+                            RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);    
+                        }
+
+
+                    }
+
+
+                    //if(true == is_cross_contact)
+                    //{
+                    //    if (true == __isSeg_A)
+                    //    {
+                            
+                    //        Vector3 lastPt = CalcTGuard_LastPt(_maxV, meetPt, root_0.position, _cur_seg_B);
+                    //        CalcTGuard_FirstToLast(_maxV, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
+                    //    }
+                    //    else if (true == __isSeg_B)
+                    //    {
+                    //        //정상동작 안함
+                    //        Vector3 lastPt = CalcTGuard_LastPt(_minV, meetPt, root_1.position, _cur_seg_A);
+                    //        CalcTGuard_FirstToLast(_minV, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
+                    //    }    
+                    //}
+
+
+                    _cur_seg_A = newSegA;
+                    _cur_seg_B = newSegB;
+
+
+
+                    LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+                    __cur_A_B_order2 = pt_close_B - pt_close_A;
+
+                    DebugWide.LogBlue("cur dir " + __cur_A_B_order2.magnitude);
+                    if (0.00001f > __cur_A_B_order2.magnitude)
+                        DebugWide.LogRed("서로 붙었음");
+                    
+                    if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
+                    {
+                        DebugWide.LogRed("방향이 바뀌었음 ");
+                    }
+
+                    __min_max.origin = minV;
+                    __min_max.last = maxV;
+
+                }
+                //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1f, Color.red);
+                //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order2) * 0.7f, Color.black);
+                //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 0.4f, Color.green);
+
             }
 
             //__localRota_A = Quaternion.identity;
             //__localRota_B = Quaternion.identity;
-            if (result_contact)
-            {
-                LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
-
-                const float DROPPING = 0.01f;
-                Vector3 drop_dir = VOp.Normalize(maxV - minV);
-                float drop_sign = 1f;
-                //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
-                //Vector3 centerB = (_prev_seg_B.origin + _prev_seg_B.last) * 0.5f;
-                ////prevB 선분의 방향이 prevA 선분의 방향보다 뒤에 있는 경우
-                //if(0 > Vector3.Dot(centerB - centerA, __dir_A))
-                //{
-                //    drop_sign = -1f; 
-                //}
-
-                //if(false == __isSeg_A)
-                {
-                    Vector3 lastPt = meetPt;
-                    if (false == __isSeg_A && true == __isSeg_B)
-                    {
-
-                        if(0 > Vector3.Dot(drop_dir, __prev_A_B_order))
-                        {
-                            DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
-                            drop_sign = -1f;
-                        }
-
-                        lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
-
-                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
-                        DebugWide.LogRed("방향보정 dropping a");
-                    }
-
-                    //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
-                    //{
-                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                    //    Vector3 firstPt = CalcTGuard_FirstPt2(_minV, root_0.position, _cur_seg_A);
-                    //    RotateTGuard_FirstToLast(firstPt, _minV, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
-                    //    DebugWide.LogBlue("--------aaaaa");
-                    //}else
-                    {
-                        Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
-                        RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);    
-                    }
-
-
-                }
-                //if(false == __isSeg_B)
-                {
-                    Vector3 lastPt = meetPt;
-                    if (true == __isSeg_A && false == __isSeg_B)
-                    {
-
-                        if (0 > Vector3.Dot(drop_dir, __prev_A_B_order))
-                        {
-                            DebugWide.LogRed("min max 방향이 달라졌음 ! bb");
-                            drop_sign = -1f;
-                        }
-
-                          lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
-
-                        //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
-                        DebugWide.LogRed("방향보정 dropping b");
-                    }
-
-                    //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
-                    //{
-                    //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                    //    Vector3 firstPt = CalcTGuard_FirstPt2(_maxV, root_1.position, _cur_seg_B);
-                    //    RotateTGuard_FirstToLast(firstPt, _maxV, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
-                    //    //DebugWide.LogBlue("bbbbb");
-                    //}else
-                    {
-                        Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
-                        RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);    
-                    }
-
-
-                }
-
-
-                //if(true == is_cross_contact)
-                //{
-                //    if (true == __isSeg_A)
-                //    {
-                        
-                //        Vector3 lastPt = CalcTGuard_LastPt(_maxV, meetPt, root_0.position, _cur_seg_B);
-                //        CalcTGuard_FirstToLast(_maxV, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                //    }
-                //    else if (true == __isSeg_B)
-                //    {
-                //        //정상동작 안함
-                //        Vector3 lastPt = CalcTGuard_LastPt(_minV, meetPt, root_1.position, _cur_seg_A);
-                //        CalcTGuard_FirstToLast(_minV, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-                //    }    
-                //}
-
-
-                _cur_seg_A = newSegA;
-                _cur_seg_B = newSegB;
-
-
-
-                LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-                __cur_A_B_order2 = pt_end - pt_start;
-
-                DebugWide.LogBlue("cur dir " + __cur_A_B_order2.magnitude);
-                if (0.00001f > __cur_A_B_order2.magnitude)
-                    DebugWide.LogRed("서로 붙었음");
-                
-                if(0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
-                {
-                    DebugWide.LogRed("방향이 바뀌었음 ");
-                }
-
-                __min_max.origin = minV;
-                __min_max.last = maxV;
-
-            }
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__prev_A_B_order) * 1f, Color.red);
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__cur_A_B_order2) * 0.7f, Color.black);
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 0.4f, Color.green);
 
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
@@ -2321,7 +2372,9 @@ namespace UtilGS9
                 //}
 
                 LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
-                if(0.000001f > (pt_end - pt_start).sqrMagnitude)
+                //if(0.000001f > (pt_end - pt_start).sqrMagnitude)
+                float sqr_rad = _radius_A + _radius_B;
+                if (sqr_rad * sqr_rad > (pt_end - pt_start).sqrMagnitude)
                 {
                     __cpPt0 = pt_start;
                     __intr_seg_seg = true;
