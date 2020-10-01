@@ -1671,7 +1671,7 @@ namespace UtilGS9
                                                 out Vector3 pt_center, out Vector3 pt_first)
         {
             //float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
-            //Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
+            //Vector3 n_dir = (pt_close_A - pt_close_B).normalized;
             Vector3 meetPt_A = pt_close + (n_dir * penetration);
 
 
@@ -1730,9 +1730,9 @@ namespace UtilGS9
 
             //선분과 선분이 만난 경우 
             //if (__isSeg_A && __isSeg_B)
-            if (true == __intr_seg_seg)
+            if (true == __intr_seg_seg && false)
             {
-                //if (true == __intr_seg_seg)
+                //if (true == __intr_seg_seg )
                 {
                     DebugWide.LogGreen("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
@@ -1873,7 +1873,7 @@ namespace UtilGS9
 
 
 
-                if (result_contact && false)
+                if (result_contact )//&& false)
                 {
                     DebugWide.LogGreen("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);    
 
@@ -1882,43 +1882,28 @@ namespace UtilGS9
                     const float DROPPING = 0.01f;
                     Vector3 drop_dir = VOp.Normalize(maxV - minV);
                     float drop_sign = 1f;
-                    //Vector3 centerA = (_prev_seg_A.origin + _prev_seg_A.last) * 0.5f; //대충중점을 잡는다. 정확히는 minPt에서 최소거리 점을 구해야 한다 
-                    //Vector3 centerB = (_prev_seg_B.origin + _prev_seg_B.last) * 0.5f;
-                    ////prevB 선분의 방향이 prevA 선분의 방향보다 뒤에 있는 경우
-                    //if(0 > Vector3.Dot(centerB - centerA, __dir_A))
-                    //{
-                    //    drop_sign = -1f; 
-                    //}
+
 
                     //if(false == __isSeg_A)
                     {
                         Vector3 lastPt = meetPt;
+                        //float dropping = 0f;
                         if (false == __isSeg_A && true == __isSeg_B)
                         {
 
-                            if(0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                            if (0 > Vector3.Dot(drop_dir, __prev_A_B_order))
                             {
                                 DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
                                 drop_sign = -1f;
                             }
-
                             lastPt += -drop_dir * drop_sign * DROPPING; //dropping 처리 
-
-                            //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                            //DebugWide.DrawCircle(lastPt, 0.05f, Color.blue);
                             DebugWide.LogRed("방향보정 dropping a");
                         }
 
-                        //if (false == __isSeg_A && true == __isSeg_B && 0 > orderValue)
-                        //{
-                        //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //    Vector3 firstPt = CalcTGuard_FirstPt2(_minV, root_0.position, _cur_seg_A);
-                        //    RotateTGuard_FirstToLast(firstPt, _minV, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
-                        //    DebugWide.LogBlue("--------aaaaa");
-                        //}else
                         {
-                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_0.position, _prev_seg_A);
+                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt ,root_0, _prev_seg_A);
                             RotateTGuard_FirstToLast(firstPt, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);    
+                            DebugWide.DrawCircle(lastPt, _radius_A, Color.blue);
                         }
 
 
@@ -1935,23 +1920,14 @@ namespace UtilGS9
                                 drop_sign = -1f;
                             }
 
-                              lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
-
-                            //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                            //DebugWide.DrawCircle(lastPt, 0.05f, Color.magenta);
+                            lastPt += drop_dir * drop_sign * DROPPING; //dropping 처리
                             DebugWide.LogRed("방향보정 dropping b");
                         }
 
-                        //if (true == __isSeg_A && false == __isSeg_B && 0 > orderValue)
-                        //{
-                        //    //lastPt = lastPt + -__prev_A_B_order.normalized * 0.01f;
-                        //    Vector3 firstPt = CalcTGuard_FirstPt2(_maxV, root_1.position, _cur_seg_B);
-                        //    RotateTGuard_FirstToLast(firstPt, _maxV, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
-                        //    //DebugWide.LogBlue("bbbbb");
-                        //}else
                         {
-                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1.position, _prev_seg_B);
+                            Vector3 firstPt = CalcTGuard_FirstPt2(lastPt, root_1, _prev_seg_B);
                             RotateTGuard_FirstToLast(firstPt, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);    
+                            DebugWide.DrawCircle(lastPt, _radius_B, Color.magenta);
                         }
 
 
@@ -2237,11 +2213,11 @@ namespace UtilGS9
             return pt_first;
         }
 
-        public Vector3 CalcTGuard_FirstPt2(Vector3 meetPt, Vector3 pos_t0_root,
+        public Vector3 CalcTGuard_FirstPt2(Vector3 meetPt, Transform root_0,
                                 LineSegment3 t0_sub_prev)
         {
-            float a = (meetPt - pos_t0_root).magnitude;
 
+            float a = (meetPt - root_0.position).magnitude;
 
             //선분의 시작점이 원의 안쪽으로 들어가 접촉점 계산이 잘못되는 문제해결을 위해 선분연장 
             //한계검사를 통해 meetPt값이 조절되지 않으면 연장된 선분에 의해 교점검사 실패시 범위를 넘어가는 값이 나올 수 있다 
@@ -2251,10 +2227,10 @@ namespace UtilGS9
 
             //원과 접하는 두개의 교점을 찾느다 이중 meetPT와 가까운 교점이 찾으려는 점이다 , CalcTGuard_FirstPt 함수의 문제를 해결 
             Vector3 pt_first1, pt_first2;
-            bool r1 = Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first1);
+            bool r1 = Geo.IntersectLineSegment(root_0.position, a, seg, out pt_first1);
             seg.origin = t0_sub_prev.last;
             seg.last = t0_sub_prev.origin;
-            bool r2 = Geo.IntersectLineSegment(pos_t0_root, a, seg, out pt_first2);
+            bool r2 = Geo.IntersectLineSegment(root_0.position, a, seg, out pt_first2);
 
             float sqrlen1 = (pt_first1 - meetPt).sqrMagnitude;
             float sqrlen2 = (pt_first2 - meetPt).sqrMagnitude;
