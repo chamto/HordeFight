@@ -1666,6 +1666,55 @@ namespace UtilGS9
         }
 
 
+        //n_dir 은 노멀값이어야 함 
+        public void CalcTGuard_First_ClosePt(float penetration, Vector3 pt_close, Vector3 n_dir, Transform root_0 ,
+                                                out Vector3 pt_center, out Vector3 pt_first)
+        {
+            //float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
+            //Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
+            Vector3 meetPt_A = pt_close + (n_dir * penetration);
+
+
+
+            //===============
+            Vector3 up_center = Vector3.Cross(root_0.rotation * ConstV.v3_forward, n_dir);
+            pt_center = Line3.ClosestPoint(new Line3(root_0.position, up_center), pt_close);
+
+            //===============
+            //코사인 제2법칙 이용, a 와 c 는 길이가 같은점을 이용하여 식을 정리 
+            //    0
+            //  a   b
+            // 0  c   0
+            //
+            // a2 = b2+c2-2bc*cosa
+            // a2 - b2 - c2 = -2bc * cosa
+            // (a2 - b2 - c2)/-2bc = cosa
+            // a == c
+            // b/2c = cosa
+            float c = (pt_close - pt_center).magnitude;
+            float b = penetration;
+            float cos_a = b / (2 * c);
+            float angle_a = Mathf.Acos(cos_a) * Mathf.Rad2Deg;
+
+            Vector3 up = Vector3.Cross((pt_center - pt_close), (meetPt_A - pt_close));
+            Vector3 dir_rot = Quaternion.AngleAxis(angle_a, up) * ((pt_center - pt_close).normalized * b);
+
+            pt_first = pt_close + dir_rot;
+
+            DebugWide.LogBlue(__cur_A_B_order.magnitude);
+            DebugWide.LogBlue(angle_a + "  " + penetration);
+
+            DebugWide.DrawLine(pt_center, pt_close, Color.yellow);
+            DebugWide.DrawLine(meetPt_A, pt_close, Color.green);
+            DebugWide.DrawLine(pt_close + dir_rot, pt_close, Color.black);
+
+
+            DebugWide.DrawCircle(pt_first, _radius_A, Color.yellow);
+            //DebugWide.DrawCircle(meetPt_A , _radius_B, Color.yellow);
+
+        }
+
+
         public bool Calc_TGuard_vs_TGuard(float rateAtoB, Transform root_0, Transform root_1)
         {
             bool result_contact = false;
@@ -1675,6 +1724,7 @@ namespace UtilGS9
 
             Vector3 pt_close_A, pt_close_B;
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+
             __cur_A_B_order = pt_close_B - pt_close_A;
 
 
@@ -1689,48 +1739,19 @@ namespace UtilGS9
                     minV = maxV = meetPt;
                     result_contact = true;
 
+                    DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
+                    DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
 
                     float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
                     Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
-                    Vector3 meetPt_A = pt_close_A + (n_close_BA * penetration);
+                    Vector3 pt_first, pt_center;
+                    CalcTGuard_First_ClosePt(penetration, pt_close_A, n_close_BA, root_0, out pt_center, out pt_first);
+                    //CalcTGuard_First_ClosePt(_radius_A + _radius_B, pt_close_B, n_close_BA, root_0, out pt_center, out pt_first);
 
-                    DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
-                    DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
-                    DebugWide.LogBlue(__cur_A_B_order.magnitude);
-
-
-                    //===============
-                    Vector3 up_center = Vector3.Cross(root_0.rotation * ConstV.v3_forward, n_close_BA);
-                    Vector3 pt_center = Line3.ClosestPoint(new Line3(root_0.position, up_center), pt_close_A);
-
-                    //===============
-                    //코사인 제2법칙 이용, a 와 c 는 길이가 같은점을 이용하여 식을 정리 
-                    //    0
-                    //  a   b
-                    // 0  c   0
-                    //
-                    // a2 = b2+c2-2bc*cosa
-                    // a2 - b2 - c2 = -2bc * cosa
-                    // (a2 - b2 - c2)/-2bc = cosa
-                    // a == c
-                    // b/2c = cosa
-                    float c = (pt_close_A - pt_center).magnitude;
-                    float b = penetration;
-                    float cos_a = b / (2 * c);
-                    float angle_a = Mathf.Acos(cos_a) * Mathf.Rad2Deg;
-
-                    Vector3 up = Vector3.Cross((pt_center-pt_close_A),(meetPt_A-pt_close_A));
-                    Vector3 dir_rot = Quaternion.AngleAxis(angle_a, up) * (( pt_center - pt_close_A).normalized * b);
-
-                    DebugWide.LogBlue(angle_a + "  " + penetration);
-                    DebugWide.DrawCircle(pt_close_A + dir_rot, _radius_A, Color.yellow);
-                    DebugWide.DrawLine(pt_center, pt_close_A, Color.yellow);
-                    DebugWide.DrawLine(meetPt_A, pt_close_A, Color.green);
-                    DebugWide.DrawLine(pt_close_A+dir_rot, pt_close_A, Color.black);
 
                     //===============
                     //RotateTGuard_FirstToLast(pt_close_A, meetPt_A, root_0.position, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
-                    RotateTGuard_FirstToLast(pt_close_A, pt_close_A+dir_rot, pt_center, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
+                    RotateTGuard_FirstToLast(pt_close_A, pt_first, pt_center, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
                 }
             }
             else
@@ -1852,7 +1873,7 @@ namespace UtilGS9
 
 
 
-                if (result_contact)
+                if (result_contact && false)
                 {
                     DebugWide.LogGreen("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);    
 
