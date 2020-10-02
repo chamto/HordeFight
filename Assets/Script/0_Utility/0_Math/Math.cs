@@ -1670,11 +1670,10 @@ namespace UtilGS9
         public void CalcTGuard_First_ClosePt(float penetration, Vector3 pt_close, Vector3 n_dir, Transform root_0 ,
                                                 out Vector3 pt_center, out Vector3 pt_first)
         {
+            const float ERROR_RATE = 1.2f; //20프로 정도 침투길이를 늘려 계산할려는 목적 
             //float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
             //Vector3 n_dir = (pt_close_A - pt_close_B).normalized;
             Vector3 meetPt_A = pt_close + (n_dir * penetration);
-
-
 
             //===============
             Vector3 up_center = Vector3.Cross(root_0.rotation * ConstV.v3_forward, n_dir);
@@ -1692,7 +1691,7 @@ namespace UtilGS9
             // a == c
             // b/2c = cosa
             float c = (pt_close - pt_center).magnitude;
-            float b = penetration;
+            float b = penetration * ERROR_RATE; //오차율로 인해 ab선분의 반지름 합을 못 벗어나는 문제가 있음. 이를 제거함  
             float cos_a = b / (2 * c);
             float angle_a = Mathf.Acos(cos_a) * Mathf.Rad2Deg;
 
@@ -1701,14 +1700,15 @@ namespace UtilGS9
 
             pt_first = pt_close + dir_rot;
 
-            DebugWide.LogBlue(__cur_A_B_order.magnitude);
-            DebugWide.LogBlue(angle_a + "  " + penetration);
+
 
             DebugWide.DrawLine(pt_center, pt_close, Color.yellow);
             DebugWide.DrawLine(meetPt_A, pt_close, Color.green);
             DebugWide.DrawLine(pt_close + dir_rot, pt_close, Color.black);
 
-
+            DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  ang:" + angle_a);
+            DebugWide.LogBlue((pt_close-meetPt_A).magnitude + "  => " + (dir_rot).magnitude);
+                     
             DebugWide.DrawCircle(pt_first, _radius_A, Color.yellow);
             //DebugWide.DrawCircle(meetPt_A , _radius_B, Color.yellow);
 
@@ -1727,14 +1727,14 @@ namespace UtilGS9
 
             __cur_A_B_order = pt_close_B - pt_close_A;
 
-
+            //DebugWide.LogBlue(__intr_seg_seg);
             //선분과 선분이 만난 경우 
             //if (__isSeg_A && __isSeg_B)
-            if (true == __intr_seg_seg && false)
+            if (true == __intr_seg_seg )
             {
                 //if (true == __intr_seg_seg )
                 {
-                    DebugWide.LogGreen("!! 선분 vs 선분  ");    
+                    DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);    
                     meetPt = __cpPt0;
                     minV = maxV = meetPt;
                     result_contact = true;
@@ -1748,10 +1748,32 @@ namespace UtilGS9
                     CalcTGuard_First_ClosePt(penetration, pt_close_A, n_close_BA, root_0, out pt_center, out pt_first);
                     //CalcTGuard_First_ClosePt(_radius_A + _radius_B, pt_close_B, n_close_BA, root_0, out pt_center, out pt_first);
 
+                    //1
+                    //Vector3 dir_B_first = (pt_first - pt_close_B).normalized;
+                    //pt_first = pt_close_B + dir_B_first * (_radius_A + _radius_B + 0.002f);
 
+
+                    //2
+                    //Vector3 dir_first_B = (pt_close_B-pt_first);;
+                    //float proj_first_B = Vector3.Dot(dir_first_B, -n_close_BA);
+                    //penetration = (_radius_A + _radius_B) - proj_first_B;
+                    //pt_first = pt_first + (n_close_BA * penetration);
+
+                    //3
+                    //Vector3 n_A_first = (pt_first - pt_close_A).normalized;
+                    //float cos = Vector3.Dot(n_A_first, n_close_BA);
+                    //if (float.Epsilon > cos) cos = 1f;
+                    //float len_A_first_pen = (penetration*1.1f) / (cos);
+                    //pt_first = pt_close_A + (n_A_first * len_A_first_pen);
                     //===============
                     //RotateTGuard_FirstToLast(pt_close_A, meetPt_A, root_0.position, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
                     RotateTGuard_FirstToLast(pt_close_A, pt_first, pt_center, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
+
+                    LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+                    __cur_A_B_order = pt_close_B - pt_close_A;
+                    penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
+                    DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration);
+                    //DebugWide.LogBlue("  len :" + (pt_first-pt_close_B).magnitude + "  " + pt_first);
                 }
             }
             else
@@ -1873,13 +1895,13 @@ namespace UtilGS9
 
 
 
-                if (result_contact )//&& false)
+                if (result_contact && false)
                 {
                     DebugWide.LogGreen("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);    
 
                     LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
-                    const float DROPPING = 0.01f;
+                    const float DROPPING = 0.1f;
                     Vector3 drop_dir = VOp.Normalize(maxV - minV);
                     float drop_sign = 1f;
 
@@ -2353,11 +2375,11 @@ namespace UtilGS9
             //__cur_A_B_order = pt_end - pt_start;
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
+            __intr_seg_seg = false;
             if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
-                __intr_seg_seg = false;
-
+                //__intr_seg_seg = false;
                 //Dropping 으로 밀은후에도 값이 커 선분이 교차한것으로 나옴  
                 //Dropping zero 상태에 의해 조금씩 미는 효과가 생김 , 의도치 않은 것이므로 제거함 
                 //if(0.00001f > LineSegment3.DistanceSquared(segA, segB, out __cpS, out __cpT)) 
@@ -2370,9 +2392,10 @@ namespace UtilGS9
 
                 LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
                 //if(0.000001f > (pt_end - pt_start).sqrMagnitude)
-                float sqr_rad = _radius_A + _radius_B;
-                if (sqr_rad * sqr_rad > (pt_end - pt_start).sqrMagnitude)
+                float rad_AB = _radius_A + _radius_B;
+                if (rad_AB * rad_AB > (pt_end - pt_start).sqrMagnitude)
                 {
+                    DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
                     __cpPt0 = pt_start;
                     __intr_seg_seg = true;
                 }
