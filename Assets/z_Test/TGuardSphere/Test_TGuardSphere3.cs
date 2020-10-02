@@ -444,7 +444,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         
         if (true == _tgs_A._init)
         {
-            //__rate = Mathf.Clamp(__rate, 0, 1f);
+            __rate = Mathf.Clamp(__rate, 0, 1f);
             _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
 
