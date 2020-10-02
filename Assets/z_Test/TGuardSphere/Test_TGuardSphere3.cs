@@ -285,8 +285,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 if (true == contact)
                 {
 
-                    _tgs_A._T0_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
-                    _tgs_B._T0_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
+                    //_tgs_A._T1_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
+                    //_tgs_B._T1_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
+
+                    _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                    _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
                     //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
                     //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
@@ -351,17 +354,14 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if (true == contact)
             {
 
-                //잘못된 코드 , cur 선분에 적용 
-                //_tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
-                //_tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+                //cur 선분에 적용 
+                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
                 //prev 선분에 적용 
-                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
-                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
+                //_tgs_A._T0_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
+                //_tgs_B._T0_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
 
-                //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
             }
 
 
@@ -415,8 +415,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if (true == contact)
             {
 
-                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
-                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+                _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._Tctl_root.rotation; //실제적용 
+                _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._Tctl_root.rotation; //실제적용 
 
                 _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
                 _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
@@ -472,35 +472,15 @@ public class Test_TGuardSphere3 : MonoBehaviour
             if(true == contact)
             {
                 
-                _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
-                _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+                //_tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                //_tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
-
-                //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+                _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._Tctl_root.rotation; //실제적용 
+                _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._Tctl_root.rotation; //실제적용 
 
             }
 
-            //------------
 
-            //_tgs_A.Draw();
-            //_tgs_B.Draw();    
-
-
-            //계산된 선분이 실제적용된것과 일치하는지 확인  
-            //_movTgs._cur_seg_A.Draw(Color.white);
-            //_movTgs._cur_seg_B.Draw(Color.white);
-
-            //LineSegment3 rooA = _tgs_A.ToRoot_T0().Rotate(_tgs_A._T0_root.position, _movTgs.__localRota_A);
-            //rooA.Draw(Color.white);
-            //LineSegment3 rooB = _tgs_B.ToRoot_T0().Rotate(_tgs_B._T0_root.position, _movTgs.__localRota_B);
-            //rooB.Draw(Color.white);
-
-            //DebugWide.DrawLine(_movTgs._meetPt, _movTgs._meetPt + dirMeet, Color.black);
-            //DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, 0.04f, Color.black);
-            //DebugWide.DrawCircle(_movTgs._cur_seg_A.last, 0.04f, Color.black);
-            //DebugWide.LogBlue(_movTgs._cur_seg_A);
         }
 
     }
