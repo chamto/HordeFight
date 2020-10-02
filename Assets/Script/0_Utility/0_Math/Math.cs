@@ -1670,7 +1670,7 @@ namespace UtilGS9
         public void CalcTGuard_First_ClosePt(float penetration, Vector3 pt_close, Vector3 n_dir, Transform root_0 ,
                                                 out Vector3 pt_center, out Vector3 pt_first)
         {
-            const float ERROR_RATE = 1.2f; //20프로 정도 침투길이를 늘려 계산할려는 목적 
+            const float ERROR_RATE = 1.0f; //20프로 정도 침투길이를 늘려 계산할려는 목적 
             //float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
             //Vector3 n_dir = (pt_close_A - pt_close_B).normalized;
             Vector3 meetPt_A = pt_close + (n_dir * penetration);
@@ -1727,12 +1727,12 @@ namespace UtilGS9
 
             __cur_A_B_order = pt_close_B - pt_close_A;
 
-            //DebugWide.LogBlue(__intr_seg_seg);
+
             //선분과 선분이 만난 경우 
             //if (__isSeg_A && __isSeg_B)
             if (true == __intr_seg_seg )
             {
-                //if (true == __intr_seg_seg )
+                
                 {
                     DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);    
                     meetPt = __cpPt0;
@@ -1744,10 +1744,14 @@ namespace UtilGS9
 
                     float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
                     Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
-                    Vector3 pt_first, pt_center;
-                    CalcTGuard_First_ClosePt(penetration, pt_close_A, n_close_BA, root_0, out pt_center, out pt_first);
-                    //CalcTGuard_First_ClosePt(_radius_A + _radius_B, pt_close_B, n_close_BA, root_0, out pt_center, out pt_first);
+                    Vector3 pt_first_A, pt_center_A;
+                    Vector3 pt_first_B, pt_center_B;
 
+                    CalcTGuard_First_ClosePt(penetration * (1f-rateAtoB), pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
+                    CalcTGuard_First_ClosePt(penetration * (rateAtoB), pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
+
+
+                    //===============
                     //1
                     //Vector3 dir_B_first = (pt_first - pt_close_B).normalized;
                     //pt_first = pt_close_B + dir_B_first * (_radius_A + _radius_B + 0.002f);
@@ -1766,8 +1770,9 @@ namespace UtilGS9
                     //float len_A_first_pen = (penetration*1.1f) / (cos);
                     //pt_first = pt_close_A + (n_A_first * len_A_first_pen);
                     //===============
-                    //RotateTGuard_FirstToLast(pt_close_A, meetPt_A, root_0.position, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
-                    RotateTGuard_FirstToLast(pt_close_A, pt_first, pt_center, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
+
+                    RotateTGuard_FirstToLast(pt_close_A, pt_first_A, pt_center_A, _prev_seg_A, out _cur_seg_A, out __localRota_A);    
+                    RotateTGuard_FirstToLast(pt_close_B, pt_first_B, pt_center_B, _prev_seg_B, out _cur_seg_B, out __localRota_B);    
 
                     LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
                     __cur_A_B_order = pt_close_B - pt_close_A;
@@ -2411,6 +2416,45 @@ namespace UtilGS9
 
         }
 
+        public void Find_TGuard(LineSegment3 prev_segA, LineSegment3 prev_segB, LineSegment3 cur_segA, LineSegment3 cur_segB)
+        {
+
+            _cur_seg_A = cur_segA;
+            _cur_seg_B = cur_segB;
+            _prev_seg_A = prev_segA;
+            _prev_seg_B = prev_segB;
+            //--------------------
+
+            //선분의 이동방향
+            __dir_A = (_cur_seg_A.origin - _prev_seg_A.origin) + (_cur_seg_A.last - _prev_seg_A.last);
+            __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
+
+
+            __isSeg_A = Misc.IsZero(__dir_A);
+            __isSeg_B = Misc.IsZero(__dir_B);
+
+            _tetr01.Set(_prev_seg_A, _cur_seg_A);
+            _tetr23.Set(_prev_seg_B, _cur_seg_B);
+
+            Vector3 pt_start, pt_end;
+            float rad_AB = _radius_A + _radius_B;
+            __intr_seg_seg = false;
+            LineSegment3.ClosestPoints(out pt_start, out pt_end, _cur_seg_A, _cur_seg_B);
+            if (rad_AB * rad_AB > (pt_end - pt_start).sqrMagnitude)
+            {
+                //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
+                __cpPt0 = pt_start;
+                __intr_seg_seg = true;
+            }
+            else
+            {   //삼각형과 삼각형 
+                _intr_0_2.Find_Twice();
+                _intr_0_3.Find_Twice();
+                _intr_1_2.Find_Twice();
+                _intr_1_3.Find_Twice();
+            }
+
+        }
     }//end class
 
 

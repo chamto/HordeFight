@@ -215,9 +215,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
         _tgs_A.Draw();
         _tgs_B.Draw();
 
-        DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-        DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-        DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+        //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
         DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
         DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
@@ -274,7 +274,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
             //DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
-            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
 
             //if (true == __nextFrame)
             {
@@ -345,7 +345,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
             //DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
-            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
 
             bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
@@ -409,7 +409,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             cur_B = _tgs_B.ToSeg_Tctl();
 
 
-            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
 
             bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
@@ -465,7 +465,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             prev_B = _tgs_B.ToSeg_T0();
             cur_B = _tgs_B.ToSeg_Tctl();
 
-            _movTgs.Find(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
             bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
