@@ -173,7 +173,7 @@ public class MovingModel
 
         _movingSegment.Find(prev_A, prev_B, cur_A, cur_B);
 
-        bool contact = _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
+        bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
         if (true == contact)
         {
             //_frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_sword_A._tr_frame.rotation; //실제적용 
@@ -232,7 +232,7 @@ public class MovingModel
 
                 //=============
 
-                recalc = _movingSegment.Calc_TGuard_vs_TGuard(__RateAtoB,
+                recalc = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB,
                                                               _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
 
 
