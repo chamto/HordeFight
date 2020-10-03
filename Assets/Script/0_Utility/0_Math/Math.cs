@@ -1075,17 +1075,17 @@ namespace UtilGS9
             //_tetr23.Draw(Color.magenta);
             //if(true == contact)
             //{
-            //    //for (int i = 0; i < 8; i++)
-            //    //{
-            //    //    Color color = Color.green;
-            //    //    if (Misc.IsZero(arr[i]))
-            //    //        color = Color.black;
-            //    //    if(Misc.IsZero(arr[i]-min))
-            //    //        color = Color.black;
-            //    //    if (Misc.IsZero(arr[i] - max))
-            //    //        color = Color.black;
-            //    //    DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
-            //    //}
+            //    for (int i = 0; i < 8; i++)
+            //    {
+            //        Color color = Color.green;
+            //        if (Misc.IsZero(arr[i]))
+            //            color = Color.black;
+            //        if(Misc.IsZero(arr[i]-min))
+            //            color = Color.black;
+            //        if (Misc.IsZero(arr[i] - max))
+            //            color = Color.black;
+            //        DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, color);
+            //    }
             //    //DebugWide.DrawCircle(min, 0.03f, Color.red);
             //    //DebugWide.DrawCircle(max, 0.07f, Color.red);
 
@@ -1737,7 +1737,7 @@ namespace UtilGS9
             if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
                 
-                if (true == __intr_seg_seg && false)
+                if (true == __intr_seg_seg)
                 {
 
                     DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
@@ -1767,10 +1767,10 @@ namespace UtilGS9
                     RotateTGuard_FirstToLast(pt_close_A, pt_first_A, pt_center_A, _cur_seg_A, out _cur_seg_A, out __localRota_A);
                     RotateTGuard_FirstToLast(pt_close_B, pt_first_B, pt_center_B, _cur_seg_B, out _cur_seg_B, out __localRota_B);
 
-                    //LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
-                    //__cur_A_B_order = pt_close_B - pt_close_A;
-                    //penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
-                    //DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration);
+                    LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+                    __cur_A_B_order = pt_close_B - pt_close_A;
+                    penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
+                    DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration);
 
                     //DebugWide.LogBlue("  len :" + (pt_first-pt_close_B).magnitude + "  " + pt_first);
 
@@ -1879,22 +1879,22 @@ namespace UtilGS9
 
                     meetPt = minV + (maxV - minV) * rateAtoB;
 
-
+                    DebugWide.DrawLine(minV, maxV, Color.gray);
 
                     //한계위치 검사
-                    Vector3 limit;
-                    if (CalcLimit(meetPt, minV, maxV, root_0.position, _cur_seg_A, out limit))
-                    {
-                        meetPt = limit;
-                        //DebugWide.DrawCircle(limit, 0.04f, Color.white);
-                    }
-                    if(CalcLimit(meetPt, minV, maxV, root_1.position, _cur_seg_B, out limit))
-                    {
-                        //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
-                        if((meetPt-minV).sqrMagnitude > (limit - minV).sqrMagnitude)
-                            meetPt = limit;
-                        //DebugWide.DrawCircle(limit, 0.05f, Color.white);
-                    }
+                    //Vector3 limit;
+                    //if (CalcLimit(meetPt, minV, maxV, root_0.position, _cur_seg_A, out limit))
+                    //{
+                    //    meetPt = limit;
+                    //    //DebugWide.DrawCircle(limit, 0.04f, Color.white);
+                    //}
+                    //if(CalcLimit(meetPt, minV, maxV, root_1.position, _cur_seg_B, out limit))
+                    //{
+                    //    //더 작은값일때 선위의 점이 성립하므로 구한값으로 적용한다 
+                    //    if((meetPt-minV).sqrMagnitude > (limit - minV).sqrMagnitude)
+                    //        meetPt = limit;
+                    //    //DebugWide.DrawCircle(limit, 0.05f, Color.white);
+                    //}
 
                 }
 
@@ -2042,7 +2042,7 @@ namespace UtilGS9
         public Quaternion __localRota_A = Quaternion.identity;
         public Quaternion __localRota_B = Quaternion.identity;
 
-
+        //엉터리 함수 쓰지 말것 
         public bool CalcLimit(Vector3 meetPt, Vector3 min, Vector3 max,
                                Vector3 pos_t_root,
                                  LineSegment3 t_sub, out Vector3 limitPt)
@@ -2055,9 +2055,11 @@ namespace UtilGS9
                 subPt = t_sub.last;
             }
 
-            //원인모를 오차를 제거해 본다 0.002
+            //원인모를 오차를 제거해 본다 0.002 - 오차가 생길 수 밖에 없음. 가정이 잘못되었음 
             float a = (subPt - pos_t_root).magnitude - 0.002f; //삼각형내의 최대 길이 
+            //float a = (meetPt - pos_t_root).magnitude; //삼각형내의 최대 길이 
 
+            //루트선분에 기울어진 서브선분을 제대로 판단못함 . 잘못된 처리 
             if((meetPt - pos_t_root).sqrMagnitude < a*a)
             {
                 limitPt = ConstV.v3_zero;
@@ -2066,7 +2068,7 @@ namespace UtilGS9
 
             Vector3 n_ab = VOp.Normalize(min - max);
             float ab2 = Vector3.Dot(n_ab, (pos_t_root - max));
-            Vector3 b2 = max + n_ab * ab2;
+            Vector3 b2 = max + (n_ab * ab2);
 
 
             //피타고라스의 정리를 이용 
@@ -2074,10 +2076,10 @@ namespace UtilGS9
             pb2 = (float)Math.Sqrt(pb2);
             limitPt = b2 + (-n_ab * pb2);
 
-            //DebugWide.LogBlue((limitPt - pos_t_root).magnitude + "   " + a);
-            //DebugWide.DrawLine(max, b2, Color.green);
-            //DebugWide.DrawLine(b2, pos_t_root, Color.green);
-            //DebugWide.DrawLine(p , pos_t_root, Color.magenta);
+            DebugWide.LogBlue((limitPt - pos_t_root).magnitude + "   " + a);
+            DebugWide.DrawLine(max, b2, Color.green);
+            DebugWide.DrawLine(b2, pos_t_root, Color.green);
+            DebugWide.DrawLine(limitPt , pos_t_root, Color.magenta);
 
             return true;
         }
