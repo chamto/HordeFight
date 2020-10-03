@@ -1714,7 +1714,6 @@ namespace UtilGS9
         public bool Find_TGuard_vs_TGuard(float rateAtoB, Transform root_0, Transform root_1)
         {
             bool result_contact = false;
-            bool is_cross_contact = false;
             Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
             Vector3 pt_close_A, pt_close_B;
@@ -1737,12 +1736,11 @@ namespace UtilGS9
 
             if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
-                //DebugWide.LogRed("방향이 바뀌었음 ");
-             
-                if (true == __intr_seg_seg)
+                
+                if (true == __intr_seg_seg && false)
                 {
 
-                    //DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
+                    DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
                     meetPt = __cpPt0;
                     minV = maxV = meetPt;
                     result_contact = true;
@@ -1780,6 +1778,8 @@ namespace UtilGS9
             }
             else
             {
+                //DebugWide.LogRed("방향이 바뀌었음 ");
+
                 _intr_0_2.Find_Twice();
                 _intr_0_3.Find_Twice();
                 _intr_1_2.Find_Twice();
@@ -1826,7 +1826,7 @@ namespace UtilGS9
                     result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
                     //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
-                    is_cross_contact = true;
+
 
                     //DebugWide.LogBlue(orderValue + "  cur " + VOp.ToString(__cur_A_B_order) + "  prev " + VOp.ToString(__prev_A_B_order));
 
@@ -1934,6 +1934,7 @@ namespace UtilGS9
                             //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt1 ,root_0, _prev_seg_A);
                             //RotateTGuard_FirstToLast(firstPt, lastPt1, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);    
 
+                            //현재 선분에 회전적용
                             Vector3 firstPt = CalcTGuard_FirstPt2(lastPt1 ,root_0, _cur_seg_A);
                             RotateTGuard_FirstToLast(firstPt,lastPt1, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);    
 
@@ -1967,6 +1968,7 @@ namespace UtilGS9
                             //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt2, root_1, _prev_seg_B);
                             //RotateTGuard_FirstToLast(firstPt, lastPt2, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);    
 
+                            //현재 선분에 회전적용
                             Vector3 firstPt = CalcTGuard_FirstPt2(lastPt2, root_1, _cur_seg_B);
                             RotateTGuard_FirstToLast(firstPt,lastPt2, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);    
 
@@ -1978,23 +1980,6 @@ namespace UtilGS9
 
 
                     }
-
-
-                    //if(true == is_cross_contact)
-                    //{
-                    //    if (true == __isSeg_A)
-                    //    {
-                            
-                    //        Vector3 lastPt = CalcTGuard_LastPt(_maxV, meetPt, root_0.position, _cur_seg_B);
-                    //        CalcTGuard_FirstToLast(_maxV, lastPt, root_0.position, _prev_seg_A, out newSegA, out __localRota_A);
-                    //    }
-                    //    else if (true == __isSeg_B)
-                    //    {
-                    //        //정상동작 안함
-                    //        Vector3 lastPt = CalcTGuard_LastPt(_minV, meetPt, root_1.position, _cur_seg_A);
-                    //        CalcTGuard_FirstToLast(_minV, lastPt, root_1.position, _prev_seg_B, out newSegB, out __localRota_B);
-                    //    }    
-                    //}
 
 
                     _cur_seg_A = newSegA;
@@ -2269,13 +2254,14 @@ namespace UtilGS9
             //한계검사를 통해 meetPt값이 조절되지 않으면 연장된 선분에 의해 교점검사 실패시 범위를 넘어가는 값이 나올 수 있다 
             LineSegment3 seg = t0_sub_prev;
             seg.last = seg.last + seg.direction;
-            seg.origin = seg.origin + -seg.direction; 
+            seg.origin = seg.origin + -seg.direction;
 
             //원과 접하는 두개의 교점을 찾느다 이중 meetPT와 가까운 교점이 찾으려는 점이다 , CalcTGuard_FirstPt 함수의 문제를 해결 
             Vector3 pt_first1, pt_first2;
             bool r1 = Geo.IntersectLineSegment(root_0.position, a, seg, out pt_first1);
-            seg.origin = t0_sub_prev.last;
-            seg.last = t0_sub_prev.origin;
+            Vector3 temp = seg.origin;
+            seg.origin = seg.last;
+            seg.last = temp;
             bool r2 = Geo.IntersectLineSegment(root_0.position, a, seg, out pt_first2);
 
             float sqrlen1 = (pt_first1 - meetPt).sqrMagnitude;
@@ -2287,11 +2273,15 @@ namespace UtilGS9
                 closePt = pt_first2;
                 r = r2;
             }
-                
-            //if(true == r)
-            //    DebugWide.DrawCircle(closePt, 0.06f, Color.cyan); //chamto test        
-            //else
-                //DebugWide.DrawCircle(closePt, 0.06f, Color.yellow); //chamto test        
+
+
+            //DebugWide.LogBlue(Mathf.Sqrt(sqrlen1) + " vs " + Mathf.Sqrt(sqrlen2) + "  ");
+            //seg.Draw(Color.cyan);
+            //DebugWide.DrawCircle(root_0.position, a, Color.cyan); //chamto test        
+            if(true == r)
+                DebugWide.DrawCircle(closePt, 0.06f, Color.cyan); //chamto test        
+            else
+                DebugWide.DrawCircle(closePt, 0.06f, Color.yellow); //chamto test        
 
             return closePt;
         }
