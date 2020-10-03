@@ -248,7 +248,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 Vector3 start = _tgs_A._T0_root_end.position;
                 Vector3 end = _tgs_A._Tctl_root_end.position;
                 Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
-                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, -up_angle);
+                //_tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, -up_angle);
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, -ConstV.v3_right);
             }
 
             ////각도전진 시험
@@ -259,7 +260,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 Vector3 start = _tgs_A._T0_root_end.position;
                 Vector3 end = _tgs_A._Tctl_root_end.position;
                 Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
-                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, up_angle);
+                //_tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, up_angle);
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, ConstV.v3_right);
             }
 
             //------------
@@ -274,22 +276,22 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
             //DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
-            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
             //if (true == __nextFrame)
             {
                 //__nextFrame = false;
 
 
-                bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+                bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
                 if (true == contact)
                 {
 
                     //_tgs_A._T1_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
                     //_tgs_B._T1_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
 
-                    _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
-                    _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
+                    _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
+                    _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
                     //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
                     //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
@@ -348,9 +350,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //DebugWide.DrawLine(__seg_prev_A.origin, __seg_prev_A.last, Color.black);
             //DebugWide.DrawLine(__seg_prev_B.origin, __seg_prev_B.last, Color.black);
 
-            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
 
@@ -409,9 +411,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
             cur_B = _tgs_B.ToSeg_Tctl();
 
 
-            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
 
@@ -465,10 +467,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             prev_B = _tgs_B.ToSeg_T0();
             cur_B = _tgs_B.ToSeg_Tctl();
 
-            _movTgs.Find_TGuard(prev_A, prev_B, cur_A, cur_B);
+            _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
-            bool contact = _movTgs.Calc_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
             if(true == contact)
             {
                 
