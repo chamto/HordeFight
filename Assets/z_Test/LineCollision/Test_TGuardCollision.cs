@@ -37,11 +37,15 @@ public class Test_TGuardCollision : MonoBehaviour
 //움직이는 모형의 교차검사 
 public class MovingModel
 {
-    public struct TR_Segment
+    public struct TGuard_Info
     {
         public Transform start;
         public Transform end;
         public float radius;
+
+        public LineSegment3 prev_seg;
+        public LineSegment3 cur_seg;
+        public Vector3 prev_A_B_order;
 
         public LineSegment3 ToSegment()
         {
@@ -55,34 +59,34 @@ public class MovingModel
 
         public Transform _tr_frame = null;
 
-        public LineSegment3[] _prev_seg = null;
-        public LineSegment3[] _cur_seg = null;
-        public TR_Segment[] _tr_seg = null; 
+        //public LineSegment3[] _prev_seg = null;
+        //public LineSegment3[] _cur_seg = null;
+        public TGuard_Info[] _info = null; 
 
         public void Draw(Color color)
         {
-            if (null == _tr_seg) return;
+            if (null == _info) return;
 
             for (int i = 0; i < _seg_count; i++)
             {
-                DebugWide.DrawLine(_prev_seg[i].origin, _prev_seg[i].last, Color.gray);
+                DebugWide.DrawLine(_info[i].prev_seg.origin, _info[i].prev_seg.last, Color.gray);
             }
 
             for (int i = 0; i < _seg_count; i++)
             {
-                DebugWide.DrawLine(_tr_seg[i].start.position, _tr_seg[i].end.position, color);
-                DebugWide.DrawCircle(_tr_seg[i].start.position, _tr_seg[i].radius, color);
-                DebugWide.DrawCircle(_tr_seg[i].end.position, _tr_seg[i].radius, color);
+                DebugWide.DrawLine(_info[i].start.position, _info[i].end.position, color);
+                DebugWide.DrawCircle(_info[i].start.position, _info[i].radius, color);
+                DebugWide.DrawCircle(_info[i].end.position, _info[i].radius, color);
             }
         }
 
 
         public void Init(Transform tr_frame)
         {
-            _prev_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
-            _cur_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
+            //_prev_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
+            //_cur_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
 
-            _tr_seg = new TR_Segment[MAX_SEGMENT_NUMBER];
+            _info = new TGuard_Info[MAX_SEGMENT_NUMBER];
 
             _tr_frame = tr_frame;
             Transform root = null;
@@ -100,13 +104,14 @@ public class MovingModel
                 if(null != (object)seg)
                 {
                     _seg_count++;
-                    _tr_seg[i].start = Hierarchy.GetTransform(seg, "start");
-                    _tr_seg[i].end = Hierarchy.GetTransform(seg, "end");
-                    _tr_seg[i].radius = 0.02f; //임시로 값 넣어둠 
+                    _info[i].start = Hierarchy.GetTransform(seg, "start");
+                    _info[i].end = Hierarchy.GetTransform(seg, "end");
+                    _info[i].radius = 0.02f; //임시로 값 넣어둠 
 
-                    _cur_seg[i].origin = _tr_seg[i].start.position;
-                    _cur_seg[i].last = _tr_seg[i].end.position;
-                    _prev_seg[i] = _cur_seg[i];
+                    _info[i].cur_seg.origin = _info[i].start.position;
+                    _info[i].cur_seg.last = _info[i].end.position;
+                    _info[i].prev_seg = _info[i].cur_seg;
+                    _info[i].prev_A_B_order = ConstV.v3_zero;
                 }
             }
 
@@ -116,8 +121,8 @@ public class MovingModel
         {
             for (int i = 0; i < _seg_count;i++)
             {
-                _cur_seg[i].origin = _tr_seg[i].start.position;
-                _cur_seg[i].last = _tr_seg[i].end.position;
+                _info[i].cur_seg.origin = _info[i].start.position;
+                _info[i].cur_seg.last = _info[i].end.position;
             }
         }
 
@@ -125,7 +130,7 @@ public class MovingModel
         {
             for (int i = 0; i < _seg_count; i++)
             {
-                _prev_seg[i] = _cur_seg[i];
+                _info[i].prev_seg = _info[i].cur_seg;
             }
         }
 
@@ -188,14 +193,14 @@ public class MovingModel
 
         int idx = 0;
 
-        prev_A = _frame_sword_A._prev_seg[idx];
-        cur_A = _frame_sword_A._cur_seg[idx];
+        prev_A = _frame_sword_A._info[idx].prev_seg;
+        cur_A = _frame_sword_A._info[idx].cur_seg;
 
-        prev_B = _frame_sword_B._prev_seg[idx];
-        cur_B = _frame_sword_B._cur_seg[idx];
+        prev_B = _frame_sword_B._info[idx].prev_seg;
+        cur_B = _frame_sword_B._info[idx].cur_seg;
 
-        _movingSegment._radius_A = _frame_sword_A._tr_seg[idx].radius;
-        _movingSegment._radius_B = _frame_sword_B._tr_seg[idx].radius;
+        _movingSegment._radius_A = _frame_sword_A._info[idx].radius;
+        _movingSegment._radius_B = _frame_sword_B._info[idx].radius;
         _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
         bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
@@ -212,8 +217,8 @@ public class MovingModel
         //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
         //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
-        _frame_sword_A._cur_seg[idx] = _movingSegment._cur_seg_A;
-        _frame_sword_B._cur_seg[idx] = _movingSegment._cur_seg_B;
+        //_frame_sword_A._cur_seg[idx] = _movingSegment._cur_seg_A;
+        //_frame_sword_B._cur_seg[idx] = _movingSegment._cur_seg_B;
         _frame_sword_A.Prev_Update();
         _frame_sword_B.Prev_Update();
     }
@@ -248,14 +253,14 @@ public class MovingModel
         {
             for (int j = 0; j < _frame_sword_B._seg_count; j++)
             {
-                prev_A = _frame_sword_A._prev_seg[i];
-                cur_A = _frame_sword_A._cur_seg[i];    
+                prev_A = _frame_sword_A._info[i].prev_seg;
+                cur_A = _frame_sword_A._info[i].cur_seg;    
 
-                prev_B = _frame_sword_B._prev_seg[j];
-                cur_B = _frame_sword_B._cur_seg[j];
+                prev_B = _frame_sword_B._info[j].prev_seg;
+                cur_B = _frame_sword_B._info[j].cur_seg;
 
-                _movingSegment._radius_A = _frame_sword_A._tr_seg[i].radius;
-                _movingSegment._radius_B = _frame_sword_B._tr_seg[j].radius;
+                _movingSegment._radius_A = _frame_sword_A._info[i].radius;
+                _movingSegment._radius_B = _frame_sword_B._info[j].radius;
                 _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
