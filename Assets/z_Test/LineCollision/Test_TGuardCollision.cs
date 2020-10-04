@@ -8,14 +8,14 @@ public class Test_TGuardCollision : MonoBehaviour
 {
     private MovingModel _movingModel = new MovingModel();
     public float __RateAtoB = 0.5f;
-    public float __radius_A = 0.1f;
-    public float __radius_B = 0.1f;
+    //public float __radius_A = 0.1f;
+    //public float __radius_B = 0.1f;
 
 	private void OnDrawGizmos()
 	{
         _movingModel.__RateAtoB = __RateAtoB;
-        _movingModel.__radius_A = __radius_A;
-        _movingModel.__radius_B = __radius_B;
+        //_movingModel.__radius_A = __radius_A;
+        //_movingModel.__radius_B = __radius_B;
         _movingModel.Update();
 
         _movingModel.Draw();
@@ -41,6 +41,7 @@ public class MovingModel
     {
         public Transform start;
         public Transform end;
+        public float radius;
 
         public LineSegment3 ToSegment()
         {
@@ -67,9 +68,11 @@ public class MovingModel
                 DebugWide.DrawLine(_prev_seg[i].origin, _prev_seg[i].last, Color.gray);
             }
 
-            for (int i = 0; i < _seg_count;i++)
+            for (int i = 0; i < _seg_count; i++)
             {
                 DebugWide.DrawLine(_tr_seg[i].start.position, _tr_seg[i].end.position, color);
+                DebugWide.DrawCircle(_tr_seg[i].start.position, _tr_seg[i].radius, color);
+                DebugWide.DrawCircle(_tr_seg[i].end.position, _tr_seg[i].radius, color);
             }
         }
 
@@ -99,6 +102,7 @@ public class MovingModel
                     _seg_count++;
                     _tr_seg[i].start = Hierarchy.GetTransform(seg, "start");
                     _tr_seg[i].end = Hierarchy.GetTransform(seg, "end");
+                    _tr_seg[i].radius = 0.02f; //임시로 값 넣어둠 
 
                     _cur_seg[i].origin = _tr_seg[i].start.position;
                     _cur_seg[i].last = _tr_seg[i].end.position;
@@ -190,8 +194,8 @@ public class MovingModel
         prev_B = _frame_sword_B._prev_seg[idx];
         cur_B = _frame_sword_B._cur_seg[idx];
 
-        _movingSegment._radius_A = __radius_A;
-        _movingSegment._radius_B = __radius_B;
+        _movingSegment._radius_A = _frame_sword_A._tr_seg[idx].radius;
+        _movingSegment._radius_B = _frame_sword_B._tr_seg[idx].radius;
         _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
         bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
@@ -250,8 +254,8 @@ public class MovingModel
                 prev_B = _frame_sword_B._prev_seg[j];
                 cur_B = _frame_sword_B._cur_seg[j];
 
-                _movingSegment._radius_A = __radius_A;
-                _movingSegment._radius_B = __radius_B;
+                _movingSegment._radius_A = _frame_sword_A._tr_seg[i].radius;
+                _movingSegment._radius_B = _frame_sword_B._tr_seg[j].radius;
                 _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
