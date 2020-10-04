@@ -13,7 +13,8 @@ namespace HordeFight
 
         public Transform _effect = null;
 
-        private MovingSegement3 _movingSegment = new MovingSegement3();
+        //private MovingSegement3 _movingSegment = new MovingSegement3();
+        private MovingModel _movingModel = new MovingModel();
 
         //string tempGui = "Cut and Sting";
         private void OnGUI()
@@ -27,7 +28,7 @@ namespace HordeFight
         private void OnDrawGizmos()
         {
 
-            _movingSegment.Draw();
+            _movingModel.Draw();
         }
 
         public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
@@ -76,6 +77,9 @@ namespace HordeFight
             _champ_1.UpdateAll();
             //_movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
 
+
+            _movingModel.Init(_champ_0._limbs._armed_left._tr_arm, _champ_1._limbs._armed_left._tr_arm);
+
         }
 
 
@@ -92,8 +96,8 @@ namespace HordeFight
         private bool __reverse = false;
         private float __time_elapsed = 0;
         public float __RateAtoB = 1f;
-        public bool __AllowFixed_A = true;
-        public bool __AllowFixed_B = true;
+        //public bool __AllowFixed_A = true;
+        //public bool __AllowFixed_B = true;
 		private void Update()
 		{
 
@@ -112,7 +116,7 @@ namespace HordeFight
                 //Interpolation.CalcShakeScale(champ0_ani.transform, ConstV.v3_one,  new Vector3(0f, 0, 0.2f), __time_elapsed);
 
                 //Interpolation.CalcPosition(champ0_ani.transform, _champ_0.transform.position, _champ_0.transform.position + new Vector3(0f, 0, 0.4f), __time_elapsed, __interKind, __reverse);
-                Interpolation.CalcRotation(champ0_ani.transform, ConstV.v3_zero, new Vector3(0, 0, 360f), __time_elapsed, __interKind, __reverse);
+                ////Interpolation.CalcRotation(champ0_ani.transform, ConstV.v3_zero, new Vector3(0, 0, 360f), __time_elapsed, __interKind, __reverse);
                 //Interpolation.CalcScale(champ0_ani.transform, ConstV.v3_one, new Vector3(1f, 1, 1.4f), __time_elapsed, __interKind, __reverse);
 
 
@@ -120,7 +124,7 @@ namespace HordeFight
                 //Interpolation.CalcShakeRotation(_effect, _champ_1.transform.eulerAngles, new Vector3(0, 45f, 0), __time_elapsed);
                 //Interpolation.CalcShakeScale(_effect, _champ_1.transform.localScale, new Vector3(0.2f, 0, 0.2f), __time_elapsed);
 
-                Interpolation.CalcRotation(_effect, ConstV.v3_zero, new Vector3(0, -360f, 0), __time_elapsed, __interKind, false);
+                ////Interpolation.CalcRotation(_effect, ConstV.v3_zero, new Vector3(0, -360f, 0), __time_elapsed, __interKind, false);
 
                 __time_elapsed += Time.deltaTime;
 
@@ -130,27 +134,8 @@ namespace HordeFight
 
             //==================================================
 
-            _champ_0._limbs.Update_CurSeg();
-            _champ_1._limbs.Update_CurSeg();
-            //==================================================
-
-            _movingSegment.Find(_champ_0._limbs._prev_seg, _champ_1._limbs._prev_seg,
-                _champ_0._limbs._cur_seg, _champ_1._limbs._cur_seg);
-
-            bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
-                                                               _champ_0._limbs._tr_hand_left.position, _champ_1._limbs._tr_hand_left.position);
-            
-
-            //계산된 선분 적용 
-            if (recalc)
-            {
-                _champ_0._limbs._tr_hand_left.position = _movingSegment._cur_seg_A.origin;
-                _champ_0._limbs._tr_hand_right.position = _movingSegment._cur_seg_A.origin + VOp.Normalize(_movingSegment._cur_seg_A.direction) * _champ_0._limbs._twoHand_length;
-
-                _champ_1._limbs._tr_hand_left.position = _movingSegment._cur_seg_B.origin;
-                _champ_1._limbs._tr_hand_right.position = _movingSegment._cur_seg_B.origin + VOp.Normalize(_movingSegment._cur_seg_B.direction) * _champ_1._limbs._twoHand_length;
-            }
-
+            //_champ_0._limbs.Update_CurSeg();
+            //_champ_1._limbs.Update_CurSeg();
             //==================================================
 
             _champ_0.UpdateAll();
@@ -159,67 +144,19 @@ namespace HordeFight
             _champ_1.UpdateAll();
             _champ_1.Apply_UnityPosition();
 
+
+            _movingModel.__RateAtoB = __RateAtoB;
+            if(true == _movingModel.Update())
+            {
+                //계산된 회전값을 sting , cut 에 적용하기  
+            }
             //==================================================
             //_champ_0._limbs._armed_left._prev_seg = _champ_0._limbs._armed_left._cur_seg;
             //_champ_1._limbs._armed_left._prev_seg = _champ_1._limbs._armed_left._cur_seg;
             //==================================================
 		}
-		private void Update2()
-        {
-            
-            //==================================================
-            //두 선분의 교차 계산 
-            _movingSegment.Find(_champ_0._limbs._armed_left._prev_seg, _champ_1._limbs._armed_left._prev_seg, 
-                                _champ_0._limbs._armed_left._cur_seg, _champ_1._limbs._armed_left._cur_seg);
-            //_movingSegment.Find(_champ_0._limbs._prev_seg, _champ_1._limbs._prev_seg,
-                                //_champ_0._limbs._cur_seg, _champ_1._limbs._cur_seg);
-            
-            //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
-                                                 //_champ_0._limbs._armed_left._line.origin, _champ_1._limbs._armed_left._line.origin);
-            bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
-                                                               _champ_0._limbs._hs_standard.position, _champ_1._limbs._hs_standard.position);
-            //bool recalc = _movingSegment.CalcSegment_PushPoint(__RateAtoB, __AllowFixed_A, __AllowFixed_B,
-                                                               //_champ_0._limbs._hand_left, _champ_1._limbs._hand_left);
-            
-            //계산된 선분 적용 
-            if(recalc)
-            {
-                _champ_0._limbs._hs_standard.position = _movingSegment._cur_seg_A.origin;
-                _champ_0._limbs._hs_objectDir.position = _movingSegment._cur_seg_A.last;
+		
 
-                _champ_1._limbs._hs_standard.position = _movingSegment._cur_seg_B.origin;
-                _champ_1._limbs._hs_objectDir.position = _movingSegment._cur_seg_B.last;    
-            }
-            _champ_0._limbs._armed_left._prev_seg = _champ_0._limbs._armed_left._cur_seg;
-            _champ_1._limbs._armed_left._prev_seg = _champ_1._limbs._armed_left._cur_seg;
-
-            //_champ_0._limbs._prev_seg = _champ_0._limbs._cur_seg;
-            //_champ_1._limbs._prev_seg = _champ_1._limbs._cur_seg;
-            //==================================================
-
-            _champ_0.UpdateAll();
-            _champ_0.Apply_UnityPosition();
-
-            _champ_1.UpdateAll();
-            _champ_1.Apply_UnityPosition();
-
-
-            //Collision_Sword(_champ_0, _champ_1);
-            //==================================================
-
-        }
-
-
-        public void Collision_Sword(ChampUnit unit0 , ChampUnit unit1)
-        {
-            
-            float s, t;
-            float sqrdis = LineSegment3.DistanceSquared(unit0._limbs._armed_left._cur_seg, unit1._limbs._armed_left._cur_seg, out s, out t);
-            if(sqrdis < 0.01f)
-            {
-                DebugWide.LogBlue("Collision!!");
-            }
-        }
 
         //======================================================================================================================================
         //======================================================================================================================================
