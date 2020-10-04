@@ -918,7 +918,7 @@ namespace UtilGS9
 
                 _prev_seg_A.Draw(Color.blue);
                 _prev_seg_B.Draw(Color.magenta);
-                if(true == __intr_seg_seg)
+                if(true == __intr_rad_A_B)
                 {
                     DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
                     //DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
@@ -1447,7 +1447,7 @@ namespace UtilGS9
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
-                if(true == __intr_seg_seg)
+                if(true == __intr_rad_A_B)
                 {
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");
                     meetPt = __cpPt0;
@@ -1542,7 +1542,7 @@ namespace UtilGS9
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
-                if (true == __intr_seg_seg)
+                if (true == __intr_rad_A_B)
                 {
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
@@ -1726,14 +1726,14 @@ namespace UtilGS9
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
 
-            __intr_seg_seg = false;
+            __intr_rad_A_B = false;
             if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
             {
 
                 //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
 
                 __cpPt0 = pt_close_A;
-                __intr_seg_seg = true;
+                __intr_rad_A_B = true;
             }
 
             //=========================
@@ -1741,7 +1741,7 @@ namespace UtilGS9
             if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
                 
-                if (true == __intr_seg_seg)
+                if (true == __intr_rad_A_B)
                 {
 
                     //DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
@@ -2311,8 +2311,8 @@ namespace UtilGS9
 
 
 
-        bool __isSeg_A, __isSeg_B;
-        bool __intr_seg_seg = false;
+        public bool __isSeg_A, __isSeg_B;
+        public bool __intr_rad_A_B = false;
         //float __cpS, __cpT;
         Vector3 __cpPt0;
         public Vector3 __dir_A = ConstV.v3_zero;
@@ -2351,7 +2351,7 @@ namespace UtilGS9
             //__cur_A_B_order = pt_end - pt_start;
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
-            __intr_seg_seg = false;
+            __intr_rad_A_B = false;
             if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
@@ -2373,7 +2373,7 @@ namespace UtilGS9
                 {
                     DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
                     __cpPt0 = pt_start;
-                    __intr_seg_seg = true;
+                    __intr_rad_A_B = true;
                 }
 
             }

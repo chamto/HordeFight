@@ -45,7 +45,6 @@ public class MovingModel
 
         public LineSegment3 prev_seg;
         public LineSegment3 cur_seg;
-        public Vector3 prev_A_B_order;
 
         public LineSegment3 ToSegment()
         {
@@ -111,7 +110,7 @@ public class MovingModel
                     _info[i].cur_seg.origin = _info[i].start.position;
                     _info[i].cur_seg.last = _info[i].end.position;
                     _info[i].prev_seg = _info[i].cur_seg;
-                    _info[i].prev_A_B_order = ConstV.v3_zero;
+
                 }
             }
 
@@ -253,6 +252,7 @@ public class MovingModel
         bool recalc = false;
         __update = false;
         float min_len = 1000000f;
+        float max_len = 0f;
         __min_A_rot = Quaternion.identity;
         __min_B_rot = Quaternion.identity;
 
@@ -290,31 +290,54 @@ public class MovingModel
                 {
                     __update = true;
 
-                    Vector3 n_left = VOp.Normalize(prev_A.direction);
-                    float len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_A.origin));
-                    Vector3 pt_proj_A = len_proj_left * n_left + prev_A.origin;
+                    //Vector3 n_left = VOp.Normalize(prev_A.direction);
+                    //float len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_A.origin));
+                    //Vector3 pt_proj_A = len_proj_left * n_left + prev_A.origin;
 
-                    n_left = VOp.Normalize(prev_B.direction);
-                    len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_B.origin));
-                    Vector3 pt_proj_B = len_proj_left * n_left + prev_B.origin;
+                    //n_left = VOp.Normalize(prev_B.direction);
+                    //len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_B.origin));
+                    //Vector3 pt_proj_B = len_proj_left * n_left + prev_B.origin;
 
-                    //meet으로부터 더 먼 점을 선택 , 기준이 되는 공통의 선분위의 점을 찾는다 
-                    Vector3 stand = pt_proj_B;
-                    if((pt_proj_A - _movingSegment._meetPt).sqrMagnitude > (pt_proj_B - _movingSegment._meetPt).sqrMagnitude)
-                    {
-                        stand = pt_proj_A;
-                    }
+                    ////meet으로부터 더 먼 점을 선택 , 기준이 되는 공통의 선분위의 점을 찾는다 
+                    //Vector3 stand = pt_proj_B;
+                    //if((pt_proj_A - _movingSegment._meetPt).sqrMagnitude > (pt_proj_B - _movingSegment._meetPt).sqrMagnitude)
+                    //{
+                    //    stand = pt_proj_A;
+                    //}
 
                     //결과들중 최소거리의 선분 하나 선택
-                    float new_len = (_movingSegment._meetPt - stand).sqrMagnitude; 
-                    if(min_len > new_len)
+                    //float new_len = (_movingSegment._meetPt - stand).sqrMagnitude; 
+
+                    //하나의 프레임에서 하나의 유형만 발생한다.
+                    float new_len = _movingSegment.__cur_A_B_order.sqrMagnitude;
+                    if(true == _movingSegment.__intr_rad_A_B)
                     {
-                        min_len = new_len;
+                        //반지름의 합 내에서 발생
+                        //선분 vs 선분  :  최소거리 찾기 
+                        //선분 vs 사각꼴   :  최소거리 찾기 
+                        //사각꼴 vs 사각꼴  :  최소거리 찾기 
+                        if (min_len > new_len)
+                        {
+                            min_len = new_len;
 
-                        __min_A_rot = _movingSegment.__localRota_A;
-                        __min_B_rot = _movingSegment.__localRota_B;
-
+                            __min_A_rot = _movingSegment.__localRota_A;
+                            __min_B_rot = _movingSegment.__localRota_B;
+                        }
                     }
+                    else
+                    {
+                        //선분 vs 사각꼴   :  최대거리 찾기 
+                        //사각꼴 vs 사각꼴  :  최대거리 찾기 
+                        if (max_len < new_len)
+                        {
+                            max_len = new_len;
+
+                            __min_A_rot = _movingSegment.__localRota_A;
+                            __min_B_rot = _movingSegment.__localRota_B;
+                        }
+                    }
+
+
 
                     //DebugWide.DrawCircle(_movingSegment._meetPt, 0.05f, Color.red);
                 }
