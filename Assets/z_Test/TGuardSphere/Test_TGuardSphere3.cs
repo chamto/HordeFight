@@ -219,6 +219,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
         //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
         //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
+        DebugWide.DrawCircle(_movTgs._meetPt_A, _movTgs._radius_A, Color.gray);
+        DebugWide.DrawCircle(_movTgs._meetPt_B, _movTgs._radius_B, Color.gray);
+
         DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
         DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
     }
