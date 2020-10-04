@@ -42,6 +42,7 @@ namespace HordeFight
 
             _tr_arm = arm;
             _go_arm = arm.gameObject;
+            //root 찾기 추가하기 
             _arm_start =    Hierarchy.GetTransform(_tr_arm, "start");
             _arm_end =      Hierarchy.GetTransform(_tr_arm, "end");
             _arm_shadow =   Hierarchy.GetTransform(_tr_arm, "shadow");

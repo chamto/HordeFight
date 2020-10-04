@@ -1116,7 +1116,9 @@ namespace HordeFight
                     //_hand_right = _hand_left + objectDir * _twoHand_length;
                     //_arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
                     //=======================================
-                    return;
+
+                    return; //임시로 막아놓은 코드임 --- chamto test
+
                     //조종축 회전 테스트 코드 
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                     //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
