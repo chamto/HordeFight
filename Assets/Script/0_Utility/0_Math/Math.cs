@@ -1667,7 +1667,7 @@ namespace UtilGS9
 
 
         //n_dir 은 노멀값이어야 함 
-        public void CalcTGuard_First_ClosePt(float penetration, Vector3 pt_close, Vector3 n_dir, Transform root_0 ,
+        public void CalcTGuard_First_ClosePt(bool draw, float penetration, Vector3 pt_close, Vector3 n_dir, Transform root_0 ,
                                                 out Vector3 pt_center, out Vector3 pt_first)
         {
             const float ERROR_RATE = 1f; //20프로 정도 침투길이를 늘려 계산할려는 목적 
@@ -1678,7 +1678,7 @@ namespace UtilGS9
             //===============
             Vector3 up_center = Vector3.Cross(root_0.rotation * ConstV.v3_forward, n_dir);
             pt_center = Line3.ClosestPoint(new Line3(root_0.position, up_center), pt_close);
-
+            pt_center = root_0.position; //한계위치에서의 계산을 위해 임시로 처리 
             //===============
             //코사인 제2법칙 이용, a 와 c 는 길이가 같은점을 이용하여 식을 정리 
             //    0
@@ -1701,12 +1701,15 @@ namespace UtilGS9
             pt_first = pt_close + dir_rot;
 
 
+            if(draw)
+            {
+                DebugWide.DrawLine(pt_center, pt_close, Color.yellow);
+                DebugWide.DrawLine(meetPt_A, pt_close, Color.green);
+                DebugWide.DrawLine(pt_first, pt_close, Color.black);
+                DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  ang:" + angle_a);
+                DebugWide.LogBlue((pt_close - meetPt_A).magnitude + "  => " + (dir_rot).magnitude);    
+            }
 
-            //DebugWide.DrawLine(pt_center, pt_close, Color.yellow);
-            //DebugWide.DrawLine(meetPt_A, pt_close, Color.green);
-            //DebugWide.DrawLine(pt_close + dir_rot, pt_close, Color.black);
-            //DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  ang:" + angle_a);
-            //DebugWide.LogBlue((pt_close-meetPt_A).magnitude + "  => " + (dir_rot).magnitude);
 
         }
 
@@ -1750,29 +1753,31 @@ namespace UtilGS9
                     Vector3 pt_first_A, pt_center_A;
                     Vector3 pt_first_B, pt_center_B;
 
-                    DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
-                    DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
+                    //DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
+                    //DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
 
 
-                    CalcTGuard_First_ClosePt(penetration * (1f - rateAtoB), pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
-                    CalcTGuard_First_ClosePt(penetration * (rateAtoB), pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
+                    CalcTGuard_First_ClosePt(false, penetration * (1f - rateAtoB), pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
+                    CalcTGuard_First_ClosePt(true, penetration * (rateAtoB), pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
                     //float rad_sum = _radius_A + _radius_B;
                     //CalcTGuard_First_ClosePt(rad_sum * (1f - rateAtoB), pt_close_B, n_close_BA, root_0, out pt_center_A, out pt_first_A);
                     //CalcTGuard_First_ClosePt(rad_sum * (rateAtoB), pt_close_A, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
 
-                    DebugWide.DrawCircle(pt_first_A, _radius_A, Color.yellow);
+                    DebugWide.DrawCircle(pt_first_A, _radius_A, Color.blue);
+                    DebugWide.DrawCircle(pt_first_B, _radius_B, Color.magenta);
+                    DebugWide.DrawLine(pt_close_A, pt_close_B, Color.red);
                     //===============
 
 
-                    RotateTGuard_FirstToLast(pt_close_A, pt_first_A, pt_center_A, _cur_seg_A, out _cur_seg_A, out __localRota_A);
-                    RotateTGuard_FirstToLast(pt_close_B, pt_first_B, pt_center_B, _cur_seg_B, out _cur_seg_B, out __localRota_B);
+                    //RotateTGuard_FirstToLast(pt_close_A, pt_first_A, pt_center_A, _cur_seg_A, out _cur_seg_A, out __localRota_A);
+                    //RotateTGuard_FirstToLast(pt_close_B, pt_first_B, pt_center_B, _cur_seg_B, out _cur_seg_B, out __localRota_B);
+                    RotateTGuard_FirstToLast(pt_close_A, pt_first_A, root_0.position, _cur_seg_A, out _cur_seg_A, out __localRota_A);
+                    RotateTGuard_FirstToLast(pt_close_B, pt_first_B, root_1.position, _cur_seg_B, out _cur_seg_B, out __localRota_B);
 
                     LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
                     __cur_A_B_order = pt_close_B - pt_close_A;
                     penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
-                    DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration);
-
-                    //DebugWide.LogBlue("  len :" + (pt_first-pt_close_B).magnitude + "  " + pt_first);
+                    DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  " + (pt_first_A-pt_first_B).magnitude);
 
                 }
             }
