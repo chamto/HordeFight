@@ -126,13 +126,13 @@ public class MovingModel
             }
         }
 
-        public void Prev_Update()
-        {
-            for (int i = 0; i < _seg_count; i++)
-            {
-                _info[i].prev_seg = _info[i].cur_seg;
-            }
-        }
+        //public void Prev_Update()
+        //{
+        //    for (int i = 0; i < _seg_count; i++)
+        //    {
+        //        _info[i].prev_seg = _info[i].cur_seg;
+        //    }
+        //}
 
     }//end class
 
@@ -217,10 +217,10 @@ public class MovingModel
         //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
         //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
-        //_frame_sword_A._cur_seg[idx] = _movingSegment._cur_seg_A;
-        //_frame_sword_B._cur_seg[idx] = _movingSegment._cur_seg_B;
-        _frame_sword_A.Prev_Update();
-        _frame_sword_B.Prev_Update();
+        _frame_sword_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
+        _frame_sword_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
+        //_frame_sword_A.Prev_Update();
+        //_frame_sword_B.Prev_Update();
     }
 
     private const int ROOT0 = 0;
@@ -249,18 +249,18 @@ public class MovingModel
 
 
         //DebugWide.LogBlue(_frame_sword_A._seg_count);
-        for (int i = 0; i < _frame_sword_A._seg_count ; i++)
+        for (int a = 0; a < _frame_sword_A._seg_count ; a++)
         {
-            for (int j = 0; j < _frame_sword_B._seg_count; j++)
+            for (int b = 0; b < _frame_sword_B._seg_count; b++)
             {
-                prev_A = _frame_sword_A._info[i].prev_seg;
-                cur_A = _frame_sword_A._info[i].cur_seg;    
+                prev_A = _frame_sword_A._info[a].prev_seg;
+                cur_A = _frame_sword_A._info[a].cur_seg;    
 
-                prev_B = _frame_sword_B._info[j].prev_seg;
-                cur_B = _frame_sword_B._info[j].cur_seg;
+                prev_B = _frame_sword_B._info[b].prev_seg;
+                cur_B = _frame_sword_B._info[b].cur_seg;
 
-                _movingSegment._radius_A = _frame_sword_A._info[i].radius;
-                _movingSegment._radius_B = _frame_sword_B._info[j].radius;
+                _movingSegment._radius_A = _frame_sword_A._info[a].radius;
+                _movingSegment._radius_B = _frame_sword_B._info[b].radius;
                 _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
@@ -270,6 +270,8 @@ public class MovingModel
                                                               _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
 
 
+                _frame_sword_A._info[a].prev_seg = _movingSegment._prev_seg_A;
+                _frame_sword_B._info[b].prev_seg = _movingSegment._prev_seg_B;
                 //=============
 
                 if(recalc)
@@ -321,8 +323,8 @@ public class MovingModel
         //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
         //=================================================
-        _frame_sword_A.Prev_Update();
-        _frame_sword_B.Prev_Update();
+        //_frame_sword_A.Prev_Update();
+        //_frame_sword_B.Prev_Update();
 
     }
 }
