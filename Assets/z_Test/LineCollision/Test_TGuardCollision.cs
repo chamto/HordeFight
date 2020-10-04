@@ -23,8 +23,13 @@ public class Test_TGuardCollision : MonoBehaviour
 
 	private void Start()
 	{
-        //gameObject.AddComponent<MovingModel>();
-        _movingModel.Init(transform.parent);
+
+        Transform model = Hierarchy.GetTransform(transform.parent, "model");
+        Transform frame_A , frame_B;
+        frame_A = Hierarchy.GetTransform(model, "frame_0");
+        frame_B = Hierarchy.GetTransform(model, "frame_1");
+
+        _movingModel.Init(frame_A, frame_B);
 	}
 
 	private void Update()
@@ -155,18 +160,20 @@ public class MovingModel
 
     public bool __init = false;
     Vector3[,] __prev_A_B_order = null;
-    public void Init(Transform root)
+    public void Init(Transform frame_A, Transform frame_B)
     {
         __init = true;
-        Transform model = Hierarchy.GetTransform(root, "model");
-        Transform frame = null;
-        frame = Hierarchy.GetTransform(model, "frame_0");
-        _frame_sword_A.Init(frame);
-        frame = Hierarchy.GetTransform(model, "frame_1");
-        _frame_sword_B.Init(frame);
 
-        //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
-        //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
+        //Transform model = Hierarchy.GetTransform(root, "model");
+        //Transform frame = null;
+        //frame = Hierarchy.GetTransform(model, "frame_0");
+        //_frame_sword_A.Init(frame);
+        //frame = Hierarchy.GetTransform(model, "frame_1");
+        //_frame_sword_B.Init(frame);
+
+        _frame_sword_A.Init(frame_A);
+        _frame_sword_B.Init(frame_B);
+
 
         Vector3 pt_start, pt_end;
         __prev_A_B_order = new Vector3[_frame_sword_A._seg_count, _frame_sword_B._seg_count];
