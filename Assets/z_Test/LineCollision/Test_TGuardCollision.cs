@@ -155,6 +155,7 @@ public class MovingModel
 
 
     public bool __init = false;
+    Vector3[,] __prev_A_B_order = null;
     public void Init(Transform root)
     {
         __init = true;
@@ -168,19 +169,26 @@ public class MovingModel
         //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
         //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
-        //Vector3 pt_start, pt_end;
-        //LineSegment3.ClosestPoints(out pt_start, out pt_end, __seg_prev_A, __seg_prev_B);
-        //_movingSegment.__prev_A_B_order = pt_end - pt_start;
+        Vector3 pt_start, pt_end;
+        __prev_A_B_order = new Vector3[_frame_sword_A._seg_count, _frame_sword_B._seg_count];
+        for (int a = 0; a < _frame_sword_A._seg_count; a++)
+        {
+            for (int b = 0; b < _frame_sword_B._seg_count; b++)
+            {
+                LineSegment3.ClosestPoints(out pt_start, out pt_end, 
+                                           _frame_sword_A._info[a].ToSegment(), _frame_sword_B._info[b].ToSegment());
+                _movingSegment.__prev_A_B_order = pt_end - pt_start;
+                __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
+            }
+        }
 
-        _movingSegment._radius_A = __radius_A;
-        _movingSegment._radius_B = __radius_B;
     }
 
     //private Quaternion __prev_A_rot = Quaternion.identity;
     //private Quaternion __prev_B_rot = Quaternion.identity;
     private Quaternion __min_A_rot = Quaternion.identity;
     private Quaternion __min_B_rot = Quaternion.identity;
-    public void Update()
+    public void Update_2()
     {
         if (false == __init) return;
 
@@ -219,17 +227,18 @@ public class MovingModel
 
         _frame_sword_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
         _frame_sword_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
+        __prev_A_B_order[idx, idx] = _movingSegment.__prev_A_B_order;
         //_frame_sword_A.Prev_Update();
         //_frame_sword_B.Prev_Update();
     }
 
     private const int ROOT0 = 0;
     public float __RateAtoB = 0.5f;
-    public float __radius_A = 0.1f;
-    public float __radius_B = 0.1f;
+    //public float __radius_A = 0.1f;
+    //public float __radius_B = 0.1f;
     bool __update = false;
     //LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
-    public void Update_1()
+    public void Update()
     {
 
         if (false == __init) return;
@@ -259,6 +268,8 @@ public class MovingModel
                 prev_B = _frame_sword_B._info[b].prev_seg;
                 cur_B = _frame_sword_B._info[b].cur_seg;
 
+                _movingSegment.__prev_A_B_order = __prev_A_B_order[a, b]; //*** 이전순서 복원 ***
+
                 _movingSegment._radius_A = _frame_sword_A._info[a].radius;
                 _movingSegment._radius_B = _frame_sword_B._info[b].radius;
                 _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
@@ -272,6 +283,7 @@ public class MovingModel
 
                 _frame_sword_A._info[a].prev_seg = _movingSegment._prev_seg_A;
                 _frame_sword_B._info[b].prev_seg = _movingSegment._prev_seg_B;
+                __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                 //=============
 
                 if(recalc)
