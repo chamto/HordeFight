@@ -1860,7 +1860,7 @@ namespace UtilGS9
 
                     meetPt = minV + (maxV - minV) * rateAtoB;
 
-                    DebugWide.DrawLine(minV, maxV, Color.gray);
+                    //DebugWide.DrawLine(minV, maxV, Color.gray);
 
                     //한계위치 검사
                     //Vector3 limit;
