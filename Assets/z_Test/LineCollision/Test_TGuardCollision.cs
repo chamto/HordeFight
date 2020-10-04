@@ -238,16 +238,15 @@ public class MovingModel
         //_frame_sword_B.Prev_Update();
     }
 
-    private const int ROOT0 = 0;
+
     public float __RateAtoB = 0.5f;
-    //public float __radius_A = 0.1f;
-    //public float __radius_B = 0.1f;
-    bool __update = false;
+
+    public bool __update = false;
     //LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
-    public void Update()
+    public bool Update()
     {
 
-        if (false == __init) return;
+        if (false == __init) return false;
 
         _frame_sword_A.Cur_Update();
         _frame_sword_B.Cur_Update();
@@ -297,23 +296,6 @@ public class MovingModel
                 {
                     __update = true;
 
-                    //Vector3 n_left = VOp.Normalize(prev_A.direction);
-                    //float len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_A.origin));
-                    //Vector3 pt_proj_A = len_proj_left * n_left + prev_A.origin;
-
-                    //n_left = VOp.Normalize(prev_B.direction);
-                    //len_proj_left = Vector3.Dot(n_left, (_movingSegment._meetPt - prev_B.origin));
-                    //Vector3 pt_proj_B = len_proj_left * n_left + prev_B.origin;
-
-                    ////meet으로부터 더 먼 점을 선택 , 기준이 되는 공통의 선분위의 점을 찾는다 
-                    //Vector3 stand = pt_proj_B;
-                    //if((pt_proj_A - _movingSegment._meetPt).sqrMagnitude > (pt_proj_B - _movingSegment._meetPt).sqrMagnitude)
-                    //{
-                    //    stand = pt_proj_A;
-                    //}
-
-                    //결과들중 최소거리의 선분 하나 선택
-                    //float new_len = (_movingSegment._meetPt - stand).sqrMagnitude; 
 
                     //하나의 프레임에서 하나의 유형만 발생한다.
                     float new_len = _movingSegment.__cur_A_B_order.sqrMagnitude;
@@ -344,8 +326,6 @@ public class MovingModel
                         }
                     }
 
-
-
                     //DebugWide.DrawCircle(_movingSegment._meetPt, 0.05f, Color.red);
                 }
             }
@@ -361,12 +341,6 @@ public class MovingModel
 
         }
 
-        //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
-        //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
-
-        //=================================================
-        //_frame_sword_A.Prev_Update();
-        //_frame_sword_B.Prev_Update();
-
+        return __update;
     }
 }
