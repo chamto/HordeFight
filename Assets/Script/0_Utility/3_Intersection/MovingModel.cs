@@ -105,15 +105,15 @@ namespace UtilGS9
         }//end class
 
         public MovingSegement3 _movingSegment = new MovingSegement3();
-        public Frame _frame_sword_A = new Frame();
-        public Frame _frame_sword_B = new Frame();
+        public Frame _frame_A = null;
+        public Frame _frame_B = null;
 
         public void Draw()
         {
             if (false == __init) return;
 
-            _frame_sword_A.Draw(Color.blue);
-            _frame_sword_B.Draw(Color.magenta);
+            _frame_A.Draw(Color.blue);
+            _frame_B.Draw(Color.magenta);
 
             DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
             DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
@@ -128,30 +128,31 @@ namespace UtilGS9
         {
             __init = true;
 
-            //Transform model = Hierarchy.GetTransform(root, "model");
-            //Transform frame = null;
-            //frame = Hierarchy.GetTransform(model, "frame_0");
-            //_frame_sword_A.Init(frame);
-            //frame = Hierarchy.GetTransform(model, "frame_1");
-            //_frame_sword_B.Init(frame);
+            _frame_A = new Frame();
+            _frame_B = new Frame();
 
-            _frame_sword_A.Init(frame_A);
-            _frame_sword_B.Init(frame_B);
+            _frame_A.Init(frame_A);
+            _frame_B.Init(frame_B);
 
 
+            Init_Prev_AB_Order();
+
+        }
+
+        public void Init_Prev_AB_Order()
+        {
             Vector3 pt_start, pt_end;
-            __prev_A_B_order = new Vector3[_frame_sword_A._seg_count, _frame_sword_B._seg_count];
-            for (int a = 0; a < _frame_sword_A._seg_count; a++)
+            __prev_A_B_order = new Vector3[_frame_A._seg_count, _frame_B._seg_count];
+            for (int a = 0; a < _frame_A._seg_count; a++)
             {
-                for (int b = 0; b < _frame_sword_B._seg_count; b++)
+                for (int b = 0; b < _frame_B._seg_count; b++)
                 {
                     LineSegment3.ClosestPoints(out pt_start, out pt_end,
-                                               _frame_sword_A._info[a].ToSegment(), _frame_sword_B._info[b].ToSegment());
+                                               _frame_A._info[a].ToSegment(), _frame_B._info[b].ToSegment());
                     _movingSegment.__prev_A_B_order = pt_end - pt_start;
                     __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                 }
             }
-
         }
 
         //private Quaternion __prev_A_rot = Quaternion.identity;
@@ -162,8 +163,8 @@ namespace UtilGS9
         {
             if (false == __init) return;
 
-            _frame_sword_A.Cur_Update();
-            _frame_sword_B.Cur_Update();
+            _frame_A.Cur_Update();
+            _frame_B.Cur_Update();
             //=================================================
 
             LineSegment3 prev_A, cur_A;
@@ -171,21 +172,21 @@ namespace UtilGS9
 
             int idx = 0;
 
-            prev_A = _frame_sword_A._info[idx].prev_seg;
-            cur_A = _frame_sword_A._info[idx].cur_seg;
+            prev_A = _frame_A._info[idx].prev_seg;
+            cur_A = _frame_A._info[idx].cur_seg;
 
-            prev_B = _frame_sword_B._info[idx].prev_seg;
-            cur_B = _frame_sword_B._info[idx].cur_seg;
+            prev_B = _frame_B._info[idx].prev_seg;
+            cur_B = _frame_B._info[idx].cur_seg;
 
-            _movingSegment._radius_A = _frame_sword_A._info[idx].radius;
-            _movingSegment._radius_B = _frame_sword_B._info[idx].radius;
+            _movingSegment._radius_A = _frame_A._info[idx].radius;
+            _movingSegment._radius_B = _frame_B._info[idx].radius;
             _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
+            bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_A._tr_frame, _frame_B._tr_frame);
             if (true == contact)
             {
-                _frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_sword_A._tr_frame.rotation; //실제적용 
-                _frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * _frame_sword_B._tr_frame.rotation;
+                _frame_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_A._tr_frame.rotation; //실제적용 
+                _frame_B._tr_frame.rotation = _movingSegment.__localRota_B * _frame_B._tr_frame.rotation;
 
                 //_frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * __prev_A_rot; //실제적용 
                 //_frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * __prev_B_rot;
@@ -195,8 +196,8 @@ namespace UtilGS9
             //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
             //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
 
-            _frame_sword_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
-            _frame_sword_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
+            _frame_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
+            _frame_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
             __prev_A_B_order[idx, idx] = _movingSegment.__prev_A_B_order;
             //_frame_sword_A.Prev_Update();
             //_frame_sword_B.Prev_Update();
@@ -212,8 +213,8 @@ namespace UtilGS9
 
             if (false == __init) return false;
 
-            _frame_sword_A.Cur_Update();
-            _frame_sword_B.Cur_Update();
+            _frame_A.Cur_Update();
+            _frame_B.Cur_Update();
             //=================================================
 
             LineSegment3 prev_A, cur_A;
@@ -228,31 +229,31 @@ namespace UtilGS9
 
 
             //DebugWide.LogBlue(_frame_sword_A._seg_count);
-            for (int a = 0; a < _frame_sword_A._seg_count; a++)
+            for (int a = 0; a < _frame_A._seg_count; a++)
             {
-                for (int b = 0; b < _frame_sword_B._seg_count; b++)
+                for (int b = 0; b < _frame_B._seg_count; b++)
                 {
-                    prev_A = _frame_sword_A._info[a].prev_seg;
-                    cur_A = _frame_sword_A._info[a].cur_seg;
+                    prev_A = _frame_A._info[a].prev_seg;
+                    cur_A = _frame_A._info[a].cur_seg;
 
-                    prev_B = _frame_sword_B._info[b].prev_seg;
-                    cur_B = _frame_sword_B._info[b].cur_seg;
+                    prev_B = _frame_B._info[b].prev_seg;
+                    cur_B = _frame_B._info[b].cur_seg;
 
                     _movingSegment.__prev_A_B_order = __prev_A_B_order[a, b]; //*** 이전순서 복원 ***
 
-                    _movingSegment._radius_A = _frame_sword_A._info[a].radius;
-                    _movingSegment._radius_B = _frame_sword_B._info[b].radius;
+                    _movingSegment._radius_A = _frame_A._info[a].radius;
+                    _movingSegment._radius_B = _frame_B._info[b].radius;
                     _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
                     //=============
 
                     recalc = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB,
-                                                                  _frame_sword_A._tr_frame, _frame_sword_B._tr_frame);
+                                                                  _frame_A._tr_frame, _frame_B._tr_frame);
 
 
-                    _frame_sword_A._info[a].prev_seg = _movingSegment._prev_seg_A;
-                    _frame_sword_B._info[b].prev_seg = _movingSegment._prev_seg_B;
+                    _frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
+                    _frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
                     __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                     //=============
 
@@ -300,8 +301,8 @@ namespace UtilGS9
             if (__update)
             {
 
-                _frame_sword_A._tr_frame.rotation = __min_A_rot * _frame_sword_A._tr_frame.rotation; //실제적용 
-                _frame_sword_B._tr_frame.rotation = __min_B_rot * _frame_sword_B._tr_frame.rotation;
+                _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용 
+                _frame_B._tr_frame.rotation = __min_B_rot * _frame_B._tr_frame.rotation;
 
             }
 

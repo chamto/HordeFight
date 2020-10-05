@@ -75,7 +75,6 @@ namespace HordeFight
 
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
-            //_movingSegment.InitSegAB(_champ_0._limbs._armed_left._line, _champ_1._limbs._armed_left._line);
 
 
             _movingModel.Init(_champ_0._limbs._armed_left._tr_arm, _champ_1._limbs._armed_left._tr_arm);
@@ -96,8 +95,7 @@ namespace HordeFight
         private bool __reverse = false;
         private float __time_elapsed = 0;
         public float __RateAtoB = 1f;
-        //public bool __AllowFixed_A = true;
-        //public bool __AllowFixed_B = true;
+
 		private void Update()
 		{
 
