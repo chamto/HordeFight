@@ -82,6 +82,7 @@ namespace HordeFight
         }
 
 
+
         //public void CallCurSegUpdate(LineSegment3 seg)
         //{
         //    _champ_0._limbs._hs_standard.position = seg_a.origin;
@@ -142,7 +143,17 @@ namespace HordeFight
             _champ_1.UpdateAll();
             _champ_1.Apply_UnityPosition();
 
+            //==================================================
 
+            if(_champ_0._limbs.__isUpdateEq_handLeft || _champ_0._limbs.__isUpdateEq_handRight || 
+               _champ_1._limbs.__isUpdateEq_handLeft || _champ_1._limbs.__isUpdateEq_handRight)
+            {
+                //무기장착 정보가 변경되었다면 변경된 값으로 갱신시켜준다 
+                _movingModel._frame_A = _champ_0._limbs._armed_left._frame;
+                _movingModel._frame_B = _champ_1._limbs._armed_left._frame;
+                _movingModel.Init_Prev_AB_Order();
+                DebugWide.LogBlue("무기정보 갱신 !!! ");
+            }
             _movingModel.__RateAtoB = __RateAtoB;
             if(true == _movingModel.Update())
             {

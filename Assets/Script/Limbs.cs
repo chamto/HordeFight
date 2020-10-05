@@ -744,6 +744,10 @@ namespace HordeFight
             }
         }
 
+
+        public bool __isUpdateEq_handLeft = false;
+        public bool __isUpdateEq_handRight = false;
+        //public System.Action __Callback_Update_Equipment = null;
 		public void Update_Equipment()
         {
             ArmedInfo.eIdx arin_left_idx = _equipment_handLeft;
@@ -753,6 +757,8 @@ namespace HordeFight
             if (null != (object)_armed_right)
                 arin_right_idx = _armed_right._eIdx;
 
+            __isUpdateEq_handLeft = false;
+            __isUpdateEq_handRight = false;
 
             //왼손 무기 장착
             if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
@@ -761,8 +767,8 @@ namespace HordeFight
                 _armed_left = _list_armedInfo[(int)_equipment_handLeft];
                 _armed_left.SetActive(true);
 
+                __isUpdateEq_handLeft = true;
             }
-            _armed_left.Update_Info(_tr_hand_left);
 
             //=============================================
                 
@@ -773,7 +779,13 @@ namespace HordeFight
                 ActiveAll_Arms(false, arin_left_idx);
                 _armed_right = _list_armedInfo[(int)_equipment_handRight];
                 _armed_right.SetActive(true);
+
+                __isUpdateEq_handRight = true;
             }
+
+            //=============================================
+
+            _armed_left.Update_Info(_tr_hand_left);
             _armed_right.Update_Info(_tr_hand_right);
 
 		}
