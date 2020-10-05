@@ -619,9 +619,9 @@ namespace HordeFight
         }
 
 
-        //public delegate void CallFunc(LineSegment3 seg);
-        //public CallFunc _callCurSeg = new CallFunc(CallCurSegUpdate);
-        public void Update_All()
+        //public delegate void CallFunc();
+        //public CallFunc _Call_MovingModel = null;
+        public void UpdateAll()
         {
             //방향값 갱신
             _foot_dir = VOp.Normalize(_tr_foot_dir.position - transform.position);
@@ -659,6 +659,11 @@ namespace HordeFight
 
             //==================================================
 
+
+        }
+
+        public void UpdateAll_Late()
+        {
             //2d 게임에서의 높이표현 
             Update_Position_ProjectionSlope(); //view 위치값 갱신 , 이후 코드에서 view 회전량을 구한다 
             Update_Rotation_Hand(_armed_left._tr_view, _armed_right._tr_view);
@@ -675,7 +680,6 @@ namespace HordeFight
 
             Rotate(_ref_movement._direction);
         }
-
 		//==================================================
 
         public void ActiveAll_Arms(bool value , ArmedInfo.eIdx except)

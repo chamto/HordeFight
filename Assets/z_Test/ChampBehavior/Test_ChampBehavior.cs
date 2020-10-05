@@ -83,14 +83,6 @@ namespace HordeFight
 
 
 
-        //public void CallCurSegUpdate(LineSegment3 seg)
-        //{
-        //    _champ_0._limbs._hs_standard.position = seg_a.origin;
-        //    _champ_0._limbs._hs_objectDir.position = seg_a.last;
-
-        //    _champ_1._limbs._hs_standard.position = seg_b.origin;
-        //    _champ_1._limbs._hs_objectDir.position = seg_b.last;
-        //}
 
         public Interpolation.eKind __interKind = Interpolation.eKind.spring;
         private bool __reverse = false;
@@ -133,19 +125,14 @@ namespace HordeFight
 
             //==================================================
 
-            //_champ_0._limbs.Update_CurSeg();
-            //_champ_1._limbs.Update_CurSeg();
-            //==================================================
-
             _champ_0.UpdateAll();
-            _champ_0.Apply_UnityPosition();
-
+            _champ_0._limbs.UpdateAll();
             _champ_1.UpdateAll();
-            _champ_1.Apply_UnityPosition();
+            _champ_1._limbs.UpdateAll();
 
             //==================================================
 
-            if(_champ_0._limbs.__isUpdateEq_handLeft || _champ_0._limbs.__isUpdateEq_handRight || 
+            if (_champ_0._limbs.__isUpdateEq_handLeft || _champ_0._limbs.__isUpdateEq_handRight ||
                _champ_1._limbs.__isUpdateEq_handLeft || _champ_1._limbs.__isUpdateEq_handRight)
             {
                 //무기장착 정보가 변경되었다면 변경된 값으로 갱신시켜준다 
@@ -155,9 +142,11 @@ namespace HordeFight
                 DebugWide.LogBlue("무기정보 갱신 !!! ");
             }
             _movingModel.__RateAtoB = __RateAtoB;
-            if(true == _movingModel.Update())
+            if (true == _movingModel.Update())
             {
                 //계산된 회전값을 sting , cut 에 적용하기
+
+                //임시처리 
                 _champ_0._limbs._tr_hand_left.rotation = _movingModel._frame_A._tr_frame.rotation;
                 _champ_0._limbs._tr_hand_left.position = _movingModel._frame_A._tr_frame.position;
                 Vector3 pos_o = _champ_0._limbs._tr_hand_left.position;
@@ -174,9 +163,17 @@ namespace HordeFight
             }
 
             //==================================================
+
+            _champ_0._limbs.UpdateAll_Late();
+            _champ_1._limbs.UpdateAll_Late();
+
+            _champ_0.Apply_UnityPosition();
+            _champ_1.Apply_UnityPosition();
+
+            //==================================================
+
 		}
 		
-
 
         //======================================================================================================================================
         //======================================================================================================================================
