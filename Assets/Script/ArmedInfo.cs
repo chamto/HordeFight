@@ -30,6 +30,8 @@ namespace HordeFight
         public LineSegment3 _cur_seg;
         public LineSegment3 _prev_seg;
 
+        public MovingModel.Frame _frame = new MovingModel.Frame();
+
         //public int _idx = -1;
         public string _name = "";
         public eIdx _eIdx = eIdx.None;
@@ -40,11 +42,11 @@ namespace HordeFight
         {
             if (null == (object)arm) return;
 
+            _frame.Init(arm);
             _tr_arm = arm;
             _go_arm = arm.gameObject;
-            //root 찾기 추가하기 
-            _arm_start =    Hierarchy.GetTransform(_tr_arm, "start");
-            _arm_end =      Hierarchy.GetTransform(_tr_arm, "end");
+            _arm_start =    _frame._info[0].start;
+            _arm_end =      _frame._info[0].end;
             _arm_shadow =   Hierarchy.GetTransform(_tr_arm, "shadow");
             _arm_spr =      Hierarchy.GetTransform(_tr_arm, "arm_spr").GetComponent<SpriteMesh>();
             //DebugWide.LogBlue(_arm_spr + " : " + Hierarchy.GetTransform(_tr_arm, "arm_spr").name);
