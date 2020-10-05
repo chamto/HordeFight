@@ -131,7 +131,8 @@ namespace UtilGS9
                 list = parent.GetComponentsInChildren<Transform>(includeInactive);
                 for (int i = 0; i < list.Length; i++)
                 {
-                    if (list[i].name == child_name)
+                    //자식의 자식도 모두 불러오기 때문에 직계자식만 찾도록 한다 
+                    if (list[i].name == child_name && list[i].parent == parent)
                         return list[i];
                 }
             }
