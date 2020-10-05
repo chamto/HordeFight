@@ -70,12 +70,10 @@ namespace HordeFight
 
         public void Update_Frame(Transform frame)
         {
+            
             _tr_frame.position = frame.position;
             _tr_frame.rotation = frame.rotation;
 
-            //_cur_seg.origin = _arm_start.position;
-            ////_line.direction = _arm_end.position - _line.origin;
-            //_cur_seg.last = _arm_end.position;
         }
 
 
