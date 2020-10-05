@@ -291,8 +291,8 @@ namespace HordeFight
 
             //무기정보
             {
-                _armed_left.DrawInfo(Color.red);
-                _armed_right.DrawInfo(Color.red);
+                _armed_left.Draw(Color.red);
+                _armed_right.Draw(Color.red);
             }
 
             //무기 뒷면 
@@ -611,43 +611,13 @@ namespace HordeFight
             //==================================================
             _hand_left = _tr_hand_left.position;
             _hand_right = _tr_hand_right.position;
-            //_cur_seg = new LineSegment3(_hs_standard.position, _hs_objectDir.position);
-            _cur_seg = new LineSegment3(_hand_left, _hand_right - _hand_left);
-            _prev_seg = _cur_seg;
+
 
         }
 
-        public  void Update_CurSeg()
-        {
-            if (null != (object)_armed_left)
-            {
-                //Vector3 n = _hs_objectDir.position - _hs_standard.position;
-                //n = VOp.Normalize(n);
-                Vector3 n = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
-                float len = 1f;
-                len = _armed_left._length;
-                _cur_seg = new LineSegment3(_tr_hand_left.position, _tr_hand_left.position + n * len);
-                //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
-            }
-        }
-        public void Update_PrevSeg()
-        {
-            if (null != (object)_armed_left)
-            {
-                //Vector3 n = _hs_objectDir.position - _hs_standard.position;
-                //n = VOp.Normalize(n);
-                Vector3 n = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
-                float len = 1f;
-                len = _armed_left._length;
-                _prev_seg = new LineSegment3(_tr_hand_left.position, _tr_hand_left.position + n * len);
-                //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
-            }
-        }
 
         //public delegate void CallFunc(LineSegment3 seg);
         //public CallFunc _callCurSeg = new CallFunc(CallCurSegUpdate);
-        public LineSegment3 _cur_seg;
-        public LineSegment3 _prev_seg;
         public void Update_All()
         {
             //방향값 갱신
@@ -673,19 +643,6 @@ namespace HordeFight
             Update_Ani();
 
 
-            //선분값 갱신 ..
-            //if(null != (object)_armed_left)
-            //{
-            //    //Vector3 n = _hs_objectDir.position - _hs_standard.position;
-            //    //n = VOp.Normalize(n);
-            //    Vector3 n = VOp.Normalize(_hand_right - _hand_left);
-            //    float len = 1f;
-            //    len = _armed_left._length;
-            //    _cur_seg = new LineSegment3(_hand_left, _hand_left + n * len);
-            //    //_cur_seg = new LineSegment3(_hs_objectDir.position, _hs_objectDir.position + n * len);
-            //}
-
-
 
             //손 움직임 만들기 
             Update_HandControl();
@@ -695,8 +652,8 @@ namespace HordeFight
             //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if(_active_projectionSlope)
             {
-                //_tr_hand_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
                 //_tr_hand_left.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
+                //_tr_hand_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
                 _tr_hand_left.position = Project_BoxSlope(_hand_left, (_hand_left - _groundY).y);
                 _tr_hand_right.position = Project_BoxSlope(_hand_right, (_hand_right - _groundY).y);
 
@@ -711,11 +668,11 @@ namespace HordeFight
 
             //..
             //_prev_seg = _cur_seg;
-            Update_PrevSeg();
+            //Update_PrevSeg();
 
             //==================================================
             //손에 칼 붙이기
-            Update_AttachHand();
+            Update_Attach_AtHand();
 
             //장비 장착(붙이기 처리 다음에 와야함)
             Update_Equipment();
@@ -726,7 +683,7 @@ namespace HordeFight
             Update_Shadow();
 
             //물건 움직임에 따라 손 스프라이트 표현 
-            Update_HandWristAni();
+            Update_Ani_Wrist();
             //==================================================
 
             Rotate(_ref_movement._direction);
@@ -1679,7 +1636,7 @@ namespace HordeFight
 
         //==================================================
 
-        public void Update_AttachHand()
+        public void Update_Attach_AtHand()
         {
             if (ePart.OneHand == _part_control)
             {   //한손 칼 붙이기 
@@ -1746,7 +1703,7 @@ namespace HordeFight
         }
 
         //손,손목 애니 
-        public void Update_HandWristAni()
+        public void Update_Ani_Wrist()
         {
             //주먹 회전 (어깨에서 손까지)
             //float angleY = Geo.Angle360(ConstV.v3_forward, (_hand_left.position - _shoulder_left.position), ConstV.v3_up);

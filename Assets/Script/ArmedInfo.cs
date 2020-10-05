@@ -27,8 +27,8 @@ namespace HordeFight
         public Transform _arm_end = null;
         public Transform _arm_shadow = null;
         public SpriteMesh _arm_spr = null;
-        public LineSegment3 _cur_seg;
-        public LineSegment3 _prev_seg;
+        //public LineSegment3 _cur_seg;
+        //public LineSegment3 _prev_seg;
 
         public MovingModel.Frame _frame = new MovingModel.Frame();
 
@@ -53,8 +53,8 @@ namespace HordeFight
 
             //_idx = idx;
             _length = (_arm_start.position - _arm_end.position).magnitude;
-            _cur_seg = new LineSegment3(_arm_start.position, _arm_end.position);
-            _prev_seg = _cur_seg;
+            //_cur_seg = new LineSegment3(_arm_start.position, _arm_end.position);
+            //_prev_seg = _cur_seg;
         }
 
         //실제 갱신이 일어나지 않는 처리임 
@@ -69,9 +69,9 @@ namespace HordeFight
             _tr_arm.position = parent.position;
             _tr_arm.rotation = parent.rotation;
 
-            _cur_seg.origin = _arm_start.position;
-            //_line.direction = _arm_end.position - _line.origin;
-            _cur_seg.last = _arm_end.position;
+            //_cur_seg.origin = _arm_start.position;
+            ////_line.direction = _arm_end.position - _line.origin;
+            //_cur_seg.last = _arm_end.position;
         }
 
         public void SetActive(bool value)
@@ -80,7 +80,7 @@ namespace HordeFight
             _go_arm.SetActive(value);
         }
 
-        public void DrawInfo(Color color)
+        public void Draw(Color color)
         {
             DebugWide.DrawLine(_arm_start.position, _arm_end.position, color);
         }
