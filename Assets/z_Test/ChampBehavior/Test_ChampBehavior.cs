@@ -77,7 +77,7 @@ namespace HordeFight
             _champ_1.UpdateAll();
 
 
-            _movingModel.Init(_champ_0._limbs._armed_left._tr_arm, _champ_1._limbs._armed_left._tr_arm);
+            _movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
         }
 
