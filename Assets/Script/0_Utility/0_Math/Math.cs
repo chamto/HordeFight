@@ -245,6 +245,34 @@ namespace UtilGS9
             return direction.sqrMagnitude;
         }
 
+        //같은 직선상의 선분이며 방향이 같은 선분이라고 가정
+        //방향이 다를 경우 target 선분의 origin 과 last 를 바꾸어 방향을 맞춰준다 
+        static public LineSegment3 Merge(LineSegment3 a, LineSegment3 b)
+        {
+            Vector3 t_origin = b.origin, t_last = b.last;
+            //서로 방향이 다른 선분일 경우  
+            if (0 > Vector3.Dot(a.direction, b.direction))
+            {
+                t_origin = b.last;
+                t_last = b.origin;
+            }
+
+            Vector3 dir_o_o = t_origin - a.origin;
+            Vector3 start, end;
+            if(0 < Vector3.Dot(a.direction, dir_o_o))
+            {
+                start = a.origin;
+                end = t_last;
+            }
+            else
+            {
+                start = t_origin;
+                end = a.last;
+            }
+
+
+            return new LineSegment3(start,end);
+        }
 
         // ---------------------------------------------------------------------------
         // Returns the closest point on line segment to point
@@ -543,7 +571,8 @@ namespace UtilGS9
         public void Draw(Color color)
         {
             DebugWide.DrawLine(origin, last, color);
-            //DebugWide.DrawCircle(origin, 0.05f, color);
+            DebugWide.DrawCircle(origin, 0.05f, color);
+            DebugWide.DrawCircle(last, 0.05f, color);
         }
 
 
