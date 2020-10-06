@@ -835,11 +835,14 @@ namespace UtilGS9
         public bool Find_TGuard_vs_TGuard(float rateAtoB, bool allowFixed_a, bool allowFixed_b , Transform root_0, Transform root_1)
         {
             bool result_contact = false;
+            bool isContact_onPlan = false;
             Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
             Vector3 pt_close_A, pt_close_B;
             float rad_AB = _radius_A + _radius_B;
 
+            __localRota_A = Quaternion.identity;
+            __localRota_B = Quaternion.identity;
             __dir_move_A = ConstV.v3_zero;
             __dir_move_B = ConstV.v3_zero;
 
@@ -931,6 +934,7 @@ namespace UtilGS9
                     eIntersectionType.PLANE == _intr_1_2.mIntersectionType ||
                     eIntersectionType.PLANE == _intr_1_3.mIntersectionType)
                 {
+                    isContact_onPlan = true;
 
                     //선분과 사각꼴이 같은 평면에서 만난경우
                     if (true == __isSeg_A && false == __isSeg_B)
@@ -956,7 +960,7 @@ namespace UtilGS9
                     meetPt = minV + (maxV - minV) * rateAtoB;
 
                     //if(result_contact)
-                    //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
+                        //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
 
                     DebugWide.DrawCircle(minV, 0.02f, Color.red);
                     DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
@@ -966,9 +970,19 @@ namespace UtilGS9
                 //사각꼴(선분)이 서로 엇갈려 만난경우
                 else
                 {
-                    result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
+                    if (true == __isSeg_A && true == __isSeg_B)
+                    {
+                        //현재 선분과 선분은 접촉점을 못찾는 문제가 있음 
+                    }
+                    //else
+                    {
+                        result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);    
+                    }
+
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
                     //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
+
+                    DebugWide.LogBlue("엇갈려 " + result_contact + "  " );
 
                     if (true == result_contact)
                     {
@@ -1011,9 +1025,16 @@ namespace UtilGS9
 
                     LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
-                    Vector3 drop_dir = VOp.Normalize(maxV - minV);
+                    Vector3 dir_drop = maxV - minV;
+                    if(true == isContact_onPlan)
+                    {
+                        //평면위에 접촉점이 있는 경우 
+                        dir_drop = __dir_A + __dir_B;
+                    }
+                    dir_drop = VOp.Normalize(dir_drop);
+
                     float drop_sign = 1f;
-                    if (0 > Vector3.Dot(drop_dir, __prev_A_B_order))
+                    if (0 > Vector3.Dot(dir_drop, __prev_A_B_order))
                     {
                         //DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
                         drop_sign = -1f;
@@ -1024,7 +1045,7 @@ namespace UtilGS9
                     if (true == allowFixed_a)
                     {
 
-                        lastPt1 += -drop_dir * drop_sign * dropping; //dropping 처리 
+                        lastPt1 += -dir_drop * drop_sign * dropping; //dropping 처리 
                         _meetPt_A = lastPt1;
                         //이전 선분에 회전적용
                         //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt1 ,root_0, _prev_seg_A);
@@ -1040,7 +1061,7 @@ namespace UtilGS9
                     else
                     {
                         
-                        lastPt1 += -drop_dir * dropping;
+                        lastPt1 += -dir_drop * drop_sign * dropping;
                         __dir_move_A = lastPt1 - meetPt;
                         DebugWide.DrawCircle(lastPt1, _radius_A, Color.blue);
                     }
@@ -1049,7 +1070,7 @@ namespace UtilGS9
                     if (true == allowFixed_b)
                     {
                         
-                        lastPt2 += drop_dir * drop_sign * dropping; //dropping 처리
+                        lastPt2 += dir_drop * drop_sign * dropping; //dropping 처리
                         _meetPt_B = lastPt2;
                         //이전 선분에 회전적용
                         //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt2, root_1, _prev_seg_B);
@@ -1066,7 +1087,7 @@ namespace UtilGS9
                     {
                         
                         //pt_close_A
-                        lastPt2 += drop_dir * dropping;
+                        lastPt2 += dir_drop * drop_sign * dropping;
                         __dir_move_B = lastPt2 - meetPt;
                         DebugWide.DrawCircle(lastPt2, _radius_B, Color.magenta);
                     }
@@ -1153,6 +1174,8 @@ namespace UtilGS9
             Vector3 pt_close_A, pt_close_B;
             float rad_AB = _radius_A + _radius_B;
 
+            __localRota_A = Quaternion.identity;
+            __localRota_B = Quaternion.identity;
             __dir_move_A = ConstV.v3_zero;
             __dir_move_B = ConstV.v3_zero;
 
@@ -1402,9 +1425,6 @@ namespace UtilGS9
                 //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + VOp.Normalize(__min_max.direction) * 0.4f, Color.green);
 
             }
-
-            //__localRota_A = Quaternion.identity;
-            //__localRota_B = Quaternion.identity;
 
             _prev_seg_A = _cur_seg_A;
             _prev_seg_B = _cur_seg_B;
