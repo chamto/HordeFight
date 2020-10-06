@@ -183,6 +183,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
     public float __angle = 0.05f;
     public float __radius_A = 0.1f;
     public float __radius_B = 0.1f;
+    public bool _allowFixed_a = true;
+    public bool _allowFixed_b = true;
+
 
     public eModeKind __updateMode_stopTime = eModeKind.StopTime;
     private void OnDrawGizmos()
@@ -286,7 +289,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 //__nextFrame = false;
 
 
-                bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+                bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _allowFixed_a, _allowFixed_b,
+                                                             _tgs_A._T0_root, _tgs_B._T0_root);
                 if (true == contact)
                 {
 
@@ -340,6 +344,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
+            _tgs_A._T1_root.position = _tgs_A._T0_root.position;
+            _tgs_B._T1_root.position = _tgs_B._T0_root.position;
+            _tgs_A._Tctl_root.position = _tgs_A._T0_root.position;
+            _tgs_B._Tctl_root.position = _tgs_B._T0_root.position;
             //------------
 
             LineSegment3 prev_A, cur_A;
@@ -355,7 +363,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _allowFixed_a, _allowFixed_b,
+                                                         _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
 
@@ -366,6 +375,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 //prev 선분에 적용 
                 //_tgs_A._T0_root.rotation = _movTgs.__localRota_A * __prev_A_rot; //실제적용 
                 //_tgs_B._T0_root.rotation = _movTgs.__localRota_B * __prev_B_rot; //실제적용 
+
+                //이동값 선분에 적용
+                _tgs_A._T0_root.position += _movTgs.__dir_move_A;
+                _tgs_B._T0_root.position += _movTgs.__dir_move_B;
 
             }
 
@@ -416,7 +429,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
             _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _allowFixed_a, _allowFixed_b,
+                                                         _tgs_A._T0_root, _tgs_B._T0_root);
             if (true == contact)
             {
 
@@ -453,6 +467,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
 
+            _tgs_A._T1_root.position = _tgs_A._T0_root.position;
+            _tgs_B._T1_root.position = _tgs_B._T0_root.position;
             //------------
 
             LineSegment3 prev_A, cur_A;
@@ -473,7 +489,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _movTgs.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
 
-            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _tgs_A._T0_root, _tgs_B._T0_root);
+            bool contact = _movTgs.Find_TGuard_vs_TGuard(__rate, _allowFixed_a, _allowFixed_b,
+                                                         _tgs_A._T0_root, _tgs_B._T0_root);
             if(true == contact)
             {
                 
@@ -482,6 +499,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
                 _tgs_A._T1_root.rotation = _movTgs.__localRota_A * _tgs_A._Tctl_root.rotation; //실제적용 
                 _tgs_B._T1_root.rotation = _movTgs.__localRota_B * _tgs_B._Tctl_root.rotation; //실제적용 
+
+                //이동값 선분에 적용
+                _tgs_A._T1_root.position += _movTgs.__dir_move_A;
+                _tgs_B._T1_root.position += _movTgs.__dir_move_B;
 
             }
 
