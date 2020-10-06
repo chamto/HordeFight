@@ -973,8 +973,9 @@ namespace UtilGS9
                     if (true == __isSeg_A && true == __isSeg_B)
                     {
                         //현재 선분과 선분은 접촉점을 못찾는 문제가 있음 
+                        DebugWide.LogBlue("선분인가 ? ");
                     }
-                    //else
+
                     {
                         result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);    
                     }
@@ -1855,8 +1856,17 @@ namespace UtilGS9
             __dir_B = (_cur_seg_B.origin - _prev_seg_B.origin) + (_cur_seg_B.last - _prev_seg_B.last);
 
 
-            __isSeg_A = Misc.IsZero(__dir_A);
-            __isSeg_B = Misc.IsZero(__dir_B);
+            //방향이 같으면 0벡터가 되는 외적의 성질을 이용해 선분상태를 구함 
+            Vector3 test;
+            test = Vector3.Cross(__dir_A, _cur_seg_A.direction);
+            __isSeg_A = Misc.IsZero(test);
+            test = Vector3.Cross(__dir_B, _cur_seg_B.direction);
+            __isSeg_B = Misc.IsZero(test);
+
+            //선분상태를 유지 한채 이동한 경우 선분으로 안나옴
+            //__isSeg_B = Misc.IsZero(__dir_B);
+            //__isSeg_A = Misc.IsZero(__dir_A);
+
 
             _tetr01.Set(_prev_seg_A, _cur_seg_A);
             _tetr23.Set(_prev_seg_B, _cur_seg_B);
