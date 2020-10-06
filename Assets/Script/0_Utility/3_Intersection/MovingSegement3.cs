@@ -972,11 +972,21 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A && true == __isSeg_B)
                     {
-                        
-                        LineSegment3.ClosestPoints(out minV, out maxV, _cur_seg_A, _cur_seg_B);
-                        if(float.Epsilon > (minV-maxV).sqrMagnitude)
+                        LineSegment3 mer_a = LineSegment3.Merge(_prev_seg_A, _cur_seg_A);
+                        LineSegment3 mer_b = LineSegment3.Merge(_prev_seg_B, _cur_seg_B);
+                        mer_a.Draw(Color.black);
+                        mer_b.Draw(Color.white);
+
+                        LineSegment3.ClosestPoints(out minV, out maxV, mer_a, mer_b);
+                        //LineSegment3.ClosestPoints(out minV, out maxV, _cur_seg_A, _cur_seg_B);
+                        //DebugWide.DrawCircle(minV, 0.01f, Color.green);
+                        //DebugWide.DrawCircle(maxV, 0.03f, Color.green);
+                        //DebugWide.LogBlue("교점이 있음 1  : " + (minV - maxV).sqrMagnitude);
+                        //if(float.Epsilon > (minV-maxV).sqrMagnitude)
+                        //적당히 작은값을 설정해준다. 너무 작은값은 검사를 통과하지 못한다 
+                        if (0.0000001f > (minV - maxV).sqrMagnitude)
                         {
-                            //DebugWide.LogBlue("교점이 있음");
+                            //DebugWide.LogBlue("교점이 있음 2");
                             //교점이 있음 
                             isContact_onPlan = true;
                             result_contact = true;
