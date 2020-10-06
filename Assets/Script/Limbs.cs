@@ -650,12 +650,13 @@ namespace HordeFight
             //handle에 대한 손 움직임 만들기 
             Update_Position_Handle(_tr_hand_left, _tr_hand_right);
             Update_Rotation_Hand(_tr_hand_left, _tr_hand_right);
+            BillBoard_Hand(_tr_hand_left, _tr_hand_right);
             Update_Equipment(); //tr_hand 값이 다 구해진 다음에 수행되어야 함 , 장비 장착
             //==================================================
 
-            //MovingModel 처리 
-            //새로 구한 회전값 적용 
-            //새로 구한 회전값에서 손의 위치 다시 계산 
+            //MovingModel 처리가 와야 한다 
+            // - 새로 구한 회전값 적용 
+            // - 새로 구한 회전값에서 손의 위치 다시 계산 
 
             //==================================================
 
@@ -668,8 +669,8 @@ namespace HordeFight
             Update_Position_ProjectionSlope(); //view 위치값 갱신 , 이후 코드에서 view 회전량을 구한다 
             Update_Rotation_Hand(_armed_left._tr_view, _armed_right._tr_view);
 
-            //양손잡이 일때 칼이 화면을 바라보게 함  
-            BillBoard_TwoHand_Part();
+            //칼이 화면을 바라보게 함  
+            BillBoard_Hand(_armed_left._tr_view, _armed_right._tr_view);
 
             //그림자 표현
             Update_Shadow();
@@ -1724,23 +1725,23 @@ namespace HordeFight
             }
         }
 
-        public void BillBoard_TwoHand_Part()
+        public void BillBoard_Hand(Transform tr_left , Transform tr_right)
         {
-            Transform view_left = _armed_left._tr_view;
+            //Transform tr_left = _armed_left._tr_view;
 
             if (ePart.TwoHand == _part_control)
             {
 
                 //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
                 //Vector3 temp = _tr_hand_left.eulerAngles;
-                Vector3 temp = view_left.eulerAngles;
+                Vector3 temp = tr_left.eulerAngles;
 
                 //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
 
 
                 //칼의 뒷면 표현
                 //if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - _tr_hand_left.position) > 0)
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - view_left.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - tr_left.position) > 0)
                 //if (Vector3.Dot(_body_dir, hLhR) > 0)
                 {
                     //앞면
@@ -1756,7 +1757,7 @@ namespace HordeFight
                     temp.z = 180;
                 }
                 //_tr_hand_left.eulerAngles = temp;
-                view_left.eulerAngles = temp;
+                tr_left.eulerAngles = temp;
 
             }
         }
