@@ -15,6 +15,8 @@ namespace HordeFight
 
         //private MovingSegement3 _movingSegment = new MovingSegement3();
         private MovingModel _movingModel = new MovingModel();
+        public MovingModel.Frame _frame_ch_0 = new MovingModel.Frame();
+        public MovingModel.Frame _frame_ch_1 = new MovingModel.Frame();
 
         //string tempGui = "Cut and Sting";
         private void OnGUI()
@@ -27,8 +29,9 @@ namespace HordeFight
 
         private void OnDrawGizmos()
         {
-
+            
             _movingModel.Draw();
+            //_frame_ch_0.Draw(Color.red);
         }
 
         public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
@@ -66,18 +69,25 @@ namespace HordeFight
 
             GameObject gobj = GameObject.Find("lothar");
             _champ_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
+            _frame_ch_0.Init(_champ_0.transform);
+            _frame_ch_0._info[0].radius = _champ_0._collider_radius;
 
             gobj = GameObject.Find("footman");
             _champ_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
+            _frame_ch_1.Init(_champ_1.transform);
+            _frame_ch_1._info[0].radius = _champ_1._collider_radius;
 
             _effect = Hierarchy.GetTransform(gobj.transform, "emotion");
-
+            //DebugWide.LogBlue(_champ_0.transform.name);
 
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
 
 
-            _movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
+            //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
+
+            //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
+            _movingModel.SetFrame(true, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
 
         }
 
@@ -136,12 +146,14 @@ namespace HordeFight
                _champ_1._limbs.__isUpdateEq_handLeft || _champ_1._limbs.__isUpdateEq_handRight)
             {
                 //무기장착 정보가 변경되었다면 변경된 값으로 갱신시켜준다 
-                _movingModel._frame_A = _champ_0._limbs._armed_left._frame;
-                _movingModel._frame_B = _champ_1._limbs._armed_left._frame;
-                _movingModel.Init_Prev_AB_Order();
+                //_movingModel._frame_A = _champ_0._limbs._armed_left._frame;
+                //_movingModel._frame_B = _champ_1._limbs._armed_left._frame;
+                //_movingModel.Init_Prev_AB_Order();
+                _movingModel.SetFrame(true, true,_champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
+
                 DebugWide.LogBlue("무기정보 갱신 !!! ");
             }
-            _movingModel.__RateAtoB = __RateAtoB;
+            _movingModel._rateAtoB = __RateAtoB;
             if (true == _movingModel.Update())
             {
                 //계산된 회전값을 sting , cut 에 적용하기
@@ -160,6 +172,11 @@ namespace HordeFight
                 dir_two = _movingModel._frame_B._tr_frame.forward;
                 len_two = _champ_1._limbs._twoHand_length;
                 _champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
+
+                _movingModel.__dir_move_A.y = 0;
+                _movingModel.__dir_move_B.y = 0;
+                _champ_0.SetPos(_champ_0.GetPos3D() + _movingModel.__dir_move_A);
+                _champ_1.SetPos(_champ_1.GetPos3D() + _movingModel.__dir_move_B);
             }
 
             //==================================================
