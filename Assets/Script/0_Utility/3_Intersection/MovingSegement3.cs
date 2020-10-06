@@ -840,6 +840,9 @@ namespace UtilGS9
             Vector3 pt_close_A, pt_close_B;
             float rad_AB = _radius_A + _radius_B;
 
+            __dir_move_A = ConstV.v3_zero;
+            __dir_move_B = ConstV.v3_zero;
+
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
 
@@ -1149,6 +1152,9 @@ namespace UtilGS9
             Vector3 meetPt = ConstV.v3_zero;
             Vector3 pt_close_A, pt_close_B;
             float rad_AB = _radius_A + _radius_B;
+
+            __dir_move_A = ConstV.v3_zero;
+            __dir_move_B = ConstV.v3_zero;
 
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
