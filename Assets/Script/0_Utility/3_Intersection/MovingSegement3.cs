@@ -972,10 +972,17 @@ namespace UtilGS9
                 {
                     if (true == __isSeg_A && true == __isSeg_B)
                     {
-                        //현재 선분과 선분은 접촉점을 못찾는 문제가 있음 
-                        DebugWide.LogBlue("선분인가 ? ");
+                        
+                        LineSegment3.ClosestPoints(out minV, out maxV, _cur_seg_A, _cur_seg_B);
+                        if(float.Epsilon > (minV-maxV).sqrMagnitude)
+                        {
+                            //DebugWide.LogBlue("교점이 있음");
+                            //교점이 있음 
+                            isContact_onPlan = true;
+                            result_contact = true;
+                        }
                     }
-
+                    else
                     {
                         result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);    
                     }
@@ -983,13 +990,13 @@ namespace UtilGS9
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
                     //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
 
-                    DebugWide.LogBlue("엇갈려 " + result_contact + "  " );
+                    //DebugWide.LogBlue("엇갈려 " + result_contact + "  " );
 
                     if (true == result_contact)
                     {
 
                         //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
-                        if (true == __isSeg_A)
+                        if (true == __isSeg_A && false == __isSeg_B)
                         {
 
                             //min 구하기 
@@ -998,7 +1005,7 @@ namespace UtilGS9
                             //DebugWide.LogBlue("aaa ");
 
                         }
-                        else if (true == __isSeg_B)
+                        else if (false == __isSeg_A && true == __isSeg_B)
                         {
 
                             //max 구하기
