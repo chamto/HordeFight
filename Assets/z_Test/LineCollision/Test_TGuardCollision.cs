@@ -8,14 +8,20 @@ public class Test_TGuardCollision : MonoBehaviour
 {
     private MovingModel _movingModel = new MovingModel();
     public float __RateAtoB = 0.5f;
-    //public float __radius_A = 0.1f;
-    //public float __radius_B = 0.1f;
+    public bool _allowFixed_a = true;
+    public bool _allowFixed_b = true;
+    public float __radius_A = 0.1f;
+    public float __radius_B = 0.1f;
 
 	private void OnDrawGizmos()
 	{
-        _movingModel.__RateAtoB = __RateAtoB;
-        //_movingModel.__radius_A = __radius_A;
-        //_movingModel.__radius_B = __radius_B;
+        if (false == _movingModel.__init) return;
+
+        _movingModel._rateAtoB = __RateAtoB;
+        _movingModel._allowFixed_a = _allowFixed_a;
+        _movingModel._allowFixed_b = _allowFixed_b;
+        _movingModel._frame_A._info[0].radius = __radius_A;
+        _movingModel._frame_B._info[0].radius = __radius_B;
         _movingModel.Update();
 
         _movingModel.Draw();
