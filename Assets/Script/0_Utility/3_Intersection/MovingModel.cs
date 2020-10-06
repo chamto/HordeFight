@@ -105,8 +105,13 @@ namespace UtilGS9
         }//end class
 
         public MovingSegement3 _movingSegment = new MovingSegement3();
-        public Frame _frame_A = null;
-        public Frame _frame_B = null;
+        public Frame _frame_A = new Frame();
+        public Frame _frame_B = new Frame();
+
+        public float _rateAtoB = 0.5f;
+        public bool _update = false;
+        public bool _allowFixed_a = true;
+        public bool _allowFixed_b = true;
 
         public void Draw()
         {
@@ -118,9 +123,18 @@ namespace UtilGS9
             DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
             DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
 
-
         }
 
+        public void SetFrame(bool allowFixed_a, bool allowFixed_b,  Frame frame_A, Frame frame_B)
+        {
+            __init = true;
+            _frame_A = frame_A;
+            _frame_B = frame_B;
+            Init_Prev_AB_Order();
+
+            _allowFixed_a = allowFixed_a;
+            _allowFixed_b = allowFixed_b;
+        }
 
         public bool __init = false;
         Vector3[,] __prev_A_B_order = null;
@@ -128,8 +142,8 @@ namespace UtilGS9
         {
             __init = true;
 
-            _frame_A = new Frame();
-            _frame_B = new Frame();
+            //_frame_A = new Frame();
+            //_frame_B = new Frame();
 
             _frame_A.Init(frame_A);
             _frame_B.Init(frame_B);
@@ -182,7 +196,7 @@ namespace UtilGS9
             _movingSegment._radius_B = _frame_B._info[idx].radius;
             _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
 
-            bool contact = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB, _frame_A._tr_frame, _frame_B._tr_frame);
+            bool contact = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b, _frame_A._tr_frame, _frame_B._tr_frame);
             if (true == contact)
             {
                 _frame_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_A._tr_frame.rotation; //실제적용 
@@ -203,11 +217,8 @@ namespace UtilGS9
             //_frame_sword_B.Prev_Update();
         }
 
-
-        public float __RateAtoB = 0.5f;
-
-        public bool __update = false;
-        //LineSegment3 __calc_rootSeg_a, __calc_rootSeg_b;
+        public Vector3 __dir_move_A = ConstV.v3_zero;
+        public Vector3 __dir_move_B = ConstV.v3_zero;
         public bool Update()
         {
 
@@ -221,7 +232,7 @@ namespace UtilGS9
             LineSegment3 prev_B, cur_B;
             //Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
             bool recalc = false;
-            __update = false;
+            _update = false;
             float min_len = 1000000f;
             float max_len = 0f;
             __min_A_rot = Quaternion.identity;
@@ -248,7 +259,7 @@ namespace UtilGS9
 
                     //=============
 
-                    recalc = _movingSegment.Find_TGuard_vs_TGuard(__RateAtoB,
+                    recalc = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b,
                                                                   _frame_A._tr_frame, _frame_B._tr_frame);
 
 
@@ -259,7 +270,7 @@ namespace UtilGS9
 
                     if (recalc)
                     {
-                        __update = true;
+                        _update = true;
 
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
@@ -276,6 +287,8 @@ namespace UtilGS9
 
                                 __min_A_rot = _movingSegment.__localRota_A;
                                 __min_B_rot = _movingSegment.__localRota_B;
+                                __dir_move_A = _movingSegment.__dir_move_A;
+                                __dir_move_B = _movingSegment.__dir_move_B;
                             }
                         }
                         else
@@ -288,6 +301,8 @@ namespace UtilGS9
 
                                 __min_A_rot = _movingSegment.__localRota_A;
                                 __min_B_rot = _movingSegment.__localRota_B;
+                                __dir_move_A = _movingSegment.__dir_move_A;
+                                __dir_move_B = _movingSegment.__dir_move_B;
                             }
                         }
 
@@ -298,15 +313,34 @@ namespace UtilGS9
 
             //=================================================
             //적용 
-            if (__update)
+            if (_update)
             {
+                if(true == _allowFixed_a)
+                {
+                    _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     
+                }
+                else
+                {
+                    _frame_A._tr_frame.position += __dir_move_A;
+                    //DebugWide.DrawLine(__dir_move_A + _frame_A._tr_frame.position, _frame_A._tr_frame.position, Color.white);
+                    //DebugWide.LogBlue("aa  " + __dir_move_A);
 
-                _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용 
-                _frame_B._tr_frame.rotation = __min_B_rot * _frame_B._tr_frame.rotation;
+                }
+
+                if (true == _allowFixed_b)
+                {
+                    _frame_B._tr_frame.rotation = __min_B_rot * _frame_B._tr_frame.rotation;    
+                }
+                else
+                {
+                    _frame_B._tr_frame.position += __dir_move_B;
+                    //DebugWide.DrawLine(__dir_move_B + _frame_B._tr_frame.position, _frame_B._tr_frame.position, Color.white);
+                    //DebugWide.LogBlue("bb  " + __dir_move_B);
+                }
 
             }
 
-            return __update;
+            return _update;
         }
     }
 }
