@@ -849,13 +849,16 @@ namespace UtilGS9
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
 
+            //if (0 > Vector3.Dot(__cur_A_B_order, __prev_A_B_order))
+            //{
+            //    DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
+            //}
+
             __intr_rad_A_B = false;
             if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
             {
-
                 //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
 
-                __cpPt0 = pt_close_A;
                 __intr_rad_A_B = true;
             }
 
@@ -864,7 +867,7 @@ namespace UtilGS9
             if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
 
-                if (true == __intr_rad_A_B && false)
+                if (true == __intr_rad_A_B)
                 {
 
                     //DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
@@ -918,16 +921,15 @@ namespace UtilGS9
 
                 }
             }
-            else
+            else 
             {
-                //DebugWide.LogRed("방향이 바뀌었음 ");
+                //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분)  ");
 
                 _intr_0_2.Find_Twice();
                 _intr_0_3.Find_Twice();
                 _intr_1_2.Find_Twice();
                 _intr_1_3.Find_Twice();
 
-                //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분)  ");
                 //사각꼴이 서로 같은 평면에서 만난경우
                 if (eIntersectionType.PLANE == _intr_0_2.mIntersectionType ||
                     eIntersectionType.PLANE == _intr_0_3.mIntersectionType ||
@@ -962,9 +964,9 @@ namespace UtilGS9
                     //if(result_contact)
                         //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
 
-                    DebugWide.DrawCircle(minV, 0.02f, Color.red);
-                    DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
-                    DebugWide.DrawCircle(maxV, 0.06f, Color.red);
+                    //DebugWide.DrawCircle(minV, 0.02f, Color.red);
+                    //DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
+                    //DebugWide.DrawCircle(maxV, 0.06f, Color.red);
 
                 }
                 //사각꼴(선분)이 서로 엇갈려 만난경우
@@ -974,8 +976,8 @@ namespace UtilGS9
                     {
                         LineSegment3 mer_a = LineSegment3.Merge(_prev_seg_A, _cur_seg_A);
                         LineSegment3 mer_b = LineSegment3.Merge(_prev_seg_B, _cur_seg_B);
-                        mer_a.Draw(Color.black);
-                        mer_b.Draw(Color.white);
+                        //mer_a.Draw(Color.black);
+                        //mer_b.Draw(Color.white);
 
                         LineSegment3.ClosestPoints(out minV, out maxV, mer_a, mer_b);
                         //LineSegment3.ClosestPoints(out minV, out maxV, _cur_seg_A, _cur_seg_B);
@@ -1047,7 +1049,7 @@ namespace UtilGS9
                     if(true == isContact_onPlan)
                     {
                         //평면위에 접촉점이 있는 경우 
-                        dir_drop = __dir_A + __dir_B;
+                        dir_drop = __dir_A + __dir_B; //ab 둘다 방향값이 있을때 성립하는지 모르겠다.. 
                     }
                     dir_drop = VOp.Normalize(dir_drop);
 
@@ -1081,7 +1083,7 @@ namespace UtilGS9
                         
                         lastPt1 += -dir_drop * drop_sign * dropping;
                         __dir_move_A = lastPt1 - meetPt;
-                        DebugWide.DrawCircle(lastPt1, _radius_A, Color.blue);
+                        //DebugWide.DrawCircle(lastPt1, _radius_A, Color.blue);
                     }
 
                     dropping = (_radius_A + _radius_B) * (rateAtoB);
@@ -1107,7 +1109,7 @@ namespace UtilGS9
                         //pt_close_A
                         lastPt2 += dir_drop * drop_sign * dropping;
                         __dir_move_B = lastPt2 - meetPt;
-                        DebugWide.DrawCircle(lastPt2, _radius_B, Color.magenta);
+                        //DebugWide.DrawCircle(lastPt2, _radius_B, Color.magenta);
                     }
 
 
@@ -1879,6 +1881,8 @@ namespace UtilGS9
             __isSeg_A = Misc.IsZero(test);
             test = Vector3.Cross(__dir_B, _cur_seg_B.direction);
             __isSeg_B = Misc.IsZero(test);
+
+            //DebugWide.LogBlue(__isSeg_A + "  " + __isSeg_B);
 
             //선분상태를 유지 한채 이동한 경우 선분으로 안나옴
             //__isSeg_B = Misc.IsZero(__dir_B);
