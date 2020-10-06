@@ -1318,6 +1318,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   __RateAtoB: 1
+  _allowFixed_a: 1
+  _allowFixed_b: 1
+  __radius_A: 0.05
+  __radius_B: 0.05
 --- !u!1 &882848365
 GameObject:
   m_ObjectHideFlags: 0
