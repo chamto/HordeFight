@@ -150,8 +150,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
         __seg_prev_A = _tgs_A.ToSeg_T0();
         __seg_prev_B = _tgs_B.ToSeg_T0();
 
-        __prev_A_rot = _tgs_A._T0_root.rotation;
-        __prev_B_rot = _tgs_B._T0_root.rotation;
+        //__prev_A_rot = _tgs_A._T0_root.rotation;
+        //__prev_B_rot = _tgs_B._T0_root.rotation;
 
         Vector3 pt_start, pt_end;
         LineSegment3.ClosestPoints(out pt_start, out pt_end, __seg_prev_A, __seg_prev_B);
@@ -178,9 +178,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         FrameStep,
     }
 
-    public bool __prevFrame = false;
-    public bool __nextFrame = false;
-    public float __angle = 0.05f;
+
     public float __radius_A = 0.1f;
     public float __radius_B = 0.1f;
     public bool _allowFixed_a = true;
@@ -218,9 +216,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
         _tgs_A.Draw();
         _tgs_B.Draw();
 
-        //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-        //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-        //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+        DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
+        DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
+        DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
 
         DebugWide.DrawCircle(_movTgs._meetPt_A, _movTgs._radius_A, Color.gray);
         DebugWide.DrawCircle(_movTgs._meetPt_B, _movTgs._radius_B, Color.gray);
@@ -229,9 +227,12 @@ public class Test_TGuardSphere3 : MonoBehaviour
         DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
     }
 
+    public bool __prevFrame = false;
+    public bool __nextFrame = false;
+    public float __angle = 0.05f;
 
-    private Quaternion __prev_A_rot = Quaternion.identity;
-    private Quaternion __prev_B_rot = Quaternion.identity;
+    //private Quaternion __prev_A_rot = Quaternion.identity;
+    //private Quaternion __prev_B_rot = Quaternion.identity;
     //프레임 한단계씩 계산
 	public void Update_FrameStep()
 	{
@@ -244,6 +245,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //_tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
             //_tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
+            _tgs_A._T1_root.position = _tgs_A._T0_root.position;
+            _tgs_B._T1_root.position = _tgs_B._T0_root.position;
+            //_tgs_A._Tctl_root.position = _tgs_A._T0_root.position;
+            //_tgs_B._Tctl_root.position = _tgs_B._T0_root.position;
             //------------
 
             //각도후진 시험 
@@ -300,9 +305,9 @@ public class Test_TGuardSphere3 : MonoBehaviour
                     _tgs_A._T0_root.rotation = _movTgs.__localRota_A * _tgs_A._T0_root.rotation; //실제적용 
                     _tgs_B._T0_root.rotation = _movTgs.__localRota_B * _tgs_B._T0_root.rotation; //실제적용 
 
-                    //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-                    //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-                    //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
+                    //이동값 선분에 적용
+                    _tgs_A._T0_root.position += _movTgs.__dir_move_A;
+                    _tgs_B._T0_root.position += _movTgs.__dir_move_B;
 
                 }
 
@@ -311,20 +316,12 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 __seg_prev_A = _movTgs._prev_seg_A;
                 __seg_prev_B = _movTgs._prev_seg_B;
 
-                __prev_A_rot = _tgs_A._T0_root.rotation;
-                __prev_B_rot = _tgs_B._T0_root.rotation;
+                //__prev_A_rot = _tgs_A._T0_root.rotation;
+                //__prev_B_rot = _tgs_B._T0_root.rotation;
 
             }
 
 
-
-            //------------
-
-            //_tgs_A.Draw();
-            //_tgs_B.Draw();
-
-            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
         }
 	}
 
@@ -388,19 +385,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
             __seg_prev_A = _movTgs._prev_seg_A;
             __seg_prev_B = _movTgs._prev_seg_B;
 
-            __prev_A_rot = _tgs_A._T0_root.rotation;
-            __prev_B_rot = _tgs_B._T0_root.rotation;
+            //__prev_A_rot = _tgs_A._T0_root.rotation;
+            //__prev_B_rot = _tgs_B._T0_root.rotation;
 
             //------------
-
-            //_tgs_A.Draw();
-            //_tgs_B.Draw();
-
-
-            //_movTgs._prev_seg_A.Draw(Color.white);
-            //_movTgs._prev_seg_B.Draw(Color.white);
-            //DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
-            //DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
 
         }
 
@@ -415,6 +403,8 @@ public class Test_TGuardSphere3 : MonoBehaviour
             _tgs_A._T1_root.rotation = _tgs_A._T0_root.rotation;
             _tgs_B._T1_root.rotation = _tgs_B._T0_root.rotation;
 
+            _tgs_A._T1_root.position = _tgs_A._T0_root.position;
+            _tgs_B._T1_root.position = _tgs_B._T0_root.position;
             //------------
 
             LineSegment3 prev_A, cur_A;
@@ -440,10 +430,11 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 _tgs_A._Tctl_root.rotation = _tgs_A._T0_root.rotation;
                 _tgs_B._Tctl_root.rotation = _tgs_B._T0_root.rotation;
 
-                //DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.red);
-                //DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.red);
-
+                //이동값 선분에 적용
+                _tgs_A._T0_root.position += _movTgs.__dir_move_A;
+                _tgs_B._T0_root.position += _movTgs.__dir_move_B;
+                _tgs_A._Tctl_root.position = _tgs_A._T0_root.position;
+                _tgs_B._Tctl_root.position = _tgs_B._T0_root.position;
             }
 
 
