@@ -37,17 +37,17 @@ MonoBehaviour:
   - Sprite: {fileID: 21300000, guid: 5ef8b306404bd49a787aedf63d65969a, type: 3}
     Weight: 100
   - Sprite: {fileID: 21300000, guid: e94925fd196eb40b4b0ad5bc714bd3aa, type: 3}
-    Weight: 100
+    Weight: 0
   - Sprite: {fileID: 21300000, guid: 8cea0a414df7e43f0991e5fb5f23d7bb, type: 3}
-    Weight: 100
+    Weight: 0
   - Sprite: {fileID: 21300000, guid: 61e5376f2bd004085a8e9f9dc979cd99, type: 3}
-    Weight: 100
+    Weight: 0
   - Sprite: {fileID: 21300000, guid: 502b7acb1ba3c4cf79bea535e9f30e03, type: 3}
     Weight: 100
   - Sprite: {fileID: 21300000, guid: 2eb4176dacd2a4177866a375a3736740, type: 3}
-    Weight: 100
+    Weight: 0
   - Sprite: {fileID: 21300000, guid: c388862194f704711aebde74ad3cdb39, type: 3}
-    Weight: 100
+    Weight: 0
   - Sprite: {fileID: 21300000, guid: 27da518043af84b498b47ad7bea31fa0, type: 3}
     Weight: 5
   - Sprite: {fileID: 21300000, guid: a50480ef34ae1447bb402fc3ad5424d7, type: 3}
