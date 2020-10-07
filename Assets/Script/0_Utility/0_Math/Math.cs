@@ -245,6 +245,12 @@ namespace UtilGS9
             return direction.sqrMagnitude;
         }
 
+        //길이가 있는 방향으로 선분을 이동시킨다
+        static public LineSegment3 Move(LineSegment3 tar, Vector3 dir_len)
+        {
+            return new LineSegment3(tar.origin + dir_len, tar.last + dir_len);
+        }
+
         //같은 직선상의 선분이며 방향이 같은 선분이라고 가정
         //방향이 다를 경우 target 선분의 origin 과 last 를 바꾸어 방향을 맞춰준다 
         static public LineSegment3 Merge(LineSegment3 a, LineSegment3 b)

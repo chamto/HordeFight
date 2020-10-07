@@ -868,11 +868,12 @@ namespace UtilGS9
             {
 
                 if (true == __intr_rad_A_B)
+                //if(false)
                 {
 
-                    //DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
-                    meetPt = __cpPt0;
-                    minV = maxV = meetPt;
+                    //DebugWide.LogGreen("!! 현재선분검사  " + __isSeg_A + "  " + __isSeg_B);
+
+                    minV = maxV = meetPt = pt_close_A;
                     result_contact = true;
 
                     float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
@@ -893,6 +894,7 @@ namespace UtilGS9
                     {
                         pt_first_A = pt_close_A + n_close_BA * (penetration * (1f-rateAtoB));
                         __dir_move_A = pt_first_A - pt_close_A;
+                        _meetPt_A = pt_first_A;
                     }
 
                     if (true == allowFixed_b)
@@ -905,6 +907,7 @@ namespace UtilGS9
                     {
                         pt_first_B = pt_close_B + -n_close_BA * (penetration * (rateAtoB));
                         __dir_move_B = pt_first_B - pt_close_B;
+                        _meetPt_B = pt_first_B;
                     }
 
 
@@ -923,7 +926,7 @@ namespace UtilGS9
             }
             else 
             {
-                //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분)  ");
+                //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분) 검사 ");
 
                 _intr_0_2.Find_Twice();
                 _intr_0_3.Find_Twice();
@@ -1082,7 +1085,9 @@ namespace UtilGS9
                     {
                         
                         lastPt1 += -dir_drop * drop_sign * dropping;
-                        __dir_move_A = lastPt1 - meetPt;
+                        __dir_move_A = lastPt1 - maxV;
+                        _meetPt_A = lastPt1;
+                        newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
                         //DebugWide.DrawCircle(lastPt1, _radius_A, Color.blue);
                     }
 
@@ -1108,7 +1113,9 @@ namespace UtilGS9
                         
                         //pt_close_A
                         lastPt2 += dir_drop * drop_sign * dropping;
-                        __dir_move_B = lastPt2 - meetPt;
+                        __dir_move_B = lastPt2 - minV;
+                        _meetPt_B = lastPt2;
+                        newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
                         //DebugWide.DrawCircle(lastPt2, _radius_B, Color.magenta);
                     }
 
