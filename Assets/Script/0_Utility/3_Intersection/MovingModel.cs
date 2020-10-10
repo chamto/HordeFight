@@ -31,7 +31,8 @@ namespace UtilGS9
             //public LineSegment3[] _cur_seg = null;
             public TGuard_Info[] _info = null;
 
-            public void Draw(Color color)
+
+            public void Draw_Prev(Color color)
             {
                 if (null == _info) return;
 
@@ -39,6 +40,12 @@ namespace UtilGS9
                 {
                     DebugWide.DrawLine(_info[i].prev_seg.origin, _info[i].prev_seg.last, Color.gray);
                 }
+
+            }
+
+            public void Draw_Cur(Color color)
+            {
+                if (null == _info) return;
 
                 for (int i = 0; i < _seg_count; i++)
                 {
@@ -76,6 +83,7 @@ namespace UtilGS9
                         _info[i].end = Hierarchy.GetTransform(seg, "end");
                         _info[i].radius = 0.02f; //임시로 값 넣어둠 
 
+                        _info[i].cur_seg = new LineSegment3();
                         _info[i].cur_seg.origin = _info[i].start.position;
                         _info[i].cur_seg.last = _info[i].end.position;
                         _info[i].prev_seg = _info[i].cur_seg;
@@ -94,13 +102,15 @@ namespace UtilGS9
                 }
             }
 
-            //public void Prev_Update()
-            //{
-            //    for (int i = 0; i < _seg_count; i++)
-            //    {
-            //        _info[i].prev_seg = _info[i].cur_seg;
-            //    }
-            //}
+            public void Prev_Update()
+            {
+                for (int i = 0; i < _seg_count; i++)
+                {
+                    _info[i].prev_seg.origin = _info[i].start.position;
+                    _info[i].prev_seg.last = _info[i].end.position;
+                    //_info[i].prev_seg = _info[i].cur_seg;
+                }
+            }
 
         }//end class
 
@@ -117,11 +127,14 @@ namespace UtilGS9
         {
             if (false == __init) return;
 
-            _frame_A.Draw(Color.blue);
-            _frame_B.Draw(Color.magenta);
+            _frame_A.Draw_Cur(Color.blue);
+            _frame_B.Draw_Cur(Color.magenta);
 
             DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
             DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
+
+            __find_seg_A.Draw(Color.white);
+            __find_seg_B.Draw(Color.black);
 
         }
 
@@ -217,12 +230,17 @@ namespace UtilGS9
             //_frame_sword_B.Prev_Update();
         }
 
+        public LineSegment3 __find_seg_A = new LineSegment3();
+        public LineSegment3 __find_seg_B = new LineSegment3();
         public Vector3 __dir_move_A = ConstV.v3_zero;
         public Vector3 __dir_move_B = ConstV.v3_zero;
         public bool Update()
         {
 
             if (false == __init) return false;
+
+            _frame_A.Draw_Prev(Color.gray);
+            _frame_B.Draw_Prev(Color.gray);
 
             _frame_A.Cur_Update();
             _frame_B.Cur_Update();
@@ -237,13 +255,14 @@ namespace UtilGS9
             float max_len = 0f;
             __min_A_rot = Quaternion.identity;
             __min_B_rot = Quaternion.identity;
-
+            int find_a=-1, find_b=-1;
 
             //DebugWide.LogBlue(_frame_sword_A._seg_count);
             for (int a = 0; a < _frame_A._seg_count; a++)
             {
                 for (int b = 0; b < _frame_B._seg_count; b++)
                 {
+                    
                     prev_A = _frame_A._info[a].prev_seg;
                     cur_A = _frame_A._info[a].cur_seg;
 
@@ -262,14 +281,20 @@ namespace UtilGS9
                     recalc = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b,
                                                                   _frame_A._tr_frame, _frame_B._tr_frame);
 
+                    if(0 < _movingSegment.__test_value)
+                    {
+                        DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
+                    }
 
-                    _frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
-                    _frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
+                    //_frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
+                    //_frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
                     __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                     //=============
 
                     if (recalc)
                     {
+                        
+
                         _update = true;
 
 
@@ -289,6 +314,11 @@ namespace UtilGS9
                                 __min_B_rot = _movingSegment.__localRota_B;
                                 __dir_move_A = _movingSegment.__dir_move_A;
                                 __dir_move_B = _movingSegment.__dir_move_B;
+
+                                __find_seg_A = _movingSegment._cur_seg_A;
+                                __find_seg_B = _movingSegment._cur_seg_B;
+                                find_a = a;
+                                find_b = b;
                             }
                         }
                         else
@@ -303,6 +333,11 @@ namespace UtilGS9
                                 __min_B_rot = _movingSegment.__localRota_B;
                                 __dir_move_A = _movingSegment.__dir_move_A;
                                 __dir_move_B = _movingSegment.__dir_move_B;
+
+                                __find_seg_A = _movingSegment._cur_seg_A;
+                                __find_seg_B = _movingSegment._cur_seg_B;
+                                find_a = a;
+                                find_b = b;
                             }
                         }
 
@@ -311,10 +346,12 @@ namespace UtilGS9
                 }
             }//end for
 
+
             //=================================================
             //적용 
             if (_update)
             {
+                DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
                 if(true == _allowFixed_a)
                 {
                     _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     
@@ -339,6 +376,9 @@ namespace UtilGS9
                 }
 
             }
+
+            _frame_A.Prev_Update();
+            _frame_B.Prev_Update();
 
             return _update;
         }
