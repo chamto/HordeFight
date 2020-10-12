@@ -225,8 +225,15 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
         DebugWide.DrawLine(_movTgs._cur_seg_A.origin, _movTgs._cur_seg_A.last, Color.white);
         DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
+
+        DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, _movTgs._radius_A, Color.blue);
+        DebugWide.DrawCircle(_movTgs._cur_seg_B.origin, _movTgs._radius_B, Color.magenta);
+        DebugWide.DrawCircle(_movTgs._cur_seg_A.last, _movTgs._radius_A, Color.blue);
+        DebugWide.DrawCircle(_movTgs._cur_seg_B.last, _movTgs._radius_B, Color.magenta);
     }
 
+
+    public bool __rotate = false;
     public bool __prevFrame = false;
     public bool __nextFrame = false;
     public float __angle = 0.05f;
@@ -252,7 +259,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             //------------
 
             //각도후진 시험 
-            if (true == __prevFrame)
+            if (true == __prevFrame && false == __rotate)
             {
                 __prevFrame = false;
                 Vector3 ori = _tgs_A._T0_root.position;
@@ -264,7 +271,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
             }
 
             ////각도전진 시험
-            if (true == __nextFrame)
+            if (true == __nextFrame && false == __rotate)
             {
                 __nextFrame = false;
                 Vector3 ori = _tgs_A._T0_root.position;
@@ -273,6 +280,14 @@ public class Test_TGuardSphere3 : MonoBehaviour
                 Vector3 up_angle = Vector3.Cross(start - ori, end - ori);
                 //_tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, up_angle);
                 _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, ConstV.v3_right);
+            }
+
+            if(true == __rotate)
+            {
+                float sign = 1f;
+                if (true == __prevFrame) sign = -1f;
+                if (true == __nextFrame) sign = 1f;
+                _tgs_A._T0_root.rotation *= Quaternion.AngleAxis(__angle, sign * ConstV.v3_up);
             }
 
             //------------
