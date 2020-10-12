@@ -269,10 +269,10 @@ namespace UtilGS9
                     recalc = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b,
                                                                   _frame_A._tr_frame, _frame_B._tr_frame);
 
-                    if(0 < _movingSegment.__test_value)
-                    {
-                        DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
-                    }
+                    //if(0 < _movingSegment.__test_value)
+                    //{
+                    //    DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
+                    //}
 
                     //_frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
                     //_frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
@@ -339,7 +339,7 @@ namespace UtilGS9
             //적용 
             if (_update)
             {
-                DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
+                //DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
                 if(true == _allowFixed_a)
                 {
                     _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     
