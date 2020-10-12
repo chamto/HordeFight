@@ -32,23 +32,14 @@ namespace UtilGS9
             public TGuard_Info[] _info = null;
 
 
-            public void Draw_Prev(Color color)
+            public void Draw(Color color)
             {
                 if (null == _info) return;
 
                 for (int i = 0; i < _seg_count; i++)
                 {
                     DebugWide.DrawLine(_info[i].prev_seg.origin, _info[i].prev_seg.last, Color.gray);
-                }
 
-            }
-
-            public void Draw_Cur(Color color)
-            {
-                if (null == _info) return;
-
-                for (int i = 0; i < _seg_count; i++)
-                {
                     DebugWide.DrawLine(_info[i].start.position, _info[i].end.position, color);
                     DebugWide.DrawCircle(_info[i].start.position, _info[i].radius, color);
                     DebugWide.DrawCircle(_info[i].end.position, _info[i].radius, color);
@@ -127,8 +118,8 @@ namespace UtilGS9
         {
             if (false == __init) return;
 
-            _frame_A.Draw_Cur(Color.blue);
-            _frame_B.Draw_Cur(Color.magenta);
+            _frame_A.Draw(Color.blue);
+            _frame_B.Draw(Color.magenta);
 
             DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
             DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
@@ -238,9 +229,6 @@ namespace UtilGS9
         {
 
             if (false == __init) return false;
-
-            _frame_A.Draw_Prev(Color.gray);
-            _frame_B.Draw_Prev(Color.gray);
 
             _frame_A.Cur_Update();
             _frame_B.Cur_Update();

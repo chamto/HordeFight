@@ -829,6 +829,52 @@ namespace UtilGS9
             return result_contact;
         }
 
+        LineSegment3[] __list_line_A = new LineSegment3[3];
+        LineSegment3[] __list_line_B = new LineSegment3[3];
+        public void ClosestLine(out Vector3 min_A, out Vector3 min_B)
+        {
+            int count_A = 1;
+            int count_B = 1;
+
+            __list_line_A[0] = _cur_seg_A;
+            __list_line_B[0] = _cur_seg_B;
+            if(false == __isSeg_A)
+            {
+                count_A = 3;
+
+                __list_line_A[1] = _tetr01.GetLine_Last();
+                __list_line_A[2] = _tetr01.GetLine_Origin();
+            }
+
+            if (false == __isSeg_B)
+            {
+                count_B = 3;
+
+                __list_line_B[1] = _tetr23.GetLine_Last();
+                __list_line_B[2] = _tetr23.GetLine_Origin();
+            }
+
+            Vector3 pt_close_A, pt_close_B, dir_A_B;
+            min_A = ConstV.v3_zero; min_B = ConstV.v3_zero;
+            float min = 10000000f;
+            float cur = 0f;
+            for (int a = 0; a < count_A;a++)
+            {
+                for (int b = 0; b < count_B; b++)
+                {
+                    LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, __list_line_A[a], __list_line_B[b]);
+                    dir_A_B = pt_close_B - pt_close_A;
+                    cur = dir_A_B.sqrMagnitude;
+                    if(min > cur)
+                    {
+                        min = cur;
+                        min_A = pt_close_A;
+                        min_B = pt_close_B;
+                    }
+                }   
+            }
+        }
+
         public int __test_value = 0;
         public Vector3 __dir_move_A = ConstV.v3_zero;
         public Vector3 __dir_move_B = ConstV.v3_zero;
@@ -849,83 +895,21 @@ namespace UtilGS9
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
 
-            DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + __prev_A_B_order, Color.yellow);
+            //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + __prev_A_B_order, Color.yellow);
 
             __intr_rad_A_B = false;
             if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
             {
                 //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
-
-                __intr_rad_A_B = true;
+                if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
+                    __intr_rad_A_B = true;
             }
 
             //=========================
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
             __test_value = 0;
-            if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
-            //if(true)
-            {
-                
-                if (true == __intr_rad_A_B)
-                {
-                    __test_value = 1;
-                    //DebugWide.LogGreen("!! 현재선분검사  " + __isSeg_A + "  " + __isSeg_B);
 
-                    minV = maxV = meetPt = pt_close_A;
-                    result_contact = true;
-
-                    float penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
-                    Vector3 n_close_BA = (pt_close_A - pt_close_B).normalized;
-                    Vector3 pt_first_A, pt_center_A;
-                    Vector3 pt_first_B, pt_center_B;
-
-                    //DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
-                    //DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
-
-                    if(true == allowFixed_a)
-                    {
-                        CalcTGuard_First_ClosePt(false, penetration * (1f - rateAtoB), pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);    
-                        RotateTGuard_FirstToLast(pt_close_A, pt_first_A, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
-                        _meetPt_A = pt_first_A;
-                    }
-                    else
-                    {
-                        pt_first_A = pt_close_A + n_close_BA * (penetration * (1f-rateAtoB));
-                        __dir_move_A = pt_first_A - pt_close_A;
-                        //DebugWide.LogBlue(VOp.ToString(__dir_move_A));
-                        _meetPt_A = pt_first_A;
-                        newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
-                    }
-
-                    if (true == allowFixed_b)
-                    {
-                        CalcTGuard_First_ClosePt(false, penetration * (rateAtoB), pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);    
-                        RotateTGuard_FirstToLast(pt_close_B, pt_first_B, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
-                        _meetPt_B = pt_first_B;
-                    }
-                    else
-                    {
-                        pt_first_B = pt_close_B + -n_close_BA * (penetration * (rateAtoB));
-                        __dir_move_B = pt_first_B - pt_close_B;
-                        _meetPt_B = pt_first_B;
-                        newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
-                    }
-
-                    DebugWide.LogBlue(result_contact + "  " + __test_value);
-                    //DebugWide.DrawCircle(pt_first_A, _radius_A, Color.blue);
-                    //DebugWide.DrawCircle(pt_first_B, _radius_B, Color.magenta);
-                    //DebugWide.DrawLine(pt_close_A, pt_close_B, Color.red);
-                    //===============
-
-
-                    //LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
-                    //__cur_A_B_order = pt_close_B - pt_close_A;
-                    //penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
-                    //DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  " + (pt_first_A-pt_first_B).magnitude);
-
-                }
-            }
-            else 
+            if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
                 __test_value = 2;
                 //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분) 검사 ");
@@ -1129,7 +1113,79 @@ namespace UtilGS9
                     //_cur_seg_A = newSegA;
                     //_cur_seg_B = newSegB;
 
+
+                }else
+                {
+                    //--------------------------------
+                    //최소선분 다시 구함 
+                    ClosestLine(out pt_close_A, out pt_close_B);
+                    if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
+                    {
+                        __intr_rad_A_B = true;    
+                    }
+                    DebugWide.LogYellow(" --- intr_ " + __intr_rad_A_B);
+
                 }
+
+            }
+
+            if (true == __intr_rad_A_B)
+            {
+                __test_value = 1;
+                //DebugWide.LogGreen("!! 현재선분검사  " + __isSeg_A + "  " + __isSeg_B);
+
+                minV = maxV = meetPt = pt_close_A;
+                result_contact = true;
+
+                Vector3 dir_A_B = (pt_close_B - pt_close_A);
+                float penetration = (_radius_A + _radius_B) - dir_A_B.magnitude;
+                Vector3 n_close_BA = -VOp.Normalize(dir_A_B);
+                Vector3 pt_first_A, pt_center_A;
+                Vector3 pt_first_B, pt_center_B;
+
+                //DebugWide.DrawCircle(pt_close_A, _radius_A, Color.blue);
+                //DebugWide.DrawCircle(pt_close_B, _radius_B, Color.magenta);
+
+                if (true == allowFixed_a)
+                {
+                    CalcTGuard_First_ClosePt(false, penetration * (1f - rateAtoB), pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
+                    RotateTGuard_FirstToLast(pt_close_A, pt_first_A, root_0.position, _cur_seg_A, out newSegA, out __localRota_A);
+                    _meetPt_A = pt_first_A;
+                }
+                else
+                {
+                    pt_first_A = pt_close_A + n_close_BA * (penetration * (1f - rateAtoB));
+                    __dir_move_A = pt_first_A - pt_close_A;
+                    //DebugWide.LogBlue(VOp.ToString(__dir_move_A));
+                    _meetPt_A = pt_first_A;
+                    newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
+                }
+
+                if (true == allowFixed_b)
+                {
+                    CalcTGuard_First_ClosePt(false, penetration * (rateAtoB), pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
+                    RotateTGuard_FirstToLast(pt_close_B, pt_first_B, root_1.position, _cur_seg_B, out newSegB, out __localRota_B);
+                    _meetPt_B = pt_first_B;
+                }
+                else
+                {
+                    pt_first_B = pt_close_B + -n_close_BA * (penetration * (rateAtoB));
+                    __dir_move_B = pt_first_B - pt_close_B;
+                    _meetPt_B = pt_first_B;
+                    newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
+                }
+
+                DebugWide.LogBlue(result_contact + "  " + __test_value);
+                //DebugWide.DrawCircle(pt_first_A, _radius_A, Color.blue);
+                //DebugWide.DrawCircle(pt_first_B, _radius_B, Color.magenta);
+                //DebugWide.DrawLine(pt_close_A, pt_close_B, Color.red);
+                //===============
+
+
+                //LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
+                //__cur_A_B_order = pt_close_B - pt_close_A;
+                //penetration = (_radius_A + _radius_B) - __cur_A_B_order.magnitude;
+                //DebugWide.LogBlue("  len:" + __cur_A_B_order.magnitude + "  p:" + penetration + "  " + (pt_first_A-pt_first_B).magnitude);
 
             }
 
@@ -1152,6 +1208,7 @@ namespace UtilGS9
             __result_meet = result_contact;
 
             if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
+            //if (false == Misc.IsZero(__cur_A_B_order))
                 __prev_A_B_order = __cur_A_B_order;
 
 

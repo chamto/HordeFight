@@ -843,6 +843,25 @@ namespace UtilGS9
             get { return tri1.V[2]; }
         }
 
+        public LineSegment3 GetLine_Last()
+        {
+            return new LineSegment3(tri0.V[1], tri0.V[2]);
+        }
+
+        public LineSegment3 GetLine_Origin()
+        {
+            return new LineSegment3(tri1.V[0], tri1.V[2]);
+        }
+
+        //tri0
+        //v1  - v2
+        // |  /     
+        //v0  
+
+        //tri1
+        //      v1
+        //    /  |   
+        //v0  - v2
         public void Set(LineSegment3 seg0, LineSegment3 seg1)
         {
             tri0.V[0] = seg0.origin;
