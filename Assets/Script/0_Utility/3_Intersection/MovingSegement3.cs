@@ -990,7 +990,7 @@ namespace UtilGS9
                     {
                         __test_value = 5;
                         result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
-                        DebugWide.LogBlue(result_contact + "  " + __test_value);
+                        //DebugWide.LogBlue(result_contact + "  " + __test_value);
                     }
 
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
@@ -1118,12 +1118,14 @@ namespace UtilGS9
                 {
                     //--------------------------------
                     //최소선분 다시 구함 
+                    __intr_rad_A_B = false;
                     ClosestLine(out pt_close_A, out pt_close_B);
                     if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
                     {
-                        __intr_rad_A_B = true;    
+                        __intr_rad_A_B = true;   
+                        __prev_A_B_order = __cur_A_B_order; //순서가 바뀌므로 갱신시켜 줘야함 
                     }
-                    DebugWide.LogYellow(" --- intr_ " + __intr_rad_A_B);
+                    //DebugWide.LogYellow(" --- intr_ " + __intr_rad_A_B);
 
                 }
 
@@ -1158,7 +1160,8 @@ namespace UtilGS9
                     __dir_move_A = pt_first_A - pt_close_A;
                     //DebugWide.LogBlue(VOp.ToString(__dir_move_A));
                     _meetPt_A = pt_first_A;
-                    newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
+                    //newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
+                    newSegA = LineSegment3.Move(_cur_seg_A, __dir_move_A);
                 }
 
                 if (true == allowFixed_b)
@@ -1172,10 +1175,11 @@ namespace UtilGS9
                     pt_first_B = pt_close_B + -n_close_BA * (penetration * (rateAtoB));
                     __dir_move_B = pt_first_B - pt_close_B;
                     _meetPt_B = pt_first_B;
-                    newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
+                    //newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
+                    newSegB = LineSegment3.Move(_cur_seg_B, __dir_move_B);
                 }
 
-                DebugWide.LogBlue(result_contact + "  " + __test_value);
+                //DebugWide.LogBlue(result_contact + "  " + __test_value);
                 //DebugWide.DrawCircle(pt_first_A, _radius_A, Color.blue);
                 //DebugWide.DrawCircle(pt_first_B, _radius_B, Color.magenta);
                 //DebugWide.DrawLine(pt_close_A, pt_close_B, Color.red);
@@ -1189,14 +1193,16 @@ namespace UtilGS9
 
             }
 
-            LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, newSegA, newSegB);
-            __cur_A_B_order2 = pt_close_B - pt_close_A;
-            if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
-            {
-                DebugWide.LogRed("선분이 통과되었음 !!!! " + __test_value + "  " + result_contact);
-            }
+            //LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, newSegA, newSegB);
+            //__cur_A_B_order2 = pt_close_B - pt_close_A;
+            //if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
+            //{
+            //    DebugWide.LogRed("선분이 통과되었음 !!!! " + __test_value + "  " + result_contact);
+            //}
 
 
+            _cur_seg_A = newSegA;
+            _cur_seg_B = newSegB;
             //_prev_seg_A = _cur_seg_A;
             //_prev_seg_B = _cur_seg_B;
             _prev_seg_A = newSegA;
@@ -1208,7 +1214,6 @@ namespace UtilGS9
             __result_meet = result_contact;
 
             if (false == result_contact && false == Misc.IsZero(__cur_A_B_order))
-            //if (false == Misc.IsZero(__cur_A_B_order))
                 __prev_A_B_order = __cur_A_B_order;
 
 
