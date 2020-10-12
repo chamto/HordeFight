@@ -87,7 +87,7 @@ namespace HordeFight
             //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
             //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
-            _movingModel.SetFrame(true, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
+            _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
 
         }
 
