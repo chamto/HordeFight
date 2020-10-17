@@ -432,10 +432,10 @@ namespace HordeFight
             return obj;
         }
 
-        static public Limbs CreateLimbs_TwoHand(Transform parent)
+        static public Limbs CreateLimbs(Transform parent)
         {
             
-            GameObject limbPrefab = Limbs.CreatePrefab("limbs_twoHand", parent, "limbs");
+            GameObject limbPrefab = Limbs.CreatePrefab("limbs", parent, "limbs");
             //Limbs limbs = limbPrefab.AddComponent<Limbs>();
             Limbs limbs = limbPrefab.GetComponent<Limbs>();
 
@@ -443,22 +443,13 @@ namespace HordeFight
         }
 
 
-        public void Init()
+        public void Load_RootBone()
         {
-
-            //--------------------------------------------------
-
-            _Model_left_0.branch = Geo.Model.eBranch.arm_left_0;
-            _Model_left_1.branch = Geo.Model.eBranch.arm_left_0;
-            _Model_right_0.branch = Geo.Model.eBranch.arm_right_0;
-            _Model_right_1.branch = Geo.Model.eBranch.arm_right_0;
-
-
 
             //==================================================
             //1차 자식 : root
             //==================================================
-            _tr_root = SingleO.hierarchy.GetTransform(transform, "root");
+            _tr_root = SingleO.hierarchy.GetTransform(transform.parent, "root");
             //root->foot_dir
             _tr_foot_dir = SingleO.hierarchy.GetTransform(_tr_root, "foot_dir");
             _tr_head = SingleO.hierarchy.GetTransform(_tr_root, "head");
@@ -505,6 +496,21 @@ namespace HordeFight
 
 
             //-------------------------
+
+        }
+
+        public void Init()
+        {
+
+            Load_RootBone();
+
+            //--------------------------------------------------
+
+            _Model_left_0.branch = Geo.Model.eBranch.arm_left_0;
+            _Model_left_1.branch = Geo.Model.eBranch.arm_left_0;
+            _Model_right_0.branch = Geo.Model.eBranch.arm_right_0;
+            _Model_right_1.branch = Geo.Model.eBranch.arm_right_0;
+
 
             //==================================================
             //1차 자식 : arms
@@ -1005,6 +1011,8 @@ namespace HordeFight
             Vector3 temp = transform.localEulerAngles;
             temp.y = Geo.AngleSigned_AxisY(ConstV.v3_forward, dir);
             transform.localEulerAngles = temp;
+
+            _tr_root.localEulerAngles = temp; //루트본에도 적용 
         }
 
 
