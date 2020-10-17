@@ -118,6 +118,8 @@ namespace HordeFight
         public ArmedInfo.eIdx _equipment_handRight = ArmedInfo.eIdx.None;
         public ArmedInfo _armed_left = null;
         public ArmedInfo _armed_right = null;
+        public bool _isUpdateEq_handLeft = false;
+        public bool _isUpdateEq_handRight = false;
 
         //핸들 
         private Transform _HANDLE_twoHand = null;
@@ -216,40 +218,40 @@ namespace HordeFight
         private Transform _foot_end;
         private Transform _foot_movePos;
 
+
         //ref : https://mentum.tistory.com/223
-        [Header("____ANI____")]
-        [Space]
-        public eState _state_current = eState.Start;
-        public bool _active_backAni = true; //역재생 활성 
-        public bool _active_loopAni = true;
+        //[Header("____ANI____")]
+        //[Space]
+        //public eState _state_current = eState.Start;
+        //public bool _active_backAni = true; //역재생 활성 
+        //public bool _active_loopAni = true;
 
-        [Header("____STANCE____")] 
-        [Space]
-        public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
-        public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
-        public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
-        public bool _active_stance_ani = true; //재생 활성 
-        public int _stance_rotate_count = 0;
-        public float _amplitude_punch = 1f; //펀치 애니 진폭
-        //public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInElastic; //수직 베기
-        public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInOutSine; //수평 베기
+        //[Header("____STANCE____")] 
+        //[Space]
+        //public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
+        //public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
+        //public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
+        //public bool _active_stance_ani = true; //재생 활성 
+        //public int _stance_rotate_count = 0;
+        //public float _amplitude_punch = 1f; //펀치 애니 진폭
+        //public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInOutSine; //수평 베기
 
-        [Header("____UPPERBODY____")]
-        [Space]
-        public float _upperBody_rotateTime = 1f; //상체회전시간 
-        public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
-        public bool _active_upperBody_rotate = true;
+        //[Header("____UPPERBODY____")]
+        //[Space]
+        //public float _upperBody_rotateTime = 1f; //상체회전시간 
+        //public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
+        //public bool _active_upperBody_rotate = true;
 
-        [Header("____FOOT____")]
-        [Space]
-        public float _foot_moveTime = 1f;
-        public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_move = true;
+        //[Header("____FOOT____")]
+        //[Space]
+        //public float _foot_moveTime = 1f;
+        //public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
+        //public bool _active_foot_move = true;
 
-        public float _foot_rotateTime = 1f;
-        public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
-        public bool _active_foot_rotate = true;
-        public float _foot_rotate_count = 0;
+        //public float _foot_rotateTime = 1f;
+        //public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
+        //public bool _active_foot_rotate = true;
+        //public float _foot_rotate_count = 0;
 
         //======================================================
         [Header("____ETC____")]
@@ -257,6 +259,212 @@ namespace HordeFight
         public bool _show_gizmos = true;
 
         //======================================================
+        [Space]
+        public Ani _ani_hand_left = new Ani();
+        [Space]
+        public Ani _ani_hand_right = new Ani();
+        [Space]
+        public Ani _ani_upperBody = new Ani();
+        [Space]
+        public Ani _ani_foot_move = new Ani();
+        [Space]
+        public Ani _ani_foot_rotate = new Ani();
+        //======================================================
+
+        [System.Serializable]
+        public class Ani
+        {
+            public delegate void CallFunc(Ani ani);
+            public CallFunc _Call_Func = null;
+
+            private float _elapsedTime = 0f;
+            private float _aniProgDir = 1f;
+            private float _entire_aniTime = 0f;
+
+            public eState _state_current = eState.Start;
+            public bool _active_ani = false; //재생 활성
+            public bool _active_backAni = false; //역재생 활성 
+            public bool _active_loopAni = false;
+
+            public float _aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
+            public float _aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
+            public float _stiffTime_E = 0.1f; //end 도달후 경직시간
+            public int _rotate_count = 0;
+            public float _amplitude_punch = 1f; //펀치 애니 진폭
+
+            public Interpolation.eKind _ani_interpolation = Interpolation.eKind.easeInOutSine;
+
+            public float _cur_inpol = 0f;
+            public float _prev_inpol = 0f;
+
+            public void Update()
+            {
+                if (false == _active_ani) 
+                {
+                    //_state_current = eState.Start;
+                    return;   
+                }
+
+                switch (this._state_current)
+                {
+                    case eState.Start:
+                        {
+                            //기본애니정보 초기화 
+                            _aniProgDir = 1f;
+                            _elapsedTime = 0f;
+                            _entire_aniTime = _aniTime_SE;
+
+                            _cur_inpol = 0f;
+                            _prev_inpol = 0f;
+
+                            //다음 상태로 변경
+                            _state_current = eState.Running;
+                        }
+                        break;
+                    case eState.Running:
+                        {
+                            Running_Ani();
+                        }
+                        break;
+                    case eState.End:
+                        {
+                            
+                            if (_active_loopAni)
+                                _state_current = eState.Start;
+                        }
+                        break;
+                }
+            }
+
+            public void Running_Ani()
+            {
+
+                _elapsedTime += Time.deltaTime * _aniProgDir;
+                float curTime = _elapsedTime;
+                //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
+
+                //정방향 재생 , 동작시간 경과
+                if (0 < _aniProgDir && _elapsedTime > _aniTime_SE)
+                {
+                    curTime = _aniTime_SE;
+
+                    //경직시간 경과  
+                    if (_elapsedTime > _aniTime_SE + _stiffTime_E)
+                    {
+
+                        if (true == _active_backAni)
+                        {
+                            //재생방향 변경 
+                            _aniProgDir = -1f;
+                            _elapsedTime = _aniTime_ES;
+                            curTime = _aniTime_ES;
+                            _entire_aniTime = _aniTime_ES;
+                        }
+                        else
+                        {
+                            _state_current = eState.End;
+                        }
+                    }
+                }
+                //역방향 재생 , 동작시간 경과 
+                if (0 > _aniProgDir && _elapsedTime < 0)
+                {
+                    _state_current = eState.End;
+                }
+
+
+                //if (_active_ani)
+                {
+
+                    float t = curTime / _entire_aniTime;
+
+                    if (Interpolation.eKind.punch == _ani_interpolation)
+                    {
+                        _cur_inpol = Interpolation.Calc(_ani_interpolation, 0, _amplitude_punch, t);
+                        _active_backAni = false;
+                    }
+                    else
+                    {
+                        _cur_inpol = Interpolation.Calc(_ani_interpolation, 0, 1f, t);
+                    }
+
+                    if(null != _Call_Func)
+                        _Call_Func(this);
+                }
+
+                _prev_inpol = _cur_inpol;
+
+            }//end func
+        }
+
+
+        public void Call_UpperBody_Rotate(Ani ani)
+        {
+            //상체회전 애니 
+            //if (ani._active_ani)
+            {
+                UpperBody_RotateAni(ani._cur_inpol);
+            }
+            //else
+            {
+                //상체회전 비활성시 기본값으로 초기화 한다 
+                //Vector3 temp = _tr_waist.localEulerAngles;
+                //temp.y = 0;
+                //_tr_waist.localEulerAngles = temp;
+            }
+
+        }
+
+        public void Call_Foot_Move(Ani ani)
+        {
+            //다리이동 애니 
+
+            if (0 > ani._cur_inpol) ani._cur_inpol = 0;
+            else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
+
+            float tt_delta = ani._cur_inpol - ani._prev_inpol; //0~1 값을 프레임차이값으로 변환한다 
+
+
+            Vector3 move_dir = _foot_movePos.position - transform.position;
+            _ref_being.SetPos(_ref_being.GetPos3D() + move_dir * tt_delta);
+
+        }
+
+        public void Call_Foot_Rotate(Ani ani)
+        {
+            if (0 > ani._cur_inpol) ani._cur_inpol = 0;
+            else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
+
+            float tt_delta = ani._cur_inpol - ani._prev_inpol; //0~1 값을 프레임차이값으로 변환한다 
+
+            //감기는 방향 
+            Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
+
+            //전체각도 
+            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_start.position - transform.position, _foot_end.position - transform.position, winding);
+            entireAngle = entireAngle + (360f * ani._rotate_count);
+
+            Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
+            _ref_movement.SetDirection(dir);
+            _ref_being.UpdateIdle();
+
+        }
+
+        public void Call_Handle_TwoHand_Cut(Ani ani)
+        {
+            if (_part_control == ePart.TwoHand)
+            {
+                if (eStance.Cut == _eStance)
+                {
+                    //구면 보간
+                    Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
+                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
+                }
+            }
+
+        }
+
+        //==================================================
 
         private void OnDrawGizmos()
         {
@@ -616,10 +824,16 @@ namespace HordeFight
 
             //-------------------------
 
-            __entire_aniTime = _stance_aniTime_SE;
+            //__entire_aniTime = _stance_aniTime_SE;
+
+
+            _ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
+            //_ani_hand_right._Call_Func = Call_Handle_TwoHand_Cut;
+            _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
+            _ani_foot_move._Call_Func = Call_Foot_Move;
+            _ani_foot_rotate._Call_Func = Call_Foot_Rotate;
             //==================================================
-            //_hand_left = _tr_hand_left.position;
-            //_hand_right = _tr_hand_right.position;
+
             Update_Equipment(); //장비 설정값 채우기 
 
         }
@@ -725,8 +939,6 @@ namespace HordeFight
         }
 
 
-        public bool __isUpdateEq_handLeft = false;
-        public bool __isUpdateEq_handRight = false;
         //public System.Action __Callback_Update_Equipment = null;
 		public void Update_Equipment()
         {
@@ -737,8 +949,8 @@ namespace HordeFight
             if (null != (object)_armed_right)
                 arin_right_idx = _armed_right._eIdx;
 
-            __isUpdateEq_handLeft = false;
-            __isUpdateEq_handRight = false;
+            _isUpdateEq_handLeft = false;
+            _isUpdateEq_handRight = false;
 
             //왼손 무기 장착
             if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
@@ -747,7 +959,7 @@ namespace HordeFight
                 _armed_left = _list_armedInfo[(int)_equipment_handLeft];
                 _armed_left.SetActive(true);
 
-                __isUpdateEq_handLeft = true;
+                _isUpdateEq_handLeft = true;
             }
 
             //=============================================
@@ -760,7 +972,7 @@ namespace HordeFight
                 _armed_right = _list_armedInfo[(int)_equipment_handRight];
                 _armed_right.SetActive(true);
 
-                __isUpdateEq_handRight = true;
+                _isUpdateEq_handRight = true;
             }
 
             //=============================================
@@ -769,224 +981,232 @@ namespace HordeFight
             _armed_right.Update_Frame(_tr_hand_right);
 		}
 
+
 		public void Update_Ani()
         {
-            switch (this._state_current)
-            {
-                case eState.Start:
-                    {
-                        //기본애니정보 초기화 
-                        __aniProgDir = 1f;
-                        __elapsedTime = 0f;
-                        __entire_aniTime = _stance_aniTime_SE;
 
-                        //다리이동,회전 초기화 
-                        {
-                            __cur_foot_move_inpol = 0f;
-                            __prev_foot_move_inpol = 0f;
+            _ani_hand_left.Update();
+            _ani_hand_right.Update();
+            _ani_upperBody.Update();
+            _ani_foot_move.Update();
+            _ani_foot_rotate.Update();
 
-                            __cur_foot_rotate_inpol = 0f;
-                            __prev_foot_rotate_inpol = 0f;
-                        }
+            //switch (this._state_current)
+            //{
+            //    case eState.Start:
+            //        {
+            //            //기본애니정보 초기화 
+            //            __aniProgDir = 1f;
+            //            __elapsedTime = 0f;
+            //            __entire_aniTime = _stance_aniTime_SE;
 
-                        //다음 상태로 변경
-                        _state_current = eState.Running;
-                    }
-                    break;
-                case eState.Running:
-                    {
-                        Update_StanceAni();
-                    }
-                    break;
-                case eState.End:
-                    {
+            //            //다리이동,회전 초기화 
+            //            {
+            //                __cur_foot_move_inpol = 0f;
+            //                __prev_foot_move_inpol = 0f;
+
+            //                __cur_foot_rotate_inpol = 0f;
+            //                __prev_foot_rotate_inpol = 0f;
+            //            }
+
+            //            //다음 상태로 변경
+            //            _state_current = eState.Running;
+            //        }
+            //        break;
+            //    case eState.Running:
+            //        {
+            //            //Update_StanceAni(); //임시로 동작안되게 막는다 
+            //        }
+            //        break;
+            //    case eState.End:
+            //        {
                         
-                        if(_active_loopAni)
-                            _state_current = eState.Start;
-                    }
-                    break;
-            }
+            //            if(_active_loopAni)
+            //                _state_current = eState.Start;
+            //        }
+            //        break;
+            //}
         }
 
 
-        float __elapsedTime = 0f;
-        float __aniProgDir = 1f;
-        float __entire_aniTime = 0f;
-        public void Update_StanceAni()
-        {
+        //float __elapsedTime = 0f;
+        //float __aniProgDir = 1f;
+        //float __entire_aniTime = 0f;
+        //public void Update_StanceAni()
+        //{
             
-            if (_part_control == ePart.TwoHand)
-            {
-                if (eStance.Cut == _eStance)
-                {
-                    __elapsedTime += Time.deltaTime * __aniProgDir;
-                    float curTime = __elapsedTime;
-                    //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
+        //    if (_part_control == ePart.TwoHand)
+        //    {
+        //        if (eStance.Cut == _eStance)
+        //        {
+        //            __elapsedTime += Time.deltaTime * __aniProgDir;
+        //            float curTime = __elapsedTime;
+        //            //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
 
-                    //정방향 재생 , 동작시간 경과
-                    if(0 < __aniProgDir && __elapsedTime > _stance_aniTime_SE)
-                    {
-                        curTime = _stance_aniTime_SE;
+        //            //정방향 재생 , 동작시간 경과
+        //            if(0 < __aniProgDir && __elapsedTime > _stance_aniTime_SE)
+        //            {
+        //                curTime = _stance_aniTime_SE;
 
-                        //경직시간 경과  
-                        if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
-                        {
+        //                //경직시간 경과  
+        //                if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
+        //                {
                             
-                            if(true == _active_backAni)
-                            {
-                                //재생방향 변경 
-                                __aniProgDir = -1f;
-                                __elapsedTime = _stance_aniTime_ES;
-                                curTime = _stance_aniTime_ES;
-                                __entire_aniTime = _stance_aniTime_ES;
-                            }
-                            else
-                            {
-                                //__aniProgDir = 1f;
-                                //__elapsedTime = 0f;
-                                //curTime = 0f;
-                                //__entire_aniTime = _stance_aniTime_SE;
-                                _state_current = eState.End;
-                            }
-                        }
-                    }
-                    //역방향 재생 , 동작시간 경과 
-                    if (0 > __aniProgDir && __elapsedTime < 0)
-                    {
-                        //__aniProgDir = 1f;
-                        //__elapsedTime = 0f;
-                        //curTime = 0;
-                        //__entire_aniTime = _stance_aniTime_SE;
-                        _state_current = eState.End;
-                    }
+        //                    if(true == _active_backAni)
+        //                    {
+        //                        //재생방향 변경 
+        //                        __aniProgDir = -1f;
+        //                        __elapsedTime = _stance_aniTime_ES;
+        //                        curTime = _stance_aniTime_ES;
+        //                        __entire_aniTime = _stance_aniTime_ES;
+        //                    }
+        //                    else
+        //                    {
+        //                        //__aniProgDir = 1f;
+        //                        //__elapsedTime = 0f;
+        //                        //curTime = 0f;
+        //                        //__entire_aniTime = _stance_aniTime_SE;
+        //                        _state_current = eState.End;
+        //                    }
+        //                }
+        //            }
+        //            //역방향 재생 , 동작시간 경과 
+        //            if (0 > __aniProgDir && __elapsedTime < 0)
+        //            {
+        //                //__aniProgDir = 1f;
+        //                //__elapsedTime = 0f;
+        //                //curTime = 0;
+        //                //__entire_aniTime = _stance_aniTime_SE;
+        //                _state_current = eState.End;
+        //            }
 
-                    float t, inpol;
-                    if(_active_stance_ani)
-                    {
-                        //inpol = curTime;
-                        //inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
-                        //inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
-                        //inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
-                        //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
+        //            float t, inpol;
+        //            if(_active_stance_ani)
+        //            {
+        //                //inpol = curTime;
+        //                //inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
+        //                //inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
+        //                //inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
+        //                //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
 
-                        t = curTime / __entire_aniTime;
-                        inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
+        //                t = curTime / __entire_aniTime;
+        //                inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
 
-                        //선형보간을 사용한다. 180도 이상 표현 못함  
-                        //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
+        //                //선형보간을 사용한다. 180도 이상 표현 못함  
+        //                //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
 
-                        //구면 보간
-                        Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
-                        _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _stance_rotate_count, inpol);
+        //                //구면 보간
+        //                Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
+        //                _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _stance_rotate_count, inpol);
     
-                    }
+        //            }
 
 
-                    //--------------------------------------
-                    //상체회전 애니 
-                    if(_active_upperBody_rotate)
-                    {
-                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-                        if(0 > __aniProgDir && _upperBody_rotateTime > _stance_aniTime_ES)
-                        {
-                            t = curTime / _stance_aniTime_ES;
-                        }else
-                        {
-                            t = curTime / _upperBody_rotateTime;        
-                        }
+        //            //--------------------------------------
+        //            //상체회전 애니 
+        //            if(_active_upperBody_rotate)
+        //            {
+        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
+        //                if(0 > __aniProgDir && _upperBody_rotateTime > _stance_aniTime_ES)
+        //                {
+        //                    t = curTime / _stance_aniTime_ES;
+        //                }else
+        //                {
+        //                    t = curTime / _upperBody_rotateTime;        
+        //                }
 
 
-                        inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
-                        UpperBody_RotateAni(inpol);
-                    }
-                    else
-                    {
-                        //상체회전 비활성시 기본값으로 초기화 한다 
-                        Vector3 temp = _tr_waist.localEulerAngles;
-                        temp.y = 0;
-                        _tr_waist.localEulerAngles = temp;
-                    }
+        //                inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
+        //                UpperBody_RotateAni(inpol);
+        //            }
+        //            else
+        //            {
+        //                //상체회전 비활성시 기본값으로 초기화 한다 
+        //                Vector3 temp = _tr_waist.localEulerAngles;
+        //                temp.y = 0;
+        //                _tr_waist.localEulerAngles = temp;
+        //            }
 
-                    //--------------------------------------
-                    //다리이동 애니 
-                    if(_active_foot_move)
-                    {
-                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-                        if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
-                        {
-                            t = curTime / _stance_aniTime_ES;
-                        }
-                        else
-                        {
-                            t = curTime / _foot_moveTime;
-                        }
-
-
-                        Foot_MoveAni(t);
-                    }
-
-                    if (_active_foot_rotate)
-                    {
-                        //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-                        if (0 > __aniProgDir && _foot_rotateTime > _stance_aniTime_ES)
-                        {
-                            t = curTime / _stance_aniTime_ES;
-                        }
-                        else
-                        {
-                            t = curTime / _foot_rotateTime;
-                        }
-
-                        Foot_RotateAni(t , _foot_rotate_count);
-                    }
-                }//end - cut stance
-            }//end - twohand
-        }//end func
+        //            //--------------------------------------
+        //            //다리이동 애니 
+        //            if(_active_foot_move)
+        //            {
+        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
+        //                if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
+        //                {
+        //                    t = curTime / _stance_aniTime_ES;
+        //                }
+        //                else
+        //                {
+        //                    t = curTime / _foot_moveTime;
+        //                }
 
 
-        private float __prev_foot_rotate_inpol = 0f;
-        private float __cur_foot_rotate_inpol = 0f;
-        private void Foot_RotateAni(float t , float rotateCount)
-        {
-            __cur_foot_rotate_inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
+        //                Foot_MoveAni(t);
+        //            }
 
-            if (0 > __cur_foot_rotate_inpol) __cur_foot_rotate_inpol = 0;
-            else if (__cur_foot_rotate_inpol > 1f) __cur_foot_rotate_inpol = 1f;
+        //            if (_active_foot_rotate)
+        //            {
+        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
+        //                if (0 > __aniProgDir && _foot_rotateTime > _stance_aniTime_ES)
+        //                {
+        //                    t = curTime / _stance_aniTime_ES;
+        //                }
+        //                else
+        //                {
+        //                    t = curTime / _foot_rotateTime;
+        //                }
 
-            float tt_delta = __cur_foot_rotate_inpol - __prev_foot_rotate_inpol; //0~1 값을 프레임차이값으로 변환한다 
+        //                Foot_RotateAni(t , _foot_rotate_count);
+        //            }
+        //        }//end - cut stance
+        //    }//end - twohand
+        //}//end func
 
-            //감기는 방향 
-            Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
 
-            //전체각도 
-            float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_start.position - transform.position, _foot_end.position - transform.position, winding);
-            entireAngle = entireAngle + (360f * rotateCount);
+        //private float __prev_foot_rotate_inpol = 0f;
+        //private float __cur_foot_rotate_inpol = 0f;
+        //private void Foot_RotateAni(float t , float rotateCount)
+        //{
+        //    __cur_foot_rotate_inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
 
-            Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
-            _ref_movement.SetDirection(dir);
-            _ref_being.UpdateIdle();
+        //    if (0 > __cur_foot_rotate_inpol) __cur_foot_rotate_inpol = 0;
+        //    else if (__cur_foot_rotate_inpol > 1f) __cur_foot_rotate_inpol = 1f;
 
-            __prev_foot_rotate_inpol = __cur_foot_rotate_inpol;
-        }
+        //    float tt_delta = __cur_foot_rotate_inpol - __prev_foot_rotate_inpol; //0~1 값을 프레임차이값으로 변환한다 
 
-        private float __prev_foot_move_inpol = 0f;
-        private float __cur_foot_move_inpol = 0f;
-        private void Foot_MoveAni(float t)
-        {
-            __cur_foot_move_inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
+        //    //감기는 방향 
+        //    Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
+
+        //    //전체각도 
+        //    float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_start.position - transform.position, _foot_end.position - transform.position, winding);
+        //    entireAngle = entireAngle + (360f * rotateCount);
+
+        //    Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
+        //    _ref_movement.SetDirection(dir);
+        //    _ref_being.UpdateIdle();
+
+        //    __prev_foot_rotate_inpol = __cur_foot_rotate_inpol;
+        //}
+
+        //private float __prev_foot_move_inpol = 0f;
+        //private float __cur_foot_move_inpol = 0f;
+        //private void Foot_MoveAni(float t)
+        //{
+        //    __cur_foot_move_inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
             
-            if (0 > __cur_foot_move_inpol) __cur_foot_move_inpol = 0;
-            else if (__cur_foot_move_inpol > 1f) __cur_foot_move_inpol = 1f;
+        //    if (0 > __cur_foot_move_inpol) __cur_foot_move_inpol = 0;
+        //    else if (__cur_foot_move_inpol > 1f) __cur_foot_move_inpol = 1f;
 
-            float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol; //0~1 값을 프레임차이값으로 변환한다 
+        //    float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol; //0~1 값을 프레임차이값으로 변환한다 
 
 
-            Vector3 move_dir = _foot_movePos.position - transform.position;
-            _ref_being.SetPos(_ref_being.GetPos3D() + move_dir * tt_delta);
+        //    Vector3 move_dir = _foot_movePos.position - transform.position;
+        //    _ref_being.SetPos(_ref_being.GetPos3D() + move_dir * tt_delta);
 
-            __prev_foot_move_inpol = __cur_foot_move_inpol;
+        //    __prev_foot_move_inpol = __cur_foot_move_inpol;
 
-        }
+        //}
 
         private void UpperBody_RotateAni(float t)
         {
@@ -1737,20 +1957,17 @@ namespace HordeFight
         {
             //Transform tr_left = _armed_left._tr_view;
 
-            if (ePart.TwoHand == _part_control)
+            //if (ePart.TwoHand == _part_control)
             {
 
                 //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
-                //Vector3 temp = _tr_hand_left.eulerAngles;
                 Vector3 temp = tr_left.eulerAngles;
 
                 //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
 
 
                 //칼의 뒷면 표현
-                //if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - _tr_hand_left.position) > 0)
                 if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - tr_left.position) > 0)
-                //if (Vector3.Dot(_body_dir, hLhR) > 0)
                 {
                     //앞면
                     //_hand_left_obj_spr.color = Color.white;
@@ -1764,8 +1981,24 @@ namespace HordeFight
                     //_hand_left_obj_mesh.sharedMaterial.color = Color.gray;
                     temp.z = 180;
                 }
-                //_tr_hand_left.eulerAngles = temp;
+
                 tr_left.eulerAngles = temp;
+
+                //===============================
+
+                temp = tr_right.eulerAngles;
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_right_up.position - tr_right.position) > 0)
+                {
+                    //앞면
+                    temp.z = 0;
+                }
+                else
+                {
+                    //뒷면 
+                    temp.z = 180;
+                }
+
+                tr_right.eulerAngles = temp;
 
             }
         }

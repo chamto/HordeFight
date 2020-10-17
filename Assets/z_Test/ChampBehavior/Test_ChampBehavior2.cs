@@ -5,7 +5,7 @@ using UtilGS9;
 
 namespace HordeFight
 {
-    public class Test_ChampBehavior : MonoBehaviour
+    public class Test_ChampBehavior2 : MonoBehaviour
     {
 
         public ChampUnit _champ_0 = null;
@@ -459,15 +459,15 @@ namespace HordeFight
     //=========================================================
 
 
-    public class TouchControlTool : MonoBehaviour
+    public class TouchControlTool2 : MonoBehaviour
     {
         public Being _selected = null;
-        private Test_ChampBehavior _test_ChampBehavior = null;
+        private Test_ChampBehavior2 _test_ChampBehavior = null;
 
         private void Start()
         {
             SingleO.touchEvent.Attach_SendObject(this.gameObject);
-            _test_ChampBehavior = gameObject.GetComponent<Test_ChampBehavior>();
+            _test_ChampBehavior = gameObject.GetComponent<Test_ChampBehavior2>();
         }
 
         private void Update()
