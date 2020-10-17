@@ -192,8 +192,10 @@ public class Test_TGuardSphere3 : MonoBehaviour
 
         _movTgs._radius_A = __radius_A;
         _movTgs._radius_B = __radius_B;
-        _movTgs.Draw();
+
         //-----------------------------------
+
+        //DebugWide.DrawCircle(_movTgs._prev_seg_A.last, _movTgs._radius_A, Color.black);
 
         switch (__updateMode_stopTime)
         {
@@ -212,7 +214,7 @@ public class Test_TGuardSphere3 : MonoBehaviour
         }
 
         //-----------------------------------
-
+        _movTgs.Draw();
         _tgs_A.Draw();
         _tgs_B.Draw();
 
