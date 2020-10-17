@@ -65,7 +65,7 @@ namespace HordeFight
         {
             Misc.Init();
             SingleO.Init_Tool(gameObject); //싱글톤 객체 생성 , 초기화 
-            gameObject.AddComponent<TouchControlTool>();
+            gameObject.AddComponent<TouchControlTool2>();
 
             GameObject gobj = GameObject.Find("lothar");
             _champ_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
@@ -87,8 +87,8 @@ namespace HordeFight
             //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
             //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
-            _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
-            //_movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
+            //_movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
+            _movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
 
         }
 
