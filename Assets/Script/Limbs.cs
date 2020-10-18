@@ -376,7 +376,11 @@ namespace HordeFight
                 //if (_active_ani)
                 {
 
-                    float t = curTime / _entire_aniTime;
+                    float t = 0f;
+                    if (float.Epsilon > _entire_aniTime)
+                        t = 0f;
+                    else
+                        t = curTime / _entire_aniTime;
 
                     if (Interpolation.eKind.punch == _ani_interpolation)
                     {
@@ -461,7 +465,25 @@ namespace HordeFight
                     _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
                 }
             }
+        }
 
+        public void Call_Handle_RightHand_Sting(Ani ani)
+        {
+            if (_part_control == ePart.OneHand)
+            {
+                if (eStance.Sting == _eStance)
+                {
+                    //if (0 > ani._cur_inpol) ani._cur_inpol = 0;
+                    //else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
+
+                    Vector3 dir_target = _target[1].position - _tr_shoulder_right.position;
+                    dir_target = VOp.Normalize(dir_target);
+                    Vector3 start = _tr_shoulder_right.position + dir_target * _arm_right_min_length;
+                    Vector3 end = start + dir_target * (_arm_right_max_length-_arm_right_min_length) * ani._cur_inpol;
+                    _HANDLE_right.position = end;
+
+                }
+            }
         }
 
         //==================================================
@@ -758,8 +780,8 @@ namespace HordeFight
             _target[0] = SingleO.hierarchy.GetTransform(_HANDLE_oneHand, "target_1");
             _target[1] = SingleO.hierarchy.GetTransform(_HANDLE_oneHand, "target_2");
             //-------------------------
-            _HANDLE_left = SingleO.hierarchy.GetTransform(_target[0], "handle_left"); //핸들 
-            _HANDLE_right = SingleO.hierarchy.GetTransform(_target[1], "handle_right");
+            _HANDLE_left = SingleO.hierarchy.GetTransform(_HANDLE_oneHand, "handle_left"); //핸들 
+            _HANDLE_right = SingleO.hierarchy.GetTransform(_HANDLE_oneHand, "handle_right");
             //-------------------------
 
             //ctr->sh_left
@@ -838,7 +860,7 @@ namespace HordeFight
 
 
             _ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
-            //_ani_hand_right._Call_Func = Call_Handle_TwoHand_Cut;
+            _ani_hand_right._Call_Func = Call_Handle_RightHand_Sting;
             _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
             _ani_foot_move._Call_Func = Call_Foot_Move;
             _ani_foot_rotate._Call_Func = Call_Foot_Rotate;
@@ -1525,6 +1547,8 @@ namespace HordeFight
             bool inCircle = true;
             Vector3 sdToHandle = (handle - shoulder_pos);
             float length_sdToHandle = sdToHandle.magnitude;
+            if (float.Epsilon > length_sdToHandle)
+                length_sdToHandle = 1f; //NaN 예외처리 추가 
             Vector3 n_shToHandle = sdToHandle / length_sdToHandle;
             newArm_length = length_sdToHandle;
             newHand_pos = handle;
