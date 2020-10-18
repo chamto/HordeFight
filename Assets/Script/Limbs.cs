@@ -465,7 +465,8 @@ namespace HordeFight
         }
 
         //==================================================
-
+        public bool __show_bagic = false;
+        public bool __show_control = false;
         private void OnDrawGizmos()
         {
             if (false == _show_gizmos) return;
@@ -473,7 +474,7 @@ namespace HordeFight
             //------------------------------------------------
 
             //기본 손정보  출력 
-            if(false)
+            if(__show_bagic)
             {
                 Vector3 sLsR = _tr_shoulder_right.position - _tr_shoulder_left.position;
                 Vector3 hLsL = _tr_hand_left.position - _tr_shoulder_left.position;
@@ -502,8 +503,8 @@ namespace HordeFight
 
             //무기정보
             {
-                _armed_left.Draw(Color.red);
-                _armed_right.Draw(Color.red);
+                //_armed_left.Draw(Color.red);
+                //_armed_right.Draw(Color.red);
             }
 
             //무기 뒷면 
@@ -521,23 +522,31 @@ namespace HordeFight
             }
 
             //조종정보
-            if(false)
+            //if(false)
             {
-                if (_part_control == ePart.TwoHand)
+                if (_ani_hand_left._active_ani)
                 {
-                    
                     DebugWide.DrawCircle(_shoul_left_end.position, 0.5f, Color.black);
                     DebugWide.DrawLine(_shoul_left_start.position, _shoul_left_end.position, Color.black);
 
                     Vector3 up = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
                     DebugWide.DrawArc(transform.position, _shoul_left_start.position, _shoul_left_end.position, up, Color.red);    
 
-                    DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
+                }
 
+                if(_ani_upperBody._active_ani)
+                {
+                    DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
+                }
+
+                if (_ani_foot_move._active_ani)
+                {
                     //다리이동
                     DebugWide.DrawLine(transform.position, _foot_movePos.position, Color.red);
                     DebugWide.DrawCircle(_foot_movePos.position, 0.1f, Color.red);
-
+                }
+                if (_ani_foot_rotate._active_ani)
+                {
                     //다리회전
                     Vector3 winding = Vector3.Cross( _foot_start.position - transform.position, _foot_dir);
                     DebugWide.DrawArc(transform.position, _foot_start.position, _foot_end.position, winding, 3f, Color.red, "foot");
@@ -575,6 +584,7 @@ namespace HordeFight
 
 
             //손방향 조종
+            if(__show_control)
             {
                 
                 //찌르기 
