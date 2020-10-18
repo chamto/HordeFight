@@ -72,7 +72,7 @@ namespace UtilGS9
                         _seg_count++;
                         _info[i].start = Hierarchy.GetTransform(seg, "start");
                         _info[i].end = Hierarchy.GetTransform(seg, "end");
-                        _info[i].radius = 0.02f; //임시로 값 넣어둠 
+                        _info[i].radius = 0.05f; //임시로 값 넣어둠 
 
                         _info[i].cur_seg = new LineSegment3();
                         _info[i].cur_seg.origin = _info[i].start.position;
@@ -123,6 +123,8 @@ namespace UtilGS9
 
             DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
             DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
+
+            _movingSegment.Draw();
 
             __find_seg_A.Draw(Color.white);
             __find_seg_B.Draw(Color.black);
@@ -269,10 +271,10 @@ namespace UtilGS9
                     recalc = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b,
                                                                   _frame_A._tr_frame, _frame_B._tr_frame);
 
-                    //if(0 < _movingSegment.__test_value)
-                    //{
-                    //    DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
-                    //}
+                    if(0 < _movingSegment.__test_value)
+                    {
+                        DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
+                    }
 
                     //_frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
                     //_frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
@@ -288,7 +290,7 @@ namespace UtilGS9
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
                         float new_len = _movingSegment.__cur_A_B_order.sqrMagnitude;
-                        if (true == _movingSegment.__intr_rad_A_B)
+                        if (true == _movingSegment.__intr_A_B_inside)
                         {
                             //반지름의 합 내에서 발생
                             //선분 vs 선분  :  최소거리 찾기 
@@ -339,7 +341,7 @@ namespace UtilGS9
             //적용 
             if (_update)
             {
-                //DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
+                DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
                 if(true == _allowFixed_a)
                 {
                     _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     

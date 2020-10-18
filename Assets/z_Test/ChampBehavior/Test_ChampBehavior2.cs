@@ -87,8 +87,8 @@ namespace HordeFight
             //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
             //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
-            //_movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
-            _movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
+            _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
+            //_movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
 
         }
 
@@ -178,6 +178,8 @@ namespace HordeFight
                 _movingModel.__dir_move_B.y = 0;
                 _champ_0.SetPos(_champ_0.GetPos3D() + _movingModel.__dir_move_A);
                 _champ_1.SetPos(_champ_1.GetPos3D() + _movingModel.__dir_move_B);
+                //_champ_0.SetPos(_movingModel._frame_A._tr_frame.position);
+                //_champ_1.SetPos(_movingModel._frame_B._tr_frame.position);
             }
 
             //==================================================

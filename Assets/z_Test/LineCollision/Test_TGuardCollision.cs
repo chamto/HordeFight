@@ -12,10 +12,22 @@ public class Test_TGuardCollision : MonoBehaviour
     public bool _allowFixed_b = true;
     public float __radius_A = 0.1f;
     public float __radius_B = 0.1f;
-
+    public float __angle = 5f;
+    public int __c2 = 10;
+    int __count = 0;
+    float __sign = 1f;
 	private void OnDrawGizmos()
 	{
         if (false == _movingModel.__init) return;
+
+        __count++;
+
+
+        if(0 == __count%__c2)
+        {
+            __sign *= -1f;
+        }
+        _movingModel._frame_A._tr_frame.rotation *= Quaternion.AngleAxis(__sign * __angle, ConstV.v3_up);
 
         _movingModel._rateAtoB = __RateAtoB;
         _movingModel._allowFixed_a = _allowFixed_a;

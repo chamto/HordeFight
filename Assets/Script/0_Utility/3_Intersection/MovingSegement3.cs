@@ -53,27 +53,27 @@ namespace UtilGS9
 
         public void Draw()
         {
-            if (__result_meet)
-            {
-                //min, max
-                DebugWide.DrawCircle(_minV, 0.02f, Color.white);
-                DebugWide.DrawCircle(_maxV, 0.04f, Color.white);
+            //if (__result_meet)
+            //{
+            //    //min, max
+            //    DebugWide.DrawCircle(_minV, 0.02f, Color.white);
+            //    DebugWide.DrawCircle(_maxV, 0.04f, Color.white);
 
-                //meetPt
-                DebugWide.DrawCircle(_meetPt, 0.5f, Color.red); //chamto test
-            }
+            //    //meetPt
+            //    //DebugWide.DrawCircle(_meetPt, 0.5f, Color.red); //chamto test
+            //}
 
             if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
                 _prev_seg_A.Draw(Color.blue);
                 _prev_seg_B.Draw(Color.magenta);
-                if (true == __intr_rad_A_B)
-                {
-                    DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
-                    //DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
-                    //DebugWide.DrawLine(__cpPt0, __cpPt1, Color.red);    
-                }
+                //if (true == __intr_A_B_inside)
+                //{
+                //    DebugWide.DrawCircle(__cpPt0, 0.05f, Color.red);
+                //    //DebugWide.DrawCircle(__cpPt1, 0.05f, Color.red);
+                //    //DebugWide.DrawLine(__cpPt0, __cpPt1, Color.red);    
+                //}
 
 
             }
@@ -608,7 +608,7 @@ namespace UtilGS9
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
-                if (true == __intr_rad_A_B)
+                if (true == __intr_A_B_inside)
                 {
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");
                     meetPt = __cpPt0;
@@ -705,7 +705,7 @@ namespace UtilGS9
             //선분과 선분이 만난 경우 
             if (__isSeg_A && __isSeg_B)
             {
-                if (true == __intr_rad_A_B)
+                if (true == __intr_A_B_inside)
                 {
                     //DebugWide.LogBlue("!! 선분 vs 선분  ");    
                     meetPt = __cpPt0;
@@ -875,6 +875,10 @@ namespace UtilGS9
             }
         }
 
+
+        public bool __intr_A_B_inside = false;
+        public bool __intr_A_B_outside = false;
+        public float __intr_min_length = 0;
         public int __test_value = 0;
         public Vector3 __dir_move_A = ConstV.v3_zero;
         public Vector3 __dir_move_B = ConstV.v3_zero;
@@ -897,18 +901,23 @@ namespace UtilGS9
 
             //DebugWide.DrawLine(_cur_seg_A.origin, _cur_seg_A.origin + __prev_A_B_order, Color.yellow);
 
-            __intr_rad_A_B = false;
+            __intr_A_B_inside = false;
             if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
             {
                 //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
                 if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
-                    __intr_rad_A_B = true;
+                    __intr_A_B_inside = true;
             }
 
             //=========================
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
             __test_value = 0;
-
+            //if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
+            //{
+            //    if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
+            //        __intr_A_B_inside = true;
+            //}
+            //else
             if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
                 __test_value = 2;
@@ -950,8 +959,8 @@ namespace UtilGS9
                     }
                     meetPt = minV + (maxV - minV) * rateAtoB;
 
-                    //if(result_contact)
-                        //DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
+                    if(result_contact)
+                        DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
 
                     //DebugWide.DrawCircle(minV, 0.02f, Color.red);
                     //DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
@@ -985,12 +994,14 @@ namespace UtilGS9
                             isContact_onPlan = true;
                             result_contact = true;
                         }
+
+                        DebugWide.LogBlue(result_contact + "  " + __test_value);
                     }
                     else
                     {
                         __test_value = 5;
                         result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
-                        //DebugWide.LogBlue(result_contact + "  " + __test_value);
+                        DebugWide.LogBlue(result_contact + "  " + __test_value);
                     }
 
                     //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
@@ -1118,20 +1129,20 @@ namespace UtilGS9
                 {
                     //--------------------------------
                     //최소선분 다시 구함 
-                    __intr_rad_A_B = false;
+                    __intr_A_B_outside = false;
                     ClosestLine(out pt_close_A, out pt_close_B);
                     if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
                     {
-                        __intr_rad_A_B = true;   
+                        __intr_A_B_outside = true;   
                         __prev_A_B_order = __cur_A_B_order; //순서가 바뀌므로 갱신시켜 줘야함 
                     }
-                    //DebugWide.LogYellow(" --- intr_ " + __intr_rad_A_B);
+                    DebugWide.LogYellow(" --- intr_ " + __intr_A_B_outside);
 
                 }
 
             }
 
-            if (true == __intr_rad_A_B)
+            if (true == __intr_A_B_inside || true == __intr_A_B_outside)
             {
                 __test_value = 1;
                 //DebugWide.LogGreen("!! 현재선분검사  " + __isSeg_A + "  " + __isSeg_B);
@@ -1179,7 +1190,7 @@ namespace UtilGS9
                     newSegB = LineSegment3.Move(_cur_seg_B, __dir_move_B);
                 }
 
-                //DebugWide.LogBlue(result_contact + "  " + __test_value);
+                DebugWide.LogBlue(result_contact + "  " + __test_value);
                 //DebugWide.DrawCircle(pt_first_A, _radius_A, Color.blue);
                 //DebugWide.DrawCircle(pt_first_B, _radius_B, Color.magenta);
                 //DebugWide.DrawLine(pt_close_A, pt_close_B, Color.red);
@@ -1193,12 +1204,12 @@ namespace UtilGS9
 
             }
 
-            //LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, newSegA, newSegB);
-            //__cur_A_B_order2 = pt_close_B - pt_close_A;
-            //if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
-            //{
-            //    DebugWide.LogRed("선분이 통과되었음 !!!! " + __test_value + "  " + result_contact);
-            //}
+            LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, newSegA, newSegB);
+            __cur_A_B_order2 = pt_close_B - pt_close_A;
+            if (0 > Vector3.Dot(__prev_A_B_order, __cur_A_B_order2))
+            {
+                DebugWide.LogRed("선분이 통과되었음 !!!! " + __test_value + "  " + result_contact);
+            }
 
 
             _cur_seg_A = newSegA;
@@ -1286,14 +1297,14 @@ namespace UtilGS9
             LineSegment3.ClosestPoints(out pt_close_A, out pt_close_B, _cur_seg_A, _cur_seg_B);
             __cur_A_B_order = pt_close_B - pt_close_A;
 
-            __intr_rad_A_B = false;
+            __intr_A_B_inside = false;
             if (rad_AB * rad_AB > (pt_close_A - pt_close_B).sqrMagnitude)
             {
 
                 //DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
 
                 __cpPt0 = pt_close_A;
-                __intr_rad_A_B = true;
+                __intr_A_B_inside = true;
             }
 
             //=========================
@@ -1301,7 +1312,7 @@ namespace UtilGS9
             if (0 < Vector3.Dot(__prev_A_B_order, __cur_A_B_order))
             {
 
-                if (true == __intr_rad_A_B)
+                if (true == __intr_A_B_inside)
                 {
 
                     //DebugWide.LogGreen("!! 선분 vs 선분  " + __isSeg_A + "  " + __isSeg_B);
@@ -1870,7 +1881,6 @@ namespace UtilGS9
 
 
         public bool __isSeg_A, __isSeg_B;
-        public bool __intr_rad_A_B = false;
         //float __cpS, __cpT;
         Vector3 __cpPt0;
         public Vector3 __dir_A = ConstV.v3_zero;
@@ -1909,7 +1919,7 @@ namespace UtilGS9
             //__cur_A_B_order = pt_end - pt_start;
 
             //DebugWide.LogBlue(VOp.ToString(__dir_A) + "   " + VOp.ToString(__dir_B));
-            __intr_rad_A_B = false;
+            __intr_A_B_inside = false;
             if (__isSeg_A && __isSeg_B)
             {   //선분과 선분
 
@@ -1931,7 +1941,7 @@ namespace UtilGS9
                 {
                     DebugWide.LogRed(rad_AB + "  " + (pt_end - pt_start).magnitude);
                     __cpPt0 = pt_start;
-                    __intr_rad_A_B = true;
+                    __intr_A_B_inside = true;
                 }
 
             }
