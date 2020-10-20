@@ -1481,13 +1481,38 @@ namespace HordeFight
         {
             newHand_pos = line_start;
 
+
+            Vector3 cpt_first, cpt_second;
             Vector3 dir_line_SE = line_end - line_start;
             Vector3 n_dir_line_SE = VOp.Normalize(dir_line_SE);
             float len_line_SE = dir_line_SE.magnitude;
 
-            Vector3 cpt_first, cpt_second;
+            Vector3 dir_s_sh = shoulder_pos - line_start;
+            float a = dir_s_sh.magnitude;
+            Vector3 up = Vector3.Cross(dir_s_sh, dir_line_SE);
+            //----------------------------------------------
+            //최소원에 대하여 교점이 있다면, 선분의 방향을 원과 접하게 한다 - 최소원 처리하지 않는다 
+            //bool result0 = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, line_start, n_dir_line_SE, out cpt_first);
+            //if(true == result0)
+            //{
+            //    float LL = Mathf.Sqrt(a * a - arm_max_length * arm_max_length); //피타고라스 
+
+            //    float angle0 = Mathf.Atan2(arm_max_length, LL) * Mathf.Rad2Deg;
+            //    Vector3 dir_cpt = Quaternion.AngleAxis(angle0, up) * dir_s_sh;
+            //    dir_cpt = VOp.Normalize(dir_cpt);
+            //    line_end = line_start + dir_cpt * len_line_SE;
+
+            //    dir_line_SE = line_end - line_start;
+            //    n_dir_line_SE = VOp.Normalize(dir_line_SE);
+
+            //    DebugWide.LogBlue("0 ");
+            //}
+
+            //----------------------------------------------
+
             bool result = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_start, n_dir_line_SE, out cpt_first);
             float p = (line_start - cpt_first).magnitude;
+
 
             //----------------------------------------------
 
@@ -1504,21 +1529,19 @@ namespace HordeFight
                     if (L > p) L = p;
 
                     newHand_pos = line_start + n_dir_line_SE * L;
-
-                    DebugWide.LogBlue("1 ");
+                    //DebugWide.LogBlue("1 ");
                 }
                 else
                 {  
                     //라인이 원밖에 있다 또는 원밖에 생긴다 
                     if(p > len_line_SE || p > line_max_length)
                     {
-                        DebugWide.LogBlue("2 ");
+                        //DebugWide.LogBlue("2 ");
                         result = false; 
                     }
                     else
                     {
-                        DebugWide.LogBlue("3 ");
-
+                        //DebugWide.LogBlue("3 ");
 
                         float L = len_line_SE;
                         float L2 = len_line_SE;
@@ -1542,13 +1565,11 @@ namespace HordeFight
             }
 
             //라인이 원밖에 있는 경우 , 코사인 제2법칙 이용 
-            if (false == result)
+            if (false == result )
             {
 
-                DebugWide.LogBlue("라인이 원밖에 있음 ");
+                //DebugWide.LogBlue("라인이 원밖에 있음 ");
 
-                Vector3 dir_s_sh = shoulder_pos - line_start;
-                float a = dir_s_sh.magnitude;
                 float p_min = a - arm_max_length;
                 float p_max = a + arm_max_length;
                 float L = len_line_SE; //공책식에는 p로 표현 - 20201020
@@ -1557,13 +1578,26 @@ namespace HordeFight
                 if (p_min > L) L = p_min;
                 if (p_max < L) L = p_max;
 
-                float cos = (a * a + L * L - arm_max_length * arm_max_length) / (2 * a * L);
-                float angle = Mathf.Acos(cos) * Mathf.Rad2Deg;
-                Vector3 up = Vector3.Cross(dir_s_sh, n_dir_line_SE);
-                Vector3 cpt = Quaternion.AngleAxis(angle, up) * dir_s_sh;
+
+                float angle4 = 0;
+                float LL = Mathf.Sqrt(a * a - arm_max_length * arm_max_length); //피타고라스 
+                if(LL < L)
+                {
+                    //DebugWide.LogBlue("4 ");
+                    angle4 = Mathf.Atan2(arm_max_length, LL) * Mathf.Rad2Deg;
+                    L = LL;
+                }
+                else
+                {
+                    //DebugWide.LogBlue("5 ");
+                    float aL2 = (a * L * 2);
+                    float cos4 = (a * a + L * L - arm_max_length * arm_max_length) / aL2; //코사인 제2법칙 
+                    cos4 = Mathf.Clamp(cos4, -1f, 1f);
+                    angle4 = Mathf.Acos(cos4) * Mathf.Rad2Deg;    
+                }
+
+                Vector3 cpt = Quaternion.AngleAxis(angle4, up) * dir_s_sh;
                 newHand_pos = line_start + VOp.Normalize(cpt) * L;
-
-
 
                 //-----------------------
             }
