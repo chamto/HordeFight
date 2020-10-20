@@ -142,8 +142,11 @@ namespace HordeFight
         public float _arm_right_length = 0.7f;
         public float _arm_right_min_length = 0.2f;
         public float _arm_right_max_length = 1f;
+        public float _twoHand_basic_length = 0.2f; //양손간격 기본길이 , 길이 복원시에 사용 
         public float _twoHand_length = 0.2f;
-        //public float _twoHand_length = 0.5f;
+        public float _twoHand_min_length = 0.1f;
+        public float _twoHand_max_length = 0.5f;
+
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
@@ -1349,11 +1352,11 @@ namespace HordeFight
 
                     //=======================================
                     //test
-                    hand_left = _tr_hand_left.position;
-                    _arm_left_length = (_tr_shoulder_left.position - hand_left).magnitude;
-                    Vector3 dir = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
-                    hand_right = hand_left + dir * _twoHand_length;
-                    _arm_right_length = (_tr_shoulder_right.position - hand_right).magnitude;
+                    //hand_left = _tr_hand_left.position;
+                    //_arm_left_length = (_tr_shoulder_left.position - hand_left).magnitude;
+                    //Vector3 dir = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
+                    //hand_right = hand_left + dir * _twoHand_length;
+                    //_arm_right_length = (_tr_shoulder_right.position - hand_right).magnitude;
 
                     //=======================================
                     //test
@@ -1365,7 +1368,7 @@ namespace HordeFight
                     //_arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
                     //=======================================
 
-                    return; //임시로 막아놓은 코드임 --- chamto test
+                    //return; //임시로 막아놓은 코드임 --- chamto test
 
                     //조종축 회전 테스트 코드 
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
@@ -1380,9 +1383,11 @@ namespace HordeFight
                     _arm_left_length = newLength;
 
 
-                    this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
+                    //this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
+                                                 //_tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+                    this.CalcHandPos_LineSegment2(newPos, _hs_objectDir.position, 
+                                                  _twoHand_length, _twoHand_min_length, _twoHand_max_length,
                                                  _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-
 
                     //-----------------------
                     //Vector3 leftToRight = newPos - _hand_left.position;
@@ -1469,6 +1474,105 @@ namespace HordeFight
             return objectPos + s * nDir;
         }
 
+        public bool CalcHandPos_LineSegment2(Vector3 line_start, Vector3 line_end, 
+                                             float line_basic_length, float line_min_length, float line_max_length,
+                                            Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
+                                            out Vector3 newHand_pos, out float newArm_length)
+        {
+            newHand_pos = line_start;
+
+            Vector3 dir_line_SE = line_end - line_start;
+            Vector3 n_dir_line_SE = VOp.Normalize(dir_line_SE);
+            float len_line_SE = dir_line_SE.magnitude;
+
+            Vector3 cpt_first, cpt_second;
+            bool result = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_start, n_dir_line_SE, out cpt_first);
+            float p = (line_start - cpt_first).magnitude;
+
+            //----------------------------------------------
+
+            //원과 접촉가능성이 있는 경우 
+            if (true == result)
+            {   
+                //원안에 시작점이 있는 경우 
+                if ((arm_max_length * arm_max_length >= (shoulder_pos - line_start).sqrMagnitude))
+                {
+                    
+                    float L = len_line_SE;
+                    if (line_min_length > len_line_SE) L = line_min_length;
+                    if (line_max_length < len_line_SE) L = line_max_length;
+                    if (L > p) L = p;
+
+                    newHand_pos = line_start + n_dir_line_SE * L;
+
+                    DebugWide.LogBlue("1 ");
+                }
+                else
+                {  
+                    //라인이 원밖에 있다 또는 원밖에 생긴다 
+                    if(p > len_line_SE || p > line_max_length)
+                    {
+                        DebugWide.LogBlue("2 ");
+                        result = false; 
+                    }
+                    else
+                    {
+                        DebugWide.LogBlue("3 ");
+
+
+                        float L = len_line_SE;
+                        float L2 = len_line_SE;
+                        //원안에 끝점이 있는지 검사한다 
+                        if (arm_max_length * arm_max_length < (shoulder_pos - line_end).sqrMagnitude)
+                        {
+                            //두번째 접촉점을 구한다
+                            UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, cpt_first + n_dir_line_SE * 0.0001f, n_dir_line_SE, out cpt_second);    
+                            L2 = (line_start - cpt_second).magnitude;
+                        }
+
+                        if (line_min_length > len_line_SE) L = line_min_length;
+                        if (line_max_length < len_line_SE) L = line_max_length;
+                        if (L > L2) L = L2;
+
+                        newHand_pos = line_start + n_dir_line_SE * L;
+                    }
+
+                }
+
+            }
+
+            //라인이 원밖에 있는 경우 , 코사인 제2법칙 이용 
+            if (false == result)
+            {
+
+                DebugWide.LogBlue("라인이 원밖에 있음 ");
+
+                Vector3 dir_s_sh = shoulder_pos - line_start;
+                float a = dir_s_sh.magnitude;
+                float p_min = a - arm_max_length;
+                float p_max = a + arm_max_length;
+                float L = len_line_SE; //공책식에는 p로 표현 - 20201020
+                if (line_min_length > len_line_SE) L = line_min_length;
+                if (line_max_length < len_line_SE) L = line_max_length;
+                if (p_min > L) L = p_min;
+                if (p_max < L) L = p_max;
+
+                float cos = (a * a + L * L - arm_max_length * arm_max_length) / (2 * a * L);
+                float angle = Mathf.Acos(cos) * Mathf.Rad2Deg;
+                Vector3 up = Vector3.Cross(dir_s_sh, n_dir_line_SE);
+                Vector3 cpt = Quaternion.AngleAxis(angle, up) * dir_s_sh;
+                newHand_pos = line_start + VOp.Normalize(cpt) * L;
+
+
+
+                //-----------------------
+            }
+
+            newArm_length = (newHand_pos - shoulder_pos).magnitude;
+
+            return result;
+
+        }
 
         //어깨범위와 선분의 교차위치를 구한다. 어깨범위의 최소범위는 적용안됨 
         public bool CalcHandPos_LineSegment(Vector3 line_origin, Vector3 line_dir, float line_length,
@@ -1476,7 +1580,7 @@ namespace HordeFight
                                             out Vector3 newHand_pos, out float newArm_length)
         {
 
-            Vector3 n_line_dir = line_dir.normalized;
+            Vector3 n_line_dir = VOp.Normalize(line_dir);
             Vector3 posOnMaxCircle;
             float sqr_arm_max_length = arm_max_length * arm_max_length;
             bool result = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_origin, n_line_dir, out posOnMaxCircle);
@@ -1513,25 +1617,31 @@ namespace HordeFight
             else
             {   //목표와 왼손 사이의 직선경로 위에서 오른손 위치를 구할 수 없다   :  목표와 왼손 사이의 직선경로가 오른손 최대범위에 닿지 않는 경우
 
-                Vector3 targetToRSd = (shoulder_pos - line_origin);
-                Vector3 n_targetToRSd = targetToRSd.normalized;
-                float length_contactPt = targetToRSd.sqrMagnitude - sqr_arm_max_length;
-                length_contactPt = (float)System.Math.Sqrt(length_contactPt);
-                float proj_cos = length_contactPt / targetToRSd.magnitude;
-
+                //Vector3 dir_o_sh = (shoulder_pos - line_origin);
+                //Vector3 n_dir_o_sh = VOp.Normalize(dir_o_sh);
+                //float len_dir_o_sh = dir_o_sh.magnitude;
+                //float length_contactPt = dir_o_sh.sqrMagnitude - sqr_arm_max_length;
+                //length_contactPt = (float)System.Math.Sqrt(length_contactPt);
+                //float proj_cos = length_contactPt / dir_o_sh.magnitude;
+                //float len_contactPt = len_dir_o_sh - arm_max_length;
+                //float proj_cos = len_contactPt / len_dir_o_sh;
+                //float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
+                //Vector3 shaft_l = Vector3.Cross(line_origin, shoulder_pos);
+                //newHand_pos = line_origin + Quaternion.AngleAxis(-angleC, shaft_l) * n_dir_o_sh * len_contactPt;
                 //-----------------------
 
-                //proj_cos = Mathf.Clamp01(proj_cos); //0~1사이의 값만 사용
-                float angleC = Mathf.Acos(proj_cos) * Mathf.Rad2Deg;
-                Vector3 shaft_l = Vector3.Cross(line_origin, shoulder_pos);
-                newHand_pos = line_origin + Quaternion.AngleAxis(-angleC, shaft_l) * n_targetToRSd * length_contactPt;
+                //Vector3 line_end = line_origin + n_line_dir * line_length;
+                Vector3 line_end = line_origin + line_dir;
+                Vector3 dir_sh_e = (line_end - shoulder_pos);
+                Vector3 n_dir_sh_e = VOp.Normalize(dir_sh_e);
+                newHand_pos = shoulder_pos + n_dir_sh_e * arm_max_length;
 
                 //-----------------------
             }
 
             newArm_length = (newHand_pos - shoulder_pos).magnitude;
-            if (newArm_length > arm_max_length)
-                newArm_length = arm_max_length;
+            //if (newArm_length > arm_max_length)
+                //newArm_length = arm_max_length;
 
 
             return result;
