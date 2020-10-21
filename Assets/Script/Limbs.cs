@@ -151,7 +151,9 @@ namespace HordeFight
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
-        public eStance _eStance = eStance.Sting; //자세 
+        //public eStance _eStance = eStance.Sting; //자세
+        public eStance _eStance_hand_left = eStance.Sting; //자세
+        public eStance _eStance_hand_right = eStance.Sting; //자세
 
         public bool _active_shadowObject = true;
 
@@ -226,36 +228,7 @@ namespace HordeFight
         //ref : https://mentum.tistory.com/223
         //[Header("____ANI____")]
         //[Space]
-        //public eState _state_current = eState.Start;
-        //public bool _active_backAni = true; //역재생 활성 
-        //public bool _active_loopAni = true;
 
-        //[Header("____STANCE____")] 
-        //[Space]
-        //public float _stance_aniTime_SE = 1f; //스탠스 앞으로 재생시간 1초
-        //public float _stance_aniTime_ES = 0.7f; //스탠스 뒤로 재생시간
-        //public float _stance_stiffTime_E = 0.1f; //end 도달후 경직시간
-        //public bool _active_stance_ani = true; //재생 활성 
-        //public int _stance_rotate_count = 0;
-        //public float _amplitude_punch = 1f; //펀치 애니 진폭
-        //public Interpolation.eKind _stance_ani_interpolation = Interpolation.eKind.easeInOutSine; //수평 베기
-
-        //[Header("____UPPERBODY____")]
-        //[Space]
-        //public float _upperBody_rotateTime = 1f; //상체회전시간 
-        //public Interpolation.eKind _upperBody_rotate_interpolation = Interpolation.eKind.easeInOutSine;
-        //public bool _active_upperBody_rotate = true;
-
-        //[Header("____FOOT____")]
-        //[Space]
-        //public float _foot_moveTime = 1f;
-        //public Interpolation.eKind _foot_move_interpolation = Interpolation.eKind.easeInSine;
-        //public bool _active_foot_move = true;
-
-        //public float _foot_rotateTime = 1f;
-        //public Interpolation.eKind _foot_rotate_interpolation = Interpolation.eKind.easeInSine;
-        //public bool _active_foot_rotate = true;
-        //public float _foot_rotate_count = 0;
 
         //======================================================
         [Header("____ETC____")]
@@ -458,11 +431,11 @@ namespace HordeFight
 
         }
 
-        public void Call_Handle_TwoHand_Cut(Ani ani)
+        public void Call_Handle_TwoHand_LeftO_Cut(Ani ani)
         {
-            if (_part_control == ePart.TwoHand)
+            //if (_part_control == ePart.TwoHand)
             {
-                if (eStance.Cut == _eStance)
+                
                 {
                     //구면 보간
                     Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
@@ -473,27 +446,38 @@ namespace HordeFight
 
         public void Call_Handle_TwoHand_Sting(Ani ani)
         {
-            if (_part_control == ePart.TwoHand)
+            //if (_part_control == ePart.TwoHand)
             {
-                if (eStance.Sting == _eStance)
+                
                 {
-                    
                     Vector3 dir_target = _hs_objectDir.position - _hs_ani_start.position;
                     Vector3 n_dir_target = VOp.Normalize(dir_target);
                     Vector3 start = _hs_ani_start.position;
                     Vector3 end = _hs_objectDir.position - n_dir_target * _twoHand_min_length;
                     _hs_standard.position = start + (end-start) * ani._cur_inpol;
-
-
                 }
             }
         }
 
+        public void Call_Handle_TwoHand_RightO_Cut(Ani ani)
+        {
+            //if (_part_control == ePart.TwoHand)
+            {
+
+                {
+                    //구면 보간
+                    Vector3 arcUp = Vector3.Cross(_shoul_right_start.position - transform.position, _foot_dir);
+                    _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_right_start.position, _shoul_right_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
+                }
+            }
+        }
+
+
         public void Call_Handle_RightHand_Sting(Ani ani)
         {
-            if (_part_control == ePart.OneHand)
+            //if (_part_control == ePart.OneHand)
             {
-                if (eStance.Sting == _eStance)
+                
                 {
                     //if (0 > ani._cur_inpol) ani._cur_inpol = 0;
                     //else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
@@ -510,9 +494,9 @@ namespace HordeFight
 
         public void Call_Handle_LeftHand_Sting(Ani ani)
         {
-            if (_part_control == ePart.OneHand)
+            //if (_part_control == ePart.OneHand)
             {
-                if (eStance.Sting == _eStance)
+                
                 {
                     //if (0 > ani._cur_inpol) ani._cur_inpol = 0;
                     //else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
@@ -529,12 +513,22 @@ namespace HordeFight
 
         public void Call_Handle_LeftHand_Cut(Ani ani)
         {
-            if (_part_control == ePart.OneHand)
+            //if (_part_control == ePart.OneHand)
             {
-                if (eStance.Cut == _eStance)
                 {
                     Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
                     _HANDLE_left.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
+                }
+            }
+        }
+
+        public void Call_Handle_RightHand_Cut(Ani ani)
+        {
+            //if (_part_control == ePart.OneHand)
+            {
+                {
+                    Vector3 arcUp = Vector3.Cross(_shoul_right_start.position - transform.position, _foot_dir);
+                    _HANDLE_right.position = InterpolationTornado(transform.position, _shoul_right_start.position, _shoul_right_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
                 }
             }
         }
@@ -661,48 +655,53 @@ namespace HordeFight
             //손방향 조종
             if(__show_control)
             {
-                
-                //찌르기 
-                if (eStance.Sting == _eStance)
+                if (_part_control == ePart.OneHand)
                 {
-                    if (_part_control == ePart.OneHand)
+                    //찌르기 
+                    if (eStance.Sting == _eStance_hand_left)
                     {
                         DebugWide.DrawLine(_HANDLE_left.position, _target[0].position, Color.red);
-                        DebugWide.DrawLine(_HANDLE_right.position, _target[1].position, Color.red);
-
                         DebugWide.DrawCircle(_HANDLE_left.position, 0.05f, Color.green);
-                        DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
-
-                        DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
-                        DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
                     }
-
-                    if (_part_control == ePart.TwoHand)
+                    //찌르기 
+                    if (eStance.Sting == _eStance_hand_right)
                     {
-                        DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
-                        DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);
+                        DebugWide.DrawLine(_HANDLE_right.position, _target[1].position, Color.red);
+                        DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
                     }
-                }
 
-                //베기 
-                if (eStance.Cut == _eStance)
-                {
-                    if (_part_control == ePart.OneHand)
+                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
+                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
+
+                    if (eStance.Cut == _eStance_hand_left)
                     {
                         _Model_left_0.Draw(Color.yellow);
                         _Model_left_1.Draw(Color.yellow);
 
-                        _Model_right_0.Draw(Color.blue);
-                        _Model_right_1.Draw(Color.blue);
-
-
                         DebugWide.DrawLine(_pos_circle_A0.position, _HANDLE_left.position, Color.gray);
                         DebugWide.DrawLine(_pos_circle_A1.position, _HANDLE_left.position, Color.gray);
+                    }
+
+                    if (eStance.Cut == _eStance_hand_right)
+                    {
+                        _Model_right_0.Draw(Color.blue);
+                        _Model_right_1.Draw(Color.blue);
 
                         DebugWide.DrawLine(_pos_circle_B0.position, _HANDLE_right.position, Color.gray);
                         DebugWide.DrawLine(_pos_circle_B1.position, _HANDLE_right.position, Color.gray);
                     }
-                    if (_part_control == ePart.TwoHand)
+
+                }
+
+                if (_part_control == ePart.TwoHand)
+                {
+                    if(eStance.Sting == _eStance_hand_left || eStance.Sting == _eStance_hand_right)
+                    {
+                        DebugWide.DrawLine(_hs_standard.position, _hs_objectDir.position, Color.white);
+                        DebugWide.DrawCircle(_hs_objectDir.position, 0.05f, Color.white);    
+                    }
+
+                    if (eStance.Cut == _eStance_hand_left || eStance.Cut == _eStance_hand_right)
                     {
                         //주변원의 중심에서 핸들까지 
                         DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.gray);
@@ -714,6 +713,7 @@ namespace HordeFight
                     }
 
                 }
+
             }
 
         }//end func
@@ -918,14 +918,6 @@ namespace HordeFight
 
             //__entire_aniTime = _stance_aniTime_SE;
 
-
-            //_ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
-            //_ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
-            _ani_hand_left._Call_Func = Call_Handle_LeftHand_Cut;
-            _ani_hand_right._Call_Func = Call_Handle_RightHand_Sting;
-            _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
-            _ani_foot_move._Call_Func = Call_Foot_Move;
-            _ani_foot_rotate._Call_Func = Call_Foot_Rotate;
             //==================================================
 
             Update_Equipment(); //장비 설정값 채우기 
@@ -996,6 +988,7 @@ namespace HordeFight
             Rotate(_ref_movement._direction);
         }
 		//==================================================
+
 
         public void ActiveAll_Arms(bool value , ArmedInfo.eIdx except)
         {
@@ -1079,228 +1072,79 @@ namespace HordeFight
 		public void Update_Ani()
         {
 
+            switch(_part_control)
+            {
+                case ePart.OneHand:
+                    {
+                        
+                        if (eStance.Sting == _eStance_hand_left)
+                        {
+                            _ani_hand_left._Call_Func = Call_Handle_LeftHand_Sting;
+                        }
+
+                        if (eStance.Cut == _eStance_hand_left)
+                        {
+                            _ani_hand_left._Call_Func = Call_Handle_LeftHand_Cut;
+                        }
+
+                        if (eStance.Sting == _eStance_hand_right)
+                        {
+                            _ani_hand_right._Call_Func = Call_Handle_RightHand_Sting;
+                        }
+
+                        if (eStance.Cut == _eStance_hand_right)
+                        {
+                            _ani_hand_right._Call_Func = Call_Handle_RightHand_Cut;
+                        }
+                    }
+                    break;
+                case ePart.TwoHand:
+                    {
+                        if(eStandard.TwoHand_LeftO == _eHandStandard)
+                        {
+                            if (eStance.Sting == _eStance_hand_left)
+                            {
+                                _ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
+                            }
+
+                            if (eStance.Cut == _eStance_hand_left)
+                            {
+                                _ani_hand_left._Call_Func = Call_Handle_TwoHand_LeftO_Cut;
+                            }    
+                        }
+
+
+                        if (eStandard.TwoHand_RightO == _eHandStandard)
+                        {
+                            if (eStance.Sting == _eStance_hand_right)
+                            {
+                                _ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
+                            }
+
+                            if (eStance.Cut == _eStance_hand_right)
+                            {
+                                _ani_hand_left._Call_Func = Call_Handle_TwoHand_RightO_Cut;
+                            }
+                        }
+
+                    }
+                    break;
+            }
+            _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
+            _ani_foot_move._Call_Func = Call_Foot_Move;
+            _ani_foot_rotate._Call_Func = Call_Foot_Rotate;
+
+
+
             _ani_hand_left.Update();
             _ani_hand_right.Update();
             _ani_upperBody.Update();
             _ani_foot_move.Update();
             _ani_foot_rotate.Update();
 
-            //switch (this._state_current)
-            //{
-            //    case eState.Start:
-            //        {
-            //            //기본애니정보 초기화 
-            //            __aniProgDir = 1f;
-            //            __elapsedTime = 0f;
-            //            __entire_aniTime = _stance_aniTime_SE;
 
-            //            //다리이동,회전 초기화 
-            //            {
-            //                __cur_foot_move_inpol = 0f;
-            //                __prev_foot_move_inpol = 0f;
-
-            //                __cur_foot_rotate_inpol = 0f;
-            //                __prev_foot_rotate_inpol = 0f;
-            //            }
-
-            //            //다음 상태로 변경
-            //            _state_current = eState.Running;
-            //        }
-            //        break;
-            //    case eState.Running:
-            //        {
-            //            //Update_StanceAni(); //임시로 동작안되게 막는다 
-            //        }
-            //        break;
-            //    case eState.End:
-            //        {
-                        
-            //            if(_active_loopAni)
-            //                _state_current = eState.Start;
-            //        }
-            //        break;
-            //}
         }
 
-
-        //float __elapsedTime = 0f;
-        //float __aniProgDir = 1f;
-        //float __entire_aniTime = 0f;
-        //public void Update_StanceAni()
-        //{
-            
-        //    if (_part_control == ePart.TwoHand)
-        //    {
-        //        if (eStance.Cut == _eStance)
-        //        {
-        //            __elapsedTime += Time.deltaTime * __aniProgDir;
-        //            float curTime = __elapsedTime;
-        //            //DebugWide.LogBlue(__aniProgDir + "  " + curTime);
-
-        //            //정방향 재생 , 동작시간 경과
-        //            if(0 < __aniProgDir && __elapsedTime > _stance_aniTime_SE)
-        //            {
-        //                curTime = _stance_aniTime_SE;
-
-        //                //경직시간 경과  
-        //                if (__elapsedTime > _stance_aniTime_SE + _stance_stiffTime_E)
-        //                {
-                            
-        //                    if(true == _active_backAni)
-        //                    {
-        //                        //재생방향 변경 
-        //                        __aniProgDir = -1f;
-        //                        __elapsedTime = _stance_aniTime_ES;
-        //                        curTime = _stance_aniTime_ES;
-        //                        __entire_aniTime = _stance_aniTime_ES;
-        //                    }
-        //                    else
-        //                    {
-        //                        //__aniProgDir = 1f;
-        //                        //__elapsedTime = 0f;
-        //                        //curTime = 0f;
-        //                        //__entire_aniTime = _stance_aniTime_SE;
-        //                        _state_current = eState.End;
-        //                    }
-        //                }
-        //            }
-        //            //역방향 재생 , 동작시간 경과 
-        //            if (0 > __aniProgDir && __elapsedTime < 0)
-        //            {
-        //                //__aniProgDir = 1f;
-        //                //__elapsedTime = 0f;
-        //                //curTime = 0;
-        //                //__entire_aniTime = _stance_aniTime_SE;
-        //                _state_current = eState.End;
-        //            }
-
-        //            float t, inpol;
-        //            if(_active_stance_ani)
-        //            {
-        //                //inpol = curTime;
-        //                //inpol = Interpolation.easeInElastic(0, 1f, curTime/__progress_aniTime);
-        //                //inpol = Interpolation.easeOutElastic(0, 1f, curTime / __progress_aniTime);
-        //                //inpol = Interpolation.punch(_amplitude_punch, curTime / __progress_aniTime);
-        //                //_stance_backAni = false; //펀치는 제자리로 돌아오기 떄문에, 역방향재생이 필요없다 
-
-        //                t = curTime / __entire_aniTime;
-        //                inpol = Interpolation.Calc(_stance_ani_interpolation, 0, 1f, t);
-
-        //                //선형보간을 사용한다. 180도 이상 표현 못함  
-        //                //_HANDLE_twoHand.position = Vector3.Lerp(_stance_start.position, _stance_end.position, inpol);
-
-        //                //구면 보간
-        //                Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
-        //                _HANDLE_twoHand.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, _stance_rotate_count, inpol);
-    
-        //            }
-
-
-        //            //--------------------------------------
-        //            //상체회전 애니 
-        //            if(_active_upperBody_rotate)
-        //            {
-        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-        //                if(0 > __aniProgDir && _upperBody_rotateTime > _stance_aniTime_ES)
-        //                {
-        //                    t = curTime / _stance_aniTime_ES;
-        //                }else
-        //                {
-        //                    t = curTime / _upperBody_rotateTime;        
-        //                }
-
-
-        //                inpol = Interpolation.Calc(_upperBody_rotate_interpolation, 0, 1f, t);
-        //                UpperBody_RotateAni(inpol);
-        //            }
-        //            else
-        //            {
-        //                //상체회전 비활성시 기본값으로 초기화 한다 
-        //                Vector3 temp = _tr_waist.localEulerAngles;
-        //                temp.y = 0;
-        //                _tr_waist.localEulerAngles = temp;
-        //            }
-
-        //            //--------------------------------------
-        //            //다리이동 애니 
-        //            if(_active_foot_move)
-        //            {
-        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-        //                if (0 > __aniProgDir && _foot_moveTime > _stance_aniTime_ES)
-        //                {
-        //                    t = curTime / _stance_aniTime_ES;
-        //                }
-        //                else
-        //                {
-        //                    t = curTime / _foot_moveTime;
-        //                }
-
-
-        //                Foot_MoveAni(t);
-        //            }
-
-        //            if (_active_foot_rotate)
-        //            {
-        //                //역방향재생이고, 상체재생시간보다 자세재생시간이 짧은 경우 (애니가 끊어지는 것을 막는 처리) 
-        //                if (0 > __aniProgDir && _foot_rotateTime > _stance_aniTime_ES)
-        //                {
-        //                    t = curTime / _stance_aniTime_ES;
-        //                }
-        //                else
-        //                {
-        //                    t = curTime / _foot_rotateTime;
-        //                }
-
-        //                Foot_RotateAni(t , _foot_rotate_count);
-        //            }
-        //        }//end - cut stance
-        //    }//end - twohand
-        //}//end func
-
-
-        //private float __prev_foot_rotate_inpol = 0f;
-        //private float __cur_foot_rotate_inpol = 0f;
-        //private void Foot_RotateAni(float t , float rotateCount)
-        //{
-        //    __cur_foot_rotate_inpol = Interpolation.Calc(_foot_rotate_interpolation, 0, 1f, t);
-
-        //    if (0 > __cur_foot_rotate_inpol) __cur_foot_rotate_inpol = 0;
-        //    else if (__cur_foot_rotate_inpol > 1f) __cur_foot_rotate_inpol = 1f;
-
-        //    float tt_delta = __cur_foot_rotate_inpol - __prev_foot_rotate_inpol; //0~1 값을 프레임차이값으로 변환한다 
-
-        //    //감기는 방향 
-        //    Vector3 winding = Vector3.Cross(_foot_start.position - transform.position, _foot_dir);
-
-        //    //전체각도 
-        //    float entireAngle = Geo.Angle360_AxisRotate_Normal_Axis(_foot_start.position - transform.position, _foot_end.position - transform.position, winding);
-        //    entireAngle = entireAngle + (360f * rotateCount);
-
-        //    Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
-        //    _ref_movement.SetDirection(dir);
-        //    _ref_being.UpdateIdle();
-
-        //    __prev_foot_rotate_inpol = __cur_foot_rotate_inpol;
-        //}
-
-        //private float __prev_foot_move_inpol = 0f;
-        //private float __cur_foot_move_inpol = 0f;
-        //private void Foot_MoveAni(float t)
-        //{
-        //    __cur_foot_move_inpol = Interpolation.Calc(_foot_move_interpolation, 0, 1f, t);
-            
-        //    if (0 > __cur_foot_move_inpol) __cur_foot_move_inpol = 0;
-        //    else if (__cur_foot_move_inpol > 1f) __cur_foot_move_inpol = 1f;
-
-        //    float tt_delta = __cur_foot_move_inpol - __prev_foot_move_inpol; //0~1 값을 프레임차이값으로 변환한다 
-
-
-        //    Vector3 move_dir = _foot_movePos.position - transform.position;
-        //    _ref_being.SetPos(_ref_being.GetPos3D() + move_dir * tt_delta);
-
-        //    __prev_foot_move_inpol = __cur_foot_move_inpol;
-
-        //}
 
         private void UpperBody_RotateAni(float t)
         {
@@ -1373,30 +1217,87 @@ namespace HordeFight
 
             if (_part_control == ePart.OneHand)
             {
-                if (eStance.Sting == _eStance)
-                {   //찌르기
+                Vector3 newRightPos;
+                Vector3 newLeftPos;
+                float newRightLength;
+                float newLeftLength;
 
-                    Vector3 newRightPos;
-                    Vector3 newLeftPos;
-                    float newRightLength;
-                    float newLeftLength;
+                //찌르기
+                if (eStance.Sting == _eStance_hand_left)
+                {
+                    
                     this.CalcHandPos(_HANDLE_left.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newLeftPos, out newLeftLength);
                     //_tr_hand_left.position = newLeftPos;
                     hand_left = newLeftPos;
                     _arm_left_length = newLeftLength;
-
-
+                }
+                if (eStance.Sting == _eStance_hand_right)
+                { 
                     this.CalcHandPos(_HANDLE_right.position, _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newRightPos, out newRightLength);
                     //_tr_hand_right.position = newRightPos;
                     hand_right = newRightPos;
                     _arm_right_length = newRightLength;
-
-
                 }
-                else if (eStance.Cut == _eStance)
-                {   //베기
 
-                    Cut_OneHand(out hand_left, out hand_right);
+
+                //Cut_OneHand(out hand_left, out hand_right);
+
+                if (eStance.Cut == _eStance_hand_left)
+                {   //베기
+                    
+                    Vector3 handle = _HANDLE_left.position;
+                    //Vector3 upDir = _left_axis_up.position - _left_axis_o.position;
+
+                    Vector3 newPos = Vector3.zero;
+                    float newLength = 0f;
+                    //------------------------------------------
+
+                    _Model_left_0.kind = _motion_oneHand_left_0._eModel; //_eModelKind_Left_0;
+                    _Model_left_1.kind = _motion_oneHand_left_1._eModel; //_eModelKind_Left_1;
+                    SetModel_OneHand(_Model_left_0, _Model_left_1);
+                    CalcHandPos_PlaneArea(_Model_left_0, handle,
+                                          _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+                                          out newPos, out newLength);
+
+                    _arm_left_length = newLength;
+                    //_tr_hand_left.position = newPos;
+                    hand_left = newPos;
+
+
+                    CalcHandPos_PlaneArea(_Model_left_1, handle,
+                                          _tr_shoulder_left.position, 1000, _arm_left_min_length,
+                                          out newPos, out newLength);
+                    _tr_arm_left_dir.position = newPos;
+                }
+
+                if (eStance.Cut == _eStance_hand_right)
+                {
+                    
+                    Vector3 handle = _HANDLE_right.position;
+                    //upDir = _right_axis_up.position - _right_axis_o.position;
+
+                    Vector3 newPos = Vector3.zero;
+                    float newLength = 0f;
+
+                    _Model_right_0.kind = _motion_oneHand_right_0._eModel; //_eModelKind_Right_0;
+                    _Model_right_1.kind = _motion_oneHand_right_1._eModel; //_eModelKind_Right_1;
+                    SetModel_OneHand(_Model_right_0, _Model_right_1);
+                    CalcHandPos_PlaneArea(_Model_right_0, handle,
+                                          _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                          out newPos, out newLength);
+
+                    _arm_right_length = newLength;
+                    //_tr_hand_right.position = newPos;
+                    hand_right = newPos;
+
+
+                    CalcHandPos_PlaneArea(_Model_right_1, handle,
+                                          _tr_shoulder_right.position, 1000, _arm_right_min_length,
+                                          out newPos, out newLength);
+
+                    _tr_arm_right_dir.position = newPos;
+
+                
                 }
 
             }
@@ -1405,56 +1306,73 @@ namespace HordeFight
 
             if (_part_control == ePart.TwoHand)
             {
-                if (eStance.Sting == _eStance)
-                {   //찌르기 , 치기 
+                if(eStandard.TwoHand_LeftO == _eHandStandard)
+                {
+                    if (eStance.Sting == _eStance_hand_left)
+                    {   //찌르기 , 치기 
 
 
-                    //=======================================
-                    //test
-                    //hand_left = _tr_hand_left.position;
-                    //_arm_left_length = (_tr_shoulder_left.position - hand_left).magnitude;
-                    //Vector3 dir = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
-                    //hand_right = hand_left + dir * _twoHand_length;
-                    //_arm_right_length = (_tr_shoulder_right.position - hand_right).magnitude;
+                        //=======================================
+                        //test
+                        //hand_left = _tr_hand_left.position;
+                        //_arm_left_length = (_tr_shoulder_left.position - hand_left).magnitude;
+                        //Vector3 dir = VOp.Normalize(_tr_hand_right.position - _tr_hand_left.position);
+                        //hand_right = hand_left + dir * _twoHand_length;
+                        //_arm_right_length = (_tr_shoulder_right.position - hand_right).magnitude;
 
-                    //=======================================
-                    //test
-                    //Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
-                    //objectDir = VOp.Normalize(objectDir);
-                    //_hand_left = _hs_standard.position;
-                    //_arm_left_length = (_tr_shoulder_left.position - _hand_left).magnitude;
-                    //_hand_right = _hand_left + objectDir * _twoHand_length;
-                    //_arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
-                    //=======================================
+                        //=======================================
+                        //test
+                        //Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
+                        //objectDir = VOp.Normalize(objectDir);
+                        //_hand_left = _hs_standard.position;
+                        //_arm_left_length = (_tr_shoulder_left.position - _hand_left).magnitude;
+                        //_hand_right = _hand_left + objectDir * _twoHand_length;
+                        //_arm_right_length = (_tr_shoulder_right.position - _hand_right).magnitude;
+                        //=======================================
 
-                    //return; //임시로 막아놓은 코드임 --- chamto test
+                        //return; //임시로 막아놓은 코드임 --- chamto test
 
-                    //조종축 회전 테스트 코드 
-                    //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
-                    //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
+                        //조종축 회전 테스트 코드 
+                        //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
+                        //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
-                    Sting_TwoHand(out hand_left, out hand_right);
-                        
-                    //-----------------------
+                        Sting_TwoHand(out hand_left,out _arm_left_length, out hand_right, out _arm_right_length);
 
+                        //-----------------------
+
+                    }
+                    //================================================================
+                    else if (eStance.Cut == _eStance_hand_left)
+                    {   //베기 
+
+
+                        //-----------------------
+
+                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel,
+                                    out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
+
+                        //--------------------
+                        //찌르기 모드로 연결하기 위한 핸들값 조정 
+                        //_hs_standard.position = hand_left;
+                        //_hs_objectDir.position = hand_right;
+
+                    }//else end
                 }
-                //================================================================
-                else if (eStance.Cut == _eStance)
-                {   //베기 
+
+                if (eStandard.TwoHand_RightO == _eHandStandard)
+                {
+                    if (eStance.Sting == _eStance_hand_right)
+                    { 
+                        Sting_TwoHand(out hand_right, out _arm_right_length, out hand_left, out _arm_left_length);
+                    }
+                    else if (eStance.Cut == _eStance_hand_right)    
+                    {
+                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel,
+                                    out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
+                    }
+                }
 
 
-                    //-----------------------
-
-                    Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel,
-                                out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
-
-                    //--------------------
-                    //찌르기 모드로 연결하기 위한 핸들값 조정 
-                    //_hs_standard.position = _tr_hand_left.position;
-                    //_hs_objectDir.position = _tr_hand_right.position;
-                    _hs_standard.position = hand_left;
-                    _hs_objectDir.position = hand_right;
-                }//else end
             }
 
             tr_left.position = hand_left;
@@ -2065,7 +1983,7 @@ namespace HordeFight
         }
 
 
-        public void Sting_TwoHand(out Vector3 hand_left , out Vector3 hand_right)
+        public void Sting_TwoHand(out Vector3 hand_left , out float len_arm_left, out Vector3 hand_right, out float len_arm_right)
         {
             
             Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
@@ -2074,7 +1992,7 @@ namespace HordeFight
             this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
 
             hand_left = newPos_left;
-            _arm_left_length = newLength;
+            len_arm_left = newLength;
 
 
             //this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
@@ -2085,7 +2003,7 @@ namespace HordeFight
                                           out newPos_right, out newLength);
 
             hand_right = newPos_right;
-            _arm_right_length = newLength;
+            len_arm_right = newLength;
 
             //-----------------------
             //손과손이의 거리가 최소거리에 있지 않을시 왼손위치를 다시 계산해준다 
@@ -2095,11 +2013,11 @@ namespace HordeFight
                 this.CalcHandPos(newPos_left, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
 
                 hand_left = newPos_left;
-                _arm_left_length = newLength;
+                len_arm_left = newLength;
             }
 
-            _tr_hand_left.position = hand_left;
-            _tr_hand_right.position = hand_right;
+            //_tr_hand_left.position = hand_left;
+            //_tr_hand_right.position = hand_right;
         }
 
 
@@ -2155,7 +2073,7 @@ namespace HordeFight
             {   //한손 칼 붙이기 
 
                 //베기
-                if (eStance.Cut == _eStance)
+                if (eStance.Cut == _eStance_hand_left)
                 {
                     //Vector3 handToTarget = _tr_arm_left_dir.position - _tr_hand_left.position;
                     //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
@@ -2164,18 +2082,22 @@ namespace HordeFight
 
                     Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                }
 
+                if (eStance.Cut == _eStance_hand_right)
+                {
 
                     //handToTarget = _tr_arm_right_dir.position - _tr_hand_right.position;
                     //obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    handToTarget = _tr_arm_right_dir.position - tr_right.position;
+                    Vector3 handToTarget = _tr_arm_right_dir.position - tr_right.position;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
                 //찌르기 
-                else if (eStance.Sting == _eStance)
+
+                if (eStance.Sting == _eStance_hand_left)
                 {
                     //Vector3 handToTarget = _target[0].position - _tr_hand_left.position;
                     //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
@@ -2185,13 +2107,17 @@ namespace HordeFight
                     Vector3 handToTarget = _target[0].position - tr_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
 
+                }
+
+                if (eStance.Sting == _eStance_hand_right)
+                {
 
                     //handToTarget = _target[1].position - _tr_hand_right.position;
                     //obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    handToTarget = _target[1].position - tr_right.position;
+                    Vector3 handToTarget = _target[1].position - tr_right.position;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
@@ -2201,8 +2127,18 @@ namespace HordeFight
                 //Vector3 hLhR = _tr_hand_right.position - _tr_hand_left.position;
                 //_tr_hand_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
 
-                Vector3 hLhR = tr_right.position - tr_left.position;
-                tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);
+                if(_eHandStandard == eStandard.TwoHand_LeftO )
+                {
+                    Vector3 hLhR = tr_right.position - tr_left.position;
+                    tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);    
+                }
+                else if (_eHandStandard == eStandard.TwoHand_LeftO)
+                {
+                    Vector3 hLhR = tr_left.position - tr_right.position;
+                    tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);
+                }
+
+
 
             }
         }
