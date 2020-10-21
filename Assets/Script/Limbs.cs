@@ -1374,37 +1374,9 @@ namespace HordeFight
                     //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                     //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
-                    Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
-                    Vector3 newPos;
-                    float newLength;
-                    this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos, out newLength);
-                    //_hand_left.position = newPos;
-                    hand_left = newPos;
-                    _arm_left_length = newLength;
-
-
-                    //this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
-                                                 //_tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-                    this.CalcHandPos_LineSegment2(newPos, _hs_objectDir.position, 
-                                                  _twoHand_length, _twoHand_min_length, _twoHand_max_length,
-                                                 _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-
+                    Sting_TwoHand(out hand_left, out hand_right);
+                        
                     //-----------------------
-                    //Vector3 leftToRight = newPos - _hand_left.position;
-                    //Vector3 shaft_rot = Vector3.Cross(_hand_left.position, _shoulder_right.position);
-                    //Vector3 rotateDir = Quaternion.AngleAxis(-90f, shaft_rot) * leftToRight.normalized;
-                    //float length_min_twoHand = 0.1f;
-                    //if (leftToRight.magnitude < length_min_twoHand)
-                    //{   //양손 최소거리 일떄 자연스런 회전 효과를 준다 (미완성) 
-                    //    _hand_left.position = _hand_left.position + rotateDir * 0.08f;
-                    //    //_handle_leftToRight.position = newLeftPos;
-                    //}
-                    //-----------------------
-
-                    //_hand_right.position = newPos;
-                    hand_right = newPos;
-                    _arm_right_length = newLength;
-
 
                 }
                 //================================================================
@@ -1475,12 +1447,13 @@ namespace HordeFight
         }
 
         public bool CalcHandPos_LineSegment2(Vector3 line_start, Vector3 line_end, 
-                                             float line_basic_length, float line_min_length, float line_max_length,
+                                             float line_min_length, float line_max_length,
                                             Vector3 shoulder_pos, float arm_max_length, float arm_min_length,
-                                            out Vector3 newHand_pos, out float newArm_length)
-        {
-            newHand_pos = line_start;
+                                             out Vector3 newHand_end, out float newArm_length_end)
 
+        {
+            newHand_end = line_start;
+            //newHand_start = line_start;
 
             Vector3 cpt_first, cpt_second;
             Vector3 dir_line_SE = line_end - line_start;
@@ -1528,7 +1501,8 @@ namespace HordeFight
                     if (line_max_length < len_line_SE) L = line_max_length;
                     if (L > p) L = p;
 
-                    newHand_pos = line_start + n_dir_line_SE * L;
+                    newHand_end = line_start + n_dir_line_SE * L;
+
                     //DebugWide.LogBlue("1 ");
                 }
                 else
@@ -1541,10 +1515,9 @@ namespace HordeFight
                     }
                     else
                     {
-                        //DebugWide.LogBlue("3 ");
-
+                        
                         float L = len_line_SE;
-                        float L2 = len_line_SE;
+                        float L2 = len_line_SE * 2; //두번째 접촉점이 없을 떄의 경우도 조건식을 성립시키기 위하여 임의로 증가시킴 
                         //원안에 끝점이 있는지 검사한다 
                         if (arm_max_length * arm_max_length < (shoulder_pos - line_end).sqrMagnitude)
                         {
@@ -1557,7 +1530,9 @@ namespace HordeFight
                         if (line_max_length < len_line_SE) L = line_max_length;
                         if (L > L2) L = L2;
 
-                        newHand_pos = line_start + n_dir_line_SE * L;
+                        newHand_end = line_start + n_dir_line_SE * L;
+
+                        //DebugWide.LogBlue("3 : ");
                     }
 
                 }
@@ -1585,6 +1560,8 @@ namespace HordeFight
                 {
                     //DebugWide.LogBlue("4 ");
                     angle4 = Mathf.Atan2(arm_max_length, LL) * Mathf.Rad2Deg;
+
+                    if (line_min_length > LL) LL = line_min_length;
                     L = LL;
                 }
                 else
@@ -1597,12 +1574,13 @@ namespace HordeFight
                 }
 
                 Vector3 cpt = Quaternion.AngleAxis(angle4, up) * dir_s_sh;
-                newHand_pos = line_start + VOp.Normalize(cpt) * L;
+                newHand_end = line_start + VOp.Normalize(cpt) * L;
 
                 //-----------------------
             }
 
-            newArm_length = (newHand_pos - shoulder_pos).magnitude;
+            newArm_length_end = (newHand_end - shoulder_pos).magnitude;
+
 
             return result;
 
@@ -2027,10 +2005,49 @@ namespace HordeFight
 
         }
 
-        //handle 
-        //eHandOrigin : 고정손
-        //eModelLeft : 궤적모형 
-        public void Cut_TwoHand(Vector3 handle, eStandard eHandStandard, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight,
+
+        public void Sting_TwoHand(out Vector3 hand_left , out Vector3 hand_right)
+        {
+            
+            Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
+            Vector3 newPos_left, newPos_right;
+            float newLength;
+            this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
+
+            hand_left = newPos_left;
+            _arm_left_length = newLength;
+
+
+            //this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
+            //_tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
+            this.CalcHandPos_LineSegment2(newPos_left, _hs_objectDir.position,
+                                          _twoHand_min_length, _twoHand_max_length,
+                                         _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+                                          out newPos_right, out newLength);
+
+            hand_right = newPos_right;
+            _arm_right_length = newLength;
+
+            //-----------------------
+            //손과손이의 거리가 최소거리에 있지 않을시 왼손위치를 다시 계산해준다 
+            if ((hand_left - hand_right).sqrMagnitude < _twoHand_min_length * _twoHand_min_length)
+            {
+                newPos_left = hand_right + VOp.Normalize(hand_left - hand_right) * _twoHand_min_length;
+                this.CalcHandPos(newPos_left, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
+
+                hand_left = newPos_left;
+                _arm_left_length = newLength;
+            }
+
+            _tr_hand_left.position = hand_left;
+            _tr_hand_right.position = hand_right;
+        }
+
+
+		//handle 
+		//eHandOrigin : 고정손
+		//eModelLeft : 궤적모형 
+		public void Cut_TwoHand(Vector3 handle, eStandard eHandStandard, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight,
                                 out Vector3 hand_left, out Vector3 hand_right)
         {
             //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
