@@ -143,7 +143,7 @@ namespace HordeFight
         public float _arm_right_length = 0.7f;
         public float _arm_right_min_length = 0.2f;
         public float _arm_right_max_length = 1f;
-        public float _twoHand_basic_length = 0.2f; //양손간격 기본길이 , 길이 복원시에 사용 
+        //public float _twoHand_basic_length = 0.2f; //양손간격 기본길이 , 길이 복원시에 사용 
         public float _twoHand_length = 0.2f;
         public float _twoHand_min_length = 0.1f;
         public float _twoHand_max_length = 0.5f;
@@ -695,6 +695,12 @@ namespace HordeFight
                         _Model_right_0.Draw(Color.blue);
                         _Model_right_1.Draw(Color.blue);
 
+
+                        DebugWide.DrawLine(_pos_circle_A0.position, _HANDLE_left.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_A1.position, _HANDLE_left.position, Color.gray);
+
+                        DebugWide.DrawLine(_pos_circle_B0.position, _HANDLE_right.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_B1.position, _HANDLE_right.position, Color.gray);
                     }
                     if (_part_control == ePart.TwoHand)
                     {
