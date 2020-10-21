@@ -508,6 +508,37 @@ namespace HordeFight
             }
         }
 
+        public void Call_Handle_LeftHand_Sting(Ani ani)
+        {
+            if (_part_control == ePart.OneHand)
+            {
+                if (eStance.Sting == _eStance)
+                {
+                    //if (0 > ani._cur_inpol) ani._cur_inpol = 0;
+                    //else if (ani._cur_inpol > 1f) ani._cur_inpol = 1f;
+
+                    Vector3 dir_target = _target[0].position - _tr_shoulder_left.position;
+                    dir_target = VOp.Normalize(dir_target);
+                    Vector3 start = _tr_shoulder_left.position + dir_target * _arm_left_min_length;
+                    Vector3 end = start + dir_target * (_arm_left_max_length - _arm_left_min_length) * ani._cur_inpol;
+                    _HANDLE_left.position = end;
+
+                }
+            }
+        }
+
+        public void Call_Handle_LeftHand_Cut(Ani ani)
+        {
+            if (_part_control == ePart.OneHand)
+            {
+                if (eStance.Cut == _eStance)
+                {
+                    Vector3 arcUp = Vector3.Cross(_shoul_left_start.position - transform.position, _foot_dir);
+                    _HANDLE_left.position = InterpolationTornado(transform.position, _shoul_left_start.position, _shoul_left_end.position, arcUp, ani._rotate_count, ani._cur_inpol);
+                }
+            }
+        }
+
         //==================================================
         public bool __show_bagic = false;
         public bool __show_control = false;
@@ -883,7 +914,8 @@ namespace HordeFight
 
 
             //_ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
-            _ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
+            //_ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
+            _ani_hand_left._Call_Func = Call_Handle_LeftHand_Cut;
             _ani_hand_right._Call_Func = Call_Handle_RightHand_Sting;
             _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
             _ani_foot_move._Call_Func = Call_Foot_Move;
