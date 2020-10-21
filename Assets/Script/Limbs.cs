@@ -130,6 +130,7 @@ namespace HordeFight
         //찌르기용 핸들 
         public Transform _hs_objectDir = null;
         public Transform _hs_standard = null;
+        public Transform _hs_ani_start = null;
 
         //목표
         private Transform[] _target = new Transform[2]; //임시 최대2개 목표 
@@ -470,6 +471,24 @@ namespace HordeFight
             }
         }
 
+        public void Call_Handle_TwoHand_Sting(Ani ani)
+        {
+            if (_part_control == ePart.TwoHand)
+            {
+                if (eStance.Sting == _eStance)
+                {
+                    
+                    Vector3 dir_target = _hs_objectDir.position - _hs_ani_start.position;
+                    Vector3 n_dir_target = VOp.Normalize(dir_target);
+                    Vector3 start = _hs_ani_start.position;
+                    Vector3 end = _hs_objectDir.position - n_dir_target * _twoHand_min_length;
+                    _hs_standard.position = start + (end-start) * ani._cur_inpol;
+
+
+                }
+            }
+        }
+
         public void Call_Handle_RightHand_Sting(Ani ani)
         {
             if (_part_control == ePart.OneHand)
@@ -777,6 +796,7 @@ namespace HordeFight
             //손조종 찌르기 
             _hs_objectDir = SingleO.hierarchy.GetTransform(_HANDLE_twoHand, "hs_objectDir");
             _hs_standard = SingleO.hierarchy.GetTransform(_HANDLE_twoHand, "hs_standard");
+            _hs_ani_start = SingleO.hierarchy.GetTransform(_HANDLE_twoHand, "hs_ani_start");
             //-------------------------
             //ctr->handle_oneHand
             _HANDLE_oneHand = SingleO.hierarchy.GetTransform(ctr, "handle_oneHand");
@@ -862,7 +882,8 @@ namespace HordeFight
             //__entire_aniTime = _stance_aniTime_SE;
 
 
-            _ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
+            //_ani_hand_left._Call_Func = Call_Handle_TwoHand_Cut;
+            _ani_hand_left._Call_Func = Call_Handle_TwoHand_Sting;
             _ani_hand_right._Call_Func = Call_Handle_RightHand_Sting;
             _ani_upperBody._Call_Func = Call_UpperBody_Rotate;
             _ani_foot_move._Call_Func = Call_Foot_Move;
