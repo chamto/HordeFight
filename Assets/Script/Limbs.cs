@@ -33,6 +33,8 @@ namespace HordeFight
 
         public enum eStance
         {
+            None = 0,
+
             Cut,    //베기
             Sting,  //찌르기
             Block,  //막기
@@ -947,6 +949,13 @@ namespace HordeFight
             _shoulder_length = shLR.magnitude;
 
             //==================================================
+
+            if(ePart.TwoHand == _part_control)
+            {
+                //양손모드에서는 오른손 자세값을 사용하지 않느다 
+                _eStance_hand_right = eStance.None;
+            }
+            
 
             //stance ani 재생 만들기 ( 현재 cut handle 값만 계산함 ) 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
