@@ -10,6 +10,7 @@ namespace HordeFight
 
         public ChampUnit _champ_0 = null;
         public ChampUnit _champ_1 = null;
+        public Transform _test = null;
 
         public Transform _effect = null;
 
@@ -17,6 +18,7 @@ namespace HordeFight
         private MovingModel _movingModel = new MovingModel();
         public MovingModel.Frame _frame_ch_0 = new MovingModel.Frame();
         public MovingModel.Frame _frame_ch_1 = new MovingModel.Frame();
+        public MovingModel.Frame _frame_test = new MovingModel.Frame();
 
         //string tempGui = "Cut and Sting";
         private void OnGUI()
@@ -61,6 +63,8 @@ namespace HordeFight
             return cha;
         }
 
+
+
         private void Start()
         {
             Misc.Init();
@@ -83,13 +87,19 @@ namespace HordeFight
             _champ_0.UpdateAll();
             _champ_1.UpdateAll();
 
+            //==============================================
 
+            gobj = GameObject.Find("test");
+            _test = gobj.transform;
+            _frame_test.Init(_test);
+            _frame_test._info[0].radius = 0.4f;
             //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
             //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
-            _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
+            //_movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
             //_movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
 
+            _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_test);
         }
 
 
@@ -157,24 +167,25 @@ namespace HordeFight
                 //계산된 회전값을 sting , cut 에 적용하기
 
                 //임시처리 
-                _champ_0._limbs._tr_hand_left.rotation = _movingModel._frame_A._tr_frame.rotation;
-                _champ_0._limbs._tr_hand_left.position = _movingModel._frame_A._tr_frame.position;
-                Vector3 pos_o = _champ_0._limbs._tr_hand_left.position;
-                Vector3 dir_two = _movingModel._frame_A._tr_frame.forward;
-                float len_two = _champ_0._limbs._twoHand_length;
-                _champ_0._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
+                //_champ_0._limbs._tr_hand_left.rotation = _movingModel._frame_A._tr_frame.rotation;
+                //_champ_0._limbs._tr_hand_left.position = _movingModel._frame_A._tr_frame.position;
+                //Vector3 pos_o = _champ_0._limbs._tr_hand_left.position;
+                //Vector3 dir_two = _movingModel._frame_A._tr_frame.forward;
+                //float len_two = _champ_0._limbs._twoHand_length;
+                //_champ_0._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
 
-                _champ_1._limbs._tr_hand_left.rotation = _movingModel._frame_B._tr_frame.rotation;
-                _champ_1._limbs._tr_hand_left.position = _movingModel._frame_B._tr_frame.position;
-                pos_o = _champ_1._limbs._tr_hand_left.position;
-                dir_two = _movingModel._frame_B._tr_frame.forward;
-                len_two = _champ_1._limbs._twoHand_length;
-                _champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
+                //_champ_1._limbs._tr_hand_left.rotation = _movingModel._frame_B._tr_frame.rotation;
+                //_champ_1._limbs._tr_hand_left.position = _movingModel._frame_B._tr_frame.position;
+                //pos_o = _champ_1._limbs._tr_hand_left.position;
+                //dir_two = _movingModel._frame_B._tr_frame.forward;
+                //len_two = _champ_1._limbs._twoHand_length;
+                //_champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
 
                 _movingModel.__dir_move_A.y = 0;
                 _movingModel.__dir_move_B.y = 0;
                 _champ_0.SetPos(_champ_0.GetPos3D() + _movingModel.__dir_move_A);
-                _champ_1.SetPos(_champ_1.GetPos3D() + _movingModel.__dir_move_B);
+                //_champ_1.SetPos(_champ_1.GetPos3D() + _movingModel.__dir_move_B);
+
                 //_champ_0.SetPos(_movingModel._frame_A._tr_frame.position);
                 //_champ_1.SetPos(_movingModel._frame_B._tr_frame.position);
             }
