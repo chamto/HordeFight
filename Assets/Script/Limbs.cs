@@ -678,8 +678,8 @@ namespace HordeFight
                         _Model_left_0.Draw(Color.yellow);
                         _Model_left_1.Draw(Color.yellow);
 
-                        DebugWide.DrawLine(_pos_circle_A0.position, _HANDLE_left.position, Color.gray);
-                        DebugWide.DrawLine(_pos_circle_A1.position, _HANDLE_left.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_A0.position, _HANDLE_left.position, Color.yellow);
+                        DebugWide.DrawLine(_pos_circle_A1.position, _HANDLE_left.position, Color.yellow);
                     }
 
                     if (eStance.Cut == _eStance_hand_right)
@@ -687,8 +687,8 @@ namespace HordeFight
                         _Model_right_0.Draw(Color.blue);
                         _Model_right_1.Draw(Color.blue);
 
-                        DebugWide.DrawLine(_pos_circle_B0.position, _HANDLE_right.position, Color.gray);
-                        DebugWide.DrawLine(_pos_circle_B1.position, _HANDLE_right.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_B0.position, _HANDLE_right.position, Color.blue);
+                        DebugWide.DrawLine(_pos_circle_B1.position, _HANDLE_right.position, Color.blue);
                     }
 
                 }
@@ -704,8 +704,8 @@ namespace HordeFight
                     if (eStance.Cut == _eStance_hand_left || eStance.Cut == _eStance_hand_right)
                     {
                         //주변원의 중심에서 핸들까지 
-                        DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.gray);
-                        DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.gray);
+                        DebugWide.DrawLine(_pos_circle_left.position, _HANDLE_twoHand.position, Color.yellow);
+                        DebugWide.DrawLine(_pos_circle_right.position, _HANDLE_twoHand.position, Color.blue);
 
                         //설정된 모델 그리기 
                         _Model_left_0.Draw(Color.yellow);
@@ -2005,8 +2005,16 @@ namespace HordeFight
             hand_right = newPos_right;
             len_arm_right = newLength;
 
+            //오른손위치가 오른손어깨의 최소거리안에 있를때 오른손위치를 다시 계산한다 
+            if(_arm_right_min_length > len_arm_right)
+            {
+                this.CalcHandPos(hand_right, _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos_right, out newLength);
+                hand_right = newPos_right;
+                len_arm_right = newLength;    
+            }
+
             //-----------------------
-            //손과손이의 거리가 최소거리에 있지 않을시 왼손위치를 다시 계산해준다 
+            //손과손의 거리가 손과손최소거리 보다 작을시 왼손위치를 최소거리에 있게 한다 
             if ((hand_left - hand_right).sqrMagnitude < _twoHand_min_length * _twoHand_min_length)
             {
                 newPos_left = hand_right + VOp.Normalize(hand_left - hand_right) * _twoHand_min_length;
@@ -2029,8 +2037,7 @@ namespace HordeFight
         {
             //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
             Vector3 axis_up = _upDir_circle_left.position - _pos_circle_left.position; //임시로 왼쪽 upDir 사용 
-
-            axis_up.Normalize();
+            axis_up = VOp.Normalize(axis_up);
 
             float new_leftLength = 0f;
             Vector3 new_leftPos;
@@ -2075,10 +2082,10 @@ namespace HordeFight
                 //베기
                 if (eStance.Cut == _eStance_hand_left)
                 {
-                    //Vector3 handToTarget = _tr_arm_left_dir.position - _tr_hand_left.position;
+                    //Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
                     //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
                     //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    //_tr_hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+                    //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
