@@ -193,11 +193,11 @@ public class Test_LineCollision : MonoBehaviour
         _cur_seg_A = new LineSegment3(_line0_start.position, _line0_end.position);
         _cur_seg_B = new LineSegment3(_line1_start.position, _line1_end.position);
 
-        _moveSegment.Find(_prev_seg_A, _prev_seg_B, _cur_seg_A, _cur_seg_B);
+        //_moveSegment.Find(_prev_seg_A, _prev_seg_B, _cur_seg_A, _cur_seg_B);
         
         //_moveSegment.CalcSegment_FromContactPt();
         //_moveSegment.CalcSegment_FromContactPt(false, false, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
-        _moveSegment.CalcSegment_PushPoint(__RateAtoB,__AllowFixed_A, __AllowFixed_B, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
+        //_moveSegment.CalcSegment_PushPoint(__RateAtoB,__AllowFixed_A, __AllowFixed_B, _moveSegment._cur_seg_A.origin, _moveSegment._cur_seg_B.origin);
 
 
         //최종 계산된 선분 적용
