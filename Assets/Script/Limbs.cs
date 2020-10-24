@@ -137,7 +137,7 @@ namespace HordeFight
         public float _arm_right_min_length = 0.2f;
         public float _arm_right_max_length = 1f;
         //public float _twoHand_basic_length = 0.2f; //양손간격 기본길이 , 길이 복원시에 사용 
-        public float _twoHand_length = 0.2f;
+        public float _twoHand_cut_length = 0.2f;
         public float _twoHand_min_length = 0.1f;
         public float _twoHand_max_length = 0.5f;
 
@@ -2203,7 +2203,7 @@ namespace HordeFight
             //----------------------------
 
             ApplyHandPos_TwoHandLength(new_leftPos, new_leftLength, new_rightPos, new_rightLength,
-                                       eHandStandard, _twoHand_length, out hand_left, out hand_right);
+                                       eHandStandard, _twoHand_cut_length, out hand_left, out hand_right);
 
 
 
