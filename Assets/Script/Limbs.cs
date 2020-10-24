@@ -1099,9 +1099,7 @@ namespace HordeFight
             }
             else
             {
-                //_tr_hand_left.position = _hand_left;
-                //_tr_hand_right.position = _hand_right;
-
+                
                 view_left.position = _tr_hand_left.position;
                 view_right.position = _tr_hand_right.position;
             }
@@ -1180,7 +1178,7 @@ namespace HordeFight
                         ActiveAll_Arms(false, _equipment_handLeft);
                         _armed_left = _list_armedInfo[(int)_equipment_handLeft];
                         _armed_left.SetActive(true); 
-                        DebugWide.LogBlue("1");
+                        //DebugWide.LogBlue("1");
                         _isUpdateEq_handLeft = true;
                     }
 
@@ -1198,7 +1196,7 @@ namespace HordeFight
                         _armed_right = _list_armedInfo[(int)_equipment_handLeft];
                         _armed_right.SetActive(true);
 
-                        DebugWide.LogBlue("2");
+                        //DebugWide.LogBlue("2");
                         _isUpdateEq_handLeft = true;
                     }
 
@@ -1486,8 +1484,23 @@ namespace HordeFight
                         //_hc1_object_dir.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_standard.position);
                         //_hc1_standard.position = _HANDLE_staff.position + (_HANDLE_staff.position - _hc1_object_dir.position);
 
-                        Sting_TwoHand(out hand_left,out _arm_left_length, out hand_right, out _arm_right_length);
-
+                        Vector3 hand_ori, hand_end;
+                        float len_ori, len_end;
+                        Sting_TwoHand(out hand_ori,out len_ori, out hand_end, out len_end);
+                        if (_eHandStandard_cur == eStandard.TwoHand_LeftO)
+                        {
+                            hand_left = hand_ori;
+                            _arm_left_length = len_ori;
+                            hand_right = hand_end;
+                            _arm_right_length = len_end;
+                        }
+                        else if (_eHandStandard_cur == eStandard.TwoHand_RightO)
+                        {
+                            hand_left = hand_end;
+                            _arm_left_length = len_end;
+                            hand_right = hand_ori;
+                            _arm_right_length = len_ori;
+                        }
                         //-----------------------
 
                     }
@@ -2134,49 +2147,82 @@ namespace HordeFight
         }
 
 
-        public void Sting_TwoHand(out Vector3 hand_left , out float len_arm_left, out Vector3 hand_right, out float len_arm_right)
+        public void Sting_TwoHand(out Vector3 hand_ori , out float len_ori, out Vector3 hand_end, out float len_end)
         {
-            
-            Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
-            Vector3 newPos_left, newPos_right;
-            float newLength;
-            this.CalcHandPos(_hs_standard.position, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
+            //Vector3 hand_ori; //Origin
+            //Vector3 hand_end; //End
+            Vector3 sh_ori = ConstV.v3_zero;
+            Vector3 sh_end = ConstV.v3_zero;;
 
-            hand_left = newPos_left;
-            len_arm_left = newLength;
+            //float len_ori = 0;
+            //float len_end = 0;
+            float sh_ori_min = 0;
+            float sh_ori_max = 0;
+            float sh_end_min = 0;
+            float sh_end_max = 0;
+
+            if (_eHandStandard_cur == eStandard.TwoHand_LeftO)
+            {
+                
+                sh_ori = _tr_shoulder_left.position;
+                sh_end = _tr_shoulder_right.position;
+                sh_ori_min = _arm_left_min_length;
+                sh_ori_max = _arm_left_max_length;
+                sh_end_min = _arm_right_min_length;
+                sh_end_max = _arm_right_max_length;
+            }
+            else if (_eHandStandard_cur == eStandard.TwoHand_RightO)
+            {
+                
+                sh_ori = _tr_shoulder_right.position;
+                sh_end = _tr_shoulder_left.position;
+                sh_ori_min = _arm_right_min_length;
+                sh_ori_max = _arm_right_max_length;
+                sh_end_min = _arm_left_min_length;
+                sh_end_max = _arm_left_max_length;
+            }
+
+            //================================
+
+            //Vector3 objectDir = _hs_objectDir.position - _hs_standard.position;
+            //Vector3 newPos_left, newPos_right;
+            //float newLength;
+            this.CalcHandPos(_hs_standard.position, sh_ori, sh_ori_max, sh_ori_min, out hand_ori, out len_ori);
+
+            //hand_left = newPos_left;
+            //len_arm_left = newLength;
 
 
             //this.CalcHandPos_LineSegment(newPos, objectDir, _twoHand_length,
             //_tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos, out newLength);
-            this.CalcHandPos_LineSegment2(newPos_left, _hs_objectDir.position,
+            this.CalcHandPos_LineSegment2(hand_ori, _hs_objectDir.position,
                                           _twoHand_min_length, _twoHand_max_length,
-                                         _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                                          out newPos_right, out newLength);
+                                          sh_end, sh_end_max, sh_end_min,
+                                          out hand_end, out len_end);
 
-            hand_right = newPos_right;
-            len_arm_right = newLength;
+            //hand_right = newPos_right;
+            //len_arm_right = newLength;
 
             //오른손위치가 오른손어깨의 최소거리안에 있를때 오른손위치를 다시 계산한다 
-            if(_arm_right_min_length > len_arm_right)
+            if(sh_end_min > len_end)
             {
-                this.CalcHandPos(hand_right, _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out newPos_right, out newLength);
-                hand_right = newPos_right;
-                len_arm_right = newLength;    
+                this.CalcHandPos(hand_end, sh_end, sh_end_max, sh_end_min, out hand_end, out len_end);
+                //hand_right = newPos_right;
+                //len_arm_right = newLength;    
             }
 
             //-----------------------
             //손과손의 거리가 손과손최소거리 보다 작을시 왼손위치를 최소거리에 있게 한다 
-            if ((hand_left - hand_right).sqrMagnitude < _twoHand_min_length * _twoHand_min_length)
+            if ((hand_ori - hand_end).sqrMagnitude < _twoHand_min_length * _twoHand_min_length)
             {
-                newPos_left = hand_right + VOp.Normalize(hand_left - hand_right) * _twoHand_min_length;
-                this.CalcHandPos(newPos_left, _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out newPos_left, out newLength);
+                hand_ori = hand_end + VOp.Normalize(hand_ori - hand_end) * _twoHand_min_length;
+                this.CalcHandPos(hand_ori, sh_ori, sh_ori_max, sh_ori_min, out hand_ori, out len_ori);
 
-                hand_left = newPos_left;
-                len_arm_left = newLength;
+                //hand_left = newPos_left;
+                //len_arm_left = newLength;
             }
 
-            //_tr_hand_left.position = hand_left;
-            //_tr_hand_right.position = hand_right;
+
         }
 
 
@@ -2190,9 +2236,9 @@ namespace HordeFight
             //Vector3 axis_up = _ctr_two_A0_up.position - _ctr_two_A0.position; //임시로 왼쪽 upDir 사용 
             //axis_up = VOp.Normalize(axis_up);
 
-            float new_leftLength = 0f;
+            float new_left_length = 0f;
             Vector3 new_leftPos;
-            float new_rightLength = 0f;
+            float new_right_length = 0f;
             Vector3 new_rightPos;
 
 
@@ -2216,15 +2262,18 @@ namespace HordeFight
             second.SetModel(first.tr_up.position - first.tr.position); //첫번째 조종모형의 up값으로 설정 
 
             this.CalcHandPos_PlaneArea(first.model, handle,
-                                       _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
+                                       _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_left_length);
 
             this.CalcHandPos_PlaneArea(second.model, handle,
-                                   _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
+                                   _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_right_length);
 
 
             //----------------------------
-
-            ApplyHandPos_TwoHandLength(new_leftPos, new_leftLength, new_rightPos, new_rightLength,
+            //hand_left = new_leftPos;
+            //hand_right = new_rightPos;
+            //_arm_left_length = new_left_length;
+            //_arm_right_length = new_right_length;
+            ApplyHandPos_TwoHandLength(new_leftPos, new_left_length, new_rightPos, new_right_length,
                                        eHandStandard, _twoHand_cut_length, out hand_left, out hand_right);
 
 
