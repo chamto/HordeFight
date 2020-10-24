@@ -114,15 +114,6 @@ namespace HordeFight
         //private SpriteMesh _arm_right_spr = null;
 
 
-        //무기정보
-        private List<ArmedInfo> _list_armedInfo = new List<ArmedInfo>();
-        public ArmedInfo.eIdx _equipment_handLeft = ArmedInfo.eIdx.Federschwert;
-        public ArmedInfo.eIdx _equipment_handRight = ArmedInfo.eIdx.None;
-        public ArmedInfo _armed_left = null;
-        public ArmedInfo _armed_right = null;
-        public bool _isUpdateEq_handLeft = false;
-        public bool _isUpdateEq_handRight = false;
-
         //핸들 
         private Transform _HANDLE_twoHand = null;
         private Transform _HANDLE_oneHand = null;
@@ -153,9 +144,17 @@ namespace HordeFight
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
         public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
-        //public eStance _eStance = eStance.Sting; //자세
         public eStance _eStance_hand_left = eStance.Sting; //자세
         public eStance _eStance_hand_right = eStance.Sting; //자세
+
+        //무기정보
+        private List<ArmedInfo> _list_armedInfo = new List<ArmedInfo>();
+        public ArmedInfo.eIdx _equipment_handLeft = ArmedInfo.eIdx.Federschwert;
+        public ArmedInfo.eIdx _equipment_handRight = ArmedInfo.eIdx.None;
+        public ArmedInfo _armed_left = null;
+        public ArmedInfo _armed_right = null;
+        public bool _isUpdateEq_handLeft = false;
+        public bool _isUpdateEq_handRight = false;
 
         public bool _active_shadowObject = true;
 
@@ -922,7 +921,7 @@ namespace HordeFight
 
             //==================================================
 
-            Update_Equipment(); //장비 설정값 채우기 
+            Init_Equipment(); //장비 설정값 채우기 
 
         }
 
@@ -954,6 +953,9 @@ namespace HordeFight
             {
                 //양손모드에서는 오른손 자세값을 사용하지 않느다 
                 _eStance_hand_right = eStance.None;
+                //_armed_right._eIdx = ArmedInfo.eIdx.None;
+                _equipment_handRight = ArmedInfo.eIdx.None;
+
             }
             
 
@@ -965,7 +967,7 @@ namespace HordeFight
             //handle에 대한 손 움직임 만들기 
             Update_Position_Handle(_tr_hand_left, _tr_hand_right);
             Update_Rotation_Hand(_tr_hand_left, _tr_hand_right);
-            BillBoard_Hand(_tr_hand_left, _tr_hand_right);
+            //BillBoard_Hand(_tr_hand_left, _tr_hand_right); //원본값을 변형할 필요 없음 
             Update_Equipment(); //tr_hand 값이 다 구해진 다음에 수행되어야 함 , 장비 장착
             //==================================================
 
@@ -1035,40 +1037,91 @@ namespace HordeFight
         }
 
 
-        //public System.Action __Callback_Update_Equipment = null;
+
+        public void Init_Equipment()
+        {
+            if (ePart.TwoHand == _part_control)
+            {
+                _equipment_handRight = ArmedInfo.eIdx.None;
+            }
+
+            ActiveAll_Arms(false, _equipment_handRight);
+            _armed_left = _list_armedInfo[(int)_equipment_handLeft];
+            _armed_left.SetActive(true);
+
+            ActiveAll_Arms(false, _equipment_handLeft);
+            _armed_right = _list_armedInfo[(int)_equipment_handRight];
+            _armed_right.SetActive(true);
+
+        }
+
 		public void Update_Equipment()
         {
-            ArmedInfo.eIdx arin_left_idx = _equipment_handLeft;
-            ArmedInfo.eIdx arin_right_idx = _equipment_handRight;
-            if (null != (object)_armed_left)
-                arin_left_idx = _armed_left._eIdx;
-            if (null != (object)_armed_right)
-                arin_right_idx = _armed_right._eIdx;
+            //ArmedInfo.eIdx arin_left_idx = _equipment_handLeft;
+            //ArmedInfo.eIdx arin_right_idx = _equipment_handRight;
+            //if (null != (object)_armed_left)
+            //    arin_left_idx = _armed_left._eIdx;
+            //if (null != (object)_armed_right)
+                //arin_right_idx = _armed_right._eIdx;
 
             _isUpdateEq_handLeft = false;
             _isUpdateEq_handRight = false;
 
             //왼손 무기 장착
-            if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
+            if(ePart.OneHand == _part_control)
             {
-                ActiveAll_Arms(false, arin_right_idx);
-                _armed_left = _list_armedInfo[(int)_equipment_handLeft];
-                _armed_left.SetActive(true);
+                //if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
+                if(_armed_left._eIdx != _equipment_handLeft)
+                {
+                    ActiveAll_Arms(false, _equipment_handLeft);
+                    _armed_left = _list_armedInfo[(int)_equipment_handLeft];
+                    _armed_left.SetActive(true);
 
-                _isUpdateEq_handLeft = true;
+                    _isUpdateEq_handLeft = true;
+                }   
+
+                //오른손 무기 장착
+                //기존값과 비교 , 다른때만 갱신 
+                //if (null == (object)_armed_right || _armed_right._eIdx != _equipment_handRight)
+                if(_armed_right._eIdx != _equipment_handRight)
+                {
+                    ActiveAll_Arms(false, _equipment_handRight);
+                    _armed_right = _list_armedInfo[(int)_equipment_handRight];
+                    _armed_right.SetActive(true);
+
+                    _isUpdateEq_handRight = true;
+                }
             }
-
-            //=============================================
-                
-            //오른손 무기 장착
-            //기존값과 비교 , 다른때만 갱신 
-            if (null == (object)_armed_right || _armed_right._eIdx != _equipment_handRight)
+            else if (ePart.TwoHand == _part_control)
             {
-                ActiveAll_Arms(false, arin_left_idx);
-                _armed_right = _list_armedInfo[(int)_equipment_handRight];
-                _armed_right.SetActive(true);
 
-                _isUpdateEq_handRight = true;
+                if (eStandard.TwoHand_LeftO == _eHandStandard)
+                {
+                    if (_armed_left._eIdx != _equipment_handLeft)
+                    {
+                        ActiveAll_Arms(false, _equipment_handLeft);
+                        _armed_left = _list_armedInfo[(int)_equipment_handLeft];
+                        _armed_left.SetActive(true); 
+
+                        _isUpdateEq_handLeft = true;
+                    }
+
+
+                }    
+                //왼손기준으로 설정되게 한다 , 붙이는 것만 오른손이다 
+                else if (eStandard.TwoHand_RightO == _eHandStandard)
+                {
+                    if (_armed_left._eIdx != _equipment_handLeft)
+                    {
+                        ActiveAll_Arms(false, _equipment_handLeft);
+                        _armed_right = _list_armedInfo[(int)_equipment_handLeft];
+                        _armed_right.SetActive(true);    
+
+                        _isUpdateEq_handLeft = true;
+                    }
+
+                }    
+
             }
 
             //=============================================
@@ -1370,11 +1423,11 @@ namespace HordeFight
 
                 if (eStandard.TwoHand_RightO == _eHandStandard)
                 {
-                    if (eStance.Sting == _eStance_hand_right)
+                    if (eStance.Sting == _eStance_hand_left)
                     { 
                         Sting_TwoHand(out hand_right, out _arm_right_length, out hand_left, out _arm_left_length);
                     }
-                    else if (eStance.Cut == _eStance_hand_right)    
+                    else if (eStance.Cut == _eStance_hand_left)    
                     {
                         Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_left._eModel, _motion_twoHand_right._eModel,
                                     out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
@@ -1901,7 +1954,8 @@ namespace HordeFight
         //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
         //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
         //handE : 위치를 구할려는 손 
-        public void ApplyHandPos_TwoHandLength(Vector3 handLeft_pos, float handLeft_length, Vector3 handRight_pos, float handRight_length, eStandard eHandS, float twoLength,
+        public void ApplyHandPos_TwoHandLength(Vector3 handLeft_pos, float handLeft_length, Vector3 handRight_pos, float handRight_length, 
+                                               eStandard eHandS, float twoLength,
                                                out Vector3 hand_left, out Vector3 hand_right)
         {
             hand_left = ConstV.v3_zero;
