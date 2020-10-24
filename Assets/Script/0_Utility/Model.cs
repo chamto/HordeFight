@@ -16,37 +16,37 @@ namespace UtilGS9
         //통합모델은 데이터 공유, 함수만 다른 모델 객체로 나눈다 
         public class Model
         {
-            public enum eBranch
-            {
-                none = 0,
+            //public enum eBranch
+            //{
+            //    none = 0,
 
-                head_0,
+            //    head_0,
 
-                //============
-                LEFT_START,
-                arm_left_0,
-                arm_left_1,
+            //    //============
+            //    LEFT_START,
+            //    arm_left_0,
+            //    arm_left_1,
 
-                leg_left_0,
-                leg_left_1,
+            //    leg_left_0,
+            //    leg_left_1,
 
-                wing_left_0,
-                LEFT_END,
+            //    wing_left_0,
+            //    LEFT_END,
 
-                //============
-                RIGHT_START,
-                arm_right_0,
-                arm_right_1,
+            //    //============
+            //    RIGHT_START,
+            //    arm_right_0,
+            //    arm_right_1,
 
-                leg_right_0,
-                leg_right_1,
+            //    leg_right_0,
+            //    leg_right_1,
 
-                wing_right_0,
-                RIGHT_END,
-                //============
+            //    wing_right_0,
+            //    RIGHT_END,
+            //    //============
 
-                tail_0,
-            }
+            //    tail_0,
+            //}
 
             public enum eKind
             {
@@ -64,7 +64,7 @@ namespace UtilGS9
             //public const int Cylinder = 4;
             //public const int Arc = 5;  //호 
 
-            public eBranch branch = eBranch.none;
+            //public eBranch branch = eBranch.none;
             public eKind kind = eKind.FreePlane;
 
             public Vector3 upDir;
@@ -106,23 +106,23 @@ namespace UtilGS9
                 cylinder.model = this;
             }
 
-            public bool IsLeft()
-            {
-                if (eBranch.LEFT_START < this.branch && this.branch < eBranch.LEFT_END)
-                {
-                    return true;
-                }
-                return false;
-            }
+            //public bool IsLeft()
+            //{
+            //    if (eBranch.LEFT_START < this.branch && this.branch < eBranch.LEFT_END)
+            //    {
+            //        return true;
+            //    }
+            //    return false;
+            //}
 
-            public bool IsRight()
-            {
-                if (eBranch.RIGHT_START < this.branch && this.branch < eBranch.RIGHT_END)
-                {
-                    return true;
-                }
-                return false;
-            }
+            //public bool IsRight()
+            //{
+            //    if (eBranch.RIGHT_START < this.branch && this.branch < eBranch.RIGHT_END)
+            //    {
+            //        return true;
+            //    }
+            //    return false;
+            //}
 
 
             public void SetModel(Vector3 in_upDir, Vector3 in_center, float in_radius, Vector3 in_highest, float in_far_radius,

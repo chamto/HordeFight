@@ -9,13 +9,13 @@ namespace HordeFight
     public class Limbs : MonoBehaviour
     {
 
-        public class Control
-        {
-        }
+        //public class Control
+        //{
+        //}
 
-        public class PathCircle
-        {
-        }
+        //public class PathCircle
+        //{
+        //}
 
 
         public enum ePart
@@ -161,55 +161,68 @@ namespace HordeFight
         public bool _active_projectionSlope = true;
         public float _boxSlope_angle = 75f;
 
-        private Geo.Model _Model_A0 = new Geo.Model(); //a
-        private Geo.Model _Model_A1 = new Geo.Model(); //a
-        private Geo.Model _Model_B0 = new Geo.Model();//b 
-        private Geo.Model _Model_B1 = new Geo.Model();//b
+        //private Geo.Model _Model_A0 = new Geo.Model(); //a
+        //private Geo.Model _Model_A1 = new Geo.Model(); //a
+        //private Geo.Model _Model_B0 = new Geo.Model();//b 
+        //private Geo.Model _Model_B1 = new Geo.Model();//b
 
-        private MotionTrajectory _motion_oneHand_A0 = null; //왼손
-        private MotionTrajectory _motion_oneHand_A1 = null; //왼손 손잡이
-        private MotionTrajectory _motion_oneHand_B0 = null; //오른손
-        private MotionTrajectory _motion_oneHand_B1 = null; //오른손 손잡이
-        private MotionTrajectory _motion_twoHand_A0 = null;
-        private MotionTrajectory _motion_twoHand_B0 = null;
+        //private MotionTrajectory _motion_oneHand_A0 = null; //왼손
+        //private MotionTrajectory _motion_oneHand_A1 = null; //왼손 손잡이
+        //private MotionTrajectory _motion_oneHand_B0 = null; //오른손
+        //private MotionTrajectory _motion_oneHand_B1 = null; //오른손 손잡이
+        //private MotionTrajectory _motion_twoHand_A0 = null;
+        //private MotionTrajectory _motion_twoHand_B0 = null;
 
 
         //======================================================
 
-        //양손 조종용 경로원
-        private Transform _ctr_two_A0 = null;
-        private Transform _ctr_two_A0_up = null;
-        private Transform _ctr_two_A0_highest = null;
-        private Transform _ctr_two_A0_tornado_unlace = null;
 
-        private Transform _ctr_two_B0 = null;
-        private Transform _ctr_two_B0_up = null;
-        private Transform _ctr_two_B0_highest = null;
-        private Transform _ctr_two_B0_tornado_unlace = null;
 
         //왼손 조종용 경로원
-        //[ 손목 ]
-        private Transform _ctr_one_A0 = null;
-        private Transform _ctr_one_A0_up = null;
-        private Transform _ctr_one_A0_highest = null;
-        private Transform _ctr_one_A0_tornado_unlace = null;
-        //[ 손잡이 ]
-        private Transform _ctr_one_A1 = null;
-        private Transform _ctr_one_A1_up = null;
-        private Transform _ctr_one_A1_highest = null;
-        private Transform _ctr_one_A1_tornado_unlace = null;
-
+        private ControlModel _ctrm_one_A0 = new ControlModel();//왼손
+        private ControlModel _ctrm_one_A1 = new ControlModel();//왼손 손잡이
         //오른손 조종용 경로 
-        //[ 손목 ]
-        private Transform _ctr_one_B0 = null;
-        private Transform _ctr_one_B0_up = null;
-        private Transform _ctr_one_B0_highest = null;
-        private Transform _ctr_one_B0_tornado_unlace = null;
-        //[ 손잡이 ]
-        private Transform _ctr_one_B1 = null;
-        private Transform _ctr_one_B1_up = null;
-        private Transform _ctr_one_B1_highest = null;
-        private Transform _ctr_one_B1_tornado_unlace = null;
+        private ControlModel _ctrm_one_B0 = new ControlModel();//오른손
+        private ControlModel _ctrm_one_B1 = new ControlModel();//오른손 손잡이
+
+        //양손 조종용 경로원
+        private ControlModel _ctrm_two_A0 = new ControlModel();//양손 - 첫번째 기준
+        private ControlModel _ctrm_two_B0 = new ControlModel();//양손 - 두번쨰 기준 
+
+        //양손 조종용 경로원
+        //private Transform _ctr_two_A0 = null;
+        //private Transform _ctr_two_A0_up = null;
+        //private Transform _ctr_two_A0_highest = null;
+        //private Transform _ctr_two_A0_tornado_unlace = null;
+
+        //private Transform _ctr_two_B0 = null;
+        //private Transform _ctr_two_B0_up = null;
+        //private Transform _ctr_two_B0_highest = null;
+        //private Transform _ctr_two_B0_tornado_unlace = null;
+
+        ////왼손 조종용 경로원
+        ////[ 손목 ]
+        //private Transform _ctr_one_A0 = null;
+        //private Transform _ctr_one_A0_up = null;
+        //private Transform _ctr_one_A0_highest = null;
+        //private Transform _ctr_one_A0_tornado_unlace = null;
+        ////[ 손잡이 ]
+        //private Transform _ctr_one_A1 = null;
+        //private Transform _ctr_one_A1_up = null;
+        //private Transform _ctr_one_A1_highest = null;
+        //private Transform _ctr_one_A1_tornado_unlace = null;
+
+        ////오른손 조종용 경로 
+        ////[ 손목 ]
+        //private Transform _ctr_one_B0 = null;
+        //private Transform _ctr_one_B0_up = null;
+        //private Transform _ctr_one_B0_highest = null;
+        //private Transform _ctr_one_B0_tornado_unlace = null;
+        ////[ 손잡이 ]
+        //private Transform _ctr_one_B1 = null;
+        //private Transform _ctr_one_B1_up = null;
+        //private Transform _ctr_one_B1_highest = null;
+        //private Transform _ctr_one_B1_tornado_unlace = null;
 
 
         //======================================================
@@ -248,6 +261,49 @@ namespace HordeFight
         [Space]
         public Ani _ani_foot_rotate = new Ani();
         //======================================================
+
+        public class ControlModel
+        {
+            public Transform tr = null;
+            public Transform tr_up = null;
+            public Transform tr_highest = null;
+            public Transform tr_tornado_unlace = null;
+            public MotionTrajectory motion = null;
+
+            public Geo.Model model = new Geo.Model();
+
+            public void SetModel()
+            {
+                SetModel(tr_up.position - tr.position);
+            }
+            public void SetModel(Vector3 upDir)
+            {
+                model.kind = motion._eModel;
+
+                model.SetModel(upDir, tr.position, motion._radius, tr_highest.position,
+                                     motion._far_radius, motion._tornado_angle, tr_tornado_unlace.localPosition);
+
+            }
+
+            public void Load(Transform parent, string ctr_name)
+            {
+                tr = SingleO.hierarchy.GetTransform(parent, ctr_name);
+                motion = tr.GetComponent<MotionTrajectory>();
+                tr_up = SingleO.hierarchy.GetTransform(tr, "up");
+                tr_highest = SingleO.hierarchy.GetTransform(tr, "highest");
+                tr_tornado_unlace = SingleO.hierarchy.GetTransform(tr_highest, "tornado_unlace");
+            }
+
+            public void Draw(Color color, Vector3 handle_pos)
+            {
+                model.Draw(color);
+
+                DebugWide.DrawLine(tr.position, handle_pos, color);
+
+            }
+
+        }
+
 
         [System.Serializable]
         public class Ani
@@ -676,20 +732,16 @@ namespace HordeFight
 
                     if (eStance.Cut == _eStance_hand_left)
                     {
-                        _Model_A0.Draw(Color.yellow);
-                        _Model_A1.Draw(Color.yellow);
+                        _ctrm_one_A0.Draw(Color.yellow, _HANDLE_left.position);
+                        _ctrm_one_A1.Draw(Color.yellow, _HANDLE_left.position);
 
-                        DebugWide.DrawLine(_ctr_one_A0.position, _HANDLE_left.position, Color.yellow);
-                        DebugWide.DrawLine(_ctr_one_A1.position, _HANDLE_left.position, Color.yellow);
                     }
 
                     if (eStance.Cut == _eStance_hand_right)
                     {
-                        _Model_B0.Draw(Color.blue);
-                        _Model_B1.Draw(Color.blue);
+                        _ctrm_one_B0.Draw(Color.blue, _HANDLE_right.position);
+                        _ctrm_one_B1.Draw(Color.blue, _HANDLE_right.position);
 
-                        DebugWide.DrawLine(_ctr_one_B0.position, _HANDLE_right.position, Color.blue);
-                        DebugWide.DrawLine(_ctr_one_B1.position, _HANDLE_right.position, Color.blue);
                     }
 
                 }
@@ -704,13 +756,10 @@ namespace HordeFight
 
                     if (eStance.Cut == _eStance_hand_left || eStance.Cut == _eStance_hand_right)
                     {
-                        //주변원의 중심에서 핸들까지 
-                        DebugWide.DrawLine(_ctr_two_A0.position, _HANDLE_twoHand.position, Color.yellow);
-                        DebugWide.DrawLine(_ctr_two_B0.position, _HANDLE_twoHand.position, Color.blue);
-
+                        
                         //설정된 모델 그리기 
-                        _Model_A0.Draw(Color.yellow);
-                        _Model_B0.Draw(Color.blue);
+                        _ctrm_two_A0.Draw(Color.yellow, _HANDLE_twoHand.position);
+                        _ctrm_two_B0.Draw(Color.blue, _HANDLE_twoHand.position);
                     }
 
                 }
@@ -806,10 +855,10 @@ namespace HordeFight
 
             //--------------------------------------------------
 
-            _Model_A0.branch = Geo.Model.eBranch.arm_left_0;
-            _Model_A1.branch = Geo.Model.eBranch.arm_left_0;
-            _Model_B0.branch = Geo.Model.eBranch.arm_right_0;
-            _Model_B1.branch = Geo.Model.eBranch.arm_right_0;
+            //_Model_A0.branch = Geo.Model.eBranch.arm_left_0;
+            //_Model_A1.branch = Geo.Model.eBranch.arm_left_0;
+            //_Model_B0.branch = Geo.Model.eBranch.arm_right_0;
+            //_Model_B1.branch = Geo.Model.eBranch.arm_right_0;
 
 
             //==================================================
@@ -871,49 +920,62 @@ namespace HordeFight
             //-------------------------
             Transform two_cut = SingleO.hierarchy.GetTransform(path_circle, "two_cut");
 
-            _ctr_two_A0 = SingleO.hierarchy.GetTransform(two_cut, "pos_circle_left");
-            _motion_twoHand_A0 = _ctr_two_A0.GetComponent<MotionTrajectory>();
-            _ctr_two_A0_up = SingleO.hierarchy.GetTransform(_ctr_two_A0, "upDir_circle_left");
-            _ctr_two_A0_highest = SingleO.hierarchy.GetTransform(_ctr_two_A0, "highest_circle_left");
-            _ctr_two_A0_tornado_unlace = SingleO.hierarchy.GetTransform(_ctr_two_A0_highest, "tornado_unlace_left");
+            _ctrm_two_A0.Load(two_cut, "pos_circle_left");
+            //_ctr_two_A0 = SingleO.hierarchy.GetTransform(two_cut, "pos_circle_left");
+            //_motion_twoHand_A0 = _ctr_two_A0.GetComponent<MotionTrajectory>();
+            //_ctr_two_A0_up = SingleO.hierarchy.GetTransform(_ctr_two_A0, "upDir_circle_left");
+            //_ctr_two_A0_highest = SingleO.hierarchy.GetTransform(_ctr_two_A0, "highest_circle_left");
+            //_ctr_two_A0_tornado_unlace = SingleO.hierarchy.GetTransform(_ctr_two_A0_highest, "tornado_unlace_left");
             //-------------------------
-            _ctr_two_B0 = SingleO.hierarchy.GetTransform(two_cut, "pos_circle_right");
-            _motion_twoHand_B0 = _ctr_two_B0.GetComponent<MotionTrajectory>();
-            _ctr_two_B0_up = SingleO.hierarchy.GetTransform(_ctr_two_B0, "upDir_circle_right");
-            _ctr_two_B0_highest = SingleO.hierarchy.GetTransform(_ctr_two_B0, "highest_circle_right");
-            _ctr_two_B0_tornado_unlace = SingleO.hierarchy.GetTransform(_ctr_two_B0_highest, "tornado_unlace_right");
+
+            _ctrm_two_B0.Load(two_cut, "pos_circle_right");
+            //_ctr_two_B0 = SingleO.hierarchy.GetTransform(two_cut, "pos_circle_right");
+            //_motion_twoHand_B0 = _ctr_two_B0.GetComponent<MotionTrajectory>();
+            //_ctr_two_B0_up = SingleO.hierarchy.GetTransform(_ctr_two_B0, "upDir_circle_right");
+            //_ctr_two_B0_highest = SingleO.hierarchy.GetTransform(_ctr_two_B0, "highest_circle_right");
+            //_ctr_two_B0_tornado_unlace = SingleO.hierarchy.GetTransform(_ctr_two_B0_highest, "tornado_unlace_right");
 
             //----------------------------------------------
 
             Transform one_left = SingleO.hierarchy.GetTransform(path_circle, "one_left");
 
-            _ctr_one_A0      = SingleO.hierarchy.GetTransform(one_left, "pos_circle_A0");
-            _motion_oneHand_A0 = _ctr_one_A0.GetComponent<MotionTrajectory>();
-            _ctr_one_A0_up    = SingleO.hierarchy.GetTransform(_ctr_one_A0, "upDir_circle_A0");
-            _ctr_one_A0_highest  = SingleO.hierarchy.GetTransform(_ctr_one_A0, "highest_circle_A0");
-            _ctr_one_A0_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_A0_highest, "tornado_unlace_A0");
+            _ctrm_one_A0.Load(one_left, "pos_circle_A0");
+
+            //_ctr_one_A0      = SingleO.hierarchy.GetTransform(one_left, "pos_circle_A0");
+            //_motion_oneHand_A0 = _ctr_one_A0.GetComponent<MotionTrajectory>();
+            //_ctr_one_A0_up    = SingleO.hierarchy.GetTransform(_ctr_one_A0, "upDir_circle_A0");
+            //_ctr_one_A0_highest  = SingleO.hierarchy.GetTransform(_ctr_one_A0, "highest_circle_A0");
+            //_ctr_one_A0_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_A0_highest, "tornado_unlace_A0");
             //-------------------------
-            _ctr_one_A1      = SingleO.hierarchy.GetTransform(_ctr_one_A0, "pos_circle_A1");
-            _motion_oneHand_A1 = _ctr_one_A1.GetComponent<MotionTrajectory>();
-            _ctr_one_A1_up    = SingleO.hierarchy.GetTransform(_ctr_one_A1, "upDir_circle_A1");
-            _ctr_one_A1_highest  = SingleO.hierarchy.GetTransform(_ctr_one_A1, "highest_circle_A1");
-            _ctr_one_A1_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_A1_highest, "tornado_unlace_A1");
+
+            _ctrm_one_A1.Load(_ctrm_one_A0.tr, "pos_circle_A1");
+
+            //_ctr_one_A1      = SingleO.hierarchy.GetTransform(_ctr_one_A0, "pos_circle_A1");
+            //_motion_oneHand_A1 = _ctr_one_A1.GetComponent<MotionTrajectory>();
+            //_ctr_one_A1_up    = SingleO.hierarchy.GetTransform(_ctr_one_A1, "upDir_circle_A1");
+            //_ctr_one_A1_highest  = SingleO.hierarchy.GetTransform(_ctr_one_A1, "highest_circle_A1");
+            //_ctr_one_A1_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_A1_highest, "tornado_unlace_A1");
 
             //----------------------------------------------
 
             Transform one_right = SingleO.hierarchy.GetTransform(path_circle, "one_right");
 
-            _ctr_one_B0      = SingleO.hierarchy.GetTransform(one_right, "pos_circle_B0");
-            _motion_oneHand_B0 = _ctr_one_B0.GetComponent<MotionTrajectory>();
-            _ctr_one_B0_up    = SingleO.hierarchy.GetTransform(_ctr_one_B0, "upDir_circle_B0");
-            _ctr_one_B0_highest  = SingleO.hierarchy.GetTransform(_ctr_one_B0, "highest_circle_B0");
-            _ctr_one_B0_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_B0_highest, "tornado_unlace_B0");
+            _ctrm_one_B0.Load(one_right, "pos_circle_B0");
+
+            //_ctr_one_B0      = SingleO.hierarchy.GetTransform(one_right, "pos_circle_B0");
+            //_motion_oneHand_B0 = _ctr_one_B0.GetComponent<MotionTrajectory>();
+            //_ctr_one_B0_up    = SingleO.hierarchy.GetTransform(_ctr_one_B0, "upDir_circle_B0");
+            //_ctr_one_B0_highest  = SingleO.hierarchy.GetTransform(_ctr_one_B0, "highest_circle_B0");
+            //_ctr_one_B0_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_B0_highest, "tornado_unlace_B0");
             //-------------------------
-            _ctr_one_B1      = SingleO.hierarchy.GetTransform(_ctr_one_B0, "pos_circle_B1");
-            _motion_oneHand_B1 = _ctr_one_B1.GetComponent<MotionTrajectory>();
-            _ctr_one_B1_up    = SingleO.hierarchy.GetTransform(_ctr_one_B1, "upDir_circle_B1");
-            _ctr_one_B1_highest  = SingleO.hierarchy.GetTransform(_ctr_one_B1, "highest_circle_B1");
-            _ctr_one_B1_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_B1_highest, "tornado_unlace_B1");
+
+            _ctrm_one_B1.Load(_ctrm_one_B0.tr, "pos_circle_B1");
+
+            //_ctr_one_B1      = SingleO.hierarchy.GetTransform(_ctr_one_B0, "pos_circle_B1");
+            //_motion_oneHand_B1 = _ctr_one_B1.GetComponent<MotionTrajectory>();
+            //_ctr_one_B1_up    = SingleO.hierarchy.GetTransform(_ctr_one_B1, "upDir_circle_B1");
+            //_ctr_one_B1_highest  = SingleO.hierarchy.GetTransform(_ctr_one_B1, "highest_circle_B1");
+            //_ctr_one_B1_tornado_unlace  = SingleO.hierarchy.GetTransform(_ctr_one_B1_highest, "tornado_unlace_B1");
 
             //-------------------------
 
@@ -1314,10 +1376,12 @@ namespace HordeFight
                     float newLength = 0f;
                     //------------------------------------------
 
-                    _Model_A0.kind = _motion_oneHand_A0._eModel; //_eModelKind_Left_0;
-                    _Model_A1.kind = _motion_oneHand_A1._eModel; //_eModelKind_Left_1;
-                    SetModel_OneHand(_Model_A0, _Model_A1);
-                    CalcHandPos_PlaneArea(_Model_A0, handle,
+                    //_Model_A0.kind = _motion_oneHand_A0._eModel; //_eModelKind_Left_0;
+                    //_Model_A1.kind = _motion_oneHand_A1._eModel; //_eModelKind_Left_1;
+                    //SetModel_OneHand(_Model_A0, _Model_A1);
+                    _ctrm_one_A0.SetModel();
+                    _ctrm_one_A1.SetModel();
+                    CalcHandPos_PlaneArea(_ctrm_one_A0.model, handle,
                                           _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
                                           out newPos, out newLength);
 
@@ -1326,7 +1390,7 @@ namespace HordeFight
                     hand_left = newPos;
 
 
-                    CalcHandPos_PlaneArea(_Model_A1, handle,
+                    CalcHandPos_PlaneArea(_ctrm_one_A1.model, handle,
                                           _tr_shoulder_left.position, 1000, _arm_left_min_length,
                                           out newPos, out newLength);
                     _tr_arm_left_dir.position = newPos;
@@ -1341,10 +1405,12 @@ namespace HordeFight
                     Vector3 newPos = Vector3.zero;
                     float newLength = 0f;
 
-                    _Model_B0.kind = _motion_oneHand_B0._eModel; //_eModelKind_Right_0;
-                    _Model_B1.kind = _motion_oneHand_B1._eModel; //_eModelKind_Right_1;
-                    SetModel_OneHand(_Model_B0, _Model_B1);
-                    CalcHandPos_PlaneArea(_Model_B0, handle,
+                    //_Model_B0.kind = _motion_oneHand_B0._eModel; //_eModelKind_Right_0;
+                    //_Model_B1.kind = _motion_oneHand_B1._eModel; //_eModelKind_Right_1;
+                    //SetModel_OneHand(_Model_B0, _Model_B1);
+                    _ctrm_one_B0.SetModel();
+                    _ctrm_one_B1.SetModel();
+                    CalcHandPos_PlaneArea(_ctrm_one_B0.model, handle,
                                           _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
                                           out newPos, out newLength);
 
@@ -1353,7 +1419,7 @@ namespace HordeFight
                     hand_right = newPos;
 
 
-                    CalcHandPos_PlaneArea(_Model_B1, handle,
+                    CalcHandPos_PlaneArea(_ctrm_one_B1.model, handle,
                                           _tr_shoulder_right.position, 1000, _arm_right_min_length,
                                           out newPos, out newLength);
 
@@ -1368,7 +1434,7 @@ namespace HordeFight
 
             if (_part_control == ePart.TwoHand)
             {
-                if(eStandard.TwoHand_LeftO == _eHandStandard)
+                //if(eStandard.TwoHand_LeftO == _eHandStandard)
                 {
                     if (eStance.Sting == _eStance_hand_left)
                     {   //찌르기 , 치기 
@@ -1410,7 +1476,7 @@ namespace HordeFight
 
                         //-----------------------
 
-                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_A0._eModel, _motion_twoHand_B0._eModel,
+                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard,
                                     out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
 
                         //--------------------
@@ -1421,18 +1487,18 @@ namespace HordeFight
                     }//else end
                 }
 
-                if (eStandard.TwoHand_RightO == _eHandStandard)
-                {
-                    if (eStance.Sting == _eStance_hand_left)
-                    { 
-                        Sting_TwoHand(out hand_right, out _arm_right_length, out hand_left, out _arm_left_length);
-                    }
-                    else if (eStance.Cut == _eStance_hand_left)    
-                    {
-                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_A0._eModel, _motion_twoHand_B0._eModel,
-                                    out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
-                    }
-                }
+                //if (eStandard.TwoHand_RightO == _eHandStandard)
+                //{
+                //    if (eStance.Sting == _eStance_hand_left)
+                //    { 
+                //        Sting_TwoHand(out hand_right, out _arm_right_length, out hand_left, out _arm_left_length);
+                //    }
+                //    else if (eStance.Cut == _eStance_hand_left)    
+                //    {
+                //        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_A0._eModel, _motion_twoHand_B0._eModel,
+                //                    out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
+                //    }
+                //}
 
 
             }
@@ -1795,50 +1861,50 @@ namespace HordeFight
 
 
 
-        public void SetModel_OneHand(Geo.Model model_0, Geo.Model model_1)
-        {
-            Vector3 upDir;
-            if (true == model_0.IsLeft())
-            {
-                upDir = _ctr_one_A0_up.position - _ctr_one_A0.position;
-                //upDir.Normalize();
-                model_0.SetModel(upDir, _ctr_one_A0.position, _motion_oneHand_A0._radius, _ctr_one_A0_highest.position,
-                                 _motion_oneHand_A0._far_radius, _motion_oneHand_A0._tornado_angle, _ctr_one_A0_tornado_unlace.localPosition);
+        //public void SetModel_OneHand(Geo.Model model_0, Geo.Model model_1)
+        //{
+        //    Vector3 upDir;
+        //    if (true == model_0.IsLeft())
+        //    {
+        //        upDir = _ctr_one_A0_up.position - _ctr_one_A0.position;
+        //        //upDir.Normalize();
+        //        model_0.SetModel(upDir, _ctr_one_A0.position, _motion_oneHand_A0._radius, _ctr_one_A0_highest.position,
+        //                         _motion_oneHand_A0._far_radius, _motion_oneHand_A0._tornado_angle, _ctr_one_A0_tornado_unlace.localPosition);
 
-                upDir = _ctr_one_A1_up.position - _ctr_one_A1.position;
-                //upDir.Normalize();
-                model_1.SetModel(upDir, _ctr_one_A1.position, _motion_oneHand_A1._radius, _ctr_one_A1_highest.position,
-                                 _motion_oneHand_A1._far_radius, _motion_oneHand_A1._tornado_angle, _ctr_one_A1_tornado_unlace.localPosition);
-            }
-            if (true == model_0.IsRight())
-            {
-                upDir = _ctr_one_B0_up.position - _ctr_one_B0.position;
-                //upDir.Normalize();
-                model_0.SetModel(upDir, _ctr_one_B0.position, _motion_oneHand_B0._radius, _ctr_one_B0_highest.position,
-                                 _motion_oneHand_B0._far_radius, _motion_oneHand_B0._tornado_angle, _ctr_one_B0_tornado_unlace.localPosition);
+        //        upDir = _ctr_one_A1_up.position - _ctr_one_A1.position;
+        //        //upDir.Normalize();
+        //        model_1.SetModel(upDir, _ctr_one_A1.position, _motion_oneHand_A1._radius, _ctr_one_A1_highest.position,
+        //                         _motion_oneHand_A1._far_radius, _motion_oneHand_A1._tornado_angle, _ctr_one_A1_tornado_unlace.localPosition);
+        //    }
+        //    if (true == model_0.IsRight())
+        //    {
+        //        upDir = _ctr_one_B0_up.position - _ctr_one_B0.position;
+        //        //upDir.Normalize();
+        //        model_0.SetModel(upDir, _ctr_one_B0.position, _motion_oneHand_B0._radius, _ctr_one_B0_highest.position,
+        //                         _motion_oneHand_B0._far_radius, _motion_oneHand_B0._tornado_angle, _ctr_one_B0_tornado_unlace.localPosition);
 
-                upDir = _ctr_one_B1_up.position - _ctr_one_B1.position;
-                //upDir.Normalize();
-                model_1.SetModel(upDir, _ctr_one_B1.position, _motion_oneHand_B1._radius, _ctr_one_B1_highest.position,
-                                 _motion_oneHand_B1._far_radius, _motion_oneHand_B1._tornado_angle, _ctr_one_B1_tornado_unlace.localPosition);
-            }
+        //        upDir = _ctr_one_B1_up.position - _ctr_one_B1.position;
+        //        //upDir.Normalize();
+        //        model_1.SetModel(upDir, _ctr_one_B1.position, _motion_oneHand_B1._radius, _ctr_one_B1_highest.position,
+        //                         _motion_oneHand_B1._far_radius, _motion_oneHand_B1._tornado_angle, _ctr_one_B1_tornado_unlace.localPosition);
+        //    }
 
-        }
+        //}
 
-        public void SetModel_TwoHand(Geo.Model model, Vector3 upDir)
-        {
-            if (true == model.IsLeft())
-            {
-                model.SetModel(upDir, _ctr_two_A0.position, _motion_twoHand_A0._radius, _ctr_two_A0_highest.position,
-                               _motion_twoHand_A0._far_radius, _motion_twoHand_A0._tornado_angle, _ctr_two_A0_tornado_unlace.localPosition);
-            }
-            if (true == model.IsRight())
-            {
-                model.SetModel(upDir, _ctr_two_B0.position, _motion_twoHand_B0._radius, _ctr_two_B0_highest.position,
-                               _motion_twoHand_B0._far_radius, _motion_twoHand_B0._tornado_angle, _ctr_two_B0_tornado_unlace.localPosition);
-            }
+        //public void SetModel_TwoHand(Geo.Model model, Vector3 upDir)
+        //{
+        //    if (true == model.IsLeft())
+        //    {
+        //        model.SetModel(upDir, _ctr_two_A0.position, _motion_twoHand_A0._radius, _ctr_two_A0_highest.position,
+        //                       _motion_twoHand_A0._far_radius, _motion_twoHand_A0._tornado_angle, _ctr_two_A0_tornado_unlace.localPosition);
+        //    }
+        //    if (true == model.IsRight())
+        //    {
+        //        model.SetModel(upDir, _ctr_two_B0.position, _motion_twoHand_B0._radius, _ctr_two_B0_highest.position,
+        //                       _motion_twoHand_B0._far_radius, _motion_twoHand_B0._tornado_angle, _ctr_two_B0_tornado_unlace.localPosition);
+        //    }
 
-        }
+        //}
 
         //대상 도형모델의 평면공간에 투영한 결과를 반환한다.
         //평면공간에 투영이 불가능한 경우에는 어깨와 평면공간의 최소거리의 위치를 반환한다
@@ -1885,71 +1951,71 @@ namespace HordeFight
             newHand_pos = aroundCalcPos;
         }
 
-        public void Cut_OneHand(out Vector3 hand_left, out Vector3 hand_right)
-        {
-            hand_left = ConstV.v3_zero;
-            hand_right = ConstV.v3_zero;
+        //public void Cut_OneHand(out Vector3 hand_left, out Vector3 hand_right)
+        //{
+        //    hand_left = ConstV.v3_zero;
+        //    hand_right = ConstV.v3_zero;
 
-            if (ePart.OneHand == _part_control)
-            {
+        //    if (ePart.OneHand == _part_control)
+        //    {
 
-                //주변원 반지름 갱신
-                //_radius_circle_A0 = (_pos_circle_A0.position - _edge_circle_A0.position).magnitude;
-                //_radius_circle_A1 = (_pos_circle_A1.position - _edge_circle_A1.position).magnitude;
-                //_radius_circle_B0 = (_pos_circle_B0.position - _edge_circle_B0.position).magnitude;
-                //_radius_circle_B1 = (_pos_circle_B1.position - _edge_circle_B1.position).magnitude;
+        //        //주변원 반지름 갱신
+        //        //_radius_circle_A0 = (_pos_circle_A0.position - _edge_circle_A0.position).magnitude;
+        //        //_radius_circle_A1 = (_pos_circle_A1.position - _edge_circle_A1.position).magnitude;
+        //        //_radius_circle_B0 = (_pos_circle_B0.position - _edge_circle_B0.position).magnitude;
+        //        //_radius_circle_B1 = (_pos_circle_B1.position - _edge_circle_B1.position).magnitude;
 
-                //====================
+        //        //====================
 
-                Vector3 handle = _HANDLE_left.position;
-                //Vector3 upDir = _left_axis_up.position - _left_axis_o.position;
+        //        Vector3 handle = _HANDLE_left.position;
+        //        //Vector3 upDir = _left_axis_up.position - _left_axis_o.position;
 
-                Vector3 newPos = Vector3.zero;
-                float newLength = 0f;
-                //------------------------------------------
+        //        Vector3 newPos = Vector3.zero;
+        //        float newLength = 0f;
+        //        //------------------------------------------
 
-                _Model_A0.kind = _motion_oneHand_A0._eModel; //_eModelKind_Left_0;
-                _Model_A1.kind = _motion_oneHand_A1._eModel; //_eModelKind_Left_1;
-                SetModel_OneHand(_Model_A0, _Model_A1);
-                CalcHandPos_PlaneArea(_Model_A0, handle,
-                                      _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
-                                      out newPos, out newLength);
+        //        _Model_A0.kind = _motion_oneHand_A0._eModel; //_eModelKind_Left_0;
+        //        _Model_A1.kind = _motion_oneHand_A1._eModel; //_eModelKind_Left_1;
+        //        SetModel_OneHand(_Model_A0, _Model_A1);
+        //        CalcHandPos_PlaneArea(_Model_A0, handle,
+        //                              _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length,
+        //                              out newPos, out newLength);
 
-                _arm_left_length = newLength;
-                //_tr_hand_left.position = newPos;
-                hand_left = newPos;
-
-
-                CalcHandPos_PlaneArea(_Model_A1, handle,
-                                      _tr_shoulder_left.position, 1000, _arm_left_min_length,
-                                      out newPos, out newLength);
-                _tr_arm_left_dir.position = newPos;
-
-                //------------------------------------------
-
-                handle = _HANDLE_right.position;
-                //upDir = _right_axis_up.position - _right_axis_o.position;
-
-                _Model_B0.kind = _motion_oneHand_B0._eModel; //_eModelKind_Right_0;
-                _Model_B1.kind = _motion_oneHand_B1._eModel; //_eModelKind_Right_1;
-                SetModel_OneHand(_Model_B0, _Model_B1);
-                CalcHandPos_PlaneArea(_Model_B0, handle,
-                                      _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
-                                      out newPos, out newLength);
-
-                _arm_right_length = newLength;
-                //_tr_hand_right.position = newPos;
-                hand_right = newPos;
+        //        _arm_left_length = newLength;
+        //        //_tr_hand_left.position = newPos;
+        //        hand_left = newPos;
 
 
-                CalcHandPos_PlaneArea(_Model_B1, handle,
-                                      _tr_shoulder_right.position, 1000, _arm_right_min_length,
-                                      out newPos, out newLength);
+        //        CalcHandPos_PlaneArea(_Model_A1, handle,
+        //                              _tr_shoulder_left.position, 1000, _arm_left_min_length,
+        //                              out newPos, out newLength);
+        //        _tr_arm_left_dir.position = newPos;
 
-                _tr_arm_right_dir.position = newPos;
+        //        //------------------------------------------
 
-            }
-        }
+        //        handle = _HANDLE_right.position;
+        //        //upDir = _right_axis_up.position - _right_axis_o.position;
+
+        //        _Model_B0.kind = _motion_oneHand_B0._eModel; //_eModelKind_Right_0;
+        //        _Model_B1.kind = _motion_oneHand_B1._eModel; //_eModelKind_Right_1;
+        //        SetModel_OneHand(_Model_B0, _Model_B1);
+        //        CalcHandPos_PlaneArea(_Model_B0, handle,
+        //                              _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length,
+        //                              out newPos, out newLength);
+
+        //        _arm_right_length = newLength;
+        //        //_tr_hand_right.position = newPos;
+        //        hand_right = newPos;
+
+
+        //        CalcHandPos_PlaneArea(_Model_B1, handle,
+        //                              _tr_shoulder_right.position, 1000, _arm_right_min_length,
+        //                              out newPos, out newLength);
+
+        //        _tr_arm_right_dir.position = newPos;
+
+        //    }
+        //}
 
         //지정손 기준으로 지정길이 만큼의 반대손 위치 구하기 
         //handO : 기준이 되는 손 , handDir : 손과 다른손간의 방향 , twoLength : 손과 다른손의 사이길이 
@@ -2095,12 +2161,12 @@ namespace HordeFight
 		//handle 
 		//eHandOrigin : 고정손
 		//eModelLeft : 궤적모형 
-		public void Cut_TwoHand(Vector3 handle, eStandard eHandStandard, Geo.Model.eKind eModelLeft, Geo.Model.eKind eModelRight,
+		public void Cut_TwoHand(Vector3 handle, eStandard eHandStandard,
                                 out Vector3 hand_left, out Vector3 hand_right)
         {
-            //Vector3 axis_up = _L2R_axis_up.position - _L2R_axis_o.position;
-            Vector3 axis_up = _ctr_two_A0_up.position - _ctr_two_A0.position; //임시로 왼쪽 upDir 사용 
-            axis_up = VOp.Normalize(axis_up);
+            
+            //Vector3 axis_up = _ctr_two_A0_up.position - _ctr_two_A0.position; //임시로 왼쪽 upDir 사용 
+            //axis_up = VOp.Normalize(axis_up);
 
             float new_leftLength = 0f;
             Vector3 new_leftPos;
@@ -2110,18 +2176,28 @@ namespace HordeFight
 
             //-----------------------
             //모델원 위치 계산 
+            ControlModel first = null, second = null;
+            if(eStandard.TwoHand_LeftO == _eHandStandard)
+            {
+                first = _ctrm_two_A0;
+                second = _ctrm_two_B0;
 
-            _Model_A0.kind = eModelLeft;
-            this.SetModel_TwoHand(_Model_A0, axis_up);
-            this.CalcHandPos_PlaneArea(_Model_A0, handle,
+            }
+            else if(eStandard.TwoHand_RightO == _eHandStandard)
+            {
+                first = _ctrm_two_B0;
+                second = _ctrm_two_A0;
+            }
+
+
+            first.SetModel();
+            second.SetModel(first.tr_up.position - first.tr.position); //첫번째 조종모형의 up값으로 설정 
+
+            this.CalcHandPos_PlaneArea(first.model, handle,
                                        _tr_shoulder_left.position, _arm_left_max_length, _arm_left_min_length, out new_leftPos, out new_leftLength);
 
-
-
-            _Model_B0.kind = eModelRight;
-            this.SetModel_TwoHand(_Model_B0, axis_up);
-            this.CalcHandPos_PlaneArea(_Model_B0, handle,
-                                       _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
+            this.CalcHandPos_PlaneArea(second.model, handle,
+                                   _tr_shoulder_right.position, _arm_right_max_length, _arm_right_min_length, out new_rightPos, out new_rightLength);
 
 
             //----------------------------

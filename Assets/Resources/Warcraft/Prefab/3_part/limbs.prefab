@@ -85,7 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4386733011401102}
   m_Layer: 0
-  m_Name: tornado_unlace_A0
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4416359058692320}
   m_Layer: 0
-  m_Name: tornado_unlace_B1
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -225,7 +225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4763807860691930}
   m_Layer: 0
-  m_Name: highest_circle_B0
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -448,7 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4045181317546666}
   m_Layer: 0
-  m_Name: highest_circle_right
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -494,7 +494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4774564459821200}
   m_Layer: 0
-  m_Name: upDir_circle_A0
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -555,7 +555,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4199466530723930}
   m_Layer: 0
-  m_Name: upDir_circle_left
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -752,7 +752,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4091819883737566}
   m_Layer: 0
-  m_Name: upDir_circle_left
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -828,7 +828,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4811815143303618}
   m_Layer: 0
-  m_Name: upDir_circle_right
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -903,7 +903,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4345946380129796}
   m_Layer: 0
-  m_Name: highest_circle_left
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -979,7 +979,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4715597177087412}
   m_Layer: 0
-  m_Name: tornado_unlace_B0
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -994,7 +994,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4220118930244964}
   m_Layer: 0
-  m_Name: tornado_unlace_right
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1249,7 +1249,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4243261731763050}
   m_Layer: 0
-  m_Name: upDir_circle_A1
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1264,7 +1264,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4804258214929696}
   m_Layer: 0
-  m_Name: tornado_unlace_left
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1465,7 +1465,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4734955871215300}
   m_Layer: 0
-  m_Name: highest_circle_B1
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1586,7 +1586,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4234965181500116}
   m_Layer: 0
-  m_Name: upDir_circle_B1
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1616,7 +1616,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4864112889761078}
   m_Layer: 0
-  m_Name: tornado_unlace_A1
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1631,7 +1631,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4318123014113710}
   m_Layer: 0
-  m_Name: tornado_unlace_right
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1691,7 +1691,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4509309363593122}
   m_Layer: 0
-  m_Name: highest_circle_A0
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1829,7 +1829,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4587942320238782}
   m_Layer: 0
-  m_Name: upDir_circle_B0
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1844,7 +1844,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4852758993935192}
   m_Layer: 0
-  m_Name: tornado_unlace_left
+  m_Name: tornado_unlace
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1920,7 +1920,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4148469877684446}
   m_Layer: 0
-  m_Name: highest_circle_right
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2011,7 +2011,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4958590795471250}
   m_Layer: 0
-  m_Name: upDir_circle_right
+  m_Name: up
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2071,7 +2071,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4388776045610486}
   m_Layer: 0
-  m_Name: highest_circle_A1
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2131,7 +2131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4018103416722222}
   m_Layer: 0
-  m_Name: highest_circle_left
+  m_Name: highest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4577,12 +4577,6 @@ MonoBehaviour:
   _foot_dir: {x: 0, y: 0, z: 0}
   _tr_hand_left: {fileID: 0}
   _tr_hand_right: {fileID: 0}
-  _equipment_handLeft: 4
-  _equipment_handRight: 0
-  _armed_left: {fileID: 0}
-  _armed_right: {fileID: 0}
-  _isUpdateEq_handLeft: 0
-  _isUpdateEq_handRight: 0
   _hs_objectDir: {fileID: 0}
   _hs_standard: {fileID: 0}
   _hs_ani_start: {fileID: 0}
@@ -4593,13 +4587,19 @@ MonoBehaviour:
   _arm_right_length: 0.7
   _arm_right_min_length: 0.2
   _arm_right_max_length: 1
-  _twoHand_basic_length: 0.2
   _twoHand_length: 0.2
   _twoHand_min_length: 0.1
   _twoHand_max_length: 0.5
   _part_control: 2
   _eHandStandard: 0
-  _eStance: 1
+  _eStance_hand_left: 1
+  _eStance_hand_right: 1
+  _equipment_handLeft: 4
+  _equipment_handRight: 0
+  _armed_left: {fileID: 0}
+  _armed_right: {fileID: 0}
+  _isUpdateEq_handLeft: 0
+  _isUpdateEq_handRight: 0
   _active_shadowObject: 0
   _active_projectionSlope: 0
   _boxSlope_angle: 75
