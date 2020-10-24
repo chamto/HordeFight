@@ -739,6 +739,7 @@ namespace HordeFight
                         _ctrm_one_A0.Draw(Color.yellow, _HANDLE_left.position);
                         _ctrm_one_A1.Draw(Color.yellow, _HANDLE_left.position);
 
+                        DebugWide.DrawCircle(_tr_arm_left_dir.position, 0.05f, Color.yellow);
                     }
 
                     if (eStance.Cut == _eStance_hand_right)
@@ -746,6 +747,7 @@ namespace HordeFight
                         _ctrm_one_B0.Draw(Color.blue, _HANDLE_right.position);
                         _ctrm_one_B1.Draw(Color.blue, _HANDLE_right.position);
 
+                        DebugWide.DrawCircle(_tr_arm_right_dir.position, 0.05f, Color.blue);
                     }
 
                 }
