@@ -164,14 +164,14 @@ namespace HordeFight
                 _champ_0._limbs._tr_hand_left.position = _movingModel._frame_A._tr_frame.position;
                 Vector3 pos_o = _champ_0._limbs._tr_hand_left.position;
                 Vector3 dir_two = _movingModel._frame_A._tr_frame.forward;
-                float len_two = _champ_0._limbs._twoHand_length;
+                float len_two = _champ_0._limbs._twoHand_cut_length;
                 _champ_0._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
 
                 _champ_1._limbs._tr_hand_left.rotation = _movingModel._frame_B._tr_frame.rotation;
                 _champ_1._limbs._tr_hand_left.position = _movingModel._frame_B._tr_frame.position;
                 pos_o = _champ_1._limbs._tr_hand_left.position;
                 dir_two = _movingModel._frame_B._tr_frame.forward;
-                len_two = _champ_1._limbs._twoHand_length;
+                len_two = _champ_1._limbs._twoHand_cut_length;
                 _champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
 
                 _movingModel.__dir_move_A.y = 0;

@@ -157,7 +157,7 @@ namespace HordeFight
                _champ_1._limbs._isUpdateEq_handLeft || _champ_1._limbs._isUpdateEq_handRight)
             {
                 //무기장착 정보가 변경되었다면 변경된 값으로 갱신시켜준다 
-                _movingModel.SetFrame(true, true,_champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
+                //_movingModel.SetFrame(true, true,_champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
 
                 DebugWide.LogBlue("무기정보 갱신 !!! ");
             }
