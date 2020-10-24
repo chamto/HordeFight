@@ -600,6 +600,9 @@ namespace HordeFight
             if (null == _ref_being) return;
             //------------------------------------------------
 
+            //_armed_left.Draw(Color.blue);
+            //_armed_right.Draw(Color.magenta);
+
             //기본 손정보  출력 
             if(__show_bagic)
             {
@@ -1177,6 +1180,7 @@ namespace HordeFight
                     {
                         ActiveAll_Arms(false, _equipment_handLeft);
                         _armed_left = _list_armedInfo[(int)_equipment_handLeft];
+                        _armed_right = _list_armedInfo[(int)ArmedInfo.eIdx.None];
                         _armed_left.SetActive(true); 
                         //DebugWide.LogBlue("1");
                         _isUpdateEq_handLeft = true;
@@ -1194,6 +1198,7 @@ namespace HordeFight
                     {
                         ActiveAll_Arms(false, _equipment_handLeft);
                         _armed_right = _list_armedInfo[(int)_equipment_handLeft];
+                        _armed_left = _list_armedInfo[(int)ArmedInfo.eIdx.None]; //left 와 right 가 같은 무기면 위치값을 공유하는 문제있음 , 같은 무기가 안되게 함 
                         _armed_right.SetActive(true);
 
                         //DebugWide.LogBlue("2");
@@ -1205,7 +1210,7 @@ namespace HordeFight
             }
 
             //=============================================
-
+            //DebugWide.LogBlue("sdfs");
             _armed_left.Update_Frame(_tr_hand_left);
             _armed_right.Update_Frame(_tr_hand_right);
 

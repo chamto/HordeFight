@@ -85,6 +85,7 @@ namespace HordeFight
 
         public void Draw(Color color)
         {
+            DebugWide.DrawCircle(_tr_view.position, 0.3f, color);
             DebugWide.DrawLine(_arm_start.position, _arm_end.position, color);
         }
     }
