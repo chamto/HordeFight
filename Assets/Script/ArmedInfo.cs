@@ -24,6 +24,9 @@ namespace HordeFight
         public GameObject _go_view = null;
         public Transform _tr_frame = null;
         public Transform _tr_view = null;
+
+        public Vector3 _view_dirPos = ConstV.v3_zero; //view 에서의 한손으로 쥐고 있었을 때의 물체의 방향.
+
         public Transform _arm_start = null;
         public Transform _arm_end = null;
         public Transform _arm_shadow = null;
@@ -57,8 +60,11 @@ namespace HordeFight
 
             //_idx = idx;
             _length = (_arm_start.position - _arm_end.position).magnitude;
-            //_cur_seg = new LineSegment3(_arm_start.position, _arm_end.position);
-            //_prev_seg = _cur_seg;
+            if(float.Epsilon > _length)
+            {
+                //DebugWide.LogBlue(_name);
+                _length = 0.001f;
+            }
         }
 
         //실제 갱신이 일어나지 않는 처리임 

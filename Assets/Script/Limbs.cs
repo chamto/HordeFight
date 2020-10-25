@@ -1019,7 +1019,7 @@ namespace HordeFight
 
             //handle에 대한 손 움직임 만들기 
             Update_Position_Handle(_tr_hand_left, _tr_hand_right);
-            Update_Rotation_Hand(_tr_hand_left, _tr_hand_right);
+            Update_Rotation_Hand(0);
             //BillBoard_Hand(_tr_hand_left, _tr_hand_right); //원본값을 변형할 필요 없음 
             Update_Equipment(); //tr_hand 값이 다 구해진 다음에 수행되어야 함 , 장비 장착
             //==================================================
@@ -1037,7 +1037,7 @@ namespace HordeFight
         {
             //2d 게임에서의 높이표현 
             Update_Position_ProjectionSlope(); //view 위치값 갱신 , 이후 코드에서 view 회전량을 구한다 
-            Update_Rotation_Hand(_armed_left._tr_view, _armed_right._tr_view);
+            Update_Rotation_Hand(1);
 
             //칼이 화면을 바라보게 함  
             BillBoard_Hand(_armed_left._tr_view, _armed_right._tr_view);
@@ -1074,24 +1074,25 @@ namespace HordeFight
 
         public void Update_Position_ProjectionSlope()
         {
-            Transform view_left = _armed_left._tr_view;
-            Transform view_right = _armed_right._tr_view;
+            //Transform view_left = _armed_left._tr_view;
+            //Transform view_right = _armed_right._tr_view;
 
             //Update_HandControl 로 계산이 끝난 손정보를 2d카메라 상자에 투영한다   
             if (_active_projectionSlope)
             {
-                //_tr_hand_left.position = Project_BoxSlope(_hand_left, (_hand_left - _groundY).y);
-                //_tr_hand_right.position = Project_BoxSlope(_hand_right, (_hand_right - _groundY).y);
+                _armed_left._tr_view.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
+                _armed_right._tr_view.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
 
-                view_left.position = Project_BoxSlope(_tr_hand_left.position, (_tr_hand_left.position - _groundY).y);
-                view_right.position = Project_BoxSlope(_tr_hand_right.position, (_tr_hand_right.position - _groundY).y);
-
+                _armed_left._view_dirPos = Project_BoxSlope(_hand_left_dirPos, (_hand_left_dirPos - _groundY).y);
+                _armed_right._view_dirPos = Project_BoxSlope(_hand_right_dirPos, (_hand_right_dirPos - _groundY).y);
             }
             else
             {
-                
-                view_left.position = _tr_hand_left.position;
-                view_right.position = _tr_hand_right.position;
+                _armed_left._tr_view.position = _tr_hand_left.position;
+                _armed_right._tr_view.position = _tr_hand_right.position;
+
+                _armed_left._view_dirPos = _hand_left_dirPos;
+                _armed_right._view_dirPos = _hand_right_dirPos;
             }
         }
 
@@ -2277,8 +2278,30 @@ namespace HordeFight
 
         //==================================================
 
-        public void Update_Rotation_Hand(Transform tr_left , Transform tr_right)
+        public void Update_Rotation_Hand(int calcMode)
         {
+            Transform tr_left = null;
+            Transform tr_right = null;
+            Vector3 left_dirPos = ConstV.v3_zero;
+            Vector3 right_dirPos = ConstV.v3_zero;
+
+            //경사도 적용 안함
+            if(0 == calcMode)
+            {
+                tr_left = _tr_hand_left;
+                tr_right = _tr_hand_right;
+                left_dirPos = _hand_left_dirPos;
+                right_dirPos = _hand_right_dirPos;
+            }
+            //경사도 적용함 (2d z축표현)
+            else if(1 == calcMode)
+            {
+                tr_left = _armed_left._tr_view;
+                tr_right = _armed_right._tr_view;
+                left_dirPos = _armed_left._view_dirPos;
+                right_dirPos = _armed_right._view_dirPos;
+            }
+
             //DebugWide.LogBlue(_armed_left + "  --  " + _armed_right);
 
             if (ePart.OneHand == _part_control)
@@ -2292,8 +2315,8 @@ namespace HordeFight
                     //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    //Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
-                    Vector3 handToTarget = _hand_left_dirPos - tr_left.position;
+                    //Vector3 handToTarget = _hand_left_dirPos - tr_left.position;
+                    Vector3 handToTarget = left_dirPos - tr_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
@@ -2305,8 +2328,8 @@ namespace HordeFight
                     //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    //Vector3 handToTarget = _tr_arm_right_dir.position - tr_right.position;
-                    Vector3 handToTarget = _hand_right_dirPos - tr_right.position;
+                    //Vector3 handToTarget = _hand_right_dirPos - tr_right.position;
+                    Vector3 handToTarget = right_dirPos - tr_right.position;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
                 //찌르기 
@@ -2432,104 +2455,120 @@ namespace HordeFight
             _tr_hand_right_wrist.position = view_right.position;
         }
 
+        public void Draw_Shadow(ArmedInfo armed_ori, Transform view_ori, Vector3 view_end_pos, Vector3 up_ori)
+        {
+            Vector3 arm_ori_end = armed_ori._arm_end.position;
+            Transform arm_ori_shadow = armed_ori._arm_shadow;
+
+            if (false == _active_shadow)
+            {
+                arm_ori_shadow.gameObject.SetActive(false);
+                return;
+            }
+            arm_ori_shadow.gameObject.SetActive(true);
+
+            //-----------------------------------
+
+            //평면과 광원사이의 최소거리 
+            Vector3 hLhR = view_end_pos - view_ori.position;
+            float len_groundToObj_start, len_groundToObj_end;
+            //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
+            Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_ori_end, out len_groundToObj_end);
+            Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
+            //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
+
+            Vector3 startToEnd = end - start;
+            float len_startToEnd = startToEnd.magnitude;
+            //float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
+            float rate = len_startToEnd / armed_ori._length; //창길이 하드코딩 
+            //DebugWide.LogBlue(armed_ori._length + " " + rate);
+
+            float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd);
+            //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
+            //DebugWide.LogBlue(shader_angle);
+            arm_ori_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
+            arm_ori_shadow.position = start;
+
+            //높이에 따라 그림자 길이 조절 
+            Vector3 scale = arm_ori_shadow.localScale;
+            scale.z = rate;
+            arm_ori_shadow.localScale = scale;
+            //------
+            //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
+            Vector3 temp2 = arm_ori_shadow.eulerAngles;
+            //temp2.x = 90f;
+            if (Vector3.Dot(ConstV.v3_up, up_ori - view_ori.position) > 0)
+            {
+                temp2.z = 0;
+            }
+            else
+            {
+                temp2.z = 180f;
+            }
+            arm_ori_shadow.eulerAngles = temp2;
+            //-----------------------------------  
+
+            //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
+
+            //땅을 통과하는 창 자르기 
+            SpriteMesh spriteMesh = armed_ori._arm_spr;
+            if (_groundY.y > arm_ori_end.y)
+            {
+                float rate_viewLen = (arm_ori_end - end).magnitude / armed_ori._length;
+                spriteMesh._cuttingRate.y = -rate_viewLen;
+                spriteMesh._update_perform = true;
+
+            }
+            else if (0 != spriteMesh._cuttingRate.y)
+            {
+                //기존값이 남아있는 경우를 제거한다  
+                spriteMesh._cuttingRate.y = 0;
+                spriteMesh._update_perform = true;
+            }
+        }
+
         public void Update_Shadow()
         {
             
             ArmedInfo armed_ori = null;
-            ArmedInfo armed_end = null;
             Transform view_ori = null;
-            Transform view_end = null;
+            Vector3 view_end_pos = ConstV.v3_zero;
             Vector3 up_ori = ConstV.v3_zero;
 
-            if (ePart.TwoHand == _part_control)
+            if (ePart.OneHand == _part_control)
             {
-                if(eStandard.TwoHand_LeftO == _eHandStandard)
+                //왼쪽손
+                armed_ori = _armed_left;
+                view_ori = _armed_left._tr_view;
+                view_end_pos = _armed_left._view_dirPos;
+                up_ori = _tr_arm_left_up.position;
+                Draw_Shadow(armed_ori, view_ori, view_end_pos, up_ori);
+
+                //오른쪽손
+                armed_ori = _armed_right;
+                view_ori = _armed_right._tr_view;
+                view_end_pos = _armed_right._view_dirPos;
+                up_ori = _tr_arm_right_up.position;
+                Draw_Shadow(armed_ori, view_ori, view_end_pos, up_ori);
+            }
+            else if (ePart.TwoHand == _part_control)
+            {
+                if (eStandard.TwoHand_LeftO == _eHandStandard)
                 {
                     armed_ori = _armed_left;
-                    armed_end = _armed_right;
                     view_ori = _armed_left._tr_view;
-                    view_end = _armed_right._tr_view;
+                    view_end_pos = _armed_right._tr_view.position;
                     up_ori = _tr_arm_left_up.position;
                 }
-                else if(eStandard.TwoHand_RightO == _eHandStandard)
+                else if (eStandard.TwoHand_RightO == _eHandStandard)
                 {
                     armed_ori = _armed_right;
-                    armed_end = _armed_left;
                     view_ori = _armed_right._tr_view;
-                    view_end = _armed_left._tr_view;
+                    view_end_pos = _armed_left._tr_view.position;
                     up_ori = _tr_arm_right_up.position;
                 }
 
-                //-----------------------------------
-                Vector3 arm_ori_end = armed_ori._arm_end.position;
-                Transform arm_ori_shadow = armed_ori._arm_shadow;
-
-                if (false == _active_shadow) 
-                {
-                    arm_ori_shadow.gameObject.SetActive(false); 
-                    return;
-                }
-                arm_ori_shadow.gameObject.SetActive(true); 
-
-                //-----------------------------------
-
-                //평면과 광원사이의 최소거리 
-                Vector3 hLhR = view_end.position - view_ori.position;
-                float len_groundToObj_start, len_groundToObj_end;
-                //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-                Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_ori_end, out len_groundToObj_end);
-                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
-                //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
-
-                Vector3 startToEnd = end - start;
-                float len_startToEnd = startToEnd.magnitude;
-                //float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
-                float rate = len_startToEnd / armed_ori._length; //창길이 하드코딩 
-
-
-                float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd);
-                //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
-                //DebugWide.LogBlue(shader_angle);
-                arm_ori_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
-                arm_ori_shadow.position = start;
-
-                //높이에 따라 그림자 길이 조절 
-                Vector3 scale = arm_ori_shadow.localScale;
-                scale.z = rate;
-                arm_ori_shadow.localScale = scale;
-                //------
-                //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
-                Vector3 temp2 = arm_ori_shadow.eulerAngles;
-                //temp2.x = 90f;
-                if (Vector3.Dot(ConstV.v3_up, up_ori - view_ori.position) > 0)
-                {
-                    temp2.z = 0;
-                }
-                else
-                {
-                    temp2.z = 180f;
-                }
-                arm_ori_shadow.eulerAngles = temp2;
-                //-----------------------------------  
-
-                //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
-
-                //땅을 통과하는 창 자르기 
-                SpriteMesh spriteMesh = armed_ori._arm_spr;
-                if (_groundY.y > arm_ori_end.y)
-                {
-                    float rate_viewLen = (arm_ori_end - end).magnitude / armed_ori._length;
-                    spriteMesh._cuttingRate.y = -rate_viewLen;
-                    spriteMesh._update_perform = true;
-
-                }
-                else if (0 != spriteMesh._cuttingRate.y)
-                {
-                    //기존값이 남아있는 경우를 제거한다  
-                    spriteMesh._cuttingRate.y = 0;
-                    spriteMesh._update_perform = true;
-                }
-            
+                Draw_Shadow(armed_ori, view_ori, view_end_pos, up_ori);
             }
 
         }
