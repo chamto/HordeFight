@@ -140,7 +140,8 @@ namespace HordeFight
 
 
         public ePart _part_control = ePart.TwoHand; //조종부위 <한손 , 양손 , 한다리 , 꼬리 등등>
-        public eStandard _eHandStandard_cur = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
+        private ePart _part_control_prev = ePart.TwoHand;
+        public eStandard _eHandStandard = eStandard.TwoHand_LeftO; //고정으로 잡는 손지정(부위지정)  
         private eStandard _eHandStandard_prev = eStandard.TwoHand_LeftO;
         public eStance _eStance_hand_left = eStance.Sting; //자세
         public eStance _eStance_hand_right = eStance.Sting; //자세
@@ -1027,9 +1028,7 @@ namespace HordeFight
             {
                 //양손모드에서는 오른손 자세값을 사용하지 않느다 
                 _eStance_hand_right = eStance.None;
-                //_armed_right._eIdx = ArmedInfo.eIdx.None;
                 _equipment_handRight = ArmedInfo.eIdx.None;
-
             }
             
 
@@ -1155,7 +1154,8 @@ namespace HordeFight
             if(ePart.OneHand == _part_control)
             {
                 //if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
-                if(_armed_left._eIdx != _equipment_handLeft)
+                if((_part_control != _part_control_prev) ||
+                   (_armed_left._eIdx != _equipment_handLeft))
                 {
                     ActiveAll_Arms(false, _equipment_handRight);
                     _armed_left = _list_armedInfo[(int)_equipment_handLeft];
@@ -1167,7 +1167,8 @@ namespace HordeFight
                 //오른손 무기 장착
                 //기존값과 비교 , 다른때만 갱신 
                 //if (null == (object)_armed_right || _armed_right._eIdx != _equipment_handRight)
-                if(_armed_right._eIdx != _equipment_handRight)
+                if((_part_control != _part_control_prev) ||
+                   (_armed_right._eIdx != _equipment_handRight))
                 {
                     ActiveAll_Arms(false, _equipment_handLeft);
                     _armed_right = _list_armedInfo[(int)_equipment_handRight];
@@ -1178,15 +1179,15 @@ namespace HordeFight
             }
             else if (ePart.TwoHand == _part_control)
             {
-
-
+                
                 {
-                    if ((_armed_left._eIdx != _equipment_handLeft &&
-                         eStandard.TwoHand_LeftO == _eHandStandard_cur) ||
+                    if ((_part_control != _part_control_prev) ||
+                        (_armed_left._eIdx != _equipment_handLeft &&
+                         eStandard.TwoHand_LeftO == _eHandStandard) ||
                         (eStandard.TwoHand_RightO == _eHandStandard_prev && 
-                         eStandard.TwoHand_LeftO == _eHandStandard_cur))
+                         eStandard.TwoHand_LeftO == _eHandStandard))
                     {
-                        ActiveAll_Arms(false, _equipment_handLeft);
+                        ActiveAll_Arms(false);
                         _armed_left = _list_armedInfo[(int)_equipment_handLeft];
                         _armed_right = _list_armedInfo[(int)ArmedInfo.eIdx.None];
                         _armed_left.SetActive(true); 
@@ -1199,12 +1200,13 @@ namespace HordeFight
 
                 //왼손기준으로 설정되게 한다 , 붙이는 것만 오른손이다 
                 {
-                    if ((_armed_right._eIdx != _equipment_handLeft &&
-                         eStandard.TwoHand_RightO == _eHandStandard_cur) || 
+                    if ((_part_control != _part_control_prev) ||
+                        (_armed_right._eIdx != _equipment_handLeft &&
+                         eStandard.TwoHand_RightO == _eHandStandard) || 
                         (eStandard.TwoHand_LeftO == _eHandStandard_prev &&
-                         eStandard.TwoHand_RightO == _eHandStandard_cur))
+                         eStandard.TwoHand_RightO == _eHandStandard))
                     {
-                        ActiveAll_Arms(false, _equipment_handLeft);
+                        ActiveAll_Arms(false);
                         _armed_right = _list_armedInfo[(int)_equipment_handLeft];
                         _armed_left = _list_armedInfo[(int)ArmedInfo.eIdx.None]; //left 와 right 가 같은 무기면 위치값을 공유하는 문제있음 , 같은 무기가 안되게 함 
                         _armed_right.SetActive(true);
@@ -1222,7 +1224,8 @@ namespace HordeFight
             _armed_left.Update_Frame(_tr_hand_left);
             _armed_right.Update_Frame(_tr_hand_right);
 
-            _eHandStandard_prev = _eHandStandard_cur;
+            _eHandStandard_prev = _eHandStandard;
+            _part_control_prev = _part_control;
 		}
 
 
@@ -1257,7 +1260,7 @@ namespace HordeFight
                     break;
                 case ePart.TwoHand:
                     {
-                        if(eStandard.TwoHand_LeftO == _eHandStandard_cur)
+                        if(eStandard.TwoHand_LeftO == _eHandStandard)
                         {
                             if (eStance.Sting == _eStance_hand_left)
                             {
@@ -1271,7 +1274,7 @@ namespace HordeFight
                         }
 
 
-                        if (eStandard.TwoHand_RightO == _eHandStandard_cur)
+                        if (eStandard.TwoHand_RightO == _eHandStandard)
                         {
                             if (eStance.Sting == _eStance_hand_right)
                             {
@@ -1499,14 +1502,14 @@ namespace HordeFight
                         Vector3 hand_ori, hand_end;
                         float len_ori, len_end;
                         Sting_TwoHand(out hand_ori,out len_ori, out hand_end, out len_end);
-                        if (_eHandStandard_cur == eStandard.TwoHand_LeftO)
+                        if (_eHandStandard == eStandard.TwoHand_LeftO)
                         {
                             hand_left = hand_ori;
                             _arm_left_length = len_ori;
                             hand_right = hand_end;
                             _arm_right_length = len_end;
                         }
-                        else if (_eHandStandard_cur == eStandard.TwoHand_RightO)
+                        else if (_eHandStandard == eStandard.TwoHand_RightO)
                         {
                             hand_left = hand_end;
                             _arm_left_length = len_end;
@@ -1523,7 +1526,7 @@ namespace HordeFight
 
                         //-----------------------
 
-                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard_cur,
+                        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard,
                                     out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
 
                         //--------------------
@@ -2173,7 +2176,7 @@ namespace HordeFight
             float sh_end_min = 0;
             float sh_end_max = 0;
 
-            if (_eHandStandard_cur == eStandard.TwoHand_LeftO)
+            if (_eHandStandard == eStandard.TwoHand_LeftO)
             {
                 
                 sh_ori = _tr_shoulder_left.position;
@@ -2183,7 +2186,7 @@ namespace HordeFight
                 sh_end_min = _arm_right_min_length;
                 sh_end_max = _arm_right_max_length;
             }
-            else if (_eHandStandard_cur == eStandard.TwoHand_RightO)
+            else if (_eHandStandard == eStandard.TwoHand_RightO)
             {
                 
                 sh_ori = _tr_shoulder_right.position;
@@ -2257,13 +2260,13 @@ namespace HordeFight
             //-----------------------
             //모델원 위치 계산 
             ControlModel first = null, second = null;
-            if(eStandard.TwoHand_LeftO == _eHandStandard_cur)
+            if(eStandard.TwoHand_LeftO == _eHandStandard)
             {
                 first = _ctrm_two_A0;
                 second = _ctrm_two_B0;
 
             }
-            else if(eStandard.TwoHand_RightO == _eHandStandard_cur)
+            else if(eStandard.TwoHand_RightO == _eHandStandard)
             {
                 first = _ctrm_two_B0;
                 second = _ctrm_two_A0;
@@ -2358,12 +2361,12 @@ namespace HordeFight
                 //Vector3 hLhR = _tr_hand_right.position - _tr_hand_left.position;
                 //_tr_hand_left.rotation = Quaternion.FromToRotation(Vector3.forward, hLhR);
 
-                if(_eHandStandard_cur == eStandard.TwoHand_LeftO )
+                if(_eHandStandard == eStandard.TwoHand_LeftO )
                 {
                     Vector3 hLhR = tr_right.position - tr_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);    
                 }
-                else if (_eHandStandard_cur == eStandard.TwoHand_RightO)
+                else if (_eHandStandard == eStandard.TwoHand_RightO)
                 {
                     Vector3 hLhR = tr_left.position - tr_right.position;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);
