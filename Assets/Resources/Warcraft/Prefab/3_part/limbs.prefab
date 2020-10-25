@@ -3703,7 +3703,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1935834048353028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0.19}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4168770440844508}
@@ -3716,7 +3716,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1069734242084952}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0.17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4168770440844508}
@@ -4477,6 +4477,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -4550,6 +4551,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -4587,7 +4589,7 @@ MonoBehaviour:
   _arm_right_length: 0.7
   _arm_right_min_length: 0.2
   _arm_right_max_length: 1
-  _twoHand_length: 0.2
+  _twoHand_cut_length: 0.2
   _twoHand_min_length: 0.1
   _twoHand_max_length: 0.5
   _part_control: 2
@@ -4600,10 +4602,13 @@ MonoBehaviour:
   _armed_right: {fileID: 0}
   _isUpdateEq_handLeft: 0
   _isUpdateEq_handRight: 0
-  _active_shadowObject: 0
+  _active_shadow: 1
   _active_projectionSlope: 0
   _boxSlope_angle: 75
   _show_gizmos: 1
+  _show_bagic: 0
+  _show_control: 0
+  _show_shadow: 0
   _ani_hand_left:
     _state_current: 1
     _active_ani: 0
@@ -4669,8 +4674,6 @@ MonoBehaviour:
     _ani_interpolation: 15
     _cur_inpol: 0
     _prev_inpol: 0
-  __show_bagic: 0
-  __show_control: 0
 --- !u!114 &114306031411323092
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4745,6 +4748,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -4889,6 +4893,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -4910,6 +4915,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -4931,6 +4937,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -5019,6 +5026,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
@@ -5066,6 +5074,7 @@ MonoBehaviour:
   _go_view: {fileID: 0}
   _tr_frame: {fileID: 0}
   _tr_view: {fileID: 0}
+  _view_dirPos: {x: 0, y: 0, z: 0}
   _arm_start: {fileID: 0}
   _arm_end: {fileID: 0}
   _arm_shadow: {fileID: 0}
