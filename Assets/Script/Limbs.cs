@@ -1403,9 +1403,7 @@ namespace HordeFight
                     float newLength = 0f;
                     //------------------------------------------
 
-                    //_Model_A0.kind = _motion_oneHand_A0._eModel; //_eModelKind_Left_0;
-                    //_Model_A1.kind = _motion_oneHand_A1._eModel; //_eModelKind_Left_1;
-                    //SetModel_OneHand(_Model_A0, _Model_A1);
+
                     _ctrm_one_A0.SetModel();
                     _ctrm_one_A1.SetModel();
                     CalcHandPos_PlaneArea(_ctrm_one_A0.model, handle,
@@ -1413,7 +1411,6 @@ namespace HordeFight
                                           out newPos, out newLength);
 
                     _arm_left_length = newLength;
-                    //_tr_hand_left.position = newPos;
                     hand_left = newPos;
 
 
@@ -2304,7 +2301,8 @@ namespace HordeFight
                     //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
+                    //Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
+                    Vector3 handToTarget = _tr_arm_left_dir.position - _tr_shoulder_left.position;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
@@ -2316,7 +2314,8 @@ namespace HordeFight
                     //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
                     //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
-                    Vector3 handToTarget = _tr_arm_right_dir.position - tr_right.position;
+                    //Vector3 handToTarget = _tr_arm_right_dir.position - tr_right.position;
+                    Vector3 handToTarget = _tr_arm_right_dir.position - _tr_shoulder_right.position;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
                 //찌르기 
