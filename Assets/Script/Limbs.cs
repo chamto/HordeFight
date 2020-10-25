@@ -155,22 +155,10 @@ namespace HordeFight
         public bool _isUpdateEq_handLeft = false;
         public bool _isUpdateEq_handRight = false;
 
-        public bool _active_shadowObject = true;
+        public bool _active_shadow = true;
 
         public bool _active_projectionSlope = true;
         public float _boxSlope_angle = 75f;
-
-        //private Geo.Model _Model_A0 = new Geo.Model(); //a
-        //private Geo.Model _Model_A1 = new Geo.Model(); //a
-        //private Geo.Model _Model_B0 = new Geo.Model();//b 
-        //private Geo.Model _Model_B1 = new Geo.Model();//b
-
-        //private MotionTrajectory _motion_oneHand_A0 = null; //왼손
-        //private MotionTrajectory _motion_oneHand_A1 = null; //왼손 손잡이
-        //private MotionTrajectory _motion_oneHand_B0 = null; //오른손
-        //private MotionTrajectory _motion_oneHand_B1 = null; //오른손 손잡이
-        //private MotionTrajectory _motion_twoHand_A0 = null;
-        //private MotionTrajectory _motion_twoHand_B0 = null;
 
 
         //======================================================
@@ -187,41 +175,6 @@ namespace HordeFight
         //양손 조종용 경로원
         private ControlModel _ctrm_two_A0 = new ControlModel();//양손 - 첫번째 기준
         private ControlModel _ctrm_two_B0 = new ControlModel();//양손 - 두번쨰 기준 
-
-        //양손 조종용 경로원
-        //private Transform _ctr_two_A0 = null;
-        //private Transform _ctr_two_A0_up = null;
-        //private Transform _ctr_two_A0_highest = null;
-        //private Transform _ctr_two_A0_tornado_unlace = null;
-
-        //private Transform _ctr_two_B0 = null;
-        //private Transform _ctr_two_B0_up = null;
-        //private Transform _ctr_two_B0_highest = null;
-        //private Transform _ctr_two_B0_tornado_unlace = null;
-
-        ////왼손 조종용 경로원
-        ////[ 손목 ]
-        //private Transform _ctr_one_A0 = null;
-        //private Transform _ctr_one_A0_up = null;
-        //private Transform _ctr_one_A0_highest = null;
-        //private Transform _ctr_one_A0_tornado_unlace = null;
-        ////[ 손잡이 ]
-        //private Transform _ctr_one_A1 = null;
-        //private Transform _ctr_one_A1_up = null;
-        //private Transform _ctr_one_A1_highest = null;
-        //private Transform _ctr_one_A1_tornado_unlace = null;
-
-        ////오른손 조종용 경로 
-        ////[ 손목 ]
-        //private Transform _ctr_one_B0 = null;
-        //private Transform _ctr_one_B0_up = null;
-        //private Transform _ctr_one_B0_highest = null;
-        //private Transform _ctr_one_B0_tornado_unlace = null;
-        ////[ 손잡이 ]
-        //private Transform _ctr_one_B1 = null;
-        //private Transform _ctr_one_B1_up = null;
-        //private Transform _ctr_one_B1_highest = null;
-        //private Transform _ctr_one_B1_tornado_unlace = null;
 
 
         //======================================================
@@ -245,6 +198,7 @@ namespace HordeFight
         public bool _show_gizmos = true;
         public bool _show_bagic = false;
         public bool _show_control = false;
+        public bool _show_shadow = false;
 
         //======================================================
         [Space]
@@ -669,6 +623,16 @@ namespace HordeFight
 
                 }
 
+                if (_ani_hand_right._active_ani)
+                {
+                    DebugWide.DrawCircle(_shoul_right_end.position, 0.5f, Color.black);
+                    DebugWide.DrawLine(_shoul_right_start.position, _shoul_right_end.position, Color.black);
+
+                    Vector3 up = Vector3.Cross(_shoul_right_start.position - transform.position, _foot_dir);
+                    DebugWide.DrawArc(transform.position, _shoul_right_start.position, _shoul_right_end.position, up, Color.red);
+
+                }
+
                 if(_ani_upperBody._active_ani)
                 {
                     DebugWide.DrawArc(transform.position, _upperBody_start.position, _upperBody_end.position, ConstV.v3_up, 4f, Color.blue, "upperBody");    
@@ -690,28 +654,44 @@ namespace HordeFight
 
             }
 
-            if (true == _active_shadowObject)
+            if (true == _show_shadow)
             {
                 //무기 그림자 표현 
                 DebugWide.DrawLine(Vector3.zero, _light_dir, Color.black);
                 DebugWide.DrawCircle(_light_dir, 0.1f, Color.black);
                 DebugWide.DrawLine(_groundY + Vector3.forward * 5, _groundY, Color.black);
 
-                if (null != (object)_armed_left)
+
+                if(ePart.TwoHand == _part_control)
                 {
-                    Vector3 arm_left_end = _armed_left._arm_end.position;
+                    ArmedInfo armed_ori = null;
+                    Vector3 objDir = ConstV.v3_zero;
+                    Vector3 hand_ori_pos = ConstV.v3_zero;
 
-                    //--
-                    Vector3 objDir = _tr_hand_right.position - _tr_hand_left.position;
+                    if (eStandard.TwoHand_LeftO == _eHandStandard)
+                    {
+                        armed_ori = _armed_left;
+                        objDir = _tr_hand_right.position - _tr_hand_left.position;
+                        hand_ori_pos = _tr_hand_left.position;
+                    }    
+                    else if (eStandard.TwoHand_RightO == _eHandStandard)
+                    {
+                        armed_ori = _armed_right;
+                        objDir = _tr_hand_left.position - _tr_hand_right.position;
+                        hand_ori_pos = _tr_hand_right.position;
+                    }    
+
+                    Vector3 arm_ori_end = armed_ori._arm_end.position;
+
                     float len_groundToObj_start, len_groundToObj_end;
-                    Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, _tr_hand_left.position, out len_groundToObj_start);
-                    Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, arm_left_end, out len_groundToObj_end);
+                    Vector3 shaderStart = this.CalcShadowPos(_light_dir, objDir, _groundY, hand_ori_pos, out len_groundToObj_start);
+                    Vector3 shaderEnd = this.CalcShadowPos(_light_dir, objDir, _groundY, arm_ori_end, out len_groundToObj_end);
                     //--
 
-                    DebugWide.DrawLine(_tr_hand_left.position, _tr_hand_left.position + len_groundToObj_start * Vector3.down, Color.black);
-                    DebugWide.DrawLine(arm_left_end, arm_left_end + len_groundToObj_end * Vector3.down, Color.black);
-                    DebugWide.DrawLine(arm_left_end, shaderStart, Color.black);
-                    DebugWide.DrawLine(arm_left_end, shaderEnd, Color.black);
+                    DebugWide.DrawLine(hand_ori_pos, hand_ori_pos + len_groundToObj_start * Vector3.down, Color.black);
+                    DebugWide.DrawLine(arm_ori_end, arm_ori_end + len_groundToObj_end * Vector3.down, Color.black);
+                    DebugWide.DrawLine(arm_ori_end, shaderStart, Color.black);
+                    DebugWide.DrawLine(arm_ori_end, shaderEnd, Color.black);
                     DebugWide.DrawLine(shaderEnd, shaderStart, Color.red); //그림자 놓여질 위치 표현 
                 }
                     
@@ -2454,46 +2434,74 @@ namespace HordeFight
 
         public void Update_Shadow()
         {
-            if (false == _active_shadowObject) return;
-
-            Transform view_left = _armed_left._tr_view;
-            Transform view_right = _armed_right._tr_view;
+            
+            ArmedInfo armed_ori = null;
+            ArmedInfo armed_end = null;
+            Transform view_ori = null;
+            Transform view_end = null;
+            Vector3 up_ori = ConstV.v3_zero;
 
             if (ePart.TwoHand == _part_control)
             {
+                if(eStandard.TwoHand_LeftO == _eHandStandard)
+                {
+                    armed_ori = _armed_left;
+                    armed_end = _armed_right;
+                    view_ori = _armed_left._tr_view;
+                    view_end = _armed_right._tr_view;
+                    up_ori = _tr_arm_left_up.position;
+                }
+                else if(eStandard.TwoHand_RightO == _eHandStandard)
+                {
+                    armed_ori = _armed_right;
+                    armed_end = _armed_left;
+                    view_ori = _armed_right._tr_view;
+                    view_end = _armed_left._tr_view;
+                    up_ori = _tr_arm_right_up.position;
+                }
+
                 //-----------------------------------
-                Vector3 arm_left_end = _armed_left._arm_end.position;
-                Transform arm_left_shadow = _armed_left._arm_shadow;
+                Vector3 arm_ori_end = armed_ori._arm_end.position;
+                Transform arm_ori_shadow = armed_ori._arm_shadow;
+
+                if (false == _active_shadow) 
+                {
+                    arm_ori_shadow.gameObject.SetActive(false); 
+                    return;
+                }
+                arm_ori_shadow.gameObject.SetActive(true); 
+
+                //-----------------------------------
 
                 //평면과 광원사이의 최소거리 
-                Vector3 hLhR = view_right.position - view_left.position;
+                Vector3 hLhR = view_end.position - view_ori.position;
                 float len_groundToObj_start, len_groundToObj_end;
                 //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-                Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_left_end, out len_groundToObj_end);
-                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_left.position);
+                Vector3 end = this.CalcShadowPos(_light_dir, hLhR, _groundY, arm_ori_end, out len_groundToObj_end);
+                Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
                 //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
 
                 Vector3 startToEnd = end - start;
                 float len_startToEnd = startToEnd.magnitude;
                 //float rate = len_startToEnd / 2.4f; //창길이 하드코딩 
-                float rate = len_startToEnd / _armed_left._length; //창길이 하드코딩 
+                float rate = len_startToEnd / armed_ori._length; //창길이 하드코딩 
 
 
                 float shader_angle = Geo.AngleSigned_AxisY(ConstV.v3_forward, startToEnd);
                 //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
                 //DebugWide.LogBlue(shader_angle);
-                arm_left_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
-                arm_left_shadow.position = start;
+                arm_ori_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
+                arm_ori_shadow.position = start;
 
                 //높이에 따라 그림자 길이 조절 
-                Vector3 scale = arm_left_shadow.localScale;
+                Vector3 scale = arm_ori_shadow.localScale;
                 scale.z = rate;
-                arm_left_shadow.localScale = scale;
+                arm_ori_shadow.localScale = scale;
                 //------
                 //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
-                Vector3 temp2 = arm_left_shadow.eulerAngles;
+                Vector3 temp2 = arm_ori_shadow.eulerAngles;
                 //temp2.x = 90f;
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - view_left.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, up_ori - view_ori.position) > 0)
                 {
                     temp2.z = 0;
                 }
@@ -2501,16 +2509,16 @@ namespace HordeFight
                 {
                     temp2.z = 180f;
                 }
-                arm_left_shadow.eulerAngles = temp2;
+                arm_ori_shadow.eulerAngles = temp2;
                 //-----------------------------------  
 
                 //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
                 //땅을 통과하는 창 자르기 
-                SpriteMesh spriteMesh = _armed_left._arm_spr;
-                if (_groundY.y > arm_left_end.y)
+                SpriteMesh spriteMesh = armed_ori._arm_spr;
+                if (_groundY.y > arm_ori_end.y)
                 {
-                    float rate_viewLen = (arm_left_end - end).magnitude / _armed_left._length;
+                    float rate_viewLen = (arm_ori_end - end).magnitude / armed_ori._length;
                     spriteMesh._cuttingRate.y = -rate_viewLen;
                     spriteMesh._update_perform = true;
 
@@ -2521,8 +2529,9 @@ namespace HordeFight
                     spriteMesh._cuttingRate.y = 0;
                     spriteMesh._update_perform = true;
                 }
+            
             }
-        
+
         }
 
     }//end class
