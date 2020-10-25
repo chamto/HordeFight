@@ -1157,7 +1157,7 @@ namespace HordeFight
                 //if (null == (object)_armed_left || _armed_left._eIdx != _equipment_handLeft)
                 if(_armed_left._eIdx != _equipment_handLeft)
                 {
-                    ActiveAll_Arms(false, _equipment_handLeft);
+                    ActiveAll_Arms(false, _equipment_handRight);
                     _armed_left = _list_armedInfo[(int)_equipment_handLeft];
                     _armed_left.SetActive(true);
 
@@ -1169,7 +1169,7 @@ namespace HordeFight
                 //if (null == (object)_armed_right || _armed_right._eIdx != _equipment_handRight)
                 if(_armed_right._eIdx != _equipment_handRight)
                 {
-                    ActiveAll_Arms(false, _equipment_handRight);
+                    ActiveAll_Arms(false, _equipment_handLeft);
                     _armed_right = _list_armedInfo[(int)_equipment_handRight];
                     _armed_right.SetActive(true);
 
