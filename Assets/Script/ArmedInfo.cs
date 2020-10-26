@@ -21,26 +21,25 @@ namespace HordeFight
 
         }
 
-        public GameObject _go_view = null;
-        public Transform _tr_frame = null;
-        public Transform _tr_view = null;
-
-        public Vector3 _view_dirPos = ConstV.v3_zero; //view 에서의 한손으로 쥐고 있었을 때의 물체의 방향.
-
-        public Transform _arm_start = null;
-        public Transform _arm_end = null;
-        public Transform _arm_shadow = null;
-        public SpriteMesh _arm_spr = null;
-        //public LineSegment3 _cur_seg;
-        //public LineSegment3 _prev_seg;
-
         public MovingModel.Frame _frame = new MovingModel.Frame();
 
-        //public int _idx = -1;
+        public GameObject _go_view = null;
+        public Transform _tr_frame = null;
+        public Transform _tr_frame_start = null;
+        public Transform _tr_frame_end = null;
+
+        public Transform _tr_view = null;
+        public Transform _tr_view_shadow = null;
+        public SpriteMesh _view_spr = null;
+        //무기의 시작과 끝위치
+        public Vector3 _view_arms_start = ConstV.v3_zero;
+        public Vector3 _view_arms_end = ConstV.v3_zero;
+
+
         public string _name = "";
         public eIdx _eIdx = eIdx.None;
         public float _length = 1f;
-        //public bool _equipment = false;
+
 
         public void Init(Transform arm)
         {
@@ -48,31 +47,23 @@ namespace HordeFight
 
             _go_view = arm.gameObject;
             _tr_view = Hierarchy.GetTransform(arm, "view"); ;
-            _arm_shadow = Hierarchy.GetTransform(_tr_view, "shadow");
-            _arm_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteMesh>();
+            _tr_view_shadow = Hierarchy.GetTransform(_tr_view, "shadow");
+            _view_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteMesh>();
 
             _tr_frame = Hierarchy.GetTransform(arm, "frame");
             _frame.Init(_tr_frame);
-            _arm_start =    _frame._info[0].start;
-            _arm_end =      _frame._info[0].end;
+            _tr_frame_start =    _frame._info[0].start;
+            _tr_frame_end =      _frame._info[0].end;
 
             //DebugWide.LogBlue(_arm_spr + " : " + Hierarchy.GetTransform(_tr_arm, "arm_spr").name);
 
-            //_idx = idx;
-            _length = (_arm_start.position - _arm_end.position).magnitude;
+            _length = (_tr_frame_start.position - _tr_frame_end.position).magnitude;
             if(float.Epsilon > _length)
             {
                 //DebugWide.LogBlue(_name);
                 _length = 0.001f;
             }
         }
-
-        //실제 갱신이 일어나지 않는 처리임 
-        //public void SetArmPos(LineSegment3 arm)
-        //{
-        //    _arm_start.position = arm.origin;
-        //    _arm_end.position = arm.last;
-        //}
 
         public void Update_Frame(Transform frame)
         {
@@ -82,8 +73,6 @@ namespace HordeFight
 
         }
 
-
-
         public void SetActive(bool value)
         {
             _go_view.SetActive(value); //chamto test
@@ -92,7 +81,7 @@ namespace HordeFight
         public void Draw(Color color)
         {
             DebugWide.DrawCircle(_tr_view.position, 0.3f, color);
-            DebugWide.DrawLine(_arm_start.position, _arm_end.position, color);
+            DebugWide.DrawLine(_tr_frame_start.position, _tr_frame_end.position, color);
         }
     }
 }
