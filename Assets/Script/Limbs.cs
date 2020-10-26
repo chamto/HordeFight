@@ -1518,20 +1518,6 @@ namespace HordeFight
                     }//else end
                 }
 
-                //if (eStandard.TwoHand_RightO == _eHandStandard)
-                //{
-                //    if (eStance.Sting == _eStance_hand_left)
-                //    { 
-                //        Sting_TwoHand(out hand_right, out _arm_right_length, out hand_left, out _arm_left_length);
-                //    }
-                //    else if (eStance.Cut == _eStance_hand_left)    
-                //    {
-                //        Cut_TwoHand(_HANDLE_twoHand.position, _eHandStandard, _motion_twoHand_A0._eModel, _motion_twoHand_B0._eModel,
-                //                    out hand_left, out hand_right); //_eModelKind_Left_0, _eModelKind_Right_0);
-                //    }
-                //}
-
-
             }
 
             tr_left.position = hand_left;
@@ -1599,24 +1585,6 @@ namespace HordeFight
             Vector3 dir_s_sh = shoulder_pos - line_start;
             float a = dir_s_sh.magnitude;
             Vector3 up = Vector3.Cross(dir_s_sh, dir_line_SE);
-            //----------------------------------------------
-            //최소원에 대하여 교점이 있다면, 선분의 방향을 원과 접하게 한다 - 최소원 처리하지 않는다 
-            //bool result0 = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_min_length, line_start, n_dir_line_SE, out cpt_first);
-            //if(true == result0)
-            //{
-            //    float LL = Mathf.Sqrt(a * a - arm_max_length * arm_max_length); //피타고라스 
-
-            //    float angle0 = Mathf.Atan2(arm_max_length, LL) * Mathf.Rad2Deg;
-            //    Vector3 dir_cpt = Quaternion.AngleAxis(angle0, up) * dir_s_sh;
-            //    dir_cpt = VOp.Normalize(dir_cpt);
-            //    line_end = line_start + dir_cpt * len_line_SE;
-
-            //    dir_line_SE = line_end - line_start;
-            //    n_dir_line_SE = VOp.Normalize(dir_line_SE);
-
-            //    DebugWide.LogBlue("0 ");
-            //}
-
             //----------------------------------------------
 
             bool result = UtilGS9.Geo.IntersectRay2(shoulder_pos, arm_max_length, line_start, n_dir_line_SE, out cpt_first);
