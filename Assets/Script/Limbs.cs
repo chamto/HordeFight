@@ -2464,16 +2464,16 @@ namespace HordeFight
 
             //평면과 광원사이의 최소거리 
             //Vector3 object_dir = view_end - view_ori.position;
-            Vector3 object_dir = arm_ori_end - view_ori.position;
+            Vector3 arm_dir = arm_ori_end - view_ori.position;
             float len_groundToObj_start, proj_groundToObj_end;
 
             //Vector3 end = this.CalcShadowPos(_light_dir, object_dir, _groundY, arm_ori_end, out proj_groundToObj_end);
             //Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
 
-            Vector3 pos = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
-            Vector3 end = this.CalcShadowPos(_light_dir, _groundY, arm_ori_end);
-            Vector3 start = this.CalcShadowPos(_light_dir, _groundY, arm_ori_start);
 
+            Vector3 end = this.CalcShadowPos(_light_dir, arm_dir, _groundY, arm_ori_end, out proj_groundToObj_end);
+            Vector3 start = this.CalcShadowPos(_light_dir, _groundY, arm_ori_start);
+            Vector3 pos = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
 
             Vector3 startToEnd = end - start;
             float len_startToEnd = startToEnd.magnitude;
@@ -2496,7 +2496,7 @@ namespace HordeFight
             //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
             Vector3 temp2 = arm_ori_shadow.eulerAngles;
             //temp2.x = 90f;
-            if (Vector3.Dot(ConstV.v3_up, up_ori - view_ori.position) > 0)
+            if (Vector3.Dot(ConstV.v3_up, up_ori) > 0)
             {
                 temp2.z = 0;
             }
@@ -2509,21 +2509,22 @@ namespace HordeFight
 
             //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
 
+            //나중에 그림자 자르기 처리와 같이 사용하기 , 보기에 크게 차이가 안난다 
             //땅을 통과하는 창 자르기 
-            SpriteMesh spriteMesh = armed_ori._view_spr;
-            if (_groundY.y > arm_ori_end.y)
-            {
-                float rate_viewLen = (arm_ori_end - end).magnitude / armed_ori._length;
-                spriteMesh._cuttingRate.y = -rate_viewLen;
-                spriteMesh._update_perform = true;
+            //SpriteMesh spriteMesh = armed_ori._view_spr;
+            //if (_groundY.y > arm_ori_end.y)
+            //{
+            //    float rate_viewLen = (arm_ori_end - end).magnitude / armed_ori._length;
+            //    spriteMesh._cuttingRate.y = -rate_viewLen;
+            //    spriteMesh._update_perform = true;
 
-            }
-            else if (0 != spriteMesh._cuttingRate.y)
-            {
-                //기존값이 남아있는 경우를 제거한다  
-                spriteMesh._cuttingRate.y = 0;
-                spriteMesh._update_perform = true;
-            }
+            //}
+            //else if (0 != spriteMesh._cuttingRate.y)
+            //{
+                ////기존값이 남아있는 경우를 제거한다  
+                //spriteMesh._cuttingRate.y = 0;
+                //spriteMesh._update_perform = true;
+            //}
         }
 
         public void Update_Shadow()
@@ -2538,13 +2539,13 @@ namespace HordeFight
                 //왼쪽손
                 armed_ori = _armed_left;
 
-                up_ori = _tr_arm_left_up.position;
+                up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
                 Draw_Shadow(armed_ori, up_ori);
 
                 //오른쪽손
                 armed_ori = _armed_right;
 
-                up_ori = _tr_arm_right_up.position;
+                up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
                 Draw_Shadow(armed_ori, up_ori);
             }
             else if (ePart.TwoHand == _part_control)
@@ -2553,13 +2554,13 @@ namespace HordeFight
                 {
                     armed_ori = _armed_left;
 
-                    up_ori = _tr_arm_left_up.position;
+                    up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
                 }
                 else if (eStandard.TwoHand_RightO == _eHandStandard)
                 {
                     armed_ori = _armed_right;
 
-                    up_ori = _tr_arm_right_up.position;
+                    up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
                 }
 
                 Draw_Shadow(armed_ori, up_ori);
