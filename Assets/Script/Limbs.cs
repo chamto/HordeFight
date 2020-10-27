@@ -124,7 +124,8 @@ namespace HordeFight
 
         //목표
         private Transform[] _target = new Transform[2]; //임시 최대2개 목표 
-
+        private Vector3 _view_target_0 = ConstV.v3_zero;
+        private Vector3 _view_target_1 = ConstV.v3_zero;
 
         public float _shoulder_length = 0f;
         public float _arm_left_length = 0.5f;
@@ -1088,6 +1089,9 @@ namespace HordeFight
 
                 _armed_right._view_arms_start = Project_BoxSlope(_armed_right._tr_frame_start.position);
                 _armed_right._view_arms_end = Project_BoxSlope(_armed_right._tr_frame_end.position);
+
+                _view_target_0 = Project_BoxSlope(_target[0].position);
+                _view_target_1 = Project_BoxSlope(_target[1].position);
             }
             else
             {
@@ -1100,6 +1104,9 @@ namespace HordeFight
 
                 _armed_right._view_arms_start = _armed_right._tr_frame_start.position;
                 _armed_right._view_arms_end = _armed_right._tr_frame_end.position;
+
+                _view_target_0 = _target[0].position;
+                _view_target_1 = _target[1].position;
             }
         }
 
@@ -2283,8 +2290,6 @@ namespace HordeFight
             {
                 tr_left = _armed_left._tr_view;
                 tr_right = _armed_right._tr_view;
-                //left_ori = _armed_left._view_start;
-                //right_ori = _armed_right._view_start;
                 left_ori = _armed_left._tr_view.position;
                 right_ori = _armed_right._tr_view.position;
                 left_end = _armed_left._view_arms_end;
@@ -2325,25 +2330,14 @@ namespace HordeFight
 
                 if (eStance.Sting == _eStance_hand_left)
                 {
-                    //Vector3 handToTarget = _target[0].position - _tr_hand_left.position;
-                    //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
-                    //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    //_tr_hand_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-
-                    Vector3 handToTarget = _target[0].position - left_ori;
+                    Vector3 handToTarget = _view_target_0 - left_ori;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
 
                 }
 
                 if (eStance.Sting == _eStance_hand_right)
                 {
-
-                    //handToTarget = _target[1].position - _tr_hand_right.position;
-                    //obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
-                    //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-
-                    Vector3 handToTarget = _target[1].position - right_ori;
+                    Vector3 handToTarget = _view_target_1 - right_ori;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
@@ -2446,6 +2440,8 @@ namespace HordeFight
         {
             Transform view_ori = armed_ori._tr_view;
             Vector3 arm_ori_end = armed_ori._view_arms_end;
+            Vector3 arm_ori_start = armed_ori._view_arms_start;
+            //Vector3 arm_ori_end = _view_target_1;
             //Vector3 arm_ori_end = view_end_pos;
             Transform arm_ori_shadow = armed_ori._tr_view_shadow;
 
@@ -2462,10 +2458,14 @@ namespace HordeFight
             //Vector3 object_dir = view_end - view_ori.position;
             Vector3 object_dir = arm_ori_end - view_ori.position;
             float len_groundToObj_start, proj_groundToObj_end;
-            //Vector3 start = this.CalcShaderPos(_light_dir.position,hLhR, _ground.position, _hand_left_obj.position, out len_groundToObj_start);
-            Vector3 end = this.CalcShadowPos(_light_dir, object_dir, _groundY, arm_ori_end, out proj_groundToObj_end);
-            Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
-            //Vector3 end = this.CalcShaderPos(_light_dir.position, _ground.position, _hand_left_obj_end.position);
+
+            //Vector3 end = this.CalcShadowPos(_light_dir, object_dir, _groundY, arm_ori_end, out proj_groundToObj_end);
+            //Vector3 start = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
+
+            Vector3 pos = this.CalcShadowPos(_light_dir, _groundY, view_ori.position);
+            Vector3 end = this.CalcShadowPos(_light_dir, _groundY, arm_ori_end);
+            Vector3 start = this.CalcShadowPos(_light_dir, _groundY, arm_ori_start);
+
 
             Vector3 startToEnd = end - start;
             float len_startToEnd = startToEnd.magnitude;
@@ -2477,7 +2477,8 @@ namespace HordeFight
             //float shader_angle = Geo.Angle360(ConstV.v3_forward, startToEnd, Vector3.up);
             //DebugWide.LogBlue(shader_angle);
             arm_ori_shadow.rotation = Quaternion.AngleAxis(shader_angle, ConstV.v3_up); // 땅up벡터 축으로 회전 
-            arm_ori_shadow.position = start;
+            //arm_ori_shadow.position = start;
+            arm_ori_shadow.position = pos;
 
             //높이에 따라 그림자 길이 조절 
             Vector3 scale = arm_ori_shadow.localScale;
