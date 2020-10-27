@@ -124,8 +124,8 @@ namespace HordeFight
 
         //목표
         private Transform[] _target = new Transform[2]; //임시 최대2개 목표 
-        private Vector3 _view_target_0 = ConstV.v3_zero;
-        private Vector3 _view_target_1 = ConstV.v3_zero;
+        //private Vector3 _view_target_0 = ConstV.v3_zero;
+        //private Vector3 _view_target_1 = ConstV.v3_zero;
 
         public float _shoulder_length = 0f;
         public float _arm_left_length = 0.5f;
@@ -1090,8 +1090,8 @@ namespace HordeFight
                 _armed_right._view_arms_start = Project_BoxSlope(_armed_right._tr_frame_start.position);
                 _armed_right._view_arms_end = Project_BoxSlope(_armed_right._tr_frame_end.position);
 
-                _view_target_0 = Project_BoxSlope(_target[0].position);
-                _view_target_1 = Project_BoxSlope(_target[1].position);
+                //_view_target_0 = Project_BoxSlope(_target[0].position);
+                //_view_target_1 = Project_BoxSlope(_target[1].position);
             }
             else
             {
@@ -1105,8 +1105,8 @@ namespace HordeFight
                 _armed_right._view_arms_start = _armed_right._tr_frame_start.position;
                 _armed_right._view_arms_end = _armed_right._tr_frame_end.position;
 
-                _view_target_0 = _target[0].position;
-                _view_target_1 = _target[1].position;
+                //_view_target_0 = _target[0].position;
+                //_view_target_1 = _target[1].position;
             }
         }
 
@@ -2272,8 +2272,10 @@ namespace HordeFight
             Transform tr_right = null;
             Vector3 left_ori = ConstV.v3_zero;
             Vector3 right_ori = ConstV.v3_zero;
-            Vector3 left_end = ConstV.v3_zero;
-            Vector3 right_end = ConstV.v3_zero;
+            Vector3 cut_left_end = ConstV.v3_zero;
+            Vector3 cut_right_end = ConstV.v3_zero;
+            Vector3 sting_left_end = ConstV.v3_zero;
+            Vector3 sting_right_end = ConstV.v3_zero;
 
             //경사도 적용 안함
             if(0 == calcMode)
@@ -2282,8 +2284,11 @@ namespace HordeFight
                 tr_right = _tr_hand_right;
                 left_ori = _tr_hand_left.position;
                 right_ori = _tr_hand_right.position;
-                left_end = _hand_left_dirPos;
-                right_end = _hand_right_dirPos;
+
+                cut_left_end = _hand_left_dirPos;
+                cut_right_end = _hand_right_dirPos;
+                sting_left_end = _target[0].position;
+                sting_right_end = _target[1].position;
             }
             //경사도 적용함 (2d z축표현) , 변환이 끝난 뷰값을 사용함 
             else if(1 == calcMode)
@@ -2292,8 +2297,11 @@ namespace HordeFight
                 tr_right = _armed_right._tr_view;
                 left_ori = _armed_left._tr_view.position;
                 right_ori = _armed_right._tr_view.position;
-                left_end = _armed_left._view_arms_end;
-                right_end = _armed_right._view_arms_end;
+
+                cut_left_end = _armed_left._view_arms_end;
+                cut_right_end = _armed_right._view_arms_end;
+                sting_left_end = _armed_left._view_arms_end;
+                sting_right_end = _armed_right._view_arms_end;
             }
 
             //DebugWide.LogBlue(_armed_left + "  --  " + _armed_right);
@@ -2310,7 +2318,7 @@ namespace HordeFight
                     //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     //Vector3 handToTarget = _hand_left_dirPos - tr_left.position;
-                    Vector3 handToTarget = left_end - left_ori;
+                    Vector3 handToTarget = cut_left_end - left_ori;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
@@ -2323,21 +2331,21 @@ namespace HordeFight
                     //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
 
                     //Vector3 handToTarget = _hand_right_dirPos - tr_right.position;
-                    Vector3 handToTarget = right_end - right_ori;
+                    Vector3 handToTarget = cut_right_end - right_ori;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
                 //찌르기 
 
                 if (eStance.Sting == _eStance_hand_left)
                 {
-                    Vector3 handToTarget = _view_target_0 - left_ori;
+                    Vector3 handToTarget = sting_left_end - left_ori;
                     tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
 
                 }
 
                 if (eStance.Sting == _eStance_hand_right)
                 {
-                    Vector3 handToTarget = _view_target_1 - right_ori;
+                    Vector3 handToTarget = sting_right_end - right_ori;
                     tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
                 }
 
