@@ -32,7 +32,7 @@ namespace HordeFight
         private void OnDrawGizmos()
         {
             
-            _movingModel.Draw();
+            //_movingModel.Draw();
             //_frame_ch_0.Draw(Color.red);
         }
 

@@ -39,7 +39,7 @@ namespace HordeFight
         public string _name = "";
         public eIdx _eIdx = eIdx.None;
         public float _length = 1f;
-
+        public float _radius = 0.05f;
 
         public void Init(Transform arm)
         {
@@ -80,7 +80,7 @@ namespace HordeFight
 
         public void Draw(Color color)
         {
-            DebugWide.DrawCircle(_tr_view.position, 0.3f, color);
+            DebugWide.DrawCircle(_tr_frame_end.position, _radius, color);
             DebugWide.DrawLine(_tr_frame_start.position, _tr_frame_end.position, color);
         }
     }

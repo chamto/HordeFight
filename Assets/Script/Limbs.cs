@@ -198,6 +198,7 @@ namespace HordeFight
         [Space]
         public bool _show_gizmos = true;
         public bool _show_bagic = false;
+        public bool _show_armed = false;
         public bool _show_control = false;
         public bool _show_shadow = false;
 
@@ -590,26 +591,31 @@ namespace HordeFight
 
             }
 
-
+            if (_show_armed)
             //무기정보
             {
-                //_armed_left.Draw(Color.red);
-                //_armed_right.Draw(Color.red);
+                _armed_left.Draw(Color.blue);
+                _armed_right.Draw(Color.magenta);
+
+                DebugWide.DrawLine(_tr_hand_left.position, _tr_arm_left_up.position, Color.blue);
+                DebugWide.DrawLine(_tr_hand_right.position, _tr_arm_right_up.position, Color.magenta);
+
+                //무기 뒷면 
+                if (false)
+                {
+                    //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_end.position, Color.cyan);
+                    //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_up.position, Color.cyan);
+                    //DebugWide.DrawCircle(_arm_left_up.position, 0.1f, Color.cyan);
+
+                    //Vector3 hLhR = _hand_right.position - _hand_left.position;
+                    //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
+                    //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
+                    //DebugWide.DrawLine(_arm_left.position, _arm_left.position + obj_shaft * 3f, Color.red);
+                    //DebugWide.PrintText(_arm_left.position + obj_shaft * 3f, Color.red, angleW + "");
+                }
             }
 
-            //무기 뒷면 
-            if(false)
-            {
-                //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_end.position, Color.cyan);
-                //DebugWide.DrawLine(_hand_left_obj.position, _arm_left_up.position, Color.cyan);
-                //DebugWide.DrawCircle(_arm_left_up.position, 0.1f, Color.cyan);
 
-                //Vector3 hLhR = _hand_right.position - _hand_left.position;
-                //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, hLhR);
-                //float angleW = Vector3.SignedAngle(Vector3.forward, hLhR, obj_shaft);
-                //DebugWide.DrawLine(_arm_left.position, _arm_left.position + obj_shaft * 3f, Color.red);
-                //DebugWide.PrintText(_arm_left.position + obj_shaft * 3f, Color.red, angleW + "");
-            }
 
             //조종정보
             //if(false)
@@ -717,8 +723,8 @@ namespace HordeFight
                         DebugWide.DrawCircle(_HANDLE_right.position, 0.05f, Color.green);
                     }
 
-                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
-                    DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
+                    //DebugWide.DrawLine(_HANDLE_oneHand.position, _target[0].position, Color.magenta);
+                    //DebugWide.DrawLine(_HANDLE_oneHand.position, _target[1].position, Color.magenta);
 
                     if (eStance.Cut == _eStance_hand_left)
                     {
