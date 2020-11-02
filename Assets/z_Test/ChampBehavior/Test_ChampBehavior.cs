@@ -5,7 +5,7 @@ using UtilGS9;
 
 namespace HordeFight
 {
-    public class Test_ChampBehavior : MonoBehaviour
+    public partial class Test_ChampBehavior : MonoBehaviour
     {
 
         public ChampUnit _champ_0 = null;
@@ -337,121 +337,6 @@ namespace HordeFight
             float angleC = Mathf.Acos(cosC) * Mathf.Rad2Deg;
 
             return angleC;
-        }
-
-
-
-        public class Quat
-        {
-            public float _x, _y, _z, _w;
-
-            public void Set(float w, float x, float y, float z)
-            {
-                _w = w; _x = x; _y = y; _z = z;
-            }
-
-            public void Identity()
-            {
-                _x = _y = _z = 0.0f;
-                _w = 1.0f;
-            }
-
-            public void Normalize()
-            {
-                float lengthsq = _w * _w + _x * _x + _y * _y + _z * _z;
-
-                if (Misc.IsZero(lengthsq))
-                {
-                    _x = _y = _z = _w = 0f;
-                }
-                else
-                {
-                    float factor = 1f / (float)System.Math.Sqrt(lengthsq);
-                    _w *= factor;
-                    _x *= factor;
-                    _y *= factor;
-                    _z *= factor;
-                }
-
-            }
-
-            //angle_rd : 라디안 값 넣어야함 
-            public Quaternion AngleAxis(float angle_rd, Vector3 axis)
-            {
-                // if axis of rotation is zero vector, just set to identity quat
-                float sqrLength = axis.sqrMagnitude;
-                if (Misc.IsZero(sqrLength))
-                {
-                    Identity();
-                    return Quaternion.identity;
-                }
-
-                // take half-angle
-                angle_rd *= 0.5f;
-
-                float sintheta = 0, costheta = 0;
-                sintheta = (float)System.Math.Sin(angle_rd);
-                costheta = (float)System.Math.Cos(angle_rd);
-
-
-                float scaleFactor = sintheta / (float)System.Math.Sqrt(sqrLength);
-
-                _w = costheta;
-                _x = scaleFactor * axis.x;
-                _y = scaleFactor * axis.y;
-                _z = scaleFactor * axis.z;
-
-
-                return new Quaternion(_x, _y, _z, _w);
-            }
-
-            public Quaternion FromToRotation(Vector3 from, Vector3 to)
-            {
-
-                // get axis of rotation
-                Vector3 axis = Vector3.Cross(from, to);
-
-
-                // get scaled cos of angle between vectors and set initial quaternion
-                Set(Vector3.Dot(from, to), axis.x, axis.y, axis.z);
-                // quaternion at this point is ||from||*||to||*( cos(theta), r*sin(theta) )
-
-                // normalize to remove ||from||*||to|| factor
-                Normalize();
-                // quaternion at this point is ( cos(theta), r*sin(theta) )
-                // what we want is ( cos(theta/2), r*sin(theta/2) )
-
-                // set up for half angle calculation
-                _w += 1.0f;
-
-                // now when we normalize, we'll be dividing by sqrt(2*(1+cos(theta))), which is 
-                // what we want for r*sin(theta) to give us r*sin(theta/2)  (see pages 487-488)
-                // 
-                // w will become 
-                //                 1+cos(theta)
-                //            ----------------------
-                //            sqrt(2*(1+cos(theta)))        
-                // which simplifies to
-                //                cos(theta/2)
-
-                // before we normalize, check if vectors are opposing
-                if (_w <= float.Epsilon)
-                {
-                    // rotate pi radians around orthogonal vector
-                    // take cross product with x axis
-                    if (from.z * from.z > from.x * from.x)
-                        Set(0.0f, 0.0f, from.z, -from.y);
-                    // or take cross product with z axis
-                    else
-                        Set(0.0f, from.y, -from.x, 0.0f);
-                }
-
-                // normalize again to get rotation quaternion
-                Normalize();
-
-                return new Quaternion(_x, _y, _z, _w);
-
-            }
         }
     }
 
