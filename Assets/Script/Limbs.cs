@@ -1017,7 +1017,8 @@ namespace HordeFight
                 _eStance_hand_right = eStance.None;
                 _equipment_handRight = ArmedInfo.eIdx.None;
             }
-            
+
+            Rotate(_ref_movement._direction);
 
             //stance ani 재생 만들기 ( 현재 cut handle 값만 계산함 ) 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
@@ -1026,7 +1027,7 @@ namespace HordeFight
 
             //handle에 대한 손 움직임 만들기 
             Update_Position_Handle(_tr_hand_left, _tr_hand_right);
-            Update_Rotation_Hand(0);
+            Update_Rotation_Dir(0);
             //BillBoard_Hand(_tr_hand_left, _tr_hand_right); //원본값을 변형할 필요 없음 
             Update_Equipment(); //tr_hand 값이 다 구해진 다음에 수행되어야 함 , 장비 장착
             //==================================================
@@ -1044,10 +1045,10 @@ namespace HordeFight
         {
             //2d 게임에서의 높이표현 
             Update_Position_ProjectionSlope(); //view 위치값 갱신 , 이후 코드에서 view 회전량을 구한다 
-            Update_Rotation_Hand(1);
+            Update_Rotation_Dir(1);
 
             //칼이 화면을 바라보게 함  
-            BillBoard_Hand(_armed_left._tr_view, _armed_right._tr_view);
+            //BillBoard_Hand(_armed_left._tr_view, _armed_right._tr_view);
 
             //그림자 표현
             Update_Shadow();
@@ -1056,7 +1057,7 @@ namespace HordeFight
             Update_Ani_Wrist();
             //==================================================
 
-            Rotate(_ref_movement._direction);
+            //Rotate(_ref_movement._direction);
         }
 		//==================================================
 
@@ -2272,7 +2273,7 @@ namespace HordeFight
 
         //==================================================
 
-        public void Update_Rotation_Hand(int calcMode)
+        public void Update_Rotation_Dir(int calcMode)
         {
             Transform tr_left = null;
             Transform tr_right = null;
@@ -2282,6 +2283,7 @@ namespace HordeFight
             Vector3 cut_right_end = ConstV.v3_zero;
             Vector3 sting_left_end = ConstV.v3_zero;
             Vector3 sting_right_end = ConstV.v3_zero;
+
 
             //경사도 적용 안함
             if(0 == calcMode)
@@ -2318,41 +2320,43 @@ namespace HordeFight
                 //베기
                 if (eStance.Cut == _eStance_hand_left)
                 {
-                    //Vector3 handToTarget = _tr_arm_left_dir.position - tr_left.position;
-                    //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
-                    //float angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-
-                    //Vector3 handToTarget = _hand_left_dirPos - tr_left.position;
                     Vector3 handToTarget = cut_left_end - left_ori;
-                    tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    //tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    tr_left.rotation = Quaternion.FromToRotation(_foot_dir, handToTarget) * _tr_root.rotation;
                 }
 
                 if (eStance.Cut == _eStance_hand_right)
                 {
-
-                    //handToTarget = _tr_arm_right_dir.position - _tr_hand_right.position;
-                    //obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
-                    //angleW = Vector3.SignedAngle(Vector3.forward, handToTarget, obj_shaft);
-                    //_tr_hand_right.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
-
-                    //Vector3 handToTarget = _hand_right_dirPos - tr_right.position;
                     Vector3 handToTarget = cut_right_end - right_ori;
-                    tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    //tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    tr_right.rotation = Quaternion.FromToRotation(_foot_dir, handToTarget) * _tr_root.rotation;
                 }
                 //찌르기 
 
                 if (eStance.Sting == _eStance_hand_left)
                 {
+
+                    //Vector3 handToTarget = sting_left_end - left_ori;
+                    //Vector3 obj_shaft = Vector3.Cross(Vector3.forward, handToTarget);
+                    //float angleW = Geo.AngleSigned(Vector3.forward, handToTarget, obj_shaft);
+                    ////float angleW = Geo.Angle360_AxisRotate(Vector3.forward, handToTarget, obj_shaft);
+                    //tr_left.rotation = Quaternion.AngleAxis(angleW, obj_shaft);
+
                     Vector3 handToTarget = sting_left_end - left_ori;
-                    tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    //tr_left.localRotation = Quaternion.FromToRotation(_foot_dir, handToTarget );
+                    //* 위의 로컬회전에 값을 넣는 코드가 원하는 결과가 안나오는 이유 : 회전결합 , 회전순서 문제 때문임
+                    //  캐릭터가 180도 회전후 손의 로컬에 회전을 넣는다는 생각으로 작성하였지만 실제로는 
+                    //  자식인 손의 로컬 회전량이 먼저 적용되고 부모인 캐릭터가 180도 회전하게 된다 
+                    //  자식의 회전량이 먼저 적용되어서 x축 회전시 반대방향으로 회전하는 것으로 보이게 된다 
+                    tr_left.rotation =  Quaternion.FromToRotation(_foot_dir, handToTarget) * _tr_root.rotation;
 
                 }
 
                 if (eStance.Sting == _eStance_hand_right)
                 {
                     Vector3 handToTarget = sting_right_end - right_ori;
-                    tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    //tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, handToTarget);
+                    tr_right.rotation = Quaternion.FromToRotation(_foot_dir, handToTarget) * _tr_root.rotation;
                 }
 
             }
@@ -2364,12 +2368,12 @@ namespace HordeFight
                 if(_eHandStandard == eStandard.TwoHand_LeftO )
                 {
                     Vector3 hLhR = right_ori - left_ori;
-                    tr_left.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);    
+                    tr_left.rotation = Quaternion.FromToRotation(_foot_dir, hLhR) * _tr_root.rotation;    
                 }
                 else if (_eHandStandard == eStandard.TwoHand_RightO)
                 {
                     Vector3 hLhR = left_ori - right_ori;
-                    tr_right.rotation = Quaternion.FromToRotation(ConstV.v3_forward, hLhR);
+                    tr_right.rotation = Quaternion.FromToRotation(_foot_dir, hLhR) * _tr_root.rotation;
                 }
 
             }
