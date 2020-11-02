@@ -1018,7 +1018,7 @@ namespace HordeFight
                 _equipment_handRight = ArmedInfo.eIdx.None;
             }
 
-            Rotate(_ref_movement._direction);
+            //Rotate(_ref_movement._direction);
 
             //stance ani 재생 만들기 ( 현재 cut handle 값만 계산함 ) 
             //stance 값으로 handle을 계산 , Update_HandControl 보다 먼저 계산되어야 한다 
@@ -1057,7 +1057,7 @@ namespace HordeFight
             Update_Ani_Wrist();
             //==================================================
 
-            //Rotate(_ref_movement._direction);
+            Rotate(_ref_movement._direction);
         }
 		//==================================================
 
@@ -1380,8 +1380,8 @@ namespace HordeFight
 
         public void Update_Position_Handle(Transform tr_left, Transform tr_right)
         {
-            Vector3 hand_left = ConstV.v3_zero;
-            Vector3 hand_right = ConstV.v3_zero;
+            Vector3 hand_left = tr_left.position;
+            Vector3 hand_right = tr_right.position;
 
             if (_part_control == ePart.OneHand)
             {
