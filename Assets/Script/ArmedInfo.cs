@@ -30,7 +30,8 @@ namespace HordeFight
 
         public Transform _tr_view = null;
         public Transform _tr_view_shadow = null;
-        public SpriteMesh _view_spr = null;
+        //public SpriteMesh _view_spr = null;
+        public SpriteRenderer _view_spr = null;
         //무기의 시작과 끝위치
         public Vector3 _view_arms_start = ConstV.v3_zero;
         public Vector3 _view_arms_end = ConstV.v3_zero;
@@ -48,7 +49,8 @@ namespace HordeFight
             _go_view = arm.gameObject;
             _tr_view = Hierarchy.GetTransform(arm, "view"); ;
             _tr_view_shadow = Hierarchy.GetTransform(_tr_view, "shadow");
-            _view_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteMesh>();
+            //_view_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteMesh>();
+            _view_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteRenderer>();
 
             _tr_frame = Hierarchy.GetTransform(arm, "frame");
             _frame.Init(_tr_frame);

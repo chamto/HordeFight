@@ -1048,7 +1048,7 @@ namespace HordeFight
             Update_Rotation_Dir(1);
 
             //칼이 화면을 바라보게 함  
-            //BillBoard_Hand(_armed_left._tr_view, _armed_right._tr_view);
+            BillBoard_Hand(_armed_left, _armed_right);
 
             //그림자 표현
             Update_Shadow();
@@ -2379,7 +2379,7 @@ namespace HordeFight
             }
         }
 
-        public void BillBoard_Hand(Transform tr_left , Transform tr_right)
+        public void BillBoard_Hand(ArmedInfo left , ArmedInfo right)
         {
             //Transform tr_left = _armed_left._tr_view;
 
@@ -2387,44 +2387,44 @@ namespace HordeFight
             {
 
                 //2d칼을 좌/우로 90도 세웠을때 안보이는 문제를 피하기 위해 z축 롤값을 0으로 한다  
-                Vector3 temp = tr_left.eulerAngles;
+                Vector3 temp = left._tr_view.eulerAngles;
 
-                //temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다 
-
+                temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다
 
                 //칼의 뒷면 표현
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - tr_left.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - left._tr_frame.position) > 0)
                 {
-                    //앞면
-                    //_hand_left_obj_spr.color = Color.white;
-                    //_hand_left_obj_mesh.sharedMaterial.color = Color.white;
-                    temp.z = 0;
+                    //윗면
+                    left._view_spr.color = Color.white;
+                    //temp.z = 0;
                 }
                 else
                 {
                     //뒷면 
-                    //_hand_left_obj_spr.color = Color.gray;
-                    //_hand_left_obj_mesh.sharedMaterial.color = Color.gray;
-                    temp.z = 180;
+                    left._view_spr.color = Color.gray;
+                    //temp.z = 180;
                 }
 
-                tr_left.eulerAngles = temp;
+                left._tr_view.eulerAngles = temp;
 
                 //===============================
 
-                temp = tr_right.eulerAngles;
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_right_up.position - tr_right.position) > 0)
+                temp = right._tr_view.eulerAngles;
+                temp.z = 0;
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_right_up.position - right._tr_view.position) > 0)
                 {
-                    //앞면
-                    temp.z = 0;
+                    //윗면
+                    right._view_spr.color = Color.white;
+                    //temp.z = 0;
                 }
                 else
                 {
                     //뒷면 
-                    temp.z = 180;
+                    right._view_spr.color = Color.gray;
+                    //temp.z = 180;
                 }
 
-                tr_right.eulerAngles = temp;
+                right._tr_view.eulerAngles = temp;
 
             }
         }

@@ -30,9 +30,9 @@ public class SpriteMesh : MonoBehaviour
     public float _world_height = 0f;
     //======================================================
 
-    private Material _spriteMaterial;
-	private Mesh _mesh;
-	private MeshRenderer _renderer;
+    public Material _spriteMaterial;
+    public Mesh _mesh;
+    public MeshRenderer _renderer;
 
     private Vector2 _vert_unit;
     private Vector2 _tex_unit;
