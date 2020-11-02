@@ -2392,7 +2392,7 @@ namespace HordeFight
                 temp.z = 0; //<쿼터니언 회전시 무기뒤집어지는 문제 원인> 이 처리를 주석하면 수직베기시 정상처리가 된다
 
                 //칼의 뒷면 표현
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - left._tr_frame.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_left_up.position - _tr_hand_left.position) > 0)
                 {
                     //윗면
                     left._view_spr.color = Color.white;
@@ -2411,7 +2411,7 @@ namespace HordeFight
 
                 temp = right._tr_view.eulerAngles;
                 temp.z = 0;
-                if (Vector3.Dot(ConstV.v3_up, _tr_arm_right_up.position - right._tr_view.position) > 0)
+                if (Vector3.Dot(ConstV.v3_up, _tr_arm_right_up.position - _tr_hand_right.position) > 0)
                 {
                     //윗면
                     right._view_spr.color = Color.white;
@@ -2454,7 +2454,7 @@ namespace HordeFight
             _tr_hand_right_wrist.position = view_right.position;
         }
 
-        public void Draw_Shadow(ArmedInfo armed_ori, Vector3 up_ori)
+        public void Draw_Shadow(ArmedInfo armed_ori)
         {
             Transform view_ori = armed_ori._tr_view;
             Vector3 arm_ori_end = armed_ori._view_arms_end;
@@ -2504,17 +2504,16 @@ namespace HordeFight
             arm_ori_shadow.localScale = scale;
             //------
             //그림자 땅표면위에만 있게 하기위해 pitch 회전값 제거  
-            Vector3 temp2 = arm_ori_shadow.eulerAngles;
-            //temp2.x = 90f;
-            if (Vector3.Dot(ConstV.v3_up, up_ori) > 0)
-            {
-                temp2.z = 0;
-            }
-            else
-            {
-                temp2.z = 180f;
-            }
-            arm_ori_shadow.eulerAngles = temp2;
+            //Vector3 temp2 = arm_ori_shadow.eulerAngles;
+            //if (Vector3.Dot(ConstV.v3_up, up_ori) > 0)
+            //{
+            //    temp2.z = 0;
+            //}
+            //else
+            //{
+            //    temp2.z = 180f;
+            //}
+            //arm_ori_shadow.eulerAngles = temp2;
             //-----------------------------------  
 
             //DebugWide.LogBlue(len_startToEnd + "   " + (_hand_left_obj_end.position - _hand_left_obj.position).magnitude);
@@ -2542,21 +2541,21 @@ namespace HordeFight
             
             ArmedInfo armed_ori = null;
 
-            Vector3 up_ori = ConstV.v3_zero;
+            //Vector3 up_ori = ConstV.v3_zero;
 
             if (ePart.OneHand == _part_control)
             {
                 //왼쪽손
                 armed_ori = _armed_left;
 
-                up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
-                Draw_Shadow(armed_ori, up_ori);
+                //up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
+                Draw_Shadow(armed_ori);
 
                 //오른쪽손
                 armed_ori = _armed_right;
 
-                up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
-                Draw_Shadow(armed_ori, up_ori);
+                //up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
+                Draw_Shadow(armed_ori);
             }
             else if (ePart.TwoHand == _part_control)
             {
@@ -2564,16 +2563,16 @@ namespace HordeFight
                 {
                     armed_ori = _armed_left;
 
-                    up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
+                    //up_ori = _tr_arm_left_up.position - _tr_hand_left.position;
                 }
                 else if (eStandard.TwoHand_RightO == _eHandStandard)
                 {
                     armed_ori = _armed_right;
 
-                    up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
+                    //up_ori = _tr_arm_right_up.position - _tr_hand_right.position;;
                 }
 
-                Draw_Shadow(armed_ori, up_ori);
+                Draw_Shadow(armed_ori);
             }
 
         }
