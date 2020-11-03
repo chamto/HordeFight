@@ -195,7 +195,7 @@ namespace HordeFight
         {
             _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Attack);
             _behaviorKind = Behavior.eKind.Attack;
-            _bodyControl.Attack_Strong_1();
+            //_bodyControl.Attack_Strong_1();
 
             //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
             //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
@@ -365,25 +365,25 @@ namespace HordeFight
         Vector3 _debug_line = Vector3.zero;
         public void Debug_DrawGizmos_Behavior()
         {
-            BodyControl.Part HL = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Left];
-            BodyControl.Part HR = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Right];
+            //BodyControl.Part HL = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Left];
+            //BodyControl.Part HR = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Right];
 
             Vector3 posBody = this.GetPos3D();
             Quaternion quater_r = Quaternion.FromToRotation(UtilGS9.ConstV.v3_forward, _move._direction);
-            Vector3 posHL = quater_r * HL._pos_standard + posBody;
-            Vector3 posHR = quater_r * HR._pos_standard + posBody;
+            //Vector3 posHL = quater_r * HL._pos_standard + posBody;
+            //Vector3 posHR = quater_r * HR._pos_standard + posBody;
 
             float weaponArc_degree = 45f;
             float weaponArc_radius_far = 3f;
             Vector3 weaponArc_dir = _move._direction;
             //*
             //어깨 기준점 
-            Gizmos.color = Color.gray;
-            Gizmos.DrawWireSphere(posHL, HL._range_max);
-            Gizmos.DrawWireSphere(posHR, HR._range_max);
+            //Gizmos.color = Color.gray;
+            //Gizmos.DrawWireSphere(posHL, HL._range_max);
+            //Gizmos.DrawWireSphere(posHR, HR._range_max);
 
-            //skill 진행 상태 출력 
-            DebugWide.PrintText(posHR, Color.white, _bodyControl._skill_current._kind.ToString() + "  st: " + _bodyControl._state_current.ToString() + "   t: " + _bodyControl._timeDelta.ToString("00.00"));
+            ////skill 진행 상태 출력 
+            //DebugWide.PrintText(posHR, Color.white, _bodyControl._skill_current._kind.ToString() + "  st: " + _bodyControl._state_current.ToString() + "   t: " + _bodyControl._timeDelta.ToString("00.00"));
 
             //공격 범위 - 호/수직 : Vector3.forward
             //eTraceShape tr = eTraceShape.None;
@@ -412,11 +412,11 @@ namespace HordeFight
             //Gizmos.DrawSphere(posBody + _move._direction * 4, 0.2f);
 
             //공격 무기이동 경로
-            Vector3 weapon_curPos = posBody + _bodyControl.CurrentDistance() * weaponArc_dir;
-            _debug_line.y = -0.5f;
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(posBody, weapon_curPos);
-            Gizmos.DrawWireSphere(weapon_curPos, 0.1f);
+            //Vector3 weapon_curPos = posBody + _bodyControl.CurrentDistance() * weaponArc_dir;
+            //_debug_line.y = -0.5f;
+            //Gizmos.color = Color.red;
+            //Gizmos.DrawLine(posBody, weapon_curPos);
+            //Gizmos.DrawWireSphere(weapon_curPos, 0.1f);
             //*/
 
             //칼죽이기 가능 범위

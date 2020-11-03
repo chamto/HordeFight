@@ -215,7 +215,7 @@ namespace HordeFight
         public Behavior.eKind _behaviorKind = Behavior.eKind.None;
         public Behavior _behavior = null;
         public float _timeDelta = 0f;  //시간변화량
-        public BodyControl _bodyControl = new BodyControl();
+        //public BodyControl _bodyControl = new BodyControl();
 
         //==================================================
         //상태정보
@@ -627,7 +627,7 @@ namespace HordeFight
             }
 
             //========================================
-            _bodyControl.Update(); //행동 진행 갱신 
+            //_bodyControl.Update(); //행동 진행 갱신 
             //========================================
 
             //아래 행동 관련 사용 안되는 코드임 - 분석필요 
@@ -883,7 +883,7 @@ namespace HordeFight
         {
 
             _behaviorKind = Behavior.eKind.Idle;
-            _bodyControl.Idle();
+            //_bodyControl.Idle();
 
             if (true == IsActive_Animator())
             {
@@ -1065,7 +1065,7 @@ namespace HordeFight
                 eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
             _behaviorKind = Behavior.eKind.Move;
-            _bodyControl.Move_0();
+            //_bodyControl.Move_0();
 
             if (true == IsActive_Animator())
             {

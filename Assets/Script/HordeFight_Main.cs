@@ -529,7 +529,7 @@ namespace HordeFight
 }
 
 
-
+//*
 namespace HordeFight
 {
 
@@ -740,11 +740,12 @@ namespace HordeFight
     }
 
 }
-
+//*/
 //========================================================
 //==================     스킬  정보     ==================
 //========================================================
 
+/*
 namespace HordeFight
 {
     public class Skill : List<Behavior>
@@ -1311,6 +1312,7 @@ namespace HordeFight
 
     }
 }
+*/
 
 //===========================
 
