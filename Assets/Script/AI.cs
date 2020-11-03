@@ -254,8 +254,9 @@ namespace HordeFight
                             break;
                         }
 
-                        //1초마다 방향을 바꾼다
-                        if (1f <= _elapsedTime)
+                        //1~2초마다 방향을 바꾼다
+                        //if (1f <= _elapsedTime)
+                        if (Misc.RandFloat(1f, 2f) <= _elapsedTime)
                         {
                             _ai_Dir = Misc.GetDir8_Random_AxisY();
                             _elapsedTime = 0f;
