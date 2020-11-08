@@ -967,7 +967,7 @@ namespace HordeFight
             else if (hash_state == aniState.shortNameHash)
             {
                 _trans_start = false; //상태전이에서 동작으로 전환되면, 상태전이 시작값을 해제해 준다
-                _curCount = (int)aniState.normalizedTime;
+                _curCount = (int)aniState.normalizedTime; //1초로 가정된 코드 
                 normalTime = aniState.normalizedTime - _curCount;
             }
             //상태전이 없고, 요청 상태값이 아닌 경우
@@ -1037,6 +1037,7 @@ namespace HordeFight
 
             _behaviorKind = Behavior.eKind.Block;
             Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+            //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
             _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Block);
 
         }
@@ -1144,73 +1145,6 @@ namespace HordeFight
 
             //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
-
-
-        //____________________________________________
-        //                  터치 이벤트   
-        //____________________________________________
-
-        //private Vector3 __startPos = ConstV.v3_zero;
-        //private LineSegment3 __lineSeg = LineSegment3.zero;
-        //private void TouchBegan()
-        //{
-        //    RaycastHit hit = SingleO.touchEvent.GetHit3D();
-        //    __startPos = hit.point;
-        //    __startPos.y = 0f;
-
-
-        //    if (8 > _hp_cur)
-        //    {
-        //        //다시 살리기
-        //        _animator.Play(ANI_STATE_IDLE);
-        //        //_death = false;
-        //        _hp_cur = 10;
-        //        _behaviorKind = Behavior.eKind.Idle;
-        //    }
-
-        //    SingleO.uiMain.SelectLeader(_kind.ToString());
-
-        //}
-
-
-
-        //private void TouchMoved()
-        //{
-        //    //DebugWide.LogBlue("TouchMoved " + Single.touchProcess.GetTouchPos());
-
-        //    RaycastHit hit = SingleO.touchEvent.GetHit3D();
-
-        //    Vector3 dir = hit.point - this.transform.position;
-        //    dir.y = 0;
-        //    //DebugWide.LogBlue("TouchMoved " + dir);
-
-        //    //SingleO.objectManager.LookAtTarget(this, GridManager.NxN_MIN);
-
-        //}
-
-        //private void TouchEnded()
-        //{
-        //    RaycastHit hit = SingleO.touchEvent.GetHit3D();
-
-
-        //    //DebugWide.LogBlue("TouchEnded " + Single.touchProcess.GetTouchPos());
-        //    //_move.MoveToTarget(transform.position, 1f); //이동종료
-        //    _move.SetNextMoving(false);
-
-        //    Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-        //    //_animator.SetInteger("state", (int)eState.Idle);
-        //    _animator.Play(ANI_STATE_IDLE);
-
-
-        //    _behaviorKind = Behavior.eKind.Idle_Random;
-        //    SingleO.objectManager.SetAll_Behavior(Behavior.eKind.Idle_Random);
-
-
-        //    _behaviorKind = Behavior.eKind.Move;
-
-        //    _move.MoveToTarget(hit.point, 1f);
-
-        //}
 
     }
 

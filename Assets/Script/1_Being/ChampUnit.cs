@@ -195,15 +195,17 @@ namespace HordeFight
         {
             _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Attack);
             _behaviorKind = Behavior.eKind.Attack;
-            //_bodyControl.Attack_Strong_1();
 
-            //_move._eDir8 = Misc.TransDirection8_AxisY(dir);
-            //Switch_Ani("base_attack", _kind.ToString() + "_attack_", _move._eDir8);
-            _appointmentDir = dir;
+
+            _move._eDir8 = Misc.GetDir8_AxisY(dir);
+            Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
+            //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
+            //_animator.speed = 0.5f; //속도를 설정한다 
             //_target = target;
 
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
-            Update_AnimatorState(ANI_STATE_ATTACK, 0.8f);
+            _appointmentDir = dir;
+            //Update_AnimatorState(ANI_STATE_ATTACK, 0.8f);
 
             //임시코드 
             if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)

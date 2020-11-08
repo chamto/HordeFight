@@ -107,11 +107,11 @@ namespace HordeFight
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
             Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
 
-            //_selected.Attack(hit.point - _selected.transform.position);
-            //_selected.Block_Forward(hit.point - _selected.transform.position);
-            _selected.Move_Forward(touchDir, 1f, true);
+            //_selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
 
             ChampUnit champSelected = _selected as ChampUnit;
+            champSelected.Attack(hit.point - _selected.transform.position);
+            //champSelected.Block_Forward(hit.point - _selected.transform.position);
             if (null != (object)champSelected)
             {
                 //임시처리 
@@ -139,7 +139,7 @@ namespace HordeFight
 
 
 
-            //View_AnimatorState();
+            View_AnimatorState();
         }
         private void TouchEnded()
         {
@@ -155,6 +155,8 @@ namespace HordeFight
         {
             AnimatorStateInfo aniState = _selected._animator.GetCurrentAnimatorStateInfo(0);
             AnimatorTransitionInfo aniTrans = _selected._animator.GetAnimatorTransitionInfo(0);
+            //DebugWide.LogBlue(_selected._animator.speed);
+
             float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
             float playTime = aniState.length;
             string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
@@ -163,12 +165,12 @@ namespace HordeFight
             if (hash == aniState.shortNameHash)
             {
 
-                DebugWide.LogBlue(aniTrans.nameHash + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
+                DebugWide.LogBlue(aniTrans.nameHash + "  plt: " + playTime + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
                                   "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
             }
             else
             {
-                DebugWide.LogRed(aniTrans.nameHash + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
+                DebugWide.LogRed(aniTrans.nameHash + "  plt: " + playTime + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
                                  "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
             }
         }
