@@ -1157,63 +1157,64 @@ namespace HordeFight
 
 
 
+        //임시주석 
         /// <summary>
         /// 지정된 범위의 캐릭터가 특정캐릭터를 쳐다보게 설정한다
         /// </summary>
         /// <param name="target">Target.</param>
-        public void LookAtTarget(Being src, uint gridRange_NxN)
-        {
+        //public void LookAtTarget(Being src, uint gridRange_NxN)
+        //{
 
-            Vector3 dir = ConstV.v3_zero;
-            CellSpace cell = null;
+        //    Vector3 dir = ConstV.v3_zero;
+        //    CellSpace cell = null;
 
-            Index2[] array = SingleO.gridManager._indexesNxN[gridRange_NxN];
-            int count = array.Length;
-            for (int i = 0; i < count; i++)
-            {
+        //    Index2[] array = SingleO.gridManager._indexesNxN[gridRange_NxN];
+        //    int count = array.Length;
+        //    for (int i = 0; i < count; i++)
+        //    {
 
-                cell = SingleO.cellPartition.GetCellSpace(array[i] + src._cur_cell._pos2d); //SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
-                if (null == cell) continue;
+        //        cell = SingleO.cellPartition.GetCellSpace(array[i] + src._cur_cell._pos2d); //SingleO.gridManager.GetCellInfo(ix + src._cellInfo._index);
+        //        if (null == cell) continue;
 
-                Being dst = null;
-                Being getBeing = cell._children;
-                while (null != (object)getBeing)
-                {
-                    dst = getBeing;
-                    getBeing = getBeing._next_sibling;
+        //        Being dst = null;
+        //        Being getBeing = cell._children;
+        //        while (null != (object)getBeing)
+        //        {
+        //            dst = getBeing;
+        //            getBeing = getBeing._next_sibling;
 
-                    if ((object)src == (object)dst) continue;
+        //            if ((object)src == (object)dst) continue;
 
-                    if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
-                    {
-                        dir = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
+        //            if ((int)Behavior.eKind.Idle <= (int)dst._behaviorKind && (int)dst._behaviorKind <= (int)Behavior.eKind.Idle_Max)
+        //            {
+        //                dir = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
 
-                        //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
-                        //==============================
-                        float sqr_radius = (float)(gridRange_NxN) * 0.5f; //반지름으로 변환
-                        sqr_radius *= SingleO.gridManager._cellSize_x; //셀크기로 변환
-                        sqr_radius *= sqr_radius; //제곱으로 변환
-                        if (sqr_radius < dir.sqrMagnitude)
-                            continue;
-                        //==============================
+        //                //그리드범위에 딱들어가는 원을 설정, 그 원 밖에 있으면 처리하지 않는다 
+        //                //==============================
+        //                float sqr_radius = (float)(gridRange_NxN) * 0.5f; //반지름으로 변환
+        //                sqr_radius *= SingleO.gridManager._cellSize_x; //셀크기로 변환
+        //                sqr_radius *= sqr_radius; //제곱으로 변환
+        //                if (sqr_radius < dir.sqrMagnitude)
+        //                    continue;
+        //                //==============================
 
-                        //dst.Idle_View(dir, true); //todo 나중에 수정된 함수 호출하기 
-                        dst._behaviorKind = Behavior.eKind.Idle_LookAt;
-                    }
-                }
-            }
+        //                //dst.Idle_View(dir, true); //todo 나중에 수정된 함수 호출하기 
+        //                dst._behaviorKind = Behavior.eKind.Idle_LookAt;
+        //            }
+        //        }
+        //    }
+        //}
 
-        }
+        //임시주석 
+        //public void SetAll_Behavior(Behavior.eKind kind)
+        //{
+        //    foreach (Being t in _beings.Values)
+        //    {
 
-        public void SetAll_Behavior(Behavior.eKind kind)
-        {
-            foreach (Being t in _beings.Values)
-            {
+        //        t._behaviorKind = kind;
 
-                t._behaviorKind = kind;
-
-            }
-        }
+        //    }
+        //}
 
         int __shotNextCount = -1;
         public Shot GetNextShot()

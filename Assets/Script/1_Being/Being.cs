@@ -212,7 +212,7 @@ namespace HordeFight
         //==================================================
         //동작정보
         //==================================================
-        public Behavior.eKind _behaviorKind = Behavior.eKind.None;
+        //public Behavior.eKind _behaviorKind = Behavior.eKind.None;
         public Behavior _behavior = null;
         public float _timeDelta = 0f;  //시간변화량
         //public BodyControl _bodyControl = new BodyControl();
@@ -612,19 +612,13 @@ namespace HordeFight
                 //_behaviorKind = Behavior.eKind.Idle;
             }
 
-            //int hash = Animator.StringToHash("idle");
-            //AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-            //if(hash == stateInfo.shortNameHash)
+            //임시로 무작위아이들 주석함 
+            //if (Behavior.eKind.Idle_Random == _behaviorKind)
             //{
-            //    //Idle();
+            //    //_animator.SetInteger("state", (int)Behavior.eKind.Idle);
+            //    Idle_Random();
+
             //}
-
-            if (Behavior.eKind.Idle_Random == _behaviorKind)
-            {
-                //_animator.SetInteger("state", (int)Behavior.eKind.Idle);
-                Idle_Random();
-
-            }
 
             //========================================
             //_bodyControl.Update(); //행동 진행 갱신 
@@ -849,7 +843,7 @@ namespace HordeFight
         private float __randTime = 0f;
         public void Idle_Random()
         {
-            if ((int)Behavior.eKind.Idle == _animator.GetInteger(ANI_STATE))
+            if((int)eAniBaseKind.idle == _animator.GetInteger(ANI_STATE))
             {
                 __elapsedTime_1 += Time.deltaTime;
 
@@ -867,7 +861,7 @@ namespace HordeFight
                     _move._eDir8 = (eDirection8)num;
 
                     Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                    _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+                    _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
 
                     __elapsedTime_1 = 0f;
 
@@ -882,13 +876,12 @@ namespace HordeFight
         public void Idle()
         {
 
-            _behaviorKind = Behavior.eKind.Idle;
-            //_bodyControl.Idle();
+            //_behaviorKind = Behavior.eKind.Idle;
 
             if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
                 _animator.Play(ANI_STATE_IDLE); //상태전이 없이 바로 적용되게 한다    
             }
 
@@ -1022,11 +1015,10 @@ namespace HordeFight
 
             }
 
-            _behaviorKind = Behavior.eKind.FallDown;
+            //_behaviorKind = Behavior.eKind.FallDown;
             Switch_Ani(_kind, eAniBaseKind.fallDown, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.FallDown);
-            //int hash = Animator.StringToHash("fallDown");
-            //_animator.SetTrigger(hash);
+            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.fallDown);
+
         }
 
         public void Block_Forward(Vector3 dir)
@@ -1035,10 +1027,9 @@ namespace HordeFight
 
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
-            _behaviorKind = Behavior.eKind.Block;
+            //_behaviorKind = Behavior.eKind.Block;
             Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Block);
+            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
 
         }
 
@@ -1049,7 +1040,7 @@ namespace HordeFight
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
 
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
             }
         }
 
@@ -1065,14 +1056,14 @@ namespace HordeFight
             if (false == forward)
                 eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
-            _behaviorKind = Behavior.eKind.Move;
+            //_behaviorKind = Behavior.eKind.Move;
             //_bodyControl.Move_0();
 
             if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
+                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
             }
 
             //==============================================
@@ -1090,14 +1081,14 @@ namespace HordeFight
             _move.Move_LookAt(moveDir, lookAtDir, 2f, second);
 
             //아이들 상태에서 밀려 이동하는 걸 표현
-            _behaviorKind = Behavior.eKind.Move;
+            //_behaviorKind = Behavior.eKind.Move;
 
             if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
 
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
+                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
             }
 
             //==============================================
@@ -1114,14 +1105,14 @@ namespace HordeFight
             _move.Move_Push(dir, 2f, second);
 
             //아이들 상태에서 밀려 이동하는 걸 표현
-            _behaviorKind = Behavior.eKind.Idle;
+            //_behaviorKind = Behavior.eKind.Idle;
 
             if (true == IsActive_Animator())
             {
                 Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
 
                 //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Idle);
+                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
             }
 
             //==============================================
@@ -1137,15 +1128,82 @@ namespace HordeFight
             _move.SetNextMoving(false);
             _move.MoveToTarget(targetPos, speed);
 
-            _behaviorKind = Behavior.eKind.Move;
+            //_behaviorKind = Behavior.eKind.Move;
             Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Move);
+            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
             //int hash = Animator.StringToHash("move");
             //_animator.SetTrigger(hash);
 
             //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
 
+    }
+
+    public class AniControl
+    {
+        public readonly int ANI_STATE = Animator.StringToHash("state");
+        public readonly int ANI_STATE_IDLE = Animator.StringToHash("idle");
+        public readonly int ANI_STATE_MOVE = Animator.StringToHash("move");
+        public readonly int ANI_STATE_ATTACK = Animator.StringToHash("attack");
+        public readonly int ANI_STATE_FALLDOWN = Animator.StringToHash("fallDown");
+
+        public Animator _animator = null;
+        public AnimatorOverrideController _overCtr = null;
+        public SpriteRenderer _sprRender = null;
+
+
+        public void Play(Being.eKind eKind, eDirection8 dir)
+        {
+            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);
+
+
+            //_move._eDir8 = Misc.GetDir8_AxisY(dir);
+            Switch_Ani(eKind, eAniBaseKind.attack, dir);
+            //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
+            //_animator.speed = 0.5f; //속도를 설정한다 
+        }
+
+        uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
+        public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
+        {
+            if (null == (object)_overCtr) return;
+
+            _sprRender.flipX = false;
+
+            switch (dir)
+            {
+
+                case eDirection8.leftUp:
+                    {
+                        dir = eDirection8.rightUp;
+                        _sprRender.flipX = true;
+                    }
+                    break;
+                case eDirection8.left:
+                    {
+                        dir = eDirection8.right;
+                        _sprRender.flipX = true;
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        dir = eDirection8.rightDown;
+                        _sprRender.flipX = true;
+                    }
+                    break;
+
+            }
+
+            //현재상태와 같은 요청이 들어오면 갱신하지 않는다 
+            uint next_aniMultiKey = SingleO.resourceManager.ComputeAniMultiKey(being_kind, ani_kind, dir);
+            if (next_aniMultiKey == __cache_cur_aniMultiKey[(int)ani_kind]) return;
+
+
+            AnimationClip base_clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
+            _overCtr[base_clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
+            __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
+
+        }
     }
 
 }

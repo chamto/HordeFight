@@ -193,8 +193,8 @@ namespace HordeFight
         public Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
-            _animator.SetInteger(ANI_STATE, (int)Behavior.eKind.Attack);
-            _behaviorKind = Behavior.eKind.Attack;
+            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);
+            //_behaviorKind = Behavior.eKind.Attack;
 
 
             _move._eDir8 = Misc.GetDir8_AxisY(dir);

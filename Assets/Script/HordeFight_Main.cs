@@ -541,28 +541,28 @@ namespace HordeFight
     public partial class Behavior
     {
         //제거대상 
-        public enum eKind
-        {
-            None = 0,
+        //public enum eKind
+        //{
+        //    None = 0,
 
-            Idle = 10,
-            Idle_Random = 11,
-            Idle_LookAt = 12,
-            Idle_Max = 19,
+        //    Idle = 10,
+        //    Idle_Random = 11,
+        //    Idle_LookAt = 12,
+        //    Idle_Max = 19,
 
-            Move = 20,
-            Move_Max = 29,
+        //    Move = 20,
+        //    Move_Max = 29,
 
-            Block = 30,
-            Block_Max = 39,
+        //    Block = 30,
+        //    Block_Max = 39,
 
-            Attack = 40,
-            Attack_Max = 49,
+        //    Attack = 40,
+        //    Attack_Max = 49,
 
-            FallDown = 50,
-            FallDown_Max = 59,
+        //    FallDown = 50,
+        //    FallDown_Max = 59,
 
-        }
+        //}
 
         //운동 모양
         public enum eMovementShape
