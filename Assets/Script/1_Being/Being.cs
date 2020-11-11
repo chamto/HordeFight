@@ -136,11 +136,11 @@ namespace HordeFight
         //==================================================
 
         //상수
-        public int ANI_STATE = Animator.StringToHash("state");
-        public int ANI_STATE_IDLE = Animator.StringToHash("idle");
-        public int ANI_STATE_MOVE = Animator.StringToHash("move");
-        public int ANI_STATE_ATTACK = Animator.StringToHash("attack");
-        public int ANI_STATE_FALLDOWN = Animator.StringToHash("fallDown");
+        //public int ANI_STATE = Animator.StringToHash("state");
+        //public int ANI_STATE_IDLE = Animator.StringToHash("idle");
+        //public int ANI_STATE_MOVE = Animator.StringToHash("move");
+        //public int ANI_STATE_ATTACK = Animator.StringToHash("attack");
+        //public int ANI_STATE_FALLDOWN = Animator.StringToHash("fallDown");
 
         //==================================================
 
@@ -183,11 +183,13 @@ namespace HordeFight
         //==================================================
         //애니
         //==================================================
-        public Animator _animator = null;
-        protected AnimatorOverrideController _overCtr = null;
+        //public Animator _animator = null;
+        //protected AnimatorOverrideController _overCtr = null;
         //protected AniClipOverrides _clipOverrides = null;
+        //protected SpriteRenderer _sprRender = null;
 
-        protected SpriteRenderer _sprRender = null;
+        public AniControl _ani = new AniControl();
+
         protected SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
 
@@ -264,27 +266,27 @@ namespace HordeFight
                 _ai.Init();
             }
 
-            _sprRender = GetComponentInChildren<SpriteRenderer>();
-            _animator = GetComponentInChildren<Animator>();
+            //_sprRender = GetComponentInChildren<SpriteRenderer>();
+            //_animator = GetComponentInChildren<Animator>();
             _sprMask = GetComponentInChildren<SpriteMask>();
-
+            _ani.Init(transform, _id);
             //=====================================================
-            //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
-            //오버라이트컨트롤러를 직접 생성해서 추가한다
-            if (null != _animator)
-            {
-                //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
-                _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
-                _overCtr.name = "divide_character_" + _id.ToString();
-                _animator.runtimeAnimatorController = _overCtr;
+            ////미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
+            ////오버라이트컨트롤러를 직접 생성해서 추가한다
+            //if (null != _animator)
+            //{
+            //    //RuntimeAnimatorController new_baseController = RuntimeAnimatorController.Instantiate<RuntimeAnimatorController>(SingleO.resourceManager._base_Animator);
+            //    _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+            //    _overCtr.name = "divide_character_" + _id.ToString();
+            //    _animator.runtimeAnimatorController = _overCtr;
 
-                //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
-                //_clipOverrides = new AniClipOverrides(_overCtr.overridesCount);
-                //_overCtr.GetOverrides(_clipOverrides);
-                //_clipOverrides.Init(); //chamto test
-                //ApplyOverrides 이 함수는 내부적으로 값을 복사하는 것 같음. 프레임이 급격히 떨어짐. 이 방식 사용하지 말기 
-                //_overCtr.ApplyOverrides(_clipOverrides);
-            }
+            //    //ref : https://docs.unity3d.com/ScriptReference/AnimatorOverrideController.html
+            //    //_clipOverrides = new AniClipOverrides(_overCtr.overridesCount);
+            //    //_overCtr.GetOverrides(_clipOverrides);
+            //    //_clipOverrides.Init(); //chamto test
+            //    //ApplyOverrides 이 함수는 내부적으로 값을 복사하는 것 같음. 프레임이 급격히 떨어짐. 이 방식 사용하지 말기 
+            //    //_overCtr.ApplyOverrides(_clipOverrides);
+            //}
 
             //=====================================================
             //셀정보 초기 위치값에 맞춰 초기화
@@ -376,14 +378,14 @@ namespace HordeFight
 
         public void SetVisible(bool onoff)
         {
-            if (null != (object)_sprRender)
+            if (null != (object)_ani._sprRender)
             {
-                _sprRender.enabled = onoff;
+                _ani._sprRender.enabled = onoff;
                 //_sprRender.gameObject.SetActive(onoff);
             }
-            if (null != (object)_animator)
+            if (null != (object)_ani._animator)
             {
-                _animator.enabled = onoff;
+                _ani._animator.enabled = onoff;
             }
             if (null != (object)_sprMask)
             {
@@ -395,9 +397,9 @@ namespace HordeFight
 
         public void SetColor(Color color)
         {
-            if (null != (object)_sprRender)
+            if (null != (object)_ani._sprRender)
             {
-                _sprRender.color = color;
+                _ani._sprRender.color = color;
             }
         }
 
@@ -450,8 +452,8 @@ namespace HordeFight
         {
             if (null == (object)_sprMask) return;
 
-            AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
-            _sprMask.sprite = _sprRender.sprite;
+            AnimatorStateInfo stateInfo = _ani._animator.GetCurrentAnimatorStateInfo(0);
+            _sprMask.sprite = _ani._sprRender.sprite;
 
         }
 
@@ -502,7 +504,7 @@ namespace HordeFight
 
         public void Update_SortingOrder(int add)
         {
-            _sprRender.sortingOrder = GetSortingOrder(add);
+            _ani._sprRender.sortingOrder = GetSortingOrder(add);
             //_sortingGroup.sortingOrder = GetSortingOrder(add);
         }
 
@@ -661,49 +663,49 @@ namespace HordeFight
         //                  애니메이션  
         //____________________________________________
 
-        uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
-        public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
-        {
-            if (null == (object)_overCtr) return;
+        //uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
+        //public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
+        //{
+        //    if (null == (object)_overCtr) return;
 
-            _sprRender.flipX = false;
+        //    _sprRender.flipX = false;
 
-            switch (dir)
-            {
+        //    switch (dir)
+        //    {
 
-                case eDirection8.leftUp:
-                    {
-                        dir = eDirection8.rightUp;
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.left:
-                    {
-                        dir = eDirection8.right;
-                        _sprRender.flipX = true;
-                    }
-                    break;
-                case eDirection8.leftDown:
-                    {
-                        dir = eDirection8.rightDown;
-                        _sprRender.flipX = true;
-                    }
-                    break;
+        //        case eDirection8.leftUp:
+        //            {
+        //                dir = eDirection8.rightUp;
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
+        //        case eDirection8.left:
+        //            {
+        //                dir = eDirection8.right;
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
+        //        case eDirection8.leftDown:
+        //            {
+        //                dir = eDirection8.rightDown;
+        //                _sprRender.flipX = true;
+        //            }
+        //            break;
 
-            }
+        //    }
 
-            //현재상태와 같은 요청이 들어오면 갱신하지 않는다 
-            uint next_aniMultiKey = SingleO.resourceManager.ComputeAniMultiKey(being_kind, ani_kind, dir);
-            if (next_aniMultiKey == __cache_cur_aniMultiKey[(int)ani_kind]) return;
+        //    //현재상태와 같은 요청이 들어오면 갱신하지 않는다 
+        //    uint next_aniMultiKey = SingleO.resourceManager.ComputeAniMultiKey(being_kind, ani_kind, dir);
+        //    if (next_aniMultiKey == __cache_cur_aniMultiKey[(int)ani_kind]) return;
 
-            //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir)); //느려서 못씀 
-            //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); 
+        //    //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir)); //느려서 못씀 
+        //    //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); 
 
-            AnimationClip clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
-            _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
-            __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
+        //    AnimationClip clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
+        //    _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
+        //    __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
 
-        }
+        //}
 
         //public void non_Switch_Ani(string aniKind, string aniName, eDirection8 dir)
         //{
@@ -755,7 +757,8 @@ namespace HordeFight
         private float __randTime = 0f;
         public void Idle_Random()
         {
-            if((int)eAniBaseKind.idle == _animator.GetInteger(ANI_STATE))
+            if(_ani.IsAniState(eAniBaseKind.idle))
+            //if((int)eAniBaseKind.idle == _animator.GetInteger(ANI_STATE))
             {
                 __elapsedTime_1 += Time.deltaTime;
 
@@ -772,8 +775,9 @@ namespace HordeFight
                     if (8 < num) num = 1;
                     _move._eDir8 = (eDirection8)num;
 
-                    Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                    _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
+                    _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
+                    //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
+                    //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
 
                     __elapsedTime_1 = 0f;
 
@@ -790,22 +794,16 @@ namespace HordeFight
 
             //_behaviorKind = Behavior.eKind.Idle;
 
-            if (true == IsActive_Animator())
+            if (true == _ani.IsActive_Animator())
             {
-                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
-                _animator.Play(ANI_STATE_IDLE); //상태전이 없이 바로 적용되게 한다    
+                _ani.PlayNow(_kind, eAniBaseKind.idle, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
+                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
+                //_animator.Play(ANI_STATE_IDLE); //상태전이 없이 바로 적용되게 한다    
             }
 
         }
 
-        public bool IsActive_Animator()
-        {
-            if (null != (object)_animator && true == _animator.gameObject.activeInHierarchy)
-                return true;
-
-            return false;
-        }
 
         //public void Idle_LookAt()
         //{
@@ -832,8 +830,8 @@ namespace HordeFight
         int _nextCount = 0; //동작카운트
         public void Update_AnimatorState(int hash_state, float progress)
         {
-            AnimatorStateInfo aniState = _animator.GetCurrentAnimatorStateInfo(0);
-            AnimatorTransitionInfo aniTrans = _animator.GetAnimatorTransitionInfo(0);
+            AnimatorStateInfo aniState = _ani._animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorTransitionInfo aniTrans = _ani._animator.GetAnimatorTransitionInfo(0);
 
             float normalTime = 0;
 
@@ -927,9 +925,9 @@ namespace HordeFight
 
             }
 
-            //_behaviorKind = Behavior.eKind.FallDown;
-            Switch_Ani(_kind, eAniBaseKind.fallDown, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.fallDown);
+            _ani.Play(_kind, eAniBaseKind.fallDown, _move._eDir8);
+            //Switch_Ani(_kind, eAniBaseKind.fallDown, _move._eDir8);
+            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.fallDown);
 
         }
 
@@ -939,20 +937,20 @@ namespace HordeFight
 
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
-            //_behaviorKind = Behavior.eKind.Block;
-            Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
+            _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
+            //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
 
         }
 
         public void UpdateIdle()
         {
 
-            if (true == IsActive_Animator())
+            if (true == _ani.IsActive_Animator())
             {
-                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-
-                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
+                _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
+                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
             }
         }
 
@@ -971,11 +969,11 @@ namespace HordeFight
             //_behaviorKind = Behavior.eKind.Move;
             //_bodyControl.Move_0();
 
-            if (true == IsActive_Animator())
+            if (true == _ani.IsActive_Animator())
             {
-                Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-                //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
+                _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
             }
 
             //==============================================
@@ -995,12 +993,11 @@ namespace HordeFight
             //아이들 상태에서 밀려 이동하는 걸 표현
             //_behaviorKind = Behavior.eKind.Move;
 
-            if (true == IsActive_Animator())
+            if (true == _ani.IsActive_Animator())
             {
-                Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-
-                //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
+                _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
             }
 
             //==============================================
@@ -1019,12 +1016,11 @@ namespace HordeFight
             //아이들 상태에서 밀려 이동하는 걸 표현
             //_behaviorKind = Behavior.eKind.Idle;
 
-            if (true == IsActive_Animator())
+            if (true == _ani.IsActive_Animator())
             {
-                Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-
-                //int hash = Animator.StringToHash("move");
-                _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
+                _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
+                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
             }
 
             //==============================================
@@ -1040,11 +1036,9 @@ namespace HordeFight
             _move.SetNextMoving(false);
             _move.MoveToTarget(targetPos, speed);
 
-            //_behaviorKind = Behavior.eKind.Move;
-            Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
-            //int hash = Animator.StringToHash("move");
-            //_animator.SetTrigger(hash);
+            _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
+            //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
+            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
 
             //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
@@ -1058,21 +1052,65 @@ namespace HordeFight
         public readonly int ANI_STATE_MOVE = Animator.StringToHash("move");
         public readonly int ANI_STATE_ATTACK = Animator.StringToHash("attack");
         public readonly int ANI_STATE_FALLDOWN = Animator.StringToHash("fallDown");
+        public int[] HASH_STATE = new int[(int)eAniBaseKind.MAX];
 
         public Animator _animator = null;
         public AnimatorOverrideController _overCtr = null;
         public SpriteRenderer _sprRender = null;
 
 
+        public void Init(Transform parent , uint id)
+        {
+            HASH_STATE[(int)eAniBaseKind.idle] = ANI_STATE_IDLE;
+            HASH_STATE[(int)eAniBaseKind.move] = ANI_STATE_MOVE;
+            HASH_STATE[(int)eAniBaseKind.attack] = ANI_STATE_ATTACK;
+            HASH_STATE[(int)eAniBaseKind.fallDown] = ANI_STATE_FALLDOWN;
+
+            _sprRender = parent.GetComponentInChildren<SpriteRenderer>();
+            _animator = parent.GetComponentInChildren<Animator>();
+
+            //미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
+            //오버라이트컨트롤러를 직접 생성해서 추가한다
+            if (null != _animator)
+            {
+                _overCtr = new AnimatorOverrideController(_animator.runtimeAnimatorController);
+                _overCtr.name = "divide_character_" + id.ToString();
+                _animator.runtimeAnimatorController = _overCtr;
+            }
+        }
+
+        public bool IsActive_Animator()
+        {
+            if (null != (object)_animator && true == _animator.gameObject.activeInHierarchy)
+                return true;
+
+            return false;
+        }
+
+        public bool IsAniState(eAniBaseKind ani_kind)
+        {
+            if ((int)ani_kind == _animator.GetInteger(ANI_STATE))
+                return true;
+
+            return false;
+        }
+
         public void Play(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
         {
-            _animator.SetInteger(ANI_STATE, (int)ani_kind);
-
-
             //_move._eDir8 = Misc.GetDir8_AxisY(dir);
+            _animator.SetInteger(ANI_STATE, (int)ani_kind);
             Switch_Ani(being_kind, ani_kind, dir);
+
             //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
             //_animator.speed = 0.5f; //속도를 설정한다 
+        }
+
+        //에니메이터의 전이과정 없이 즉시재생시킨다 
+        public void PlayNow(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
+        {
+            _animator.SetInteger(ANI_STATE, (int)ani_kind);
+            Switch_Ani(being_kind, ani_kind, dir);
+            _animator.Play(HASH_STATE[(int)ani_kind]);
         }
 
         uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
@@ -1115,6 +1153,32 @@ namespace HordeFight
             _overCtr[base_clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
             __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
 
+        }
+
+        //애니메이터 상태별 상세값이 어떻게 변화되는지 보기 위해 작성함
+        //ChampStateMachine.OnStateEnter 에서 전이중일 때, "상태 시작함수"의 현재상태값이 "다음 상태"로 나오는 반면, 아래함수로 직접 출력해 보면 "현재 상태"로 나온다
+        public void Print_AnimatorState()
+        {
+            AnimatorStateInfo aniState = _animator.GetCurrentAnimatorStateInfo(0);
+            AnimatorTransitionInfo aniTrans = _animator.GetAnimatorTransitionInfo(0);
+            //DebugWide.LogBlue(_selected._animator.speed);
+
+            float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
+            float playTime = aniState.length;
+            string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
+            string transName = SingleO.hashMap.GetString(aniTrans.nameHash);
+            int hash = Animator.StringToHash("attack");
+            if (hash == aniState.shortNameHash)
+            {
+
+                DebugWide.LogBlue(aniTrans.nameHash + "  plt: " + playTime + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
+                                  "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            }
+            else
+            {
+                DebugWide.LogRed(aniTrans.nameHash + "  plt: " + playTime + "   tr: " + transName + "    du: " + aniTrans.duration + "   trNt: " + aniTrans.normalizedTime +
+                                 "  :::   st: " + stateName + "   ct: " + (int)aniState.normalizedTime + "  stNt:" + normalTime);
+            }
         }
 
         //--------------------------------------------------

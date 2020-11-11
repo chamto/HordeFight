@@ -193,12 +193,13 @@ namespace HordeFight
         public Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
-            _animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);
-            //_behaviorKind = Behavior.eKind.Attack;
-
-
+            
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
-            Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
+
+            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
+            //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
+            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);
+
             //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
             //_animator.speed = 0.5f; //속도를 설정한다 
             //_target = target;
@@ -241,12 +242,14 @@ namespace HordeFight
         {
             //DebugWide.LogBlue("OnAniState_Start :" + hash_state); //chamto test
 
-            if (hash_state == ANI_STATE_ATTACK)
+            if (hash_state == _ani.ANI_STATE_ATTACK)
             {
                 //예약된 방향값 설정
                 _move._eDir8 = Misc.GetDir8_AxisY(_appointmentDir);
                 _move._direction = Misc.GetDir8_Normal3D_AxisY(_move._eDir8);
-                Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
+
+                _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
+                //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
 
                 //this.SetActiveEffect(eEffectKind.Hand_Right, true);
             }
@@ -257,7 +260,7 @@ namespace HordeFight
         {
             //DebugWide.LogYellow("OnAniState_End :" + hash_state + "  " + _hash_attack + "   "+ _target); //chamto test
 
-            if (hash_state == ANI_STATE_ATTACK)
+            if (hash_state == _ani.ANI_STATE_ATTACK)
             {
 
                 //목표에 피해를 준다
@@ -314,7 +317,7 @@ namespace HordeFight
             //    yield return new WaitForSeconds(0.05f);
             //}
             this.SetActiveEffect(eEffectKind.Emotion, true);
-            _sprRender.color = Color.red;
+            _ani._sprRender.color = Color.red;
 
             if (true == __in_corutin_Damage)
                 yield break;
@@ -323,7 +326,7 @@ namespace HordeFight
             yield return new WaitForSeconds(0.5f);
 
             this.SetActiveEffect(eEffectKind.Emotion, false);
-            _sprRender.color = Color.white;
+            _ani._sprRender.color = Color.white;
             __in_corutin_Damage = false;
 
             yield break;

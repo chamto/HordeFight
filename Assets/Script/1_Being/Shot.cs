@@ -110,7 +110,7 @@ namespace HordeFight
         public void ThrowThings(Being owner, Vector3 launchPos, Vector3 targetPos)
         {
 
-            if (null == (object)_sprRender)
+            if (null == (object)_ani._sprRender)
                 return; //Start 함수 수행전에 호출된 경우 
 
 
