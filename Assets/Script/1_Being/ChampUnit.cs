@@ -187,6 +187,27 @@ namespace HordeFight
 
         }
 
+        public void On_Start_Attack(SkillControl control)
+        {
+            _ani._animator.speed = 1;
+            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
+            //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0.7f); //애니의 노멀타임을 설정한다
+            //float a = 0.015f;
+            //_ani._animator.speed = 1f/a; //속도를 설정한다 
+
+            // 0.15s : 1 = 1s : ?
+            // 1 = 0.15 * ?
+
+
+            DebugWide.LogBlue(control._state_current +  "  " + control._skill_cur._name + "  " + control._timeDelta);
+        }
+        public void On_Start_End(SkillControl control)
+        {
+            DebugWide.LogRed(control._state_current + "  " + control._skill_cur._name + "  " + control._timeDelta);
+            //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 1f);
+            //this.Idle();
+            _ani._animator.speed = 0;
+        }
 
         public Shot _shot = null;
         Vector3 _appointmentDir = ConstV.v3_zero;
@@ -196,10 +217,17 @@ namespace HordeFight
             
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
-            _skillControl.Attack_Strong_1();
-            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
-            //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
-            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);
+
+            //_skillControl.Attack_Strong_1();
+            //_skillControl._on_start = On_Start_Attack;
+            //_skillControl._on_running_end = On_Start_End;
+            Skill.AddInfo addInfo = new Skill.AddInfo();
+            addInfo.on_start = On_Start_Attack;
+            addInfo.on_running = null;
+            addInfo.on_running_end = On_Start_End;
+            _skillControl.Play(Skill.eName.Attack_Strong_1, addInfo);
+
+            //_ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
 
             //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
             //_animator.speed = 0.5f; //속도를 설정한다 

@@ -270,6 +270,7 @@ namespace HordeFight
             //_animator = GetComponentInChildren<Animator>();
             _sprMask = GetComponentInChildren<SpriteMask>();
             _ani.Init(transform, _id);
+            _skillControl._ref_being = this;
             //=====================================================
             ////미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             ////오버라이트컨트롤러를 직접 생성해서 추가한다
@@ -789,18 +790,24 @@ namespace HordeFight
 
         }
 
-        public void Idle()
+        public void On_Start_Idle(SkillControl control)
         {
-
-            _skillControl.Idle();
-
             if (true == _ani.IsActive_Animator())
             {
                 _ani.PlayNow(_kind, eAniBaseKind.idle, _move._eDir8);
-                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
-                //_animator.Play(ANI_STATE_IDLE); //상태전이 없이 바로 적용되게 한다    
+
             }
+        }
+
+        public void Idle()
+        {
+            //_skillControl.Idle();
+            //_skillControl._on_start = On_Start_Idle;
+
+            Skill.AddInfo addInfo = new Skill.AddInfo();
+            addInfo.Init();
+
+            _skillControl.PlayNow(Skill.eName.Idle, addInfo);
 
         }
 

@@ -747,7 +747,7 @@ namespace HordeFight
         {
 
             Behavior bhvo = new Behavior();
-            bhvo.runningTime = 2.0f;
+            bhvo.runningTime = 1.0f;
             //1
             bhvo.cloggedTime_0 = 0.1f;
             bhvo.cloggedTime_1 = 1.0f;
@@ -758,7 +758,7 @@ namespace HordeFight
             bhvo.openTime_0 = 1.5f;
             bhvo.openTime_1 = 1.8f;
             //4
-            bhvo.rigidTime = 0.5f;
+            bhvo.rigidTime = 0.0f;
 
             bhvo.movementShape = Behavior.eMovementShape.Straight;
             //bhvo.attack_shape = eTraceShape.Vertical;
@@ -786,7 +786,7 @@ namespace HordeFight
 namespace HordeFight
 {
     //스킬 : 행동의 집합체 
-    public class Skill : List<Behavior>
+    public partial class Skill : List<Behavior>
     {
 
         public enum eKind
@@ -957,6 +957,24 @@ namespace HordeFight
 
 namespace HordeFight
 {
+    public partial class Skill
+    {
+        public delegate void CallBack_Behavior(SkillControl control);
+        public struct AddInfo
+        {
+            public CallBack_Behavior on_start;
+            public CallBack_Behavior on_running;
+            public CallBack_Behavior on_running_end;
+
+            public void Init()
+            {
+                on_start = null;
+                on_running = null;
+                on_running_end = null;
+            }
+        }
+    }
+
     public class SkillControl
     {
         
@@ -1043,7 +1061,12 @@ namespace HordeFight
         //동작정보
         public Behavior _behavior_cur = null;
         public Skill _skill_cur = null;
+
+        //다음 스킬 정보 
         private Skill _skill_next = null;
+        public Skill.AddInfo _addInfo_cur = new Skill.AddInfo();
+        public Skill.AddInfo _addInfo_next = new Skill.AddInfo();
+
         public float _timeDelta = 0f;  //시간변화량
 
         //상태정보
@@ -1055,8 +1078,20 @@ namespace HordeFight
 
 
 
+        public Being _ref_being = null;
+
         //====================================
 
+        //public SkillControl(Being ref_being)
+        //{
+        //    _ref_being = ref_being;
+        //}
+
+        public SkillControl()
+        {
+            _addInfo_cur.Init();
+            _addInfo_next.Init();
+        }
         //public SkillControl()
         //{
         //    _parts = new Part[(int)Part.eKind.Max];
@@ -1126,55 +1161,60 @@ namespace HordeFight
 
         public SkillBook ref_skillBook { get { return CSingleton<SkillBook>.Instance; } }
 
-        public void PlayNow(Skill.eName name)
+        public void PlayNow(Skill.eName name, Skill.AddInfo addInfo)
         {
-            this.PlayNow(ref_skillBook.Refer(name));
+            this.PlayNow(ref_skillBook.Refer(name) , addInfo);
         }
 
-        //바로 요청시킬로 변경 
-        public void PlayNow(Skill skill)
+        //바로 요청스킬로 변경 
+        public void PlayNow(Skill skill, Skill.AddInfo addInfo)
         {
+            //콜백 초기화 
+            _addInfo_cur = addInfo;
+            _addInfo_next.Init();
+
             _skill_cur = skill;
             _behavior_cur = _skill_cur.FirstBehavior();
             SetState(eState.Start);
             this._timeDelta = 0f;
         }
 
-        public void Play(Skill.eName name)
+        public void Play(Skill.eName name ,Skill.AddInfo addInfo)
         {
-            this.Play(ref_skillBook.Refer(name));
+            this.Play(ref_skillBook.Refer(name), addInfo);
         }
 
-        //현재 스킬 end 까지 진행후 다음스킬 시작 (현재 스킬을 end 상태로 바로 전환한다)  
-        public void Play(Skill skill)
+        //현재 스킬의 행동 end 까지 진행후 다음스킬 시작 (현재 스킬을 end 상태로 바로 전환한다)  
+        public void Play(Skill skill, Skill.AddInfo addInfo)
         {
             //현재 스킬이 지정되어 있지 않으면 바로 요청 스킬로 지정한다
             //현재 상태가 end라면 스킬을 바로 지정한다
             if (null == _skill_cur || eState.End == this._state_current)
             {
-                this.PlayNow(skill);
+                this.PlayNow(skill, addInfo);
                 return;
             }
 
+            _addInfo_next = addInfo;
             _skill_next = skill;
 
             //SetState(eState.End); //계속 함수를 호출하면 End 상태를 못 벗어나 주석처리함 
         }
 
-        public void Attack_Strong_1()
-        {
-            Play(Skill.eName.Attack_Strong_1);
-        }
+        //public void Attack_Strong_1()
+        //{
+        //    Play(Skill.eName.Attack_Strong_1);
+        //}
 
-        public void Move_0()
-        {
-            Play(Skill.eName.Move_0);
-        }
+        //public void Move_0()
+        //{
+        //    Play(Skill.eName.Move_0);
+        //}
 
-        public void Idle()
-        {
-            Play(Skill.eName.Idle);
-        }
+        //public void Idle()
+        //{
+        //    Play(Skill.eName.Idle);
+        //}
 
         public void Update()
         {
@@ -1198,9 +1238,13 @@ namespace HordeFight
                     break;
                 case eState.Start:
                     {
-                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name);//chamto test
+                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name);//chamto test
 
                         this._timeDelta = 0f;
+
+                        if (null != _addInfo_cur.on_start)
+                            _addInfo_cur.on_start(this);
+                        
                         SetState(eState.Running);
                         SetEventState(eSubState.None);
 
@@ -1242,13 +1286,24 @@ namespace HordeFight
 
                         if (_behavior_cur.runningTime <= this._timeDelta)
                         {
+                            if (null != _addInfo_cur.on_running_end)
+                                _addInfo_cur.on_running_end(this);
+                            
                             //동작완료
                             this.SetState(eState.Waiting);
+
+                            break;
                         }
+
+                        if (null != _addInfo_cur.on_running)
+                            _addInfo_cur.on_running(this);
+
+                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta);//chamto test
                     }
                     break;
                 case eState.Waiting:
                     {
+                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta);//chamto test
                         //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
                         if (_behavior_cur.rigidTime <= (this._timeDelta - _behavior_cur.runningTime))
                         {
@@ -1259,12 +1314,14 @@ namespace HordeFight
                     break;
                 case eState.End:
                     {
+                        
                         //* 다음 스킬입력 처리  
                         if (null != _skill_next)
                         {
                             //DebugWide.LogBlue ("next : " + _skill_next.name);
-                            PlayNow(_skill_next);
+                            PlayNow(_skill_next, _addInfo_cur);
                             _skill_next = null;
+
                         }
                         else
                         {
@@ -1274,7 +1331,8 @@ namespace HordeFight
                             //if(false == _skill_current.IsNextBehavior())
                             {
                                 //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
-                                Idle();
+                                //Idle();
+                                _ref_being.Idle();
                             }
                             else
                             {
