@@ -540,29 +540,6 @@ namespace HordeFight
     //========================================================
     public partial class Behavior
     {
-        //제거대상 
-        //public enum eKind
-        //{
-        //    None = 0,
-
-        //    Idle = 10,
-        //    Idle_Random = 11,
-        //    Idle_LookAt = 12,
-        //    Idle_Max = 19,
-
-        //    Move = 20,
-        //    Move_Max = 29,
-
-        //    Block = 30,
-        //    Block_Max = 39,
-
-        //    Attack = 40,
-        //    Attack_Max = 49,
-
-        //    FallDown = 50,
-        //    FallDown_Max = 59,
-
-        //}
 
         //운동 모양
         public enum eMovementShape
@@ -573,7 +550,6 @@ namespace HordeFight
             Rotation,   //회전 
             Area,       //영역
         }
-
 
         //===================================
 
@@ -737,17 +713,79 @@ namespace HordeFight
             //if(distance_maxTime < currentTime)
             return this.velocity_after * (runningTime - currentTime);
         }
+
+        //==================================================
+
+        static public Behavior Details_Idle()
+        {
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = 0;
+            bhvo.openTime_1 = 10f;
+
+            return bhvo;
+        }
+
+        static public Behavior Details_Move()
+        {
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 1f;
+
+            bhvo.eventTime_0 = 0f;
+            bhvo.eventTime_1 = 0f;
+            bhvo.openTime_0 = 0;
+            bhvo.openTime_1 = 10f;
+
+            return bhvo;
+        }
+
+
+        static public Behavior Details_Attack_Strong()
+        {
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 2.0f;
+            //1
+            bhvo.cloggedTime_0 = 0.1f;
+            bhvo.cloggedTime_1 = 1.0f;
+            //2
+            bhvo.eventTime_0 = 1.0f;
+            bhvo.eventTime_1 = 1.2f;
+            //3
+            bhvo.openTime_0 = 1.5f;
+            bhvo.openTime_1 = 1.8f;
+            //4
+            bhvo.rigidTime = 0.5f;
+
+            bhvo.movementShape = Behavior.eMovementShape.Straight;
+            //bhvo.attack_shape = eTraceShape.Vertical;
+            bhvo.angle = 45f;
+            bhvo.plus_range_0 = 2f;
+            bhvo.plus_range_1 = 2f;
+            bhvo.distance_travel = 1f;
+            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
+            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+
+            bhvo.Calc_Velocity();
+
+            return bhvo;
+        }
+
     }
 
-}
+}//end namespace
 //*/
 //========================================================
 //==================     스킬  정보     ==================
 //========================================================
 
-/*
+
 namespace HordeFight
 {
+    //스킬 : 행동의 집합체 
     public class Skill : List<Behavior>
     {
 
@@ -843,18 +881,10 @@ namespace HordeFight
         static public Skill Details_Idle()
         {
             Skill skinfo = new Skill();
-
             skinfo._kind = eKind.None;
             skinfo._name = eName.Idle;
 
-            Behavior bhvo = new Behavior();
-            bhvo.runningTime = 1f;
-
-            bhvo.eventTime_0 = 0f;
-            bhvo.eventTime_1 = 0f;
-            bhvo.openTime_0 = 0;
-            bhvo.openTime_1 = 10f;
-            skinfo.Add(bhvo);
+            skinfo.Add(Behavior.Details_Idle());
 
             return skinfo;
         }
@@ -862,18 +892,10 @@ namespace HordeFight
         static public Skill Details_Move()
         {
             Skill skinfo = new Skill();
-
             skinfo._kind = eKind.Move;
             skinfo._name = eName.Move_0;
 
-            Behavior bhvo = new Behavior();
-            bhvo.runningTime = 1f;
-
-            bhvo.eventTime_0 = 0f;
-            bhvo.eventTime_1 = 0f;
-            bhvo.openTime_0 = 0;
-            bhvo.openTime_1 = 10f;
-            skinfo.Add(bhvo);
+            skinfo.Add(Behavior.Details_Move());
 
             return skinfo;
         }
@@ -882,35 +904,10 @@ namespace HordeFight
         static public Skill Details_Attack_Strong()
         {
             Skill skinfo = new Skill();
-
             skinfo._kind = eKind.Attack_Strong;
             skinfo._name = eName.Attack_Strong_1;
 
-            Behavior bhvo = new Behavior();
-            bhvo.runningTime = 2.0f;
-            //1
-            bhvo.cloggedTime_0 = 0.1f;
-            bhvo.cloggedTime_1 = 1.0f;
-            //2
-            bhvo.eventTime_0 = 1.0f;
-            bhvo.eventTime_1 = 1.2f;
-            //3
-            bhvo.openTime_0 = 1.5f;
-            bhvo.openTime_1 = 1.8f;
-            //4
-            bhvo.rigidTime = 0.5f;
-
-            bhvo.movementShape = Behavior.eMovementShape.Straight;
-            //bhvo.attack_shape = eTraceShape.Vertical;
-            bhvo.angle = 45f;
-            bhvo.plus_range_0 = 2f;
-            bhvo.plus_range_1 = 2f;
-            bhvo.distance_travel = 1f;
-            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
-
-            bhvo.Calc_Velocity();
-            skinfo.Add(bhvo);
+            skinfo.Add(Behavior.Details_Attack_Strong());
 
             return skinfo;
         }
@@ -922,11 +919,11 @@ namespace HordeFight
     /// <summary>
     /// Skill book.
     /// </summary>
-    public class SkillBook //: Dictionary<Skill.eName, Skill>
+    public class SkillBook 
     {
         private delegate Skill Details_Skill();
         private Dictionary<Skill.eName, Skill> _referDict = new Dictionary<Skill.eName, Skill>();   //미리 만들어진 정보로 빠르게 사용
-        private Dictionary<Skill.eName, Details_Skill> _createDict = new Dictionary<Skill.eName, Details_Skill>(); //새로운 스킬인스턴스를 만들때 사용 
+        //private Dictionary<Skill.eName, Details_Skill> _createDict = new Dictionary<Skill.eName, Details_Skill>(); //새로운 스킬인스턴스를 만들때 사용 
 
         public SkillBook()
         {
@@ -941,7 +938,7 @@ namespace HordeFight
         private void Add(Skill.eName name, Details_Skill skillPtr)
         {
             _referDict.Add(name, skillPtr());
-            _createDict.Add(name, skillPtr);
+            //_createDict.Add(name, skillPtr);
         }
 
         //만들어진 객체를 참조한다 
@@ -950,18 +947,19 @@ namespace HordeFight
             return _referDict[name];
         }
 
-        //요청객체를 생성한다
-        public Skill Create(Skill.eName name)
-        {
-            return _createDict[name]();
-        }
+        ////요청객체를 생성한다
+        //public Skill Create(Skill.eName name)
+        //{
+        //    return _createDict[name]();
+        //}
     }
 }
 
 namespace HordeFight
 {
-    public class BodyControl
+    public class SkillControl
     {
+        
         public enum eState
         {
             None = 0,
@@ -986,71 +984,65 @@ namespace HordeFight
         }
 
 
-        public enum ePoint
-        {
-            Start,  //시작
-            End,    //끝지
+        //public enum ePoint
+        //{
+        //    Start,  //시작
+        //    End,    //끝지
 
-            Cur,    //현재
+        //    Cur,    //현재
 
-            Max,
-        }
+        //    Max,
+        //}
 
-        public class Part
-        {
-            //신체부위
-            public enum eKind
-            {
-                None = 0,
+        //public class Part
+        //{
+        //    //신체부위
+        //    public enum eKind
+        //    {
+        //        None = 0,
 
-                //==== 인간형태 ==== 
-                Head = 0,
-                Hand_Left,  //손
-                Hand_Right,
-                Foot_Left,  //발
-                Foot_Right,
+        //        //==== 인간형태 ==== 
+        //        Head = 0,
+        //        Hand_Left,  //손
+        //        Hand_Right,
+        //        Foot_Left,  //발
+        //        Foot_Right,
 
-                //Other_1,    //또다른 손발등
-                //Other_2,
+        //        //Other_1,    //또다른 손발등
+        //        //Other_2,
 
-                Max,
+        //        Max,
 
-            }
+        //    }
 
 
-            public Vector3 _pos_standard;    //신체 부위의 기준점 
-            public float _range_max;         //부위 기준점으로 부터 최대 범위
-            public Vector3[] _pos;           //부위 위치 (로컬값)
-            public Vector3[] _dir;           //부위 방향 (로컬값)
+        //    public Vector3 _pos_standard;    //신체 부위의 기준점 
+        //    public float _range_max;         //부위 기준점으로 부터 최대 범위
+        //    public Vector3[] _pos;           //부위 위치 (로컬값)
+        //    public Vector3[] _dir;           //부위 방향 (로컬값)
 
-            public Vector3 _target;          //목표점 (월드값)
+        //    public Vector3 _target;          //목표점 (월드값)
 
-            public void Init()
-            {
-                _pos_standard = UtilGS9.ConstV.v3Int_zero;
-                _range_max = 1f;
-                _pos = new Vector3[(int)ePoint.Max];
-                _dir = new Vector3[(int)ePoint.Max];
+        //    public void Init()
+        //    {
+        //        _pos_standard = ConstV.v3_zero;
+        //        _range_max = 1f;
+        //        _pos = new Vector3[(int)ePoint.Max];
+        //        _dir = new Vector3[(int)ePoint.Max];
 
-                _target = new Vector3(0, 0, 2f); //z축을 보게 한다 
-            }
+        //        _target = new Vector3(0, 0, 2f); //z축을 보게 한다 
+        //    }
 
-        }
-
-        public class Weapon
-        {
-            public float length; //무기 길이 
-            //public 
-        }
+        //}
 
 
         //====================================
-        public Part[] _parts = null;    //부위 정보 
+        //public Part[] _parts = null;    //부위 정보 
 
 
         //동작정보
-        public Behavior _behavior = null;
-        public Skill _skill_current = null;
+        public Behavior _behavior_cur = null;
+        public Skill _skill_cur = null;
         private Skill _skill_next = null;
         public float _timeDelta = 0f;  //시간변화량
 
@@ -1065,43 +1057,43 @@ namespace HordeFight
 
         //====================================
 
-        public BodyControl()
-        {
-            _parts = new Part[(int)Part.eKind.Max];
-            for (int i = 0; i < (int)Part.eKind.Max; i++)
-            {
-                _parts[i] = new Part();
-                _parts[i].Init();
-            }
+        //public SkillControl()
+        //{
+        //    _parts = new Part[(int)Part.eKind.Max];
+        //    for (int i = 0; i < (int)Part.eKind.Max; i++)
+        //    {
+        //        _parts[i] = new Part();
+        //        _parts[i].Init();
+        //    }
 
-            Setting_Head_2Hand_2Foot();
-        }
+        //    Setting_Head_2Hand_2Foot();
+        //}
 
-        public void Setting_2Hand()
-        {
-            //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
-            Part HL = _parts[(int)Part.eKind.Hand_Left];
-            Part HR = _parts[(int)Part.eKind.Hand_Right];
+        //public void Setting_2Hand()
+        //{
+        //    //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
+        //    Part HL = _parts[(int)Part.eKind.Hand_Left];
+        //    Part HR = _parts[(int)Part.eKind.Hand_Right];
 
-            HL._pos_standard = new Vector3(-0.5f, 0.5f, 0);
-            HR._pos_standard = new Vector3(0.5f, 0.5f, 0);
-            HR._range_max = 1.1f; //오른쪽 사정거리를 약간 더 늘린다 
-        }
+        //    HL._pos_standard = new Vector3(-0.5f, 0.5f, 0);
+        //    HR._pos_standard = new Vector3(0.5f, 0.5f, 0);
+        //    HR._range_max = 1.1f; //오른쪽 사정거리를 약간 더 늘린다 
+        //}
 
-        public void Setting_Head_2Hand_2Foot()
-        {
-            //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
-            Setting_2Hand();
-            _parts[(int)Part.eKind.Head]._pos_standard = new Vector3(0, 1f, 0);
-            _parts[(int)Part.eKind.Foot_Left]._pos_standard = new Vector3(-0.5f, 0, 0);
-            _parts[(int)Part.eKind.Foot_Right]._pos_standard = new Vector3(0.5f, 0, 0);
-        }
+        //public void Setting_Head_2Hand_2Foot()
+        //{
+        //    //x-z축 공간에 캐릭터가 놓여 있고, z축을 바라보고 있다 가정 < Forward 방향 >
+        //    Setting_2Hand();
+        //    _parts[(int)Part.eKind.Head]._pos_standard = new Vector3(0, 1f, 0);
+        //    _parts[(int)Part.eKind.Foot_Left]._pos_standard = new Vector3(-0.5f, 0, 0);
+        //    _parts[(int)Part.eKind.Foot_Right]._pos_standard = new Vector3(0.5f, 0, 0);
+        //}
 
 
 
         public float CurrentDistance()
         {
-            return _behavior.CurrentDistance(_timeDelta);
+            return _behavior_cur.CurrentDistance(_timeDelta);
         }
 
         //public float GetWeaponDistance()
@@ -1134,32 +1126,33 @@ namespace HordeFight
 
         public SkillBook ref_skillBook { get { return CSingleton<SkillBook>.Instance; } }
 
-        public void SetSkill_Start(Skill.eName name)
+        public void PlayNow(Skill.eName name)
         {
-            this.SetSkill_Start(ref_skillBook.Refer(name));
+            this.PlayNow(ref_skillBook.Refer(name));
         }
 
-        public void SetSkill_Start(Skill skill)
+        //바로 요청시킬로 변경 
+        public void PlayNow(Skill skill)
         {
-            _skill_current = skill;
-            _behavior = _skill_current.FirstBehavior();
+            _skill_cur = skill;
+            _behavior_cur = _skill_cur.FirstBehavior();
             SetState(eState.Start);
             this._timeDelta = 0f;
         }
 
-        public void SetSkill_AfterInterruption(Skill.eName name)
+        public void Play(Skill.eName name)
         {
-            this.SetSkill_AfterInterruption(ref_skillBook.Refer(name));
+            this.Play(ref_skillBook.Refer(name));
         }
 
-        //현재 스킬 중단후 다음스킬 시작 (현재 스킬을 end 상태로 바로 전환한다)  
-        public void SetSkill_AfterInterruption(Skill skill)
+        //현재 스킬 end 까지 진행후 다음스킬 시작 (현재 스킬을 end 상태로 바로 전환한다)  
+        public void Play(Skill skill)
         {
             //현재 스킬이 지정되어 있지 않으면 바로 요청 스킬로 지정한다
             //현재 상태가 end라면 스킬을 바로 지정한다
-            if (null == _skill_current || eState.End == this._state_current)
+            if (null == _skill_cur || eState.End == this._state_current)
             {
-                this.SetSkill_Start(skill);
+                this.PlayNow(skill);
                 return;
             }
 
@@ -1170,22 +1163,22 @@ namespace HordeFight
 
         public void Attack_Strong_1()
         {
-            SetSkill_AfterInterruption(Skill.eName.Attack_Strong_1);
+            Play(Skill.eName.Attack_Strong_1);
         }
 
         public void Move_0()
         {
-            SetSkill_AfterInterruption(Skill.eName.Move_0);
+            Play(Skill.eName.Move_0);
         }
 
         public void Idle()
         {
-            SetSkill_AfterInterruption(Skill.eName.Idle);
+            Play(Skill.eName.Idle);
         }
 
         public void Update()
         {
-            if (null == _behavior) return;
+            if (null == _behavior_cur) return;
 
             this._timeDelta += Time.deltaTime;
 
@@ -1205,11 +1198,12 @@ namespace HordeFight
                     break;
                 case eState.Start:
                     {
+                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name);//chamto test
+
                         this._timeDelta = 0f;
                         SetState(eState.Running);
                         SetEventState(eSubState.None);
 
-                        //DebugWide.LogRed ("[0: "+this._state_current);//chamto test
                     }
                     break;
                 case eState.Running:
@@ -1224,7 +1218,7 @@ namespace HordeFight
                         switch (_eventState_current)
                         {
                             case eSubState.None:
-                                if (_behavior.eventTime_0 <= _timeDelta && _timeDelta <= _behavior.eventTime_1)
+                                if (_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta <= _behavior_cur.eventTime_1)
                                 {
                                     this.SetEventState(eSubState.Start);
                                 }
@@ -1233,7 +1227,7 @@ namespace HordeFight
                                 this.SetEventState(eSubState.Running);
                                 break;
                             case eSubState.Running:
-                                if (!(_behavior.eventTime_0 <= _timeDelta && _timeDelta < _behavior.eventTime_1))
+                                if (!(_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta < _behavior_cur.eventTime_1))
                                 {
                                     this.SetEventState(eSubState.End);
                                 }
@@ -1246,7 +1240,7 @@ namespace HordeFight
                         }
 
 
-                        if (_behavior.runningTime <= this._timeDelta)
+                        if (_behavior_cur.runningTime <= this._timeDelta)
                         {
                             //동작완료
                             this.SetState(eState.Waiting);
@@ -1256,7 +1250,7 @@ namespace HordeFight
                 case eState.Waiting:
                     {
                         //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
-                        if (_behavior.rigidTime <= (this._timeDelta - _behavior.runningTime))
+                        if (_behavior_cur.rigidTime <= (this._timeDelta - _behavior_cur.runningTime))
                         {
                             this.SetState(eState.End);
                         }
@@ -1269,14 +1263,14 @@ namespace HordeFight
                         if (null != _skill_next)
                         {
                             //DebugWide.LogBlue ("next : " + _skill_next.name);
-                            SetSkill_Start(_skill_next);
+                            PlayNow(_skill_next);
                             _skill_next = null;
                         }
                         else
                         {
                             //** 콤보 스킬 처리
-                            _behavior = _skill_current.NextBehavior();
-                            if (null == _behavior)
+                            _behavior_cur = _skill_cur.NextBehavior();
+                            if (null == _behavior_cur)
                             //if(false == _skill_current.IsNextBehavior())
                             {
                                 //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
@@ -1300,19 +1294,14 @@ namespace HordeFight
 
             }
 
-            //============================================================================
 
-            //this.GetJudgment().Update(); //판정 후처리 갱신
-
-            //if(1 == this.GetID())
-            //  DebugWide.LogBlue ("[3:_receiveState_current : " + _receiveState_current);
             //============================================================================
 
         }//end func
 
     }
 }
-*/
+
 
 //===========================
 

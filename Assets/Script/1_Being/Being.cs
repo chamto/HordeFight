@@ -196,7 +196,7 @@ namespace HordeFight
         //==================================================
         //동작정보
         //==================================================
-
+        public SkillControl _skillControl = new SkillControl();
 
         //==================================================
         //상태정보
@@ -602,7 +602,7 @@ namespace HordeFight
             //}
 
             //========================================
-            //_bodyControl.Update(); //행동 진행 갱신 
+            _skillControl.Update(); //행동 진행 갱신 
             //========================================
 
 
@@ -792,7 +792,7 @@ namespace HordeFight
         public void Idle()
         {
 
-            //_behaviorKind = Behavior.eKind.Idle;
+            _skillControl.Idle();
 
             if (true == _ani.IsActive_Animator())
             {
@@ -1183,101 +1183,7 @@ namespace HordeFight
 
         //--------------------------------------------------
 
-        //단계
-        public enum ePhase
-        {
-            None = 0,
-
-            Start,
-            Running,
-            Waiting,
-            End,
-
-            Max,
-        }
-
-        public ePhase _phase = ePhase.None;
-        public delegate void CallBack_State();
-        public List<CallBack_State> _onStates_Start = new List<CallBack_State>();
-        public List<CallBack_State> _onStates_End = new List<CallBack_State>();
-
-        //public Behavior.eKind _behaviorKind = Behavior.eKind.None;
-        public Behavior _behavior = null;
-        public float _timeDelta = 0f;  //시간변화량
-        //public BodyControl _bodyControl = new BodyControl();
-
-        public void Update()
-        {
-            //아래 행동 관련 사용 안되는 코드임 - 분석필요 
-            switch (this._phase)
-            {
-                case ePhase.None:
-                    {
-                        this._timeDelta = 0f;
-                    }
-                    break;
-                case ePhase.Start:
-                    {
-                        this._timeDelta = 0f;
-
-                        //////////////////////
-                        foreach (CallBack_State callback in _onStates_Start)
-                        {
-                            //DebugWide.LogBlue("ssss"); //chamto test
-                            callback();
-                        }
-                        //////////////////////
-
-                        _phase = ePhase.Running;
-
-
-                    }
-                    break;
-            }
-
-            switch (this._phase)
-            {
-
-                case ePhase.Running:
-                    {
-
-                        this._timeDelta += Time.deltaTime;
-                        //this._timeDelta += FrameTime.DeltaTime(); //todo test : 프레임드랍 상황에서 테스트 필요 
-
-                        if (this._timeDelta >= _behavior.runningTime)
-                        {
-                            //동작완료
-                            _phase = ePhase.End;
-                        }
-                    }
-                    break;
-            }
-
-            switch (this._phase)
-            {
-                case ePhase.Waiting:
-                    {
-
-                    }
-                    break;
-                case ePhase.End:
-                    {
-
-                        //////////////////////
-                        foreach (CallBack_State callback in _onStates_End)
-                        {
-                            callback();
-                        }
-                        //////////////////////
-
-                        _phase = ePhase.Start;
-                        _timeDelta = 0f;
-
-                    }
-                    break;
-            }
-        }
-    }//enc
+    }//end
 
 }
 

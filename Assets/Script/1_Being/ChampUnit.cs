@@ -196,6 +196,7 @@ namespace HordeFight
             
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
+            _skillControl.Attack_Strong_1();
             _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
             //Switch_Ani(_kind, eAniBaseKind.attack, _move._eDir8);
             //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.attack);

@@ -110,7 +110,7 @@ namespace HordeFight
             //_selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
 
             ChampUnit champSelected = _selected as ChampUnit;
-            champSelected.Attack(hit.point - _selected.transform.position);
+            champSelected.Attack(hit.point - _selected.transform.position); //테스트
             //champSelected.Block_Forward(hit.point - _selected.transform.position);
             if (null != (object)champSelected)
             {
