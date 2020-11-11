@@ -666,39 +666,39 @@ namespace HordeFight
             return this.openTime_1 - this.openTime_0;
         }
 
-        public bool Valid_EventTime(Being.ePhase phase, float timeDelta)
-        {
+        //public bool Valid_EventTime(Being.ePhase phase, float timeDelta)
+        //{
 
-            if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
-            {
-                if (this.eventTime_0 <= timeDelta && timeDelta <= this.eventTime_1)
-                    return true;
-            }
+        //    if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
+        //    {
+        //        if (this.eventTime_0 <= timeDelta && timeDelta <= this.eventTime_1)
+        //            return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        public bool Valid_CloggedTime(Being.ePhase phase, float timeDelta)
-        {
-            if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
-            {
-                if (this.cloggedTime_0 <= timeDelta && timeDelta <= this.cloggedTime_1)
-                    return true;
-            }
+        //public bool Valid_CloggedTime(Being.ePhase phase, float timeDelta)
+        //{
+        //    if (Being.ePhase.Start == phase || Being.ePhase.Running == phase)
+        //    {
+        //        if (this.cloggedTime_0 <= timeDelta && timeDelta <= this.cloggedTime_1)
+        //            return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
-        public bool Valid_OpenTime(Being.ePhase phase, float timeDelta)
-        {
-            if (Being.ePhase.Running == phase)
-            {
-                if (this.openTime_0 <= timeDelta && timeDelta <= this.openTime_1)
-                    return true;
-            }
+        //public bool Valid_OpenTime(Being.ePhase phase, float timeDelta)
+        //{
+        //    if (Being.ePhase.Running == phase)
+        //    {
+        //        if (this.openTime_0 <= timeDelta && timeDelta <= this.openTime_1)
+        //            return true;
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
 
         public void Calc_Velocity()
