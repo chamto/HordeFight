@@ -73,7 +73,11 @@ namespace HordeFight
         public LineControl.Info _ui_circle;
         public LineControl.Info _ui_hp;
 
+
         //==================================================
+        //동작정보
+        //==================================================
+        public Skill_Attack _skill_attack = new Skill_Attack();
 
         //진영정보
         //public Camp _belongCamp = null; //소속 캠프
@@ -117,6 +121,7 @@ namespace HordeFight
         {
             base.Init();
 
+            _skill_attack.Init(this, Skill.eName.Attack_Strong_1);
             _activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
@@ -162,6 +167,38 @@ namespace HordeFight
             ////SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
         }
 
+        public class Skill_Attack : Skill.BaseInfo
+        {
+            public Vector3 dir;
+            public Being target;
+
+            public  override void On_Start()
+            {
+                //_ani._animator.speed = 1;
+                //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0f); //애니의 노멀타임을 설정한다
+                being._ani.Play(being._kind, eAniBaseKind.attack, being._move._eDir8);
+
+
+                DebugWide.LogBlue(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
+            }
+            public override void On_Running()
+            {
+                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                being._ani.Play(being._kind, eAniBaseKind.attack, being._move._eDir8);
+            }
+            public override void On_End()
+            {
+                DebugWide.LogRed(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
+            }
+
+            public void Play(Vector3 dir, Being target)
+            {
+                this.dir = dir;
+                this.target = target;
+                being._skillControl.PlayNow(this);
+            }
+        }
+
 
         public override bool UpdateAll()
         {
@@ -187,56 +224,17 @@ namespace HordeFight
 
         }
 
-        public void On_Start_Attack(SkillControl control)
-        {
-            //_ani._animator.speed = 1;
-            //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0f); //애니의 노멀타임을 설정한다
-            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
-
-            //float a = 0.015f;
-            //_ani._animator.speed = 1f/a; //속도를 설정한다 
-
-            // 0.15s : 1 = 1s : ?
-            // 1 = 0.15 * ?
-
-
-            DebugWide.LogBlue(control._state_current +  "  " + control._skill_cur._name + "  " + control._timeDelta);
-        }
-
-        public void On_Start_Running(SkillControl control)
-        {
-            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
-        }
-
-        public void On_Start_End(SkillControl control)
-        {
-            DebugWide.LogRed(control._state_current + "  " + control._skill_cur._name + "  " + control._timeDelta);
-
-            //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 1f); //애니의 노멀타임을 설정한다
-            //_ani._animator.speed = 0;
-            //this.Idle();
-        }
 
         public Shot _shot = null;
         Vector3 _appointmentDir = ConstV.v3_zero;
         public Being _target = null;
         public void Attack(Vector3 dir, Being target)
         {
-            DebugWide.LogBlue(dir + "   attatck"); //chamto test
-
+            
             _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
 
-            //_skillControl.Attack_Strong_1();
-            //_skillControl._on_start = On_Start_Attack;
-            //_skillControl._on_running_end = On_Start_End;
-            Skill.AddInfo addInfo = new Skill.AddInfo();
-            addInfo.on_start = On_Start_Attack;
-            addInfo.on_running = On_Start_Running;
-            addInfo.on_running_end = On_Start_End;
-            _skillControl.PlayNow(Skill.eName.Attack_Strong_1, addInfo);
-
-            //_ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
+            _ani.Play(_kind, eAniBaseKind.attack, _move._eDir8);
 
             //_animator.Play(ANI_STATE_ATTACK, 0, 0.0f); //애니의 노멀타임을 설정한다  
             //_animator.speed = 0.5f; //속도를 설정한다 
@@ -244,7 +242,7 @@ namespace HordeFight
 
             //1회 공격중 방향변경 안되게 하기. 1회 공격시간의 80% 경과시 콜백호출 하기.
             _appointmentDir = dir;
-            //Update_AnimatorState(ANI_STATE_ATTACK, 0.8f);
+            Update_AnimatorState(_ani.ANI_STATE_ATTACK, 0.8f);
 
             //임시코드 
             if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)

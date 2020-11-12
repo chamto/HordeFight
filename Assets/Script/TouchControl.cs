@@ -56,7 +56,8 @@ namespace HordeFight
             }
             if(keydown)
             {
-                _selected.Move_Forward(dir, 1f, true);
+                //_selected.Move_Forward(dir, 1f, true);
+                _selected._skill_move.Play(dir, 1f, true);
             }
 #endif
 
@@ -139,8 +140,9 @@ namespace HordeFight
             //_selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
 
             ChampUnit champSelected = _selected as ChampUnit;
-            champSelected.Attack(hit.point - _selected.transform.position); //테스트
+            //champSelected.Attack(hit.point - _selected.transform.position); 
             //champSelected.Block_Forward(hit.point - _selected.transform.position);
+            champSelected._skill_attack.Play(hit.point - _selected.transform.position, null); //테스트
             if (null != (object)champSelected)
             {
                 //임시처리 

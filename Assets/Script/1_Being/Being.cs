@@ -197,6 +197,9 @@ namespace HordeFight
         //동작정보
         //==================================================
         public SkillControl _skillControl = new SkillControl();
+        public Skill_Idle _skill_idle = new Skill_Idle();
+        public Skill_Move _skill_move = new Skill_Move();
+
 
         //==================================================
         //상태정보
@@ -270,7 +273,9 @@ namespace HordeFight
             //_animator = GetComponentInChildren<Animator>();
             _sprMask = GetComponentInChildren<SpriteMask>();
             _ani.Init(transform, _id);
-            _skillControl._ref_being = this;
+            _skill_idle.Init(this, Skill.eName.Idle);
+            _skill_move.Init(this, Skill.eName.Move_0);
+            _skillControl.Init(this, _skill_idle); //초기 애니 설정 
             //=====================================================
             ////미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             ////오버라이트컨트롤러를 직접 생성해서 추가한다
@@ -300,8 +305,54 @@ namespace HordeFight
 
             //=====================================================
             //초기 애니 설정 
-            this.Idle();
+            //_skill_idle.Idle();
+            //this.Idle();
         }
+
+        public class Skill_Idle : Skill.BaseInfo
+        {
+            public override void On_Start()
+            {
+                being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8);
+            }
+
+            public void Play()
+            {
+                being._skillControl.PlayNow(this);
+            }
+        }
+
+
+        public class Skill_Move : Skill.BaseInfo
+        {
+            public Vector3 dir;
+            public float second;
+            public bool forward;
+
+
+            public override void On_Running()
+            {
+                dir.y = 0;
+                being._move.SetNextMoving(false);
+                being._move.Move_Forward(dir, 2f, second);
+                eDirection8 eDirection = being._move._eDir8;
+
+                //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+                if (false == forward)
+                    eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
+
+                being._ani.Play(being._kind, eAniBaseKind.move, eDirection);
+            }
+
+            public void Play(Vector3 dir, float second, bool forward)
+            {
+                this.dir = dir;
+                this.second = second;
+                this.forward = forward;
+                being._skillControl.PlayNow(this);
+            }
+        }
+
 
         public void SetForce(Vector3 nDir, float force)
         {
@@ -790,28 +841,6 @@ namespace HordeFight
 
         }
 
-        public void On_Start_Idle(SkillControl control)
-        {
-            if (true == _ani.IsActive_Animator())
-            {
-                //_ani._animator.speed = 1;
-                _ani.PlayNow(_kind, eAniBaseKind.idle, _move._eDir8);
-
-            }
-        }
-
-        public void Idle()
-        {
-            //_skillControl.Idle();
-            //_skillControl._on_start = On_Start_Idle;
-
-            Skill.AddInfo addInfo = new Skill.AddInfo();
-            addInfo.Init();
-            addInfo.on_start = On_Start_Idle;
-            _skillControl.PlayNow(Skill.eName.Idle, addInfo);
-
-        }
-
 
         //public void Idle_LookAt()
         //{
@@ -953,14 +982,10 @@ namespace HordeFight
 
         public void UpdateIdle()
         {
-
-            if (true == _ani.IsActive_Animator())
-            {
-                _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
-                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
-            }
+            _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
         }
+
+
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
         {
@@ -974,15 +999,7 @@ namespace HordeFight
             if (false == forward)
                 eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
-            //_behaviorKind = Behavior.eKind.Move;
-            //_bodyControl.Move_0();
-
-            if (true == _ani.IsActive_Animator())
-            {
-                _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-                //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
-            }
+            _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
@@ -998,15 +1015,8 @@ namespace HordeFight
             _move.SetNextMoving(false);
             _move.Move_LookAt(moveDir, lookAtDir, 2f, second);
 
-            //아이들 상태에서 밀려 이동하는 걸 표현
-            //_behaviorKind = Behavior.eKind.Move;
 
-            if (true == _ani.IsActive_Animator())
-            {
-                _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-                //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
-            }
+            _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
@@ -1022,14 +1032,8 @@ namespace HordeFight
             _move.Move_Push(dir, 2f, second);
 
             //아이들 상태에서 밀려 이동하는 걸 표현
-            //_behaviorKind = Behavior.eKind.Idle;
 
-            if (true == _ani.IsActive_Animator())
-            {
-                _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
-                //Switch_Ani(_kind, eAniBaseKind.idle, _move._eDir8);
-                //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.idle);
-            }
+            _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
@@ -1045,8 +1049,6 @@ namespace HordeFight
             _move.MoveToTarget(targetPos, speed);
 
             _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-            //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
 
             //_animator.Play("idle"); //상태전이 없이 바로 적용
         }
@@ -1105,6 +1107,8 @@ namespace HordeFight
 
         public void Play(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
         {
+            if (false == IsActive_Animator()) return;
+
             //_move._eDir8 = Misc.GetDir8_AxisY(dir);
             _animator.SetInteger(ANI_STATE, (int)ani_kind);
             Switch_Ani(being_kind, ani_kind, dir);
@@ -1116,6 +1120,8 @@ namespace HordeFight
         //에니메이터의 전이과정 없이 즉시재생시킨다 
         public void PlayNow(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
         {
+            if (false == IsActive_Animator()) return;
+
             _animator.SetInteger(ANI_STATE, (int)ani_kind);
             Switch_Ani(being_kind, ani_kind, dir);
             _animator.Play(HASH_STATE[(int)ani_kind]);

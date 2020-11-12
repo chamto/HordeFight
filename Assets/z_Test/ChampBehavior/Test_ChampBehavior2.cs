@@ -460,7 +460,8 @@ namespace HordeFight
         {
             if (null == (object)_selected) return;
 
-            _selected.Idle();
+            //_selected.Idle();
+            _selected._skill_idle.Play();
 
         }
 
