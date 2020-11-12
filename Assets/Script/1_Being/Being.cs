@@ -794,6 +794,7 @@ namespace HordeFight
         {
             if (true == _ani.IsActive_Animator())
             {
+                //_ani._animator.speed = 1;
                 _ani.PlayNow(_kind, eAniBaseKind.idle, _move._eDir8);
 
             }
@@ -806,7 +807,7 @@ namespace HordeFight
 
             Skill.AddInfo addInfo = new Skill.AddInfo();
             addInfo.Init();
-
+            addInfo.on_start = On_Start_Idle;
             _skillControl.PlayNow(Skill.eName.Idle, addInfo);
 
         }

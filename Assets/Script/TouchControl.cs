@@ -30,6 +30,35 @@ namespace HordeFight
             {
                 _selected = null;
             }
+#if UNITY_EDITOR
+
+            bool keydown = false;
+            Vector3 dir = new Vector3(0, 0, 0);
+            if (Input.GetKey(KeyCode.LeftArrow))
+            {
+                keydown = true;
+                dir.x += -1;
+            }
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                keydown = true;
+                dir.x += 1;
+            }
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                keydown = true;
+                dir.z += 1;
+            }
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                keydown = true;
+                dir.z += -1;
+            }
+            if(keydown)
+            {
+                _selected.Move_Forward(dir, 1f, true);
+            }
+#endif
 
         }
 

@@ -1169,10 +1169,15 @@ namespace HordeFight
         //바로 요청스킬로 변경 
         public void PlayNow(Skill skill, Skill.AddInfo addInfo)
         {
+            //현재 설정된 스킬과 같은 스킬이 들어오면 처리하지 않느다 
+            if (null != _skill_cur &&  eState.End != this._state_current 
+                && _skill_cur._name == skill._name)
+                return;
+            
             //콜백 초기화 
-            _addInfo_cur = addInfo;
             _addInfo_next.Init();
 
+            _addInfo_cur = addInfo;
             _skill_cur = skill;
             _behavior_cur = _skill_cur.FirstBehavior();
             SetState(eState.Start);
@@ -1238,13 +1243,15 @@ namespace HordeFight
                     break;
                 case eState.Start:
                     {
-                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name);//chamto test
-
+                        
                         this._timeDelta = 0f;
 
                         if (null != _addInfo_cur.on_start)
                             _addInfo_cur.on_start(this);
-                        
+
+                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta + "  : " + (_addInfo_cur.on_start));//chamto test
+
+
                         SetState(eState.Running);
                         SetEventState(eSubState.None);
 
@@ -1303,7 +1310,7 @@ namespace HordeFight
                     break;
                 case eState.Waiting:
                     {
-                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta);//chamto test
+                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta + "  : " + (_addInfo_cur.on_running_end));//chamto test
                         //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
                         if (_behavior_cur.rigidTime <= (this._timeDelta - _behavior_cur.runningTime))
                         {
@@ -1319,7 +1326,7 @@ namespace HordeFight
                         if (null != _skill_next)
                         {
                             //DebugWide.LogBlue ("next : " + _skill_next.name);
-                            PlayNow(_skill_next, _addInfo_cur);
+                            PlayNow(_skill_next, _addInfo_next);
                             _skill_next = null;
 
                         }
@@ -1340,11 +1347,11 @@ namespace HordeFight
 
                                 //다음 스킬 동작으로 넘어간다
                                 SetState(eState.Start);
-                                _timeDelta = 0f;
 
                                 DebugWide.LogBlue("next combo !!");
                             }
                         }
+                        _timeDelta = 0f;
 
                     }
                     break;
