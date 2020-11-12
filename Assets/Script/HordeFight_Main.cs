@@ -968,7 +968,7 @@ namespace HordeFight
 
             public void Init(Being be, Skill.eName name)
             {
-                skill = be._skillControl.ref_skillBook.Refer(name);
+                skill = SingleO.skillBook.Refer(name);
                 being = be;
             }
 
@@ -1169,7 +1169,7 @@ namespace HordeFight
         }
 
 
-        public SkillBook ref_skillBook { get { return CSingleton<SkillBook>.Instance; } }
+        //public SkillBook ref_skillBook { get { return CSingleton<SkillBook>.Instance; } }
 
         //public void PlayNow(Skill.eName name, Skill.AddInfo addInfo)
         //{

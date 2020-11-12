@@ -128,6 +128,7 @@ namespace HordeFight
             cellPartition = CSingleton<CellSpacePartition>.Instance;
             coroutine = CSingleton<WideCoroutine>.Instance;
             hashMap = CSingleton<HashToStringMap>.Instance;
+            skillBook = CSingleton<SkillBook>.Instance;
             //==============================================
 
             _startDateTime = DateTime.Now;
@@ -204,6 +205,7 @@ namespace HordeFight
         public static HierarchyPreLoader hierarchy = null;
         public static WideCoroutine coroutine = null;
         public static HashToStringMap hashMap = null;
+        public static SkillBook skillBook = null;
 
     }
 
