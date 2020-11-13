@@ -77,6 +77,9 @@ namespace HordeFight
         //==================================================
         //동작정보
         //==================================================
+        public SkillControl _skillControl = new SkillControl();
+        public Skill_Idle _skill_idle = new Skill_Idle();
+        public Skill_Move _skill_move = new Skill_Move();
         public Skill_Attack _skill_attack = new Skill_Attack();
 
         //진영정보
@@ -121,7 +124,11 @@ namespace HordeFight
         {
             base.Init();
 
-            _skill_attack.Init(this, Skill.eName.Attack_Strong_1);
+            _skill_idle.Init(_skillControl, this, Skill.eName.Idle);
+            _skill_move.Init(_skillControl, this, Skill.eName.Move_0);
+            _skill_attack.Init(_skillControl, this, Skill.eName.Attack_Strong_1);
+            _skillControl.Init(this, _skill_idle); //초기 애니 설정 
+
             _activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
@@ -167,6 +174,58 @@ namespace HordeFight
             ////SingleO.lineControl.SetScale(_UIID_circle_collider, 2f);
         }
 
+        public class Skill_Idle : Skill.BaseInfo
+        {
+            public override void On_Start()
+            {
+                being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8);
+            }
+
+            public void Play()
+            {
+                skillControl.PlayNow(this);
+            }
+        }
+
+
+        public class Skill_Move : Skill.BaseInfo
+        {
+            public Vector3 dir;
+            public float second;
+            public bool forward;
+
+            //public override void On_Start()
+            //{
+            //    On_Running();
+            //}
+
+            public override void On_Running()
+            {
+                dir.y = 0;
+                being._move.SetNextMoving(false);
+                being._move.Move_Forward(dir, 1f, second);
+                eDirection8 eDirection = being._move._eDir8;
+
+                //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
+                if (false == forward)
+                    eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
+
+                //Play함수는 기존재생중 애니가 있는 경우 바로 전환이 안된다. 예)공격애니중 이동애니 전환시 
+                //PlayNow함수를 사용해야 이동애니로 바로 바뀐다 
+                being._ani.PlayNow(being._kind, eAniBaseKind.move, eDirection);
+
+                DebugWide.LogGreen(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
+            }
+
+            public void Play(Vector3 dir, float second, bool forward)
+            {
+                this.dir = dir;
+                this.second = second;
+                this.forward = forward;
+                skillControl.PlayNow(this);
+            }
+        }
+
         public class Skill_Attack : Skill.BaseInfo
         {
             public Vector3 dir;
@@ -180,7 +239,7 @@ namespace HordeFight
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
 
 
-                DebugWide.LogBlue(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
+                DebugWide.LogBlue(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
             public override void On_Running()
             {
@@ -190,23 +249,32 @@ namespace HordeFight
             }
             public override void On_End()
             {
-                DebugWide.LogRed(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
+                DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 
             public void Play(Vector3 dir, Being target)
             {
                 this.dir = dir;
                 this.target = target;
-                being._skillControl.PlayNext(this);
+                skillControl.PlayNext(this);
             }
         }
 
+		public override void Idle()
+		{
+            _skill_idle.Play();
+		}
 
-        public override bool UpdateAll()
+		public override bool UpdateAll()
         {
             bool result = base.UpdateAll();
             if (true == result)
             {
+                //========================================
+                _skillControl.Update(); //행동 진행 갱신 
+                //========================================
+
+
                 ApplyUI_HPBar();
 
                 if (null != (object)_limbs)

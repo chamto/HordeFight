@@ -441,7 +441,7 @@ namespace HordeFight
 
             Vector3 dir = Quaternion.AngleAxis(entireAngle * tt_delta, winding) * _foot_dir;
             _ref_movement.SetDirection(dir);
-            _ref_being.UpdateIdle();
+            _ref_being.Idle();
 
         }
 

@@ -391,12 +391,14 @@ namespace HordeFight
     {
         public class BaseInfo
         {
+            public SkillControl skillControl = null;
             public Skill skill = null;
             public Being being = null;
 
 
-            public void Init(Being be, Skill.eName name)
+            public void Init(SkillControl skillControl, Being be, Skill.eName name)
             {
+                this.skillControl = skillControl;
                 skill = SingleO.skillBook.Refer(name);
                 being = be;
             }
@@ -826,8 +828,8 @@ namespace HordeFight
                             {
                                 //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
                                 //Idle();
-                                //_ref_being.Idle();
-                                _ref_being._skill_idle.Play();
+                                _ref_being.Idle();
+                                //_ref_being._skill_idle.Play();
                             }
                             else
                             {

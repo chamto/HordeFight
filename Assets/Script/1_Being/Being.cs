@@ -337,13 +337,6 @@ namespace HordeFight
         protected SphereCollider _collider = null;
         protected SpriteMask _sprMask = null;
 
-        //==================================================
-        //동작정보
-        //==================================================
-        public SkillControl _skillControl = new SkillControl();
-        public Skill_Idle _skill_idle = new Skill_Idle();
-        public Skill_Move _skill_move = new Skill_Move();
-
 
         //==================================================
         //상태정보
@@ -417,9 +410,7 @@ namespace HordeFight
             //_animator = GetComponentInChildren<Animator>();
             _sprMask = GetComponentInChildren<SpriteMask>();
             _ani.Init(transform, _id);
-            _skill_idle.Init(this, Skill.eName.Idle);
-            _skill_move.Init(this, Skill.eName.Move_0);
-            _skillControl.Init(this, _skill_idle); //초기 애니 설정 
+
             //=====================================================
             ////미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             ////오버라이트컨트롤러를 직접 생성해서 추가한다
@@ -453,57 +444,7 @@ namespace HordeFight
             //this.Idle();
         }
 
-        public class Skill_Idle : Skill.BaseInfo
-        {
-            public override void On_Start()
-            {
-                being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8);
-            }
 
-            public void Play()
-            {
-                being._skillControl.PlayNow(this);
-            }
-        }
-
-
-        public class Skill_Move : Skill.BaseInfo
-        {
-            public Vector3 dir;
-            public float second;
-            public bool forward;
-
-            //public override void On_Start()
-            //{
-            //    On_Running();
-            //}
-
-            public override void On_Running()
-            {
-                dir.y = 0;
-                being._move.SetNextMoving(false);
-                being._move.Move_Forward(dir, 1f, second);
-                eDirection8 eDirection = being._move._eDir8;
-
-                //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
-                if (false == forward)
-                    eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
-
-                //Play함수는 기존재생중 애니가 있는 경우 바로 전환이 안된다. 예)공격애니중 이동애니 전환시 
-                //PlayNow함수를 사용해야 이동애니로 바로 바뀐다 
-                being._ani.PlayNow(being._kind, eAniBaseKind.move, eDirection);
-
-                DebugWide.LogGreen(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
-            }
-
-            public void Play(Vector3 dir, float second, bool forward)
-            {
-                this.dir = dir;
-                this.second = second;
-                this.forward = forward;
-                being._skillControl.PlayNow(this);
-            }
-        }
 
 
         public void SetForce(Vector3 nDir, float force)
@@ -805,11 +746,6 @@ namespace HordeFight
 
             //}
 
-            //========================================
-            _skillControl.Update(); //행동 진행 갱신 
-            //========================================
-
-
 
             //========================================
 
@@ -834,6 +770,12 @@ namespace HordeFight
         public virtual void UpdateAll_Late()
         {
             
+        }
+
+        //기본 아이들 함수 
+        public virtual void Idle()
+        {
+            _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
         }
 
         //____________________________________________
@@ -1131,12 +1073,6 @@ namespace HordeFight
             //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
 
         }
-
-        public void UpdateIdle()
-        {
-            _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
-        }
-
 
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
