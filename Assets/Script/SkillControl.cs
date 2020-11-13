@@ -674,6 +674,7 @@ namespace HordeFight
         //public void Play(Skill skill, Skill.AddInfo addInfo)
         public void PlayNext(Skill.BaseInfo info)
         {
+            
             //현재 스킬이 지정되어 있지 않으면 바로 요청 스킬로 지정한다
             //현재 상태가 end라면 스킬을 바로 지정한다
             if (eState.End == this._state_current)
@@ -681,6 +682,10 @@ namespace HordeFight
                 this.PlayNow(info);
                 return;
             }
+
+            //설정할려는 스킬과 현재스킬이 같다면 설정하지 않는다 
+            if (info.skill._name == _skillInfo_cur.skill._name)
+                return;
 
             _skillInfo_next = info;
             //_skill_next = skill;
