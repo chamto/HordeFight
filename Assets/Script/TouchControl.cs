@@ -54,12 +54,27 @@ namespace HordeFight
                 keydown = true;
                 dir.z += -1;
             }
-            if(keydown)
+
+            RaycastHit hit = SingleO.touchEvent.GetHit3D();
+            ChampUnit champ = _selected as ChampUnit;
+            if (null != (object)champ)
             {
-                ChampUnit champ = _selected as ChampUnit;
-                if(null != (object)champ)
+                if (keydown)
+                {
                     champ._skill_move.Play(dir, 1f, true);
+                }    
+
+                if (Input.GetKey(KeyCode.A))
+                {
+                    champ._skill_attack.Play(champ._move._direction, null); //테스트    
+                }
+                if (Input.GetKey(KeyCode.S))
+                {
+                    champ._skill_attack.Play(hit.point - _selected.transform.position, null); //테스트    
+                }
+
             }
+
 #endif
 
         }
@@ -138,14 +153,14 @@ namespace HordeFight
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
             Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
 
-            //_selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
+            _selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
 
             ChampUnit champSelected = _selected as ChampUnit;
 
 
             if (null != (object)champSelected)
             {
-                champSelected._skill_attack.Play(hit.point - _selected.transform.position, null); //테스트
+                //champSelected._skill_attack.Play(hit.point - _selected.transform.position, null); //테스트
 
                 //임시처리 
                 //최적화를 위해 주석처리 

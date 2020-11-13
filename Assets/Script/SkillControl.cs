@@ -799,7 +799,7 @@ namespace HordeFight
                     break;
                 case eState.Waiting:
                     {
-                        DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
+                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
                         //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
                         if (_behavior_cur.rigidTime <= (this._timeDelta - _behavior_cur.runningTime))
                         {

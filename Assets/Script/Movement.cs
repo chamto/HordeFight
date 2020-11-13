@@ -204,7 +204,10 @@ namespace HordeFight
                     }
 
                     if (true == moveable)//&& 3 > cell._childCount)
+                    {
+                        //DebugWide.LogBlue("sdfsdf"); //두 객체가 같은 셀에 있을경우 여기에 도달 못하는 문제 발견 
                         _being.SetPos(newPos);
+                    }
 
                 }
             }

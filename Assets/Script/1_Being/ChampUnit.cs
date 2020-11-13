@@ -214,7 +214,7 @@ namespace HordeFight
                 //PlayNow함수를 사용해야 이동애니로 바로 바뀐다 
                 being._ani.PlayNow(being._kind, eAniBaseKind.move, eDirection);
 
-                DebugWide.LogGreen(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
+                //DebugWide.LogGreen(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 
             public void Play(Vector3 dir, float second, bool forward)
@@ -239,7 +239,7 @@ namespace HordeFight
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
 
 
-                DebugWide.LogBlue(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
+                //DebugWide.LogBlue(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
             public override void On_Running()
             {
@@ -249,7 +249,7 @@ namespace HordeFight
             }
             public override void On_End()
             {
-                DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
+                //DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 
             public void Play(Vector3 dir, Being target)
