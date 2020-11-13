@@ -94,6 +94,10 @@ namespace HordeFight
         public Limbs _limbs = null;
         //==================================================
 
+
+        public Behavior _behavior_cur = null;
+
+
         public float attack_range_min
         {
             get { return this._collider_radius + _mt_range_min * GridManager.MeterToWorld; }
@@ -230,10 +234,16 @@ namespace HordeFight
         {
             public Vector3 dir;
             public Being target;
+            public Vector3 start_dir;
 
             public  override void On_Start()
             {
-                //_ani._animator.speed = 1;
+                ChampUnit champ = being as ChampUnit;
+                start_dir = dir;
+                champ._behavior_cur = skillControl._behavior_cur;
+
+
+                being._ani._animator.speed = 1f/skillControl._behavior_cur.runningTime;
                 //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0f); //애니의 노멀타임을 설정한다
                 being._move._eDir8 = Misc.GetDir8_AxisY(dir);
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
@@ -243,12 +253,27 @@ namespace HordeFight
             }
             public override void On_Running()
             {
+                //float inpol = Interpolation.Calc(Interpolation.eKind.easeOutCirc, 0, 1f, skillControl._normalTime);
+                float angle = skillControl._behavior_cur.angle;
+                int rotateCount = 0;
+                dir =  Quaternion.AngleAxis(skillControl._normalTime * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
+
+                DebugWide.LogBlue(skillControl._timeDelta + "   " + skillControl._normalTime);
+
                 being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                being._move._direction = dir;
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
-                //being._ani._animator.Play(being._ani.ANI_STATE_ATTACK, 0, 0.8f); //애니의 노멀타임을 설정한다
+                //being._ani._animator.Play(being._ani.ANI_STATE_ATTACK, 0, 0.7f); //애니의 노멀타임을 설정한다
             }
             public override void On_End()
             {
+                being._ani._animator.speed = 1f;
+                float angle = skillControl._behavior_cur.angle;
+                int rotateCount = 0;
+                dir = Quaternion.AngleAxis(1f * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
+                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                being._move._direction = dir;
+                being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
                 //DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 

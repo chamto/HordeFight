@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UtilGS9;
 
 namespace HordeFight
 {
@@ -9,6 +10,7 @@ namespace HordeFight
     //========================================================
     //==================     동작  정보     ==================
     //========================================================
+    [System.Serializable]
     public partial class Behavior
     {
 
@@ -49,13 +51,9 @@ namespace HordeFight
         //운동 모양 
         public eMovementShape movementShape;
 
-        //공격행동의 중심점 
-        public Vector3 point_0; //행동 중심점 (상대위치임) : 0(시작) , 1(끝)
-        public Vector3 point_1;
+        //보간방식 
+        public Interpolation.eKind _interpolation = Interpolation.eKind.linear;
 
-
-        public Vector3 object_startDir;     //무기 시작 방향
-        public Vector3 behaDir;             //행동의 방향
         public float angle;             //범위 각도
 
         public float plus_range_0;      //더해지는 범위 최소 
@@ -69,6 +67,15 @@ namespace HordeFight
         public float velocity_before;   //공격점 전 속도 
         public float velocity_after;    //공격점 후 속도  
 
+        //공격행동의 중심점 
+        public Vector3 point_0; //행동 중심점 (상대위치임) : 0(시작) , 1(끝)
+        public Vector3 point_1;
+
+
+        public Vector3 object_startDir;     //무기 시작 방향
+        public Vector3 behaDir;             //행동의 방향
+
+        //==================================================
 
         public Behavior()
         {
@@ -257,6 +264,7 @@ namespace HordeFight
 namespace HordeFight
 {
     //스킬 : 행동의 집합체 
+    [System.Serializable]
     public partial class Skill : List<Behavior>
     {
 
@@ -389,11 +397,12 @@ namespace HordeFight
 
     public partial class Skill
     {
+        //[System.Serializable]
         public class BaseInfo
         {
-            public SkillControl skillControl = null;
+            protected Being being = null;
+            protected SkillControl skillControl = null;
             public Skill skill = null;
-            public Being being = null;
 
 
             public void Init(SkillControl skillControl, Being be, Skill.eName name)
@@ -451,6 +460,7 @@ namespace HordeFight
 
 namespace HordeFight
 {
+    //[System.Serializable]
     public class SkillControl
     {
 
@@ -544,6 +554,7 @@ namespace HordeFight
         public Skill.BaseInfo _skillInfo_next = null;
 
         public float _timeDelta = 0f;  //시간변화량
+        public float _normalTime = 0f; //시간을 0~1값으로 변환한 값 
 
         //상태정보
         public eState _state_current = eState.None;
@@ -734,7 +745,7 @@ namespace HordeFight
                     {
 
                         this._timeDelta = 0f;
-
+                        _normalTime = 0f;
 
                         _skillInfo_cur.On_Start();
 
@@ -754,6 +765,13 @@ namespace HordeFight
                         //====================================================
 
 
+                        if(float.Epsilon < _behavior_cur.runningTime)
+                            _normalTime = _timeDelta / _behavior_cur.runningTime;
+                        else
+                            _normalTime = 0f;
+                            
+
+                        _normalTime = Interpolation.Calc(_behavior_cur._interpolation, 0, 1f, _normalTime);
 
                         switch (_eventState_current)
                         {
