@@ -176,7 +176,8 @@ namespace HordeFight
             {
                 //_ani._animator.speed = 1;
                 //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0f); //애니의 노멀타임을 설정한다
-                being._ani.Play(being._kind, eAniBaseKind.attack, being._move._eDir8);
+                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
 
 
                 DebugWide.LogBlue(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
@@ -184,7 +185,8 @@ namespace HordeFight
             public override void On_Running()
             {
                 being._move._eDir8 = Misc.GetDir8_AxisY(dir);
-                being._ani.Play(being._kind, eAniBaseKind.attack, being._move._eDir8);
+                being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
+                //being._ani._animator.Play(being._ani.ANI_STATE_ATTACK, 0, 0.8f); //애니의 노멀타임을 설정한다
             }
             public override void On_End()
             {
@@ -195,7 +197,7 @@ namespace HordeFight
             {
                 this.dir = dir;
                 this.target = target;
-                being._skillControl.PlayNow(this);
+                being._skillControl.PlayNext(this);
             }
         }
 

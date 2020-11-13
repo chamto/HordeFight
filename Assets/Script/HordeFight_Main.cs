@@ -1202,7 +1202,7 @@ namespace HordeFight
 
         //현재 스킬의 행동 end 까지 진행후 다음스킬 시작 (현재 스킬을 end 상태로 바로 전환한다)  
         //public void Play(Skill skill, Skill.AddInfo addInfo)
-        public void Play(Skill.BaseInfo info)
+        public void PlayNext(Skill.BaseInfo info)
         {
             //현재 스킬이 지정되어 있지 않으면 바로 요청 스킬로 지정한다
             //현재 상태가 end라면 스킬을 바로 지정한다

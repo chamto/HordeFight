@@ -329,19 +329,27 @@ namespace HordeFight
             public float second;
             public bool forward;
 
+            //public override void On_Start()
+            //{
+            //    On_Running();
+            //}
 
             public override void On_Running()
             {
                 dir.y = 0;
                 being._move.SetNextMoving(false);
-                being._move.Move_Forward(dir, 2f, second);
+                being._move.Move_Forward(dir, 1f, second);
                 eDirection8 eDirection = being._move._eDir8;
 
                 //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
                 if (false == forward)
                     eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
-                being._ani.Play(being._kind, eAniBaseKind.move, eDirection);
+                //Play함수는 기존재생중 애니가 있는 경우 바로 전환이 안된다. 예)공격애니중 이동애니 전환시 
+                //PlayNow함수를 사용해야 이동애니로 바로 바뀐다 
+                being._ani.PlayNow(being._kind, eAniBaseKind.move, eDirection);
+
+                DebugWide.LogGreen(being._skillControl._state_current + "  " + skill._name + "  " + being._skillControl._timeDelta);
             }
 
             public void Play(Vector3 dir, float second, bool forward)
