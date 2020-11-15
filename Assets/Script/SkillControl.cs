@@ -44,7 +44,7 @@ namespace HordeFight
         public float openTime_1;
 
         //하나의 동작이 완료후 경직되는 시간. 마지막 모션상태로 경직 상태동안 있는다
-        public float rigidTime;     //동작 완료후 경직 시간
+        public float waitTime;     //동작 완료후 경직 시간
 
         //===================================
 
@@ -82,7 +82,7 @@ namespace HordeFight
             runningTime = 0f;
             eventTime_0 = 0f;
             eventTime_1 = 0f;
-            rigidTime = 0f;
+            waitTime = 0f;
             openTime_0 = 0f;
             openTime_1 = 0f;
             cloggedTime_0 = 0f;
@@ -267,7 +267,7 @@ namespace HordeFight
             bhvo.openTime_0 = 1.5f;
             bhvo.openTime_1 = 1.8f;
             //4
-            bhvo.rigidTime = 0.0f;
+            bhvo.waitTime = 0.0f;
 
             bhvo.movementShape = Behavior.eMovementShape.Straight;
             bhvo._interpolation = Interpolation.eKind.linear;
@@ -518,7 +518,7 @@ namespace HordeFight
 
             Start,
             Running,
-            Waiting,
+            Wait,
             End,
 
             Max,
@@ -685,19 +685,20 @@ namespace HordeFight
 
             _skillInfo_cur = info;
             _behavior_cur = _skillInfo_cur.skill.FirstBehavior();
-            SetState(eState.Start);
+            //SetState(eState.Start);
+            _state_current = eState.Start;
             this._timeDelta = 0f;
         }
 
-        public void SetState(eState setState)
-        {
-            _state_current = setState;
-        }
+        //public void SetState(eState setState)
+        //{
+        //    _state_current = setState;
+        //}
 
-        public void SetEventState(eSubState setSubState)
-        {
-            _eventState_current = setSubState;
-        }
+        //public void SetEventState(eSubState setSubState)
+        //{
+        //    _eventState_current = setSubState;
+        //}
 
 
         //public SkillBook ref_skillBook { get { return CSingleton<SkillBook>.Instance; } }
@@ -722,7 +723,8 @@ namespace HordeFight
             _skillInfo_cur = info;
             //_skill_cur = _addInfo_cur.skill;
             _behavior_cur = _skillInfo_cur.skill.FirstBehavior();
-            SetState(eState.Start);
+            //SetState(eState.Start);
+            _state_current = eState.Start;
             this._timeDelta = 0f;
         }
 
@@ -769,156 +771,227 @@ namespace HordeFight
         //    Play(Skill.eName.Idle);
         //}
 
+
         public void Update()
         {
-            if (null == _behavior_cur) return;
-
-            this._timeDelta += Time.deltaTime;
-
-
-            switch (this._state_current)
+            //==============================================
+            if(eState.Start == _state_current)
             {
-                case eState.None:
+                _timeDelta = 0f;
+                _normalTime = 0f;
+
+                _skillInfo_cur.On_Start();
+                _state_current = eState.Running;
+            }
+            //==============================================
+            if (eState.Running == _state_current)
+            {
+                if (float.Epsilon < _behavior_cur.runningTime)
+                    _normalTime = _timeDelta / _behavior_cur.runningTime;
+                else
+                    _normalTime = 0f;
+                
+                _normalTime = Interpolation.Calc(_behavior_cur._interpolation, 0, 1f, _normalTime);
+
+                _skillInfo_cur.On_Running();    
+                if (_behavior_cur.runningTime <= this._timeDelta)
+                {
+                    _state_current = eState.Wait;
+                }
+            }
+            //==============================================
+            if (eState.Wait == _state_current)
+            {
+                _skillInfo_cur.On_Wait();    
+                if (_behavior_cur.waitTime <= (this._timeDelta - _behavior_cur.runningTime))
+                {
+                    _state_current = eState.End;
+                }
+            }
+            //==============================================
+            if (eState.End == _state_current)
+            {
+                _skillInfo_cur.On_End();
+
+                //* 다음 스킬입력 처리  
+                if (null != _skillInfo_next)
+                {
+                    PlayNow(_skillInfo_next);
+                }
+                else
+                {
+                    //** 콤보 스킬 처리
+                    _behavior_cur = _skillInfo_cur.skill.NextBehavior();
+                    if (null == _behavior_cur)
                     {
-                        //===== 처리철차 ===== 
-                        //입력 -> ui갱신 -> (갱신 -> 판정)
-                        //공격키입력 -> 행동상태none 에서 start 로 변경 -> start 상태 검출
-                        //* 공격키입력으로 시작되는 상태는 None 이 되어야 한다. (바로 Start 상태가 되면 판정에서 Start상태인지 모른다)
-                        //* 상태변이에 의해 시작되는 상태는 Start 여야 한다. (None 으로 시작되면 한프레임을 더 수행하는게 되므로 Start로 시작하게 한다)
-                        this._timeDelta = 0f;
-                        SetState(eState.Start);
-                    }
-                    break;
-                case eState.Start:
-                    {
-
-                        this._timeDelta = 0f;
-                        _normalTime = 0f;
-
-                        _skillInfo_cur.On_Start();
-
-                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
-
-
-                        SetState(eState.Running);
-                        SetEventState(eSubState.None);
-
-                    }
-                    break;
-                case eState.Running:
-                    {
-
-                        //====================================================
-                        // update sub_state 
-                        //====================================================
-
-
-                        if(float.Epsilon < _behavior_cur.runningTime)
-                            _normalTime = _timeDelta / _behavior_cur.runningTime;
-                        else
-                            _normalTime = 0f;
-                            
-
-                        _normalTime = Interpolation.Calc(_behavior_cur._interpolation, 0, 1f, _normalTime);
-
-                        switch (_eventState_current)
-                        {
-                            case eSubState.None:
-                                if (_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta <= _behavior_cur.eventTime_1)
-                                {
-                                    this.SetEventState(eSubState.Start);
-                                }
-                                break;
-                            case eSubState.Start:
-                                this.SetEventState(eSubState.Running);
-                                break;
-                            case eSubState.Running:
-                                if (!(_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta < _behavior_cur.eventTime_1))
-                                {
-                                    this.SetEventState(eSubState.End);
-                                }
-
-                                break;
-                            case eSubState.End:
-                                this.SetEventState(eSubState.None);
-                                break;
-
-                        }
-
-
-                        if (_behavior_cur.runningTime <= this._timeDelta)
-                        {
-
-                            _skillInfo_cur.On_End();
-
-                            //동작완료
-                            this.SetState(eState.Waiting);
-
-                            break;
-                        }
-
-
-                        _skillInfo_cur.On_Running();
-
-                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta);//chamto test
-                    }
-                    break;
-                case eState.Waiting:
-                    {
-                        //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
-                        //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
-                        if (_behavior_cur.rigidTime <= (this._timeDelta - _behavior_cur.runningTime))
-                        {
-                            this.SetState(eState.End);
-                        }
+                        //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
+                        _ref_being.Idle();
 
                     }
-                    break;
-                case eState.End:
+                    else
                     {
+                     
+                        //다음 스킬 동작으로 넘어간다
+                        _state_current = eState.Start;
 
-                        //* 다음 스킬입력 처리  
-                        if (null != _skillInfo_next)
-                        {
-                            //DebugWide.LogBlue ("next : " + _skill_next.name);
-                            PlayNow(_skillInfo_next);
-                            //_skill_next = null;
-
-                        }
-                        else
-                        {
-                            //** 콤보 스킬 처리
-                            _behavior_cur = _skillInfo_cur.skill.NextBehavior();
-                            if (null == _behavior_cur)
-                            //if(false == _skill_current.IsNextBehavior())
-                            {
-                                //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
-                                //Idle();
-                                _ref_being.Idle();
-                                //_ref_being._skill_idle.Play();
-                            }
-                            else
-                            {
-                                //_behavior = _skill_current.NextBehavior ().Clone();
-
-                                //다음 스킬 동작으로 넘어간다
-                                SetState(eState.Start);
-
-                                DebugWide.LogBlue("next combo !!");
-                            }
-                        }
-                        _timeDelta = 0f;
-
+                        DebugWide.LogBlue("next combo !!");
                     }
-                    break;
-
+                }
 
             }
 
+            //==============================================
+            _timeDelta += Time.deltaTime;
 
-            //============================================================================
+        }
 
-        }//end func
+        //public void Update2()
+        //{
+        //    if (null == _behavior_cur) return;
+
+        //    this._timeDelta += Time.deltaTime;
+
+
+        //    switch (this._state_current)
+        //    {
+        //        case eState.None:
+        //            {
+        //                //===== 처리철차 ===== 
+        //                //입력 -> ui갱신 -> (갱신 -> 판정)
+        //                //공격키입력 -> 행동상태none 에서 start 로 변경 -> start 상태 검출
+        //                //* 공격키입력으로 시작되는 상태는 None 이 되어야 한다. (바로 Start 상태가 되면 판정에서 Start상태인지 모른다)
+        //                //* 상태변이에 의해 시작되는 상태는 Start 여야 한다. (None 으로 시작되면 한프레임을 더 수행하는게 되므로 Start로 시작하게 한다)
+        //                this._timeDelta = 0f;
+        //                SetState(eState.Start);
+        //            }
+        //            break;
+        //        case eState.Start:
+        //            {
+
+        //                this._timeDelta = 0f;
+        //                _normalTime = 0f;
+
+        //                _skillInfo_cur.On_Start();
+
+        //                //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
+
+
+        //                SetState(eState.Running);
+        //                SetEventState(eSubState.None);
+
+        //            }
+        //            break;
+        //        case eState.Running:
+        //            {
+
+        //                //====================================================
+        //                // update sub_state 
+        //                //====================================================
+
+
+        //                if(float.Epsilon < _behavior_cur.runningTime)
+        //                    _normalTime = _timeDelta / _behavior_cur.runningTime;
+        //                else
+        //                    _normalTime = 0f;
+                            
+
+        //                _normalTime = Interpolation.Calc(_behavior_cur._interpolation, 0, 1f, _normalTime);
+
+        //                switch (_eventState_current)
+        //                {
+        //                    case eSubState.None:
+        //                        if (_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta <= _behavior_cur.eventTime_1)
+        //                        {
+        //                            this.SetEventState(eSubState.Start);
+        //                        }
+        //                        break;
+        //                    case eSubState.Start:
+        //                        this.SetEventState(eSubState.Running);
+        //                        break;
+        //                    case eSubState.Running:
+        //                        if (!(_behavior_cur.eventTime_0 <= _timeDelta && _timeDelta < _behavior_cur.eventTime_1))
+        //                        {
+        //                            this.SetEventState(eSubState.End);
+        //                        }
+
+        //                        break;
+        //                    case eSubState.End:
+        //                        this.SetEventState(eSubState.None);
+        //                        break;
+
+        //                }
+
+        //                _skillInfo_cur.On_Running();    
+
+        //                if (_behavior_cur.runningTime <= this._timeDelta)
+        //                {
+                            
+        //                    //동작완료
+        //                    this.SetState(eState.Wait);
+        //                    //break;
+        //                }
+        //                //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skill_cur._name + "  " + _timeDelta);//chamto test
+        //            }
+        //            break;
+        //        case eState.Wait:
+        //            {
+        //                _skillInfo_cur.On_Wait();
+
+        //                //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
+        //                //DebugWide.LogBlue (_behavior.rigidTime + "   " + (this._timeDelta - _behavior.allTime));
+        //                if (_behavior_cur.waitTime <= (this._timeDelta - _behavior_cur.runningTime))
+        //                {
+        //                    this.SetState(eState.End);
+        //                }
+
+        //            }
+        //            break;
+        //        case eState.End:
+        //            {
+        //                _skillInfo_cur.On_End();
+
+        //                //* 다음 스킬입력 처리  
+        //                if (null != _skillInfo_next)
+        //                {
+        //                    //DebugWide.LogBlue ("next : " + _skill_next.name);
+        //                    PlayNow(_skillInfo_next);
+        //                    //_skill_next = null;
+
+        //                }
+        //                else
+        //                {
+        //                    //** 콤보 스킬 처리
+        //                    _behavior_cur = _skillInfo_cur.skill.NextBehavior();
+        //                    if (null == _behavior_cur)
+        //                    //if(false == _skill_current.IsNextBehavior())
+        //                    {
+        //                        //스킬 동작을 모두 꺼냈으면 아이들상태로 들어간다
+        //                        //Idle();
+        //                        _ref_being.Idle();
+        //                        //_ref_being._skill_idle.Play();
+        //                    }
+        //                    else
+        //                    {
+        //                        //_behavior = _skill_current.NextBehavior ().Clone();
+
+        //                        //다음 스킬 동작으로 넘어간다
+        //                        SetState(eState.Start);
+
+        //                        DebugWide.LogBlue("next combo !!");
+        //                    }
+        //                }
+        //                _timeDelta = 0f;
+
+        //            }
+        //            break;
+
+
+        //    }
+
+
+        //    //============================================================================
+
+        //}//end func
 
     }
 }

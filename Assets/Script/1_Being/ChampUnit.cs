@@ -260,7 +260,7 @@ namespace HordeFight
                 int rotateCount = 0;
                 dir =  Quaternion.AngleAxis(skillControl._normalTime * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
 
-                DebugWide.LogBlue(skillControl._timeDelta + "   " + skillControl._normalTime);
+                DebugWide.LogBlue("running : "+ skillControl._timeDelta + "   " + skillControl._normalTime);
 
                 eDirection8 eDirection = Misc.GetDir8_AxisY(dir);
                 //being._move._eDir8 = Misc.GetDir8_AxisY(dir);
@@ -269,8 +269,21 @@ namespace HordeFight
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, eDirection, 0.6f);
 
             }
+            public override void On_Wait()
+            {
+                float angle = skillControl._behavior_cur.angle;
+                int rotateCount = 0;
+                dir = Quaternion.AngleAxis(skillControl._normalTime * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
+
+                DebugWide.LogBlue("wait : "+ skillControl._timeDelta + "   " + skillControl._normalTime);
+
+                eDirection8 eDirection = Misc.GetDir8_AxisY(dir);
+                being._ani.PlayNow(being._kind, eAniBaseKind.attack, eDirection, 0.6f);
+            }
             public override void On_End()
             {
+                DebugWide.LogBlue("end : " + skillControl._timeDelta + "   " + skillControl._normalTime);
+
                 //being._ani._animator.speed = 1f;
                 //float angle = skillControl._behavior_cur.angle;
                 //int rotateCount = 0;
@@ -279,8 +292,9 @@ namespace HordeFight
                 //being._move._direction = dir;
                 //being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
 
+
                 //being._move._eDir8 = Misc.GetDir8_AxisY(start_dir);
-                //being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8);
+                being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8); //애니를 초기방향 아이들로 바꾼다
                 //DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 
