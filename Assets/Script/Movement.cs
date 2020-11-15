@@ -159,6 +159,10 @@ namespace HordeFight
             _prevInterpolationTime = interpolationTime;
         }
 
+        float __elapsedTime = 0f;
+        float __ntime_prev = 0f;
+        float __ntime_cur = 0f;
+        public Interpolation.eKind __interKind = Interpolation.eKind.linear;
         public void Move_Forward(Vector3 dir, float meter, float perSecond)
         {
 
@@ -202,15 +206,32 @@ namespace HordeFight
                 //DebugWide.LogRed(VOp.ToString(test_1) + "  " + angle + "  " + _direction + "    : " + dir + "    : " + _being.name); //chamto test
             }
 
-
             _eDir8 = Misc.GetDir8_AxisY(_direction);
 
+            //===========================================
+            __elapsedTime += Time.deltaTime;
+            if (perSecond < __elapsedTime)
+            {
+                __elapsedTime = 0;
+                __ntime_prev = 0f;
+            }
 
-            perSecond = 1f / perSecond;
+            __ntime_cur = Interpolation.Calc(__interKind, 0, 1f, __elapsedTime / perSecond);
+            if (0 > __ntime_cur) __ntime_cur = 0;
+            else if (1 < __ntime_cur) __ntime_cur = 1;
+            float tt_delta = (__ntime_cur - __ntime_prev);
+            perSecond = tt_delta * (1f / perSecond);
+            __ntime_prev = __ntime_cur;
+            //===========================================
+
+            //perSecond = 1f / perSecond;
             //보간 없는 기본형
-            //this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
-            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
-            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
+            ////this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
+            //Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            //Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
+            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (perSecond);
+            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (perSecond) * _being._collider_radius;
+
             //================================
 
             if (null != SingleO.cellPartition)
