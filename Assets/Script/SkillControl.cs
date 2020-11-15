@@ -220,12 +220,43 @@ namespace HordeFight
             return bhvo;
         }
 
+        static public Behavior Details_Attack_Swing()
+        {
+
+            Behavior bhvo = new Behavior();
+            bhvo.runningTime = 0.5f;
+            //1
+            //bhvo.cloggedTime_0 = 0.1f;
+            //bhvo.cloggedTime_1 = 1.0f;
+            ////2
+            //bhvo.eventTime_0 = 1.0f;
+            //bhvo.eventTime_1 = 1.2f;
+            ////3
+            //bhvo.openTime_0 = 1.5f;
+            //bhvo.openTime_1 = 1.8f;
+            ////4
+            //bhvo.rigidTime = 0.0f;
+
+            bhvo.movementShape = Behavior.eMovementShape.Rotation;
+            bhvo._interpolation = Interpolation.eKind.linear;
+
+            bhvo.angle = 360f;
+            bhvo.plus_range_0 = 2f;
+            bhvo.plus_range_1 = 2f;
+            bhvo.distance_travel = 1f;
+            //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
+            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+
+            bhvo.Calc_Velocity();
+
+            return bhvo;
+        }
 
         static public Behavior Details_Attack_Strong()
         {
 
             Behavior bhvo = new Behavior();
-            bhvo.runningTime = 1.0f;
+            bhvo.runningTime = 1f;
             //1
             bhvo.cloggedTime_0 = 0.1f;
             bhvo.cloggedTime_1 = 1.0f;
@@ -239,8 +270,9 @@ namespace HordeFight
             bhvo.rigidTime = 0.0f;
 
             bhvo.movementShape = Behavior.eMovementShape.Straight;
-            //bhvo.attack_shape = eTraceShape.Vertical;
-            bhvo.angle = 45f;
+            bhvo._interpolation = Interpolation.eKind.linear;
+
+            bhvo.angle = 180f;
             bhvo.plus_range_0 = 2f;
             bhvo.plus_range_1 = 2f;
             bhvo.distance_travel = 1f;
@@ -268,18 +300,18 @@ namespace HordeFight
     public partial class Skill : List<Behavior>
     {
 
-        public enum eKind
-        {
-            None,
-            Move,
-            Attack_Strong,
-            Attack_Weak,
-            Attack_Counter,
-            Withstand,
-            Block,
-            Hit,
-            Max
-        }
+        //public enum eKind
+        //{
+        //    None,
+        //    Move,
+        //    Attack_Strong,
+        //    Attack_Weak,
+        //    Attack_Counter,
+        //    Withstand,
+        //    Block,
+        //    Hit,
+        //    Max
+        //}
 
         public enum eName
         {
@@ -292,6 +324,8 @@ namespace HordeFight
             Hit_Weapon,
 
             Attack_Strong_1,
+
+            Attack_Combo_1,
 
             Block_1,
 
@@ -306,7 +340,7 @@ namespace HordeFight
 
         //========================================
 
-        public eKind _kind;
+        //public eKind _kind;
         public eName _name;
 
         //========================================
@@ -360,7 +394,7 @@ namespace HordeFight
         static public Skill Details_Idle()
         {
             Skill skinfo = new Skill();
-            skinfo._kind = eKind.None;
+            //skinfo._kind = eKind.None;
             skinfo._name = eName.Idle;
 
             skinfo.Add(Behavior.Details_Idle());
@@ -371,7 +405,7 @@ namespace HordeFight
         static public Skill Details_Move()
         {
             Skill skinfo = new Skill();
-            skinfo._kind = eKind.Move;
+            //skinfo._kind = eKind.Move;
             skinfo._name = eName.Move_0;
 
             skinfo.Add(Behavior.Details_Move());
@@ -383,10 +417,22 @@ namespace HordeFight
         static public Skill Details_Attack_Strong()
         {
             Skill skinfo = new Skill();
-            skinfo._kind = eKind.Attack_Strong;
+            //skinfo._kind = eKind.Attack_Strong;
             skinfo._name = eName.Attack_Strong_1;
 
             skinfo.Add(Behavior.Details_Attack_Strong());
+
+            return skinfo;
+        }
+
+        static public Skill Details_Attack_Combo()
+        {
+            Skill skinfo = new Skill();
+            //skinfo._kind = eKind.Attack_Strong;
+            skinfo._name = eName.Attack_Combo_1;
+
+            skinfo.Add(Behavior.Details_Attack_Strong());
+            skinfo.Add(Behavior.Details_Attack_Swing());
 
             return skinfo;
         }
@@ -435,6 +481,8 @@ namespace HordeFight
             this.Add(Skill.eName.Move_0, Skill.Details_Move);
 
             this.Add(Skill.eName.Attack_Strong_1, Skill.Details_Attack_Strong);
+
+            this.Add(Skill.eName.Attack_Combo_1, Skill.Details_Attack_Combo);
 
         }
 

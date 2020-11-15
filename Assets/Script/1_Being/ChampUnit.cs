@@ -131,6 +131,7 @@ namespace HordeFight
             _skill_idle.Init(_skillControl, this, Skill.eName.Idle);
             _skill_move.Init(_skillControl, this, Skill.eName.Move_0);
             _skill_attack.Init(_skillControl, this, Skill.eName.Attack_Strong_1);
+            //_skill_attack.Init(_skillControl, this, Skill.eName.Attack_Combo_1);
             _skillControl.Init(this, _skill_idle); //초기 애니 설정 
 
             _activeRange.radius = GridManager.ONE_METER * 1f;
@@ -243,9 +244,10 @@ namespace HordeFight
                 champ._behavior_cur = skillControl._behavior_cur;
 
 
-                being._ani._animator.speed = 1f/skillControl._behavior_cur.runningTime;
+                //being._ani._animator.speed = 1f/skillControl._behavior_cur.runningTime;
                 //_ani._animator.Play(_ani.ANI_STATE_ATTACK, 0, 0f); //애니의 노멀타임을 설정한다
-                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                being._move._eDir8 = Misc.GetDir8_AxisY(start_dir);
+                being._move._direction = start_dir;
                 being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
 
 
@@ -260,20 +262,25 @@ namespace HordeFight
 
                 DebugWide.LogBlue(skillControl._timeDelta + "   " + skillControl._normalTime);
 
-                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
-                being._move._direction = dir;
-                being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
-                //being._ani._animator.Play(being._ani.ANI_STATE_ATTACK, 0, 0.7f); //애니의 노멀타임을 설정한다
+                eDirection8 eDirection = Misc.GetDir8_AxisY(dir);
+                //being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                //being._move._direction = dir;
+                //being._ani.PlayNow(being._kind, eAniBaseKind.attack, eDirection, skillControl._normalTime);
+                being._ani.PlayNow(being._kind, eAniBaseKind.attack, eDirection, 0.6f);
+
             }
             public override void On_End()
             {
-                being._ani._animator.speed = 1f;
-                float angle = skillControl._behavior_cur.angle;
-                int rotateCount = 0;
-                dir = Quaternion.AngleAxis(1f * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
-                being._move._eDir8 = Misc.GetDir8_AxisY(dir);
-                being._move._direction = dir;
-                being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
+                //being._ani._animator.speed = 1f;
+                //float angle = skillControl._behavior_cur.angle;
+                //int rotateCount = 0;
+                //dir = Quaternion.AngleAxis(1f * (angle + (360f * rotateCount)), ConstV.v3_up) * start_dir;
+                //being._move._eDir8 = Misc.GetDir8_AxisY(dir);
+                //being._move._direction = dir;
+                //being._ani.PlayNow(being._kind, eAniBaseKind.attack, being._move._eDir8);
+
+                //being._move._eDir8 = Misc.GetDir8_AxisY(start_dir);
+                //being._ani.PlayNow(being._kind, eAniBaseKind.idle, being._move._eDir8);
                 //DebugWide.LogRed(skillControl._state_current + "  " + skill._name + "  " + skillControl._timeDelta);
             }
 

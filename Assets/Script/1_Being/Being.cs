@@ -80,6 +80,17 @@ namespace HordeFight
             _animator.SetInteger(ANI_STATE, (int)ani_kind);
             Switch_Ani(being_kind, ani_kind, dir);
             _animator.Play(HASH_STATE[(int)ani_kind]);
+
+        }
+
+        public void PlayNow(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir, float normalTime)
+        {
+            if (false == IsActive_Animator()) return;
+
+            _animator.SetInteger(ANI_STATE, (int)ani_kind);
+            Switch_Ani(being_kind, ani_kind, dir);
+
+            _animator.Play(HASH_STATE[(int)ani_kind], 0, normalTime);
         }
 
         uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
