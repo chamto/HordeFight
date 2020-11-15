@@ -1534,7 +1534,7 @@ namespace HordeFight
             //===================================================
 
             // -- 장애물 진형 --
-            numMax_create = 1;
+            numMax_create = 0;
             for (int i = 0; i < numMax_create; i++)
             {
                 Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());

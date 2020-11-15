@@ -840,6 +840,7 @@ namespace HordeFight
 
             }
 
+            //DebugWide.LogBlue("[0: " + this._state_current + "  " + _skillInfo_cur.skill._name + "  " + _timeDelta + "  : ");//chamto test
             //==============================================
             _timeDelta += Time.deltaTime;
 

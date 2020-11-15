@@ -24,6 +24,8 @@ namespace HordeFight
         public eDirection8 _eDir8 = eDirection8.down;
         //public float _dir_angleY = 0f;
         public Vector3 _direction = Vector3.back; //_eDir8과 같은 방향으로 설정한다  
+        //private Vector3 _direction_prev = Vector3.back;
+        public float _anglePerSecond = 180f; //초당 회전각 
 
         private float _speed_meterPerSecond = 1f;
 
@@ -162,12 +164,46 @@ namespace HordeFight
 
             //dir.Normalize();
             _isNextMoving = true;
-            _direction = Quaternion.FromToRotation(_direction, dir) * _direction;
-            _eDir8 = Misc.GetDir8_AxisY(dir);
-            //if(eDirection8.max == _eDir8)
-            //{
-            //    DebugWide.LogBlue(_direction + "    : " + dir + "    : " + _being.name); //chamto test
-            //}
+
+            Vector3 dir_prev = _direction;
+            dir_prev.y = 0; dir.y = 0;
+            Vector3 up = Vector3.Cross(dir_prev, dir);
+            float test_0 = Vector3.Dot(dir_prev, dir);
+            bool upZero = Misc.IsZero(up.y);
+            float angle = Time.deltaTime * _anglePerSecond;
+
+            if(180f > angle)
+            {
+                
+                if (true == upZero && 0 > test_0)
+                {
+                    //각도가 정확히 180도 차이가 나는 경우 외적값을 구하지 못하므로 기본up값을 넣어준다 
+                    up = ConstV.v3_up;
+                    _direction = Quaternion.AngleAxis(angle, up) * _direction;
+                    //DebugWide.LogBlue(VOp.ToString(up) + "  " + angle + "  " + _direction + "    : " + dir + "    : " + _being.name); //chamto test
+                }
+                else if (false == upZero)
+                {
+                    _direction = Quaternion.AngleAxis(angle, up) * _direction;
+                    //DebugWide.LogBlue(VOp.ToString(up) + "  " + angle + "  " + _direction + "    : " + dir + "    : " + _being.name); //chamto test
+                }
+                //else
+                //{
+                //    //현재방향과 목표방향이 같을때는 방향을 구하지 않는다 
+                //}
+            }
+
+            //요청방향을 넘어서 회전한 경우 요청방향으로 맞춘다 
+            //회전할 각도가 180도 보다 크다면 요청방향으로 바로 맞춘다
+            Vector3 test_1 = Vector3.Cross(dir, _direction);
+            if(Vector3.Dot(up, test_1) > 0 || 180f <= angle)
+            {
+                _direction = Quaternion.FromToRotation(dir_prev, dir) * dir_prev;
+                //DebugWide.LogRed(VOp.ToString(test_1) + "  " + angle + "  " + _direction + "    : " + dir + "    : " + _being.name); //chamto test
+            }
+
+
+            _eDir8 = Misc.GetDir8_AxisY(_direction);
 
 
             perSecond = 1f / perSecond;
