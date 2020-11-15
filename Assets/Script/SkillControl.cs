@@ -59,21 +59,21 @@ namespace HordeFight
         public float plus_range_0;      //더해지는 범위 최소 
         public float plus_range_1;      //더해지는 범위 최대
 
-
-        //=== 직선 공격 모델 === Straight
-        //무기를 휘둘러 무기가 최대공격점까지 이동한후 제자리로 돌아오는 것을 수치모델로 만든것임. 요요라 보면됨
-        public float distance_travel;   //공격점까지 이동 거리 : 상대방까지의 직선거리 , 근사치 , 판단을 위한 값임 , 정확한 충돌검사용 값이 아님.
-        public float distance_maxTime;  //최대거리가 되는 시간 , 공격점에 도달하는 시간
-        public float velocity_before;   //공격점 전 속도 
-        public float velocity_after;    //공격점 후 속도  
-
         //공격행동의 중심점 
         public Vector3 point_0; //행동 중심점 (상대위치임) : 0(시작) , 1(끝)
         public Vector3 point_1;
 
-
         public Vector3 object_startDir;     //무기 시작 방향
         public Vector3 behaDir;             //행동의 방향
+
+        //=== 직선 공격 모델 === Straight
+        //무기를 휘둘러 무기가 최대공격점까지 이동한후 제자리로 돌아오는 것을 수치모델로 만든것임. 요요라 보면됨
+        //public float distance_travel;   //공격점까지 이동 거리 : 상대방까지의 직선거리 , 근사치 , 판단을 위한 값임 , 정확한 충돌검사용 값이 아님.
+        //public float distance_maxTime;  //최대거리가 되는 시간 , 공격점에 도달하는 시간
+        //public float velocity_before;   //공격점 전 속도 
+        //public float velocity_after;    //공격점 후 속도  
+
+
 
         //==================================================
 
@@ -91,11 +91,11 @@ namespace HordeFight
             movementShape = eMovementShape.None;
             plus_range_0 = 0f;
             plus_range_1 = 0f;
-            angle = 45f;
-            distance_travel = 0f;
-            distance_maxTime = 0f;
-            velocity_before = 0f;
-            velocity_after = 0f;
+            angle = 0f;
+            //distance_travel = 0f;
+            //distance_maxTime = 0f;
+            //velocity_before = 0f;
+            //velocity_after = 0f;
         }
 
         public Behavior Clone()
@@ -155,42 +155,42 @@ namespace HordeFight
         //}
 
 
-        public void Calc_Velocity()
-        {
-            //t * s = d
-            //s = d/t
-            if (0f == distance_maxTime)
-                this.velocity_before = 0f;
-            else
-                this.velocity_before = distance_travel / distance_maxTime;
+        //public void Calc_Velocity()
+        //{
+        //    //t * s = d
+        //    //s = d/t
+        //    if (0f == distance_maxTime)
+        //        this.velocity_before = 0f;
+        //    else
+        //        this.velocity_before = distance_travel / distance_maxTime;
 
-            this.velocity_after = distance_travel / (runningTime - distance_maxTime);
+        //    this.velocity_after = distance_travel / (runningTime - distance_maxTime);
 
-            //DebugWide.LogBlue("velocity_before : " + this.velocity_before + "   <-- 충돌점 -->   velocity_after : " + this.velocity_after + "  [distance_travel:" + distance_travel + "]"); //chamto test
-        }
+        //    //DebugWide.LogBlue("velocity_before : " + this.velocity_before + "   <-- 충돌점 -->   velocity_after : " + this.velocity_after + "  [distance_travel:" + distance_travel + "]"); //chamto test
+        //}
 
-        public float CurrentDistance(float currentTime)
-        {
-            //* 러닝타임 보다 더 큰 값이 들어오면 사용오류임
-            if (runningTime < currentTime)
-                return 0f;
+        //public float CurrentDistance(float currentTime)
+        //{
+        //    //* 러닝타임 보다 더 큰 값이 들어오면 사용오류임
+        //    if (runningTime < currentTime)
+        //        return 0f;
 
-            //* 최대거리에 도달하는 시간이 0이면 최대거리를 반환한다.
-            if (0f == distance_maxTime)
-            {
-                return distance_travel;
-            }
+        //    //* 최대거리에 도달하는 시간이 0이면 최대거리를 반환한다.
+        //    if (0f == distance_maxTime)
+        //    {
+        //        return distance_travel;
+        //    }
 
-            //1. 전진
-            if (currentTime <= distance_maxTime)
-            {
-                return this.velocity_before * currentTime;
-            }
+        //    //1. 전진
+        //    if (currentTime <= distance_maxTime)
+        //    {
+        //        return this.velocity_before * currentTime;
+        //    }
 
-            //2. 후진
-            //if(distance_maxTime < currentTime)
-            return this.velocity_after * (runningTime - currentTime);
-        }
+        //    //2. 후진
+        //    //if(distance_maxTime < currentTime)
+        //    return this.velocity_after * (runningTime - currentTime);
+        //}
 
         //==================================================
 
@@ -243,11 +243,11 @@ namespace HordeFight
             bhvo.angle = 360f;
             bhvo.plus_range_0 = 2f;
             bhvo.plus_range_1 = 2f;
-            bhvo.distance_travel = 1f;
+            //bhvo.distance_travel = 1f;
             //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+            //bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
 
-            bhvo.Calc_Velocity();
+            //bhvo.Calc_Velocity();
 
             return bhvo;
         }
@@ -275,11 +275,11 @@ namespace HordeFight
             bhvo.angle = 180f;
             bhvo.plus_range_0 = 2f;
             bhvo.plus_range_1 = 2f;
-            bhvo.distance_travel = 1f;
+            //bhvo.distance_travel = 1f;
             //bhvo.distance_maxTime = bhvo.eventTime_0; //유효범위 시작시간에 최대 거리가 되게 한다. : 떙겨치기 , [시간증가에 따라 유효거리 감소]
-            bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
+            //bhvo.distance_maxTime = bhvo.eventTime_1; //유효범위 끝시간에 최대 거리가 되게 한다. : 일반치기 , [시간증가에 따라 유효거리 증가]
 
-            bhvo.Calc_Velocity();
+            //bhvo.Calc_Velocity();
 
             return bhvo;
         }
@@ -657,10 +657,10 @@ namespace HordeFight
 
 
 
-        public float CurrentDistance()
-        {
-            return _behavior_cur.CurrentDistance(_timeDelta);
-        }
+        //public float CurrentDistance()
+        //{
+        //    return _behavior_cur.CurrentDistance(_timeDelta);
+        //}
 
         //public float GetWeaponDistance()
         //{

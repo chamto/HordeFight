@@ -102,6 +102,8 @@ namespace HordeFight
             resourceManager = CSingleton<ResourceManager>.Instance;
             SingleO.resourceManager.Init(); //스프라이트 로드 
 
+            skillBook = CSingleton<SkillBook>.Instance;
+
             cameraWalk = parent.AddComponent<CameraWalk>();
             touchEvent = parent.AddComponent<TouchEvent>();
             //touchControl = parent.AddComponent<TouchControl>();
