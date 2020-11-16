@@ -31,7 +31,7 @@ namespace HordeFight
 
         private bool _isNextMoving = false;
         private float _elapsedTime = 0f;
-        private float _prevInterpolationTime = 0;
+        private float _interTime_prev = 0;
 
         private Vector3 _startPos = ConstV.v3_zero;
         private Vector3 _lastTargetPos = ConstV.v3_zero;
@@ -94,7 +94,7 @@ namespace HordeFight
             if (_speed_meterPerSecond < _elapsedTime)
             {
                 _elapsedTime = 0;
-                _prevInterpolationTime = 0;
+                _interTime_prev = 0;
             }
             _elapsedTime += Time.deltaTime;
 
@@ -105,6 +105,11 @@ namespace HordeFight
 
             DebugVeiw_DrawPath_MoveToTarget(); //chamto test
         }
+
+        //public void UpdateMove()
+        //{
+        //    _elapsedTime += Time.deltaTime;
+        //}
 
         public void SetNextMoving(bool isNext)
         {
@@ -129,7 +134,7 @@ namespace HordeFight
 
             //연속이동요청시에 이동처리를 할수 있게 주석처리함
             _elapsedTime = 0;
-            _prevInterpolationTime = 0;
+            _interTime_prev = 0;
 
             _targetPath = SingleO.pathFinder.Search(_being.GetPos3D(), targetPos);
 
@@ -150,25 +155,19 @@ namespace HordeFight
 
             //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
             //_transform.Translate(dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime));
-            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (interpolationTime - _prevInterpolationTime);
+            Vector3 newPos = _being.GetPos3D() + dir * (GridManager.ONE_METER * meter) * (interpolationTime - _interTime_prev);
             _being.SetPos(newPos);
 
             //보간 없는 기본형
             //this.transform.Translate(dir * (ONE_METER * meter) * (Time.deltaTime * perSecond));
 
-            _prevInterpolationTime = interpolationTime;
+            _interTime_prev = interpolationTime;
         }
 
-        float __elapsedTime = 0f;
-        float __ntime_prev = 0f;
-        float __ntime_cur = 0f;
-        public Interpolation.eKind __interKind = Interpolation.eKind.linear;
-        public void Move_Forward(Vector3 dir, float meter, float perSecond)
+
+        //초당회전각 값에 따라 회전량을 구한다 
+        private void RotateDirection(Vector3 dir)
         {
-
-            //dir.Normalize();
-            _isNextMoving = true;
-
             Vector3 dir_prev = _direction;
             dir_prev.y = 0; dir.y = 0;
             Vector3 up = Vector3.Cross(dir_prev, dir);
@@ -176,9 +175,9 @@ namespace HordeFight
             bool upZero = Misc.IsZero(up.y);
             float angle = Time.deltaTime * _anglePerSecond;
 
-            if(180f > angle)
+            if (180f > angle)
             {
-                
+
                 if (true == upZero && 0 > test_0)
                 {
                     //각도가 정확히 180도 차이가 나는 경우 외적값을 구하지 못하므로 기본up값을 넣어준다 
@@ -200,37 +199,52 @@ namespace HordeFight
             //요청방향을 넘어서 회전한 경우 요청방향으로 맞춘다 
             //회전할 각도가 180도 보다 크다면 요청방향으로 바로 맞춘다
             Vector3 test_1 = Vector3.Cross(dir, _direction);
-            if(Vector3.Dot(up, test_1) > 0 || 180f <= angle)
+            if (Vector3.Dot(up, test_1) > 0 || 180f <= angle)
             {
                 _direction = Quaternion.FromToRotation(dir_prev, dir) * dir_prev;
                 //DebugWide.LogRed(VOp.ToString(test_1) + "  " + angle + "  " + _direction + "    : " + dir + "    : " + _being.name); //chamto test
             }
 
+        }
+
+        public Interpolation.eKind __interKind = Interpolation.eKind.linear;
+        public void Move_Forward(Vector3 dir, float meter, float perSecond)
+        {
+
+            //dir.Normalize();
+            _isNextMoving = true;
+
+
+            RotateDirection(dir);
             _eDir8 = Misc.GetDir8_AxisY(_direction);
 
             //===========================================
-            __elapsedTime += Time.deltaTime;
-            if (perSecond < __elapsedTime)
+            _elapsedTime += Time.deltaTime;
+            if (perSecond < _elapsedTime)
             {
-                __elapsedTime = 0;
-                __ntime_prev = 0f;
+                _elapsedTime = 0;
+
+                _interTime_prev = 0;
             }
 
-            __ntime_cur = Interpolation.Calc(__interKind, 0, 1f, __elapsedTime / perSecond);
-            if (0 > __ntime_cur) __ntime_cur = 0;
-            else if (1 < __ntime_cur) __ntime_cur = 1;
-            float tt_delta = (__ntime_cur - __ntime_prev);
-            perSecond = tt_delta * (1f / perSecond);
-            __ntime_prev = __ntime_cur;
+            float interTime = Interpolation.Calc(__interKind, 0, 1f, _elapsedTime / perSecond);
+            if (0 > interTime) interTime = 0;
+            else if (1 < interTime) interTime = 1;
+            //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
+            float tt_delta = interTime - _interTime_prev;
+
+            _interTime_prev = interTime;
+            //DebugWide.LogBlue(interTime + "  " + _interTime_prev + "  "  + tt_delta + "  el: " +  _elapsedTime + "  ps: "  + perSecond );
             //===========================================
+
 
             //perSecond = 1f / perSecond;
             //보간 없는 기본형
             ////this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
             //Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
             //Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond) * _being._collider_radius;
-            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (perSecond);
-            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (perSecond) * _being._collider_radius;
+            Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * tt_delta;
+            Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (tt_delta) * _being._collider_radius;
 
             //================================
 
