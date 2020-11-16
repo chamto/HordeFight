@@ -62,7 +62,7 @@ namespace HordeFight
         public Inventory _inventory = null;
 
         //전용effect
-        private Transform[] _effect = new Transform[(int)eEffectKind.Max];
+        public Transform[] _effect = new Transform[(int)eEffectKind.Max];
         private SpriteRenderer _bar_red = null;
         private SpriteRenderer _bar_blue = null;
 
@@ -141,12 +141,12 @@ namespace HordeFight
 
 
             Transform effectTr = Hierarchy.GetTransform(transform, "effectIcon");
-            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "aim");
-            _effect[(int)eEffectKind.Dir] = Hierarchy.GetTransform(effectTr, "dir");
-            _effect[(int)eEffectKind.Emotion] = Hierarchy.GetTransform(effectTr, "emotion");
-            _effect[(int)eEffectKind.Circle] = Hierarchy.GetTransform(effectTr, "circle");
-            _effect[(int)eEffectKind.Bar_Red] = Hierarchy.GetTransform(effectTr, "bar_red");
-            _effect[(int)eEffectKind.Bar_Blue] = Hierarchy.GetTransform(effectTr, "bar_blue");
+            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "aim",true);
+            _effect[(int)eEffectKind.Dir] = Hierarchy.GetTransform(effectTr, "dir",true);
+            _effect[(int)eEffectKind.Emotion] = Hierarchy.GetTransform(effectTr, "emotion",true);
+            _effect[(int)eEffectKind.Circle] = Hierarchy.GetTransform(effectTr, "circle",true);
+            _effect[(int)eEffectKind.Bar_Red] = Hierarchy.GetTransform(effectTr, "bar_red",true);
+            _effect[(int)eEffectKind.Bar_Blue] = Hierarchy.GetTransform(effectTr, "bar_blue",true);
 
             _bar_red = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Red], "spr");
             _bar_blue = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Blue], "spr");
