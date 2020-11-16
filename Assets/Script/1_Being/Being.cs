@@ -346,7 +346,7 @@ namespace HordeFight
         public AniControl _ani = new AniControl();
 
         protected SphereCollider _collider = null;
-        protected SpriteMask _sprMask = null;
+        //protected SpriteMask _sprMask = null;
 
 
         //==================================================
@@ -419,7 +419,7 @@ namespace HordeFight
 
             //_sprRender = GetComponentInChildren<SpriteRenderer>();
             //_animator = GetComponentInChildren<Animator>();
-            _sprMask = GetComponentInChildren<SpriteMask>();
+            //_sprMask = GetComponentInChildren<SpriteMask>();
             _ani.Init(transform, _id);
 
             //=====================================================
@@ -543,11 +543,11 @@ namespace HordeFight
             {
                 _ani._animator.enabled = onoff;
             }
-            if (null != (object)_sprMask)
-            {
-                //_sprMask.enabled = onoff;
-                _sprMask.gameObject.SetActive(onoff);
-            }
+            //if (null != (object)_sprMask)
+            //{
+            //    //_sprMask.enabled = onoff;
+            //    _sprMask.gameObject.SetActive(onoff);
+            //}
 
         }
 
@@ -604,14 +604,13 @@ namespace HordeFight
         }
 
 
-        public void Update_SpriteMask()
-        {
-            if (null == (object)_sprMask) return;
+        //public void Update_SpriteMask()
+        //{
+        //    if (null == (object)_sprMask) return;
 
-            AnimatorStateInfo stateInfo = _ani._animator.GetCurrentAnimatorStateInfo(0);
-            _sprMask.sprite = _ani._sprRender.sprite;
-
-        }
+        //    AnimatorStateInfo stateInfo = _ani._animator.GetCurrentAnimatorStateInfo(0);
+        //    _sprMask.sprite = _ani._sprRender.sprite;
+        //}
 
         /// <summary>
         /// 그리드상 셀값이 변경되면 셀정보값을 갱신한다 
@@ -740,7 +739,7 @@ namespace HordeFight
             Update_CellSpace();
 
 
-            Update_SpriteMask();
+            //Update_SpriteMask();
 
             //Update_Collision(); //성능테스트 : objectManager 에서 일괄적으로 전체 객체의 충돌처리 하는게 약간 더 빠르다 
 
