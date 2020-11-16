@@ -41,25 +41,26 @@ namespace HordeFight
             GameObject obj = champTR.gameObject;
             ChampUnit cha = obj.AddComponent<ChampUnit>();
 
-            Movement mov = obj.AddComponent<Movement>();
-            mov._being = cha;
+            cha._move = obj.AddComponent<Movement>();
+            cha._move._being = cha;
+
             //mov._eDir8 = eDirection8.up;
-            obj.AddComponent<AI>();
+            cha._ai = obj.AddComponent<AI>();
+            cha._ai.Init();
             cha._id = 0;
             cha._kind = eKind;
             cha._belongCamp = null;
             cha.transform.position = champTR.position;
 
+            cha.Init();
+
             ////==============================================
             ////가지(촉수) 등록
-            Limbs limbs_hand = obj.GetComponentInChildren<Limbs>();
-            limbs_hand.Init();
-            limbs_hand._ref_movement = mov;
-            limbs_hand._ref_being = cha;
-            cha._limbs = limbs_hand;
-            ////======================
+            cha._bone.Load(champTR);
+            cha._limbs = obj.GetComponentInChildren<Limbs>();
+            cha._limbs.Init(cha, cha._move, cha._bone);
 
-            cha.Init();
+            ////======================
 
             return cha;
         }
@@ -148,9 +149,9 @@ namespace HordeFight
             //==================================================
 
             _champ_0.UpdateAll();
-            _champ_0._limbs.UpdateAll();
+            //_champ_0._limbs.Update_Frame();
             _champ_1.UpdateAll();
-            _champ_1._limbs.UpdateAll();
+            //_champ_1._limbs.Update_Frame();
 
             //==================================================
 
@@ -193,8 +194,8 @@ namespace HordeFight
 
             //==================================================
 
-            _champ_0._limbs.UpdateAll_Late();
-            _champ_1._limbs.UpdateAll_Late();
+            //_champ_0._limbs.Update_View();
+            //_champ_1._limbs.Update_View();
 
             _champ_0.Apply_UnityPosition();
             _champ_1.Apply_UnityPosition();

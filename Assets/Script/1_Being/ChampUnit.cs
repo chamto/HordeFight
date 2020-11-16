@@ -91,6 +91,7 @@ namespace HordeFight
         //==================================================
 
         //가지정보
+        public Bone _bone = new Bone();
         public Limbs _limbs = null;
         //==================================================
 
@@ -318,14 +319,23 @@ namespace HordeFight
             {
                 //========================================
                 _skillControl.Update(); //행동 진행 갱신 
+
                 //========================================
+
 
 
                 ApplyUI_HPBar();
 
                 if (null != (object)_limbs)
                 {
-                    //_limbs.UpdateAll(); //가지들 갱신 
+                    _limbs.Update_Frame(); //뼈대 정보 갱신 
+
+                    //MovingModel 처리가 와야 한다 
+                    // - 새로 구한 회전값 적용 
+                    // - 새로 구한 회전값에서 손의 위치 다시 계산 
+
+                    _limbs.Update_View(); //보이는 정보 처리 
+
                     //_limbs.Rotate(_move._direction); //move 에서 오일러각을 따로 구한것을 사용하도록 코드 수정하기     
                 }
 

@@ -410,12 +410,12 @@ namespace HordeFight
             _collider_sqrRadius = _collider_radius * _collider_radius;
             //_prevLocalPos = transform.localPosition;
 
-            _move = GetComponent<Movement>();
-            _ai = GetComponent<AI>();
-            if (null != _ai)
-            {
-                _ai.Init();
-            }
+            //_move = GetComponent<Movement>();
+            //_ai = GetComponent<AI>();
+            //if (null != _ai)
+            //{
+            //    _ai.Init();
+            //}
 
             //_sprRender = GetComponentInChildren<SpriteRenderer>();
             //_animator = GetComponentInChildren<Animator>();

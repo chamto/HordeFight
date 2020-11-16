@@ -1273,9 +1273,10 @@ namespace HordeFight
             GameObject obj = CreatePrefab("0_champ/" + eKind.ToString(), parent, _id_sequence.ToString("000") + "_" + eKind.ToString());
             ChampUnit cha = obj.AddComponent<ChampUnit>();
             ////obj.AddComponent<SortingGroup>(); //drawcall(batches) 증가 문제로 주석  
-            Movement mov = obj.AddComponent<Movement>();
-            mov._being = cha;
-            obj.AddComponent<AI>();
+            cha._move = obj.AddComponent<Movement>();
+            cha._move._being = cha;
+            cha._ai = obj.AddComponent<AI>();
+            cha._ai.Init();
             cha._id = _id_sequence;
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
@@ -1283,11 +1284,11 @@ namespace HordeFight
 
             ////==============================================
             ////가지(촉수) 등록
-            //Limbs limbs_hand = Limbs.CreateLimbs_TwoHand(obj.transform);
-            //limbs_hand.Init();
-            //limbs_hand._ref_movement = mov;
-            //limbs_hand._ref_being = cha;
-            //cha._limbs = limbs_hand;
+            GameObject bone = CreatePrefab("3_part/bone", obj.transform, "bone");
+            cha._bone.Load(obj.transform);
+            cha._limbs = Limbs.CreateLimbs(obj.transform);
+            cha._limbs.Init(cha, cha._move, cha._bone);
+
             ////==============================================
             //effectIcon 등록 
             CreatePrefab("3_part/effectIcon", obj.transform, "effectIcon");

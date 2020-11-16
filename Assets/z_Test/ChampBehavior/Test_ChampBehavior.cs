@@ -34,29 +34,31 @@ namespace HordeFight
             //_frame_ch_0.Draw(Color.red);
         }
 
-        public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
+        public ChampUnit CreateTestChamp(Transform champTR, ChampUnit.eKind eKind)
         {
             GameObject obj = champTR.gameObject;
             ChampUnit cha = obj.AddComponent<ChampUnit>();
 
-            Movement mov = obj.AddComponent<Movement>();
-            mov._being = cha;
-            obj.AddComponent<AI>();
+            cha._move = obj.AddComponent<Movement>();
+            cha._move._being = cha;
+
+            //mov._eDir8 = eDirection8.up;
+            cha._ai = obj.AddComponent<AI>();
+            cha._ai.Init();
             cha._id = 0;
             cha._kind = eKind;
             cha._belongCamp = null;
             cha.transform.position = champTR.position;
 
+            cha.Init();
+
             ////==============================================
             ////가지(촉수) 등록
-            Limbs limbs_hand = obj.GetComponentInChildren<Limbs>();
-            limbs_hand.Init();
-            limbs_hand._ref_movement = mov;
-            limbs_hand._ref_being = cha;
-            cha._limbs = limbs_hand;
-            ////======================
+            cha._bone.Load(champTR);
+            cha._limbs = obj.GetComponentInChildren<Limbs>();
+            cha._limbs.Init(cha, cha._move, cha._bone);
 
-            cha.Init();
+            ////======================
 
             return cha;
         }
@@ -137,9 +139,9 @@ namespace HordeFight
             //==================================================
 
             _champ_0.UpdateAll();
-            _champ_0._limbs.UpdateAll();
+            //_champ_0._limbs.Update_Frame();
             _champ_1.UpdateAll();
-            _champ_1._limbs.UpdateAll();
+            //_champ_1._limbs.Update_Frame();
 
             //==================================================
 
@@ -160,19 +162,19 @@ namespace HordeFight
                 //계산된 회전값을 sting , cut 에 적용하기
 
                 //임시처리 
-                _champ_0._limbs._tr_hand_left.rotation = _movingModel._frame_A._tr_frame.rotation;
-                _champ_0._limbs._tr_hand_left.position = _movingModel._frame_A._tr_frame.position;
-                Vector3 pos_o = _champ_0._limbs._tr_hand_left.position;
+                _champ_0._limbs._bone._hand_left.rotation = _movingModel._frame_A._tr_frame.rotation;
+                _champ_0._limbs._bone._hand_left.position = _movingModel._frame_A._tr_frame.position;
+                Vector3 pos_o = _champ_0._limbs._bone._hand_left.position;
                 Vector3 dir_two = _movingModel._frame_A._tr_frame.forward;
                 float len_two = _champ_0._limbs._twoHand_cut_length;
-                _champ_0._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
+                _champ_0._limbs._bone._hand_right.position = pos_o + dir_two.normalized * len_two;
 
-                _champ_1._limbs._tr_hand_left.rotation = _movingModel._frame_B._tr_frame.rotation;
-                _champ_1._limbs._tr_hand_left.position = _movingModel._frame_B._tr_frame.position;
-                pos_o = _champ_1._limbs._tr_hand_left.position;
+                _champ_1._limbs._bone._hand_left.rotation = _movingModel._frame_B._tr_frame.rotation;
+                _champ_1._limbs._bone._hand_left.position = _movingModel._frame_B._tr_frame.position;
+                pos_o = _champ_1._limbs._bone._hand_left.position;
                 dir_two = _movingModel._frame_B._tr_frame.forward;
                 len_two = _champ_1._limbs._twoHand_cut_length;
-                _champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
+                _champ_1._limbs._bone._hand_right.position = pos_o + dir_two.normalized * len_two;
 
                 _movingModel.__dir_move_A.y = 0;
                 _movingModel.__dir_move_B.y = 0;
@@ -182,8 +184,8 @@ namespace HordeFight
 
             //==================================================
 
-            _champ_0._limbs.UpdateAll_Late();
-            _champ_1._limbs.UpdateAll_Late();
+            //_champ_0._limbs.Update_View();
+            //_champ_1._limbs.Update_View();
 
             _champ_0.Apply_UnityPosition();
             _champ_1.Apply_UnityPosition();
