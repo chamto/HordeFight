@@ -254,7 +254,8 @@ namespace HordeFight
                 if (orgin_2d == SingleO.gridManager.ToPosition2D(origin_center + next))
                 {
                     keyword += "Eq";
-                    UnityEditor.Handles.Label(origin_center + next, keyword + ":" + i);
+                    DebugWide.PrintText(origin_center + next, Color.white, keyword + ":" + i);
+                    //UnityEditor.Handles.Label(origin_center + next, keyword + ":" + i);
                     continue;
                 }
 
@@ -282,7 +283,8 @@ namespace HordeFight
 
 
                 }
-                UnityEditor.Handles.Label(origin_center + next, keyword + ":" + i);
+                DebugWide.PrintText(origin_center + next, Color.white, keyword + ":" + i);
+                //UnityEditor.Handles.Label(origin_center + next, keyword + ":" + i);
 
             }
 
@@ -335,7 +337,8 @@ namespace HordeFight
                         break;
                 }
 
-                UnityEditor.Handles.Label(origin_3d_center, "__before:" + SingleO.gridManager.ToPosition3D_Center(origin_2d) + " after:" + origin_3d_center);
+                DebugWide.PrintText(origin_3d_center, Color.white, "__before:" + SingleO.gridManager.ToPosition3D_Center(origin_2d) + " after:" + origin_3d_center);
+                //UnityEditor.Handles.Label(origin_3d_center, "__before:" + SingleO.gridManager.ToPosition3D_Center(origin_2d) + " after:" + origin_3d_center);
             }
 
 
@@ -347,7 +350,8 @@ namespace HordeFight
             Vector3 next = n * length_interval * count;
             while (line.sqrMagnitude > next.sqrMagnitude)
             {
-                UnityEditor.Handles.Label(origin_3d_center + next, "__" + count);
+                DebugWide.PrintText(origin_3d_center + next, Color.white, "__" + count);
+                //UnityEditor.Handles.Label(origin_3d_center + next, "__" + count);
 
                 if (SingleO.gridManager.HasStructTile(origin_3d_center + next, out structTile))
                 //if (this.HasStructUpTile(origin_center + next))
@@ -371,7 +375,8 @@ namespace HordeFight
 
             }
 
-            UnityEditor.Handles.Label(origin_3d_center + next, "_________end :" + count);
+            DebugWide.PrintText(origin_3d_center + next, Color.white, "_________end :" + count);
+            //UnityEditor.Handles.Label(origin_3d_center + next, "_________end :" + count);
 
             Debug.DrawLine(origin_3d_center, target_3d, Color.green);
             //return true;
@@ -420,7 +425,6 @@ namespace HordeFight
 
             //UpdateDraw_IndexesNxN();
 
-            //DebugWide.DrawLine(_origin.transform.position, _target.transform.position ,Color.red);
 
             //UpdateDraw_StructTileDir();
 
@@ -428,10 +432,12 @@ namespace HordeFight
 
             //Update_DrawEdges(false);
 
+            //DebugWide.DrawLine(_origin.transform.position, _target.transform.position ,Color.red);
+
 
             //if(null != _origin && null != _target)
             //{
-            //    Draw_Grid();
+            //    Draw_Grid(); //제거대상
             //    Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
             //    IsVisibleTile(_origin.position, _target.position, _length_interval);
             //}
@@ -443,7 +449,7 @@ namespace HordeFight
             //SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
             //SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
             //float radius = (_origin.position - _target.position).magnitude;
-            //SingleO.objectManager.GetSphereTree().Render_RangeTest(_origin.position,radius);
+            //SingleO.objectManager.GetSphereTree_Being().Render_RangeTest(_origin.position,radius);
             //==============================================
 
             //Draw_LookAtChamp();
