@@ -1084,7 +1084,7 @@ namespace HordeFight
 
             //최대 반지름 길이를 포함하는  정사각형 그리드 범위 구하기  
             uint NxN = SingleO.gridManager.GetNxNIncluded_CircleRadius(wrd_maxRad);
-            int TILE_MAP_SIZE = SingleO.cellPartition._tileMapSize_x;
+            int TILE_MAP_SIZE = CellSpacePartition.MAP_WIDTH;
 
             //int count = 0;
             Index2 tempv2;

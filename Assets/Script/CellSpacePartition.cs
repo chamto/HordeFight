@@ -131,9 +131,9 @@ namespace HordeFight
 
         private float _tileSize_w = ONE_METER * 1; //월드 크기 
         private float _tileSize_h = ONE_METER * 1; //월드 크기
-        public int _tileMapSize_x = 64;
-        private int _tileMapSize_y = 64;
-        private int _max_tileMapSize = 64 * 64;
+        public const int MAP_WIDTH = 64;
+        public const int MAP_HEIGHT = 64;
+        private int _max_tileMapSize = MAP_WIDTH * MAP_HEIGHT;
         //private Vector2Int _tileMapSize = new Vector2Int(64, 64); //64*64 타일 갯수까지 사용한다 
         private CellSpace[] _cellInfo2Map = null;
 
@@ -161,12 +161,13 @@ namespace HordeFight
 
 
         //public void Init(Vector2Int tileMapSize)
-        public void Init(Index2 tileMapSize)
+        //public void Init(Index2 tileMapSize)
+        public void Init()
         {
-            _tileMapSize_x = tileMapSize.x;
-            _tileMapSize_y = tileMapSize.y;
-            _max_tileMapSize = _tileMapSize_x * _tileMapSize_y;
-            _cellInfo2Map = new CellSpace[_tileMapSize_x * _tileMapSize_y];
+            //_tileMapSize_x = tileMapSize.x;
+            //_tileMapSize_y = tileMapSize.y;
+            //_max_tileMapSize = MAP_WIDTH * MAP_HEIGHT;
+            _cellInfo2Map = new CellSpace[MAP_WIDTH * MAP_HEIGHT];
 
             CreateCellIfoMap_FromStructUpTile();
         }
@@ -175,9 +176,9 @@ namespace HordeFight
         private void CreateCellIfoMap_FromStructUpTile()
         {
             int count = 0;
-            for (int y = 0; y < _tileMapSize_y; y++)
+            for (int y = 0; y < MAP_HEIGHT; y++)
             {
-                for (int x = 0; x < _tileMapSize_x; x++)
+                for (int x = 0; x < MAP_WIDTH; x++)
                 {
                     CellSpace structTile = null;
                     if (false == SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile))
@@ -550,9 +551,9 @@ namespace HordeFight
         public int ToPosition1D(Index2 posXY_2d)
         {
             //Assert.IsFalse(0 > posXY_2d.x || 0 > posXY_2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
-            if (0 > posXY_2d.x || 0 > posXY_2d.y || _tileMapSize_x <= posXY_2d.x || _tileMapSize_y <= posXY_2d.y) return -1;
+            if (0 > posXY_2d.x || 0 > posXY_2d.y || MAP_WIDTH <= posXY_2d.x || MAP_HEIGHT <= posXY_2d.y) return -1;
 
-            return (posXY_2d.x + posXY_2d.y * _tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            return (posXY_2d.x + posXY_2d.y * MAP_WIDTH); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
 
         }
 
@@ -561,8 +562,8 @@ namespace HordeFight
             //Assert.IsFalse(0 > pos1d, "음수좌표값은 2차원값으로 변환 할 수 없다");
             if (0 > pos1d) return ConstV.id2_zero;
 
-            result.x = pos1d % _tileMapSize_x;
-            result.y = pos1d / _tileMapSize_x;
+            result.x = pos1d % MAP_WIDTH;
+            result.y = pos1d / MAP_WIDTH;
             return result;
         }
 
@@ -595,10 +596,10 @@ namespace HordeFight
             out_pos2d = new Index2(pos2d_x, pos2d_y);
             //out_pos2d.x = pos2d_x; out_pos2d.y = pos2d_y;
             out_pos1d = -1;
-            if (0 > pos2d_x || 0 > pos2d_y || _tileMapSize_x <= pos2d_x || _tileMapSize_y <= pos2d_y) return;
+            if (0 > pos2d_x || 0 > pos2d_y || MAP_WIDTH <= pos2d_x || MAP_HEIGHT <= pos2d_y) return;
 
             //2d => 1d
-            out_pos1d = (pos2d_x + pos2d_y * _tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            out_pos1d = (pos2d_x + pos2d_y * MAP_WIDTH); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
         }
 
         public int ToPosition1D(Vector3 pos3d)
@@ -634,20 +635,20 @@ namespace HordeFight
             }
             //==============================================
 
-            if (0 > pos2d_x || 0 > pos2d_y || _tileMapSize_x <= pos2d_x || _tileMapSize_y <= pos2d_y) return -1;
+            if (0 > pos2d_x || 0 > pos2d_y || MAP_WIDTH <= pos2d_x || MAP_HEIGHT <= pos2d_y) return -1;
 
             //2d => 1d
-            return (pos2d_x + pos2d_y * _tileMapSize_x); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            return (pos2d_x + pos2d_y * MAP_WIDTH); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
 
         }
 
         public Vector3 ToPosition3D_Center(int pos1d, Vector3 result = default(Vector3))
         {
-            if (0 > pos1d || _tileMapSize_x * _tileMapSize_y <= pos1d) return ConstV.v3_zero;
+            if (0 > pos1d || MAP_WIDTH * MAP_HEIGHT <= pos1d) return ConstV.v3_zero;
 
             //1d => 2d
-            int pos2d_x = pos1d % _tileMapSize_x;
-            int pos2d_y = pos1d / _tileMapSize_x;
+            int pos2d_x = pos1d % MAP_WIDTH;
+            int pos2d_y = pos1d / MAP_WIDTH;
 
             //2d => 3d
             float pos3d_x = (float)pos2d_x * _tileSize_w;

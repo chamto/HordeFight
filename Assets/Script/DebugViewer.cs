@@ -56,13 +56,13 @@ namespace HordeFight
         }
 
 
-        private Vector3 _start = ConstV.v3_zero;
-        private Vector3 _end = ConstV.v3_right;
-        public void DrawLine(Vector3 start, Vector3 end)
-        {
-            _start = start;
-            _end = end;
-        }
+        //private Vector3 _start = ConstV.v3_zero;
+        //private Vector3 _end = ConstV.v3_right;
+        //public void DrawLine(Vector3 start, Vector3 end)
+        //{
+        //    _start = start;
+        //    _end = end;
+        //}
 
         public void UpdateDraw_IndexesNxN()
         {
@@ -73,10 +73,12 @@ namespace HordeFight
             //foreach (Vector3Int cur in SingleO.gridManager.CreateIndexesNxN_SquareCenter(7, ConstV.v3_up))
             {
                 //DebugWide.LogBlue(v);
-                //Debug.DrawLine(cur - Vector3.one * 0.3f, cur + Vector3.one * 0.3f, Color.red);
-                //Debug.DrawLine(prev, cur);
+                Vector3 v3_cur = SingleO.cellPartition.ToPosition3D_Center(cur);
+                Vector3 v3_prev = SingleO.cellPartition.ToPosition3D_Center(prev);
+                Debug.DrawLine(v3_cur - Vector3.one * 0.3f, v3_cur + Vector3.one * 0.3f, Color.red);
+                Debug.DrawLine(v3_prev, v3_cur);
 
-                //UnityEditor.Handles.Label(cur, "( " + cur.x + " , " + cur.z + " )");
+                UnityEditor.Handles.Label(v3_cur, "( " + cur.x + " , " + cur.y + " )");
 
                 prev = cur;
 
@@ -91,11 +93,14 @@ namespace HordeFight
             RuleExtraTile rule = null;
             byte divisionNum = 0;
             Vector3 pos3d = ConstV.v3_zero;
+            //DebugWide.LogBlue(bounds);
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
-                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
+                //rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
+                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile(xy) as RuleExtraTile;
                 if (null != rule)
                 {
+                    DebugWide.LogBlue(xy + " " + rule);   
                     pos3d = SingleO.gridManager.ToPosition3D(xy);
                     pos3d.x += 0.08f;
                     pos3d.z += 0.16f;
@@ -145,7 +150,7 @@ namespace HordeFight
             }
         }
 
-        public void Update_DrawEdges(bool debugLog)
+        public void Update_DrawEdges(bool printToPos)
         {
             PathFinder finder = SingleO.pathFinder;
             GridManager grid = SingleO.gridManager;
@@ -171,11 +176,13 @@ namespace HordeFight
                     to_nav = finder._graph.GetNode(e.To()) as NavGraphNode;
                     Debug.DrawLine(from_nav.Pos(), to_nav.Pos(), Color.green);
 
+                    if(printToPos)
+                        DebugWide.PrintText(to_nav.Pos(), Color.white, "to " + e.To());
                     //chamto test
-                    if (true == debugLog)
-                    {
-                        DebugWide.LogBlue(e + "  " + from_XY_2d + "   " + to_XY_2d);
-                    }
+                    //if (true == debugLog)
+                    //{
+                    //    DebugWide.LogBlue(e + "  " + from_XY_2d + "   " + to_XY_2d);
+                    //}
 
                 }
             }
@@ -408,14 +415,16 @@ namespace HordeFight
         void OnDrawGizmos()
         {
             //Misc.DrawDirN();
-            //UnityEditor.Handles.Label(ConstV.v3_zero, "0,0");
+
+            //DebugWide.PrintText(ConstV.v3_zero, Color.green,"0,0");
+
             //UpdateDraw_IndexesNxN();
 
-            //Debug.DrawLine(_start, _end);
+            //DebugWide.DrawLine(_origin.transform.position, _target.transform.position ,Color.red);
 
             //UpdateDraw_StructTileDir();
 
-            //UpdateDraw_FogOfWar_DivisionNum();
+            //UpdateDraw_FogOfWar_DivisionNum(); //??
 
             //Update_DrawEdges(false);
 
@@ -439,7 +448,7 @@ namespace HordeFight
 
             //Draw_LookAtChamp();
 
-            // SingleO.cellPartition.DebugPrint();
+            //SingleO.cellPartition.DebugPrint();
         }
 
 

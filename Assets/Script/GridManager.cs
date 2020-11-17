@@ -107,7 +107,8 @@ namespace HordeFight
 
             this.LoadTilemap_Struct();
 
-            SingleO.cellPartition.Init(new Index2(64, 64));
+            SingleO.cellPartition.Init();
+            //SingleO.cellPartition.Init(new Index2(64, 64));
             //_cellSpacePartition.Init(new Vector2Int(64, 64)); //chamto test
         }
 

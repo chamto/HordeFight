@@ -23,8 +23,8 @@ namespace HordeFight
 
         public Transform _town = null;
 
-        const int TILE_BLOCK_WIDTH = 38;
-        const int TILE_BLOCK_HEIGHT = 24;
+        const int TILE_BLOCK_WIDTH = CellSpacePartition.MAP_WIDTH;
+        const int TILE_BLOCK_HEIGHT = CellSpacePartition.MAP_HEIGHT;
         //const int TILE_BLOCK_WIDTH = 15;
         //const int TILE_BLOCK_HEIGHT = 15;
         public Vector3Int TILE_BLOCK_SIZE =  new Vector3Int(TILE_BLOCK_WIDTH, TILE_BLOCK_HEIGHT, 1);
@@ -33,6 +33,7 @@ namespace HordeFight
         //void Start()
         public void Init()
         {
+            
             LoadNodes(TILE_BLOCK_SIZE);
             LoadEdges(TILE_BLOCK_SIZE);
 

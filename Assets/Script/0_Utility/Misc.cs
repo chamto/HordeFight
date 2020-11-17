@@ -1506,8 +1506,12 @@ namespace UtilGS9
             int count = 0;
             foreach (Vector3 xz in _dir360_normal3D_AxisY)
             {
-                Debug.DrawLine(Vector3.zero, xz);
-                UnityEditor.Handles.Label(xz, ":" + count++);
+                //Debug.DrawLine(Vector3.zero, xz);
+                //UnityEditor.Handles.Label(xz, ":" + count++);
+                  
+                DebugWide.DrawLine(Vector3.zero, xz , Color.yellow);
+                DebugWide.PrintText(xz, Color.white ,":" + count++);
+
             }
 #endif
         }
