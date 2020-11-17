@@ -159,25 +159,27 @@ namespace HordeFight
 
                             //공격사거리 안에 들어오면 공격한다 
                             result = Situation_Is_AttackInRange();
+                            Vector3 lookDir = _me._looking.GetPos3D() - _me.GetPos3D();
                             if (_IN_RANGE == result)
                             {
 
                                 _me._target = _me._looking; //보고 있는 상대를 목표로 설정 
-                                _me.Attack(VOp.Minus(_me._looking.GetPos3D(), _me.GetPos3D()));
+                                _me.Attack(lookDir, null);
+                                _me.Throw(_me._target.GetPos3D());
+                                //_me._skill_attack.Play(lookDir, null); //테스트 
                                 //_state = eState.Attack;
                                 break;
                                 //DebugWide.LogBlue("attack");
                             }
 
 
-                            Vector3 moveDir = VOp.Minus(_me._looking.GetPos3D(), _me.GetPos3D());
                             float second = 0.7f;
                             bool foward = true;
 
                             //상대와 너무 붙어 최소공격사거리 조건에 안맞는 경우 
                             if (_OUT_RANGE_MIN == result)
                             {
-                                moveDir *= -1f; //반대방향으로 바꾼다
+                                lookDir *= -1f; //반대방향으로 바꾼다
                                 second = 2f;
                                 foward = false; //뒷걸음질 
                             }
@@ -194,7 +196,7 @@ namespace HordeFight
                             //}
 
 
-                            _me.Move_Forward(moveDir, second, foward);
+                            _me.Move_Forward(lookDir, second, foward);
                         }
 
                     }

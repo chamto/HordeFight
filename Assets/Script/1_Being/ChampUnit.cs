@@ -344,12 +344,32 @@ namespace HordeFight
             return result;
         }
 
-        public void Attack(Vector3 dir)
+        //public void Attack(Vector3 dir)
+        //{
+        //    this.Attack(dir, null);
+        //}
+
+        public bool Throw(Vector3 targetPos)
         {
-            this.Attack(dir, null);
+            if (null == (object)_shot || false == _shot._on_theWay)
+            {
+                _shot = SingleO.objectManager.GetNextShot();
+                if(null != (object)_shot)
+                {
+                    float targetToLen = (targetPos - _getPos3D).sqrMagnitude;
+                    if (targetToLen < attack_range_min * attack_range_min)
+                        return false;
+                    if (targetToLen > attack_range_max * attack_range_max)
+                        return false;
 
+                    _shot.ThrowThings(this, _getPos3D, targetPos);    
+                    return true;
+                }
+
+            }
+
+            return false;
         }
-
 
         public Shot _shot = null;
         Vector3 _appointmentDir = ConstV.v3_zero;
@@ -371,32 +391,32 @@ namespace HordeFight
             Update_AnimatorState(_ani.ANI_STATE_ATTACK, 0.8f);
 
             //임시코드 
-            if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)
-            {
+            //if (eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind)
+            //{
 
-                if (null == (object)_shot || false == _shot._on_theWay)
-                {
-                    _shot = SingleO.objectManager.GetNextShot();
-                    if (null != (object)_shot)
-                    {
-                        Vector3 targetPos = ConstV.v3_zero;
-                        if (null != (object)target)
-                        {
-                            //targetPos = target.transform.position;
-                            targetPos = target.GetPos3D();
-                        }
-                        else
-                        {
-                            _appointmentDir.Normalize();
-                            //targetPos = this.transform.position + _appointmentDir * attack_range_max;
-                            targetPos = _getPos3D + _appointmentDir * attack_range_max;
-                        }
-                        //_shot.ThrowThings(this, this.transform.position, targetPos);
-                        _shot.ThrowThings(this, _getPos3D, targetPos);
-                    }
-                }
+            //    if (null == (object)_shot || false == _shot._on_theWay)
+            //    {
+            //        _shot = SingleO.objectManager.GetNextShot();
+            //        if (null != (object)_shot)
+            //        {
+            //            Vector3 targetPos = ConstV.v3_zero;
+            //            if (null != (object)target)
+            //            {
+            //                //targetPos = target.transform.position;
+            //                targetPos = target.GetPos3D();
+            //            }
+            //            else
+            //            {
+            //                _appointmentDir.Normalize();
+            //                //targetPos = this.transform.position + _appointmentDir * attack_range_max;
+            //                targetPos = _getPos3D + _appointmentDir * attack_range_max;
+            //            }
+            //            //_shot.ThrowThings(this, this.transform.position, targetPos);
+            //            _shot.ThrowThings(this, _getPos3D, targetPos);
+            //        }
+            //    }
 
-            }
+            //}
         }
 
         //임시처리
@@ -478,7 +498,8 @@ namespace HordeFight
             //    //_sprRender.color = Color.red;
             //    yield return new WaitForSeconds(0.05f);
             //}
-            this.SetActiveEffect(eEffectKind.Emotion, true);
+
+            //this.SetActiveEffect(eEffectKind.Emotion, true);
             _ani._sprRender.color = Color.red;
 
             if (true == __in_corutin_Damage)
@@ -487,7 +508,7 @@ namespace HordeFight
             __in_corutin_Damage = true;
             yield return new WaitForSeconds(0.5f);
 
-            this.SetActiveEffect(eEffectKind.Emotion, false);
+            //this.SetActiveEffect(eEffectKind.Emotion, false);
             _ani._sprRender.color = Color.white;
             __in_corutin_Damage = false;
 
