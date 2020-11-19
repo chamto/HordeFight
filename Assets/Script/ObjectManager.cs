@@ -110,6 +110,22 @@ namespace HordeFight
             return bounds;
         }
 
+        public void Draw_AABBCulling()
+        {
+            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap()) //fixme : 조회속도가 빠른 자료구조로 바꾸기 
+            {
+                Being src = _linearSearch_list[key._V0];
+                Being dst = _linearSearch_list[key._V1];
+                if ((object)src == (object)dst) continue;
+
+                DebugWide.DrawCube(src.GetPos3D(), new Vector3(src._collider_radius*2, 0, src._collider_radius*2), Color.white);
+                DebugWide.DrawCube(dst.GetPos3D(), new Vector3(dst._collider_radius*2, 0, dst._collider_radius*2), Color.white);
+                DebugWide.DrawLine(src.GetPos3D(), dst.GetPos3D(), Color.green);
+                //DebugWide.DrawLine(src._getBounds_min, src._getBounds_max, Color.white);
+                //DebugWide.DrawLine(dst._getBounds_min, dst._getBounds_max, Color.white);
+            }
+        }
+
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
         private void Update()
         //private void LateUpdate()
@@ -1513,7 +1529,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            numMax_create = 1;
+            numMax_create = 10;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
@@ -1524,7 +1540,7 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            numMax_create = 0;
+            numMax_create = 10;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
