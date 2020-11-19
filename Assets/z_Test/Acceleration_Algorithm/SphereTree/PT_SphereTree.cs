@@ -425,12 +425,12 @@ namespace Test_003
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                //hit = DefineI.IntersectRay(_center, _radius, line_origin, dir, out sect);
-                hit = DefineI.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
+                //hit = Geo.IntersectRay(_center, _radius, line_origin, dir, out sect);
+                hit = Geo.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
                 if (hit)
                 {
                     //#if DEMO
-                    DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
                     //#endif
                     PT_SphereModel pack = _children;
 
@@ -446,8 +446,8 @@ namespace Test_003
             else
             {
 
-                //hit = DefineI.IntersectLineSegment(_center, _radius, line_origin, dir, distance, out sect);
-                hit = DefineI.IntersectLineSegment(_center, _radius, line_origin, line_last);
+                //hit = Geo.IntersectLineSegment(_center, _radius, line_origin, dir, distance, out sect);
+                hit = Geo.IntersectLineSegment(_center, _radius, line_origin, line_last);
                 if (hit)
                 {
                     PT_SphereModel upLink = this.GetLink_UpLevelTree();
@@ -457,7 +457,7 @@ namespace Test_003
 
                     Color cc = Color.gray;
                     if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
-                    DefineI.DrawCircle(_center, GetRadius(), cc);
+                    DebugWide.DrawCircle(_center, GetRadius(), cc);
                 }
             }
         }
@@ -490,7 +490,7 @@ namespace Test_003
                 //#if DEMO
                 if (state == Frustum.ViewState.PARTIAL)
                 {
-                    DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
                 }
                 //#endif
                 PT_SphereModel pack = _children;
@@ -509,7 +509,7 @@ namespace Test_003
 
                 Color cc = Color.gray;
                 if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
-                DefineI.DrawCircle(_center, GetRadius(), cc);
+                DebugWide.DrawCircle(_center, GetRadius(), cc);
             }
         }
 
@@ -521,7 +521,7 @@ namespace Test_003
                 //#if DEMO
                 if (state != Frustum.ViewState.OUTSIDE)
                 {
-                    DefineI.DrawCircle(_center, GetRadius(), Color.gray);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
                 }
                 //#endif
             }
@@ -572,7 +572,7 @@ namespace Test_003
                             //callback.VisibilityCallback(f, this, state);
 
                             if (null != link) link.VisibilityTest(f, state); //테스트 필요 
-                            DefineI.DrawCircle(_center, GetRadius(), Color.red);
+                            DebugWide.DrawCircle(_center, GetRadius(), Color.red);
                         }
                         break;
                     case Frustum.ViewState.OUTSIDE:
@@ -583,7 +583,7 @@ namespace Test_003
                             //callback.VisibilityCallback(f, this, state);
 
                             if (null != link) link.VisibilityTest(f, state); //테스트 필요 
-                            DefineI.DrawCircle(_center, GetRadius(), Color.black);
+                            DebugWide.DrawCircle(_center, GetRadius(), Color.black);
                         }
                         break;
                     case Frustum.ViewState.PARTIAL:
@@ -594,7 +594,7 @@ namespace Test_003
                             //callback.VisibilityCallback(f, this, state);
 
                             if (null != link) link.VisibilityTest(f, state); //테스트 필요 
-                            DefineI.DrawCircle(_center, GetRadius(), Color.blue);
+                            DebugWide.DrawCircle(_center, GetRadius(), Color.blue);
                         }
                         break;
                 }
@@ -624,7 +624,7 @@ namespace Test_003
                 if (HasFlag(Flag.SUPERSPHERE))
                 {
 
-                    DefineI.DrawCircle(_center, GetRadius(), Color.green);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.green);
 
                     if (HasFlag(Flag.TREE_LEVEL_2))
                     {
@@ -636,7 +636,7 @@ namespace Test_003
 
                         if (null != link && false == link.HasFlag(Flag.ROOTNODE))
                         {
-                            DefineI.DrawLine(_center, link._center, Color.cyan);
+                            DebugWide.DrawLine(_center, link._center, Color.cyan);
                         }
                     }
 
@@ -645,7 +645,7 @@ namespace Test_003
                 else
                 {
                     temp += "\n";
-                    DefineI.DrawCircle(_center, GetRadius(), Color.white);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.white);
                 }
 
                 if(true == isText)
@@ -654,7 +654,7 @@ namespace Test_003
                     if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
-                    DefineI.PrintText(_center, color, temp + GetID());
+                    DebugWide.PrintText(_center, color, temp + GetID());
                     //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );    
                 }
 
