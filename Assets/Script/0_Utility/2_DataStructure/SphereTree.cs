@@ -822,8 +822,9 @@ namespace UtilGS9
 
         //private float _maxRadius_supersphere_root;   //루트트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임)          
         //private float _maxRadius_supersphere_leaf;   //리프트리 슈퍼구의 최대 반지름 크기 (gravy 을 합친 최대크기임) 
-        private float[] _maxRadius_supersphere = null;
-        private float _gravy_supersphere;         //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
+        public int _max_level = 4;
+        public float[] _maxRadius_supersphere = null;
+        public float _gravy_supersphere;         //여분의 양. 여분은 객체들이 부모로 부터 너무 자주 떨어지지 않도록 경계구의 크기를 넉넉하게 만드는 역할을 한다
 
 
 
@@ -831,11 +832,11 @@ namespace UtilGS9
         public SphereTree(int maxspheres, float[] list_maxRadius, float gravy)
         {
             //최대 4개까지만 만들 수 있게 한다 
-            int maxLevel = list_maxRadius.Length;
-            if (4 < maxLevel) maxLevel = 4; 
-            _levels = new SphereModel[maxLevel];
-            _maxRadius_supersphere = new float[maxLevel];
-            for (int i = 0; i < maxLevel;i++)
+            _max_level = list_maxRadius.Length;
+            if (4 < _max_level) _max_level = 4; 
+            _levels = new SphereModel[_max_level];
+            _maxRadius_supersphere = new float[_max_level];
+            for (int i = 0; i < _max_level;i++)
             {
                 _maxRadius_supersphere[i] = list_maxRadius[i];
             }
@@ -844,7 +845,7 @@ namespace UtilGS9
             //메모리풀 크기를 4배 하는 이유 : 각각의 레벨트리는 자식구에 대해 1개의 슈퍼구를 각각 만든다. 레벨트리 1개당 최대개수 *2 의 크기를 가져야 한다. 
             //레벨트리가 2개 이므로 *2*2 가 된다.
             //구의 최대개수가 5일때의 최대 메모리 사용량 : 레벨2트리 구5개 + 슈퍼구5개 , 레벨1트리 슈퍼구5개 + 복제된슈퍼구5개 
-            maxspheres *= 2 * maxLevel;
+            maxspheres *= 2 * _max_level;
 
             //_maxRadius_supersphere_root = rootsize;
             //_maxRadius_supersphere_leaf = leafsize;
@@ -866,7 +867,7 @@ namespace UtilGS9
 
 
 
-            for (int i = 0; i < maxLevel;i++)
+            for (int i = 0; i < _max_level;i++)
             {
                 int level_flag = (int)(SphereModel.Flag.TREE_LEVEL_ROOT) << i;
 
