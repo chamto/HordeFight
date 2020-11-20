@@ -386,18 +386,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffd6a6ccff4a4a44b2ade21487a08f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _sphere: {fileID: 165119576}
   _lineStart: {fileID: 95269852}
   _lineEnd: {fileID: 1349567283}
   _treeMode: 3
   _isText: 0
   _testMode: 0
-  _count: 30
+  _count: 10
   _radius_root: 25
   _radius_leaf: 5
   _radius_gravy: 1
-  _MaxRecompute: 0
-  _MaxIntegrate: 0
-  __radius: 3
-  __speed: 50
-  __p: {x: 0, y: 0, z: 0}
+  _out_MaxRecompute: 0
+  _out_MaxIntegrate: 0
+  _A_radius: 3
+  _A_speed: 10
+  _A_pos: {x: 0, y: 0, z: 0}

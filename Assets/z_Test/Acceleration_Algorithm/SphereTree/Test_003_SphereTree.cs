@@ -21,12 +21,12 @@ namespace Test_003
             RayTrace,
             RangeTest,
             FrustumTest,
-            SphereInterstion, //원과 반직선 교차검사 
+            //SphereInterstion, //원과 반직선 교차검사 
         }
 
         private PT_SphereTree _sphereTree = null;
 
-        public Transform _sphere = null;
+        //public Transform _sphere = null;
         public Transform _lineStart = null;
         public Transform _lineEnd = null;
 
@@ -38,10 +38,15 @@ namespace Test_003
         public int _radius_leaf = 4;
         public int _radius_gravy = 1;
 
-        public int _MaxRecompute = 0;
-        public int _MaxIntegrate = 0;
+        [Space]
+        [Space]
+        public int _out_MaxRecompute = 0;
+        public int _out_MaxIntegrate = 0;
+        public float _A_radius = 3;
+        public float _A_speed = 10f;
+        public Vector3 _A_pos = Vector3.zero;
 
-        private PT_SphereModel _control = null;
+        private PT_SphereModel _A_model = null;
 
         // Use this for initialization
         void Start()
@@ -56,41 +61,43 @@ namespace Test_003
                 PT_SphereModel model = _sphereTree.AddSphere(pos, radius, PT_SphereModel.Flag.TREE_LEVEL_2);
                 _sphereTree.AddIntegrateQ(model);
 
-                _control = model;
+                _A_model = model;
             }
 
 
         }
 
-        public float __radius = 3;
-        public float __speed = 10f;
-        public Vector3 __p = Vector3.zero;
+
         void Update()
         {
             if (null == _sphereTree) return;
 
-            __p = _control.GetPos();
+            _sphereTree._maxRadius_supersphere_root = _radius_root;
+            _sphereTree._maxRadius_supersphere_leaf = _radius_leaf;
+            _sphereTree._gravy_supersphere = _radius_gravy;
 
+            _A_pos = _A_model.GetPos();
             switch (Input.inputString)
             {
                 case "a": //left
-                    __p.x = __p.x + Time.deltaTime * -1f * __speed;
+                    _A_pos.x = _A_pos.x + Time.deltaTime * -1f * _A_speed;
+                    //DebugWide.LogBlue("a");
                     break;
                 case "s": //down
-                    __p.y = __p.y + Time.deltaTime * -1f * __speed;
+                    _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
                     break;
                 case "d": //right
-                    __p.x = __p.x + Time.deltaTime * 1f * __speed;
+                    _A_pos.x = _A_pos.x + Time.deltaTime * 1f * _A_speed;
                     break;
                 case "w": //up
-                    __p.y = __p.y + Time.deltaTime * 1f * __speed;
+                    _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
                     break;
 
             }
-            _control.SetPosRadius(__p, __radius);
+            _A_model.SetPosRadius(_A_pos, _A_radius);
 
             _sphereTree.ResetFlag();
-            _sphereTree.Process(out _MaxRecompute, out _MaxIntegrate);
+            _sphereTree.Process(out _out_MaxRecompute, out _out_MaxIntegrate);
 
         }
 
@@ -138,25 +145,22 @@ namespace Test_003
             //==================================================
             //원과 반직선 교차 테스트
             Color cc = Color.black;
-            if (TestMode.SphereInterstion == _testMode)
-            {
-                Vector3 pointIts = Vector3.zero;
-                Vector3 dir = _lineEnd.position - _lineStart.position;
-                dir.Normalize();
-                DebugWide.DrawCircle(_sphere.position, 10, Color.red);
-                //DefineI.IntersectLineSegment(_sphere.position, 10, _lineStart.position, dir, out pointIts);
-                //DefineI.DrawCircle(pointIts, 1, Color.white);
+            //if (TestMode.SphereInterstion == _testMode)
+            //{
+            //    Vector3 pointIts = Vector3.zero;
+            //    Vector3 dir = _lineEnd.position - _lineStart.position;
+            //    dir.Normalize();
+            //    DebugWide.DrawCircle(_sphere.position, 10, Color.red);
+            //    //DefineI.IntersectLineSegment(_sphere.position, 10, _lineStart.position, dir, out pointIts);
+            //    //DefineI.DrawCircle(pointIts, 1, Color.white);
 
 
-
-                //if (true == DefineI.IntersectRay(_sphere.position, 10, _lineStart.position, dir))
-                if(true == Geo.IntersectLineSegment(_sphere.position, 10, _lineStart.position, _lineEnd.position))
-                {
-                    cc = Color.red;
-                }
-
-            }
-
+            //    //if (true == DefineI.IntersectRay(_sphere.position, 10, _lineStart.position, dir))
+            //    if(true == Geo.IntersectLineSegment(_sphere.position, 10, _lineStart.position, _lineEnd.position))
+            //    {
+            //        cc = Color.red;
+            //    }
+            //}
 
             DebugWide.DrawLine(_lineStart.position, _lineEnd.position, cc);
 
