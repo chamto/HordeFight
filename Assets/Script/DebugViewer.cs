@@ -417,44 +417,101 @@ namespace HordeFight
             }
         }
 
+        public bool _draw_line = false;
+        public bool _draw_line_addInfo = false;
+        public bool _draw_DirNormal = false;
+        public bool _draw_IndexesNxN = false;
+        public bool _draw_StructTile = false;
+        public bool _draw_FogOfWar = false;
+        public bool _draw_Path_Edges = false;
+        public bool _draw_LookAt_Champ = false;
+        public bool _draw_AABBCulling = false;
+        public bool _draw_CellPartition = false;
+        public bool _draw_SphTree_Being = false;
+        public bool _draw_SphTree_Being_RayTrace = false;
+        public bool _draw_SphTree_Being_Range = false;
+        public bool _draw_SphTree_Struct = false;
+        public bool _draw_SphTree_Struct_RayTrace = false;
+
         void OnDrawGizmos()
         {
-            //Misc.DrawDirN();
+            if(_draw_line)
+            {
+                DebugWide.DrawLine(_origin.transform.position, _target.transform.position, Color.red);
+            }
+            if(_draw_line_addInfo)
+            {
+                Draw_Grid(); //제거대상
+                Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
+                IsVisibleTile(_origin.position, _target.position, _length_interval);
+            }
+            if(_draw_DirNormal)
+            {
+                Misc.DrawDirN();    
+            }
+            if(_draw_IndexesNxN)
+            {
+                DebugWide.PrintText(ConstV.v3_zero, Color.green,"0,0");
+                UpdateDraw_IndexesNxN();   
+            }
+            if(_draw_StructTile)
+            {
+                UpdateDraw_StructTileDir();    
+            }
+            if(_draw_FogOfWar)
+            {
+                UpdateDraw_FogOfWar_DivisionNum(); //??    
+            }
+            if(_draw_Path_Edges)
+            {
+                Update_DrawEdges(false);    
+            }
+            if(_draw_LookAt_Champ)
+            {
+                Draw_LookAtChamp();    
+            }
+            if(_draw_AABBCulling)
+            {
+                SingleO.objectManager.Draw_AABBCulling();    
+            }
+            if(_draw_CellPartition)
+            {
+                SingleO.cellPartition.DebugPrint();    
+            }
 
-            //DebugWide.PrintText(ConstV.v3_zero, Color.green,"0,0");
-
-            //UpdateDraw_IndexesNxN();
-
-
-            //UpdateDraw_StructTileDir();
-
-            //UpdateDraw_FogOfWar_DivisionNum(); //??
-
-            //Update_DrawEdges(false);
-
-            //DebugWide.DrawLine(_origin.transform.position, _target.transform.position ,Color.red);
-
-
-            //if(null != _origin && null != _target)
-            //{
-            //    Draw_Grid(); //제거대상
-            //    Update_IsVisible_SightOfView(_origin.position, _target.position , _length_interval);
-            //    IsVisibleTile(_origin.position, _target.position, _length_interval);
-            //}
-
-
-            //==============================================
             //구트리 테스트 
-            //SingleO.objectManager.GetSphereTree_Being().Render_Debug(3, false); 
-            //SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
-            //SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
-            //float radius = (_origin.position - _target.position).magnitude;
-            //SingleO.objectManager.GetSphereTree_Being().Render_RangeTest(_origin.position,radius);
-            //==============================================
+            if(_draw_SphTree_Being)
+            {
+                //SingleO.objectManager.GetSphereTree_Being().Render_Debug(0, false); 
+                //SingleO.objectManager.GetSphereTree_Being().Render_Debug(1, false); 
+                //SingleO.objectManager.GetSphereTree_Being().Render_Debug(2, false); 
+                SingleO.objectManager.GetSphereTree_Being().Render_Debug(3, false); 
 
-            //Draw_LookAtChamp();
+                if(_draw_SphTree_Being_RayTrace)
+                {
+                    SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);    
+                }
+                if(_draw_SphTree_Being_Range)
+                {
+                    float radius = (_origin.position - _target.position).magnitude;
+                    SingleO.objectManager.GetSphereTree_Being().Render_RangeTest(_origin.position,radius);    
+                }
 
-            //SingleO.cellPartition.DebugPrint();
+            }
+
+            if(_draw_SphTree_Struct)
+            {
+                //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(0, false); 
+                //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(1, false); 
+                SingleO.objectManager.GetSphereTree_Struct().Render_Debug(2, false); 
+
+                if(_draw_SphTree_Struct_RayTrace)
+                {
+                    SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);        
+                }
+
+            }
+
         }
 
 
