@@ -57,7 +57,7 @@ namespace Test_004
 
             for (int i = 0; i < _count; i++)
             {
-                Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
+                Vector3 pos = new Vector3(Misc.rand.Next() % 100, 0, Misc.rand.Next() % 60);
                 float radius = (Misc.rand.Next() % 4) + 1;
                 SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.CREATE_LEVEL_LAST);
                 _sphereTree.AddIntegrateQ(model);
@@ -90,30 +90,13 @@ namespace Test_004
             }
             if (Input.GetKey(KeyCode.UpArrow))
             {
-                _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
+                _A_pos.z = _A_pos.z + Time.deltaTime * 1f * _A_speed;
             }
             if (Input.GetKey(KeyCode.DownArrow))
             {
-                _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
+                _A_pos.z = _A_pos.z + Time.deltaTime * -1f * _A_speed;
             }
 
-            //switch (Input.inputString)
-            //{
-            //    case "a": //left
-            //        _A_pos.x = _A_pos.x + Time.deltaTime * -1f * _A_speed;
-            //        //DebugWide.LogBlue("a");
-            //        break;
-            //    case "s": //down
-            //        _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
-            //        break;
-            //    case "d": //right
-            //        _A_pos.x = _A_pos.x + Time.deltaTime * 1f * _A_speed;
-            //        break;
-            //    case "w": //up
-            //        _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
-            //        break;
-
-            //}
             _A_model.SetPosRadius(_A_pos, _A_radius);
 
             _sphereTree.ResetFlag();
@@ -160,8 +143,8 @@ namespace Test_004
             {
                 Vector3Int leftDown = new Vector3Int((int)_lineStart.position.x, (int)_lineStart.position.y, (int)_lineStart.position.z);
                 Vector3Int rightUp = new Vector3Int((int)_lineEnd.position.x, (int)_lineEnd.position.y, (int)_lineEnd.position.z);
-                Vector3Int leftUp = new Vector3Int(leftDown.x, rightUp.y, 0);
-                Vector3Int rightDown = new Vector3Int(rightUp.x, leftDown.y, 0);
+                Vector3Int leftUp = new Vector3Int(leftDown.x, 0, rightUp.z);
+                Vector3Int rightDown = new Vector3Int(rightUp.x, 0, leftDown.z);
                 __f.Set(leftDown.x, leftDown.y, rightUp.x, rightUp.y);
 
                 DebugWide.DrawLine(leftDown, leftUp, Color.yellow);
