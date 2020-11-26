@@ -741,7 +741,7 @@ namespace UtilGS9
             }
         }
 
-        public void Debug_Render(bool isText)
+        public void Debug_Render(Color color, bool isText)
         {
 
             if (null != _head_children)
@@ -750,7 +750,7 @@ namespace UtilGS9
 
                 while (null != pack)
                 {
-                    pack.Debug_Render(isText);
+                    pack.Debug_Render(color, isText);
                     pack = pack.GetNextSibling();
                 }
             }
@@ -758,12 +758,12 @@ namespace UtilGS9
             if (false == HasFlag(Flag.ROOTNODE))
             {
                 string temp = string.Empty;
-                Color color = Color.green;
+                //Color color = Color.green;
 
                 if (HasFlag(Flag.SUPERSPHERE))
                 {
 
-                    DebugWide.DrawCircle(_center, GetRadius(), Color.green);
+                    DebugWide.DrawCircle(_center, GetRadius(), color);
 
                     //if (HasFlag(Flag.TREE_LEVEL_2))
                     {
@@ -775,7 +775,7 @@ namespace UtilGS9
 
                         if (null != link && false == link.HasFlag(Flag.ROOTNODE))
                         {
-                            DebugWide.DrawLine(_center, link._center, Color.cyan);
+                            DebugWide.DrawLine(_center, link._center, Color.green);
                         }
                     }
 
@@ -784,23 +784,26 @@ namespace UtilGS9
                 else
                 {
                     temp += "\n";
-                    DebugWide.DrawCircle(_center, GetRadius(), Color.white);
+                    DebugWide.DrawCircle(_center, GetRadius(), color);
                 }
 
                 if (true == isText)
                 {
-                    if (HasFlag(Flag.TREE_LEVEL_1)) { temp += ""; color = Color.magenta; }
-                    if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
-                    if (HasFlag(Flag.TREE_LEVEL_3)) { temp += "\n                "; }
-                    if (HasFlag(Flag.TREE_LEVEL_4)) { temp += "\n                        "; }
+                    int level = 0;
+                    if (HasFlag(Flag.TREE_LEVEL_1)) { temp += "\n"; level = 1; }
+                    if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; level = 2; }
+                    if (HasFlag(Flag.TREE_LEVEL_3)) { temp += "\n                "; level = 3; }
+                    if (HasFlag(Flag.TREE_LEVEL_4)) { temp += "\n                        "; level = 4; }
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
-                    DebugWide.PrintText(_center, color, temp + GetID());
+                    //DebugWide.PrintText(_center, color, temp + GetID());
+                    DebugWide.PrintText(_center, Color.black, temp + level);
                 }
 
             }
 
         }
+
     }
 }
 

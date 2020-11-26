@@ -411,16 +411,39 @@ namespace UtilGS9
             
             for (int i = 0; i < _levels.Length; i++)
             {
-                _levels[i].Debug_Render(isText);
+                Render_Debug(i, isText);
             }
+
         }
 
         public void Render_Debug(int treeLevel, bool isText)
         {
-            if(0 <= treeLevel && treeLevel < _levels.Length)
-                _levels[treeLevel].Debug_Render(isText);
-            
+            //if(0 <= treeLevel && treeLevel < _levels.Length)
+            //_levels[treeLevel].Debug_Render(color, isText);
+
+            Color color = Color.white;
+            switch(treeLevel)
+            {
+                case 0:
+                    color.r = color.r * 0.4f;
+                    color.g = color.g * 0.4f;
+                    break;
+                case 1:
+                    color.r = color.r * 0.6f;
+                    color.g = color.g * 0.6f;
+                    break;
+                case 2:
+                    color.r = color.r * 0.8f;
+                    color.g = color.g * 0.8f;
+                    break;
+                case 3:
+                    color = Color.white;
+                    break;
+            }
+            _levels[treeLevel].Debug_Render(color, isText);
+
         }
+
     }
 }
 
