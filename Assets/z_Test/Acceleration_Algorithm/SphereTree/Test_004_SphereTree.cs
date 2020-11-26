@@ -59,7 +59,7 @@ namespace Test_004
             {
                 Vector3 pos = new Vector3(Misc.rand.Next() % 100, Misc.rand.Next() % 60, 0);
                 float radius = (Misc.rand.Next() % 4) + 1;
-                SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.TREE_LEVEL_LAST);
+                SphereModel model = _sphereTree.AddSphere(pos, radius, SphereModel.Flag.CREATE_LEVEL_LAST);
                 _sphereTree.AddIntegrateQ(model);
 
                 _A_model = model;
@@ -80,23 +80,40 @@ namespace Test_004
             _sphereTree._gravy_supersphere = _radius_gravy;
 
             _A_pos = _A_model.GetPos();
-            switch (Input.inputString)
+            if (Input.GetKey(KeyCode.LeftArrow))
             {
-                case "a": //left
-                    _A_pos.x = _A_pos.x + Time.deltaTime * -1f * _A_speed;
-                    //DebugWide.LogBlue("a");
-                    break;
-                case "s": //down
-                    _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
-                    break;
-                case "d": //right
-                    _A_pos.x = _A_pos.x + Time.deltaTime * 1f * _A_speed;
-                    break;
-                case "w": //up
-                    _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
-                    break;
-
+                _A_pos.x = _A_pos.x + Time.deltaTime * -1f * _A_speed;
             }
+            if (Input.GetKey(KeyCode.RightArrow))
+            {
+                _A_pos.x = _A_pos.x + Time.deltaTime * 1f * _A_speed;
+            }
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
+            }
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
+            }
+
+            //switch (Input.inputString)
+            //{
+            //    case "a": //left
+            //        _A_pos.x = _A_pos.x + Time.deltaTime * -1f * _A_speed;
+            //        //DebugWide.LogBlue("a");
+            //        break;
+            //    case "s": //down
+            //        _A_pos.y = _A_pos.y + Time.deltaTime * -1f * _A_speed;
+            //        break;
+            //    case "d": //right
+            //        _A_pos.x = _A_pos.x + Time.deltaTime * 1f * _A_speed;
+            //        break;
+            //    case "w": //up
+            //        _A_pos.y = _A_pos.y + Time.deltaTime * 1f * _A_speed;
+            //        break;
+
+            //}
             _A_model.SetPosRadius(_A_pos, _A_radius);
 
             _sphereTree.ResetFlag();
@@ -113,10 +130,7 @@ namespace Test_004
 
             if(TreeLevel.All == _tree_level)
             {
-                for (int i = 0; i < _sphereTree._max_level;i++)
-                {
-                    _sphereTree.Render_Debug(i, _isText);
-                }
+                _sphereTree.Render_Debug(_isText);
             }else
             {
                 _sphereTree.Render_Debug((int)_tree_level, _isText);

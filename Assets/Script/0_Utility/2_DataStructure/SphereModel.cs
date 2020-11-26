@@ -13,7 +13,7 @@ namespace UtilGS9
         [FlagsAttribute]
         public enum Flag
         {
-            NONE = 0,
+            //NONE = 0,
 
             ROOTNODE = (1 << 0),    //트리의 최상위 노드 
             SUPERSPHERE = (1 << 1), //슈퍼구 : 다른 자식구를 포한한다 
@@ -30,9 +30,10 @@ namespace UtilGS9
             TREE_LEVEL_2 = (1 << 8),   //전체트리의 Level_2 을 구성하는 분리된 트리 
             TREE_LEVEL_3 = (1 << 9),   //전체트리의 Level_3 을 구성하는 분리된 트리 
             TREE_LEVEL_4 = (1 << 10),   //전체트리의 Level_4 을 구성하는 분리된 트리 
-            TREE_LEVEL_LAST = (1 << 11),
 
-            TREE_LEVEL_ROOT = TREE_LEVEL_1,
+            CREATE_LEVEL_LAST = (1 << 11), //마지막레벨에 생성하라는 생성지시자로 사용 
+
+            //TREE_LEVEL_ROOT = TREE_LEVEL_1,
             TREE_LEVEL_1234 = TREE_LEVEL_1 | TREE_LEVEL_2 | TREE_LEVEL_3 | TREE_LEVEL_4,
 
         }
@@ -51,20 +52,24 @@ namespace UtilGS9
         private SphereModel _pool_prev = null;
 
         //------------------------------------------------------
-        //                    트리 링크 변수
+        //                    부모 노드 변수
+        //------------------------------------------------------
+        private SphereModel _head_children = null;  //형제노드의 첫번째 노드 
+        private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
+        private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
+
+        //------------------------------------------------------
+        //                    자식 노드 변수
         //------------------------------------------------------
         private SphereModel _parent = null; //트리 깊이 위로
-        private SphereModel _children = null;  //트리 깊이 아래로 
-        private SphereModel _sibling_next = null; //트리 같은 차수 왼쪽으로
-        private SphereModel _sibling_prev = null; //트리 같은 차수 오른쪽으로 
+        private SphereModel _sibling_next = null; //내기준 왼쪽 형제노드 (내가 머리라면 null값임)
+        private SphereModel _sibling_prev = null; //내기준 오른쪽 형제노드 (내가 꼬리라면 null값임) 
 
 
         private Flag _flags;
         private QFifo<SphereModel>.Out_Point _recompute_fifoOut;
         private QFifo<SphereModel>.Out_Point _intergrate_fifoOut;
 
-        private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
-        private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
 
         private IUserData _link_userData = null;
 
@@ -118,10 +123,10 @@ namespace UtilGS9
         }
         public int GetLevelIndex()
         {
-            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_1)) return 0;
-            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_2)) return 1;
-            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_3)) return 2;
-            if (Flag.NONE != (_flags & Flag.TREE_LEVEL_4)) return 3;
+            if (0 != (_flags & Flag.TREE_LEVEL_1)) return 0;
+            if (0 != (_flags & Flag.TREE_LEVEL_2)) return 1;
+            if (0 != (_flags & Flag.TREE_LEVEL_3)) return 2;
+            if (0 != (_flags & Flag.TREE_LEVEL_4)) return 3;
 
             return -1;
         }
@@ -131,7 +136,7 @@ namespace UtilGS9
         //=====================================================
         public void SetParent(SphereModel model) { _parent = model; }
         public SphereModel GetParent() { return _parent; }
-        public SphereModel GetChildren() { return _children; }
+        public SphereModel GetChildren() { return _head_children; }
         public void SetNextSibling(SphereModel child) { _sibling_next = child; }
         public void SetPrevSibling(SphereModel child) { _sibling_prev = child; }
         public SphereModel GetNextSibling() { return _sibling_next; }
@@ -163,11 +168,11 @@ namespace UtilGS9
             SetRadius(radius);
 
             _parent = null;
-            _children = null;
+            _head_children = null;
             _sibling_next = null;
             _sibling_prev = null;
 
-            _flags = Flag.NONE;
+            _flags = 0;
             _recompute_fifoOut.Init();
             _intergrate_fifoOut.Init();
             _childCount = 0;
@@ -249,14 +254,14 @@ namespace UtilGS9
         public void AddChild(SphereModel pack)
         {
 
-            SphereModel my_child = _children;
-            _children = pack; // new head of list
+            SphereModel next_child = _head_children;
+            _head_children = pack; // new head of list
 
-            pack.SetNextSibling(my_child); // his next is my old next
+            pack.SetNextSibling(next_child); // his next is my old next
             pack.SetPrevSibling(null); // at head of list, no previous
             pack.SetParent(this);
 
-            if (null != my_child) my_child.SetPrevSibling(pack); // previous now this..
+            if (null != next_child) next_child.SetPrevSibling(pack); //다음자식의 이전형제 정보를 넣어준다 
 
             _childCount++;
 
@@ -285,7 +290,7 @@ namespace UtilGS9
         public void LostChild(SphereModel model)
         {
 
-            if (null == _children || 0 == _childCount) DebugWide.LogError("null == _children || 0 == _childCount"); //assert
+            if (null == _head_children || 0 == _childCount) DebugWide.LogError("null == _children || 0 == _childCount"); //assert
 
 
             // first patch old linked list.. his previous now points to his next
@@ -301,8 +306,8 @@ namespace UtilGS9
             else
             {
                 SphereModel next = model.GetNextSibling();
-                _children = next;
-                if (null != _children) _children.SetPrevSibling(null);
+                _head_children = next;
+                if (null != _head_children) _head_children.SetPrevSibling(null);
             }
 
             _childCount--;
@@ -327,14 +332,14 @@ namespace UtilGS9
         //슈퍼구만 계산의 대상이 된다
         public bool Recompute(float gravy)
         {
-            if (null == _children) return true; // kill it!
+            if (null == _head_children) return true; // kill it!
             if (HasFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
 
             //#if 1
             // recompute bounding sphere!
             Vector3 total = ConstV.v3_zero;
             int count = 0;
-            SphereModel pack = _children;
+            SphereModel pack = _head_children;
             while (null != pack)
             {
                 total += pack._center;
@@ -352,7 +357,7 @@ namespace UtilGS9
                 _center = total; // new origin!
                 float maxradius = 0;
 
-                pack = _children;
+                pack = _head_children;
 
                 while (null != pack)
                 {
@@ -376,7 +381,7 @@ namespace UtilGS9
                 SetRadius(maxradius); //최종 반지름 갱신
 
                 // now all children have to recompute binding distance!!
-                pack = _children;
+                pack = _head_children;
 
                 while (null != pack)
                 {
@@ -406,7 +411,7 @@ namespace UtilGS9
         {
             ClearFlag(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE);
 
-            SphereModel pack = _children;
+            SphereModel pack = _head_children;
             while (null != pack)
             {
                 pack.ResetFlag();
@@ -427,7 +432,7 @@ namespace UtilGS9
                 if (hit)
                 {
 
-                    SphereModel pack = _children;
+                    SphereModel pack = _head_children;
                     while (null != pack)
                     {
                         sm = pack.RayTrace_FirstReturn(line_origin, line_last, exceptModel);
@@ -495,7 +500,7 @@ namespace UtilGS9
                 SphereModel cur_sm = null;
                 float cur_sqr = 0f;
 
-                SphereModel pack = _children;
+                SphereModel pack = _head_children;
                 while (null != pack)
                 {
 
@@ -571,7 +576,7 @@ namespace UtilGS9
 
                     DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
 
-                    SphereModel pack = _children;
+                    SphereModel pack = _head_children;
                     while (null != pack)
                     {
                         //pack.RayTrace(p1, dir, distance);
@@ -627,7 +632,7 @@ namespace UtilGS9
                     DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
                 }
                 //#endif
-                SphereModel pack = _children;
+                SphereModel pack = _head_children;
                 while (null != pack)
                 {
                     pack.Debug_RangeTest(dstCenter, dstRadius, state);
@@ -684,7 +689,7 @@ namespace UtilGS9
                     }
                 }
 
-                SphereModel pack = _children;
+                SphereModel pack = _head_children;
 
                 while (null != pack)
                 {
@@ -739,9 +744,9 @@ namespace UtilGS9
         public void Debug_Render(bool isText)
         {
 
-            if (null != _children)
+            if (null != _head_children)
             {
-                SphereModel pack = _children;
+                SphereModel pack = _head_children;
 
                 while (null != pack)
                 {

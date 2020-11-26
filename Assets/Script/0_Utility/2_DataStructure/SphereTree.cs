@@ -34,6 +34,7 @@ namespace UtilGS9
         {
             //최대 4개까지만 만들 수 있게 한다 
             _max_level = list_maxRadius.Length;
+            //DebugWide.LogBlue(_max_level);
             if (4 < _max_level) _max_level = 4; 
             _levels = new SphereModel[_max_level];
             _maxRadius_supersphere = new float[_max_level];
@@ -70,7 +71,7 @@ namespace UtilGS9
 
             for (int i = 0; i < _max_level;i++)
             {
-                int level_flag = (int)(SphereModel.Flag.TREE_LEVEL_ROOT) << i;
+                int level_flag = (int)(SphereModel.Flag.TREE_LEVEL_1) << i;
 
                 _levels[i] = _spheres.GetFreeLink(); // initially empty
                 _levels[i].Init(this, Vector3.zero, 65536);
@@ -96,15 +97,15 @@ namespace UtilGS9
 
             pack.Init(this, pos, radius); //AddSpherePackFlag 함수 보다 먼저 호출되어야 한다. _flags 정보가 초기화 되기 때문이다. 
 
-            //TREE_LEVEL_LAST 요청이 들어올 경우 마지막 레벨트리의 인덱스를 찾아 넣어준다 
-            if(SphereModel.Flag.NONE != (flags & SphereModel.Flag.TREE_LEVEL_LAST))
+            //CREATE_LEVEL_LAST 요청이 들어올 경우 마지막 레벨트리의 인덱스를 찾아 넣어준다 
+            if(0 != (flags & SphereModel.Flag.CREATE_LEVEL_LAST))
             {
                 int last_level_idx = _levels.Length - 1;
-                flags = (SphereModel.Flag)((int)(SphereModel.Flag.TREE_LEVEL_ROOT) << last_level_idx);
+                flags = (SphereModel.Flag)((int)(SphereModel.Flag.TREE_LEVEL_1) << last_level_idx);
                 //DebugWide.LogBlue(flags);
             }
 
-            if (SphereModel.Flag.NONE == (flags & SphereModel.Flag.TREE_LEVEL_1234))
+            if (0 == (flags & SphereModel.Flag.TREE_LEVEL_1234))
             {
                 DebugWide.LogError("AddSphere : TREE_LEVEL is None !!  " + flags);
                 return null;
@@ -139,7 +140,7 @@ namespace UtilGS9
                 //_level_2.AddChild(pack);
 
             pack.AddFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
-            QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); // add it to the integration stack.
+            QFifo<SphereModel>.Out_Point fifo = _integrateQ.Push(pack); //추가되기전 마지막 큐값을 반환 한다 
             pack.SetIntergrate_FifoOut(fifo);
         }
 
@@ -304,7 +305,7 @@ namespace UtilGS9
             }
             //=====================================================================================
 
-            //조건1 - src구가 완저 포함 
+            //조건1 - src구가 완전 포함 
             if (null != containing_supersphere)
             {
                 src_pack.Unlink(); //큐 연결정보를 Process 에서 해제 했기 때문에, 내부에서 LostChild만 수행된다 
@@ -354,12 +355,12 @@ namespace UtilGS9
                     parent.Recompute(_gravy_supersphere);
                     src_pack.Compute_BindingDistanceSquared(parent);
 
-                    if (false == parent.HasFlag(SphereModel.Flag.TREE_LEVEL_ROOT))
+                    if (false == parent.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
                     {
                         //parent 가 level2 이라면, 생성하는 구는 level1 이어야 한다
                         //level2 => level1 , level3 => level2 ... 
                         int up_level_idx = parent.GetLevelIndex() - 1;
-                        int up_flag = (int)(SphereModel.Flag.TREE_LEVEL_ROOT) << up_level_idx;
+                        int up_flag = (int)(SphereModel.Flag.TREE_LEVEL_1) << up_level_idx;
 
                         // need to create parent association!
                         SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), (SphereModel.Flag)up_flag);

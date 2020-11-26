@@ -24,16 +24,23 @@ namespace UtilGS9
 
             public bool IsNull()
             {
-                return packFifo == null;
+                return (null == packFifo);
             }
 
-            public MODEL Unlink()
+            //public MODEL Unlink()
+            //{
+            //    if (null != packFifo)
+            //    {
+            //        return packFifo.Unlink(queueIndex);
+            //    }
+            //    return null;
+            //}
+            public void Unlink()
             {
                 if (null != packFifo)
                 {
-                    return packFifo.Unlink(queueIndex);
+                    packFifo.Unlink(queueIndex);
                 }
-                return null;
             }
         }
 
@@ -55,6 +62,7 @@ namespace UtilGS9
 
 
 
+        //추가되기전 마지막 큐값을 반환 한다 
         //public SpherePack ** Push(SpherePack *sphere)
         public Out_Point Push(MODEL sphere)
         {
@@ -96,12 +104,16 @@ namespace UtilGS9
 
         //데이터의 개수는 변경하지 않고 데이터만 날린다
         //Out_Push 객체에서 사용하는 전용함수 
-        private MODEL Unlink(int queueIndex)
-        {
-            MODEL pack = mFifo[queueIndex];
-            mFifo[queueIndex] = null;
+        //private MODEL Unlink(int queueIndex)
+        //{
+        //    MODEL pack = mFifo[queueIndex];
+        //    mFifo[queueIndex] = null;
 
-            return pack;
+        //    return pack;
+        //}
+        private void Unlink(int queueIndex)
+        {
+            mFifo[queueIndex] = null;
         }
 
         //Unlink와 같은 기능을 하는 함수. 이름을 동일하게 해야 함 

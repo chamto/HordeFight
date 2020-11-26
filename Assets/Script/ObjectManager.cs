@@ -66,7 +66,7 @@ namespace HordeFight
             {
                 //if (true == t.Value._isUpTile)
                 {
-                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, SphereModel.Flag.TREE_LEVEL_LAST);
+                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, SphereModel.Flag.CREATE_LEVEL_LAST);
                     _sphereTree_struct.AddIntegrateQ(model);
                 }
             }
@@ -1311,7 +1311,7 @@ namespace HordeFight
 
             //==============================================
             ////구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<ChampUnit>(cha);
             ////==============================================
@@ -1342,7 +1342,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             //==============================================
 
@@ -1373,7 +1373,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.TREE_LEVEL_LAST);
+            SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             //==============================================
 
