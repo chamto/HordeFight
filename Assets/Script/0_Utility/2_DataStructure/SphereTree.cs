@@ -16,7 +16,7 @@ namespace UtilGS9
         //private SphereModel _level_2 = null; //leaf : 트리의 거리(level) 2. 루트노드 바로 아래의 자식노드를 의미한다   
         private SphereModel[] _levels = null;
 
-        private Pool<SphereModel> _spheres = null;
+        private Pool<SphereModel> _pool_sphere = null;
 
         private QFifo<SphereModel> _integrateQ = null;
         private QFifo<SphereModel> _recomputeQ = null;
@@ -46,8 +46,8 @@ namespace UtilGS9
 
             //메모리풀 크기를 4배 하는 이유 : 각각의 레벨트리는 자식구에 대해 1개의 슈퍼구를 각각 만든다. 레벨트리 1개당 최대개수 *2 의 크기를 가져야 한다. 
             //레벨트리가 2개 이므로 *2*2 가 된다.
-            //구의 최대개수가 5일때의 최대 메모리 사용량 : 레벨2트리 구5개 + 슈퍼구5개 , 레벨1트리 슈퍼구5개 + 복제된슈퍼구5개 
-            maxspheres *= 2 * _max_level;
+            //구의 최대개수가 5일때의 최대 메모리 사용량 : 레벨2트리 <루트1개 + 구5개 + 슈퍼구5개> , 레벨1트리 <루트1개 + 슈퍼구5개 + 복제된슈퍼구5개>
+            maxspheres = (maxspheres * 2 * _max_level) + _max_level;
 
             //_maxRadius_supersphere_root = rootsize;
             //_maxRadius_supersphere_leaf = leafsize;
@@ -55,8 +55,8 @@ namespace UtilGS9
 
             _integrateQ = new QFifo<SphereModel>(maxspheres);
             _recomputeQ = new QFifo<SphereModel>(maxspheres);
-            _spheres = new Pool<SphereModel>();
-            _spheres.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
+            _pool_sphere = new Pool<SphereModel>();
+            _pool_sphere.Init(maxspheres);       // init pool to hold all possible SpherePack instances.
 
             //Vector3 pos = Vector3.zero;
             //_level_1 = _spheres.GetFreeLink(); // initially empty
@@ -68,27 +68,25 @@ namespace UtilGS9
             //_level_2.AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | SphereModel.Flag.TREE_LEVEL_2);
 
 
-
             for (int i = 0; i < _max_level;i++)
             {
                 int level_flag = (int)(SphereModel.Flag.TREE_LEVEL_1) << i;
 
-                _levels[i] = _spheres.GetFreeLink(); // initially empty
+                _levels[i] = _pool_sphere.GetFreeLink(); // initially empty
                 _levels[i].Init(this, Vector3.zero, 65536);
-                _levels[i].AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | (SphereModel.Flag)level_flag);    
+                _levels[i].AddFlag(SphereModel.Flag.SUPERSPHERE | SphereModel.Flag.ROOTNODE | (SphereModel.Flag)level_flag);
+
             }
 
-
-
         }
-
 
 
 
         public SphereModel AddSphere(Vector3 pos, float radius, SphereModel.Flag flags)
         {
 
-            SphereModel pack = _spheres.GetFreeLink();
+            SphereModel pack = _pool_sphere.GetFreeLink();
+            //DebugWide.LogBlue(_pool_sphere.GetFreeCount() + "  " + _pool_sphere.GetUsedCount());
             if (null == pack)
             {
                 DebugWide.LogError("AddSphere : GetFreeLink() is Null !!");
@@ -179,7 +177,7 @@ namespace UtilGS9
 
             pack.Unlink();
 
-            _spheres.Release(pack);
+            _pool_sphere.Release(pack);
         }
 
         public void ResetFlag()
