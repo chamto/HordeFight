@@ -483,33 +483,28 @@ namespace HordeFight
             if(_draw_SphTree_Being)
             {
                 //SingleO.objectManager.GetSphereTree_Being().Render_Debug(0, false); 
-                //SingleO.objectManager.GetSphereTree_Being().Render_Debug(1, false); 
-                //SingleO.objectManager.GetSphereTree_Being().Render_Debug(2, false); 
-                SingleO.objectManager.GetSphereTree_Being().Render_Debug(3, false); 
 
-                if(_draw_SphTree_Being_RayTrace)
-                {
-                    SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);    
-                }
-                if(_draw_SphTree_Being_Range)
-                {
-                    float radius = (_origin.position - _target.position).magnitude;
-                    SingleO.objectManager.GetSphereTree_Being().Render_RangeTest(_origin.position,radius);    
-                }
-
+                SingleO.objectManager.GetSphereTree_Being().Render_Debug(false); 
+            }
+            if (_draw_SphTree_Being_RayTrace)
+            {
+                SingleO.objectManager.GetSphereTree_Being().Render_RayTrace(_origin.position, _target.position);
+            }
+            if (_draw_SphTree_Being_Range)
+            {
+                float radius = (_origin.position - _target.position).magnitude;
+                SingleO.objectManager.GetSphereTree_Being().Render_RangeTest(_origin.position, radius);
             }
 
             if(_draw_SphTree_Struct)
             {
                 //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(0, false); 
                 //SingleO.objectManager.GetSphereTree_Struct().Render_Debug(1, false); 
-                SingleO.objectManager.GetSphereTree_Struct().Render_Debug(2, false); 
-
-                if(_draw_SphTree_Struct_RayTrace)
-                {
-                    SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);        
-                }
-
+                SingleO.objectManager.GetSphereTree_Struct().Render_Debug(false); 
+            }
+            if (_draw_SphTree_Struct_RayTrace)
+            {
+                SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
             }
 
         }

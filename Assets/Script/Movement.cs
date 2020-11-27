@@ -247,7 +247,8 @@ namespace HordeFight
             Vector3 newPosBounds = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (tt_delta) * _being._collider_radius;
 
             //================================
-
+            _being.SetPos(newPos);
+            return; //셀파티션 사용안함 - 20201128 chamto
             if (null != SingleO.cellPartition)
             {
                 //!!!! 셀에 원의 중점 기준으로만 등록되어 있어서 가져온 셀정보 외에서도 충돌가능원이 있을 가능성이 매우 높다. 즉 제대로 처리 할 수가 없다  

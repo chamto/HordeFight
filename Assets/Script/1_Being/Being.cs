@@ -345,7 +345,6 @@ namespace HordeFight
 
         public AniControl _ani = new AniControl();
 
-        protected SphereCollider _collider = null;
         //protected SpriteMask _sprMask = null;
 
 
@@ -376,6 +375,7 @@ namespace HordeFight
         //속도차이 때문에 직접 호출해 사용한다. 프로퍼티나 함수로 한번 감싸서 사용하면, 충돌처리에서 5프레임 정도 성능이 떨어진다 
         //_collider.radius 를 바로 호출하면 직접 호출보다 살짝 떨어진다 
         //성능순서 : _collider_radius > _collider.radius > GetCollider_Radius()
+        public SphereCollider _collider = null;
         public float _collider_radius = 0f;
         public float _collider_sqrRadius = 0f;
         //public Vector3 _prevLocalPos = ConstV.v3_zero;
@@ -405,9 +405,9 @@ namespace HordeFight
             //=====================================================
 
             //_sortingGroup = GetComponent<SortingGroup>();
-            _collider = GetComponent<SphereCollider>();
-            _collider_radius = _collider.radius;
-            _collider_sqrRadius = _collider_radius * _collider_radius;
+            //_collider = GetComponent<SphereCollider>();
+            //_collider_radius = _collider.radius;
+            //_collider_sqrRadius = _collider_radius * _collider_radius;
             //_prevLocalPos = transform.localPosition;
 
             //_move = GetComponent<Movement>();

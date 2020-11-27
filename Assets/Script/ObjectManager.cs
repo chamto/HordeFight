@@ -25,7 +25,7 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
-        private SphereTree _sphereTree_being = new SphereTree(2000, new float[] { 16, 10, 5, 2 }, 0.5f);
+        private SphereTree _sphereTree_being = new SphereTree(2000, new float[] { 16, 10, 5 , 3 }, 0.5f);
         private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
 
@@ -1297,6 +1297,9 @@ namespace HordeFight
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
             cha.transform.position = pos;
+            cha._collider = obj.GetComponent<SphereCollider>();
+            cha._collider_radius = cha._collider.radius;
+            cha._collider_sqrRadius = cha._collider_radius * cha._collider_radius;
 
             ////==============================================
             ////가지(촉수) 등록
@@ -1314,6 +1317,7 @@ namespace HordeFight
             SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<ChampUnit>(cha);
+            //DebugWide.LogRed(cha._collider_radius + "  radius ");
             ////==============================================
 
             cha._sphereModel = model;
@@ -1339,6 +1343,9 @@ namespace HordeFight
             shot._id = _id_shot_sequence;
             shot._kind = eKind;
             shot.transform.position = pos;
+            shot._collider = obj.GetComponent<SphereCollider>();
+            shot._collider_radius = shot._collider.radius;
+            shot._collider_sqrRadius = shot._collider_radius * shot._collider_radius;
 
             //==============================================
             //구트리 등록 
@@ -1370,6 +1377,9 @@ namespace HordeFight
             obst._id = _id_sequence;
             obst._kind = eKind;
             obst.transform.position = pos;
+            obst._collider = obj.GetComponent<SphereCollider>();
+            obst._collider_radius = obst._collider.radius;
+            obst._collider_sqrRadius = obst._collider_radius * obst._collider_radius;
 
             //==============================================
             //구트리 등록 
@@ -1529,7 +1539,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            numMax_create = 10;
+            numMax_create = 0;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
@@ -1540,7 +1550,7 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            numMax_create = 10;
+            numMax_create = 20;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());

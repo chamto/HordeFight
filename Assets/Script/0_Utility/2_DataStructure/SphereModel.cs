@@ -588,17 +588,22 @@ namespace UtilGS9
             }
             else
             {
-
+                SphereModel upLink = this.GetLink_UpLevelTree();
+                SphereModel downLink = this.GetLink_DownLevelTree();
 
                 hit = Geo.IntersectLineSegment(_center, _radius, line_origin, line_last);
+
+                //DebugWide.LogBlue(GetFlag() + " - " + upLink + " - " + downLink + " - " + hit + "  " + _center + "  " + _radius);
+
                 if (hit)
                 {
-                    SphereModel upLink = this.GetLink_UpLevelTree();
-                    SphereModel downLink = this.GetLink_DownLevelTree();
+                    
                     //if (null != downLink) downLink.RayTrace(line_origin, dir, distance);
                     if (null != downLink) downLink.Debug_RayTrace(line_origin, line_last);
 
                     Color cc = Color.gray;
+                    //if (HasFlag(Flag.TREE_LEVEL_4))
+                        //DebugWide.LogBlue("L4 : " + upLink + " - " + downLink);
                     if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
                     DebugWide.DrawCircle(_center, GetRadius(), cc);
                 }
@@ -783,6 +788,9 @@ namespace UtilGS9
                 }
                 else
                 {
+                    //SphereModel up = GetLink_UpLevelTree();
+                    //SphereModel down = GetLink_DownLevelTree();
+                    //DebugWide.LogBlue(GetFlag() + " - " + up +" - " + down);
                     temp += "\n";
                     DebugWide.DrawCircle(_center, GetRadius(), color);
                 }
