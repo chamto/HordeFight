@@ -267,6 +267,7 @@ namespace HordeFight
                         float sumRadius = cur._collider_radius + _being._collider_radius;
                         if (between.sqrMagnitude <= sumRadius * sumRadius)
                         {
+                            //셀안의 다른 객체와 겹쳐있다면 이동안됨 
                             moveable = false;
                             break;
                         }

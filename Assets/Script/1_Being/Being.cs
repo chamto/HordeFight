@@ -385,12 +385,6 @@ namespace HordeFight
         //==================================================
         public SphereModel _sphereModel = null;
 
-        //==================================================
-        // 작용힘 - 임시 
-        //==================================================
-        public Vector3 _force_dir = ConstV.v3_zero;
-        public float _force = 0f;
-
 
         //==================================================
 
@@ -455,27 +449,6 @@ namespace HordeFight
             //this.Idle();
         }
 
-
-
-
-        public void SetForce(Vector3 nDir, float force)
-        {
-            _force_dir = nDir * force;
-            _force = force;
-        }
-
-        public void ReactionForce(Being dst, float deltaTime)
-        {
-            if (null != (object)dst)
-            {
-                _force_dir += dst._force_dir; //충돌후 방향을 구한다 
-                //_force -= dst._force;
-                //if (0 > _force) _force = 0; 
-            }
-
-            _getPos3D += _force_dir;
-
-        }
 
         public Vector3 GetPos3D()
         {

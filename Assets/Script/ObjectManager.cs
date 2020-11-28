@@ -643,47 +643,6 @@ namespace HordeFight
         //    }
         //}
 
-        public void CollisionForce_Test(Being src, Being dst)
-        {
-            if (null == (object)src || null == (object)dst) return;
-
-            float max_sqrRadius = dst._collider_sqrRadius;
-            if (src._collider_sqrRadius > dst._collider_sqrRadius)
-                max_sqrRadius = src._collider_sqrRadius;
-
-
-
-            Vector3 dis = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
-            Vector3 n = ConstV.v3_zero;
-            float dis_sqr = dis.sqrMagnitude;
-            float r_sum = (src._collider_radius + dst._collider_radius);
-            float r_sumsqr = r_sum * r_sum;
-            //1.두 캐릭터가 겹친상태 
-            if (dis_sqr < r_sumsqr)
-            {
-                //==========================================
-
-                float length = (float)Math.Sqrt(dis_sqr);
-                float btLength = (r_sum - length) * 0.5f;
-                n = Misc.GetDir8_Normal3D(dis); //8방향으로만 밀리게 한다 
-
-                src.SetForce(n, btLength);
-                dst.SetForce(-n, btLength);
-
-                if (float.Epsilon + 0.01f >= length)
-                {
-                    n = Misc.GetDir8_Random_AxisY();
-                    length = 1f;
-                    src.SetForce(n, 1f);
-                    dst.SetForce(-n, 1f);
-
-                }
-
-                src.ReactionForce(dst, 1);
-                dst.ReactionForce(src, 1);
-
-            }
-        }
 
         public void CollisionPush(Being src, Being dst)
         {
@@ -727,7 +686,9 @@ namespace HordeFight
                 float btLength = (r_sum - length);
                 float btLength_src = btLength * rate_src;
                 float btLength_dst = btLength * rate_dst;
-                if (0 == length)
+                //완전겹친상태 
+                //if (0 == length)
+                if (float.Epsilon >= length)
                 {
                     n = Misc.GetDir8_Random_AxisY();
                     length = 1f;
