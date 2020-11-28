@@ -618,8 +618,10 @@ namespace HordeFight
             if (sqr_dstTOsrc < sqr_r_sum)
             {
                 //==========================================
-                float rate_src = 0.5f;
-                float rate_dst = 0.5f;
+                float f_sum = src._force + dst._force;
+
+                float rate_src = 1f - (src._force / f_sum);
+                float rate_dst = 1f - rate_src;
 
 
                 //n = Misc.GetDir8_Normal3D(dir_dstTOsrc); //8방향으로만 밀리게 한다 
@@ -1340,7 +1342,7 @@ namespace HordeFight
             string Blue_CampName = "Champ_Sky";
             string White_CampName = "Skel_Gray";
             string Obstacle_CampName = "ExitGoGe";
-            int camp_position = 0;
+            //int camp_position = 0;
 
             SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
             SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
@@ -1363,11 +1365,12 @@ namespace HordeFight
             ChampUnit champ = null;
             int numMax_create = 0;
             // -- 블루 진형 --
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(camp_position));
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(0));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
+            champ._force = 50;
             //champ.GetComponent<AI>()._ai_running = true;
-            camp_position++;
+            //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
@@ -1393,13 +1396,13 @@ namespace HordeFight
                 //champ._mt_range_min = 0.3f;
                 //champ._mt_range_max = 0.5f;
                 champ.GetComponent<AI>()._ai_running = true;
-                camp_position++;
+                //camp_position++;
             }
 
             //===================================================
 
             // -- 휜색 진형 --
-            camp_position = 0;
+            //camp_position = 0;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
@@ -1410,7 +1413,7 @@ namespace HordeFight
                 champ._mt_range_min = 1f;
                 champ._mt_range_max = 4f;
                 champ.GetComponent<AI>()._ai_running = true;
-                camp_position++;
+                //camp_position++;
                 //champ.SetColor(Color.black);
             }
 
@@ -1419,16 +1422,17 @@ namespace HordeFight
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
-                camp_position++;
+                //camp_position++;
             }
 
             //===================================================
 
             // -- 장애물 진형 --
-            numMax_create = 0;
+            numMax_create = 5;
             for (int i = 0; i < numMax_create; i++)
             {
-                Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
+                Obstacle ob = Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
+                ob._force = 100f;
             }
 
             //===================================================

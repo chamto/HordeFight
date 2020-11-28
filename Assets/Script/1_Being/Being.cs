@@ -324,7 +324,7 @@ namespace HordeFight
 
         public int _hp_cur = 10;
         public int _hp_max = 10;
-
+        public float _force = 1f; //밀거나 버티는 힘, 클수록 강한힘  
 
         //==================================================
 
@@ -716,10 +716,10 @@ namespace HordeFight
 
             //Update_Collision(); //성능테스트 : objectManager 에서 일괄적으로 전체 객체의 충돌처리 하는게 약간 더 빠르다 
 
-            if (false == _move.IsMoving())
-            {
-                //_behaviorKind = Behavior.eKind.Idle;
-            }
+            //if (false == _move.IsMoving())
+            //{
+            //    //_behaviorKind = Behavior.eKind.Idle;
+            //}
 
             //임시로 무작위아이들 주석함 
             //if (Behavior.eKind.Idle_Random == _behaviorKind)
