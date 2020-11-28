@@ -597,53 +597,6 @@ namespace HordeFight
         //                  충돌 검사   
         //____________________________________________
 
-        //public void CollisionPush(Transform src, Transform dst)
-        //{
-        //    if (null == src || null == dst) return;
-
-        //    Vector3 sqr_dis = ConstV.v3_zero;
-        //    float r_sum = 0f;
-        //    float max_radius = Mathf.Max(0.5f, 0.5f);
-
-        //    //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-        //    sqr_dis = src.position - dst.position;
-        //    r_sum = 0.5f + 0.5f;
-
-        //    //1.두 캐릭터가 겹친상태 
-        //    if (sqr_dis.sqrMagnitude < Mathf.Pow(r_sum, 2))
-        //    {
-        //        //DebugWide.LogBlue(i + "_" + j + "_count:"+_characters.Count); //chamto test
-
-        //        //todo : 최적화 필요 
-
-        //        Vector3 n = sqr_dis.normalized;
-        //        //Vector3 n = sqr_dis;
-        //        float meterPerSecond = 2f;
-
-        //        //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-        //        if (sqr_dis.sqrMagnitude < Mathf.Pow(max_radius, 2))
-        //        {
-        //            //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-        //            if (n == ConstV.v3_zero)
-        //            {
-        //                //방향값이 없기 때문에 임의로 지정해 준다. 
-        //                n = Misc.GetDir8_Random_AxisY();
-        //            }
-
-        //            meterPerSecond = 0.5f;
-
-        //            //if(Being.eKind.spear != dst._kind)
-        //            //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
-        //        }
-
-
-        //        src.Translate(n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f/meterPerSecond)));
-        //        dst.Translate(-n * (GridManager.ONE_METER * 2f) * (Time.deltaTime * (1f / meterPerSecond)));
-
-        //    }
-        //}
-
-
         public void CollisionPush(Being src, Being dst)
         {
             if (null == (object)src || null == (object)dst) return;
@@ -655,92 +608,42 @@ namespace HordeFight
 
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            //Vector3 dis = src.transform.localPosition - dst.transform.localPosition;
-            //Vector3 dis = src._getPos3D - dst._getPos3D;
-            Vector3 dis = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
+            Vector3 dir_dstTOsrc = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
             Vector3 n = ConstV.v3_zero;
-            float dis_sqr = dis.sqrMagnitude;
-            //Vector3 dis = src._prevLocalPos - dst._prevLocalPos;
+            float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
             float r_sum = (src._collider_radius + dst._collider_radius);
-            float r_sumsqr = r_sum * r_sum;
+            float sqr_r_sum = r_sum * r_sum;
+
             //1.두 캐릭터가 겹친상태 
-            if (dis_sqr < r_sumsqr)
+            if (sqr_dstTOsrc < sqr_r_sum)
             {
                 //==========================================
                 float rate_src = 0.5f;
                 float rate_dst = 0.5f;
-                //if(Being.eKind.lothar == src._kind)
-                //{
-                //    rate_src = 0f;
-                //    rate_dst = 1f;
-                //}
-                //if (Being.eKind.lothar == dst._kind)
-                //{
-                //    rate_src = 1f;
-                //    rate_dst = 0f;
-                //}
 
-                n = Misc.GetDir8_Normal3D(dis); //8방향으로만 밀리게 한다 
-                //n = dis;
-                float length = (float)Math.Sqrt(dis_sqr);
-                float btLength = (r_sum - length);
-                float btLength_src = btLength * rate_src;
-                float btLength_dst = btLength * rate_dst;
-                //완전겹친상태 
-                //if (0 == length)
-                if (float.Epsilon >= length)
+
+                //n = Misc.GetDir8_Normal3D(dir_dstTOsrc); //8방향으로만 밀리게 한다 
+                n = VOp.Normalize(dir_dstTOsrc);
+
+                float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                float len_bitween = (r_sum - len_dstTOsrc);
+                float len_bt_src = len_bitween * rate_src;
+                float len_bt_dst = len_bitween * rate_dst;
+
+                //2.완전겹친상태 
+                if (float.Epsilon >= len_dstTOsrc)
                 {
                     n = Misc.GetDir8_Random_AxisY();
-                    length = 1f;
-                    btLength_src = r_sum * 0.5f;
-                    btLength_dst = r_sum * 0.5f;
-                }
-                //n.x /= length;
-                //n.z /= length;
-
-                src.SetPos(src.GetPos3D() + n * btLength_src);
-                dst.SetPos(dst.GetPos3D() - n * btLength_dst);
-                return;
-                //DebugWide.LogBlue(n + "  " + btLength + "   " + length);
-                //==========================================
-
-                n = VOp.Normalize(dis);
-                //Vector3 n = Misc.GetDir360_Normal3D(dis);
-                //Vector3 n = dis.normalized;
-
-
-
-                //DebugWide.LogBlue(dis + "  => " + n + "  compare : " + dis.normalized); //chamto test
-                float meterPerSecond = 2f;
-
-                //2.큰 충돌원의 반지름 이상으로 겹쳐있는 경우
-                if (dis_sqr < max_sqrRadius)
-                {
-                    //3.완전 겹쳐있는 경우 , 방향값을 설정할 수 없는 경우
-                    //if (n == ConstV.v3_zero)
-                    if (Misc.IsZero(n))
-                    {
-                        //DebugWide.LogBlue(n); //chamto test
-                        //방향값이 없기 때문에 임의로 지정해 준다. 
-                        n = Misc.GetDir8_Random_AxisY();
-                    }
-
-                    meterPerSecond = 1.0f;
-
-                    //if(Being.eKind.spear != dst._kind)
-                    //DebugWide.LogBlue(src.name + " " + dst.name + " : " + sqr_dis.magnitude + "  " + max_radius);
+                    len_dstTOsrc = 1f;
+                    len_bt_src = r_sum * 0.5f;
+                    len_bt_dst = r_sum * 0.5f;
                 }
 
-                //밀리는 처리 
-                //if(Being.eKind.barrel !=  src._kind )
-                //  src.Move_Push(n, meterPersecond);
+                src.SetPos(src.GetPos3D() + n * len_bt_src);
+                dst.SetPos(dst.GetPos3D() - n * len_bt_dst);
 
-                //if (Being.eKind.barrel != dst._kind)
-                //dst.Move_Push(-n, meterPersecond);
-
-                src.OnCollision_MovePush(dst, n, meterPerSecond);
-                dst.OnCollision_MovePush(src, -n, meterPerSecond);
-
+                //src.OnCollision_MovePush(dst, n, meterPerSecond);
+                //dst.OnCollision_MovePush(src, -n, meterPerSecond);
             }
         }
 
