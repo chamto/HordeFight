@@ -450,6 +450,65 @@ namespace HordeFight
         }
 
 
+        //public float GetCollider_Radius()
+        //{
+        //    //Assert를 쓰면 심각할정도로 프레임 드랍현상이 발생함. 앞으로 절대 쓰지 말기 - chamto 20181205
+        //    //Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
+
+        //    //if (null == _collider)
+        //    //DebugWide.LogRed(this.name);
+
+        //    return _collider.radius;
+        //}
+
+
+        public void SetVisible(bool onoff)
+        {
+            if (null != (object)_ani._sprRender)
+            {
+                _ani._sprRender.enabled = onoff;
+                //_sprRender.gameObject.SetActive(onoff);
+            }
+            if (null != (object)_ani._animator)
+            {
+                _ani._animator.enabled = onoff;
+            }
+
+        }
+
+        public void SetColor(Color color)
+        {
+            if (null != (object)_ani._sprRender)
+            {
+                _ani._sprRender.color = color;
+            }
+        }
+
+
+        public bool isDeath()
+        {
+            if (0 == _hp_cur) return true;
+
+            return false;
+        }
+
+        public void AddHP(int amount)
+        {
+            _hp_cur += amount;
+
+            if (0 > _hp_cur)
+                _hp_cur = 0;
+
+            if (_hp_max < _hp_cur)
+                _hp_cur = _hp_max;
+
+        }
+
+        public void Apply_UnityPosition()
+        {
+            _transform.position = _getPos3D;
+        }
+
         public Vector3 GetPos3D()
         {
             return _getPos3D;
@@ -487,103 +546,23 @@ namespace HordeFight
             return false;
         }
 
-        public Bounds old_GetBounds()
-        {
-            float diameter = _collider_radius * 2f;
-            return new Bounds(_getPos3D, new Vector3(diameter, 0, diameter));
-        }
-
-        //public float GetCollider_Radius()
+        //public Bounds old_GetBounds()
         //{
-        //    //Assert를 쓰면 심각할정도로 프레임 드랍현상이 발생함. 앞으로 절대 쓰지 말기 - chamto 20181205
-        //    //Assert.IsTrue(null != _collider, this.name + " 충돌체가 Null이다");
-
-        //    //if (null == _collider)
-        //    //DebugWide.LogRed(this.name);
-
-        //    return _collider.radius;
+        //    float diameter = _collider_radius * 2f;
+        //    return new Bounds(_getPos3D, new Vector3(diameter, 0, diameter));
         //}
 
-
-        public void SetVisible(bool onoff)
-        {
-            if (null != (object)_ani._sprRender)
-            {
-                _ani._sprRender.enabled = onoff;
-                //_sprRender.gameObject.SetActive(onoff);
-            }
-            if (null != (object)_ani._animator)
-            {
-                _ani._animator.enabled = onoff;
-            }
-            //if (null != (object)_sprMask)
-            //{
-            //    //_sprMask.enabled = onoff;
-            //    _sprMask.gameObject.SetActive(onoff);
-            //}
-
-        }
-
-        public void SetColor(Color color)
-        {
-            if (null != (object)_ani._sprRender)
-            {
-                _ani._sprRender.color = color;
-            }
-        }
-
-
-        public bool isDeath()
-        {
-            if (0 == _hp_cur) return true;
-
-            return false;
-        }
-
-        public void AddHP(int amount)
-        {
-            _hp_cur += amount;
-
-            if (0 > _hp_cur)
-                _hp_cur = 0;
-
-            if (_hp_max < _hp_cur)
-                _hp_cur = _hp_max;
-
-        }
-
-        public void Apply_UnityPosition()
-        {
-            _transform.position = _getPos3D;
-        }
-
-        //public void Apply_Bounds()
+        //public void Update_PositionAndBounds()
         //{
-        //    _getBounds_min.x = _getPos3D.x - _collider_radius;
-        //    _getBounds_min.z = _getPos3D.z - _collider_radius;
-        //    _getBounds_max.x = _getPos3D.x + _collider_radius;
-        //    _getBounds_max.z = _getPos3D.z + _collider_radius;
+        //    //_getPos3D = _transform.position;
+        //    //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
+
+        //    //_getBounds_min.x = _getPos3D.x - _collider_radius;
+        //    //_getBounds_min.z = _getPos3D.z - _collider_radius;
+        //    //_getBounds_max.x = _getPos3D.x + _collider_radius;
+        //    //_getBounds_max.z = _getPos3D.z + _collider_radius;
         //}
 
-        public void Update_PositionAndBounds()
-        {
-            //_getPos3D = _transform.position;
-            //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
-
-            //_getBounds_min.x = _getPos3D.x - _collider_radius;
-            //_getBounds_min.z = _getPos3D.z - _collider_radius;
-            //_getBounds_max.x = _getPos3D.x + _collider_radius;
-            //_getBounds_max.z = _getPos3D.z + _collider_radius;
-        }
-
-
-        //public void Update_SpriteMask()
-        //{
-        //    if (null == (object)_sprMask) return;
-
-        //    AnimatorStateInfo stateInfo = _ani._animator.GetCurrentAnimatorStateInfo(0);
-        //    _sprMask.sprite = _ani._sprRender.sprite;
-        //}
 
         /// <summary>
         /// 그리드상 셀값이 변경되면 셀정보값을 갱신한다 
@@ -711,25 +690,6 @@ namespace HordeFight
             //Update_CellInfo();
             Update_CellSpace();
 
-
-            //Update_SpriteMask();
-
-            //Update_Collision(); //성능테스트 : objectManager 에서 일괄적으로 전체 객체의 충돌처리 하는게 약간 더 빠르다 
-
-            //if (false == _move.IsMoving())
-            //{
-            //    //_behaviorKind = Behavior.eKind.Idle;
-            //}
-
-            //임시로 무작위아이들 주석함 
-            //if (Behavior.eKind.Idle_Random == _behaviorKind)
-            //{
-            //    //_animator.SetInteger("state", (int)Behavior.eKind.Idle);
-            //    Idle_Random();
-
-            //}
-
-
             //========================================
 
             //이동정보에 따라 위치 갱신
@@ -784,101 +744,6 @@ namespace HordeFight
         ////맞았을때
         //public void OnCollision_WhenBeHit(Being dst)
         //{
-        //}
-
-
-
-        //____________________________________________
-        //                  애니메이션  
-        //____________________________________________
-
-        //uint[] __cache_cur_aniMultiKey = new uint[(int)eAniBaseKind.MAX]; //기본애니 종류 별로 현재애니 정보를 저장한다. 
-        //public void Switch_Ani(Being.eKind being_kind, eAniBaseKind ani_kind, eDirection8 dir)
-        //{
-        //    if (null == (object)_overCtr) return;
-
-        //    _sprRender.flipX = false;
-
-        //    switch (dir)
-        //    {
-
-        //        case eDirection8.leftUp:
-        //            {
-        //                dir = eDirection8.rightUp;
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-        //        case eDirection8.left:
-        //            {
-        //                dir = eDirection8.right;
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-        //        case eDirection8.leftDown:
-        //            {
-        //                dir = eDirection8.rightDown;
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-
-        //    }
-
-        //    //현재상태와 같은 요청이 들어오면 갱신하지 않는다 
-        //    uint next_aniMultiKey = SingleO.resourceManager.ComputeAniMultiKey(being_kind, ani_kind, dir);
-        //    if (next_aniMultiKey == __cache_cur_aniMultiKey[(int)ani_kind]) return;
-
-        //    //_clipOverrides.SetOverAni(AniOverKey.base_move, SingleO.resourceManager.GetClip(being_kind, ani_kind, dir)); //느려서 못씀 
-        //    //_overCtr[ConstV.GetAniBaseKind(ani_kind)] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); 
-
-        //    AnimationClip clip = SingleO.resourceManager.GetBaseAniClip(ani_kind);
-        //    _overCtr[clip] = SingleO.resourceManager.GetClip(being_kind, ani_kind, dir); //부하가 조금 있다. 중복되는 요청을 걸러내야 한다 
-        //    __cache_cur_aniMultiKey[(int)ani_kind] = next_aniMultiKey;
-
-        //}
-
-        //public void non_Switch_Ani(string aniKind, string aniName, eDirection8 dir)
-        //{
-        //    if (null == _overCtr) return;
-
-        //    _sprRender.flipX = false;
-        //    string aniNameSum = "";
-        //    switch (dir)
-        //    {
-        //        //case eDirection8.none:
-        //        //{
-        //        //    DebugWide.LogRed("Switch_Ani : "+dir  + "값은 처리 할 수 없다 ");
-        //        //}
-        //        //break;
-        //        case eDirection8.leftUp:
-        //            {
-        //                aniNameSum = aniName + eDirection8.rightUp.ToString();
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-        //        case eDirection8.left:
-        //            {
-        //                aniNameSum = aniName + eDirection8.right.ToString();
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-        //        case eDirection8.leftDown:
-        //            {
-        //                aniNameSum = aniName + eDirection8.rightDown.ToString();
-        //                _sprRender.flipX = true;
-        //            }
-        //            break;
-        //        default:
-        //            {
-        //                aniNameSum = aniName + dir.ToString();
-        //                _sprRender.flipX = false;
-        //            }
-        //            break;
-
-        //    }
-
-        //    //DebugWide.LogBlue(aniNameSum + "  " + dir); //chamto test
-
-        //    _overCtr[aniKind] = SingleO.resourceManager.GetClip(aniNameSum.GetHashCode()); //chamto test
         //}
 
 
@@ -1045,17 +910,14 @@ namespace HordeFight
 
         }
 
-        public void Block_Forward(Vector3 dir)
-        {
-            dir.y = 0;
+        //public void Block_Forward(Vector3 dir)
+        //{
+        //    dir.y = 0;
 
-            _move._eDir8 = Misc.GetDir8_AxisY(dir);
+        //    _move._eDir8 = Misc.GetDir8_AxisY(dir);
 
-            _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-            //Switch_Ani(_kind, eAniBaseKind.move, _move._eDir8);
-            //_animator.SetInteger(ANI_STATE, (int)eAniBaseKind.move);
-
-        }
+        //    _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
+        //}
 
 
         public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
@@ -1072,12 +934,6 @@ namespace HordeFight
 
             _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
 
-            //==============================================
-            //!!!!! 구트리 위치 갱신 
-            //_sphereModel.SetPos(_transform.position);
-            //_sphereModel.SetPos(_getPos3D);
-            //==============================================
-
         }
 
         public void Move_LookAt(Vector3 moveDir, Vector3 lookAtDir, float second)
@@ -1089,11 +945,6 @@ namespace HordeFight
 
             _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
 
-            //==============================================
-            //!!!!! 구트리 위치 갱신 
-            //_sphereModel.SetPos(_transform.position);
-            //_sphereModel.SetPos(_getPos3D);
-            //==============================================
         }
 
         public void Move_Push(Vector3 dir, float second)
@@ -1106,11 +957,6 @@ namespace HordeFight
 
             _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
 
-            //==============================================
-            //!!!!! 구트리 위치 갱신 
-            //_sphereModel.SetPos(_transform.position);
-            //_sphereModel.SetPos(_getPos3D);
-            //==============================================
         }
 
         public void MoveToTarget(Vector3 targetPos, float speed)

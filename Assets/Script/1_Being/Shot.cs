@@ -203,7 +203,7 @@ namespace HordeFight
 
             if (true == this._on_theWay)
             {
-                base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
+                //base.Update_PositionAndBounds(); //가장 먼저 실행되어야 한다. transform 의 위치로 갱신 
                 base.Update_SortingOrder(1000); //지형위로 날라다니게 한다 
 
                 _elapsedTime += Time.deltaTime;
