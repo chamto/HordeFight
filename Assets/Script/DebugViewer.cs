@@ -425,6 +425,7 @@ namespace HordeFight
         public bool _draw_FogOfWar = false;
         public bool _draw_Path_Edges = false;
         public bool _draw_LookAt_Champ = false;
+        public bool _draw_CollisionSphere = false;
         public bool _draw_AABBCulling = false;
         public bool _draw_CellPartition = false;
         public bool _draw_SphTree_Being = false;
@@ -470,6 +471,10 @@ namespace HordeFight
             if(_draw_LookAt_Champ)
             {
                 Draw_LookAtChamp();    
+            }
+            if(_draw_CollisionSphere)
+            {
+                SingleO.objectManager.Draw_CollisionSphere();
             }
             if(_draw_AABBCulling)
             {

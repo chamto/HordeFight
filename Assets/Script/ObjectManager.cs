@@ -110,21 +110,6 @@ namespace HordeFight
             return bounds;
         }
 
-        public void Draw_AABBCulling()
-        {
-            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap()) //fixme : 조회속도가 빠른 자료구조로 바꾸기 
-            {
-                Being src = _linearSearch_list[key._V0];
-                Being dst = _linearSearch_list[key._V1];
-                if ((object)src == (object)dst) continue;
-
-                DebugWide.DrawCube(src.GetPos3D(), new Vector3(src._collider_radius*2, 0, src._collider_radius*2), Color.white);
-                DebugWide.DrawCube(dst.GetPos3D(), new Vector3(dst._collider_radius*2, 0, dst._collider_radius*2), Color.white);
-                DebugWide.DrawLine(src.GetPos3D(), dst.GetPos3D(), Color.green);
-                //DebugWide.DrawLine(src._getBounds_min, src._getBounds_max, Color.white);
-                //DebugWide.DrawLine(dst._getBounds_min, dst._getBounds_max, Color.white);
-            }
-        }
 
         //객체간의 충돌검사 최적화를 위한 충돌가능객체군 미리 조직하기 
         private void Update()
@@ -189,6 +174,31 @@ namespace HordeFight
             return (int)Misc.GetDir8_AxisY(rate);
         }
 
+        public void Draw_AABBCulling()
+        {
+            foreach (AABBCulling.UnOrderedEdgeKey key in _aabbCulling.GetOverlap()) //fixme : 조회속도가 빠른 자료구조로 바꾸기 
+            {
+                Being src = _linearSearch_list[key._V0];
+                Being dst = _linearSearch_list[key._V1];
+                if ((object)src == (object)dst) continue;
+
+                DebugWide.DrawCube(src.GetPos3D(), new Vector3(src._collider_radius * 2, 0, src._collider_radius * 2), Color.white);
+                DebugWide.DrawCube(dst.GetPos3D(), new Vector3(dst._collider_radius * 2, 0, dst._collider_radius * 2), Color.white);
+                DebugWide.DrawLine(src.GetPos3D(), dst.GetPos3D(), Color.green);
+                //DebugWide.DrawLine(src._getBounds_min, src._getBounds_max, Color.white);
+                //DebugWide.DrawLine(dst._getBounds_min, dst._getBounds_max, Color.white);
+            }
+        }
+
+        public void Draw_CollisionSphere()
+        {
+            int src_count = _linearSearch_list.Count;
+            for (int sc = 0; sc < src_count; sc++)
+            {
+                DebugWide.DrawCircle(_linearSearch_list[sc].GetPos3D(), _linearSearch_list[sc]._collider_radius, Color.green);
+            }
+
+        }
 
         //private void OnDrawGizmos()
         //{
