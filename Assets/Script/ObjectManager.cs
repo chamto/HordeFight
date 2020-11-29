@@ -1315,7 +1315,7 @@ namespace HordeFight
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(0));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
-            champ._force = 1;
+            champ._force = 20;
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));

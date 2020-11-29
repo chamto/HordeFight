@@ -227,18 +227,19 @@ namespace HordeFight
                 _interTime_prev = 0;
             }
 
-            float interTime = Interpolation.Calc(__interKind, 0, 1f, _elapsedTime / perSecond);
-            if (0 > interTime) interTime = 0;
-            else if (1 < interTime) interTime = 1;
-            //보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
-            float tt_delta = interTime - _interTime_prev;
-
-            _interTime_prev = interTime;
+            //bug : 시간값 변경시 보간값 문제가 있는것 같음. 튀는 현상이 발생함 
+            //float interTime = Interpolation.Calc(__interKind, 0, 1f, _elapsedTime / perSecond);
+            //if (0 > interTime) interTime = 0;
+            //else if (1 < interTime) interTime = 1;
+            ////보간이 들어갔을때 : Tile.deltaTime 와 같은 간격을 구하기 위해, 현재보간시간에서 전보간시간을 빼준다  
+            //float tt_delta = interTime - _interTime_prev;
+            //_interTime_prev = interTime;
             //DebugWide.LogBlue(interTime + "  " + _interTime_prev + "  "  + tt_delta + "  el: " +  _elapsedTime + "  ps: "  + perSecond );
             //===========================================
 
 
-            //perSecond = 1f / perSecond;
+            perSecond = 1f / perSecond;
+            float tt_delta = Time.deltaTime * perSecond;
             //보간 없는 기본형
             ////this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
             //Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);

@@ -100,7 +100,8 @@ namespace HordeFight
                     champ = _selected as ChampUnit;
                     if (null != champ)
                     {
-                        champ.GetComponent<AI>()._ai_running = true;
+                        //champ.GetComponent<AI>()._ai_running = true; //주석 
+
                         //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
                         //champ._ui_circle.gameObject.SetActive(false);
                         //champ._ui_hp.gameObject.SetActive(false);
@@ -174,7 +175,7 @@ namespace HordeFight
                     {
                         if (true == SingleO.objectManager.IsVisibleArea(champSelected, target.transform.position))
                         {
-                            champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
+                            //champSelected.Attack(target.GetPos3D() - _selected.GetPos3D(), target);
                         }
 
                         //_selected.Move_Forward(hit.point - _selected._getPos3D, 3f, true); 
