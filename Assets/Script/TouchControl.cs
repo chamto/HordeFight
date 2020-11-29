@@ -156,7 +156,7 @@ namespace HordeFight
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
             Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
 
-            _selected.Move_Forward(touchDir, 1f, true); //chamto test - 테스트 끝난후 주석풀기 
+            _selected.Move_Forward(touchDir, 1f); //chamto test - 테스트 끝난후 주석풀기 
 
             ChampUnit champSelected = _selected as ChampUnit;
 

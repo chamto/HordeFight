@@ -238,8 +238,8 @@ namespace HordeFight
             //===========================================
 
 
-            perSecond = 1f / perSecond;
-            float tt_delta = Time.deltaTime * perSecond;
+            //perSecond = 1f / perSecond;
+            float tt_delta = Time.deltaTime * (1f / perSecond);
             //보간 없는 기본형
             ////this.transform.Translate(_direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
             //Vector3 newPos = _being.GetPos3D() + _direction * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);

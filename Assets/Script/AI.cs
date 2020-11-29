@@ -174,14 +174,16 @@ namespace HordeFight
 
 
                             float second = 0.7f;
-                            bool foward = true;
 
                             //상대와 너무 붙어 최소공격사거리 조건에 안맞는 경우 
                             if (_OUT_RANGE_MIN == result)
                             {
-                                lookDir *= -1f; //반대방향으로 바꾼다
-                                second = 2f;
-                                foward = false; //뒷걸음질 
+                                //뒷걸음질 
+                                second = 3f;
+                                _me.Move_LookAt(-lookDir, lookDir, second);
+                            }else
+                            {
+                                _me.Move_Forward(lookDir, second);
                             }
 
                             //이동 방향에 동료가 있으면 밀지 않늗다 
@@ -195,8 +197,6 @@ namespace HordeFight
                             //    break;
                             //}
 
-
-                            _me.Move_Forward(lookDir, second, foward);
                         }
 
                     }
@@ -264,7 +264,7 @@ namespace HordeFight
                             _elapsedTime = 0f;
                         }
 
-                        _me.Move_Forward(_ai_Dir, 3f, true);
+                        _me.Move_Forward(_ai_Dir, 3f);
 
                     }
                     break;

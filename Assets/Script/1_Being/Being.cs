@@ -880,27 +880,11 @@ namespace HordeFight
 
         }
 
-        //public void Block_Forward(Vector3 dir)
-        //{
-        //    dir.y = 0;
-
-        //    _move._eDir8 = Misc.GetDir8_AxisY(dir);
-
-        //    _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-        //}
-
-
-        public void Move_Forward(Vector3 dir, float second, bool forward)//, bool setState)
+        public void Move_Forward(Vector3 dir, float second)
         {
-
             dir.y = 0;
             _move.SetNextMoving(false);
             _move.Move_Forward(dir, 2f, second);
-            eDirection8 eDirection = _move._eDir8;
-
-            //전진이 아니라면 애니를 반대방향으로 바꾼다 (뒷걸음질 효과)
-            if (false == forward)
-                eDirection = Misc.GetDir8_Reverse_AxisY(eDirection);
 
             _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
 
@@ -912,9 +896,7 @@ namespace HordeFight
             _move.SetNextMoving(false);
             _move.Move_LookAt(moveDir, lookAtDir, 2f, second);
 
-
             _ani.Play(_kind, eAniBaseKind.move, _move._eDir8);
-
         }
 
         public void Move_Push(Vector3 dir, float second)
