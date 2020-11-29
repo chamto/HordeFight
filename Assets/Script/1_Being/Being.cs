@@ -396,6 +396,7 @@ namespace HordeFight
             //SingleO.cellPartition.ToPosition1D(_getPos3D, out _getPos2D, out _getPos1D);
             //Apply_Bounds();
             this.SetPos(_getPos3D);
+            Apply_UnityPosition();
             //=====================================================
 
             //_sortingGroup = GetComponent<SortingGroup>();
@@ -615,42 +616,11 @@ namespace HordeFight
             //_sortingGroup.sortingOrder = GetSortingOrder(add);
         }
 
-        //public void Update_Collision()
-        //{
-        //    CellInfo cellInfo = null;
-        //    StructTile structTile = null;
-
-        //    //1. 3x3그리드 정보를 가져온다
-        //    foreach (Vector3Int ix in SingleO.gridManager._indexesNxN[3])
-        //    {
-
-        //        //count++;
-        //        cellInfo = SingleO.gridManager.GetCellInfo(ix + this._cellInfo._index);
-        //        //cellInfo = SingleO.gridManager.GetCellInfo(src._cellInfo._index);
-        //        if (null == cellInfo) continue;
-
-        //        foreach (Being dst in cellInfo)
-        //        {
-        //            //count++;
-        //            if (this == dst) continue;
-        //            if (null == dst || true == dst.isDeath()) continue;
-
-        //            SingleO.objectManager.CollisionPush(this, dst);
-        //        }
-        //    }
-
-
-        //    //동굴벽과 캐릭터 충돌처리 
-        //    if (SingleO.gridManager.HasStructTile(this.transform.position, out structTile))
-        //    {
-        //        SingleO.objectManager.CollisionPush_StructTile(this, structTile);
-        //        //CollisionPush_Rigid(src, structTile);
-        //    }
-        //}
 
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         public virtual bool UpdateAll()
         {
+            _getPos3D = _transform.position; //chamto test
 
             if (true == isDeath())
             {
