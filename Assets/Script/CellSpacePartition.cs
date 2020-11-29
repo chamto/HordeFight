@@ -138,7 +138,7 @@ namespace HordeFight
         private CellSpace[] _cellInfo2Map = null;
 
         string __debugTemp = ConstV.STRING_EMPTY;
-        public void DebugPrint()
+        public void Draw_CellInfo()
         {
             foreach (CellSpace cell in _cellInfo2Map)
             {
@@ -152,10 +152,10 @@ namespace HordeFight
                 }
             }
         }
-        public string DebugPrint_Children(Being be)
+        public string DrawPrint_Children(Being be)
         {
             if (null == be) return ConstV.STRING_EMPTY;
-            return be.name + " : " + DebugPrint_Children(be._next_sibling);
+            return be.name + " : " + DrawPrint_Children(be._next_sibling);
 
         }
 
@@ -801,8 +801,8 @@ namespace HordeFight
 
         public void AttachCellSpace(int pos1d, Being dst)
         {
-            CellSpace tile = null;
-            if (false == HasStructTile(pos1d, out tile))
+            CellSpace tile = GetCellSpace(pos1d);
+            //if (false == HasStructTile(pos1d, out tile))
             {
                 //뗀후 새로운 곳에 붙인다 
                 tile.DetachChild(dst);
@@ -812,8 +812,8 @@ namespace HordeFight
 
         public void DetachCellSpace(int pos1d, Being dst)
         {
-            CellSpace tile = null;
-            if (false == HasStructTile(pos1d, out tile))
+            CellSpace tile = GetCellSpace(pos1d);
+            //if (false == HasStructTile(pos1d, out tile))
             {
                 tile.DetachChild(dst);
             }

@@ -477,7 +477,7 @@ namespace HordeFight
             }
             if(_draw_CellPartition)
             {
-                SingleO.cellPartition.DebugPrint();    
+                SingleO.cellPartition.Draw_CellInfo();    
             }
 
             //구트리 테스트 
