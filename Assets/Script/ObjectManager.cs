@@ -314,8 +314,9 @@ namespace HordeFight
                 //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
                 if (SingleO.cellPartition.HasStructTile(src.GetPos3D(), out structTile))
                 {
-                    CollisionPush_StructTile(src, structTile);
-                    //CollisionPush_Rigid(src, structTile);
+                    //CollisionPush_StructTile(src, structTile);
+                    Vector3 getPos = SingleO.gridManager.GetBorder_StructTile(src.GetPos3D(), structTile);
+                    src.SetPos(getPos);
                 }
                 //==========================================
 

@@ -118,37 +118,37 @@ namespace HordeFight
 #endif
         }
 
-        public void UpdateDraw_StructTileDir()
-        {
-            Color ccc = Color.white;
-            foreach (CellSpace t in SingleO.gridManager._structTileList.Values)
-            {
-                if (eDirection8.none == t._eDir) continue;
+        //public void UpdateDraw_StructTileDir()
+        //{
+        //    Color ccc = Color.white;
+        //    foreach (CellSpace t in SingleO.gridManager._structTileList.Values)
+        //    {
+        //        if (eDirection8.none == t._eDir) continue;
 
-                //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
-                //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
+        //        //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
+        //        //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
 
-                ccc = Color.white;
-                if (CellSpace.Specifier_DiagonalFixing == t._specifier)
-                {
-                    ccc = Color.red;
-                }
+        //        ccc = Color.white;
+        //        if (CellSpace.Specifier_DiagonalFixing == t._specifier)
+        //        {
+        //            ccc = Color.red;
+        //        }
 
-                Vector3 end = t._pos3d_center + Misc.GetDir8_Normal3D_AxisY(t._eDir) * 0.12f;
-                Debug.DrawLine(t._pos3d_center, end, ccc);
+        //        Vector3 end = t._pos3d_center + Misc.GetDir8_Normal3D_AxisY(t._eDir) * 0.12f;
+        //        Debug.DrawLine(t._pos3d_center, end, ccc);
 
 
-                //UnityEditor.Handles.Label(t._center_3d, "( " + cur.x + " , " + cur.z + " )");
+        //        //UnityEditor.Handles.Label(t._center_3d, "( " + cur.x + " , " + cur.z + " )");
 
-                //Vector3 crossL = t._v3Center;
-                //crossL.x += -0.08f;
-                //crossL.z += 0.08f;
-                //Vector3 crossR = t._v3Center;
-                //crossR.x += 0.08f;
-                //crossR.z += -0.08f;
-                //Debug.DrawLine(crossL, crossR, ccc);
-            }
-        }
+        //        //Vector3 crossL = t._v3Center;
+        //        //crossL.x += -0.08f;
+        //        //crossL.z += 0.08f;
+        //        //Vector3 crossR = t._v3Center;
+        //        //crossR.x += 0.08f;
+        //        //crossR.z += -0.08f;
+        //        //Debug.DrawLine(crossL, crossR, ccc);
+        //    }
+        //}
 
         public void Update_DrawEdges(bool printToPos)
         {
@@ -456,7 +456,8 @@ namespace HordeFight
             }
             if(_draw_StructTile)
             {
-                UpdateDraw_StructTileDir();    
+                //UpdateDraw_StructTileDir();    
+                SingleO.gridManager.DrawLine_StructTile();
             }
             if(_draw_FogOfWar)
             {

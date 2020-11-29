@@ -169,6 +169,305 @@ namespace HordeFight
 
         //}
 
+        public void DrawLine_StructTile()
+        {
+            //DebugWide.LogBlue(SingleO.gridManager._structTileList.Count);
+            foreach (CellSpace t in SingleO.gridManager._structTileList.Values)
+            {
+                if (eDirection8.none == t._eDir) continue;
+
+                //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
+                //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
+                //==========================================
+
+                float size = SingleO.gridManager._cellSize_x * 0.5f;
+                Vector3 temp = t._pos3d_center;
+                LineSegment3 line3 = new LineSegment3();
+                switch (t._eDir)
+                {
+                    case eDirection8.up:
+                        {
+                            temp.z = temp.z + size;
+                            temp.x = t._pos3d_center.x - size;
+                            line3.origin = temp;
+
+                            temp.x = t._pos3d_center.x + size;
+                            line3.last = temp;
+                        }
+                        break;
+                    case eDirection8.down:
+                        {
+                            temp.z = temp.z - size;
+                            temp.x = t._pos3d_center.x - size;
+                            line3.origin = temp;
+
+                            temp.x = t._pos3d_center.x + size;
+                            line3.last = temp;
+
+                        }
+                        break;
+                    case eDirection8.left:
+                        {
+                            temp.x = temp.x - size;
+                            temp.z = t._pos3d_center.z + size;
+                            line3.origin = temp;
+
+                            temp.z = t._pos3d_center.z - size;
+                            line3.last = temp;
+
+                        }
+                        break;
+                    case eDirection8.right:
+                        {
+                            temp.x = temp.x + size;
+                            temp.z = t._pos3d_center.z + size;
+                            line3.origin = temp;
+
+                            temp.z = t._pos3d_center.z - size;
+                            line3.last = temp;
+
+                        }
+                        break;
+                    case eDirection8.leftUp:
+                        {
+                            if (CellSpace.Specifier_DiagonalFixing == t._specifier)
+                            {
+                                temp.x -= size;
+                                temp.z += size;
+                                break;
+                            }
+
+                            temp = t._pos3d_center;
+                            temp.x -= size;
+                            temp.z -= size;
+                            line3.origin = temp;
+
+                            temp = t._pos3d_center;
+                            temp.x += size;
+                            temp.z += size;
+                            line3.last = temp;
+
+                        }
+                        break;
+                    case eDirection8.rightUp:
+                        {
+                            if (CellSpace.Specifier_DiagonalFixing == t._specifier)
+                            {
+                                temp.x += size;
+                                temp.z += size;
+                                break;
+                            }
+
+                            temp = t._pos3d_center;
+                            temp.x -= size;
+                            temp.z += size;
+                            line3.origin = temp;
+
+                            temp = t._pos3d_center;
+                            temp.x += size;
+                            temp.z -= size;
+                            line3.last = temp;
+
+
+                        }
+                        break;
+                    case eDirection8.leftDown:
+                        {
+                            if (CellSpace.Specifier_DiagonalFixing == t._specifier)
+                            {
+                                temp.x -= size;
+                                temp.z -= size;
+                                break;
+                            }
+
+                            temp = t._pos3d_center;
+                            temp.x -= size;
+                            temp.z += size;
+                            line3.origin = temp;
+
+                            temp = t._pos3d_center;
+                            temp.x += size;
+                            temp.z -= size;
+                            line3.last = temp;
+
+                        }
+                        break;
+                    case eDirection8.rightDown:
+                        {
+                            if (CellSpace.Specifier_DiagonalFixing == t._specifier)
+                            {
+                                temp.x += size;
+                                temp.z -= size;
+                                break;
+                            }
+
+                            temp = t._pos3d_center;
+                            temp.x -= size;
+                            temp.z -= size;
+                            line3.origin = temp;
+
+                            temp = t._pos3d_center;
+                            temp.x += size;
+                            temp.z += size;
+                            line3.last = temp;
+
+                        }
+                        break;
+
+                }//end switch
+
+                if (CellSpace.Specifier_DiagonalFixing != t._specifier)
+                {
+                    line3.Draw(Color.white);
+                }else
+                {
+                    DebugWide.DrawCircle(temp, 0.2f, Color.red);
+                }
+
+            }
+        }
+
+        public Vector3 GetBorder_StructTile(Vector3 srcPos, CellSpace structTile)
+        {
+            if (null == structTile) return srcPos;
+
+            Vector3 centerToSrc_dir = VOp.Minus(srcPos, structTile._pos3d_center);
+            Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
+
+
+            float size = SingleO.gridManager._cellSize_x * 0.5f;
+            Vector3 temp = ConstV.v3_zero;
+            LineSegment3 line3 = new LineSegment3();
+            //8방향별 축값 고정  
+            switch (structTile._eDir)
+            {
+                case eDirection8.up:
+                    {
+                        srcPos.z = structTile._pos3d_center.z + size;
+                    }
+                    break;
+                case eDirection8.down:
+                    {
+                        srcPos.z = structTile._pos3d_center.z - size;
+                    }
+                    break;
+                case eDirection8.left:
+                    {
+                        srcPos.x = structTile._pos3d_center.x - size;
+                    }
+                    break;
+                case eDirection8.right:
+                    {
+                        srcPos.x = structTile._pos3d_center.x + size;
+                    }
+                    break;
+                case eDirection8.leftUp:
+                    {
+                        //down , right
+                        if (CellSpace.Specifier_DiagonalFixing == structTile._specifier)
+                        {
+                            srcPos.x = structTile._pos3d_center.x - size;
+                            srcPos.z = structTile._pos3d_center.z + size;
+                            break;
+                        }
+
+                        //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        temp = structTile._pos3d_center;
+                        temp.x -= size;
+                        temp.z -= size;
+                        line3.origin = temp;
+
+                        temp = structTile._pos3d_center;
+                        temp.x += size;
+                        temp.z += size;
+                        line3.last = temp;
+
+                        srcPos = line3.ClosestPoint(srcPos);
+
+                    }
+                    break;
+                case eDirection8.rightUp:
+                    {
+                        //down , left
+                        if (CellSpace.Specifier_DiagonalFixing == structTile._specifier)
+                        {
+                            srcPos.x = structTile._pos3d_center.x + size;
+                            srcPos.z = structTile._pos3d_center.z + size;
+                            break;
+                        }
+
+                        //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        temp = structTile._pos3d_center;
+                        temp.x -= size;
+                        temp.z += size;
+                        line3.origin = temp;
+
+                        temp = structTile._pos3d_center;
+                        temp.x += size;
+                        temp.z -= size;
+                        line3.last = temp;
+
+                        srcPos = line3.ClosestPoint(srcPos);
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        //up , right
+                        if (CellSpace.Specifier_DiagonalFixing == structTile._specifier)
+                        {
+                            srcPos.x = structTile._pos3d_center.x - size;
+                            srcPos.z = structTile._pos3d_center.z - size;
+                            break;
+                        }
+
+                        //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        temp = structTile._pos3d_center;
+                        temp.x -= size;
+                        temp.z += size;
+                        line3.origin = temp;
+
+                        temp = structTile._pos3d_center;
+                        temp.x += size;
+                        temp.z -= size;
+                        line3.last = temp;
+
+                        srcPos = line3.ClosestPoint(srcPos);
+                    }
+                    break;
+                case eDirection8.rightDown:
+                    {
+                        //up , left
+                        if (CellSpace.Specifier_DiagonalFixing == structTile._specifier)
+                        {
+                            srcPos.x = structTile._pos3d_center.x + size;
+                            srcPos.z = structTile._pos3d_center.z - size;
+                            break;
+                        }
+
+                        //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
+                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        temp = structTile._pos3d_center;
+                        temp.x -= size;
+                        temp.z -= size;
+                        line3.origin = temp;
+
+                        temp = structTile._pos3d_center;
+                        temp.x += size;
+                        temp.z += size;
+                        line3.last = temp;
+
+                        srcPos = line3.ClosestPoint(srcPos);
+                    }
+                    break;
+
+            }
+
+            return srcPos;
+
+        }
 
         public bool old_IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
         {
