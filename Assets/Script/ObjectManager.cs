@@ -301,8 +301,8 @@ namespace HordeFight
                 if ((object)src == (object)dst) continue;
 
                 CollisionPush(src, dst);
-                //CollisionForce_Test(src, dst); //chamto test
             }
+
             //==============================================
 
             for (int key = 0; key < src_count; key++)
@@ -1265,70 +1265,6 @@ namespace HordeFight
         }
 
 
-        //List<Transform> _transformList = new List<Transform>();
-        //public Transform Create_Test(Transform parent, Vector3 pos , bool manager)
-        //{
-
-        //    GameObject obj = CreatePrefab("test", parent,"test");
-        //    obj.transform.localPosition = pos;
-
-        //    if(true == manager)
-        //        _transformList.Add(obj.transform);
-
-        //    return obj.transform;
-        //}
-        //public Transform Create_Test2(Transform parent, Vector3 pos)
-        //{
-
-        //    GameObject obj = CreatePrefab("test", parent, "test");
-        //    Being being = obj.AddComponent<Being>();
-        //    obj.AddComponent<Movement>();
-        //    being.transform.localPosition = pos;
-        //    being._id = _id_sequence;
-        //    being.Init();
-
-
-        //    _linearSearch_list.Add(being);
-
-        //    return obj.transform;
-        //}
-
-
-        private int __TestSkelCount = 9;
-        public void Create_Characters()
-        {
-
-            if (null == SingleO.unitRoot) return;
-
-            //챔프 설정
-
-            Vector3 pos = new Vector3(3.2f, 0, 1.12f);
-            Being being = null;
-            being = Create_Character(SingleO.unitRoot, Being.eKind.lothar, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.garona, null, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.footman, null, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.spearman, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.brigand, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.ogre, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.slime, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.raider, null, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.grunt, null, pos);
-            being = Create_Character(SingleO.unitRoot, Being.eKind.knight, null, pos);
-
-
-            for (int i = 0; i < __TestSkelCount; i++)
-            {
-                //pos.x = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                //pos.z = (float)Misc.rand.NextDouble() * Mathf.Pow(-1f, i);
-                being = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, null, pos);
-            }
-
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.daemon, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.waterElemental, null, pos);
-            //being = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, null, pos);
-
-        }
 
         public void Create_ChampCamp()
         {
@@ -1368,7 +1304,7 @@ namespace HordeFight
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(0));
             champ._hp_max = 10000;
             champ._hp_cur = 10000;
-            champ._force = 50;
+            champ._force = 1;
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
@@ -1421,7 +1357,7 @@ namespace HordeFight
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
-                champ.GetComponent<AI>()._ai_running = true;
+                //champ.GetComponent<AI>()._ai_running = true;
                 //camp_position++;
             }
 
@@ -1432,7 +1368,7 @@ namespace HordeFight
             for (int i = 0; i < numMax_create; i++)
             {
                 Obstacle ob = Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
-                ob._force = 100f;
+                ob._force = 1000f;
             }
 
             //===================================================
