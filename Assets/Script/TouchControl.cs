@@ -105,7 +105,8 @@ namespace HordeFight
                         //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
                         //champ._ui_circle.gameObject.SetActive(false);
                         //champ._ui_hp.gameObject.SetActive(false);
-                        champ._effect[(int)ChampUnit.eEffectKind.Circle].gameObject.SetActive(false);
+                        //champ._effect[(int)ChampUnit.eEffectKind.Circle].gameObject.SetActive(false);
+                        champ._effect.SetActive(Effect.eKind.Circle, false);
                     }
 
 
@@ -121,7 +122,8 @@ namespace HordeFight
                     //SingleO.lineControl.SetActive(champ._UIID_circle_collider, true);
                     //champ._ui_circle.gameObject.SetActive(true);
                     //champ._ui_hp.gameObject.SetActive(true);
-                    champ._effect[(int)ChampUnit.eEffectKind.Circle].gameObject.SetActive(true);
+                    //champ._effect[(int)ChampUnit.eEffectKind.Circle].gameObject.SetActive(true);
+                    champ._effect.SetActive(Effect.eKind.Circle, true);
                 }
 
                 SingleO.cameraWalk.SetTarget(_selected._transform);

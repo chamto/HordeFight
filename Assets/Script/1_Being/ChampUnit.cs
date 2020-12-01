@@ -25,21 +25,6 @@ namespace HordeFight
         //}
         //public eJobPosition _jobPosition = eJobPosition.None;
 
-
-        //전용 effect
-        public enum eEffectKind
-        {
-            Aim,        //조준점
-            Dir,        //방향
-            Emotion,    //감정표현
-            Circle,     //선택원
-            Bar_Red,    //생명바
-            Bar_Blue,   //체력바
-
-            Max,
-        }
-
-
         //==================================================
 
         public ushort _level = 1;
@@ -62,9 +47,8 @@ namespace HordeFight
         public Inventory _inventory = null;
 
         //전용effect
-        public Transform[] _effect = new Transform[(int)eEffectKind.Max];
-        private SpriteRenderer _bar_red = null;
-        private SpriteRenderer _bar_blue = null;
+        //private SpriteRenderer _bar_red = null;
+        //private SpriteRenderer _bar_blue = null;
 
 
         //전용UI
@@ -94,7 +78,6 @@ namespace HordeFight
         public Bone _bone = new Bone();
         public Limbs _limbs = null;
         //==================================================
-
 
         public Behavior _behavior_cur = null; //임시변수 
 
@@ -138,28 +121,6 @@ namespace HordeFight
             //_activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
-            // 전용 effect 설정 
-
-
-            Transform effectTr = Hierarchy.GetTransform(transform, "effectIcon");
-            _effect[(int)eEffectKind.Aim] = Hierarchy.GetTransform(effectTr, "aim",true);
-            _effect[(int)eEffectKind.Dir] = Hierarchy.GetTransform(effectTr, "dir",true);
-            _effect[(int)eEffectKind.Emotion] = Hierarchy.GetTransform(effectTr, "emotion",true);
-            _effect[(int)eEffectKind.Circle] = Hierarchy.GetTransform(effectTr, "circle",true);
-            _effect[(int)eEffectKind.Bar_Red] = Hierarchy.GetTransform(effectTr, "bar_red",true);
-            _effect[(int)eEffectKind.Bar_Blue] = Hierarchy.GetTransform(effectTr, "bar_blue",true);
-
-            _bar_red = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Red], "spr");
-            _bar_blue = Hierarchy.GetTypeObject<SpriteRenderer>(_effect[(int)eEffectKind.Bar_Blue], "spr");
-
-            //아틀라스에서 가져온 sprite로 변경하여 시험 
-            //_effect[(int)eEffectKind.Aim].sprite = SingleO.resourceManager.GetSprite_Effect("aim_1");
-            //_effect[(int)eEffectKind.Dir].sprite = SingleO.resourceManager.GetSprite_Effect("effect_dir");
-            //_effect[(int)eEffectKind.Emotion].sprite = SingleO.resourceManager.GetSprite_Effect("effect_surprise");
-            //_effect[(int)eEffectKind.Hand_Left].sprite = SingleO.resourceManager.GetSprite_Effect("effect_sheld_0");
-            //_effect[(int)eEffectKind.Hand_Right].sprite = SingleO.resourceManager.GetSprite_Effect("effect_attack");
-
-            //DebugWide.LogBlue(_effect[(int)eEffectKind.Dir].sprite.name); //chamto test
 
             _limbs.SetActive_Sight(false);
             _limbs.SetActive_Waist(false);
@@ -322,7 +283,8 @@ namespace HordeFight
 
 
 
-                ApplyUI_HPBar();
+                //ApplyUI_HPBar();
+                //_effect.Apply_BarRed((float)_hp_cur / (float)_hp_max);
 
                 if (null != (object)_limbs)
                 {
@@ -451,11 +413,12 @@ namespace HordeFight
                     //this.SetActiveEffect(eEffectKind.Hand_Right, false);
 
                     _target.AddHP(-1);
+
                     ChampUnit target_champ = _target as ChampUnit;
                     if (null != target_champ)
                     {
                         StartCoroutine(target_champ.Damage());
-                        //target_champ.ApplyUI_HPBar();
+                        //target_champ._effect.Apply_BarRed((float)target_champ._hp_cur / (float)target_champ._hp_max);
                     }
 
                 }
@@ -463,20 +426,6 @@ namespace HordeFight
             }
         }
 
-        public void ApplyUI_HPBar()
-        {
-            //HP갱신 
-            //_ui_hp.SetLineHP((float)_hp_cur / (float)_hp_max);
-
-            //Vector2 temp = _effect[(int)eEffectKind.Bar_Red].size;
-            //temp.x = (float)_hp_cur / (float)_hp_max;
-            //_effect[(int)eEffectKind.Bar_Red].size = temp;
-
-            Vector2 temp = _bar_red.size;
-            temp.x = (float)_hp_cur / (float)_hp_max;
-            _bar_red.size = temp;
-
-        }
 
         bool __in_corutin_Damage = false;
         public IEnumerator Damage()
@@ -527,12 +476,12 @@ namespace HordeFight
         //____________________________________________
         //                  전용 effect 처리
         //____________________________________________
-        public void SetActiveEffect(eEffectKind kind, bool value)
-        {
-            if (null == _effect[(int)kind]) return;
+        //public void SetActiveEffect(eEffectKind kind, bool value)
+        //{
+        //    if (null == _effect[(int)kind]) return;
 
-            _effect[(int)kind].gameObject.SetActive(value);
-        }
+        //    _effect[(int)kind].gameObject.SetActive(value);
+        //}
 
 
         //____________________________________________

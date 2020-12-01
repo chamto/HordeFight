@@ -347,6 +347,7 @@ namespace HordeFight
 
         //protected SpriteMask _sprMask = null;
 
+        public Effect _effect = new Effect();
 
         //==================================================
         //상태정보
@@ -416,7 +417,8 @@ namespace HordeFight
             //_animator = GetComponentInChildren<Animator>();
             //_sprMask = GetComponentInChildren<SpriteMask>();
             _ani.Init(transform, _id);
-
+            // 전용 effect 설정 
+            _effect.Init(transform);
             //=====================================================
             ////미리 생성된 오버라이드컨트롤러를 쓰면 객체하나의 애니정보가 바뀔때 다른 객체의 애니정보까지 모두 바뀌게 된다. 
             ////오버라이트컨트롤러를 직접 생성해서 추가한다
@@ -621,6 +623,8 @@ namespace HordeFight
         public virtual bool UpdateAll()
         {
             _getPos3D = _transform.position; //chamto test
+
+            _effect.Apply_BarRed((float)_hp_cur / (float)_hp_max);
 
             if (true == isDeath())
             {
