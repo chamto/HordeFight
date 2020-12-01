@@ -86,7 +86,7 @@ namespace HordeFight
         //public Camp _belongCamp = null; //소속 캠프
         //public Camp.eKind _campKind = Camp.eKind.None;
 
-        public Geo.Sphere _activeRange = Geo.Sphere.Zero;
+        //public Geo.Sphere _activeRange = Geo.Sphere.Zero;
 
         //==================================================
 
@@ -96,7 +96,7 @@ namespace HordeFight
         //==================================================
 
 
-        public Behavior _behavior_cur = null;
+        public Behavior _behavior_cur = null; //임시변수 
 
 
         public float attack_range_min
@@ -135,7 +135,7 @@ namespace HordeFight
             //_skill_attack.Init(_skillControl, this, Skill.eName.Attack_Combo_1);
             _skillControl.Init(this, _skill_idle); //초기 애니 설정 
 
-            _activeRange.radius = GridManager.ONE_METER * 1f;
+            //_activeRange.radius = GridManager.ONE_METER * 1f;
 
             //=====================================================
             // 전용 effect 설정 
@@ -541,17 +541,17 @@ namespace HordeFight
         //                  디버그 정보 출력
         //____________________________________________
 
-        public bool _GIZMOS_BEHAVIOR = false;
+        public bool _active_BEHAVIOR = false;
         void OnDrawGizmos()
         {
-            if (true == _GIZMOS_BEHAVIOR)
-                Debug_DrawGizmos_Behavior();
+            if (true == _active_BEHAVIOR)
+                DrawGizmos_Behavior();
         }
 
         Vector3 _debug_dir = Vector3.zero;
         Quaternion _debug_q = Quaternion.identity;
         Vector3 _debug_line = Vector3.zero;
-        public void Debug_DrawGizmos_Behavior()
+        public void DrawGizmos_Behavior()
         {
             //BodyControl.Part HL = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Left];
             //BodyControl.Part HR = _bodyControl._parts[(int)BodyControl.Part.eKind.Hand_Right];
