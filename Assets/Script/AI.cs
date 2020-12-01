@@ -183,7 +183,10 @@ namespace HordeFight
                                 _me.Move_LookAt(-lookDir, lookDir, second);
                             }else
                             {
-                                _me.Move_Forward(lookDir, second);
+                                Vector3 pos = _me.GetPos3D() + VOp.Normalize(lookDir) * _me._collider_radius;
+                                ChampUnit findUnit = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos, 0, 0.2f);
+                                if(null == findUnit)
+                                    _me.Move_Forward(lookDir, second);
                             }
 
                             //이동 방향에 동료가 있으면 밀지 않늗다 
