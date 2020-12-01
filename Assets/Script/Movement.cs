@@ -306,10 +306,14 @@ namespace HordeFight
             SetDirection(lookAt);
 
             _isNextMoving = true;
-            perSecond = 1f / perSecond;
+
+            float tt_delta = 0;
+            if(float.Epsilon < perSecond)
+                tt_delta = Time.deltaTime * (1f / perSecond);
+
             //보간 없는 기본형
             //this.transform.Translate(dir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond));
-            Vector3 newPos = _being.GetPos3D() + moveDir * (GridManager.ONE_METER * meter) * (Time.deltaTime * perSecond);
+            Vector3 newPos = _being.GetPos3D() + moveDir * (GridManager.ONE_METER * meter) * tt_delta;
             _being.SetPos(newPos);
         }
 

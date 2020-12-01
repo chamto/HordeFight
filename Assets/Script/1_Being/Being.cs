@@ -691,6 +691,14 @@ namespace HordeFight
             _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
         }
 
+        public void Idle_LookAt(Vector3 lookAtDir)
+        {
+            lookAtDir.y = 0;
+            _move.SetDirection(lookAtDir);
+
+            _ani.Play(_kind, eAniBaseKind.idle, _move._eDir8);
+        }
+
         //____________________________________________
         //                  충돌반응
         //____________________________________________

@@ -225,6 +225,8 @@ namespace HordeFight
 
                                     //4가지 설정된 방향을 무작위로 설정 
                                     __findNum = Misc.RandInt(1, 4);
+
+                                    _me.Idle_LookAt(lookDir); //이동하지 않고 대상을 바라보게 한다  
                                 }
                                     
 
