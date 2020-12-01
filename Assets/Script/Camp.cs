@@ -301,6 +301,10 @@ namespace HordeFight
             //DebugWide.LogBlue(camp_1.ToString() + "   " + camp_2.ToString()); //chamto test
             //return GetCampRelation(camp_1).GetRelation(camp_2);
 
+            //같은 캠프면 같은편이라고 반환해준다 
+            if (camp_1 == camp_2)
+                return Camp.eRelation.SameSide;
+
             return _relations2[(int)camp_1][(int)camp_2];
         }
 
