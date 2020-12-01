@@ -260,7 +260,7 @@ namespace HordeFight
                 {
                     //DebugWide.LogBlue(cell._childCount);
                     bool moveable = true;
-                    Being cur = cell._children;
+                    Being cur = cell._head;
                     for (int i = 0; i < cell._childCount; i++)
                     {
                         if ((object)_being == (object)cur) continue;
@@ -274,7 +274,7 @@ namespace HordeFight
                         }
 
 
-                        cur = cell._children._next_sibling;
+                        cur = cell._head._next_sibling;
                     }
 
                     if (true == moveable)//&& 3 > cell._childCount)

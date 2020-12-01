@@ -54,14 +54,14 @@ namespace HordeFight
 
         //==================================================
         //타일에 속해있는 객체의 링크
-        public Being _children = null;
+        public Being _head = null;
         public int _childCount = 0;
 
 
         public Being MatchRelation(Camp.eRelation relation, Being target)
         {
             Being getB = null;
-            Being next = _children;
+            Being next = _head;
             while (null != (object)next)
             {
                 getB = next;
@@ -84,8 +84,8 @@ namespace HordeFight
         //새로운 객체가 머리가 된다 
         public void AttachChild(Being newHead)
         {
-            Being cur_child = _children;
-            _children = newHead; // new head of list
+            Being cur_child = _head;
+            _head = newHead; // new head of list
 
             newHead._prev_sibling = null;
             newHead._next_sibling = cur_child;
@@ -99,7 +99,7 @@ namespace HordeFight
 
         public void DetachChild(Being dst)
         {
-            if (null == dst._cur_cell || null == dst._cur_cell._children || 0 == dst._cur_cell._childCount) return;
+            if (null == dst._cur_cell || null == dst._cur_cell._head || 0 == dst._cur_cell._childCount) return;
 
             Being prev = dst._prev_sibling;
             Being next = dst._next_sibling;
@@ -112,7 +112,7 @@ namespace HordeFight
             {
                 //dst가 head 인 경우, 새로운 head 설정한다
                 //_children = next;
-                dst._cur_cell._children = next;
+                dst._cur_cell._head = next;
 
                 if (null != next) next._prev_sibling = null;
             }
@@ -278,7 +278,7 @@ namespace HordeFight
                             return null;
                         }
                     }
-                    else if (null != (object)structTile._children)
+                    else if (null != (object)structTile._head)
                     {
                         //==================================
                         if (Camp.eRelation.Unknown != relation)
@@ -289,7 +289,7 @@ namespace HordeFight
                         }
                         else
                         {
-                            return structTile._children; //첫번째로 발견한 객체를 반환한다 (적군 , 아군 구별없다)    
+                            return structTile._head; //첫번째로 발견한 객체를 반환한다 (적군 , 아군 구별없다)    
                         }
                         //==================================
 

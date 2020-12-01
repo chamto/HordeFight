@@ -399,7 +399,7 @@ namespace HordeFight
 
                     //foreach (Being dst in cellInfo)
                     //for (LinkedListNode<Being> curNode = cellInfo.First; null != curNode; curNode = curNode.Next)
-                    Being next = cellSpace._children;
+                    Being next = cellSpace._head;
                     while (null != (object)next)
                     {
                         dst = next;
@@ -924,22 +924,30 @@ namespace HordeFight
                 //기준객체는 검사대상에서 제외한다 
                 if (param.unit._sphereModel == dstModel) return false;
 
+                Being dstBeing = dstModel.GetLink_UserData() as Being;
                 ChampUnit dstUnit = dstModel.GetLink_UserData() as ChampUnit;
 
-
-                if (null != (object)dstUnit && param.vsRelation != Camp.eRelation.Unknown)
+                if (null != (object)dstBeing)
                 {
-                    if (dstUnit.isDeath()) return false; //죽어있는 대상은 탐지하지 않는다 
+                    SingleO.debugViewer.AddDraw_Circle(dstModel._center, dstModel._radius, Color.white);
 
-                    Camp.eRelation getRelation = SingleO.campManager.GetRelation(param.unit_campKind, dstUnit._belongCamp._eCampKind);
-                    //DebugWide.LogBlue(getRelation + "  " + param.unit_campKind + "  " + dstUnit._belongCamp._eCampKind);
-                    //요청 관계인지 검사한다 
-                    if (param.vsRelation == getRelation)
+                    if (null != (object)dstUnit && param.vsRelation != Camp.eRelation.Unknown)
                     {
-                        SingleO.debugViewer.AddDraw_Circle(dstModel._center, dstModel._radius, Color.white);
-                        //가시거리 검사 
-                        return SingleO.cellPartition.IsVisibleTile(param.unit, param.src_pos, dstModel.GetPos(), 0.1f);
+                        if (dstUnit.isDeath()) return false; //죽어있는 대상은 탐지하지 않는다 
+
+                        Camp.eRelation getRelation = SingleO.campManager.GetRelation(param.unit_campKind, dstUnit._belongCamp._eCampKind);
+                        //DebugWide.LogBlue(getRelation + "  " + param.unit_campKind + "  " + dstUnit._belongCamp._eCampKind);
+                        //요청 관계인지 검사한다 
+                        if (param.vsRelation == getRelation)
+                        {
+                            
+                            //가시거리 검사 
+                            return SingleO.cellPartition.IsVisibleTile(param.unit, param.src_pos, dstModel.GetPos(), 0.1f);
+                        }
                     }
+
+                    //챔프유닛외 것들을 찾은 경우
+                    return true;
                 }
 
                 return false;
@@ -947,7 +955,7 @@ namespace HordeFight
         }
 
 
-        public ChampUnit RangeTest(ChampUnit src, Camp.eRelation vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+        public Being RangeTest(ChampUnit src, Camp.eRelation vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
         {
                                         
             SingleO.debugViewer.AddDraw_Circle(pos, meter_maxRadius, Color.red);
@@ -959,7 +967,7 @@ namespace HordeFight
             if (null != param.find)
             {
                 //DebugWide.LogBlue(sphereModel.GetLink_UserData<ChampUnit>()); //chamto test
-                return param.find.GetLink_UserData() as ChampUnit;
+                return param.find.GetLink_UserData() as Being;
             }
 
             return null;
@@ -1004,7 +1012,7 @@ namespace HordeFight
 
                 //foreach (Being dst in cell)
                 Being dst = null;
-                Being nextBeing = cell._children;
+                Being nextBeing = cell._head;
                 while (null != (object)nextBeing)
                 {
                     dst = nextBeing;

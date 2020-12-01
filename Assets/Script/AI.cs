@@ -111,6 +111,8 @@ namespace HordeFight
             return _OUT_RANGE_MIN;
         }
 
+
+        public int __findNum = 0;
         public void StateUpdate()
         {
             switch (_state)
@@ -183,22 +185,54 @@ namespace HordeFight
                                 _me.Move_LookAt(-lookDir, lookDir, second);
                             }else
                             {
-                                Vector3 pos = _me.GetPos3D() + VOp.Normalize(lookDir) * _me._collider_radius;
-                                ChampUnit findUnit = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos, 0, 0.2f);
-                                if(null == findUnit)
-                                    _me.Move_Forward(lookDir, second);
+                                lookDir = VOp.Normalize(lookDir);
+                                Vector3 dir_1 = Quaternion.AngleAxis(45f, ConstV.v3_up) * lookDir;
+                                Vector3 dir_2 = Quaternion.AngleAxis(-45f, ConstV.v3_up) * lookDir;
+                                Vector3 dir_3 = Quaternion.AngleAxis(90f, ConstV.v3_up) * lookDir;
+                                Vector3 dir_4 = Quaternion.AngleAxis(-90f, ConstV.v3_up) * lookDir;
+                                Vector3 findDir = lookDir;
+                                if(0 ==__findNum)
+                                {
+                                    findDir = lookDir;
+                                }
+                                if (1 == __findNum)
+                                {
+                                    findDir = dir_1;
+                                }
+                                if (2 == __findNum)
+                                {
+                                    findDir = dir_2;
+                                }
+                                if (3 == __findNum)
+                                {
+                                    findDir = dir_3;
+                                }
+                                if (4 == __findNum)
+                                {
+                                    findDir = dir_4;
+                                }
+                                Vector3 pos = _me.GetPos3D() + findDir * _me._collider_radius;
+                                const float SENSOR_RADIUS = 0.4f;
+                                Being find = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos, 0, SENSOR_RADIUS);
+                                if(null == find)
+                                {
+                                    _me.Move_Forward(findDir, second);
+                                    __findNum = 0; //이동했으면 센서를 대상방향으로 다시 설정 
+                                }else
+                                {
+                                    //__findNum++;
+                                    //__findNum = __findNum % 3;
+
+                                    //4가지 설정된 방향을 무작위로 설정 
+                                    __findNum = Misc.RandInt(1, 4);
+                                }
+                                    
+
+                                //셀로 검사하는 것은 자연스럽게 안보인다 
+                                //Being sameSide = SingleO.cellPartition.RayCast_FirstReturn(_me, _me._looking.GetPos3D(), Camp.eRelation.SameSide, 0.1f);
+                                //if (null == sameSide)
+                                    //_me.Move_Forward(lookDir, second);
                             }
-
-                            //이동 방향에 동료가 있으면 밀지 않늗다 
-                            //Being sameSide = SingleO.cellPartition.RayCast_FirstReturn(_me, moveDir, Camp.eRelation.SameSide, 0.1f);
-                            //Being sameSide = _me._cur_cell.MatchRelation(Camp.eRelation.SameSide, _me);
-                            //if (null != (object)sameSide && true == foward)
-                            //////if(1 < _me._cur_cell._childCount)
-                            //{
-
-                            //    DebugWide.LogBlue(_me.name + "  ->  " + sameSide.name); //chamto test
-                            //    break;
-                            //}
 
                         }
 
