@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 //using UnityEngine.Assertions;
 
+using HordeFight;
 using UtilGS9;
 
 
@@ -11,8 +12,38 @@ using UtilGS9;
 //========================================================
 //==================     디버그      ==================
 //========================================================
-namespace HordeFight
-{
+//namespace HordeFight
+//{
+    public struct DrawInfo
+    {
+        public enum eKind
+        {
+            Circle,
+            Line,
+        }
+
+        public eKind kind;
+        public Vector3 origin;
+        public Vector3 last;
+        public float radius;
+        public Color color;
+
+        public void Draw()
+        {
+            switch(kind)
+            {
+                case eKind.Circle:
+                    DebugWide.DrawCircle(origin, radius, color);
+                    break;
+                case eKind.Line:
+                    DebugWide.DrawLine(origin, last, color);
+                    break;
+                    
+            }
+
+        }
+
+    }
     public class DebugViewer : MonoBehaviour
     {
         public float _length_interval = 0.1f;
@@ -22,6 +53,8 @@ namespace HordeFight
         private Tilemap _tilemap = null;
         private Dictionary<Vector3Int, Color> _colorMap = new Dictionary<Vector3Int, Color>();
 
+        private Queue<DrawInfo> _drawQ = new Queue<DrawInfo>();
+
         private void Start()
         {
             GameObject game = GameObject.Find("Tilemap_Debug");
@@ -30,6 +63,34 @@ namespace HordeFight
                 _tilemap = game.GetComponent<Tilemap>();
             }
 
+        }
+
+        public void AddDrawInfo(DrawInfo info)
+        {
+            _drawQ.Enqueue(info);
+        }
+
+         public void AddDraw_Circle(Vector3 origin, float radius, Color color)
+        {
+
+            DrawInfo drawInfo = new DrawInfo();
+            drawInfo.kind = DrawInfo.eKind.Circle;
+            drawInfo.origin = origin;
+            drawInfo.radius = radius;
+            drawInfo.color = color;
+
+            AddDrawInfo(drawInfo);
+        }
+
+         public void AddDraw_Line(Vector3 origin, Vector3 last, Color color)
+        {
+            DrawInfo drawInfo = new DrawInfo();
+            drawInfo.kind = DrawInfo.eKind.Line;
+            drawInfo.origin = origin;
+            drawInfo.last = last;
+            drawInfo.color = color;
+
+            AddDrawInfo(drawInfo);
         }
 
         public void ResetColor()
@@ -417,6 +478,7 @@ namespace HordeFight
             }
         }
 
+        public bool _draw_Q = false;
         public bool _draw_line = false;
         public bool _draw_line_addInfo = false;
         public bool _draw_DirNormal = false;
@@ -436,6 +498,19 @@ namespace HordeFight
 
         void OnDrawGizmos()
         {
+#if UNITY_EDITOR
+
+            if(_draw_Q)
+            {
+                while (0 != _drawQ.Count)
+                {
+                    DrawInfo info = _drawQ.Dequeue();
+                    info.Draw();
+                }    
+            }
+
+
+
             if(_draw_line)
             {
                 DebugWide.DrawLine(_origin.transform.position, _target.transform.position, Color.red);
@@ -513,8 +588,8 @@ namespace HordeFight
                 SingleO.objectManager.GetSphereTree_Struct().Render_RayTrace(_origin.position, _target.position);
             }
 
-        }
+            #endif
+        }//end func
 
-
-    }
-}
+    }//end class
+//}

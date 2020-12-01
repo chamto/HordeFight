@@ -2,13 +2,14 @@
 using UnityEngine;
 //using UnityEngine.Assertions;
 
+using HordeFight;
 using UtilGS9;
 
 //========================================================
 //==================      전역  객체      ==================
 //========================================================
-namespace HordeFight
-{
+//namespace HordeFight
+//{
     //==================================================================
     //S<CellSpacePartition>.Create();
     //S<ResourceManager>.Create();
@@ -211,4 +212,4 @@ namespace HordeFight
 
     }
 
-}//end namespace
+//}//end namespace
