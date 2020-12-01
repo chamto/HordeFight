@@ -380,9 +380,9 @@ namespace UtilGS9
             return _levels[0].RayTrace_FirstReturn(start, end, exceptModel);
         }
 
-        public SphereModel RangeTest_MinDisReturn(ref HordeFight.ObjectManager.Param_RangeTest param)
+        public void RangeTest_MinDisReturn(ref HordeFight.ObjectManager.Param_RangeTest param)
         {
-            return _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
+            _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
         }
 
         //==================================================

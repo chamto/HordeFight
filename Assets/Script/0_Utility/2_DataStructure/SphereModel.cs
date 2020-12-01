@@ -38,9 +38,9 @@ namespace UtilGS9
 
         }
 
-        protected Vector3 _center;
-        protected float _radius;
-        protected float _radius_sqr;
+        public Vector3 _center;
+        public float _radius;
+        public float _radius_sqr;
 
 
         //------------------------------------------------------
@@ -153,7 +153,8 @@ namespace UtilGS9
         public SphereModel GetLink_DownLevelTree() { return _link_downLevelTree; }
 
 
-        public T GetLink_UserData<T>() where T : IUserData { return (T)_link_userData; }
+        //public T GetLink_UserData<T>() where T : IUserData { return (T)_link_userData; }
+        public IUserData GetLink_UserData() { return _link_userData; }
         public void SetLink_UserData<T>(T data) where T : IUserData { _link_userData = (IUserData)data; }
 
         //======================================================
@@ -469,18 +470,17 @@ namespace UtilGS9
         }
 
 
-        public SphereModel RangeTest_MinDisReturn(Frustum.ViewState state, ref HordeFight.ObjectManager.Param_RangeTest param)
+        public void RangeTest_MinDisReturn(Frustum.ViewState state, ref HordeFight.ObjectManager.Param_RangeTest param)
         {
 
             float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude;
-
             if (state == Frustum.ViewState.PARTIAL)
             {
                 //float between_sqr = (dstCenter - _center).sqrMagnitude;
 
                 //완전비포함 검사
                 float sqrSumRd = (_radius + param.maxRadius) * (_radius + param.maxRadius);
-                if (between_sqr > sqrSumRd) return null;
+                if (between_sqr > sqrSumRd) return;
 
                 //완전포함 검사 
                 if (param.maxRadius >= _radius)
@@ -493,40 +493,24 @@ namespace UtilGS9
 
             if (HasFlag(Flag.SUPERSPHERE))
             {
-
-                SphereModel min_sm = null;
-                float min_sqr = param.maxRadiusSqr;
-
-                SphereModel cur_sm = null;
-                float cur_sqr = 0f;
-
                 SphereModel pack = _head_children;
                 while (null != pack)
                 {
-
-                    cur_sm = pack.RangeTest_MinDisReturn(state, ref param);
+                    pack.RangeTest_MinDisReturn(state, ref param);
                     pack = pack.GetNextSibling();
-                    if (null == cur_sm) continue;
-
-                    cur_sqr = VOp.Minus(param.src_pos, cur_sm.GetPos()).sqrMagnitude; //중복 계산a
-
-                    //기존 모델보다 더 가까운 경우
-                    if (null != cur_sm && min_sqr > cur_sqr)
-                    {
-                        min_sm = cur_sm;
-                        min_sqr = cur_sqr;
-                    }
-
                 }
 
-                //최소거리 모델을 반환 
-                return min_sm;
+                //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.gray);
             }
             else
             {
                 SphereModel upLink = this.GetLink_UpLevelTree();
                 SphereModel downLink = this.GetLink_DownLevelTree();
 
+                //자식노드에 연결된 하위레벨 슈퍼구 
+                if (null != downLink)
+                    downLink.RangeTest_MinDisReturn(state, ref param);
+                
                 //전체트리의 최하위 자식노드 
                 if (null == upLink && null == downLink)
                 {
@@ -537,26 +521,26 @@ namespace UtilGS9
                         //등록된 검사용 콜백함수 호출
                         if (null != param.callback)
                         {
+                            //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.white);
                             //검사용 콜백함수를 통과하면 최하위 노드인 자기자신을 반환한다.
                             if (true == param.callback(ref param, this))
-                                return this;
+                            {
+                                param.find = this;
+
+                            }
+                                
                         }
                         else
                         {
                             //검사함수가 없으면 자기자신을 반환한다 
-                            return this;
+                            param.find = this;
                         }
 
                     }
                 }
 
-                //자식노드에 연결된 하위레벨 슈퍼구 
-                if (null != downLink)
-                    return downLink.RangeTest_MinDisReturn(state, ref param);
-
             }
 
-            return null;
         }
 
         //==================================================

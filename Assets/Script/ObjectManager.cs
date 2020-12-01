@@ -886,11 +886,13 @@ namespace HordeFight
         public struct Param_RangeTest
         {
             //==============================================
-            public Camp.eRelation vsRelation;
-            public ChampUnit srcUnit;
-            public Camp.eKind src_campKind;
-            public Vector3 src_pos;
+            public SphereModel find; //결과값 
 
+            public Camp.eRelation vsRelation;
+            public ChampUnit unit;
+            public Camp.eKind unit_campKind;
+
+            public Vector3 src_pos;
             public float minRadius;
             public float maxRadius;
             public float maxRadiusSqr;
@@ -899,12 +901,13 @@ namespace HordeFight
             public Proto_ConditionCheck callback;
             //==============================================
 
-            public Param_RangeTest(ChampUnit in_srcUnit, Camp.eRelation in_vsRelation, float meter_minRadius, float meter_maxRadius)
+            public Param_RangeTest(ChampUnit in_srcUnit, Camp.eRelation in_vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
             {
+                find = null;
                 vsRelation = in_vsRelation;
-                srcUnit = in_srcUnit;
-                src_campKind = in_srcUnit._campKind;
-                src_pos = in_srcUnit.transform.position;
+                unit = in_srcUnit;
+                unit_campKind = in_srcUnit._campKind;
+                src_pos = pos;
                 minRadius = meter_minRadius * GridManager.ONE_METER;
                 maxRadius = meter_maxRadius * GridManager.ONE_METER;
                 maxRadiusSqr = maxRadius * maxRadius;
@@ -919,41 +922,45 @@ namespace HordeFight
                 //return true;
 
                 //기준객체는 검사대상에서 제외한다 
-                if (param.srcUnit._sphereModel == dstModel) return false;
+                if (param.unit._sphereModel == dstModel) return false;
 
-                ChampUnit dstUnit = dstModel.GetLink_UserData<ChampUnit>();
+                ChampUnit dstUnit = dstModel.GetLink_UserData() as ChampUnit;
+
 
                 if (null != (object)dstUnit && param.vsRelation != Camp.eRelation.Unknown)
                 {
                     if (dstUnit.isDeath()) return false; //죽어있는 대상은 탐지하지 않는다 
 
-                    Camp.eRelation getRelation = SingleO.campManager.GetRelation(param.src_campKind, dstUnit._belongCamp._eCampKind);
-
+                    Camp.eRelation getRelation = SingleO.campManager.GetRelation(param.unit_campKind, dstUnit._belongCamp._eCampKind);
+                    //DebugWide.LogBlue(getRelation + "  " + param.unit_campKind + "  " + dstUnit._belongCamp._eCampKind);
                     //요청 관계인지 검사한다 
                     if (param.vsRelation == getRelation)
                     {
+                        SingleO.debugViewer.AddDraw_Circle(dstModel._center, dstModel._radius, Color.white);
                         //가시거리 검사 
-                        return SingleO.cellPartition.IsVisibleTile(param.srcUnit, param.src_pos, dstModel.GetPos(), 0.1f);
+                        return SingleO.cellPartition.IsVisibleTile(param.unit, param.src_pos, dstModel.GetPos(), 0.1f);
                     }
                 }
 
                 return false;
             }
         }
-        public ChampUnit tree_GetNearCharacter(ChampUnit src, Camp.eRelation vsRelation, float meter_minRadius, float meter_maxRadius)
+
+
+        public ChampUnit RangeTest(ChampUnit src, Camp.eRelation vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
         {
-            //Old_GetNearCharacter(src, vsRelation, meter_minRadius, meter_maxRadius); //chamto test
+                                        
+            SingleO.debugViewer.AddDraw_Circle(pos, meter_maxRadius, Color.red);
 
-            Param_RangeTest param = new Param_RangeTest(src, vsRelation, meter_minRadius, meter_maxRadius);
-            SphereModel sphereModel = _sphereTree_being.RangeTest_MinDisReturn(ref param);
+            Param_RangeTest param = new Param_RangeTest(src, vsRelation, pos, meter_minRadius, meter_maxRadius);
+            _sphereTree_being.RangeTest_MinDisReturn(ref param);
 
 
-            if (null != sphereModel)
+            if (null != param.find)
             {
                 //DebugWide.LogBlue(sphereModel.GetLink_UserData<ChampUnit>()); //chamto test
-                return sphereModel.GetLink_UserData<ChampUnit>();
+                return param.find.GetLink_UserData() as ChampUnit;
             }
-
 
             return null;
         }
@@ -1228,6 +1235,7 @@ namespace HordeFight
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
+            model.SetLink_UserData<Shot>(shot);
             //==============================================
 
             shot._sphereModel = model;
@@ -1262,6 +1270,7 @@ namespace HordeFight
             //구트리 등록 
             SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
+            model.SetLink_UserData<Obstacle>(obst);
             //==============================================
 
             obst._sphereModel = model;
