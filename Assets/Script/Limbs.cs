@@ -14,7 +14,9 @@ namespace HordeFight
 
         public Transform _root = null;
         public Transform _head = null;
+        public Transform _head_spr = null;
         public Transform _waist = null; //허리
+        public Transform _waist_spr = null;
 
         public Transform _shoulder_left = null;
         public Transform _hand_left = null;
@@ -38,9 +40,11 @@ namespace HordeFight
             //root->foot_dir
             _foot_dir = SingleO.hierarchy.GetTransform(_root, "foot_dir");
             _head = SingleO.hierarchy.GetTransform(_root, "head");
+            _head_spr = SingleO.hierarchy.GetTransform(_head, "pos");
             _sight_dir = SingleO.hierarchy.GetTransform(_head, "sight_dir");
             //root->waist
             _waist = SingleO.hierarchy.GetTransform(_root, "waist");
+            _waist_spr = SingleO.hierarchy.GetTransform(_waist, "pos");
             _upperBody_dir = SingleO.hierarchy.GetTransform(_waist, "upperBody_dir");
 
 
@@ -58,8 +62,9 @@ namespace HordeFight
             _arm_right_up = SingleO.hierarchy.GetTransform(_hand_right, "arm_up");
 
             //-------------------------
-
         }
+
+
     }
 
     //가지 , 팔다리 
@@ -784,7 +789,6 @@ namespace HordeFight
         }//end func
 
 
-
         static public GameObject CreatePrefab(string prefabPath, Transform parent, string name)
         {
             const string root = "Warcraft/Prefab/3_part/";
@@ -904,6 +908,29 @@ namespace HordeFight
         }
 
 
+        public void SetActive_Sight(bool value)
+        {
+            _bone._head_spr.gameObject.SetActive(value);
+        }
+        public void SetActive_Waist(bool value)
+        {
+            _bone._waist_spr.gameObject.SetActive(value);
+        }
+        public void SetActive_LeftHand(bool value)
+        {
+            _bone._hand_left_wrist.gameObject.SetActive(value);
+        }
+        public void SetActive_RightHand(bool value)
+        {
+            _bone._hand_right_wrist.gameObject.SetActive(value);
+        }
+        public void SetActive_EquipArmed(bool value)
+        {
+            _armed_left.SetActive(value);
+            _armed_right.SetActive(value);
+        }
+
+
         //public delegate void CallFunc();
         //public CallFunc _Call_MovingModel = null;
         public void Update_Frame()
@@ -978,7 +1005,7 @@ namespace HordeFight
 		//==================================================
 
 
-        public void ActiveAll_Arms(bool value)
+        private void ActiveAll_Arms(bool value)
         {
             foreach (ArmedInfo arin in _list_armedInfo)
             {
@@ -986,7 +1013,7 @@ namespace HordeFight
             }
         }
 
-        public void ActiveAll_Arms(bool value , ArmedInfo.eIdx except)
+        private void ActiveAll_Arms(bool value , ArmedInfo.eIdx except)
         {
             foreach(ArmedInfo arin in _list_armedInfo)
             {

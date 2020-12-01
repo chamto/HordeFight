@@ -161,13 +161,11 @@ namespace HordeFight
 
             //DebugWide.LogBlue(_effect[(int)eEffectKind.Dir].sprite.name); //chamto test
 
-            //_effect[(int)eEffectKind.Aim] = SingleO.hierarchy.GetTransformA(transform, "effect/aim");
-            //_effect[(int)eEffectKind.Dir] = SingleO.hierarchy.GetTransformA(transform, "effect/dir");
-            //_effect[(int)eEffectKind.Emotion] = SingleO.hierarchy.GetTransformA(transform, "effect/emotion");
-            //_effect[(int)eEffectKind.Hand_Left] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_left");
-            //_effect[(int)eEffectKind.Hand_Right] = SingleO.hierarchy.GetTransformA(transform, "effect/hand_right");
-
-
+            _limbs.SetActive_Sight(false);
+            _limbs.SetActive_Waist(false);
+            _limbs.SetActive_LeftHand(false);
+            _limbs.SetActive_RightHand(false);
+            _limbs.SetActive_EquipArmed(false);
 
             //=====================================================
             // 전용 ui 설정 
