@@ -122,6 +122,8 @@ namespace HordeFight
 
             //=====================================================
 
+            //_effect.SetActive(Effect.eKind.Bar_Red, false);
+
             _limbs.SetActive_Sight(false);
             _limbs.SetActive_Waist(false);
             _limbs.SetActive_LeftHand(false);
