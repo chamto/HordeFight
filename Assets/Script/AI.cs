@@ -185,47 +185,29 @@ namespace HordeFight
                                 _me.Move_LookAt(-lookDir, lookDir, second);
                             }else
                             {
+                                
                                 lookDir = VOp.Normalize(lookDir);
-                                Vector3 dir_1 = Quaternion.AngleAxis(45f, ConstV.v3_up) * lookDir;
-                                Vector3 dir_2 = Quaternion.AngleAxis(-45f, ConstV.v3_up) * lookDir;
-                                Vector3 dir_3 = Quaternion.AngleAxis(90f, ConstV.v3_up) * lookDir;
-                                Vector3 dir_4 = Quaternion.AngleAxis(-90f, ConstV.v3_up) * lookDir;
-                                Vector3 findDir = lookDir;
-                                if(0 ==__findNum)
+                                float[] ay_angle = new float[] {0,45f,-45f,90f,-90,135f,-135,180f};
+                                Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * lookDir;
+
+                                Vector3 pos_1 = _me.GetPos3D() + lookDir * _me._collider_radius;
+                                Vector3 pos_2 = _me.GetPos3D() + findDir * _me._collider_radius;
+                                float SENSOR_RADIUS = _me._collider_radius; //센서의 크기는 자신의 충돌원크기가 되어야 한다. 더 작다면 이동 시도가 되어 동료를 밀게 된다 
+                                //임시로 두번 호출한다 , 한번호출에 두결과값을 얻을 수 있게 수정하기 
+                                Being find_1 = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos_1, 0, SENSOR_RADIUS);
+                                Being find_2 = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos_2, 0, SENSOR_RADIUS);
+                                if(null == find_1)
                                 {
-                                    findDir = lookDir;
-                                }
-                                if (1 == __findNum)
-                                {
-                                    findDir = dir_1;
-                                }
-                                if (2 == __findNum)
-                                {
-                                    findDir = dir_2;
-                                }
-                                if (3 == __findNum)
-                                {
-                                    findDir = dir_3;
-                                }
-                                if (4 == __findNum)
-                                {
-                                    findDir = dir_4;
-                                }
-                                Vector3 pos = _me.GetPos3D() + findDir * _me._collider_radius;
-                                const float SENSOR_RADIUS = 0.4f;
-                                Being find = SingleO.objectManager.RangeTest(_me, Camp.eRelation.SameSide, pos, 0, SENSOR_RADIUS);
-                                if(null == find)
+                                    _me.Move_Forward(lookDir, second);
+                                    //__findNum = 0; //이동했으면 센서를 대상방향으로 다시 설정 
+                                }else if (null == find_2)
                                 {
                                     _me.Move_Forward(findDir, second);
-                                    __findNum = 0; //이동했으면 센서를 대상방향으로 다시 설정 
+
                                 }else
                                 {
-                                    //__findNum++;
-                                    //__findNum = __findNum % 3;
-
                                     //4가지 설정된 방향을 무작위로 설정 
                                     __findNum = Misc.RandInt(1, 4);
-
                                     _me.Idle_LookAt(lookDir); //이동하지 않고 대상을 바라보게 한다  
                                 }
                                     
