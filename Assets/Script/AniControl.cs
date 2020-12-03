@@ -48,6 +48,8 @@ namespace HordeFight
 
         public bool IsAniState(eAniBaseKind ani_kind)
         {
+            if (null == (object)_animator) return false;
+
             if ((int)ani_kind == _animator.GetInteger(ANI_STATE))
                 return true;
 
