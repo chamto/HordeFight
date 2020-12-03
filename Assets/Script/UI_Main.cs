@@ -38,6 +38,9 @@ namespace HordeFight
         //StringBuilder __sb = new StringBuilder(32);
         float __deltaTime = 0.0f;
         float __msec, __fps;
+
+        int _fps2 = 0;
+        float _deltaTime2 = 0;
         private void Update()
         {
             __deltaTime += (Time.unscaledDeltaTime - __deltaTime) * 0.1f;
@@ -50,6 +53,15 @@ namespace HordeFight
             //StringBuilder 를 사용해도 GC가 발생함. 
             //__sb.Length = 0; //clear
             //_fpsText.text = __sb.AppendFormat("{0:0.0} ms ({1:0.} fps)", __msec, __fps).ToString();
+
+            //_deltaTime2 += Time.deltaTime;
+            //_fps2++;
+            //if(1f < _deltaTime2)
+            //{
+            //    DebugWide.LogBlue(_fps2);
+            //    _deltaTime2 = 0;
+            //    _fps2 = 0;
+            //}
         }
 
         public void SelectLeader(string name)

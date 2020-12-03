@@ -628,6 +628,12 @@ namespace HordeFight
             //1.두 캐릭터가 겹친상태 
             if (sqr_dstTOsrc < sqr_r_sum)
             {
+                //float src_plus = 0;
+                //float dst_plus = 0;
+                //if (src._ani.IsAniState(eAniBaseKind.attack)) src_plus = src._force * 10;
+                //if (dst._ani.IsAniState(eAniBaseKind.attack)) dst_plus = dst._force * 10;
+                //float f_sum = src._force + dst._force + src_plus + dst_plus;
+                //float rate_src = 1f - ((src._force + src_plus) / f_sum);
                 //==========================================
                 float f_sum = src._force + dst._force;
 
@@ -1381,11 +1387,11 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            numMax_create = 20;
+            numMax_create = 50;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
-                //champ.GetComponent<AI>()._ai_running = true;
+                champ.GetComponent<AI>()._ai_running = true;
                 //camp_position++;
             }
 
