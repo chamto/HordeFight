@@ -141,9 +141,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _prm:
-    cxClient: 100
+    cxClient: 200
     cyClient: 100
-    NumAgents: 10
+    NumAgents: 50
     NumObstacles: 7
     MinObstacleRadius: 10
     MaxObstacleRadius: 30

@@ -391,6 +391,8 @@ namespace Buckland
             {
                 m_Vehicles[a].Update(Time.deltaTime);
             }
+
+            HandleInputPresses();
         }
 
 		public void OnDrawGizmos()
@@ -453,7 +455,7 @@ namespace Buckland
             start.x = m_vCrosshair.x; start.y = m_vCrosshair.y - 8;
             end.x = m_vCrosshair.x; end.y = m_vCrosshair.y + 8;
             DebugWide.DrawLine(start, end, color);
-            DebugWide.PrintText(new Vector3(5, cyClient() - 20), color, "Click to move crosshair");
+            DebugWide.PrintText(new Vector3(0, -7), color, "Click to move crosshair");
             //#endif
 
 
@@ -463,13 +465,13 @@ namespace Buckland
             color = Color.gray;
             if (RenderPath())
             {
-                DebugWide.PrintText(new Vector3((int)(cxClient() / 2.0f - 80), cyClient() - 20), color, "Press 'U' for random path");
+                DebugWide.PrintText(new Vector3(0, -14), color, "Press 'U' for random path");
                 m_pPath.Render();
             }
 
             if (RenderFPS())
             {
-                DebugWide.PrintText(new Vector3(5, cyClient() - 20), color, ""+(1.0f / m_dAvFrameTime));
+                DebugWide.PrintText(new Vector3(0, 0), color, ""+(1.0f / m_dAvFrameTime).ToString("N1"));
             } 
 
             if (m_bShowCellSpaceInfo)
@@ -498,9 +500,11 @@ namespace Buckland
 
 
         //handle WM_COMMAND messages
-        public void HandleKeyPresses()
+        public void HandleInputPresses()
         {
-            
+
+            SetCrosshair(Input.mousePosition);
+
             if (Input.GetKey(KeyCode.U))
             {
                 //delete m_pPath;
@@ -554,8 +558,147 @@ namespace Buckland
             }
 
         }
-        public void HandleMenuItems()
-        {}
+
+        void OnGUI()
+        {
+            int count = 0;
+            int x = 120 , y = 20;
+            if (GUI.Button(new Rect(x * count, 0, x, y), new GUIContent("1 OB_OBSTACLES")))
+            {
+                m_bShowObstacles = !m_bShowObstacles;
+
+                if (!m_bShowObstacles)
+                {
+                    m_Obstacles.Clear();
+
+                    for (int i = 0; i < m_Vehicles.Count; ++i)
+                    {
+                        m_Vehicles[i].Steering().ObstacleAvoidanceOff();
+                    }
+
+                }
+                else
+                {
+                    CreateObstacles();
+
+                    for (int i = 0; i < m_Vehicles.Count; ++i)
+                    {
+                        m_Vehicles[i].Steering().ObstacleAvoidanceOn();
+                    }
+
+                }
+
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, 0, x, y), new GUIContent("2 OB_WALLS")))
+            {
+                m_bShowWalls = !m_bShowWalls;
+
+                if (m_bShowWalls)
+                {
+                    CreateWalls();
+
+                    for (int i = 0; i < m_Vehicles.Count; ++i)
+                    {
+                        m_Vehicles[i].Steering().WallAvoidanceOn();
+                    }
+
+                }
+
+                else
+                {
+                    m_Walls.Clear();
+
+                    for (int i = 0; i < m_Vehicles.Count; ++i)
+                    {
+                        m_Vehicles[i].Steering().WallAvoidanceOff();
+                    }
+
+                }
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, 0, x, y), new GUIContent("3 PARTITIONING")))
+            {
+                for (int i = 0; i < m_Vehicles.Count; ++i)
+                {
+                    m_Vehicles[i].Steering().ToggleSpacePartitioningOnOff();
+                }
+
+                //if toggled on, empty the cell space and then re-add all the 
+                //vehicles
+                if (m_Vehicles[0].Steering().isSpacePartitioningOn())
+                {
+                    m_pCellSpace.EmptyCells();
+
+                    for (int i = 0; i < m_Vehicles.Count; ++i)
+                    {
+                        m_pCellSpace.AddEntity(m_Vehicles[i]);
+                    }
+
+                }
+                else
+                {
+                    m_bShowCellSpaceInfo = false;
+                }
+            }
+            count=0;
+            if (GUI.Button(new Rect(x * count, y, x, y), new GUIContent("4 PARTITION_VIEW_NEIGHBORS")))
+            {
+                m_bShowCellSpaceInfo = !m_bShowCellSpaceInfo;
+
+                if (m_bShowCellSpaceInfo)
+                {
+                    if (!m_Vehicles[0].Steering().isSpacePartitioningOn())
+                    {
+                        //SendMessage(hwnd, WM_COMMAND, IDR_PARTITIONING, NULL);
+                    }
+                }
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, y, x, y), new GUIContent("5 WEIGHTED_SUM")))
+            {
+                for (int i = 0; i < m_Vehicles.Count; ++i)
+                {
+                    m_Vehicles[i].Steering().SetSummingMethod(SteeringBehavior.SummingMethod.weighted_average);
+                }
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, y, x, y), new GUIContent("6 PRIORITIZED")))
+            {
+                for (int i = 0; i < m_Vehicles.Count; ++i)
+                {
+                    m_Vehicles[i].Steering().SetSummingMethod(SteeringBehavior.SummingMethod.prioritized);
+                }
+            }
+            count=0;
+            if (GUI.Button(new Rect(x * count, y*2, x, y), new GUIContent("7 DITHERED")))
+            {
+                for (int i = 0; i < m_Vehicles.Count; ++i)
+                {
+                    m_Vehicles[i].Steering().SetSummingMethod(SteeringBehavior.SummingMethod.dithered);
+                }
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, y*2, x, y), new GUIContent("8 VIEW_KEYS")))
+            {
+                ToggleViewKeys();
+            }
+            count++;
+            if (GUI.Button(new Rect(x * count, y*2, x, y), new GUIContent("9 VIEW_FPS")))
+            {
+                ToggleShowFPS();
+            }
+            count=0;
+            if (GUI.Button(new Rect(x * count, y*3, x, y), new GUIContent("10 SMOOTHING")))
+            {
+                for (int i = 0; i < m_Vehicles.Count; ++i)
+                {
+                    m_Vehicles[i].ToggleSmoothing();
+                }
+            }
+            count++;
+        }
+
 
         public void TogglePause() { m_bPaused = !m_bPaused; }
         public bool Paused() {return m_bPaused;}
