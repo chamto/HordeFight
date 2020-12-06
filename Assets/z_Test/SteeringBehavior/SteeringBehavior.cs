@@ -1433,7 +1433,6 @@ namespace Buckland
             m_dWeightWallAvoidance = SingleO.prm.WallAvoidanceWeight_2;
             m_dViewDistance = SingleO.prm.ViewDistance;
             m_dWallDetectionFeelerLength = SingleO.prm.WallDetectionFeelerLength;
-            m_Feelers = new List<Vector2>(3);
             m_Deceleration = Deceleration.normal;
             m_pTargetAgent1 = null;
             m_pTargetAgent2 = null;
@@ -1452,7 +1451,12 @@ namespace Buckland
             m_dWeightFollowPath = SingleO.prm.FollowPathWeight_2;
             m_bCellSpaceOn = false;
             m_SummingMethod = SummingMethod.prioritized;
-
+            int feelCount = 3;
+            m_Feelers = new List<Vector2>(feelCount);
+            for (int i = 0 ; i < feelCount ; i++)
+            {
+                m_Feelers.Add(Vector2.zero);
+            }
             //stuff for the wander behavior
             float theta =  Misc.RandFloat() * Const.TwoPi;
 

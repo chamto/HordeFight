@@ -9,13 +9,16 @@ namespace Buckland
 
     public static class SingleO
     {
-        public static Param prm = new Param();
+        public static Param prm = null;
     }
 
     //======================================================
     [System.Serializable]
     public class Param
     {
+        public int cxClient = 100;
+        public int cyClient = 100;
+        [Space]
         public int NumAgents = 300;
         public int NumObstacles = 7;
         public float MinObstacleRadius = 10;
@@ -43,6 +46,7 @@ namespace Buckland
         public float VehicleScale = 3;
         public float MaxTurnRatePerSecond = Const.Pi;
 
+        [Space]
         //use these values to tweak the amount that each steering force
         //contributes to the total steering force
         public float _SeparationWeight = 1;
@@ -95,6 +99,7 @@ namespace Buckland
         [HideInInspector]
         public float FollowPathWeight_2;
 
+        [Space]
         //how close a neighbour must be before an agent perceives it (considers it
         //to be within its neighborhood)
         public float ViewDistance = 50f;
@@ -164,17 +169,19 @@ namespace Buckland
         }
     }
 
+    [System.Serializable]
     public class Test_SteeringBehavior : MonoBehaviour
     {
-        
+        public Param _prm = new Param();
+
         //a container of all the moving entities
         List<Vehicle> m_Vehicles = new List<Vehicle>();
 
         //any obstacles
-        List<BaseGameEntity> m_Obstacles;
+        List<BaseGameEntity> m_Obstacles = new List<BaseGameEntity>();
 
         //container containing any walls in the environment
-        List<Wall2D> m_Walls;
+        List<Wall2D> m_Walls = new List<Wall2D>();
 
         CellSpacePartition<Vehicle> m_pCellSpace;
 
@@ -279,10 +286,11 @@ namespace Buckland
         }
 
 
-        public void Init_GameWorld(int cx, int cy)
+        public void Init_GameWorld()
         {
-            m_cxClient = cx;
-            m_cyClient = cy;
+            m_cxClient = SingleO.prm.cxClient;
+            m_cyClient = SingleO.prm.cyClient;
+            int cx = m_cxClient, cy = m_cyClient;
             m_bPaused = false;
             m_vCrosshair = new Vector2(cxClient() / 2.0f, cxClient() / 2.0f);
             m_bShowWalls = false;
@@ -304,6 +312,7 @@ namespace Buckland
 
             float border = 30;
             m_pPath = new Path(5, border, border, cx - border, cy - border, true);
+
 
             //setup the agents
             for (int a = 0; a < SingleO.prm.NumAgents; ++a)
@@ -327,7 +336,7 @@ namespace Buckland
                 pVehicle.Steering().FlockingOn();
 
                 m_Vehicles.Add(pVehicle);
-
+                //DebugWide.LogBlue(pVehicle.Pos() + " ---- ");
                 //add it to the cell subdivision
                 m_pCellSpace.AddEntity(pVehicle);
             }
@@ -355,12 +364,13 @@ namespace Buckland
 
 		public void Start()
 		{
+            SingleO.prm = _prm;
             SingleO.prm.Update(); //가장먼저 갱신되어야 함 
 
             const int SampleRate = 10;
             _FrameRateSmoother = new Smoother<float, FloatCalc>(SampleRate, 0.0f);
 
-            Init_GameWorld(100, 100);
+            Init_GameWorld();
 		}
 
 
@@ -390,7 +400,7 @@ namespace Buckland
 		public void Render()
         {
 
-            if (null == m_Walls) return;
+            //if (null == m_Walls) return;
             //render any walls
             //gdi->BlackPen();
             for (int w = 0; w < m_Walls.Count; ++w)
@@ -408,27 +418,27 @@ namespace Buckland
 
             //render the agents
             for ( int a = 0; a < m_Vehicles.Count; ++a)
-                {
+            {
                     m_Vehicles[a].Render();
-
+                //DebugWide.LogBlue(a + " ----OO ");
                     //render cell partitioning stuff
                     if (m_bShowCellSpaceInfo && a == 0)
                     {
-                    //gdi->HollowBrush();
-                    float viewDis = SingleO.prm.ViewDistance;
-                    InvertedAABBox2D box = new InvertedAABBox2D(m_Vehicles[a].Pos() - new Vector2(viewDis, viewDis),
-                                                    m_Vehicles[a].Pos() + new Vector2(viewDis, viewDis));
-                    box.Render();
+                        //gdi->HollowBrush();
+                        float viewDis = SingleO.prm.ViewDistance;
+                        InvertedAABBox2D box = new InvertedAABBox2D(m_Vehicles[a].Pos() - new Vector2(viewDis, viewDis),
+                                                        m_Vehicles[a].Pos() + new Vector2(viewDis, viewDis));
+                        box.Render();
 
-                    //gdi->RedPen();
-                    CellSpace().CalculateNeighbors(m_Vehicles[a].Pos(), viewDis);
-                    foreach(BaseGameEntity pV in CellSpace().GetNeighbors())
-                    {
-                        DebugWide.DrawCircle(pV.Pos(), pV.BRadius(), Color.red);
+                        //gdi->RedPen();
+                        CellSpace().CalculateNeighbors(m_Vehicles[a].Pos(), viewDis);
+                        foreach(BaseGameEntity pV in CellSpace().GetNeighbors())
+                        {
+                            DebugWide.DrawCircle(pV.Pos(), pV.BRadius(), Color.red);
+                        }
+                    
+                        DebugWide.DrawCircle(m_Vehicles[a].Pos(), viewDis, Color.green);
                     }
-                
-                    DebugWide.DrawCircle(m_Vehicles[a].Pos(), viewDis, Color.green);
-                }
             }
 
                 //#define CROSSHAIR

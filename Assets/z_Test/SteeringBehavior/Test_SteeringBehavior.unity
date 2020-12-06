@@ -140,6 +140,71 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d06f50e7ea53545278719da1286acd75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _prm:
+    cxClient: 100
+    cyClient: 100
+    NumAgents: 10
+    NumObstacles: 7
+    MinObstacleRadius: 10
+    MaxObstacleRadius: 30
+    NumCellsX: 7
+    NumCellsY: 7
+    NumSamplesForSmoothing: 10
+    SteeringForceTweaker: 200
+    _MaxSteeringForce: 2
+    MaxSpeed: 150
+    VehicleMass: 1
+    VehicleScale: 3
+    MaxTurnRatePerSecond: 3.14159
+    _SeparationWeight: 1
+    _AlignmentWeight: 1
+    _CohesionWeight: 2
+    _ObstacleAvoidanceWeight: 10
+    _WallAvoidanceWeight: 10
+    _WanderWeight: 1
+    _SeekWeight: 1
+    _FleeWeight: 1
+    _ArriveWeight: 1
+    _PursuitWeight: 1
+    _OffsetPursuitWeight: 1
+    _InterposeWeight: 1
+    _HideWeight: 1
+    _EvadeWeight: 0.01
+    _FollowPathWeight: 0.05
+    MaxSteeringForce_2: 0
+    SeparationWeight_2: 0
+    AlignmentWeight_2: 0
+    CohesionWeight_2: 0
+    ObstacleAvoidanceWeight_2: 0
+    WallAvoidanceWeight_2: 0
+    WanderWeight_2: 0
+    SeekWeight_2: 0
+    FleeWeight_2: 0
+    ArriveWeight_2: 0
+    PursuitWeight_2: 0
+    OffsetPursuitWeight_2: 0
+    InterposeWeight_2: 0
+    HideWeight_2: 0
+    EvadeWeight_2: 0
+    FollowPathWeight_2: 0
+    ViewDistance: 50
+    MinDetectionBoxLength: 40
+    WallDetectionFeelerLength: 40
+    prWallAvoidance: 0.5
+    prObstacleAvoidance: 0.5
+    prSeparation: 0.2
+    prAlignment: 0.3
+    prCohesion: 0.6
+    prWander: 0.8
+    prSeek: 0.8
+    prFlee: 0.6
+    prEvade: 1
+    prHide: 0.8
+    prArrive: 0.5
+    WanderRad: 1.2
+    WanderDist: 2
+    WanderJitterPerSec: 80
+    WaypointSeekDist: 20
 --- !u!4 &201457198
 Transform:
   m_ObjectHideFlags: 0

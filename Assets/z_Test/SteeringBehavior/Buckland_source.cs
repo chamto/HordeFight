@@ -79,10 +79,11 @@ namespace Buckland
                                              Vector2 scale)
         {
             //copy the original vertices into the buffer about to be transformed
-            List<Vector2> TranVector2Ds = points;
-
+            List<Vector2> TranVector2Ds = new List<Vector2>(points);
+            //DebugWide.LogBlue(pos + "  " + forward + "  " + side + "   " + scale);
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
+            matTransform.Identity();
 
             //scale
             if ((scale.x != 1.0f) || (scale.y != 1.0f))
@@ -113,11 +114,11 @@ namespace Buckland
                                   Vector2 side)
         {
             //copy the original vertices into the buffer about to be transformed
-            List<Vector2> TranVector2Ds = points;
+            List<Vector2> TranVector2Ds = new List<Vector2>(points);
 
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
-
+            matTransform.Identity();
             //rotate
             matTransform.RotateY(forward, side);
 
@@ -144,6 +145,7 @@ namespace Buckland
 
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
+            matTransform.Identity();
 
             //rotate
             matTransform.RotateY(AgentHeading, AgentSide);
@@ -168,7 +170,7 @@ namespace Buckland
 
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
-
+            matTransform.Identity();
 
             float Tx = -Vector2.Dot(AgentPosition, AgentHeading);
             float Ty = -Vector2.Dot(AgentPosition, AgentSide);
@@ -194,6 +196,7 @@ namespace Buckland
 
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
+            matTransform.Identity();
 
             //create the transformation matrix
             matTransform._11 = AgentHeading.x; matTransform._12 = AgentSide.x;
@@ -218,6 +221,7 @@ namespace Buckland
 
             //create a transformation matrix
             C2DMatrix matTransform = new C2DMatrix();
+            matTransform.Identity();
 
             //rotate
             matTransform.RotateY(AgentHeading, AgentSide);
@@ -236,6 +240,7 @@ namespace Buckland
         {
             //create a transformation matrix
             C2DMatrix mat = new C2DMatrix();
+            mat.Identity();
 
             //rotate
             mat.RotateY(ang);
@@ -339,6 +344,7 @@ namespace Buckland
         {
             //create a transformation matrix
             C2DMatrix mat = new C2DMatrix();
+            mat.Identity();
 
             //rotate
             mat.RotateY(ang);
@@ -483,6 +489,12 @@ namespace Buckland
             return matrix;
         }
 
+        public override string ToString()
+        {
+            return _11 + " " + _12 + " " + _13 + "\n" +
+                _21 + " " + _22 + " " + _23 + "\n" +
+                _31 + " " + _32 + " " + _33 ;
+        }
 
         public void InitZero()
         {
@@ -563,6 +575,7 @@ namespace Buckland
 
             mat._31 = 0; mat._32 = 0; mat._33 = 1;
 
+            //DebugWide.LogBlue(this + " \n " + mat);
             //and multiply
             this = this * mat;
             //MatrixMultiply(mat);
@@ -571,6 +584,7 @@ namespace Buckland
         //applys a transformation matrix to a std::vector of points
         public static void Transform(ref C2DMatrix matrix, ref List<Vector2> vPoints)
         {
+            
             for (int i = 0; i < vPoints.Count; ++i)
             {
                 Vector2 temp = new Vector2();
@@ -856,7 +870,7 @@ namespace Buckland
             //vector accordingly
 
             C2DMatrix RotationMatrix = new C2DMatrix();
-
+            RotationMatrix.Identity();
             //notice how the direction of rotation has to be determined when creating
             //the rotation matrix
             RotationMatrix.RotateY(angle * Util.Sign(m_vHeading, toTarget));
@@ -942,6 +956,7 @@ namespace Buckland
             for (int vtx = 0; vtx < NumVehicleVerts; ++vtx)
             {
                 m_vecVehicleVB.Add(vehicle[vtx]);
+                //DebugWide.LogBlue(vehicle[vtx] + " -=-=-= ");
             }
         }
 
@@ -1086,6 +1101,8 @@ namespace Buckland
 
             //gdi->ClosedShape(m_vecVehicleVBTrans);
             List<Vector2> lines = m_vecVehicleVBTrans;
+            //DebugWide.LogBlue(isSmoothingOn() + "  " + m_vecVehicleVB[0] + " ----OO " + m_vecVehicleVB[1] + "  " + m_vecVehicleVB[2]);
+            //DebugWide.LogBlue(lines[0] + " ----OO " + lines[1] + "  " + lines[2]);
             DebugWide.DrawLine(lines[0], lines[1], color);
             DebugWide.DrawLine(lines[1], lines[2], color);
             DebugWide.DrawLine(lines[2], lines[0], color);
