@@ -1623,9 +1623,9 @@ namespace Buckland
             int NextSlot = 0; int SlotSize = 20;
 
             if (Input.GetKey(KeyCode.Q)) {m_pVehicle.SetMaxForce(m_pVehicle.MaxForce() + 1000.0f*m_pVehicle.TimeElapsed());} 
-            if (Input.GetKey(KeyCode.A)) {if (m_pVehicle.MaxForce() > 0.2f) m_pVehicle.SetMaxForce(m_pVehicle.MaxForce() - 1000.0f*m_pVehicle.TimeElapsed());}
-            if (Input.GetKey(KeyCode.W)) {m_pVehicle.SetMaxSpeed(m_pVehicle.MaxSpeed() + 50.0f*m_pVehicle.TimeElapsed());}
-            if (Input.GetKey(KeyCode.D)) {if (m_pVehicle.MaxSpeed() > 0.2f) m_pVehicle.SetMaxSpeed(m_pVehicle.MaxSpeed() - 50.0f*m_pVehicle.TimeElapsed());}
+            if (Input.GetKey(KeyCode.W)) {if (m_pVehicle.MaxForce() > 0.2f) m_pVehicle.SetMaxForce(m_pVehicle.MaxForce() - 1000.0f*m_pVehicle.TimeElapsed());}
+            if (Input.GetKey(KeyCode.E)) {m_pVehicle.SetMaxSpeed(m_pVehicle.MaxSpeed() + 50.0f*m_pVehicle.TimeElapsed());}
+            if (Input.GetKey(KeyCode.R)) {if (m_pVehicle.MaxSpeed() > 0.2f) m_pVehicle.SetMaxSpeed(m_pVehicle.MaxSpeed() - 50.0f*m_pVehicle.TimeElapsed());}
 
             if (m_pVehicle.MaxForce() < 0) m_pVehicle.SetMaxForce(0.0f);
             if (m_pVehicle.MaxSpeed() < 0) m_pVehicle.SetMaxSpeed(0.0f);
@@ -1817,9 +1817,9 @@ namespace Buckland
                     DebugWide.PrintText(new Vector3(160, NextSlot, 0), Color.gray, "" + (m_dWeightSeparation / SingleO.prm.SteeringForceTweaker));
                     NextSlot+=SlotSize;
                 }
+                if (Input.GetKey(KeyCode.S)) { m_dWeightSeparation += 200 * m_pVehicle.TimeElapsed(); m_dWeightSeparation = Mathf.Clamp(m_dWeightSeparation, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
+                if (Input.GetKey(KeyCode.X)) { m_dWeightSeparation -= 200 * m_pVehicle.TimeElapsed(); m_dWeightSeparation = Mathf.Clamp(m_dWeightSeparation, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
 
-                if (Input.GetKey(KeyCode.S)){m_dWeightSeparation += 200*m_pVehicle.TimeElapsed(); m_dWeightSeparation = Mathf.Clamp(m_dWeightSeparation, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
-                if (Input.GetKey(KeyCode.X)){m_dWeightSeparation -= 200*m_pVehicle.TimeElapsed(); m_dWeightSeparation = Mathf.Clamp(m_dWeightSeparation, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
               }
 
               if (On(eType.allignment))
@@ -1830,9 +1830,9 @@ namespace Buckland
                     DebugWide.PrintText(new Vector3(160, NextSlot, 0), Color.gray, "" + (m_dWeightAlignment / SingleO.prm.SteeringForceTweaker));
                     NextSlot+=SlotSize;
                 }
+                if (Input.GetKey(KeyCode.A)) { m_dWeightAlignment += 200 * m_pVehicle.TimeElapsed(); m_dWeightAlignment = Mathf.Clamp(m_dWeightAlignment, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
+                if (Input.GetKey(KeyCode.Z)) { m_dWeightAlignment -= 200 * m_pVehicle.TimeElapsed(); m_dWeightAlignment = Mathf.Clamp(m_dWeightAlignment, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
 
-                if (Input.GetKey(KeyCode.A)){m_dWeightAlignment += 200*m_pVehicle.TimeElapsed(); m_dWeightAlignment = Mathf.Clamp(m_dWeightAlignment, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
-                if (Input.GetKey(KeyCode.Z)){m_dWeightAlignment -= 200*m_pVehicle.TimeElapsed(); m_dWeightAlignment = Mathf.Clamp(m_dWeightAlignment, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
               }
 
               if (On(eType.cohesion))
@@ -1842,24 +1842,29 @@ namespace Buckland
                     DebugWide.PrintText(new Vector3(5, NextSlot, 0), Color.gray, "Cohesion(D/C):");
                     DebugWide.PrintText(new Vector3(160, NextSlot, 0), Color.gray, "" + (m_dWeightCohesion / SingleO.prm.SteeringForceTweaker));
                     NextSlot+=SlotSize;
-                }
 
-                if (Input.GetKey(KeyCode.D)){m_dWeightCohesion += 200*m_pVehicle.TimeElapsed(); m_dWeightCohesion = Mathf.Clamp(m_dWeightCohesion, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
-                if (Input.GetKey(KeyCode.C)){m_dWeightCohesion -= 200*m_pVehicle.TimeElapsed(); m_dWeightCohesion = Mathf.Clamp(m_dWeightCohesion, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker);}
+                }
+                if (Input.GetKey(KeyCode.D)) { m_dWeightCohesion += 200 * m_pVehicle.TimeElapsed(); m_dWeightCohesion = Mathf.Clamp(m_dWeightCohesion, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
+                if (Input.GetKey(KeyCode.C)) { m_dWeightCohesion -= 200 * m_pVehicle.TimeElapsed(); m_dWeightCohesion = Mathf.Clamp(m_dWeightCohesion, 0.0f, 50.0f * SingleO.prm.SteeringForceTweaker); }
+
+
               }
 
               if (On(eType.follow_path))
               { 
-                float sd = (float)Math.Sqrt(m_dWaypointSeekDistSq);
+                
                 if (m_pVehicle.ID() == 0)
-                { 
+                {
+                    float sd = (float)Math.Sqrt(m_dWaypointSeekDistSq);
+
                     DebugWide.PrintText(new Vector3(5, NextSlot, 0), Color.gray, "SeekDistance(D/C):");
                     DebugWide.PrintText(new Vector3(160, NextSlot, 0), Color.gray, "" + (sd));
                     NextSlot+=SlotSize;
+
                 }
-                
-                if (Input.GetKey(KeyCode.D)){m_dWaypointSeekDistSq += 1.0f;}
-                if (Input.GetKey(KeyCode.C)){m_dWaypointSeekDistSq -= 1.0f; m_dWaypointSeekDistSq = Mathf.Clamp(m_dWaypointSeekDistSq, 0.0f, 400.0f);}
+                if (Input.GetKey(KeyCode.D)) { m_dWaypointSeekDistSq += 1.0f; }
+                if (Input.GetKey(KeyCode.C)) { m_dWaypointSeekDistSq -= 1.0f; m_dWaypointSeekDistSq = Mathf.Clamp(m_dWaypointSeekDistSq, 0.0f, 400.0f); }
+
               }  
 
         }
