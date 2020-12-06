@@ -219,7 +219,7 @@ public class Heuristic_Noisy_Euclidian : IHeuristic
         NavGraphNode node2 = G.GetNode(nd2) as NavGraphNode;
 
         //0.9~1.09 사이의 랜덤값을 node2에 곱합. 랜덤함수에서 최대값 1.1에 도달하지 못한다 
-        return Vector3.Distance(node1.Pos(), node2.Pos() * (float)UtilGS9.Misc.RandInRange(0.9f, 1.1f));
+        return Vector3.Distance(node1.Pos(), node2.Pos() * (float)UtilGS9.Misc.RandFloat(0.9f, 1.1f));
 
         
     }

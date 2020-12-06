@@ -120,7 +120,7 @@ namespace HordeFight
 
                 _transform.position = launchPos;
                 _on_theWay = true;
-                float shake = (float)Misc.RandInRange(0f, 0.2f); //흔들림 정도
+                float shake = (float)Misc.RandFloat(0f, 0.2f); //흔들림 정도
                 _launchPos = launchPos;
                 _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
                 Vector3 toTarget = VOp.Minus(_targetPos, _launchPos);

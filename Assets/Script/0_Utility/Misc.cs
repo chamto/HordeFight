@@ -1383,10 +1383,10 @@ namespace UtilGS9
         }
 
         //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 
-        static public double RandInRange(double x, double y)
-        {
-            return x + RandFloat() * (y - x);
-        }
+        //static public double RandInRange(double x, double y)
+        //{
+        //    return x + RandFloat() * (y - x);
+        //}
 
         //returns a random bool
         static public bool RandBool()
@@ -1397,7 +1397,7 @@ namespace UtilGS9
         }
 
         //returns a random double in the range -1 < n < 1
-        static public double RandomClamped() { return RandFloat() - RandFloat(); }
+        static public float RandomClamped() { return RandFloat() - RandFloat(); }
 
 
         //returns a random number with a normal distribution. See method at
@@ -1573,6 +1573,17 @@ namespace UtilGS9
             if (Vector3.kEpsilon < value)
                 return false;
             
+            return true;
+        }
+
+        static public bool IsZero(Vector2 v2)
+        {
+            float value = v2.x * v2.x + v2.y * v2.y; //내적의 값이 0에 가까운지 검사 
+            if (0 > value) value *= -1f;
+            if (Vector3.kEpsilon < value)
+                return false;
+
+            //return Misc.IsZero(v3.x * v3.x + v3.y * v3.y + v3.z * v3.z);
             return true;
         }
 
