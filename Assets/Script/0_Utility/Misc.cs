@@ -489,12 +489,13 @@ namespace UtilGS9
 
         }
 
-        //수직내적 : 2차원상의 외적값 , |v||w|sin@
-        static public float PerpDot(Vector2 v, Vector2 w)
-        {
-            return (v.x * w.y - v.y * w.x);
+        static public Vector2 Perp(Vector2 v)         {             return new Vector2(-v.y, v.x); //반시계 방향으로 90도 회전 
         }
 
+        //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@ 
+        static public float PerpDot(Vector2 v, Vector2 w)         {
+            //v(x,y) => vㅗ(-y,x) v를 반시계방향으로 90도 회전 한다. 유니티는 왼손좌표계 시계방향 회전인데 이렇게 써도 되나 ??? - 20210112 chamto
+            return (-v.y * w.x + v.x * w.y);         } 
         //Vector3의 ToString 함수는 값전체를 출력해주지 않는 문제가 있음.
         //벡터의 소수점값 전체를 출력하는 함수 
         static public string ToString(Vector3 src)
