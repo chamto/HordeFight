@@ -32,10 +32,10 @@ namespace Buckland
             return a;
         }
 
-        public static Vector2 Perp(Vector2 v2)
-        {
-            return new Vector2(-v2.y, v2.x);
-        }
+        //public static Vector2 Perp(Vector2 v2)
+        //{
+        //    return new Vector2(-v2.y, v2.x);
+        //}
 
         //treats a window as a toroid
         public static Vector2 WrapAround(Vector2 pos, int MaxX, int MaxY)
@@ -798,7 +798,7 @@ namespace Buckland
             m_vHeading = heading;
             m_vVelocity = velocity;
             m_dMass = mass;
-            m_vSide = Util.Perp(m_vHeading);
+            m_vSide = VOp.Perp(m_vHeading);
             m_dMaxSpeed = max_speed;
             m_dMaxTurnRate = turn_rate;
             m_dMaxForce = max_force;
@@ -842,7 +842,7 @@ namespace Buckland
             m_vHeading = new_heading;
 
             //the side vector must always be perpendicular to the heading
-            m_vSide = Util.Perp(m_vHeading);
+            m_vSide = VOp.Perp(m_vHeading);
         }
 
         //--------------------------- RotateHeadingToFacePosition ---------------------
@@ -878,7 +878,7 @@ namespace Buckland
             C2DMatrix.Transform(ref RotationMatrix, ref m_vVelocity);
 
             //finally recreate m_vSide
-            m_vSide = Util.Perp(m_vHeading);
+            m_vSide = VOp.Perp(m_vHeading);
 
             return false;
         }
@@ -1034,7 +1034,7 @@ namespace Buckland
             {
                 m_vHeading = m_vVelocity.normalized;
 
-                m_vSide = Util.Perp(m_vHeading);
+                m_vSide = VOp.Perp(m_vHeading);
             }
 
             //EnforceNonPenetrationConstraint(this, World()->Agents());
@@ -1085,7 +1085,7 @@ namespace Buckland
                 m_vecVehicleVBTrans = Util.WorldTransform(m_vecVehicleVB,
                                                      Pos(),
                                                      SmoothedHeading(),
-                                                          Util.Perp(SmoothedHeading()),
+                                                          VOp.Perp(SmoothedHeading()),
                                                      Scale());
             }
 

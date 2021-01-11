@@ -1727,7 +1727,7 @@ namespace Buckland
                 }
                 else
                 {
-                    box = Util.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.SmoothedHeading(),Util.Perp(m_pVehicle.SmoothedHeading()));
+                    box = Util.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.SmoothedHeading(), VOp.Perp(m_pVehicle.SmoothedHeading()));
                   //gdi->ClosedShape(box);
                 } 
                 DebugWide.DrawLine(box[0], box[1], Color.gray);
