@@ -26,6 +26,14 @@ namespace Test_Steering_1
                 _list_vehicle.Add(v);
             }
 
+            _list_vehicle[1]._mode = 1;
+            _list_vehicle[1]._leader = _list_vehicle[0];
+            _list_vehicle[1]._offset = new Vector3(1f, 0, -1f);
+
+            _list_vehicle[2]._mode = 1;
+            _list_vehicle[2]._leader = _list_vehicle[0];
+            _list_vehicle[2]._offset = new Vector3(-1f, 0, -1f);
+
         }
 
         // Update is called once per frame
@@ -72,13 +80,20 @@ namespace Test_Steering_1
 
         public float _mass = 1f;
 
+        public float _speed;
+
         public float _maxSpeed = 150f;
 
         public float _maxForce;
 
         public float _maxTurnRate;
 
+        public Quaternion _rotatioin = Quaternion.identity;
+
         public Vector3 _target = ConstV.v3_zero;
+        public Vector3 _offset = ConstV.v3_zero;
+        public Vehicle _leader = null;
+        public int _mode = 0;
 
         Vector3[] _array_VB = new Vector3[3];
 
@@ -97,8 +112,11 @@ namespace Test_Steering_1
         {
 
             //Vector3 SteeringForce = m_pSteering.Calculate();
-            //Vector3 SteeringForce = ConstV.v3_zero;
-            Vector3 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.normal);
+            Vector3 SteeringForce = ConstV.v3_zero;
+            if(0 == _mode)
+                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.normal);
+            else if(1 == _mode)
+                SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset);
 
             //Acceleration = Force/Mass
             Vector3 acceleration = SteeringForce / _mass;
@@ -115,16 +133,18 @@ namespace Test_Steering_1
             if (_velocity.sqrMagnitude > 0.00000001f)
             {
                 _heading = VOp.Normalize(_velocity);
+                _speed = _velocity.magnitude;
+                _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
             }
 
         }
         public void Draw(Color color)
         {
             Vector3 vb0, vb1, vb2;
-            Quaternion quat = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
-            vb0 = quat * _array_VB[0];
-            vb1 = quat * _array_VB[1];
-            vb2 = quat * _array_VB[2];
+            vb0 = _rotatioin * _array_VB[0];
+            vb1 = _rotatioin * _array_VB[1];
+            vb2 = _rotatioin * _array_VB[2];
 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
@@ -204,6 +224,23 @@ namespace Test_Steering_1
             }
 
             return Vector3.zero;
+        }
+
+        public Vector3 OffsetPursuit(Vehicle leader, Vector3 offset)
+        {
+            //calculate the offset's position in world space
+            Vector3 WorldOffsetPos = (leader._rotatioin * offset) + leader._pos; //PointToWorldSpace
+
+            Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
+
+            //the lookahead time is propotional to the distance between the leader
+            //and the pursuer; and is inversely proportional to the sum of both
+            //agent's velocities
+            float LookAheadTime = ToOffset.magnitude /
+                                  (_vehicle._maxSpeed + leader._speed);
+
+            //now Arrive at the predicted future position of the offset
+            return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
         }
     }
 }
