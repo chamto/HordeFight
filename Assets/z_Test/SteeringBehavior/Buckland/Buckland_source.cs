@@ -564,6 +564,11 @@ namespace Buckland
             //MatrixMultiply(mat);
         }
 
+        // | cos@  sin@|   | head |   | @      |
+        // |-sin@  cos@| = | side | = | @ + 90 |
+        // side = perp(head)
+        // 회전행렬을 가로축으로 배치된 벡터로 보았을때 첫번째행 백터와 두번째행 벡터는 90도가 차이가 난다 
+        // 이 특징을 이용하여 정규화된 특정 방향백터 하나의 값으로 회전행렬을 구할 수 있다  
         //create a rotation matrix from a fwd and side 2D vector
         public void RotateY(Vector2 fwd, Vector2 side)
         {
