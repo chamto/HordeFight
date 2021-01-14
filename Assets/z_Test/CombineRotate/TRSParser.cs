@@ -332,9 +332,9 @@ static public class TRSHelper
 
 	static public Matrix4x4 GetScale(Vector3 scale)
 	{
-		//s1 : 00
-		//s2 : 11
-		//s3 : 22
+		//s1 : 00 . .
+		//s2 : . 11 .
+		//s3 : . . 22
 
 		Matrix4x4 m = Matrix4x4.identity;
 		m.m00 = scale.x;
@@ -346,14 +346,15 @@ static public class TRSHelper
 
 	static public Matrix4x4 GetTranslate(Vector3 pos)
 	{
-		//t1 : 03
-		//t2 : 13
-		//t3 : 23
+		//t1 : . . . 03
+		//t2 : . . . 13
+		//t3 : . . . 23
 
 		Matrix4x4 m = Matrix4x4.identity;
-		m.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1));
+        m.SetColumn (3, new Vector4 (pos.x, pos.y, pos.z, 1)); //열우선 행렬방식으로 넣는다 (세로방향)
+        //m.SetRow(3, new Vector4(pos.x, pos.y, pos.z, 1));
 
-		return m;
+        return m;
 	}
 
 	static public Matrix4x4 GetRotateX(float degree)

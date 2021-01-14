@@ -10,8 +10,11 @@ public class TestCombineRotate : MonoBehaviour
 	public Transform _testTarget = null;
 	public Transform _testAxis = null;
 	public string _multiOrder = "s(x y z) rz0 ry0 rx0 t(x y z)";
+    //쿼터니언 회전 : t(x y z)  q(x90 y20 z0) ry0 rx0  rz0 s(x1 y1 z1)
+    //이동후 회전 : t(x3 y z) ry90 rx0  rz0 s(x1 y1 z1) 
+    //회전후 이동 : ry90 rx0  rz0 s(x1 y1 z1) t(x3 y z)
 
-	public bool _repeat = false;
+    public bool _repeat = false;
 	public bool _apply = false;
 
 	private TRSParser _parser = new TRSParser();
@@ -40,55 +43,56 @@ public class TestCombineRotate : MonoBehaviour
 		IvQuat quat = new IvQuat ();
 		quat.Set (0f, 45f, 45f);
 		r = quat.GetMatrix ();
-		//this.ApplyMatrixToGroupPosition (_testAxis, r);
-		//this.ApplyMatrixToGroupPosition (_testAxis, r);
+        //this.ApplyMatrixToGroupPosition (_testAxis, r);
+        //this.ApplyMatrixToGroupPosition (_testAxis, r);
 
 
-		//_testTarget.position = r.MultiplyPoint (_testTarget.position);
-		//_testTarget.position = mt.MultiplyPoint (_testTarget.position);
+        //_testTarget.position = r.MultiplyPoint (_testTarget.position);
+        //_testTarget.position = mt.MultiplyPoint (_testTarget.position);
 
-		//------------------------------------------------------------
-		//  float 비트 배열 분석 
-		//------------------------------------------------------------
-//		bool bigIndian = true;
-//		DebugWide.LogBlue(ML.Util.ToBit(10.25f) + ": 10.25f");
-//		DebugWide.LogBlue(ML.Util.ToBit(1f,bigIndian) + ": 1f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-1f,bigIndian) + ": -1f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(2f,bigIndian) + ": 2f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-2f,bigIndian) + ": -2f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(3f,bigIndian) + ": 3f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-3f,bigIndian) + ": -3f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(4f,bigIndian) + ": 4f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-4f,bigIndian) + ": -4f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(5f,bigIndian) + ": 5f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-5f,bigIndian) + ": -5f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(6f,bigIndian) + ": 6f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(-6f,bigIndian) + ": -6f ");
-//		DebugWide.LogBlue(ML.Util.ToBit(float.NaN) + ": Nan");
-//		DebugWide.LogBlue(ML.Util.ToBit(float.Epsilon) + ": Epsilon " + float.Epsilon);
-//		DebugWide.LogBlue(ML.Util.ToBit(float.PositiveInfinity) + ": PositiveInfinity");
-//		DebugWide.LogBlue(ML.Util.ToBit(float.NegativeInfinity) + ": NegativeInfinity");
-//
-//
-//		float a = 1.00000011920929f; //1 + 1.0 * 1/(2^23)
-//		float b = 1.0f - a;
-//		DebugWide.LogBlue (Mathf.Log (8388608, 2)); //Log2^8388608 = 23
-//
-//		DebugWide.LogBlue(ML.Util.ToBit(a) + ": a1 : " + a + " sqrt : " + Mathf.Sqrt(b));
-//		//a = 1.00000011111f; 
-//		//a = 1.0000001f;
-//		//a = 1.000001f;
-//
-//		if(float.Epsilon < Mathf.Abs(b))
-//			DebugWide.LogBlue(ML.Util.ToBit(b) + ": a2 : " + a);
-//
-//		DebugWide.LogBlue(ML.Util.ToBit(b) + ": b3 : " + b);
-
-
+        //------------------------------------------------------------
+        //  float 비트 배열 분석 
+        //------------------------------------------------------------
+        //		bool bigIndian = true;
+        //		DebugWide.LogBlue(ML.Util.ToBit(10.25f) + ": 10.25f");
+        //		DebugWide.LogBlue(ML.Util.ToBit(1f,bigIndian) + ": 1f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-1f,bigIndian) + ": -1f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(2f,bigIndian) + ": 2f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-2f,bigIndian) + ": -2f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(3f,bigIndian) + ": 3f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-3f,bigIndian) + ": -3f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(4f,bigIndian) + ": 4f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-4f,bigIndian) + ": -4f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(5f,bigIndian) + ": 5f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-5f,bigIndian) + ": -5f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(6f,bigIndian) + ": 6f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(-6f,bigIndian) + ": -6f ");
+        //		DebugWide.LogBlue(ML.Util.ToBit(float.NaN) + ": Nan");
+        //		DebugWide.LogBlue(ML.Util.ToBit(float.Epsilon) + ": Epsilon " + float.Epsilon);
+        //		DebugWide.LogBlue(ML.Util.ToBit(float.PositiveInfinity) + ": PositiveInfinity");
+        //		DebugWide.LogBlue(ML.Util.ToBit(float.NegativeInfinity) + ": NegativeInfinity");
+        //
+        //
+        //		float a = 1.00000011920929f; //1 + 1.0 * 1/(2^23)
+        //		float b = 1.0f - a;
+        //		DebugWide.LogBlue (Mathf.Log (8388608, 2)); //Log2^8388608 = 23
+        //
+        //		DebugWide.LogBlue(ML.Util.ToBit(a) + ": a1 : " + a + " sqrt : " + Mathf.Sqrt(b));
+        //		//a = 1.00000011111f; 
+        //		//a = 1.0000001f;
+        //		//a = 1.000001f;
+        //
+        //		if(float.Epsilon < Mathf.Abs(b))
+        //			DebugWide.LogBlue(ML.Util.ToBit(b) + ": a2 : " + a);
+        //
+        //		DebugWide.LogBlue(ML.Util.ToBit(b) + ": b3 : " + b);
 
 
+        //Matrix4x4 m = Matrix4x4.identity;
+        //m.SetColumn(3, new Vector4(7, 7, 7, 1));
+        //DebugWide.LogBlue(m);
 
-		this.SavePosition (_testAxis);
+        this.SavePosition (_testAxis);
 	}
 
 
@@ -103,8 +107,8 @@ public class TestCombineRotate : MonoBehaviour
 			//1. 비행기모양으로 배치된 객체에 적용 : _testTarget
 			prev_angles = dest_angles;
 			//1. 우주선모양으로 배치된 객체에 적용 : _testTarget
-			//this.ApplyMatrixToTransform(_testTarget, trs);
-			_testTarget.localRotation = TRSHelper.GetQuaternion(_parser); //chamto test - Iv쿼터니언 바로 적용 
+			this.ApplyMatrixToTransform(_testTarget, trs);
+			//_testTarget.localRotation = TRSHelper.GetQuaternion(_parser); //chamto test - Iv쿼터니언 바로 적용 
 
 			dest_angles = _testTarget.eulerAngles;
 			DebugWide.LogBlue ("2: unity angles : "+_testTarget.eulerAngles + "\n"); //chamto test
