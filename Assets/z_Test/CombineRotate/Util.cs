@@ -110,7 +110,38 @@ namespace ML
 			return number;
 		}
 
+        public static Vector3 PointToLocalSpace(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentZ = Vector3.Cross(AgentHeading, AgentSide);
+
+            Vector3 t = new Vector3();
+            t.z = -Vector3.Dot(AgentPosition, AgentHeading);
+            t.x = -Vector3.Dot(AgentPosition, AgentSide);
+            t.y = -Vector3.Dot(AgentPosition, AgentZ);
+
+            Quaternion rotRev = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
 
 
-	}
+            return (rotRev * point) + t;
+
+        }
+
+        public static Vector3 PointToLocalSpace2(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 t = point - AgentPosition;
+
+            Quaternion rotRev = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+
+            return (rotRev * t);
+
+        }
+
+    }
 }

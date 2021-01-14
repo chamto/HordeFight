@@ -7,7 +7,10 @@ using UnityEngine;
 
 public class TestCombineRotate : MonoBehaviour 
 {
-	public Transform _testTarget = null;
+    public Transform _world = null;
+    public Transform _local = null;
+
+    public Transform _testTarget = null;
 	public Transform _testAxis = null;
 	public string _multiOrder = "s(x y z) rz0 ry0 rx0 t(x y z)";
     //쿼터니언 회전 : t(x y z)  q(x90 y20 z0) ry0 rx0  rz0 s(x1 y1 z1)
@@ -115,13 +118,25 @@ public class TestCombineRotate : MonoBehaviour
 
 			//1. 좌표계모양으로 배치된 객체에 적용 : _testAxis
 			this.ApplyMatrixToGroupPosition (_testAxis, trs);
-			//-----------
+            //-----------
 
-			elapsedTime = 0;
+
+            elapsedTime = 0;
 			_apply = false;
 		}
 
-		elapsedTime += Time.deltaTime;
+        //2. 로컬좌표 변환 테스트 
+
+        Vector3 posToLocal1 = ML.Util.PointToLocalSpace(_local.position, _world.forward, _world.right, _world.position);
+        Vector3 posToLocal2 = ML.Util.PointToLocalSpace2(_local.position, _world.forward, _world.position);
+
+        DebugWide.LogBlue("f : " + _world.forward + "  s : " + _world.right); //chamto test
+        DebugWide.LogBlue("local1 : " + UtilGS9.VOp.ToString(posToLocal1)); //chamto test
+        DebugWide.LogBlue("local2 : " + UtilGS9.VOp.ToString(posToLocal2)); //chamto test
+
+        //----------------------------------------------
+
+        elapsedTime += Time.deltaTime;
 
 		this.Repeat ();
 
