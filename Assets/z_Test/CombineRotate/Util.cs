@@ -110,35 +110,8 @@ namespace ML
 			return number;
 		}
 
-        public static Vector3 PointToLocalSpace(Vector3 point,
-                             Vector3 AgentHeading,
-                             Vector3 AgentSide,
-                             Vector3 AgentPosition)
-        {
-
-            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
-            AgentUp.Normalize();
-            AgentHeading.Normalize();
-            AgentSide.Normalize();
-            Vector3 t = new Vector3();
-            t.z = -Vector3.Dot(AgentPosition, AgentHeading);
-            t.x = -Vector3.Dot(AgentPosition, AgentSide);
-            t.y = -Vector3.Dot(AgentPosition, AgentUp);
-
-            //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
-            //return (rotInv * point) + t;
-
-            Matrix4x4 m = Matrix4x4.identity;
-            m.SetColumn(0, AgentSide);
-            m.SetColumn(1, AgentUp);
-            m.SetColumn(2, AgentHeading);
-            m = Matrix4x4.Inverse(m);
-
-            return m.MultiplyPoint(point) + t;
-
-        }
-
-        public static Vector3 PointToLocalSpace2(Vector3 point,
+        //실험노트 20210115 에 분선한 글이 있다. 참고하기 
+        public static Vector3 PointToLocalSpace_2(Vector3 point,
                              Vector3 AgentHeading,
                              Vector3 AgentSide,
                              Vector3 AgentPosition)
@@ -149,17 +122,53 @@ namespace ML
             //AgentHeading.Normalize();
             //AgentSide.Normalize();
 
-            Vector3 t = point - AgentPosition;
+            //로컬좌표기준 이동량을 구한다
+            Vector3 t = new Vector3();
+            t.z = Vector3.Dot(AgentPosition, AgentHeading);
+            t.x = Vector3.Dot(AgentPosition, AgentSide);
+            t.y = Vector3.Dot(AgentPosition, AgentUp);
 
             //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
-            //return (rotInv * t);
+            //return (rotInv * point) + t;
 
+            //회전행렬을 만든후 그 역행렬을 구한다 
             Matrix4x4 m = Matrix4x4.identity;
             m.SetColumn(0, AgentSide);
             m.SetColumn(1, AgentUp);
             m.SetColumn(2, AgentHeading);
             m = Matrix4x4.Inverse(m);
 
+            //로컬좌표기준 이동량을 빼준다
+            return m.MultiplyPoint(point) - t;
+
+        }
+
+        //변환의 역순으로 적용하여 로컬위치를 구한다 
+        public static Vector3 PointToLocalSpace_1(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            //AgentUp.Normalize();
+            //AgentHeading.Normalize();
+            //AgentSide.Normalize();
+
+            //이동량을 빼준다 
+            Vector3 t = point - AgentPosition;
+
+            //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //return (rotInv * t);
+
+            //회전행렬을 만든후 그 역행렬을 구한다 
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide); //열값 삽입
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+            m = Matrix4x4.Inverse(m);
+
+            //역회전을 한다 
             return m.MultiplyPoint(t);
         }
 
