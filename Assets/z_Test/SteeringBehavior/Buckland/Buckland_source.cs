@@ -82,8 +82,7 @@ namespace Buckland
             List<Vector2> TranVector2Ds = new List<Vector2>(points);
             //DebugWide.LogBlue(pos + "  " + forward + "  " + side + "   " + scale);
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
 
             //scale
             if ((scale.x != 1.0f) || (scale.y != 1.0f))
@@ -117,8 +116,7 @@ namespace Buckland
             List<Vector2> TranVector2Ds = new List<Vector2>(points);
 
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
             //rotate
             matTransform.RotateY(forward, side);
 
@@ -144,8 +142,7 @@ namespace Buckland
             Vector2 TransPoint = point;
 
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
 
             //rotate
             matTransform.RotateY(AgentHeading, AgentSide);
@@ -159,6 +156,7 @@ namespace Buckland
             return point;
         }
 
+        //실험노트 20210115 에 분선한 글이 있다. 참고하기 
         public static Vector2 PointToLocalSpace(Vector2 point,
                              Vector2 AgentHeading,
                              Vector2 AgentSide,
@@ -169,18 +167,20 @@ namespace Buckland
             Vector2 TransPoint = point;
 
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
 
+            //로컬좌표기준 이동량을 구한다 
             float Tx = -Vector2.Dot(AgentPosition, AgentHeading);
             float Ty = -Vector2.Dot(AgentPosition, AgentSide);
 
-            //create the transformation matrix
+            //기저축 정보를 이용하여 바로 역행렬을 만든다 
             matTransform._11 = AgentHeading.x; matTransform._12 = AgentSide.x;
             matTransform._21 = AgentHeading.y; matTransform._22 = AgentSide.y;
+
+            //이동량 적용
             matTransform._31 = Tx; matTransform._32 = Ty;
 
-            //now transform the vertices
+            //내부적으로 대상점에 회전행렬을 곱한 후 이동량이 더해진다 p' = (m*p)+t
             C2DMatrix.Transform(ref matTransform, ref TransPoint);
 
             return TransPoint;
@@ -195,8 +195,7 @@ namespace Buckland
             Vector2 TransPoint = vec;
 
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
 
             //create the transformation matrix
             matTransform._11 = AgentHeading.x; matTransform._12 = AgentSide.x;
@@ -220,8 +219,7 @@ namespace Buckland
             Vector2 TransVec = vec;
 
             //create a transformation matrix
-            C2DMatrix matTransform = new C2DMatrix();
-            matTransform.Identity();
+            C2DMatrix matTransform = C2DMatrix.identity;
 
             //rotate
             matTransform.RotateY(AgentHeading, AgentSide);
@@ -239,8 +237,7 @@ namespace Buckland
         public static Vector2 Vec2DRotateAroundOrigin(Vector2 v, float ang)
         {
             //create a transformation matrix
-            C2DMatrix mat = new C2DMatrix();
-            mat.Identity();
+            C2DMatrix mat = C2DMatrix.identity;
 
             //rotate
             mat.RotateY(ang);
@@ -343,8 +340,7 @@ namespace Buckland
         public static void Vec2DRotateAroundOrigin(ref Vector2 v, float ang)
         {
             //create a transformation matrix
-            C2DMatrix mat = new C2DMatrix();
-            mat.Identity();
+            C2DMatrix mat = C2DMatrix.identity;
 
             //rotate
             mat.RotateY(ang);
@@ -511,6 +507,16 @@ namespace Buckland
             _21 = 0; _22 = 1; _23 = 0;
 
             _31 = 0; _32 = 0; _33 = 1;
+        }
+
+        static public C2DMatrix identity
+        {
+            get 
+            {
+                C2DMatrix m = new C2DMatrix();
+                m.Identity();
+                return m; 
+            }
         }
 
         //create a transformation matrix
@@ -874,8 +880,7 @@ namespace Buckland
             //The next few lines use a rotation matrix to rotate the player's heading
             //vector accordingly
 
-            C2DMatrix RotationMatrix = new C2DMatrix();
-            RotationMatrix.Identity();
+            C2DMatrix RotationMatrix = C2DMatrix.identity;
             //notice how the direction of rotation has to be determined when creating
             //the rotation matrix
             RotationMatrix.RotateY(angle * Util.Sign(m_vHeading, toTarget));
