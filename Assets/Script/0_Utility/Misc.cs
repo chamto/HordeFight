@@ -1923,7 +1923,40 @@ namespace UtilGS9
             return Misc.BezierCurve(p0p1p2, p1p2p3, t);
         }
 
-    }
+        //========================================================
+        //==================       변  환       ==================
+        //========================================================
+
+        //변환의 역순으로 적용하여 로컬위치를 구한다 
+        public static Vector3 PointToLocalSpace(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            //AgentUp.Normalize();
+            //AgentHeading.Normalize();
+            //AgentSide.Normalize();
+
+            //이동량을 빼준다 
+            Vector3 t = point - AgentPosition;
+
+            //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //return (rotInv * t);
+
+            //회전행렬을 만든후 그 역행렬을 구한다 
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide); //열값 삽입
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+            m = Matrix4x4.Inverse(m);
+
+            //역회전을 한다 
+            return m.MultiplyPoint(t);
+        }
+
+    }//end misc
 
 }
 
