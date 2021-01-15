@@ -128,7 +128,7 @@ public class TestCombineRotate : MonoBehaviour
         //2. 로컬좌표 변환 테스트 
 
         Vector3 posToLocal1 = ML.Util.PointToLocalSpace(_local.position, _world.forward, _world.right, _world.position);
-        Vector3 posToLocal2 = ML.Util.PointToLocalSpace2(_local.position, _world.forward, _world.position);
+        Vector3 posToLocal2 = ML.Util.PointToLocalSpace2(_local.position, _world.forward, _world.right, _world.position);
 
         DebugWide.LogBlue("f : " + _world.forward + "  s : " + _world.right); //chamto test
         DebugWide.LogBlue("local1 : " + UtilGS9.VOp.ToString(posToLocal1)); //chamto test

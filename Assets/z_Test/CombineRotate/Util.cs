@@ -116,31 +116,51 @@ namespace ML
                              Vector3 AgentPosition)
         {
 
-            Vector3 AgentZ = Vector3.Cross(AgentHeading, AgentSide);
-
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            AgentUp.Normalize();
+            AgentHeading.Normalize();
+            AgentSide.Normalize();
             Vector3 t = new Vector3();
             t.z = -Vector3.Dot(AgentPosition, AgentHeading);
             t.x = -Vector3.Dot(AgentPosition, AgentSide);
-            t.y = -Vector3.Dot(AgentPosition, AgentZ);
+            t.y = -Vector3.Dot(AgentPosition, AgentUp);
 
-            Quaternion rotRev = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //return (rotInv * point) + t;
 
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide);
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+            m = Matrix4x4.Inverse(m);
 
-            return (rotRev * point) + t;
+            return m.MultiplyPoint(point) + t;
 
         }
 
         public static Vector3 PointToLocalSpace2(Vector3 point,
                              Vector3 AgentHeading,
+                             Vector3 AgentSide,
                              Vector3 AgentPosition)
         {
 
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            //AgentUp.Normalize();
+            //AgentHeading.Normalize();
+            //AgentSide.Normalize();
+
             Vector3 t = point - AgentPosition;
 
-            Quaternion rotRev = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
+            //return (rotInv * t);
 
-            return (rotRev * t);
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide);
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+            m = Matrix4x4.Inverse(m);
 
+            return m.MultiplyPoint(t);
         }
 
     }
