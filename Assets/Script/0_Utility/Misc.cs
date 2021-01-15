@@ -95,6 +95,11 @@ namespace UtilGS9
 
     public partial class ConstV
     {
+        public const float Pi = (float)Math.PI;
+        public const float TwoPi = Pi * 2f;
+        public const float HalfPi = Pi / 2f;
+        public const float QuarterPi = Pi / 4f;
+
         static public readonly Vector2 v2_zero = Vector2.zero;
 
         static public readonly Vector3 v3_zero = Vector3.zero;
