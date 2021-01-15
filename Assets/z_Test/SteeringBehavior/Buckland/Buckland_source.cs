@@ -67,12 +67,22 @@ namespace Buckland
             return v2;
         }
 
-        //--------------------------- WorldTransform -----------------------------
+        //--------------------------- Reflect ------------------------------------
         //
-        //  given a std::vector of 2D vectors, a position, orientation and scale,
-        //  this function transforms the 2D vectors into the object's world space
+        //  given a normalized vector this method reflects the vector it
+        //  is operating upon. (like the path of a ball bouncing off a wall)
         //------------------------------------------------------------------------
-        public static List<Vector2> WorldTransform(List<Vector2> points,
+        public static Vector2 Reflect(Vector2 v2, Vector2 norm)
+        {
+            return v2 + 2f * Vector2.Dot(v2, norm) * (-norm);
+        }
+
+    //--------------------------- WorldTransform -----------------------------
+    //
+    //  given a std::vector of 2D vectors, a position, orientation and scale,
+    //  this function transforms the 2D vectors into the object's world space
+    //------------------------------------------------------------------------
+    public static List<Vector2> WorldTransform(List<Vector2> points,
                                              Vector2 pos,
                                              Vector2 forward,
                                              Vector2 side,
@@ -248,52 +258,6 @@ namespace Buckland
             return v;
         }
 
-        //-------------------- LineIntersection2D-------------------------
-        //
-        //  Given 2 lines in 2D space AB, CD this returns true if an 
-        //  intersection occurs and sets dist to the distance the intersection
-        //  occurs along AB. Also sets the 2d vector point to the point of
-        //  intersection
-        //----------------------------------------------------------------- 
-        public static bool LineIntersection2D(Vector2 A,
-                                       Vector2 B,
-                                       Vector2 C,
-                                       Vector2 D,
-                                       float dist,
-                                       Vector2 point)
-        {
-
-            float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
-            float rBot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
-
-            float sTop = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
-            float sBot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
-
-            if ((rBot == 0) || (sBot == 0))
-            {
-                //lines are parallel
-                return false;
-            }
-
-            float r = rTop / rBot;
-            float s = sTop / sBot;
-
-            if ((r > 0) && (r < 1) && (s > 0) && (s < 1))
-            {
-                dist = (A - B).magnitude * r;
-
-                point = A + r * (B - A);
-
-                return true;
-            }
-
-            else
-            {
-                dist = 0;
-
-                return false;
-            }
-        }
 
         //----------------------------- TwoCirclesOverlapped ---------------------
         //
@@ -452,6 +416,137 @@ namespace Buckland
             float xSeparation = v2.x - v1.x;
 
             return ySeparation * ySeparation + xSeparation * xSeparation;
+        }
+
+        //==================================================
+        //                    geometry
+        //==================================================
+
+        //given a plane and a ray this function determins how far along the ray 
+        //an interestion occurs. Returns negative if the ray is parallel
+        public static float DistanceToRayPlaneIntersection(Vector2 RayOrigin,
+                                                     Vector2 RayHeading,
+                                                     Vector2 PlanePoint,  //any point on the plane
+                                                     Vector2 PlaneNormal)
+        {
+
+            float d = -Vector2.Dot(PlaneNormal, PlanePoint);
+            float numer = Vector2.Dot(PlaneNormal, RayOrigin) + d;
+            float denom = Vector2.Dot(PlaneNormal, RayHeading);
+
+            // normal is parallel to vector
+            if ((denom < 0.000001f) && (denom > -0.000001f))
+            {
+                return (-1.0f);
+            }
+
+            return -(numer / denom);
+        }
+
+
+        public enum span_type { plane_backside, plane_front, on_plane };
+        public static span_type WhereIsPoint(Vector2 point,
+                                      Vector2 PointOnPlane, //any point on the plane
+                                      Vector2 PlaneNormal)
+        {
+            Vector2 dir = PointOnPlane - point;
+
+            double d = Vector2.Dot(dir, PlaneNormal);
+
+            if (d < -0.000001)
+            {
+                return span_type.plane_front;
+            }
+
+            else if (d > 0.000001)
+            {
+                return span_type.plane_backside;
+            }
+
+            return span_type.on_plane;
+        }
+
+        //--------------------LineIntersection2D-------------------------
+        //
+        //  Given 2 lines in 2D space AB, CD this returns true if an 
+        //  intersection occurs.
+        //
+        //----------------------------------------------------------------- 
+
+        public static bool LineIntersection2D(Vector2 A,
+                                       Vector2 B,
+                                       Vector2 C,
+                                       Vector2 D)
+        {
+            float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
+            float sTop = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
+
+            float Bot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+
+            if (Bot == 0)//parallel
+            {
+                return false;
+            }
+
+            float invBot = 1.0f / Bot;
+            float r = rTop * invBot;
+            float s = sTop * invBot;
+
+            if ((r > 0) && (r < 1) && (s > 0) && (s < 1))
+            {
+                //lines intersect
+                return true;
+            }
+
+            //lines do not intersect
+            return false;
+        }
+
+        //-------------------- LineIntersection2D-------------------------
+        //
+        //  Given 2 lines in 2D space AB, CD this returns true if an 
+        //  intersection occurs and sets dist to the distance the intersection
+        //  occurs along AB. Also sets the 2d vector point to the point of
+        //  intersection
+        //----------------------------------------------------------------- 
+        public static bool LineIntersection2D(Vector2 A,
+                                       Vector2 B,
+                                       Vector2 C,
+                                       Vector2 D,
+                                       float dist,
+                                       Vector2 point)
+        {
+
+            float rTop = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
+            float rBot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+
+            float sTop = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
+            float sBot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+
+            if ((rBot == 0) || (sBot == 0))
+            {
+                //lines are parallel
+                return false;
+            }
+
+            float r = rTop / rBot;
+            float s = sTop / sBot;
+
+            if ((r > 0) && (r < 1) && (s > 0) && (s < 1))
+            {
+                dist = (A - B).magnitude * r;
+
+                point = A + r * (B - A);
+
+                return true;
+            }
+
+            else
+            {
+                dist = 0;
+
+                return false;
+            }
         }
 
     }
