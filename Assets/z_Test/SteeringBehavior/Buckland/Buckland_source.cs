@@ -714,51 +714,6 @@ namespace Buckland
         }
     }
 
-
-
-    public struct Telegram
-    {
-        //the entity that sent this telegram
-        int Sender;
-
-        //the entity that is to receive this telegram
-        int Receiver;
-
-        //the message itself. These are all enumerated in the file
-        //"MessageTypes.h"
-        int Msg;
-
-        //messages can be dispatched immediately or delayed for a specified amount
-        //of time. If a delay is necessary this field is stamped with the time 
-        //the message should be dispatched.
-        float DispatchTime;
-
-        //any additional information that may accompany the message
-        //void* ExtraInfo;
-
-
-        public void Init()
-        {
-            Sender = -1;
-            Receiver = -1;
-            Msg = -1;
-            DispatchTime = -1f;
-        }
-
-
-        public Telegram(float time,
-                 int sender,
-                 int receiver,
-                 int msg)
-        {
-            Sender = sender;
-            Receiver = receiver;
-            Msg = msg;
-            DispatchTime = time;
-        }
-
-    }
-
     public class BaseGameEntity
     {
 
@@ -844,7 +799,7 @@ namespace Buckland
 
         public virtual void Render() { }
 
-        public virtual bool HandleMessage(Telegram msg) { return false; }
+        //public virtual bool HandleMessage(Telegram msg) { return false; }
 
 
         public Vector2 Pos() { return m_vPos; }

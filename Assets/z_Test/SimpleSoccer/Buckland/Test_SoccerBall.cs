@@ -244,7 +244,7 @@ namespace SimpleSoccer
         }
 
         //a soccer ball doesn't need to handle messages
-        public bool HandleMessage(Telegram msg) { return false; }
+        //public bool HandleMessage(Telegram msg) { return false; }
 
         //-------------------------- Kick ----------------------------------------
         //                                                                        
