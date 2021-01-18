@@ -194,7 +194,7 @@ namespace WestWorld
                     {
                         DebugWide.LogRed("Message handled by: Miner Bob: " + " at time: " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
 
-                        DebugWide.LogRed("Miner Bob: " + "Okay Hun, ahm a comin'!");
+                        DebugWide.LogBlue("Miner Bob: " + "Okay Hun, ahm a comin'!");
 
                         pMiner.GetFSM().ChangeState(EatStew.Instance);
                     }
