@@ -101,327 +101,57 @@ namespace Raven
         public const float ShotGun_MaxRoundsCarried = 50f;
     }
 
-    public static class Feature
-    {
-
-        //returns a value between 0 and 1 based on the bot's health. The better
-        //the health, the higher the rating
-        public static float Health(Raven_Bot pBot)
-        {
-            return (float)pBot.Health() / (float)pBot.MaxHealth();
-
-        }
-
-        //returns a value between 0 and 1 based on the bot's closeness to the 
-        //given item. the further the item, the higher the rating. If there is no
-        //item of the given type present in the game world at the time this method
-        //is called the value returned is 1
-        public static float DistanceToItem(Raven_Bot pBot, int ItemType)
-        {
-            //determine the distance to the closest instance of the item type
-            float DistanceToItem = pBot.GetPathPlanner().GetCostToClosestItem(ItemType);
-
-            //if the previous method returns a negative value then there is no item of
-            //the specified type present in the game world at this time.
-            if (DistanceToItem < 0) return 1f;
-
-            //these values represent cutoffs. Any distance over MaxDistance results in
-            //a value of 0, and value below MinDistance results in a value of 1
-            const float MaxDistance = 500.0f;
-            const float MinDistance = 50.0f;
-
-            DistanceToItem = Mathf.Clamp(DistanceToItem, MinDistance, MaxDistance);
-
-            return DistanceToItem / MaxDistance;
-        }
-
-        //returns a value between 0 and 1 based on how much ammo the bot has for
-        //the given weapon, and the maximum amount of ammo the bot can carry. The
-        //closer the amount carried is to the max amount, the higher the score
-        public static float IndividualWeaponStrength(Raven_Bot pBot,
-                                               int WeaponType)
-        {
-            //grab a pointer to the gun (if the bot owns an instance)
-            Raven_Weapon wp = pBot.GetWeaponSys().GetWeaponFromInventory(WeaponType);
-
-            if (null != wp)
-            {
-                return wp.NumRoundsRemaining() / GetMaxRoundsBotCanCarryForWeapon(WeaponType);
-            }
-
-            else
-            {
-                return 0.0f;
-            }
-        }
-
-
-        public static float GetMaxRoundsBotCanCarryForWeapon(int WeaponType)
-        {
-            switch (WeaponType)
-            {
-                case (int)eObjType.rail_gun:
-
-                    return Params.RailGun_MaxRoundsCarried;
-
-                case (int)eObjType.rocket_launcher:
-
-                    return Params.RocketLauncher_MaxRoundsCarried;
-
-                case (int)eObjType.shotgun:
-
-                    return Params.ShotGun_MaxRoundsCarried;
-
-                
-                    //throw std::runtime_error("trying to calculate  of unknown weapon");
-
-            }//end switch
-
-            DebugWide.LogError("trying to calculate  of unknown weapon");
-            return -1f;
-        }
-
-        //returns a value between 0 and 1 based on the total amount of ammo the
-        //bot is carrying each of the weapons. Each of the three weapons a bot can
-        //pick up can contribute a third to the score. In other words, if a bot
-        //is carrying a RL and a RG and has max ammo for the RG but only half max
-        //for the RL the rating will be 1/3 + 1/6 + 0 = 0.5
-        public static float TotalWeaponStrength(Raven_Bot pBot)
-        {
-            float MaxRoundsForShotgun = GetMaxRoundsBotCanCarryForWeapon((int)eObjType.shotgun);
-            float MaxRoundsForRailgun = GetMaxRoundsBotCanCarryForWeapon((int)eObjType.rail_gun);
-            float MaxRoundsForRocketLauncher = GetMaxRoundsBotCanCarryForWeapon((int)eObjType.rocket_launcher);
-            float TotalRoundsCarryable = MaxRoundsForShotgun + MaxRoundsForRailgun + MaxRoundsForRocketLauncher;
-
-            float NumSlugs = (float)pBot.GetWeaponSys().GetAmmoRemainingForWeapon((int)eObjType.rail_gun);
-            float NumCartridges = (float)pBot.GetWeaponSys().GetAmmoRemainingForWeapon((int)eObjType.shotgun);
-            float NumRockets = (float)pBot.GetWeaponSys().GetAmmoRemainingForWeapon((int)eObjType.rocket_launcher);
-
-            //the value of the tweaker (must be in the range 0-1) indicates how much
-            //desirability value is returned even if a bot has not picked up any weapons.
-            //(it basically adds in an amount for a bot's persistent weapon -- the blaster)
-            const float Tweaker = 0.1f;
-
-            return Tweaker + (1 - Tweaker) * (NumSlugs + NumCartridges + NumRockets) / (MaxRoundsForShotgun + MaxRoundsForRailgun + MaxRoundsForRocketLauncher);
-        }
-    }
-
-    public class Goal_Evaluator
-    {
-
-        //when the desirability score for a goal has been evaluated it is multiplied 
-        //by this value. It can be used to create bots with preferences based upon
-        //their personality
-        protected float m_dCharacterBias;
-
-
-        public Goal_Evaluator(float CharacterBias)
-        {
-            m_dCharacterBias = CharacterBias;
-        }
-
-
-        //returns a score between 0 and 1 representing the desirability of the
-        //strategy the concrete subclass represents
-        public virtual double CalculateDesirability(Raven_Bot pBot) { return 0; }
-
-        //adds the appropriate goal to the given bot's brain
-        public virtual void SetGoal(Raven_Bot pBot) { }
-
-        //used to provide debugging/tweaking support
-        public virtual void RenderInfo(Vector3 Position, Raven_Bot pBot) { }
-    }
-
-    public class GetHealthGoal_Evaluator : Goal_Evaluator
-    {
-
-        public GetHealthGoal_Evaluator(float bias) : base(bias) { }
-
-        public float CalculateDesirability(Raven_Bot pBot)
-        {
-            //first grab the distance to the closest instance of a health item
-            float Distance = Feature.DistanceToItem(pBot, (int)eObjType.health);
-
-            //if the distance feature is rated with a value of 1 it means that the
-            //item is either not present on the map or too far away to be worth 
-            //considering, therefore the desirability is zero
-            if (Distance == 1f)
-            {
-                return 0;
-            }
-            else
-            {
-                //value used to tweak the desirability
-                const float Tweaker = 0.2f;
-
-                //the desirability of finding a health item is proportional to the amount
-                //of health remaining and inversely proportional to the distance from the
-                //nearest instance of a health item.
-                float Desirability = Tweaker * (1 - Feature.Health(pBot)) /
-                                    (Feature.DistanceToItem(pBot, (int)eObjType.health));
-
-                //ensure the value is in the range 0 to 1
-                Desirability = Mathf.Clamp(Desirability, 0, 1f);
-
-                //bias the value according to the personality of the bot
-                Desirability *= m_dCharacterBias;
-
-                return Desirability;
-            }
-        }
-
-        public void SetGoal(Raven_Bot pBot)
-        {
-            pBot.GetBrain().AddGoal_GetItem((int)eObjType.health);
-        }
-
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
-        {
-
-            DebugWide.PrintText(Position, Color.black, "H: " + CalculateDesirability(pBot));
-            //return;
-
-            //std::string s = ttos(1 - Raven_Feature::Health(pBot)) + ", " + ttos(Raven_Feature::DistanceToItem(pBot, type_health));
-            //gdi->TextAtPos(Position + Vector2D(0, 15), s);
-        }
-    }
-
-
-    public class AttackTargetGoal_Evaluator : Goal_Evaluator
-    { 
-    
-        public AttackTargetGoal_Evaluator(float bias) :base(bias) { }
-
-        public float CalculateDesirability(Raven_Bot pBot)
-        {
-            float Desirability = 0.0f;
-
-            //only do the calculation if there is a target present
-            if (pBot.GetTargetSys().isTargetPresent())
-            {
-                const float Tweaker = 1.0f;
-
-                Desirability = Tweaker *
-                               Feature.Health(pBot) *
-                               Feature.TotalWeaponStrength(pBot);
-
-                //bias the value according to the personality of the bot
-                Desirability *= m_dCharacterBias;
-            }
-
-            return Desirability;
-        }
-
-        public void SetGoal(Raven_Bot pBot)
-        {
-            pBot.GetBrain().AddGoal_AttackTarget();
-        }
-
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
-        {
-            DebugWide.PrintText(Position, Color.black, "AT: " + CalculateDesirability(pBot));
-            //return;
-
-            //std::string s = ttos(Raven_Feature::Health(pBot)) + ", " + ttos(Raven_Feature::TotalWeaponStrength(pBot));
-            //gdi->TextAtPos(Position + Vector2D(0, 12), s);
-        }
-    }
-
-    public class ExploreGoal_Evaluator : Goal_Evaluator
-    { 
-
-        public ExploreGoal_Evaluator(float bias) :base(bias) { }
-
-        public float CalculateDesirability(Raven_Bot pBot)
-        {
-            float Desirability = 0.05f;
-
-            Desirability *= m_dCharacterBias;
-
-            return Desirability;
-        }
-
-        public void SetGoal(Raven_Bot pBot)
-        {
-            pBot.GetBrain().AddGoal_Explore();
-        }
-
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
-        {
-            DebugWide.PrintText(Position, Color.black, "EX: " + CalculateDesirability(pBot));
-        }
-    }
-
-    public class GetWeaponGoal_Evaluator : Goal_Evaluator
-    {
-        int m_iWeaponType;
-
-
-        public GetWeaponGoal_Evaluator(float bias,
-                              int WeaponType) : base(bias)
-        {
-            m_iWeaponType = WeaponType;
-        }
-
-        public float CalculateDesirability(Raven_Bot pBot)
-        {
-            //grab the distance to the closest instance of the weapon type
-            float Distance = Feature.DistanceToItem(pBot, m_iWeaponType);
-
-            //if the distance feature is rated with a value of 1 it means that the
-            //item is either not present on the map or too far away to be worth 
-            //considering, therefore the desirability is zero
-            if (Distance == 1)
-            {
-                return 0;
-            }
-            else
-            {
-                //value used to tweak the desirability
-                const float Tweaker = 0.15f;
-
-                float Health, WeaponStrength;
-
-                Health = Feature.Health(pBot);
-
-                WeaponStrength = Feature.IndividualWeaponStrength(pBot,
-                                                                         m_iWeaponType);
-
-                float Desirability = (Tweaker * Health * (1 - WeaponStrength)) / Distance;
-
-                //ensure the value is in the range 0 to 1
-                Desirability = Mathf.Clamp(Desirability, 0, 1f);
-
-                Desirability *= m_dCharacterBias;
-
-                return Desirability;
-            }
-        }
-
-        public void SetGoal(Raven_Bot pBot)
-        {
-            pBot.GetBrain().AddGoal_GetItem(m_iWeaponType);
-        }
-
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
-        {
-            string s = "";
-            switch (m_iWeaponType)
-            {
-                case (int)eObjType.rail_gun:
-                    s = "RG: "; break;
-                case (int)eObjType.rocket_launcher:
-                    s = "RL: "; break;
-                case (int)eObjType.shotgun:
-                    s = "SG: "; break;
-            }
-
-            DebugWide.PrintText(Position, Color.black, s + CalculateDesirability(pBot));
-
-        }
-    }
-
     //======================================================
+    public class Goal_SeekToPosition : Goal<Raven_Bot>
+    {
+
+        //the position the bot is moving to
+        Vector3 m_vPosition;
+
+        //the approximate time the bot should take to travel the target location
+        double m_dTimeToReachPos;
+
+        //this records the time this goal was activated
+        double m_dStartTime;
+
+        //returns true if a bot gets stuck
+        //bool isStuck() { return false; }
+
+
+        public Goal_SeekToPosition(Raven_Bot pBot, Vector3 target):base(pBot, (int)eGoal.seek_to_position) { }
+
+        //the usual suspects
+        //override public void Activate() { }
+        //override public int Process() { return 0; }
+        //override public void Terminate() { }
+
+        //override public void Render() { }
+    }
+
+    public class Goal_FollowPath : Goal_Composite<Raven_Bot>
+    {
+        //a local copy of the path returned by the path planner
+        Path m_Path;
+
+
+        public Goal_FollowPath(Raven_Bot pBot, Path path) : base(pBot, (int)eGoal.seek_to_position) {}
+
+        //the usual suspects
+        //override public void Activate() { }
+        //override public int Process() { return 0; }
+        //override public void Render() { }
+        //override public void Terminate() { }
+    }
+
+    public class Goal_Wander : Goal<Raven_Bot>
+    {
+    
+        public Goal_Wander(Raven_Bot pBot) :base(pBot, (int)eGoal.wander) {}
+
+        //override public void Activate() { }
+        //override public int Process() { return 0; }
+        //override public void Terminate() { }
+    }
 
     public class Goal_MoveToPosition :  Goal_Composite<Raven_Bot>
     {
@@ -519,6 +249,140 @@ namespace Raven
 
             DebugWide.DrawCircle(m_vDestination, 2, Color.yellow);
         }
+    }
+
+
+    public class Goal_GetItem : Goal_Composite<Raven_Bot>
+    {
+    
+        int m_iItemToGet;
+
+        Trigger<Raven_Bot> m_pGiverTrigger;
+
+        //true if a path to the item has been formulated
+        bool m_bFollowingPath;
+
+        //returns true if the bot sees that the item it is heading for has been
+        //picked up by an opponent
+        bool hasItemBeenStolen()
+        {
+              if (null != m_pGiverTrigger &&
+                  !m_pGiverTrigger.isActive() &&
+                  m_pOwner.hasLOSto(m_pGiverTrigger.Pos()) )
+              {
+                return true;
+              }
+
+              return false;
+        }
+
+        static int ItemTypeToGoalType(int gt)
+        {
+            switch (gt)
+            {
+                case (int)eObjType.health:
+
+                    return (int)eGoal.get_health;
+
+                case (int)eObjType.shotgun:
+
+                    return (int)eGoal.get_shotgun;
+
+                case (int)eObjType.rail_gun:
+
+                    return (int)eGoal.get_railgun;
+
+                case (int)eObjType.rocket_launcher:
+
+                    return (int)eGoal.get_rocket_launcher;
+
+                //default: throw std::runtime_error("Goal_GetItem cannot determine item type");
+
+            }//end switch
+
+            DebugWide.LogRed("Goal_GetItem cannot determine item type");
+            return -1;
+        }
+
+        public Goal_GetItem(Raven_Bot pBot, int item) : base(pBot, ItemTypeToGoalType(item))
+        {
+            m_iItemToGet = item;
+            m_pGiverTrigger = null;
+            m_bFollowingPath = false;
+        }
+
+
+        override public void Activate()
+        {
+            m_iStatus = (int)eStatus.active;
+
+            m_pGiverTrigger = null;
+
+            //request a path to the item
+            m_pOwner.GetPathPlanner().RequestPathToItem(m_iItemToGet);
+
+            //the bot may have to wait a few update cycles before a path is calculated
+            //so for appearances sake it just wanders
+            AddSubgoal(new Goal_Wander(m_pOwner));
+
+        }
+
+        override public int Process()
+        {
+            ActivateIfInactive();
+
+            if (hasItemBeenStolen())
+            {
+                Terminate();
+            }
+
+            else
+            {
+                //process the subgoals
+                m_iStatus = ProcessSubgoals();
+            }
+
+            return m_iStatus;
+        }
+
+        override public bool HandleMessage( Telegram msg)
+        {
+          //first, pass the message down the goal hierarchy
+          bool bHandled = ForwardMessageToFrontMostSubgoal(msg);
+
+          //if the msg was not handled, test to see if this goal can handle it
+          if (bHandled == false)
+          {
+            switch(msg.Msg)
+            {
+            case (int)eMsg.PathReady:
+
+              //clear any existing goals
+              RemoveAllSubgoals();
+                AddSubgoal(new Goal_FollowPath(m_pOwner,
+                                               m_pOwner.GetPathPlanner().GetPath()));
+
+              //get the pointer to the item
+              m_pGiverTrigger = (Trigger<Raven_Bot>)(msg.ExtraInfo);
+
+              return true; //msg handled
+
+
+            case (int)eMsg.NoPathAvailable:
+
+              m_iStatus = (int)eStatus.failed;
+
+              return true; //msg handled
+
+            default: return false;
+            }
+        }
+
+          //handled by subgoals
+          return true;
+        }
+
+        override public void Terminate() { m_iStatus = (int)eStatus.completed; }
     }
 
 //======================================================
@@ -713,11 +577,21 @@ namespace Raven
     }
     //======================================================
 
+    public class Trigger<Raven_Bot>
+    {
+        public Vector3 Pos() { return ConstV.v3_zero; }
+        public bool isActive() { return false; }
+    }
+
+    public class PathEdge { }
+    public class Path : LinkedList<PathEdge> { }
+
     public class Raven_PathPlanner
     {
-        public Raven_PathPlanner GetPath() { return null; }
+        public Path GetPath() { return null; }
         public float GetCostToClosestItem(int GiverType) { return 0;  }
         public bool RequestPathToPosition(Vector3 TargetPos) { return false; }
+        public bool RequestPathToItem(int ItemType) { return false; }
     }
 
     public class Raven_TargetingSystem
@@ -778,6 +652,7 @@ namespace Raven
         public int MaxHealth() {return m_iMaxHealth;}
 
         public bool isPossessed() {return m_bPossessed;}
+        public bool hasLOSto(Vector3 pos) { return false; }
 
         public Raven_TargetingSystem GetTargetSys() {return m_pTargSys;}
         public Raven_WeaponSystem GetWeaponSys() {return m_pWeaponSys;}
