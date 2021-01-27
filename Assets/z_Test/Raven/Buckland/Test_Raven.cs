@@ -153,6 +153,49 @@ namespace Raven
         //override public void Terminate() { }
     }
 
+    public class Goal_HuntTarget : Goal_Composite<Raven_Bot>
+    {
+    
+        //this value is set to true if the last visible position of the target
+        //bot has been searched without success
+         bool m_bLVPTried;
+
+
+        public Goal_HuntTarget(Raven_Bot pBot) :base(pBot, (int)eGoal.hunt_target)
+        {
+            m_bLVPTried = false;
+        }
+
+        //the usual suspects
+        //void Activate();
+        //int Process();
+        //void Terminate() { }
+        //void Render();
+    }
+
+    public class Goal_DodgeSideToSide : Goal<Raven_Bot>
+    {
+    
+        Vector3 m_vStrafeTarget;
+
+        bool m_bClockwise;
+
+        //Vector3 GetStrafeTarget();
+
+
+        public Goal_DodgeSideToSide(Raven_Bot pBot) :base(pBot, (int)eGoal.strafe)
+        {
+            m_bClockwise = Misc.RandBool();
+        }
+
+
+        //void Activate();
+        //int Process();
+        //void Render();
+        //void Terminate();
+
+    }
+
     public class Goal_MoveToPosition :  Goal_Composite<Raven_Bot>
     {
     
@@ -385,6 +428,159 @@ namespace Raven
         override public void Terminate() { m_iStatus = (int)eStatus.completed; }
     }
 
+    public class Goal_Explore : Goal_Composite<Raven_Bot>
+    {
+  
+        Vector3 m_CurrentDestination;
+
+        //set to true when the destination for the exploration has been established
+        bool m_bDestinationIsSet;
+
+    
+        public Goal_Explore(Raven_Bot pOwner) : base(pOwner, (int)eGoal.explore)
+        {
+            m_bDestinationIsSet = false;
+        }
+
+
+        override public void Activate()
+        {
+            m_iStatus = (int)eStatus.active;
+
+            //if this goal is reactivated then there may be some existing subgoals that
+            //must be removed
+            RemoveAllSubgoals();
+
+            if (!m_bDestinationIsSet)
+            {
+                //grab a random location
+                m_CurrentDestination = m_pOwner.GetWorld().GetMap().GetRandomNodeLocation();
+
+                m_bDestinationIsSet = true;
+            }
+
+            //and request a path to that position
+            m_pOwner.GetPathPlanner().RequestPathToPosition(m_CurrentDestination);
+
+            //the bot may have to wait a few update cycles before a path is calculated
+            //so for appearances sake it simple ARRIVES at the destination until a path
+            //has been found
+            AddSubgoal(new Goal_SeekToPosition(m_pOwner, m_CurrentDestination));
+        }
+
+        override public int Process()
+        {
+            //if status is inactive, call Activate()
+            ActivateIfInactive();
+
+            //process the subgoals
+            m_iStatus = ProcessSubgoals();
+
+            return m_iStatus;
+        }
+
+        override public void Terminate() { }
+
+        override public bool HandleMessage(Telegram msg)
+        {
+          //first, pass the message down the goal hierarchy
+          bool bHandled = ForwardMessageToFrontMostSubgoal(msg);
+
+          //if the msg was not handled, test to see if this goal can handle it
+          if (bHandled == false)
+          {
+                switch(msg.Msg)
+                {
+                case (int)eMsg.PathReady:
+
+                  //clear any existing goals
+                  RemoveAllSubgoals();
+
+                    AddSubgoal(new Goal_FollowPath(m_pOwner,
+                                                   m_pOwner.GetPathPlanner().GetPath()));
+
+                  return true; //msg handled
+
+
+                case (int)eMsg.NoPathAvailable:
+
+                  m_iStatus = (int)eStatus.failed;
+
+                  return true; //msg handled
+
+                default: return false;
+                }
+            }
+
+          //handled by subgoals
+          return true;
+        }
+    }
+
+    public class Goal_AttackTarget : Goal_Composite<Raven_Bot>
+    {
+
+        public Goal_AttackTarget(Raven_Bot pOwner) : base(pOwner, (int)eGoal.attack_target)
+        {}
+
+        override public void Activate()
+        {
+            m_iStatus = (int)eStatus.active;
+
+            //if this goal is reactivated then there may be some existing subgoals that
+            //must be removed
+            RemoveAllSubgoals();
+
+            //it is possible for a bot's target to die whilst this goal is active so we
+            //must test to make sure the bot always has an active target
+            if (!m_pOwner.GetTargetSys().isTargetPresent())
+            {
+                m_iStatus = (int)eStatus.completed;
+
+                return;
+            }
+
+            //if the bot is able to shoot the target (there is LOS between bot and
+            //target), then select a tactic to follow while shooting
+            if (m_pOwner.GetTargetSys().isTargetShootable())
+            {
+                //if the bot has space to strafe then do so
+                Vector3 dummy = ConstV.v3_zero;
+                if (m_pOwner.canStepLeft(dummy) || m_pOwner.canStepRight(dummy))
+                {
+                    AddSubgoal(new Goal_DodgeSideToSide(m_pOwner));
+                }
+
+                //if not able to strafe, head directly at the target's position 
+                else
+                {
+                    AddSubgoal(new Goal_SeekToPosition(m_pOwner, m_pOwner.GetTargetBot().Pos()));
+                }
+            }
+
+            //if the target is not visible, go hunt it.
+            else
+            {
+                AddSubgoal(new Goal_HuntTarget(m_pOwner));
+            }
+        }
+
+        override public int Process()
+        {
+            //if status is inactive, call Activate()
+            ActivateIfInactive();
+
+            //process the subgoals
+            m_iStatus = ProcessSubgoals();
+
+            ReactivateIfFailed();
+
+            return m_iStatus;
+        }
+
+        override public void Terminate() { m_iStatus = (int)eStatus.completed; }
+
+    }
 //======================================================
 
     public class Goal_Think : Goal_Composite<Raven_Bot>
@@ -393,6 +589,33 @@ namespace Raven
 
         GoalEvaluators m_Evaluators = new GoalEvaluators();
 
+        public int ItemTypeToGoalType(int gt)
+        {
+            switch (gt)
+            {
+                case (int)eObjType.health:
+
+                    return (int)eGoal.get_health;
+
+                case (int)eObjType.shotgun:
+
+                    return (int)eGoal.get_shotgun;
+
+                case (int)eObjType.rail_gun:
+
+                    return (int)eGoal.get_railgun;
+
+                case (int)eObjType.rocket_launcher:
+
+                    return (int)eGoal.get_rocket_launcher;
+
+                    //default: throw std::runtime_error("Goal_GetItem cannot determine item type");
+
+            }//end switch
+
+            DebugWide.LogRed("Goal_GetItem cannot determine item type");
+            return -1;
+        }
 
         public Goal_Think(Raven_Bot pBot) : base(pBot, (int)eGoal.think)
         {
@@ -486,33 +709,6 @@ namespace Raven
         }
         override public void Terminate() { }
 
-        public int ItemTypeToGoalType(int gt)
-        {
-            switch (gt)
-            {
-                case (int)eObjType.health:
-
-                    return (int)eGoal.get_health;
-
-                case (int)eObjType.shotgun:
-
-                    return (int)eGoal.get_shotgun;
-
-                case (int)eObjType.rail_gun:
-
-                    return (int)eGoal.get_railgun;
-
-                case (int)eObjType.rocket_launcher:
-
-                    return (int)eGoal.get_rocket_launcher;
-
-                    //default: throw std::runtime_error("Goal_GetItem cannot determine item type");
-
-            }//end switch
-
-            DebugWide.LogRed("Goal_GetItem cannot determine item type");
-            return -1;
-        }
 
         //top level goal types
         public void AddGoal_MoveToPosition(Vector3 pos)
@@ -603,7 +799,9 @@ namespace Raven
         Raven_Bot m_pCurrentTarget;
 
         public bool isTargetPresent() {return m_pCurrentTarget != null;}
-    }
+        public bool isTargetShootable() { return false; }
+        public Raven_Bot GetTarget() {return m_pCurrentTarget;}
+}
 
     public class Raven_Weapon
     {
@@ -631,7 +829,17 @@ namespace Raven
         }
     }
 
-    public class Raven_Bot //: BaseGameEntity
+    public class Raven_Game
+    {
+        public Raven_Map GetMap() { return null; }
+    }
+
+    public class Raven_Map
+    {
+        public Vector3 GetRandomNodeLocation() { return ConstV.v3_zero; }
+    }
+
+    public class Raven_Bot : BaseGameEntity
     {
     
         Goal_Think m_pBrain;
@@ -640,6 +848,7 @@ namespace Raven
 
         Raven_TargetingSystem m_pTargSys;
         Raven_WeaponSystem m_pWeaponSys;
+        Raven_Game m_pWorld;
 
         int m_iHealth;
         int m_iMaxHealth;
@@ -647,6 +856,9 @@ namespace Raven
         //set to true when a human player takes over control of the bot
         bool m_bPossessed;
 
+        public Raven_Bot(int id) : base(id) { }
+
+        public Vector3 Pos() { return ConstV.v3_zero; }
 
         public int Health() {return m_iHealth;}
         public int MaxHealth() {return m_iMaxHealth;}
@@ -654,10 +866,15 @@ namespace Raven
         public bool isPossessed() {return m_bPossessed;}
         public bool hasLOSto(Vector3 pos) { return false; }
 
+        public Raven_Game  GetWorld(){return m_pWorld;}
         public Raven_TargetingSystem GetTargetSys() {return m_pTargSys;}
         public Raven_WeaponSystem GetWeaponSys() {return m_pWeaponSys;}
         public Goal_Think  GetBrain(){return m_pBrain;}
         public Raven_PathPlanner  GetPathPlanner(){return m_pPathPlanner;}
+        public Raven_Bot GetTargetBot() { return m_pTargSys.GetTarget(); }
+        public bool canStepLeft(Vector3 PositionOfStep) { return false; }
+        public bool canStepRight(Vector3 PositionOfStep) { return false; }
+
     }
 
 
