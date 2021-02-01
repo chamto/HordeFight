@@ -8,7 +8,7 @@ namespace Raven
 
         public AttackTargetGoal_Evaluator(float bias) : base(bias) { }
 
-        public float CalculateDesirability(Raven_Bot pBot)
+        override public float CalculateDesirability(Raven_Bot pBot)
         {
             float Desirability = 0.0f;
 
@@ -28,12 +28,12 @@ namespace Raven
             return Desirability;
         }
 
-        public void SetGoal(Raven_Bot pBot)
+        override public void SetGoal(Raven_Bot pBot)
         {
             pBot.GetBrain().AddGoal_AttackTarget();
         }
 
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
+        override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
             DebugWide.PrintText(Position, Color.black, "AT: " + CalculateDesirability(pBot));
             //return;

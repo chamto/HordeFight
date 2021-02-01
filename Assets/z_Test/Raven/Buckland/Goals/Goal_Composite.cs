@@ -94,33 +94,6 @@ namespace Raven
 
         public Goal_Composite(entity_type pE, int type) : base(pE, type) { }
 
-        //when this object is destroyed make sure any subgoals are terminated
-        //and destroyed.
-        //virtual ~Goal_Composite() { RemoveAllSubgoals(); }
-
-        //logic to run when the goal is activated.
-        public virtual void Activate() { }
-
-        //logic to run each update-step.
-        public virtual int Process() { return 0; }
-
-        //logic to run prior to the goal's destruction
-        public virtual void Terminate() { }
-
-        //if a child class of Goal_Composite does not define a message handler
-        //the default behavior is to forward the message to the front-most
-        //subgoal
-        public virtual bool HandleMessage(Telegram msg)
-        { return ForwardMessageToFrontMostSubgoal(msg); }
-
-        //adds a subgoal to the front of the subgoal list
-        public void AddSubgoal(Goal<entity_type> g)
-        {
-            //add the new goal to the front of the list
-            m_SubGoals.AddFirst(g);
-            //m_SubGoals.push_front(g);
-        }
-
         //this method iterates through the subgoals and calls each one's Terminate
         //method before deleting the subgoal and removing it from the subgoal list
         public void RemoveAllSubgoals()
@@ -134,7 +107,35 @@ namespace Raven
         }
 
 
-        public virtual void RenderAtPos(Vector3 pos)
+        //when this object is destroyed make sure any subgoals are terminated
+        //and destroyed.
+        //virtual ~Goal_Composite() { RemoveAllSubgoals(); }
+
+        //logic to run when the goal is activated.
+        //public virtual void Activate() { }
+
+        //logic to run each update-step.
+        //public virtual int Process() { return 0; }
+
+        //logic to run prior to the goal's destruction
+        //public virtual void Terminate() { }
+
+        //if a child class of Goal_Composite does not define a message handler
+        //the default behavior is to forward the message to the front-most
+        //subgoal
+        override public bool HandleMessage(Telegram msg)
+        { return ForwardMessageToFrontMostSubgoal(msg); }
+
+        //adds a subgoal to the front of the subgoal list
+        override public void AddSubgoal(Goal<entity_type> g)
+        {
+            //add the new goal to the front of the list
+            m_SubGoals.AddFirst(g);
+            //m_SubGoals.push_front(g);
+        }
+
+
+        override public void RenderAtPos(Vector3 pos)
         {
             base.RenderAtPos(pos);
 
@@ -160,7 +161,7 @@ namespace Raven
         }
 
         //this is only used to render information for debugging purposes
-        public virtual void Render()
+        override public void Render()
         {
             if (0 != m_SubGoals.Count)
             {

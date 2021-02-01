@@ -20,7 +20,7 @@ namespace Raven
 
         //returns a score between 0 and 1 representing the desirability of the
         //strategy the concrete subclass represents
-        public virtual double CalculateDesirability(Raven_Bot pBot) { return 0; }
+        public virtual float CalculateDesirability(Raven_Bot pBot) { return 0; }
 
         //adds the appropriate goal to the given bot's brain
         public virtual void SetGoal(Raven_Bot pBot) { }

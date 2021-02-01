@@ -14,7 +14,7 @@ namespace Raven
             m_iWeaponType = WeaponType;
         }
 
-        public float CalculateDesirability(Raven_Bot pBot)
+        override public float CalculateDesirability(Raven_Bot pBot)
         {
             //grab the distance to the closest instance of the weapon type
             float Distance = Feature.DistanceToItem(pBot, m_iWeaponType);
@@ -49,12 +49,12 @@ namespace Raven
             }
         }
 
-        public void SetGoal(Raven_Bot pBot)
+        override public void SetGoal(Raven_Bot pBot)
         {
             pBot.GetBrain().AddGoal_GetItem(m_iWeaponType);
         }
 
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
+        override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
             string s = "";
             switch (m_iWeaponType)

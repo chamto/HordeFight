@@ -8,7 +8,7 @@ namespace Raven
 
         public GetHealthGoal_Evaluator(float bias) : base(bias) { }
 
-        public float CalculateDesirability(Raven_Bot pBot)
+        override public float CalculateDesirability(Raven_Bot pBot)
         {
             //first grab the distance to the closest instance of a health item
             float Distance = Feature.DistanceToItem(pBot, (int)eObjType.health);
@@ -41,12 +41,12 @@ namespace Raven
             }
         }
 
-        public void SetGoal(Raven_Bot pBot)
+        override public void SetGoal(Raven_Bot pBot)
         {
             pBot.GetBrain().AddGoal_GetItem((int)eObjType.health);
         }
 
-        public void RenderInfo(Vector3 Position, Raven_Bot pBot)
+        override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
 
             DebugWide.PrintText(Position, Color.black, "H: " + CalculateDesirability(pBot));

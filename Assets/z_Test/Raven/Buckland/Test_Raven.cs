@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
@@ -10,16 +8,30 @@ namespace Raven
     public class Test_Raven : MonoBehaviour
     {
 
+        Raven_Bot _bot_0 = null;
+
         // Use this for initialization
         void Start()
         {
             SingleO.Init();
+
+            _bot_0 = new Raven_Bot(0);
         }
 
         // Update is called once per frame
         //void Update()
         //{
         //}
+
+        private void OnDrawGizmos()
+        {
+            if (null == _bot_0) return;
+            _bot_0.Update();
+            //_bot_0.GetBrain().Render();
+            _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero);
+            //_bot_0.GetBrain().RenderEvaluations(5, 5);
+
+        }
     }
 
     //======================================================
@@ -280,7 +292,16 @@ namespace Raven
         //set to true when a human player takes over control of the bot
         bool m_bPossessed;
 
-        public Raven_Bot(int id) : base(id) { }
+        public Raven_Bot(int id) : base(id) 
+        {
+            m_pBrain = new Goal_Think(this);
+        }
+
+
+        override public void Update()
+        {
+            m_pBrain.Process();
+        }
 
         public Vector3 Pos() { return ConstV.v3_zero; }
 
