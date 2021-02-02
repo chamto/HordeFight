@@ -10,10 +10,10 @@ using UnityEngine;
 //
 //  This search is more commonly known as A* (pronounced Ay-Star)
 //-----------------------------------------------------------------------------
-public class Graph_SearchAStar
+public class Graph_SearchAStar<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
 {
  
-    private SparseGraph              m_Graph;
+    private SparseGraph<T_Node, T_Edge>              m_Graph;
 
     //indexed into my node. Contains the 'real' accumulative cost to that node
     private List<float> m_GCosts = new List<float>();
@@ -23,13 +23,13 @@ public class Graph_SearchAStar
     //iPQ indexes into.
     private List<float> m_FCosts = new List<float>();
 
-    private List<GraphEdge>       m_ShortestPathTree = new List<GraphEdge>();
-    private List<GraphEdge>       m_SearchFrontier = new List<GraphEdge>();
+    private List<T_Edge>       m_ShortestPathTree = new List<T_Edge>();
+    private List<T_Edge>       m_SearchFrontier = new List<T_Edge>();
 
     private int m_iSource;
     private int m_iTarget;
 
-    private IHeuristic iHeuristic = null;
+    private IHeuristic<T_Node, T_Edge> iHeuristic = null;
 
     //the A* search algorithm
     private void Search()
@@ -54,7 +54,7 @@ public class Graph_SearchAStar
             if (NextClosestNode == m_iTarget) return;
 
             //now to test all the edges attached to this node
-            foreach(GraphEdge pE in m_Graph.GetEdges(NextClosestNode))
+            foreach(T_Edge pE in m_Graph.GetEdges(NextClosestNode))
             {
                 if (null == pE) continue;
 
@@ -94,7 +94,7 @@ public class Graph_SearchAStar
 
 
 
-    public void Init(SparseGraph graph, int source, int target)
+    public void Init(SparseGraph<T_Node, T_Edge> graph, int source, int target)
     {
 
         this.Clear();
@@ -102,7 +102,7 @@ public class Graph_SearchAStar
         m_Graph = graph;
         m_iSource = source;
         m_iTarget = target;
-        iHeuristic = new Heuristic_Euclid();
+        iHeuristic = new Heuristic_Euclid<T_Node, T_Edge>();
 
         m_ShortestPathTree.Capacity = graph.NumNodes();
         m_SearchFrontier.Capacity = graph.NumNodes();
@@ -131,7 +131,7 @@ public class Graph_SearchAStar
     }
 
     //returns the vector of edges that the algorithm has examined
-    public List<GraphEdge> GetSPT() 
+    public List<T_Edge> GetSPT() 
     {
         return m_ShortestPathTree;
     }
@@ -182,19 +182,19 @@ public class Graph_SearchAStar
 
 
 
-public interface IHeuristic 
+public interface IHeuristic<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
 {
-    float Calculate(SparseGraph G, int nd1, int nd2);
+    float Calculate(SparseGraph<T_Node, T_Edge> G, int nd1, int nd2);
 }
 
 //-----------------------------------------------------------------------------
 //the euclidian heuristic (straight-line distance)
 //-----------------------------------------------------------------------------
-public class Heuristic_Euclid : IHeuristic
+public class Heuristic_Euclid<T_Node, T_Edge> : IHeuristic<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
 {
     
     //calculate the straight line distance from node nd1 to node nd2
-    public float Calculate(SparseGraph G, int nd1, int nd2)
+    public float Calculate(SparseGraph<T_Node, T_Edge> G, int nd1, int nd2)
     {
         NavGraphNode node1 = G.GetNode(nd1) as NavGraphNode;
         NavGraphNode node2 = G.GetNode(nd2) as NavGraphNode;
@@ -209,11 +209,11 @@ public class Heuristic_Euclid : IHeuristic
 //be handy if you find that you frequently have lots of agents all following
 //each other in single file to get from one place to another
 //-----------------------------------------------------------------------------
-public class Heuristic_Noisy_Euclidian : IHeuristic
+public class Heuristic_Noisy_Euclidian<T_Node, T_Edge> : IHeuristic<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
 {
   
     //calculate the straight line distance from node nd1 to node nd2
-    public float Calculate(SparseGraph G, int nd1, int nd2)
+    public float Calculate(SparseGraph<T_Node, T_Edge> G, int nd1, int nd2)
     {
         NavGraphNode node1 = G.GetNode(nd1) as NavGraphNode;
         NavGraphNode node2 = G.GetNode(nd2) as NavGraphNode;
@@ -230,9 +230,9 @@ public class Heuristic_Noisy_Euclidian : IHeuristic
 //this is because Dijkstra's is equivalent to an A* search using a heuristic
 //value that is always equal to zero.
 //-----------------------------------------------------------------------------
-class Heuristic_Dijkstra : IHeuristic
+class Heuristic_Dijkstra<T_Node, T_Edge> : IHeuristic<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
 {
-    public float Calculate(SparseGraph G, int nd1, int nd2)
+    public float Calculate(SparseGraph<T_Node, T_Edge> G, int nd1, int nd2)
     {
         return 0;
     }

@@ -1,16 +1,27 @@
-﻿namespace Raven
+﻿using UnityEngine;
+
+namespace Raven
 {
     public class BaseGameEntity
     {
 
-        //every entity must have a unique identifying number
+        public const int default_entity_type = -1;
+
+
+        //each entity has a unique ID
         int m_ID;
+
+        //every entity has a type associated with it (health, troll, ammo etc)
+        int m_iType;
+
+        //this is a generic flag. 
+        bool m_bTag;
 
         //this is the next valid ID. Each time a BaseGameEntity is instantiated
         //this value is updated
-        //static int m_iNextValidID;
+        static int m_iNextValidID = 0;
 
-        //this must be called within the constructor to make sure the ID is set
+        //this must be called within each constructor to make sure the ID is set
         //correctly. It verifies that the value passed to the method is greater
         //or equal to the next valid ID, before setting the ID and incrementing
         //the next valid ID
@@ -21,24 +32,64 @@
 
             m_ID = val;
 
-            //m_iNextValidID = m_ID + 1;
+            m_iNextValidID = m_ID + 1;
         }
 
 
-        public BaseGameEntity(int id)
+
+        //its location in the environment
+        protected Vector3 m_vPosition;
+
+        protected Vector3 m_vScale;
+
+        //the magnitude of this object's bounding radius
+        protected float  m_dBoundingRadius;
+
+
+        protected BaseGameEntity(int ID)
         {
-            SetID(id);
+            m_dBoundingRadius = 0.0f;
+            m_vScale = Vector3.one;
+            m_iType = default_entity_type;
+            m_bTag = false;
+
+            SetID(ID);
         }
 
 
-        //all entities must implement an update function
         public virtual void Update() { }
 
-        //all entities can communicate using messages. They are sent
-        //using the MessageDispatcher singleton class
-        public virtual bool HandleMessage(Telegram msg) { return false; }
+        public virtual void Render() { }
+  
+        public virtual bool HandleMessage(Telegram msg){return false;}
+  
 
-        public int ID() { return m_ID; }
+        //use this to grab the next valid ID
+        public static int GetNextValidID() { return m_iNextValidID; }
+
+        //this can be used to reset the next ID
+        public static void ResetNextValidID() { m_iNextValidID = 0; }
+
+
+
+        public Vector3 Pos() {return m_vPosition;}
+        public void SetPos(Vector3 new_pos) { m_vPosition = new_pos; }
+
+        public float BRadius() {return m_dBoundingRadius;}
+        public void SetBRadius(float r) { m_dBoundingRadius = r; }
+        public int ID() {return m_ID;}
+
+        public bool IsTagged() {return m_bTag;}
+        public void Tag() { m_bTag = true; }
+        public void UnTag() { m_bTag = false; }
+
+        //public Vector3 Scale() {return m_vScale;}
+        //public void SetScale(Vector2D val) { m_dBoundingRadius *= MaxOf(val.x, val.y) / MaxOf(m_vScale.x, m_vScale.y); m_vScale = val; }
+        //public void SetScale(float val) { m_dBoundingRadius *= (val / MaxOf(m_vScale.x, m_vScale.y)); m_vScale = Vector2D(val, val); }
+
+        public int EntityType() {return m_iType;}
+        public void SetEntityType(int new_type) { m_iType = new_type; }
+
     }
 
 

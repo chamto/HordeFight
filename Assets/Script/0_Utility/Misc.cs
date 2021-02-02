@@ -1583,6 +1583,16 @@ namespace UtilGS9
             return (int)value;
         }
 
+        static public bool IsEqual(float a, float b)
+        {
+            if (Math.Abs(a - b) < 1E-12)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         static public bool IsZero(float value)
         {
             if (0 > value) value *= -1f;

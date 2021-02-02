@@ -6,39 +6,39 @@ using System.Linq;
 
 
 //성긴그래프
-//public class SparseGraph<T_Node, T_Edge> where T_Node : GraphNode  where T_Edge : GraphEdge
-public class SparseGraph
+public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Edge : NavGraphEdge
+//public class SparseGraph
 {
 	//a couple more typedefs to save my fingers and to help with the formatting
 	//of the code on the printed page
-	public class NodeVector : List<GraphNode> {}
-	public class EdgeList : LinkedList<GraphEdge> {}
+	public class NodeVector : List<T_Node> {}
+	public class EdgeList : LinkedList<T_Edge> {}
 	public class EdgeListVector : List<EdgeList> {}
 
 	//public LinkedList<string> a = new LinkedList<string> ();
 		
 	//the nodes that comprise this graph
-	private NodeVector      m_Nodes = new NodeVector();
+	protected NodeVector      m_Nodes = new NodeVector();
 
-	//벡터의 인접엣지리스트
-	//a vector of adjacency edge lists. (each node index keys into the 
-	//list of edges associated with that node)
-	private EdgeListVector  m_Edges = new EdgeListVector();
+    //벡터의 인접엣지리스트
+    //a vector of adjacency edge lists. (each node index keys into the 
+    //list of edges associated with that node)
+    protected EdgeListVector  m_Edges = new EdgeListVector();
 
-	//다이그래프로 설정할 것인가 지정
-	//=> 다이그래프란? 엣지의 방향성이 있는 그래프이다.
-	//is this a directed graph?
-	private bool            m_bDigraph;
-	
-	//the index of the next node to be added
-	private int             m_iNextNodeIndex;
+    //다이그래프로 설정할 것인가 지정
+    //=> 다이그래프란? 엣지의 방향성이 있는 그래프이다.
+    //is this a directed graph?
+    protected bool            m_bDigraph;
 
-	//returns true if an edge is not already present in the graph. Used
-	//when adding edges to make sure no duplicates are created.
-	private bool  UniqueEdge(int from, int to)
+    //the index of the next node to be added
+    protected int             m_iNextNodeIndex;
+
+    //returns true if an edge is not already present in the graph. Used
+    //when adding edges to make sure no duplicates are created.
+    protected bool  UniqueEdge(int from, int to)
 	{
 
-		foreach(GraphEdge iter in m_Edges[from])
+		foreach(T_Edge iter in m_Edges[from])
 		{
 			if(iter.To() == to)
 			{
@@ -48,14 +48,14 @@ public class SparseGraph
 
 		return true;
 	}
-	
-	//iterates through all the edges in the graph and removes any that point
-	//to an invalidated node
-	private void  CullInvalidEdges()
+
+    //iterates through all the edges in the graph and removes any that point
+    //to an invalidated node
+    protected void  CullInvalidEdges()
 	{
 		foreach (EdgeList list in m_Edges) 
 		{
-			foreach (GraphEdge curEdge in list) 
+			foreach (T_Edge curEdge in list) 
 			{
 				if (m_Nodes[curEdge.To()].Index() == GraphNode.INVALID_NODE_INDEX || 
 				    m_Nodes[curEdge.From()].Index() == GraphNode.INVALID_NODE_INDEX)
@@ -86,13 +86,13 @@ public class SparseGraph
 		return true;
 	}
 
-	public NavGraphNode FindNearNode(Vector3 pos)
+	public T_Node FindNearNode(Vector3 pos)
 	{
         Dictionary<int , float> distance_List = new Dictionary<int , float> ();
-		NavGraphNode findNode = null;
+        T_Node findNode = null;
 
         int index = 0;
-		foreach (NavGraphNode node in m_Nodes) 
+		foreach (T_Node node in m_Nodes) 
 		{
 			if(null != node)
 			{
@@ -106,7 +106,7 @@ public class SparseGraph
 		{
 			if (false == this.ClosedNode(nodeNum)) 
 			{
-				findNode = m_Nodes.ElementAt(nodeNum) as NavGraphNode;
+				findNode = m_Nodes.ElementAt(nodeNum) as T_Node;
 				break;
 			}
 		}
@@ -116,44 +116,44 @@ public class SparseGraph
 
 
 	//returns the node at the given index
-	public  GraphNode  GetNode(int idx)
+	public T_Node GetNode(int idx)
 	{
-		Assert.IsTrue( (idx < m_Nodes.Count) &&
-		       (idx >=0),             
-		       "<SparseGraph::GetNode>: invalid index");
+		//Assert.IsTrue( (idx < m_Nodes.Count) &&
+		       //(idx >=0),             
+		       //"<SparseGraph::GetNode>: invalid index");
 		
 		return m_Nodes[idx];
 	}
 	
 	//const method for obtaining a reference to an edge
-	public  GraphEdge GetEdge(int from, int to)
+	public T_Edge GetEdge(int from, int to)
 	{
-		Assert.IsTrue( (from < m_Nodes.Count) &&
-		       (from >=0)              &&
-		       m_Nodes[from].Index() != GraphNode.INVALID_NODE_INDEX ,
-		       "<SparseGraph::GetEdge>: invalid 'from' index");
+		//Assert.IsTrue( (from < m_Nodes.Count) &&
+		       //(from >=0)              &&
+		       //m_Nodes[from].Index() != GraphNode.INVALID_NODE_INDEX ,
+		       //"<SparseGraph::GetEdge>: invalid 'from' index");
 		
-		Assert.IsTrue( (to < m_Nodes.Count) &&
-		       (to >=0)              &&
-		       m_Nodes[to].Index() != GraphNode.INVALID_NODE_INDEX ,
-		       "<SparseGraph::GetEdge>: invalid 'to' index");
+		//Assert.IsTrue( (to < m_Nodes.Count) &&
+		       //(to >=0)              &&
+		       //m_Nodes[to].Index() != GraphNode.INVALID_NODE_INDEX ,
+		       //"<SparseGraph::GetEdge>: invalid 'to' index");
 
-		foreach(GraphEdge curEdge in m_Edges[from])
+		foreach(T_Edge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to) return curEdge;
 		}
 
-		Assert.IsTrue (false , "<SparseGraph::GetEdge>: edge does not exist");
+		//Assert.IsTrue (false , "<SparseGraph::GetEdge>: edge does not exist");
 
 		return null;
 	}
 	
 	public EdgeList GetEdges(int node)
 	{
-		Assert.IsTrue( (node < m_Nodes.Count) &&
-		              (node >=0)              &&
-		              m_Nodes[node].Index() != GraphNode.INVALID_NODE_INDEX ,
-		              "<SparseGraph::GetEdges>: invalid 'node' index");
+		//Assert.IsTrue( (node < m_Nodes.Count) &&
+		              //(node >=0)              &&
+		              //m_Nodes[node].Index() != GraphNode.INVALID_NODE_INDEX ,
+		              //"<SparseGraph::GetEdges>: invalid 'node' index");
 
 		return m_Edges [node];
 	}
@@ -163,14 +163,14 @@ public class SparseGraph
 	public int   GetNextFreeNodeIndex() {return m_iNextNodeIndex;}
 	
 	//adds a node to the graph and returns its index
-	public int   AddNode(GraphNode node)
+	public int   AddNode(T_Node node)
 	{
 		if (node.Index() < (int)m_Nodes.Count)
 		{
 			//make sure the client is not trying to add a node with the same ID as
 			//a currently active node
-			Assert.IsTrue (m_Nodes[node.Index()].Index() == GraphNode.INVALID_NODE_INDEX ,
-			        "<SparseGraph::AddNode>: Attempting to add a node with a duplicate ID");
+			//Assert.IsTrue (m_Nodes[node.Index()].Index() == GraphNode.INVALID_NODE_INDEX ,
+			        //"<SparseGraph::AddNode>: Attempting to add a node with a duplicate ID");
 			
 			m_Nodes[node.Index()] = node;
 			
@@ -180,7 +180,7 @@ public class SparseGraph
 		else
 		{
 			//make sure the new node has been indexed correctly
-            Assert.IsTrue (node.Index() == m_iNextNodeIndex , "<SparseGraph::AddNode>:invalid index " + node.Index() + " != "+ m_iNextNodeIndex);
+            //Assert.IsTrue (node.Index() == m_iNextNodeIndex , "<SparseGraph::AddNode>:invalid index " + node.Index() + " != "+ m_iNextNodeIndex);
 
 			m_Nodes.Add(node);
 			m_Edges.Add(new EdgeList());
@@ -192,7 +192,7 @@ public class SparseGraph
 	//removes a node by setting its index to invalid_node_index
 	public void  RemoveNode(int node)
 	{
-		Assert.IsTrue(node < (int)m_Nodes.Count , "<SparseGraph::RemoveNode>: invalid node index");
+		//Assert.IsTrue(node < (int)m_Nodes.Count , "<SparseGraph::RemoveNode>: invalid node index");
 		
 		//set this node's index to invalid_node_index
 		m_Nodes[node].SetIndex(GraphNode.INVALID_NODE_INDEX);
@@ -202,9 +202,9 @@ public class SparseGraph
 		if (!m_bDigraph)
 		{    
 			//visit each neighbour and erase any edges leading to this node
-			foreach (GraphEdge curEdge in m_Edges[node])
+			foreach (T_Edge curEdge in m_Edges[node])
 			{
-				foreach (GraphEdge curE in m_Edges[curEdge.To()])
+				foreach (T_Edge curE in m_Edges[curEdge.To()])
 				{
 					if (curE.To() == node)
 					{
@@ -230,11 +230,11 @@ public class SparseGraph
 	//edge passed as a parameter is valid before adding it to the graph. If the
 	//graph is a digraph then a similar edge connecting the nodes in the opposite
 	//direction will be automatically added.
-	public void  AddEdge(GraphEdge edge)
+	public void  AddEdge(T_Edge edge)
 	{
 		//first make sure the from and to nodes exist within the graph 
-		Assert.IsTrue( (edge.From() < m_iNextNodeIndex) && (edge.To() < m_iNextNodeIndex) ,
-		              "<SparseGraph::AddEdge>: invalid node index" + " edge:" + edge.From() + "->" + edge.To() + " NextNode : " + m_iNextNodeIndex);
+		//Assert.IsTrue( (edge.From() < m_iNextNodeIndex) && (edge.To() < m_iNextNodeIndex) ,
+		              //"<SparseGraph::AddEdge>: invalid node index" + " edge:" + edge.From() + "->" + edge.To() + " NextNode : " + m_iNextNodeIndex);
 		
 		//make sure both nodes are active before adding the edge
 		if ( (m_Nodes[edge.To()].Index() != GraphNode.INVALID_NODE_INDEX) && 
@@ -253,7 +253,7 @@ public class SparseGraph
 				//check to make sure the edge is unique before adding
 				if (UniqueEdge(edge.To(), edge.From()))
 				{
-					GraphEdge NewEdge = edge.Clone() as GraphEdge;
+                    T_Edge NewEdge = edge.Clone() as T_Edge;
 					
 					NewEdge.SetTo(edge.From());
 					NewEdge.SetFrom(edge.To());
@@ -269,18 +269,18 @@ public class SparseGraph
 	//will also be removed.
 	public void  RemoveEdge(int from, int to)
 	{
-		Assert.IsTrue ( (from < (int)m_Nodes.Count) && (to < (int)m_Nodes.Count) ,
-		        "<SparseGraph::RemoveEdge>:invalid node index");
+		//Assert.IsTrue ( (from < (int)m_Nodes.Count) && (to < (int)m_Nodes.Count) ,
+		        //"<SparseGraph::RemoveEdge>:invalid node index");
 
 		if (!m_bDigraph)
 		{
-			foreach(GraphEdge curEdge in m_Edges[to])
+			foreach(T_Edge curEdge in m_Edges[to])
 			{
 				if (curEdge.To() == from){m_Edges[to].Remove(curEdge);break;}
 			}
 		}
 		
-		foreach(GraphEdge curEdge in m_Edges[from])
+		foreach(T_Edge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to){m_Edges[from].Remove(curEdge);break;}
 		}
@@ -290,11 +290,11 @@ public class SparseGraph
 	public void  SetEdgeCost(int from, int to, float cost)
 	{
 		//make sure the nodes given are valid
-		Assert.IsTrue( (from < m_Nodes.Count) && (to < m_Nodes.Count) ,
-		       "<SparseGraph::SetEdgeCost>: invalid index");
+		//Assert.IsTrue( (from < m_Nodes.Count) && (to < m_Nodes.Count) ,
+		       //"<SparseGraph::SetEdgeCost>: invalid index");
 		
 		//visit each neighbour and erase any edges leading to this node
-		foreach(GraphEdge curEdge in m_Edges[from])
+		foreach(T_Edge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to)
 			{
@@ -356,7 +356,7 @@ public class SparseGraph
 	{
 		if (isNodePresent(from) && isNodePresent(from))
 		{
-			foreach(GraphEdge curEdge in m_Edges[from])
+			foreach(T_Edge curEdge in m_Edges[from])
 			{
 				if (curEdge.To() == to) return true;
 			}
