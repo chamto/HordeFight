@@ -4,7 +4,6 @@
 namespace Raven
 {
 
-    public class EdgeType { }
 
     //these enums are used as return values from each search update method
     public enum eReturn { target_found, target_not_found, search_incomplete };

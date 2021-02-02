@@ -1,4 +1,12 @@
 ﻿using UnityEngine;
+
+
+
+public interface Base_Pos
+{
+    Vector3 Pos(); 
+}
+
 //-----------------------------------------------------------------------------
 //
 //  Graph node for use in creating a navigation graph.This node contains
@@ -7,7 +15,7 @@
 //-----------------------------------------------------------------------------
 
 //public class NavGraphNode<extra_info> : GraphNode where extra_info : class
-public class NavGraphNode : GraphNode
+public class NavGraphNode : GraphNode , Base_Pos
 {
 
     //the node's position
