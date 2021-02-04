@@ -97,7 +97,7 @@ namespace Raven
             if (hasFailed()) color = Color.red;
             if (isActive()) color = Color.blue;
 
-            DebugWide.PrintText(pos, color, ((eGoal)GetType()).ToString());
+            DebugWide.PrintText(pos, color, (eGoal)GetType() + "  _" + (eStatus)m_iStatus);
             //DebugWide.LogBlue(((eGoal)GetType()).ToString());
 
         }

@@ -30,7 +30,7 @@ namespace Raven
             {
                 //grab a random location
                 m_CurrentDestination = m_pOwner.GetWorld().GetMap().GetRandomNodeLocation();
-
+                //DebugWide.LogBlue(m_CurrentDestination);
                 m_bDestinationIsSet = true;
             }
 

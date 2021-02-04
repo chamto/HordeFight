@@ -28,9 +28,9 @@ namespace Raven
         {
             if (null == _bot_0) return;
             _bot_0.Update();
-            //_bot_0.GetBrain().Render();
-            _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero);
-            _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15));
+            _bot_0.GetBrain().Render(); //위치출력
+            _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero); //복합목표 출력
+            _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15)); //생각을 위한 평가값들 출력
 
         }
     }
@@ -113,14 +113,52 @@ namespace Raven
 
     //======================================================
 
+    public static class UserOptions
+    {
 
+        public static bool m_bShowGraph = false;
+
+        public static bool m_bShowNodeIndices = false;
+
+        public static bool m_bShowPathOfSelectedBot = true;
+
+        public static bool m_bShowTargetOfSelectedBot = false;
+
+        public static bool m_bShowOpponentsSensedBySelectedBot = true;
+
+        public static bool m_bOnlyShowBotsInTargetsFOV = false;
+
+        public static bool m_bShowGoalsOfSelectedBot = true;
+
+        public static bool m_bShowGoalAppraisals = true;
+
+        public static bool m_bShowWeaponAppraisals = false;
+
+        public static bool m_bSmoothPathsQuick = false;
+        public static bool m_bSmoothPathsPrecise = false;
+
+        public static bool m_bShowBotIDs = false;
+
+        public static bool m_bShowBotHealth = true;
+
+        public static bool m_bShowScore = false;
+    }
     //======================================================
 
     public class Params
     {
+        public const int FrameRate = 60;
+
         public const float RocketLauncher_MaxRoundsCarried = 50f;
         public const float RailGun_MaxRoundsCarried = 50f;
         public const float ShotGun_MaxRoundsCarried = 50f;
+
+        public const int Bot_MaxHealth = 100;
+        public const float Bot_MaxSpeed = 1f;
+        public const float Bot_Mass = 1f;
+        public const float Bot_MaxForce = 1.0f;
+        public const float Bot_MaxHeadTurnRate = 0.2f;
+        public const float Bot_Scale       = 0.8f;
     }
 
     //======================================================
@@ -131,23 +169,98 @@ namespace Raven
         Vector3 m_vPosition;
 
         //the approximate time the bot should take to travel the target location
-        double m_dTimeToReachPos;
+        float m_dTimeToReachPos;
 
         //this records the time this goal was activated
-        double m_dStartTime;
+        float m_dStartTime;
 
         //returns true if a bot gets stuck
-        //bool isStuck() { return false; }
+        bool isStuck()
+        {  
+
+          float TimeTaken = Time.time - m_dStartTime;
+
+          if (TimeTaken > m_dTimeToReachPos)
+          {
+                //debug_con << "BOT " << m_pOwner->ID() << " IS STUCK!!" << "";
+                DebugWide.LogBlue("BOT " + m_pOwner.ID() + " IS STUCK!!");
+
+                return true;
+          }
+
+          return false;
+        }
 
 
-        public Goal_SeekToPosition(Raven_Bot pBot, Vector3 target):base(pBot, (int)eGoal.seek_to_position) { }
+        public Goal_SeekToPosition(Raven_Bot pBot, Vector3 target):base(pBot, (int)eGoal.seek_to_position) 
+        {
+            m_vPosition = target;
+            m_dTimeToReachPos = 0f;
+        }
 
         //the usual suspects
-        //override public void Activate() { }
-        //override public int Process() { return 0; }
-        //override public void Terminate() { }
+        override public void Activate()
+        {
+            m_iStatus = (int)eStatus.active;
 
-        //override public void Render() { }
+            //record the time the bot starts this goal
+            m_dStartTime = Time.time;
+
+            //This value is used to determine if the bot becomes stuck 
+            m_dTimeToReachPos = m_pOwner.CalculateTimeToReachPosition(m_vPosition);
+
+            //factor in a margin of error for any reactive behavior
+            const float MarginOfError = 1.0f;
+
+            m_dTimeToReachPos += MarginOfError;
+
+
+            //m_pOwner.GetSteering().SetTarget(m_vPosition);
+            //m_pOwner.GetSteering().SeekOn();
+        }
+        override public int Process()
+        {
+            //if status is inactive, call Activate()
+            ActivateIfInactive();
+
+            //test to see if the bot has become stuck
+            if (isStuck())
+            {
+                m_iStatus = (int)eStatus.failed;
+            }
+
+            //test to see if the bot has reached the waypoint. If so terminate the goal
+            else
+            {
+                if (m_pOwner.isAtPosition(m_vPosition))
+                {
+                    m_iStatus = (int)eStatus.completed;
+                }
+            }
+
+            return m_iStatus;
+        }
+        override public void Terminate()
+        {
+            //m_pOwner.GetSteering().SeekOff();
+            //m_pOwner.GetSteering().ArriveOff();
+
+            m_iStatus = (int)eStatus.completed;
+        }
+
+        override public void Render()
+        {
+            //DebugWide.LogBlue((eStatus)m_iStatus);
+            if (m_iStatus == (int)eStatus.active)
+            {
+                DebugWide.DrawCircle(m_vPosition, 3, Color.green);
+            }
+
+            else if (m_iStatus == (int)eStatus.inactive)
+            {
+                DebugWide.DrawCircle(m_vPosition, 3, Color.red);
+            }
+        }
     }
 
     public class Goal_FollowPath : Goal_Composite<Raven_Bot>
@@ -220,37 +333,7 @@ namespace Raven
 
     //======================================================
 
-    public static class UserOptions
-    {
-       
-        public static bool m_bShowGraph = false;
-
-        public static bool m_bShowNodeIndices = false;
-
-        public static bool m_bShowPathOfSelectedBot = true;
-
-        public static bool m_bShowTargetOfSelectedBot = false;
-
-        public static bool m_bShowOpponentsSensedBySelectedBot = true;
-
-        public static bool m_bOnlyShowBotsInTargetsFOV = false;
-
-        public static bool m_bShowGoalsOfSelectedBot = true;
-
-        public static bool m_bShowGoalAppraisals = true;
-
-        public static bool m_bShowWeaponAppraisals = false;
-
-        public static bool m_bSmoothPathsQuick = false;
-        public static bool m_bSmoothPathsPrecise = false;
-
-        public static bool m_bShowBotIDs = false;
-
-        public static bool m_bShowBotHealth = true;
-
-        public static bool m_bShowScore = false;
-    }
-
+    
 
     //======================================================
 
@@ -352,7 +435,11 @@ namespace Raven
         }
 
         public TriggerList GetTriggers() {return m_TriggerSystem.GetTriggers();}
-        public Vector3 GetRandomNodeLocation() { return ConstV.v3_zero; }
+        public Vector3 GetRandomNodeLocation() 
+        {
+            //return ConstV.v3_zero;
+            return new Vector3(30,0,30); //임시로 값 부여 
+        } 
         public NavGraph GetNavGraph() {return m_pNavGraph;}
         public float GetCellSpaceNeighborhoodRange() {return m_dCellSpaceNeighborhoodRange;}
         public CellSpacePartition<NavGraphNode> GetCellSpace() {return m_pSpacePartition;}
