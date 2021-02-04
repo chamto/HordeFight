@@ -48,8 +48,8 @@ namespace Raven
 
         override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
-
-            DebugWide.PrintText(Position, Color.black, "H: " + CalculateDesirability(pBot));
+            string s = "GetHealthGoal_Evaluator : H: ";
+            DebugWide.PrintText(Position, Color.black, s + CalculateDesirability(pBot));
             //return;
 
             //std::string s = ttos(1 - Raven_Feature::Health(pBot)) + ", " + ttos(Raven_Feature::DistanceToItem(pBot, type_health));

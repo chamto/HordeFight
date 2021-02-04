@@ -35,7 +35,8 @@ namespace Raven
 
         override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
-            DebugWide.PrintText(Position, Color.black, "AT: " + CalculateDesirability(pBot));
+            string s = "AttackTargetGoal_Evaluator : AT: ";
+            DebugWide.PrintText(Position, Color.black, s + CalculateDesirability(pBot));
             //return;
 
             //std::string s = ttos(Raven_Feature::Health(pBot)) + ", " + ttos(Raven_Feature::TotalWeaponStrength(pBot));

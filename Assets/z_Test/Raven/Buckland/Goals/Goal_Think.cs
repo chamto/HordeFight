@@ -173,14 +173,14 @@ namespace Raven
         }
 
         //this renders the evaluations (goal scores) at the specified location
-        public void RenderEvaluations(int left, int top)
+        public void RenderEvaluations(Vector3 pos)
         {
             //gdi->TextColor(Cgdi::black);
 
             foreach (Goal_Evaluator cur in m_Evaluators)
             {
-                cur.RenderInfo(new Vector3(left, 0, top), m_pOwner);
-                //left += 75;
+                cur.RenderInfo(pos, m_pOwner);
+                pos.z -= 2;
             }
         }
 

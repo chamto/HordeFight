@@ -30,7 +30,7 @@ namespace Raven
             _bot_0.Update();
             //_bot_0.GetBrain().Render();
             _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero);
-            //_bot_0.GetBrain().RenderEvaluations(5, 5);
+            _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15));
 
         }
     }

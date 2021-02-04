@@ -139,7 +139,7 @@ namespace Raven
         {
             base.RenderAtPos(pos);
 
-            //pos.x += 10;
+            pos.z -= 2;
 
             //확장메소드를 이용하여 뒤집은 경우 
             //foreach (Goal<entity_type> el in m_SubGoals.Reverse<entity_type>())
@@ -151,13 +151,15 @@ namespace Raven
             var el = m_SubGoals.Last;
             while (el != null)
             {
+                pos.x += 5;
+
                 // use el.Value
                 el.Value.RenderAtPos(pos);
                 el = el.Previous;
+
             }
 
 
-            //pos.x -= 10;
         }
 
         //this is only used to render information for debugging purposes

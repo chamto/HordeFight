@@ -56,15 +56,15 @@ namespace Raven
 
         override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
-            string s = "";
+            string s = "GetWeaponGoal_Evaluator : ";
             switch (m_iWeaponType)
             {
                 case (int)eObjType.rail_gun:
-                    s = "RG: "; break;
+                    s += "RailGun: "; break;
                 case (int)eObjType.rocket_launcher:
-                    s = "RL: "; break;
+                    s += "RocketLauncher: "; break;
                 case (int)eObjType.shotgun:
-                    s = "SG: "; break;
+                    s += "ShotGun: "; break;
             }
 
             DebugWide.PrintText(Position, Color.black, s + CalculateDesirability(pBot));

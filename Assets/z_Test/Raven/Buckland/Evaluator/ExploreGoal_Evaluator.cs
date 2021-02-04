@@ -24,7 +24,8 @@ namespace Raven
 
         override public void RenderInfo(Vector3 Position, Raven_Bot pBot)
         {
-            DebugWide.PrintText(Position, Color.black, "EX: " + CalculateDesirability(pBot));
+            string s = "ExploreGoal_Evaluator : EX: ";
+            DebugWide.PrintText(Position, Color.black, s + CalculateDesirability(pBot));
         }
     }
 

@@ -90,7 +90,7 @@ namespace Raven
         //used for debugging
         public virtual void RenderAtPos(Vector3 pos)
         {
-            //pos.y += 15;
+            //pos.z -= 10;
             Color color = Color.green;
             if (isComplete()) color = Color.green;
             if (isInactive()) color = Color.black;
@@ -98,6 +98,7 @@ namespace Raven
             if (isActive()) color = Color.blue;
 
             DebugWide.PrintText(pos, color, ((eGoal)GetType()).ToString());
+            //DebugWide.LogBlue(((eGoal)GetType()).ToString());
 
         }
 
