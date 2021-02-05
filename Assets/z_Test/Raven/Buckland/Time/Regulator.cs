@@ -1,95 +1,71 @@
 ﻿using UnityEngine;
 using UtilGS9;
-using DWORD = System.UInt32;
 
 namespace Raven
 {
-
-    public class Raven_Steering { }
-
-    public class Raven_Bot : BaseGameEntity
+    //조절장치 : 초당 몇번 실행할지를 알려주는 용도로 사용 
+    // NumUpdatesPerSecondRqd 값이 5 인 경우 5초 마다 알려주는 것이 아닌, 1초에 5번 알려준다는 것임 
+    public class Regulator
     {
 
-        Goal_Think m_pBrain;
+        //the time period between updates 
+        float m_dUpdatePeriod;
 
-        Raven_Steering m_pSteering;
+        //the next time the regulator allows code flow
+        float m_dwNextUpdateTime;
 
-        //the bot uses this to plan paths
-        Raven_PathPlanner m_pPathPlanner;
 
-        Raven_TargetingSystem m_pTargSys;
-        Raven_WeaponSystem m_pWeaponSys;
-        Raven_Game m_pWorld;
 
-        int m_iHealth = 10;
-        int m_iMaxHealth = 10;
-        float m_dMaxSpeed = 1f;
-
-        //set to true when a human player takes over control of the bot
-        bool m_bPossessed;
-
-        Regulator m_pGoalArbitrationRegulator;
-
-        public Raven_Bot(Raven_Game world, int id) : base(id)
+        public Regulator(float NumUpdatesPerSecondRqd)
         {
-            m_pWorld = world;
-            m_pBrain = new Goal_Think(this);
-            m_pPathPlanner = new Raven_PathPlanner(this);
+            float CurrentTime = Time.time;
+            m_dwNextUpdateTime = CurrentTime + Misc.RandFloat();
 
-            m_pTargSys = new Raven_TargetingSystem();
-            m_pWeaponSys = new Raven_WeaponSystem();
-
-            m_pGoalArbitrationRegulator = new Regulator(5);
-        }
-
-
-
-        override public void Update()
-        {
-            m_pBrain.Process();
-
-            if(m_pGoalArbitrationRegulator.isReady())
+            if (NumUpdatesPerSecondRqd > 0)
             {
-                m_pBrain.Arbitrate();
-                DebugWide.LogBlue(Time.time);
+                m_dUpdatePeriod = 1f / NumUpdatesPerSecondRqd;
+            }
+
+            else if (Misc.IsZero(NumUpdatesPerSecondRqd))
+            {
+                m_dUpdatePeriod = 0.0f;
+            }
+
+            else if (NumUpdatesPerSecondRqd < 0)
+            {
+                m_dUpdatePeriod = -1;
             }
         }
 
-        public Vector3 Pos() { return ConstV.v3_zero; }
 
-        public int Health() { return m_iHealth; }
-        public int MaxHealth() { return m_iMaxHealth; }
-        public float MaxSpeed() {return m_dMaxSpeed;}
-
-        public bool isPossessed() { return m_bPossessed; }
-        public bool isAtPosition(Vector3 pos)
+        //returns true if the current time exceeds m_dwNextUpdateTime
+        public bool isReady()
         {
-            const float tolerance = 10.0f;
+            //if a regulator is instantiated with a zero freq then it goes into
+            //stealth mode (doesn't regulate)
+            if (Misc.IsZero(m_dUpdatePeriod)) return true;
 
-            return (Pos() - pos).sqrMagnitude < tolerance * tolerance;
+            //if the regulator is instantiated with a negative freq then it will
+            //never allow the code to flow
+            if (m_dUpdatePeriod < 0) return false;
+
+            float CurrentTime = Time.time;
+
+            //the number of milliseconds the update period can vary per required
+            //update-step. This is here to make sure any multiple clients of this class
+            //have their updates spread evenly
+            const float UpdatePeriodVariator = 0.01f;
+
+            if (CurrentTime >= m_dwNextUpdateTime)
+            {
+                m_dwNextUpdateTime = CurrentTime + m_dUpdatePeriod + Misc.RandFloat(-UpdatePeriodVariator, UpdatePeriodVariator);
+
+                return true;
+            }
+
+            return false;
         }
-        public bool hasLOSto(Vector3 pos) { return false; }
-
-        public Raven_Game GetWorld() { return m_pWorld; }
-        public Raven_Steering  GetSteering(){return m_pSteering;}
-        public Raven_TargetingSystem GetTargetSys() { return m_pTargSys; }
-        public Raven_WeaponSystem GetWeaponSys() { return m_pWeaponSys; }
-        public Goal_Think GetBrain() { return m_pBrain; }
-        public Raven_PathPlanner GetPathPlanner() { return m_pPathPlanner; }
-        public Raven_Bot GetTargetBot() { return m_pTargSys.GetTarget(); }
-        public bool canStepLeft(Vector3 PositionOfStep) { return false; }
-        public bool canStepRight(Vector3 PositionOfStep) { return false; }
-        public bool canWalkBetween(Vector3 from, Vector3 to) { return false; }
-        public bool canWalkTo(Vector3 pos) { return false; }
-
-        public float CalculateTimeToReachPosition(Vector3 pos)
-        {
-            return (Pos() - pos).magnitude / (MaxSpeed() * Params.FrameRate);
-        }
-
     }
-
-    public class Raven_SensoryMemory { }
 
     /*
     public class Raven_Bot :  MovingEntity
