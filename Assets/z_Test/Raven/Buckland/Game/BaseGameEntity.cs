@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Raven
 {
@@ -84,9 +85,9 @@ namespace Raven
         public void Tag() { m_bTag = true; }
         public void UnTag() { m_bTag = false; }
 
-        //public Vector3 Scale() {return m_vScale;}
-        //public void SetScale(Vector2D val) { m_dBoundingRadius *= MaxOf(val.x, val.y) / MaxOf(m_vScale.x, m_vScale.y); m_vScale = val; }
-        //public void SetScale(float val) { m_dBoundingRadius *= (val / MaxOf(m_vScale.x, m_vScale.y)); m_vScale = Vector2D(val, val); }
+        public Vector3 Scale() {return m_vScale;}
+        public void SetScale(Vector3 val) { m_dBoundingRadius *= Math.Max(val.x, val.z) / Math.Max(m_vScale.x, m_vScale.z); m_vScale = val; }
+        public void SetScale(float val) { m_dBoundingRadius *= (val / Math.Max(m_vScale.x, m_vScale.z)); m_vScale = new Vector3(val, val, val); }
 
         public int EntityType() {return m_iType;}
         public void SetEntityType(int new_type) { m_iType = new_type; }

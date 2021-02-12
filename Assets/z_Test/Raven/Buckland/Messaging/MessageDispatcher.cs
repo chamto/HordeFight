@@ -4,66 +4,58 @@ using UnityEngine;
 
 namespace Raven
 {
+
     public class MessageDispatcher
     {
-
-        //public static MessageDispatcher Instance = null;
 
         //a std::set is used as the container for the delayed messages
         //because of the benefit of automatic sorting and avoidance
         //of duplicates. Messages are sorted by their dispatch time.
-        //std::set<Telegram> PriorityQ;
         private SortedSet<Telegram> PriorityQ = new SortedSet<Telegram>();
 
-        //this method is utilized by DispatchMessage or DispatchDelayedMessages.
+        //this method is utilized by DispatchMsg or DispatchDelayedMessages.
         //This method calls the message handling member function of the receiving
         //entity, pReceiver, with the newly created telegram
-        private void Discharge(BaseGameEntity pReceiver, Telegram telegram)
+        void Discharge(BaseGameEntity pReceiver, Telegram telegram)
         {
-            if (!pReceiver.HandleMessage(telegram))
-            {
+          if (!pReceiver.HandleMessage(telegram))
+          {
                 //telegram could not be handled
+                //#ifdef SHOW_MESSAGING_INFO
                 DebugWide.LogRed("Message not handled");
+                //#endif
             }
         }
 
 
 
-        //---------------------------- DispatchMessage ---------------------------
-        //
-        //  given a message, a receiver, a sender and any time delay , this function
-        //  routes the message to the correct agent (if no delay) or stores
-        //  in the message queue to be dispatched at the correct time
-        //------------------------------------------------------------------------
-        public void DispatchMessage(float delay,
-                                        int sender,
-                                        int receiver,
-                                        int msg,
-                                        object ExtraInfo)
+        //send a message to another agent. Receiving agent is referenced by ID.
+        public void DispatchMsg(float delay,
+                                    int sender,
+                                    int receiver,
+                                    int msg,
+                                    object AdditionalInfo)
         {
 
-
-            //get pointers to the sender and receiver
-            BaseGameEntity pSender = SingleO.entityMgr.GetEntityFromID(sender);
-            BaseGameEntity pReceiver = SingleO.entityMgr.GetEntityFromID(receiver);
+            //get a pointer to the receiver
+            BaseGameEntity pReceiver =  SingleO.entityMgr.GetEntityFromID(receiver);
 
             //make sure the receiver is valid
-            if (null == pReceiver)
+            if (pReceiver == null)
             {
                 DebugWide.LogRed("Warning! No Receiver with ID of " + receiver + " found");
-
                 return;
             }
 
             //create the telegram
-            Telegram telegram = new Telegram(0, sender, receiver, msg, ExtraInfo);
+            Telegram telegram = new Telegram(0, sender, receiver, msg, AdditionalInfo);
 
             //if there is no delay, route telegram immediately                       
             if (delay <= 0.0f)
             {
                 //DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 DebugWide.LogWhite("\nInstant telegram dispatched at time: " + Time.time +
-                " by " + pSender.ID() + " for " + pReceiver.ID() + ". Msg is " + ((eMsg)msg).ToString());
+                " by " + sender + " for " + receiver + ". Msg is " + (eMsg)msg);
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
             }
@@ -79,21 +71,15 @@ namespace Raven
                 //and put it in the queue
                 PriorityQ.Add(telegram);
 
-                DebugWide.LogWhite("Delayed telegram from " + pSender.ID() + " recorded at time " + Time.time
-                + " for " + pReceiver.ID() + ". Msg is " + ((eMsg)msg).ToString());
+                DebugWide.LogWhite("Delayed telegram from " + sender + " recorded at time " + Time.time
+                + " for " + receiver + ". Msg is " + (eMsg)msg);
             }
         }
 
-        //---------------------- DispatchDelayedMessages -------------------------
-        //
-        //  This function dispatches any telegrams with a timestamp that has
-        //  expired. Any dispatched telegrams are removed from the queue
-        //------------------------------------------------------------------------
+        //send out any delayed messages. This method is called each time through   
+        //the main game loop.
         public void DispatchDelayedMessages()
         {
-
-            //get current time
-
             float CurrentTime = Time.time;
 
             //now peek at the queue to see if any telegrams need dispatching.
@@ -109,14 +95,15 @@ namespace Raven
 
 
                 DebugWide.LogWhite("Queued telegram ready for dispatch: Sent to " + pReceiver.ID()
-                    + ". Msg is " + ((eMsg)telegram.Msg).ToString());
+                    + ". Msg is " + (eMsg)telegram.Msg);
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
 
                 //remove it from the queue
                 PriorityQ.Remove(telegram);
             }
-        }//end class
+        }
     }
+
 }
 

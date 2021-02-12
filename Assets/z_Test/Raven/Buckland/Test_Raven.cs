@@ -106,6 +106,8 @@ namespace Raven
 
     public class Const
     {
+        public const int FrameRate = 60;
+
         public const float SEND_MSG_IMMEDIATELY = 0.0f;
         public const int NO_ADDITIONAL_INFO = 0;
         public const int SENDER_ID_IRRELEVANT = -1;
@@ -143,23 +145,59 @@ namespace Raven
 
         public static bool m_bShowScore = false;
     }
-    //======================================================
 
-    public class Params
+    public class Transformation
     {
-        public const int FrameRate = 60;
 
-        public const float RocketLauncher_MaxRoundsCarried = 50f;
-        public const float RailGun_MaxRoundsCarried = 50f;
-        public const float ShotGun_MaxRoundsCarried = 50f;
+        static public void Draw_WorldTransform(List<Vector3> points,
+                                  Vector3 pos,
+                                  Vector3 forward,
+                                  Vector3 side,
+                                  Vector3 scale,
+                                  Color color)
+        {
+            Quaternion rotQ = Quaternion.FromToRotation(forward, side);
 
-        public const int Bot_MaxHealth = 100;
-        public const float Bot_MaxSpeed = 1f;
-        public const float Bot_Mass = 1f;
-        public const float Bot_MaxForce = 1.0f;
-        public const float Bot_MaxHeadTurnRate = 0.2f;
-        public const float Bot_Scale       = 0.8f;
-    }
+            int count = 0;
+            Vector3 tr, cur, prev = ConstV.v3_zero;
+            foreach (Vector3 v in points)
+            {
+                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
+                cur = (rotQ * tr) + pos;
+
+                if (count > 1)
+                {
+                    DebugWide.DrawLine(prev, cur, color);
+                }
+
+                prev = cur;
+
+                count++;
+            }
+        }
+
+        static public List<Vector3> WorldTransform(List<Vector3> points,
+                                  Vector3   pos,
+                                  Vector3   forward,
+                                  Vector3   side,
+                                  Vector3   scale)
+        {
+
+            Quaternion rotQ = Quaternion.FromToRotation(forward, side);
+            List<Vector3> list = new List<Vector3>();
+
+            Vector3 tr;
+            foreach (Vector3 v in points)
+            {
+                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
+                list.Add((rotQ * tr) + pos);
+            }
+            return list;
+
+        }
+
+
+    }   
 
     //======================================================
     public class Goal_SeekToPosition : Goal<Raven_Bot>
@@ -392,6 +430,11 @@ namespace Raven
             return 0;
         }
     }
+
+    public class Raven_Steering { }
+
+    public class Raven_SensoryMemory { }
+
 
     public class PathManager<path_planner>
     {
