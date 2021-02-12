@@ -428,7 +428,7 @@ namespace Raven
                         if (isDead() || isSpawning()) return true;
 
                         //the extra info field of the telegram carries the amount of damage
-                        ReduceHealth(DereferenceToType<int>(msg.ExtraInfo));
+                        ReduceHealth((int)(msg.ExtraInfo));
 
                         //if this bot is now dead let the shooter know
                         if (isDead())
@@ -672,9 +672,8 @@ namespace Raven
         public Raven_Steering GetSteering(){return m_pSteering;}
         public Raven_PathPlanner GetPathPlanner(){return m_pPathPlanner;}
         public Goal_Think GetBrain(){return m_pBrain;}
-        public Raven_TargetingSystem GetTargetSys()const{return m_pTargSys;}
-        public Raven_TargetingSystem GetTargetSys(){return m_pTargSys;}
-        public Raven_Bot GetTargetBot(){return m_pTargSys->GetTarget();}
+        public Raven_TargetingSystem GetTargetSys() {return m_pTargSys;}
+        public Raven_Bot GetTargetBot(){return m_pTargSys.GetTarget();}
         public Raven_WeaponSystem GetWeaponSys(){return m_pWeaponSys;}
         public Raven_SensoryMemory GetSensoryMem(){return m_pSensoryMem;}
 
