@@ -164,14 +164,21 @@ namespace Raven
                                   Vector3 scale,
                                   Color color)
         {
-            Quaternion rotQ = Quaternion.FromToRotation(forward, side);
+            Vector3 up = Vector3.Cross(forward, side);
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, side); //열값 삽입
+            m.SetColumn(1, up);
+            m.SetColumn(2, forward);
+
+            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, forward);
 
             int count = 0;
             Vector3 tr, cur, prev = ConstV.v3_zero;
             foreach (Vector3 v in points)
             {
                 tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-                cur = (rotQ * tr) + pos;
+                //cur = (rotQ * tr) + pos;
+                cur = m.MultiplyPoint(tr) + pos;
 
                 if (count > 1)
                 {
@@ -190,15 +197,22 @@ namespace Raven
                                   Vector3   side,
                                   Vector3   scale)
         {
+            Vector3 up = Vector3.Cross(forward, side);
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, side); //열값 삽입
+            m.SetColumn(1, up);
+            m.SetColumn(2, forward);
 
-            Quaternion rotQ = Quaternion.FromToRotation(forward, side);
+            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, forward);
+
             List<Vector3> list = new List<Vector3>();
 
             Vector3 tr;
             foreach (Vector3 v in points)
             {
                 tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-                list.Add((rotQ * tr) + pos);
+                //list.Add((rotQ * tr) + pos);
+                list.Add((m.MultiplyPoint(tr)) + pos);
             }
             return list;
 
@@ -209,10 +223,15 @@ namespace Raven
                                     Vector3 AgentSide,
                                     Vector3 AgentPosition)
         {
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide); //열값 삽입
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
 
-            Quaternion rotQ = Quaternion.FromToRotation(AgentHeading, AgentSide);
+            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, AgentHeading);
 
-            return rotQ * point + AgentPosition;
+            return m.MultiplyPoint(point) + AgentPosition;
         }
 
         static public void Vec2DRotateAroundOrigin(ref Vector3 v, float ang)
