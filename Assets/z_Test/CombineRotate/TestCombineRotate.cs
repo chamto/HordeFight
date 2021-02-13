@@ -129,10 +129,12 @@ public class TestCombineRotate : MonoBehaviour
 
         Vector3 posToLocal1 = ML.Util.PointToLocalSpace_1(_local.position, _world.forward, _world.right, _world.position);
         Vector3 posToLocal2 = ML.Util.PointToLocalSpace_2(_local.position, _world.forward, _world.right, _world.position);
+        Vector3 posToLocal3 = ML.Util.PointToLocalSpace_3(_local.position, _world.forward, _world.right, _world.position);
 
         DebugWide.LogBlue("f : " + _world.forward + "  s : " + _world.right); //chamto test
         DebugWide.LogBlue("local1 : " + UtilGS9.VOp.ToString(posToLocal1)); //chamto test
         DebugWide.LogBlue("local2 : " + UtilGS9.VOp.ToString(posToLocal2)); //chamto test
+        DebugWide.LogBlue("local3 : " + UtilGS9.VOp.ToString(posToLocal3)); //chamto test
 
         //----------------------------------------------
 

@@ -124,9 +124,9 @@ namespace ML
 
             //로컬좌표기준 이동량을 구한다
             Vector3 t = new Vector3();
-            t.z = Vector3.Dot(AgentPosition, AgentHeading);
             t.x = Vector3.Dot(AgentPosition, AgentSide);
             t.y = Vector3.Dot(AgentPosition, AgentUp);
+            t.z = Vector3.Dot(AgentPosition, AgentHeading);
 
             //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
             //return (rotInv * point) + t;
@@ -138,8 +138,33 @@ namespace ML
             m.SetColumn(2, AgentHeading);
             m = Matrix4x4.Inverse(m);
 
+
             //로컬좌표기준 이동량을 빼준다
             return m.MultiplyPoint(point) - t;
+
+        }
+
+        //PointToLocalSpace_2 함수에서 내적안하는 방식 
+        public static Vector3 PointToLocalSpace_2_1(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+
+
+            //회전행렬을 만든후 그 역행렬을 구한다 
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide);
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+            m = Matrix4x4.Inverse(m);
+
+            Vector3 t = AgentPosition;
+
+            //역회전이 적용된 o2 위치값을 빼준다 
+            return m.MultiplyPoint(point) - m.MultiplyPoint(t);
 
         }
 
@@ -156,7 +181,7 @@ namespace ML
             //AgentSide.Normalize();
 
             //이동량을 빼준다 
-            Vector3 t = point - AgentPosition;
+            Vector3 p1 = point - AgentPosition;
 
             //Quaternion rotInv = Quaternion.FromToRotation(AgentHeading, Vector3.forward);
             //return (rotInv * t);
@@ -169,7 +194,28 @@ namespace ML
             m = Matrix4x4.Inverse(m);
 
             //역회전을 한다 
-            return m.MultiplyPoint(t);
+            return m.MultiplyPoint(p1);
+        }
+
+        //역행렬 없이 상대위치 구하기 
+        public static Vector3 PointToLocalSpace_3(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+
+            //이동량을 빼준다 
+            Vector3 p1 = point - AgentPosition;
+
+            Vector3 t = new Vector3();
+            t.x = Vector3.Dot(p1, AgentSide);
+            t.y = Vector3.Dot(p1, AgentUp);
+            t.z = Vector3.Dot(p1, AgentHeading);
+
+
+            return t;
         }
 
     }

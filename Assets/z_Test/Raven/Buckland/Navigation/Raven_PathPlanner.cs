@@ -394,7 +394,7 @@ namespace Raven
             if (result == (int)eReturn.target_not_found)
             {
 
-                SingleO.dispatcher.DispatchMessage(Const.SEND_MSG_IMMEDIATELY,
+                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                      Const.SENDER_ID_IRRELEVANT,
                                      m_pOwner.ID(),
                                      (int)eMsg.NoPathAvailable,
@@ -413,7 +413,7 @@ namespace Raven
                 m_NavGraph.GetNode(m_pCurrentSearch.GetPathToTarget().Last.Value).ExtraInfo<Trigger<Raven_Bot>>();
 
 
-                SingleO.dispatcher.DispatchMessage(Const.SEND_MSG_IMMEDIATELY,
+                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                 Const.SENDER_ID_IRRELEVANT,
                                 m_pOwner.ID(),
                                 (int)eMsg.PathReady,

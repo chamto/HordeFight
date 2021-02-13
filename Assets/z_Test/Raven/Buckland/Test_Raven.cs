@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UtilGS9;
 
@@ -111,6 +112,13 @@ namespace Raven
         public const float SEND_MSG_IMMEDIATELY = 0.0f;
         public const int NO_ADDITIONAL_INFO = 0;
         public const int SENDER_ID_IRRELEVANT = -1;
+
+        //the radius of the constraining circle for the wander behavior
+        public const float WanderRad = 1.2f;
+        //distance the wander circle is projected in front of the agent
+        public const float WanderDist = 2.0f;
+        //the maximum amount of displacement along the circle each frame
+        public const float WanderJitterPerSec = 40.0f;
     }
 
     //======================================================
@@ -196,6 +204,22 @@ namespace Raven
 
         }
 
+        static public Vector3 PointToWorldSpace(Vector3 point,
+                                    Vector3 AgentHeading,
+                                    Vector3 AgentSide,
+                                    Vector3 AgentPosition)
+        {
+
+            Quaternion rotQ = Quaternion.FromToRotation(AgentHeading, AgentSide);
+
+            return rotQ * point + AgentPosition;
+        }
+
+        static public void Vec2DRotateAroundOrigin(ref Vector3 v, float ang)
+        {
+            Quaternion rotQ = Quaternion.AngleAxis(ang, ConstV.v3_up);
+            v = rotQ * v;
+        }
 
     }   
 
@@ -431,9 +455,6 @@ namespace Raven
         }
     }
 
-    public class Raven_Steering { }
-
-    public class Raven_SensoryMemory { }
 
 
     public class PathManager<path_planner>
@@ -496,6 +517,8 @@ namespace Raven
 
         public Raven_Map GetMap() { return m_pMap; }
         public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
+        public bool isLOSOkay(Vector3 a, Vector3 b) { return false; }
+        public LinkedList<Raven_Bot> GetAllBots() { return null; }
     }
 
 
