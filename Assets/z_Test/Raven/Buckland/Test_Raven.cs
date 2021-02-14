@@ -54,19 +54,19 @@ namespace Raven
 
     public enum eObjType
     {
-        wall,
-        bot,
-        unused,
-        waypoint,
-        health,
-        spawn_point,
-        rail_gun,
-        rocket_launcher,
-        shotgun,
-        blaster,
-        obstacle,
-        sliding_door,
-        door_trigger
+        wall = 0 ,
+        bot = 1,
+        unused = 2,
+        waypoint = 3,
+        health = 4,
+        spawn_point = 5,
+        rail_gun = 6,
+        rocket_launcher = 7,
+        shotgun = 8,
+        blaster = 9,
+        obstacle = 10,
+        sliding_door = 11,
+        door_trigger = 12
     }
 
     public enum eGoal

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-/*
+//*
 namespace Raven
 {
 
@@ -51,47 +51,45 @@ namespace Raven
             //render the normals if rqd
             if (RenderNormals)
             {
-                int MidX = (int)((m_vA.x + m_vB.x) / 2);
-                int MidY = (int)((m_vA.y + m_vB.y) / 2);
+                Vector3 mid = (m_vA + m_vB) / 2f; //벡터중간점 구하는 특수공식
 
-                DebugWide.DrawLine(
-                gdi->Line(MidX, MidY, (int)(MidX+(m_vN.x* 5)), (int) (MidY+(m_vN.y* 5)));
+                DebugWide.DrawLine(mid, mid + m_vN * 5f, Color.white);
+
             }
         }
 
-Vector2D From()const  {return m_vA;}
-  void SetFrom(Vector2D v) { m_vA = v; CalculateNormal(); }
+        public Vector3 From()  {return m_vA;}
+        public void SetFrom(Vector3 v) { m_vA = v; CalculateNormal(); }
 
-Vector2D To()const    {return m_vB;}
-  void SetTo(Vector2D v) { m_vB = v; CalculateNormal(); }
+        public Vector3 To()    {return m_vB;}
+        public void SetTo(Vector3 v) { m_vB = v; CalculateNormal(); }
 
-Vector2D Normal()const{return m_vN;}
-  void SetNormal(Vector2D n) { m_vN = n; }
+        public Vector3 Normal() {return m_vN;}
+        public void SetNormal(Vector3 n) { m_vN = n; }
 
-Vector2D Center()const{return (m_vA+m_vB)/2.0;}
+        public Vector3 Center() {return (m_vA+m_vB)/2.0f;}
 
-  std::ostream& Wall2D::Write(std::ostream& os)const
-  {
-    os << std::endl;
-    os << From() << ",";
-    os << To() << ",";
-    os << Normal();
-    return os;
-  }
+  
 
- void Read(std::ifstream& in)
-{
-    double x, y;
+        public void Read(string line)
+        {
+            float x=0f, y=0f, z=0f;
 
-    in >> x >> y;
-    SetFrom(Vector2D(x, y));
+            string[] sp = line.Split(' ');
+            int idx = 0;
 
-    in >> x >> y;
-    SetTo(Vector2D(x, y));
+            x = float.Parse(sp[idx++]);
+            z = float.Parse(sp[idx++]);
+            SetFrom(new Vector3(x, y, z));
 
-     in >> x >> y;
-    SetNormal(Vector2D(x, y));
-}
+            x = float.Parse(sp[idx++]);
+            z = float.Parse(sp[idx++]);
+            SetTo(new Vector3(x, y, z));
+
+            x = float.Parse(sp[idx++]);
+            z = float.Parse(sp[idx++]);
+            SetNormal(new Vector3(x, y, z));
+        }
   
 }
 
@@ -314,33 +312,36 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
 
         //this returns a steering force which will keep the agent away from any
         //walls it may encounter
-        Vector3 WallAvoidance(const vector<Wall2D*> &walls)
+        Vector3 WallAvoidance(List<Wall2D> walls)
         {
             //the feelers are contained in a std::vector, m_Feelers
             CreateFeelers();
 
-            double DistToThisIP = 0.0;
-            double DistToClosestIP = MaxDouble;
+            float DistToThisIP = 0.0f;
+            float DistToClosestIP = float.MaxValue;
 
             //this will hold an index into the vector of walls
             int ClosestWall = -1;
 
-            Vector2D SteeringForce,
+            Vector3 SteeringForce = ConstV.v3_zero,
                       point,         //used for storing temporary info
-                      ClosestPoint;  //holds the closest intersection point
+                      ClosestPoint = ConstV.v3_zero;  //holds the closest intersection point
 
             //examine each feeler in turn
-            for (unsigned int flr = 0; flr < m_Feelers.size(); ++flr)
+            for (int flr = 0; flr < m_Feelers.Count; ++flr)
             {
                 //run through each wall checking for any intersection points
-                for (unsigned int w = 0; w < walls.size(); ++w)
+                for (int w = 0; w < walls.Count; ++w)
                 {
-                    if (LineIntersection2D(m_pRaven_Bot->Pos(),
-                                           m_Feelers[flr],
-                                           walls[w]->From(),
-                                           walls[w]->To(),
-                                           DistToThisIP,
-                                           point))
+                    LineSegment3 l_a = new LineSegment3(m_pRaven_Bot.Pos(), m_Feelers[flr]);
+                    LineSegment3 l_b = new LineSegment3(walls[w].From(), walls[w].To());
+                    if(LineSegment3.Intersection(l_a, l_b, out DistToThisIP, out point))
+                    //if (LineIntersection2D(m_pRaven_Bot->Pos(),
+                                           //m_Feelers[flr],
+                                           //walls[w]->From(),
+                                           //walls[w]->To(),
+                                           //DistToThisIP,
+                                           //point))
                     {
                         //is this the closest found so far? If so keep a record
                         if (DistToThisIP < DistToClosestIP)
@@ -361,11 +362,11 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
                 {
                     //calculate by what distance the projected position of the agent
                     //will overshoot the wall
-                    Vector2D OverShoot = m_Feelers[flr] - ClosestPoint;
+                    Vector3 OverShoot = m_Feelers[flr] - ClosestPoint;
 
                     //create a force in the direction of the wall normal, with a 
                     //magnitude of the overshoot
-                    SteeringForce = walls[ClosestWall]->Normal() * OverShoot.Length();
+                    SteeringForce = walls[ClosestWall].Normal() * OverShoot.magnitude;
                 }
 
             }//next feeler
@@ -374,25 +375,24 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
         }
 
 
-        Vector3 Separation(const std::list<Raven_Bot*>& neighbors)
+        Vector3 Separation(LinkedList<Raven_Bot> neighbors)
         {
             //iterate through all the neighbors and calculate the vector from the
-            Vector2D SteeringForce;
+            Vector3 SteeringForce = ConstV.v3_zero;
 
-            std::list<Raven_Bot*>::const_iterator it = neighbors.begin();
-            for (it; it != neighbors.end(); ++it)
+            foreach(Raven_Bot it in neighbors)
             {
                 //make sure this agent isn't included in the calculations and that
                 //the agent being examined is close enough. ***also make sure it doesn't
                 //include the evade target ***
-                if ((*it != m_pRaven_Bot) && (*it)->IsTagged() &&
-                  (*it != m_pTargetAgent1))
+                if ((it != m_pRaven_Bot) && (it).IsTagged() &&
+                  (it != m_pTargetAgent1))
                 {
-                    Vector2D ToAgent = m_pRaven_Bot->Pos() - (*it)->Pos();
+                    Vector3 ToAgent = m_pRaven_Bot.Pos() - (it).Pos();
 
                     //scale the force inversely proportional to the agents distance  
                     //from its neighbor.
-                    SteeringForce += Vec2DNormalize(ToAgent) / ToAgent.Length();
+                    SteeringForce += VOp.Normalize(ToAgent) / ToAgent.magnitude;
                 }
             }
 
@@ -406,51 +406,51 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
 
     // .......................................................
 
-    //calculates and sums the steering forces from any active behaviors
-    Vector3 CalculatePrioritized()
+        //calculates and sums the steering forces from any active behaviors
+        Vector3 CalculatePrioritized()
         {
-            Vector2D force;
+            Vector3 force = ConstV.v3_zero;
 
-            if (On(wall_avoidance))
+            if (On(eBehavior.wall_avoidance))
             {
-                force = WallAvoidance(m_pWorld->GetMap()->GetWalls()) *
+                force = WallAvoidance(m_pWorld.GetMap().GetWalls()) *
                         m_dWeightWallAvoidance;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
             //these next three can be combined for flocking behavior (wander is
             //also a good behavior to add into this mix)
 
-            if (On(separation))
+            if (On(eBehavior.separation))
             {
-                force = Separation(m_pWorld->GetAllBots()) * m_dWeightSeparation;
+                force = Separation(m_pWorld.GetAllBots()) * m_dWeightSeparation;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
-            if (On(seek))
+            if (On(eBehavior.seek))
             {
                 force = Seek(m_vTarget) * m_dWeightSeek;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
-            if (On(arrive))
+            if (On(eBehavior.arrive))
             {
                 force = Arrive(m_vTarget, m_Deceleration) * m_dWeightArrive;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
-            if (On(wander))
+            if (On(eBehavior.wander))
             {
                 force = Wander() * m_dWeightWander;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
@@ -474,7 +474,7 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
             m_Feelers.Add(ConstV.v3_zero);
             m_Feelers.Add(ConstV.v3_zero);
             m_Feelers.Add(ConstV.v3_zero);
-            m_Deceleration = Deceleration.normal;
+            m_Deceleration = eDeceleration.normal;
             m_pTargetAgent1 = null;
             m_pTargetAgent2 = null;
             m_dWanderDistance = Const.WanderDist;
@@ -483,7 +483,7 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
              m_dWeightSeek = Params.SeekWeight;
             m_dWeightArrive = Params.ArriveWeight;
             m_bCellSpaceOn = false;
-            m_SummingMethod = summing_method.prioritized;
+            m_SummingMethod = eSumming_method.prioritized;
 
             //stuff for the wander behavior
             float theta = Misc.RandFloat() * ConstV.TwoPi;
@@ -499,12 +499,12 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
         public Vector3 Calculate()
         {
             //reset the steering force
-            m_vSteeringForce.Zero();
+            m_vSteeringForce = ConstV.v3_zero;
 
             //tag neighbors if any of the following 3 group behaviors are switched on
-            if (On(separation))
+            if (On(eBehavior.separation))
             {
-                m_pWorld->TagRaven_BotsWithinViewRange(m_pRaven_Bot, m_dViewDistance);
+                m_pWorld.TagRaven_BotsWithinViewRange(m_pRaven_Bot, m_dViewDistance);
             }
 
             m_vSteeringForce = CalculatePrioritized();
@@ -516,14 +516,14 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
         //with the Raven_Bot heading
         public float ForwardComponent()
         {
-            return m_pRaven_Bot->Heading().Dot(m_vSteeringForce);
+            return Vector3.Dot(m_pRaven_Bot.Heading(), m_vSteeringForce);
         }
 
         //calculates the component of the steering force that is perpendicuar
         //with the Raven_Bot heading
         public float SideComponent()
         {
-            return m_pRaven_Bot->Side().Dot(m_vSteeringForce);
+            return Vector3.Dot(m_pRaven_Bot.Side(), m_vSteeringForce);
         }
 
 
@@ -536,7 +536,7 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
 
         public Vector3 Force() { return m_vSteeringForce; }
 
-        public void SetSummingMethod(summing_method sm) { m_SummingMethod = sm; }
+        public void SetSummingMethod(eSumming_method sm) { m_SummingMethod = sm; }
 
 
         public void SeekOn() { m_iFlags |= (int)eBehavior.seek; }
@@ -569,4 +569,4 @@ Vector2D Center()const{return (m_vA+m_vB)/2.0;}
 
 
 }//end namespace
-*/
+//*/
