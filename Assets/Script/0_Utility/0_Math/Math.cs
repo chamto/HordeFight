@@ -302,6 +302,7 @@ namespace UtilGS9
             }
         }
 
+
         // ---------------------------------------------------------------------------
         // Returns the closest points between two line segments.
         //-----------------------------------------------------------------------------
@@ -553,6 +554,22 @@ namespace UtilGS9
 
         }   // End of ::DistanceSquared()
 
+        static public bool Intersection(LineSegment3 segment0, LineSegment3 segment1, out float dist0, out Vector3 point0)
+        {
+
+            float s, c;
+            float sq = DistanceSquared(segment0, segment1, out s, out c);
+
+            point0 = segment0.origin + s * segment0.direction;
+            dist0 = segment0.Length() * s;
+
+            if (true == Misc.IsZero(sq))
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         public LineSegment3 Rotate(Vector3 pos_ori, Quaternion rot)
         {
