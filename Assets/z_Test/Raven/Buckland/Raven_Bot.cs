@@ -7,7 +7,7 @@ using UtilGS9;
 namespace Raven
 {
 
-    //public class Raven_Steering { }
+    //*
     public class Raven_Bot : MovingEntity //BaseGameEntity
     {
 
@@ -24,7 +24,6 @@ namespace Raven
 
         int m_iHealth = 10;
         int m_iMaxHealth = 10;
-        float m_dMaxSpeed = 1f;
 
         //set to true when a human player takes over control of the bot
         bool m_bPossessed;
@@ -34,7 +33,7 @@ namespace Raven
         public Raven_Bot(Raven_Game world, int id) : base(ConstV.v3_zero,
                Params.Bot_Scale,
                ConstV.v3_zero,
-               Params.Bot_MaxSpeed,
+               0.3f,//Params.Bot_MaxSpeed, 
                ConstV.v3_forward,
                Params.Bot_Mass,
                new Vector3(Params.Bot_Scale, Params.Bot_Scale, Params.Bot_Scale),
@@ -45,26 +44,73 @@ namespace Raven
             m_pBrain = new Goal_Think(this);
             m_pPathPlanner = new Raven_PathPlanner(this);
 
+            m_pSteering = new Raven_Steering(world, this);
+
             m_pTargSys = new Raven_TargetingSystem();
             m_pWeaponSys = new Raven_WeaponSystem();
 
             m_pGoalArbitrationRegulator = new Regulator(5);
         }
 
+        void UpdateMovement()
+        {
+            //calculate the combined steering force
+            Vector3 force = m_pSteering.Calculate();
 
+            //if no steering force is produced decelerate the player by applying a
+            //braking force
+            if (Misc.IsZero(m_pSteering.Force()))
+            {
+                const float BrakingRate = 0.8f;
+
+                m_vVelocity = m_vVelocity * BrakingRate;
+            }
+
+            //calculate the acceleration
+            Vector3 accel = force / m_dMass;
+
+            //update the velocity
+            m_vVelocity += accel;
+
+            //DebugWide.LogBlue(m_vVelocity.magnitude + "   " + m_dMaxSpeed);
+            //make sure vehicle does not exceed maximum velocity
+            //m_vVelocity.Truncate(m_dMaxSpeed);
+            m_vVelocity = VOp.Truncate(m_vVelocity, m_dMaxSpeed);
+
+            //update the position
+            m_vPosition += m_vVelocity;
+
+            //if the vehicle has a non zero velocity the heading and side vectors must 
+            //be updated
+            if (!Misc.IsZero(m_vVelocity))
+            {
+                m_vHeading = VOp.Normalize(m_vVelocity);
+
+                //m_vSide = m_vHeading.Perp();
+                m_vSide = Vector3.Cross(m_vHeading, ConstV.v3_up);
+            }
+        }
 
         override public void Update()
         {
+            UpdateMovement();
             m_pBrain.Process();
 
             if(m_pGoalArbitrationRegulator.isReady())
             {
                 m_pBrain.Arbitrate();
-                DebugWide.LogBlue(Time.time);
+                //DebugWide.LogBlue(Time.time);
             }
         }
 
-        public Vector3 Pos() { return ConstV.v3_zero; }
+        public void Render()
+        {
+            {
+
+                DebugWide.DrawCircle(m_vPosition, BRadius() + 1, Color.red);
+            }
+        }
+          
 
         public int Health() { return m_iHealth; }
         public int MaxHealth() { return m_iMaxHealth; }
@@ -73,8 +119,8 @@ namespace Raven
         public bool isPossessed() { return m_bPossessed; }
         public bool isAtPosition(Vector3 pos)
         {
-            const float tolerance = 10.0f;
-
+            const float tolerance = 1.0f;
+            //DebugWide.LogWhite(Pos() + " __ " + pos + "________" +(Pos() - pos).sqrMagnitude + "  < " + (tolerance * tolerance));
             return (Pos() - pos).sqrMagnitude < tolerance * tolerance;
         }
         public bool hasLOSto(Vector3 pos) { return false; }
@@ -99,7 +145,7 @@ namespace Raven
         public Vector3 Facing() { return ConstV.v3_zero; }
         public float FieldOfView() { return 0f; }
     }
-
+    //*/
     
     /*
     public class Raven_Bot :  MovingEntity

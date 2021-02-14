@@ -33,6 +33,8 @@ namespace Raven
             _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero); //복합목표 출력
             _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15)); //생각을 위한 평가값들 출력
 
+            _bot_0.Render();
+
         }
     }
 
@@ -296,8 +298,8 @@ namespace Raven
             m_dTimeToReachPos += MarginOfError;
 
 
-            //m_pOwner.GetSteering().SetTarget(m_vPosition);
-            //m_pOwner.GetSteering().SeekOn();
+            m_pOwner.GetSteering().SetTarget(m_vPosition);
+            m_pOwner.GetSteering().SeekOn();
         }
         override public int Process()
         {
@@ -323,8 +325,8 @@ namespace Raven
         }
         override public void Terminate()
         {
-            //m_pOwner.GetSteering().SeekOff();
-            //m_pOwner.GetSteering().ArriveOff();
+            m_pOwner.GetSteering().SeekOff();
+            m_pOwner.GetSteering().ArriveOff();
 
             m_iStatus = (int)eStatus.completed;
         }
@@ -499,7 +501,7 @@ namespace Raven
 
     public class Raven_Map
     {
-
+        List<Wall2D> m_Walls;
         NavGraph m_pNavGraph = new NavGraph(false);
         CellSpacePartition<NavGraphNode> m_pSpacePartition;
         float m_dCellSpaceNeighborhoodRange;
@@ -521,16 +523,20 @@ namespace Raven
         public Vector3 GetRandomNodeLocation() 
         {
             //return ConstV.v3_zero;
-            return new Vector3(30,0,30); //임시로 값 부여 
+
+            return new Vector3(Misc.RandFloat() * 30,0, Misc.RandFloat() * 30); //임시로 값 부여 
         } 
         public NavGraph GetNavGraph() {return m_pNavGraph;}
         public float GetCellSpaceNeighborhoodRange() {return m_dCellSpaceNeighborhoodRange;}
         public CellSpacePartition<NavGraphNode> GetCellSpace() {return m_pSpacePartition;}
         public float CalculateCostToTravelBetweenNodes(int nd1, int nd2) { return 0f; }
+
+        public List<Wall2D> GetWalls() { return m_Walls; }
     }
 
     public class Raven_Game
     {
+        LinkedList<Raven_Bot> m_Bots;
         Raven_Map m_pMap = new Raven_Map();
         PathManager<Raven_PathPlanner> m_pPathManager = new PathManager<Raven_PathPlanner>();
 
@@ -538,6 +544,34 @@ namespace Raven
         public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
         public bool isLOSOkay(Vector3 a, Vector3 b) { return false; }
         public LinkedList<Raven_Bot> GetAllBots() { return null; }
+
+        public void TagRaven_BotsWithinViewRange(BaseGameEntity pRaven_Bot, float range)
+        { TagNeighbors(pRaven_Bot, m_Bots, range); }
+
+
+        void TagNeighbors(BaseGameEntity entity, LinkedList<Raven_Bot> others, float radius)
+        {
+
+            foreach(Raven_Bot it in others)
+            {
+                //first clear any current tag
+                (it).UnTag();
+
+                //work in distance squared to avoid sqrts
+                Vector3 to = (it).Pos() - entity.Pos();
+
+                //the bounding radius of the other is taken into account by adding it 
+                //to the range
+                float range = radius + (it).BRadius();
+
+                //if entity within range, tag for further consideration
+                if (((it) != entity) && (to.sqrMagnitude < range* range))
+                {
+                    (it).Tag();
+                }
+
+            }//next entity
+        }
     }
 
 

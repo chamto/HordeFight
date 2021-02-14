@@ -48,6 +48,8 @@ namespace Raven
             m_vPosition = position;
             m_dBoundingRadius = radius;
             m_vScale = scale;
+
+            //DebugWide.LogBlue(m_dMaxSpeed +" ----------");
         }
 
 
