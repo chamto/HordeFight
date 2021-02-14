@@ -141,8 +141,8 @@ namespace HordeFight
 
             float normalTime = aniState.normalizedTime - (int)aniState.normalizedTime;
             float playTime = aniState.length;
-            string stateName = SingleO.hashMap.GetString(aniState.shortNameHash);
-            string transName = SingleO.hashMap.GetString(aniTrans.nameHash);
+            string stateName = HashToStringMap.GetString(aniState.shortNameHash);
+            string transName = HashToStringMap.GetString(aniTrans.nameHash);
             int hash = Animator.StringToHash("attack");
             if (hash == aniState.shortNameHash)
             {

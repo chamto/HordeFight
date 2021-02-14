@@ -41,13 +41,13 @@ namespace HordeFight
 
             //==============================================
             _startDateTime = DateTime.Now;
-            SingleO.hashMap.Add(Animator.StringToHash("idle"), "idle");
-            SingleO.hashMap.Add(Animator.StringToHash("move"), "move");
-            SingleO.hashMap.Add(Animator.StringToHash("block"), "block");
-            SingleO.hashMap.Add(Animator.StringToHash("attack"), "attack");
-            SingleO.hashMap.Add(Animator.StringToHash("fallDown"), "fallDown");
-            SingleO.hashMap.Add(Animator.StringToHash("idle -> attack"), "idle -> attack");
-            SingleO.hashMap.Add(Animator.StringToHash("attack -> idle"), "attack -> idle");
+            HashToStringMap.Add(Animator.StringToHash("idle"), "idle");
+            HashToStringMap.Add(Animator.StringToHash("move"), "move");
+            HashToStringMap.Add(Animator.StringToHash("block"), "block");
+            HashToStringMap.Add(Animator.StringToHash("attack"), "attack");
+            HashToStringMap.Add(Animator.StringToHash("fallDown"), "fallDown");
+            HashToStringMap.Add(Animator.StringToHash("idle -> attack"), "idle -> attack");
+            HashToStringMap.Add(Animator.StringToHash("attack -> idle"), "attack -> idle");
             _timeTemp += "  ObjectManager.hashMap.Add  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
             //==============================================
             _startDateTime = DateTime.Now;

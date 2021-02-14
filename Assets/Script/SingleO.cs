@@ -130,7 +130,7 @@ using UtilGS9;
             campManager = CSingleton<CampManager>.Instance;
             cellPartition = CSingleton<CellSpacePartition>.Instance;
             coroutine = CSingleton<WideCoroutine>.Instance;
-            hashMap = CSingleton<HashToStringMap>.Instance;
+            //hashMap = CSingleton<HashToStringMap>.Instance;
             skillBook = CSingleton<SkillBook>.Instance;
             //==============================================
 
@@ -207,7 +207,7 @@ using UtilGS9;
         public static ResourceManager resourceManager = null;
         public static HierarchyPreLoader hierarchy = null;
         public static WideCoroutine coroutine = null;
-        public static HashToStringMap hashMap = null;
+        //public static HashToStringMap hashMap = null;
         public static SkillBook skillBook = null;
 
     }

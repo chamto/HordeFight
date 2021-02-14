@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Assertions;
+using System.IO;
 using System;
 using System.Text.RegularExpressions;
 
@@ -39,6 +40,26 @@ namespace UtilGS9
         attack,
         fallDown,
         MAX,
+    }
+
+    public partial class ConstV
+    {
+#if UNITY_EDITOR
+        public const string CURRENT_PLATFORM = "UNITY_EDITOR";
+        public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
+#elif UNITY_IPHONE
+        public const string CURRENT_PLATFORM = "UNITY_IPHONE";
+        public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
+#elif UNITY_ANDROID
+        public const string CURRENT_PLATFORM = "UNITY_ANDROID";
+        public static string ASSET_PATH = "jar:file://" + UnityEngine.Application.dataPath + "!/assets/";
+#elif SERVER
+        public const string CURRENT_PLATFORM = "SERVER";
+        public static string ASSET_PATH = "Data_KOR\\";
+#elif TOOL
+        public const string CURRENT_PLATFORM = "TOOL";
+        public static string ASSET_PATH = "Data_KOR\\";
+#endif
     }
 
     public partial class ConstV
@@ -171,11 +192,11 @@ namespace UtilGS9
     /// 해쉬값과 문자열을 쌍으로 묶어 관리하는 객체
     /// </summary>
     ///////////////////////////////////////////////////////////////////////
-    public class HashToStringMap
+    public static class HashToStringMap
     {
-        Dictionary<int, string> _hashStringMap = new Dictionary<int, string>();
+        static Dictionary<int, string> _hashStringMap = new Dictionary<int, string>();
 
-        public void Add(int hash, string str)
+        static public void Add(int hash, string str)
         {
             if (false == _hashStringMap.ContainsKey(hash))
             {
@@ -183,18 +204,18 @@ namespace UtilGS9
             }
         }
 
-        public void Add(string str)
+        static public void Add(string str)
         {
             int hash = str.GetHashCode();
-            this.Add(hash, str);
+            Add(hash, str);
         }
 
-        public bool Contain(int hash)
+        static public bool Contain(int hash)
         {
             return _hashStringMap.ContainsKey(hash);
         }
 
-        public string GetString(int hash)
+        static public string GetString(int hash)
         {
             if (_hashStringMap.ContainsKey(hash))
             {
@@ -206,12 +227,65 @@ namespace UtilGS9
             return ""; //존재하지 않는 키값
         }
 
-        public string GetString_ForAssetFile(int hash)
+        static public string GetString_ForAssetFile(int hash)
         {
-            string tempStr = this.GetString(hash);
+            string tempStr = GetString(hash);
             return Regex.Replace(tempStr, "[?<>:*|\"]", ""); //애셋파일 이름에 들어가면 안되는 특수문자 제거 ?, <, >, :, *, |, ".
         }
     }
+
+    ///////////////////////////////////////////////////////////////////////
+    /// <summary>
+    /// 파일 읽어 메모리 스트림을 반환 
+    /// </summary>
+    ///////////////////////////////////////////////////////////////////////
+    public class FileToMemoryStream
+    {
+
+        static public IEnumerator FileLoading(string strFilePath, System.Action<MemoryStream> result = null)
+        {
+            MemoryStream memStream = null;
+#if SERVER || TOOL
+        {
+        //CDefine.CommonLog("1__" + strFilePath); //chamto test
+        memStream = new MemoryStream(File.ReadAllBytes(strFilePath));
+        }
+
+#elif UNITY_IPHONE || UNITY_ANDROID || UNITY_EDITOR
+            {
+
+                UnityEngine.WWW wwwUrl = new UnityEngine.WWW(strFilePath);
+
+                while (!wwwUrl.isDone)
+                {
+                    if (wwwUrl.error != null)
+                    {
+                        DebugWide.LogRed("error : " + wwwUrl.error.ToString());
+                        yield break;
+                    }
+                    //DebugWide.LogGreen("wwwUrl.progress---" + wwwUrl.progress);
+                    yield return null;
+                }
+
+                if (wwwUrl.isDone)
+                {
+                    //DebugWide.LogGreen("wwwUrl.isDone---size : "+wwwUrl.size);
+                    DebugWide.LogGreen("wwwUrl.isDone---bytesLength : " + wwwUrl.bytes.Length);
+                    memStream = new MemoryStream(wwwUrl.bytes);
+                }
+            }
+#endif
+
+            if (null != result)
+            {
+                result(memStream);
+            }
+            DebugWide.LogGreen("*** " + strFilePath + " WWW Loading complete");
+            yield return memStream;
+        }
+
+    }
+
 
 
     ///////////////////////////////////////////////////////////////////////
@@ -1969,6 +2043,27 @@ namespace UtilGS9
 
             //역회전을 한다 
             return m.MultiplyPoint(t);
+        }
+
+        //역행렬 없이 상대위치 구하기 
+        public static Vector3 PointToLocalSpace_3(Vector3 point,
+                             Vector3 AgentHeading,
+                             Vector3 AgentSide,
+                             Vector3 AgentPosition)
+        {
+
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+
+            //이동량을 빼준다 
+            Vector3 p1 = point - AgentPosition;
+
+            Vector3 t = new Vector3();
+            t.x = Vector3.Dot(p1, AgentSide);
+            t.y = Vector3.Dot(p1, AgentUp);
+            t.z = Vector3.Dot(p1, AgentHeading);
+
+
+            return t;
         }
 
     }//end misc
