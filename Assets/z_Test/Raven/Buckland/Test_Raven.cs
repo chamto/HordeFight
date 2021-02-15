@@ -16,7 +16,7 @@ namespace Raven
             SingleO.Init();
 
 
-            _bot_0 = new Raven_Bot(SingleO.raven, 0);
+            _bot_0 = new Raven_Bot(SingleO.raven, ConstV.v3_zero);
         }
 
         // Update is called once per frame
@@ -444,9 +444,14 @@ namespace Raven
         //the current target (this will be null if there is no target assigned)
         Raven_Bot m_pCurrentTarget;
 
+        public Raven_TargetingSystem(Raven_Bot bot) { }
+
+        public void Update() { }
+
         public bool isTargetPresent() {return m_pCurrentTarget != null;}
         public bool isTargetShootable() { return false; }
         public Raven_Bot GetTarget() {return m_pCurrentTarget;}
+        public void ClearTarget() { }
     }
 
     public class Raven_Weapon
@@ -457,6 +462,8 @@ namespace Raven
 
     public class Raven_WeaponSystem
     {
+        public Raven_WeaponSystem(Raven_Bot bot , float a , float b , float c) { }
+
         public Raven_Weapon GetWeaponFromInventory(int weapon_type)
         {
 
@@ -475,112 +482,18 @@ namespace Raven
         }
 
         public void RenderDesirabilities() { }
+        public void RenderCurrentWeapon() { }
+        public void SelectWeapon() { }
+        public void TakeAimAndShoot() { }
+
+        public void ShootAt(Vector3 p) { }
+        public void ChangeWeapon(int i) { }
+        public void Initialize() { }
     }
-
-
-
-    public class PathManager<path_planner>
-    {
-        public void Register(path_planner pPathPlanner)
-        { }
-        public void UnRegister(path_planner pPathPlanner)
-        {
-            //m_SearchRequests.remove(pPathPlanner);
-
-        }
-    }
-
-    public class Path : LinkedList<PathEdge> { }
-
-    public class NavGraph : SparseGraph<NavGraphNode, NavGraphEdge>
-    {
-        public NavGraph(bool digraph) : base(digraph)
-        {
-        }
-    }
-
-
-    public class Raven_Map
-    {
-        List<Wall2D> m_Walls;
-        NavGraph m_pNavGraph = new NavGraph(false);
-        CellSpacePartition<NavGraphNode> m_pSpacePartition;
-        float m_dCellSpaceNeighborhoodRange;
-
-        TriggerSystem<Trigger<Raven_Bot>> m_TriggerSystem;
-
-        public Raven_Map()
-        {
-            m_pSpacePartition = new CellSpacePartition<NavGraphNode>(100,
-                                                                  100,
-                                                                  10,
-                                                                  10,
-                                                                  m_pNavGraph.NumNodes());
-
-
-        }
-
-        public TriggerList GetTriggers() {return m_TriggerSystem.GetTriggers();}
-        public Vector3 GetRandomNodeLocation() 
-        {
-            //return ConstV.v3_zero;
-
-            return new Vector3(Misc.RandFloat() * 30,0, Misc.RandFloat() * 30); //임시로 값 부여 
-        } 
-        public NavGraph GetNavGraph() {return m_pNavGraph;}
-        public float GetCellSpaceNeighborhoodRange() {return m_dCellSpaceNeighborhoodRange;}
-        public CellSpacePartition<NavGraphNode> GetCellSpace() {return m_pSpacePartition;}
-        public float CalculateCostToTravelBetweenNodes(int nd1, int nd2) { return 0f; }
-
-        public List<Wall2D> GetWalls() { return m_Walls; }
-    }
-
-    /*
-    public class Raven_Game2
-    {
-        LinkedList<Raven_Bot> m_Bots;
-        Raven_Map m_pMap = new Raven_Map();
-        PathManager<Raven_PathPlanner> m_pPathManager = new PathManager<Raven_PathPlanner>();
-
-        public Raven_Map GetMap() { return m_pMap; }
-        public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
-        public bool isLOSOkay(Vector3 a, Vector3 b) { return false; }
-        public LinkedList<Raven_Bot> GetAllBots() { return null; }
-
-        public void TagRaven_BotsWithinViewRange(BaseGameEntity pRaven_Bot, float range)
-        { TagNeighbors(pRaven_Bot, m_Bots, range); }
-
-
-        void TagNeighbors(BaseGameEntity entity, LinkedList<Raven_Bot> others, float radius)
-        {
-
-            foreach(Raven_Bot it in others)
-            {
-                //first clear any current tag
-                (it).UnTag();
-
-                //work in distance squared to avoid sqrts
-                Vector3 to = (it).Pos() - entity.Pos();
-
-                //the bounding radius of the other is taken into account by adding it 
-                //to the range
-                float range = radius + (it).BRadius();
-
-                //if entity within range, tag for further consideration
-                if (((it) != entity) && (to.sqrMagnitude < range* range))
-                {
-                    (it).Tag();
-                }
-
-            }//next entity
-        }
-    }
-    //*/
-
-
 
     //======================================================
 
+    
 
     public class GraveMarkers 
     {
@@ -594,6 +507,8 @@ namespace Raven
 
     public class Raven_Door
     {
+        public int ID() { return 0; }
+        public List<int> GetSwitchIDs() { return null; }
         public void Update() { }
     }
 
@@ -675,6 +590,72 @@ namespace Raven
                          1, 1, 1, 1, 1)
         { }
     }
+
+    //======================================================
+
+    public class PathManager<path_planner>
+    {
+        public PathManager(float a) { }
+
+        public void Register(path_planner pPathPlanner)
+        { }
+        public void UnRegister(path_planner pPathPlanner)
+        {
+            //m_SearchRequests.remove(pPathPlanner);
+
+        }
+        public void UpdateSearches() { }
+    }
+
+    public class Path : LinkedList<PathEdge> { }
+
+    public class NavGraph : SparseGraph<NavGraphNode, NavGraphEdge>
+    {
+        public NavGraph(bool digraph) : base(digraph)
+        {
+        }
+    }
+
+    //======================================================
+
+    //*
+    public class Raven_Map
+    {
+        List<Wall2D> m_Walls;
+        NavGraph m_pNavGraph = new NavGraph(false);
+        CellSpacePartition<NavGraphNode> m_pSpacePartition;
+        float m_dCellSpaceNeighborhoodRange;
+
+        TriggerSystem<Trigger<Raven_Bot>> m_TriggerSystem;
+
+        public Raven_Map()
+        {
+            m_pSpacePartition = new CellSpacePartition<NavGraphNode>(100,
+                                                                  100,
+                                                                  10,
+                                                                  10,
+                                                                  m_pNavGraph.NumNodes());
+
+
+        }
+
+        public TriggerList GetTriggers() { return m_TriggerSystem.GetTriggers(); }
+        public Vector3 GetRandomNodeLocation()
+        {
+            //return ConstV.v3_zero;
+
+            return new Vector3(Misc.RandFloat() * 30, 0, Misc.RandFloat() * 30); //임시로 값 부여 
+        }
+        public NavGraph GetNavGraph() { return m_pNavGraph; }
+        public float GetCellSpaceNeighborhoodRange() { return m_dCellSpaceNeighborhoodRange; }
+        public CellSpacePartition<NavGraphNode> GetCellSpace() { return m_pSpacePartition; }
+        public float CalculateCostToTravelBetweenNodes(int nd1, int nd2) { return 0f; }
+
+        public List<Wall2D> GetWalls() { return m_Walls; }
+    }
+    //*/
+
+    //======================================================
 
 }//end namespace
 
