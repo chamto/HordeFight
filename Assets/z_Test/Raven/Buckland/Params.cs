@@ -17,7 +17,7 @@
         public const int MaxSearchCyclesPerUpdateStep = 1000;
 
         //--the name of the default map
-        public string StartMap = "maps/Raven_DM1.map";
+        public static string StartMap = "maps/Raven_DM1.map";
 
         //--cell space partitioning defaults
         public const int NumCellsX = 10;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UtilGS9;
 
@@ -474,6 +473,8 @@ namespace Raven
 
             return 0;
         }
+
+        public void RenderDesirabilities() { }
     }
 
 
@@ -534,7 +535,8 @@ namespace Raven
         public List<Wall2D> GetWalls() { return m_Walls; }
     }
 
-    public class Raven_Game
+    /*
+    public class Raven_Game2
     {
         LinkedList<Raven_Bot> m_Bots;
         Raven_Map m_pMap = new Raven_Map();
@@ -573,7 +575,106 @@ namespace Raven
             }//next entity
         }
     }
+    //*/
 
+
+
+    //======================================================
+
+
+    public class GraveMarkers 
+    {
+        public GraveMarkers(float v) { }
+
+        public void Update() { }
+        public void Render() { }
+
+        public void AddGrave(Vector3 bot) { }
+    }
+
+    public class Raven_Door
+    {
+        public void Update() { }
+    }
+
+    public class Raven_Projectile : MovingEntity
+    {
+        public Raven_Projectile(Vector3 target,   //the target's position
+                   Raven_Game world,  //a pointer to the world data
+                   int ShooterID, //the ID of the bot that fired this shot
+                   Vector3 origin,  //the start position of the projectile
+                   Vector3 heading,   //the heading of the projectile
+                   int damage,    //how much damage it inflicts
+                   float scale,
+                   float MaxSpeed,
+                   float mass,
+                   float MaxForce) :  base(origin,
+                                                   scale,
+                                                   ConstV.v3_zero,
+                                                     MaxSpeed,
+                                                     heading,
+                                                     mass,
+                                                     new Vector3(scale, scale, scale),
+                                                     0, //max turn rate irrelevant here, all shots go straight
+                                                     MaxForce)
+
+                                        
+            {
+                                        //m_vTarget(target),
+                                        //m_bDead(false),
+                                        //m_bImpacted(false),
+                                        //m_pWorld(world),
+                                        //m_iDamageInflicted(damage),
+                                        //m_vOrigin(origin),
+                                        //m_iShooterID(ShooterID) 
+            }
+
+            public bool isDead() { return false; }
+    }
+    public class Rocket : Raven_Projectile
+    { 
+        public Rocket(Raven_Bot shooter, Vector3 target)
+                         :base(target,
+                         shooter.GetWorld(),
+                         shooter.ID(),
+                         shooter.Pos(),
+                         shooter.Facing(),
+                         1,1,1,1,1)
+        { } 
+    }
+    public class Slug : Raven_Projectile
+    { 
+        public Slug(Raven_Bot shooter, Vector3 target)
+        : base(target,
+                         shooter.GetWorld(),
+                         shooter.ID(),
+                         shooter.Pos(),
+                         shooter.Facing(),
+                         1, 1, 1, 1, 1)
+        { } 
+    }
+    public class Pellet : Raven_Projectile
+    { 
+        public Pellet(Raven_Bot shooter, Vector3 target)
+            : base(target,
+                         shooter.GetWorld(),
+                         shooter.ID(),
+                         shooter.Pos(),
+                         shooter.Facing(),
+                         1, 1, 1, 1, 1)
+        { } 
+    }
+    public class Bolt : Raven_Projectile
+    { 
+        public Bolt(Raven_Bot shooter, Vector3 target)
+            : base(target,
+                         shooter.GetWorld(),
+                         shooter.ID(),
+                         shooter.Pos(),
+                         shooter.Facing(),
+                         1, 1, 1, 1, 1)
+        { }
+    }
 
 }//end namespace
 

@@ -39,6 +39,8 @@ namespace Raven
         {
             m_EntityMap.Remove(pEntity.ID());
         }
+
+        public void Reset() { m_EntityMap.Clear(); }
     }
 
 

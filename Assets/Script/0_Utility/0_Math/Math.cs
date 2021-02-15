@@ -554,6 +554,20 @@ namespace UtilGS9
 
         }   // End of ::DistanceSquared()
 
+        static public bool Intersection(LineSegment3 segment0, LineSegment3 segment1)
+        {
+
+            float s, c;
+            float sq = DistanceSquared(segment0, segment1, out s, out c);
+
+            if (true == Misc.IsZero(sq))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         static public bool Intersection(LineSegment3 segment0, LineSegment3 segment1, out float dist0, out Vector3 point0)
         {
 
