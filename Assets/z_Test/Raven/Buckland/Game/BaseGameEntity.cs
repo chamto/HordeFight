@@ -27,7 +27,7 @@ namespace Raven
         //correctly. It verifies that the value passed to the method is greater
         //or equal to the next valid ID, before setting the ID and incrementing
         //the next valid ID
-        void SetID(int val)
+        protected void SetID(int val)
         {
             //make sure the val is equal to or greater than the next available ID
             //assert((val >= m_iNextValidID) && "<BaseGameEntity::SetID>: invalid ID");

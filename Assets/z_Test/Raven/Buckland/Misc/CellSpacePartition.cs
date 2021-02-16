@@ -4,55 +4,6 @@ using UnityEngine;
 
 namespace Raven
 {
-    public struct InvertedAABBox2D
-    {
-  
-        public Vector2 m_vTopLeft;
-        public Vector2 m_vBottomRight;
-        public Vector2 m_vCenter;
-
-
-        public InvertedAABBox2D(Vector2 tl, Vector2 br)
-        {
-            m_vTopLeft = tl;
-            m_vBottomRight = br;
-            m_vCenter = (tl + br) / 2.0f;
-        }
-
-        //returns true if the bbox described by other intersects with this one
-        public bool isOverlappedWith(InvertedAABBox2D other)
-        {
-            return !((other.Top() > this.Bottom()) ||
-                   (other.Bottom() < this.Top()) ||
-                 (other.Left() > this.Right()) ||
-                (other.Right() < this.Left()));
-        }
-
-
-        public Vector2 TopLeft() {return m_vTopLeft;}
-        public Vector2 BottomRight() {return m_vBottomRight;}
-
-        public float Top() {return m_vTopLeft.y;}
-        public float Left() {return m_vTopLeft.x;}
-        public float Bottom() {return m_vBottomRight.y;}
-        public float Right() {return m_vBottomRight.x;}
-        public Vector2 Center() {return m_vCenter;}
-
-        public void Render(bool RenderCenter = false)
-        {
-            float size_x = Mathf.Abs(m_vTopLeft.x - m_vBottomRight.x);
-            float size_y = Mathf.Abs(m_vTopLeft.y - m_vBottomRight.y);
-            DebugWide.DrawCube(m_vCenter, new Vector2(size_x, size_y), Color.white);
-
-            if (RenderCenter)
-            {
-                DebugWide.DrawCircle(m_vCenter, 5, Color.white);
-            }
-        }
-
-    }
-
-
 
     public struct Cell<T> //where T : BaseGameEntity
     {
@@ -63,7 +14,7 @@ namespace Raven
         //co-ordinate system has a y axis that increases as it descends)
         public InvertedAABBox2D BBox;
 
-        public Cell(Vector2 topleft, Vector2 botright)
+        public Cell(Vector3 topleft, Vector3 botright)
         {
             Members = new LinkedList<T>();
             BBox = new InvertedAABBox2D(topleft, botright);
@@ -89,18 +40,18 @@ namespace Raven
 
         //the number of cells the space is going to be divided up into
         int m_iNumCellsX;
-        int m_iNumCellsY;
+        int m_iNumCellsZ;
 
         float m_dCellSizeX;
-        float m_dCellSizeY;
+        float m_dCellSizeZ;
 
 
         //given a position in the game space this method determines the           
         //relevant cell's index
-        public int PositionToIndex( Vector2 pos) 
+        public int PositionToIndex( Vector3 pos) 
         {
             int idx = (int)(m_iNumCellsX * pos.x / m_dSpaceWidth) +
-            ((int)((m_iNumCellsY) * pos.y / m_dSpaceHeight) * m_iNumCellsX);
+            ((int)((m_iNumCellsZ) * pos.z / m_dSpaceHeight) * m_iNumCellsX);
 
             //if the entity's position is equal to vector2d(m_dSpaceWidth, m_dSpaceHeight)
             //then the index will overshoot. We need to check for this and adjust
@@ -119,28 +70,28 @@ namespace Raven
             m_dSpaceWidth = width;
             m_dSpaceHeight = height;
             m_iNumCellsX = cellsX;
-            m_iNumCellsY = cellsY;
+            m_iNumCellsZ = cellsY;
             m_Neighbors = new List<T>();
             m_Cells = new List<Cell<T>>();
 
             //calculate bounds of each cell
             m_dCellSizeX = width / cellsX;
-            m_dCellSizeY = height / cellsY;
+            m_dCellSizeZ = height / cellsY;
 
 
             //create the cells
 
             Cell<T> cell;
-            for (int y = 0; y < m_iNumCellsY; ++y)
+            for (int z = 0; z < m_iNumCellsZ; ++z)
             {
                 for (int x = 0; x < m_iNumCellsX; ++x)
                 {
                     float left = x * m_dCellSizeX;
                     float right = left + m_dCellSizeX;
-                    float top = y * m_dCellSizeY;
-                    float bot = top + m_dCellSizeY;
+                    float top = z * m_dCellSizeZ;
+                    float bot = top + m_dCellSizeZ;
 
-                    cell = new Cell<T>(new Vector2(left, top) , new Vector2(right, bot));
+                    cell = new Cell<T>(new Vector3(left, 0, top) , new Vector3(right, 0, bot));
                     m_Cells.Add(cell);
                 }
             }
@@ -156,7 +107,7 @@ namespace Raven
         }
 
         //update an entity's cell by calling this from your entity's Update method 
-        public void UpdateEntity(T ent, Vector2 OldPos)
+        public void UpdateEntity(T ent, Vector3 OldPos)
         {
             //if the index for the old pos and the new pos are not equal then
             //the entity has moved to another cell.
@@ -174,13 +125,13 @@ namespace Raven
         //this method calculates all a target's neighbors and stores them in
         //the neighbor vector. After you have called this method use the begin, 
         //next and end methods to iterate through the vector.
-        public void CalculateNeighbors(Vector2 TargetPos, float QueryRadius)
+        public void CalculateNeighbors(Vector3 TargetPos, float QueryRadius)
         {
             
             //create the query box that is the bounding box of the target's query
             //area
-            InvertedAABBox2D QueryBox = new InvertedAABBox2D(TargetPos - new Vector2(QueryRadius, QueryRadius),
-                            TargetPos + new Vector2(QueryRadius, QueryRadius));
+            InvertedAABBox2D QueryBox = new InvertedAABBox2D(TargetPos - new Vector3(QueryRadius, 0, QueryRadius),
+                            TargetPos + new Vector3(QueryRadius, 0, QueryRadius));
 
             //iterate through each cell and test to see if its bounding box overlaps
             //with the query box. If it does and it also contains entities then
@@ -195,7 +146,7 @@ namespace Raven
                     //add any entities found within query radius to the neighbor list
                     foreach (T ent in curCell.Members)
                     {
-                        Vector2 pos = ent.Pos();
+                        Vector3 pos = ent.Pos();
                         if ((pos - TargetPos).sqrMagnitude < QueryRadius * QueryRadius)
                         {
                             m_Neighbors.Add(ent);

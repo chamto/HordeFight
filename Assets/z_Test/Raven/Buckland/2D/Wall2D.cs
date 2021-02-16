@@ -39,6 +39,11 @@ namespace Raven
             m_vN = N;
         }
 
+        public Wall2D(string line)
+        {
+            Read(line); 
+        }
+
         //Wall2D(std::ifstream& in) { Read(in); }
 
         public virtual void Render(bool RenderNormals = false)

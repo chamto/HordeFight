@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
@@ -413,27 +414,21 @@ namespace Raven
 
     }
 
-    //======================================================
 
-    
 
-    //======================================================
-
-    public class Trigger<entity_type> : BaseGameEntity
-    {
-        public Trigger(int id) : base(id) { }
-        public Vector3 Pos() { return ConstV.v3_zero; }
-        public bool isActive() { return false; }
-        public int GraphNodeIndex() { return -1; }
-    }
+    //public class TriggerType : Trigger<Raven_Bot>
+    //{
+    //    public TriggerType(int id) : base(id) { }
+    //}
 
     public class TriggerList : LinkedList<Trigger<Raven_Bot>> 
     {
     }
 
-    public class TriggerSystem<trigger_type>
+    public class TriggerSystem<trigger_type> where trigger_type : Trigger<Raven_Bot>
     {
         public TriggerList GetTriggers(){ return null; }
+        public void Register(trigger_type trigger) {}
     }
 
     public class Raven_TargetingSystem
@@ -607,18 +602,10 @@ namespace Raven
         public void UpdateSearches() { }
     }
 
-    public class Path : LinkedList<PathEdge> { }
-
-    public class NavGraph : SparseGraph<NavGraphNode, NavGraphEdge>
-    {
-        public NavGraph(bool digraph) : base(digraph)
-        {
-        }
-    }
 
     //======================================================
 
-    //*
+    /*
     public class Raven_Map
     {
         List<Wall2D> m_Walls;
@@ -655,7 +642,420 @@ namespace Raven
     }
     //*/
 
+
     //======================================================
+
+    public class Path : LinkedList<PathEdge> { }
+
+    public class NavGraph : SparseGraph<NavGraphNode, NavGraphEdge>
+    {
+        public NavGraph(bool digraph) : base(digraph) {}
+    }
+
+    public class Raven_Map
+    {
+
+ 
+        //typedef CellSpacePartition<NavGraph::NodeType*>   CellSpace;
+
+        //typedef Trigger<Raven_Bot>                        TriggerType;
+        //typedef TriggerSystem<TriggerType>                TriggerSystem;
+
+
+        //the walls that comprise the current map's architecture. 
+        List<Wall2D> m_Walls;
+
+        //trigger are objects that define a region of space. When a raven bot
+        //enters that area, it 'triggers' an event. That event may be anything
+        //from increasing a bot's health to opening a door or requesting a lift.
+        TriggerSystem<Trigger<Raven_Bot>> m_TriggerSystem;
+
+        //this holds a number of spawn positions. When a bot is instantiated
+        //it will appear at a randomly selected point chosen from this vector
+        List<Vector3> m_SpawnPoints;
+
+        //a map may contain a number of sliding doors.
+        List<Raven_Door> m_Doors;
+
+        //this map's accompanying navigation graph
+        NavGraph m_pNavGraph;
+
+        //the graph nodes will be partitioned enabling fast lookup
+        CellSpacePartition<NavGraphNode> m_pSpacePartition;
+
+        //the size of the search radius the cellspace partition uses when looking for 
+        //neighbors 
+        float m_dCellSpaceNeighborhoodRange;
+
+        int m_iSizeX;
+        int m_iSizeY;
+
+        void PartitionNavGraph()
+        {
+            //if (null != m_pSpacePartition) delete m_pSpacePartition;
+
+            m_pSpacePartition = new CellSpacePartition<NavGraphNode>(m_iSizeX,
+                                                                            m_iSizeY,
+                                                                            Params.NumCellsX,
+                                                                            Params.NumCellsY,
+                                                                            m_pNavGraph.NumNodes());
+
+            //add the graph nodes to the space partition
+            foreach(NavGraphNode pN in m_pNavGraph.GetListNodes())
+            {
+                m_pSpacePartition.AddEntity(pN);
+            }
+        }
+
+        //this will hold a pre-calculated lookup table of the cost to travel from
+        //one node to any other.
+        List<List<float>> m_PathCosts;
+
+
+        //stream constructors for loading from a file
+        void AddWall(string line)
+        {
+            m_Walls.Add(new Wall2D(line));
+        }
+
+        Wall2D AddWall(Vector3 from, Vector3 to)
+        {
+            Wall2D w = new Wall2D(from, to);
+
+            m_Walls.Add(w);
+
+            return w;
+        }
+
+        void AddSpawnPoint(string line)
+        {
+
+            string[] sp = line.Split(' ');
+            int idx = 0;
+
+            idx++; //dummy
+            float x = float.Parse(sp[idx++]);
+            float z = float.Parse(sp[idx++]);
+
+
+            m_SpawnPoints.Add(new Vector3(x, 0, z));
+        }
+
+
+        void AddHealth_Giver(string line)
+        {
+            string[] sp = line.Split(' ');
+
+            int id = int.Parse(sp[0]);
+            //ref : http://blog.naver.com/PostView.nhn?blogId=traeumen927&logNo=220965317204
+            string subLine = line.Substring(sp[0].Length); //앞에 읽은 문자를 제거한다 
+
+            Trigger_HealthGiver hg = new Trigger_HealthGiver(id, subLine);
+
+            m_TriggerSystem.Register(hg);
+
+            //let the corresponding navgraph node point to this object
+            NavGraphNode node = m_pNavGraph.GetNode(hg.GraphNodeIndex());
+
+            node.SetExtraInfo(hg);
+
+            //register the entity 
+            SingleO.entityMgr.RegisterEntity(hg);
+        }
+
+        void AddWeapon_Giver(int type_of_weapon, std::ifstream& in)
+        {
+            Trigger_WeaponGiver* wg = new Trigger_WeaponGiver(in);
+
+            wg->SetEntityType(type_of_weapon);
+
+            //add it to the appropriate vectors
+            m_TriggerSystem.Register(wg);
+
+            //let the corresponding navgraph node point to this object
+            NavGraph::NodeType & node = m_pNavGraph->GetNode(wg->GraphNodeIndex());
+
+            node.SetExtraInfo(wg);
+
+            //register the entity 
+            EntityMgr->RegisterEntity(wg);
+        }
+        void AddDoor(std::ifstream& in)
+        {
+            Raven_Door* pDoor = new Raven_Door(this, in);
+
+            m_Doors.push_back(pDoor);
+
+            //register the entity 
+            EntityMgr->RegisterEntity(pDoor);
+        }
+        void AddDoorTrigger(std::ifstream& in)
+        {
+            Trigger_OnButtonSendMsg<Raven_Bot>* tr = new Trigger_OnButtonSendMsg<Raven_Bot>(in);
+
+            m_TriggerSystem.Register(tr);
+
+            //register the entity 
+            EntityMgr->RegisterEntity(tr);
+
+        }
+
+        void Clear()
+        {
+            //delete the triggers
+            m_TriggerSystem.Clear();
+
+            //delete the doors
+            std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
+            for (curDoor; curDoor != m_Doors.end(); ++curDoor)
+            {
+                delete* curDoor;
+            }
+
+            m_Doors.clear();
+
+            std::vector<Wall2D*>::iterator curWall = m_Walls.begin();
+            for (curWall; curWall != m_Walls.end(); ++curWall)
+            {
+                delete* curWall;
+            }
+
+            m_Walls.clear();
+            m_SpawnPoints.clear();
+
+            //delete the navgraph
+            delete m_pNavGraph;
+
+            //delete the partioning info
+            delete m_pSpacePartition;
+        }
+
+
+        public Raven_Map()
+        {
+            m_pNavGraph = null;
+            m_pSpacePartition = null;
+            m_iSizeY = 0;
+            m_iSizeX = 0;
+            m_dCellSpaceNeighborhoodRange = 0;
+        }
+        //~Raven_Map();
+
+        public void Render()
+        {
+            //render the navgraph
+            if (UserOptions->m_bShowGraph)
+            {
+                GraphHelper_DrawUsingGDI<NavGraph>(*m_pNavGraph, Cgdi::grey, UserOptions->m_bShowNodeIndices);
+            }
+
+            //render any doors
+            std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
+            for (curDoor; curDoor != m_Doors.end(); ++curDoor)
+            {
+                (*curDoor)->Render();
+            }
+
+            //render all the triggers
+            m_TriggerSystem.Render();
+
+            //render all the walls
+            std::vector<Wall2D*>::const_iterator curWall = m_Walls.begin();
+            for (curWall; curWall != m_Walls.end(); ++curWall)
+            {
+                gdi->ThickBlackPen();
+                (*curWall)->Render();
+            }
+
+            std::vector<Vector2D>::const_iterator curSp = m_SpawnPoints.begin();
+            for (curSp; curSp != m_SpawnPoints.end(); ++curSp)
+            {
+                gdi->GreyBrush();
+                gdi->GreyPen();
+                gdi->Circle(*curSp, 7);
+            }
+        }
+
+        //loads an environment from a file
+        public bool LoadMap(const std::string& filename)
+{  
+  std::ifstream in(filename.c_str());
+  if (!in)
+  {
+    ErrorBox("Bad Map Filename");
+    return false;
+  }
+
+    Clear();
+
+    BaseGameEntity::ResetNextValidID();
+
+  //first of all read and create the navgraph. This must be done before
+  //the entities are read from the map file because many of the entities
+  //will be linked to a graph node (the graph node will own a pointer
+  //to an instance of the entity)
+  m_pNavGraph = new NavGraph(false);
+
+    m_pNavGraph->Load(in);
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "NavGraph for " << filename << " loaded okay" << "";
+#endif
+
+  //determine the average distance between graph nodes so that we can
+  //partition them efficiently
+  m_dCellSpaceNeighborhoodRange = CalculateAverageGraphEdgeLength(*m_pNavGraph) + 1;
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "Average edge length is " << CalculateAverageGraphEdgeLength(*m_pNavGraph) << "";
+#endif
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "Neighborhood range set to " << m_dCellSpaceNeighborhoodRange << "";
+#endif
+
+
+  //load in the map size and adjust the client window accordingly
+  in >> m_iSizeX >> m_iSizeY;
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "Partitioning navgraph nodes..." << "";
+#endif
+
+  //partition the graph nodes
+  PartitionNavGraph();
+
+
+  //get the handle to the game window and resize the client area to accommodate
+  //the map
+  extern char* g_szApplicationName;
+  extern char* g_szWindowClassName;
+    HWND hwnd = FindWindow(g_szWindowClassName, g_szApplicationName);
+    const int ExtraHeightRqdToDisplayInfo = 50;
+    ResizeWindow(hwnd, m_iSizeX, m_iSizeY+ExtraHeightRqdToDisplayInfo);
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "Loading map..." << "";
+#endif
+
+ 
+  //now create the environment entities
+  while (!in.eof())
+  {   
+    //get type of next map object
+    int EntityType;
+    
+    in >> EntityType;
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << "Creating a " << GetNameOfType(EntityType) << "";
+#endif
+
+    //create the object
+    switch(EntityType)
+    {
+    case type_wall:
+ 
+        AddWall(in); break;
+
+    case type_sliding_door:
+ 
+        AddDoor(in); break;
+
+    case type_door_trigger:
+ 
+        AddDoorTrigger(in); break;
+
+   case type_spawn_point:
+     
+       AddSpawnPoint(in); break;
+
+   case type_health:
+     
+       AddHealth_Giver(in); break;
+
+   case type_shotgun:
+     
+       AddWeapon_Giver(type_shotgun, in); break;
+
+   case type_rail_gun:
+     
+       AddWeapon_Giver(type_rail_gun, in); break;
+
+   case type_rocket_launcher:
+     
+       AddWeapon_Giver(type_rocket_launcher, in); break;
+
+    default:
+      
+      throw std::runtime_error("<Map::Load>: Attempting to load undefined object");
+
+      return false;
+      
+    }//end switch
+  }
+
+#ifdef LOG_CREATIONAL_STUFF
+    debug_con << filename << " loaded okay" << "";
+#endif
+
+   //calculate the cost lookup table
+  m_PathCosts = CreateAllPairsCostsTable(*m_pNavGraph);
+
+  return true;
+}
+
+        //adds a wall and returns a pointer to that wall. (this method can be
+        //used by objects such as doors to add walls to the environment)
+        public Wall2D AddWall(Vector2D from, Vector2D to);
+
+        public void AddSoundTrigger(Raven_Bot* pSoundSource, double range)
+{
+    m_TriggerSystem.Register(new Trigger_SoundNotify(pSoundSource, range));
+}
+
+public float CalculateCostToTravelBetweenNodes(int nd1, int nd2)const
+{
+  assert(nd1>=0 && nd1<m_pNavGraph->NumNodes() &&
+          nd2>=0 && nd2<m_pNavGraph->NumNodes() &&
+          "<Raven_Map::CostBetweenNodes>: invalid index");
+
+  return m_PathCosts[nd1][nd2];
+}
+
+        //returns the position of a graph node selected at random
+        public Vector3 GetRandomNodeLocation()const
+{
+  NavGraph::ConstNodeIterator NodeItr(*m_pNavGraph);
+int RandIndex = RandInt(0, m_pNavGraph->NumActiveNodes() - 1);
+const NavGraph::NodeType* pN = NodeItr.begin();
+  while (--RandIndex > 0)
+  {
+    pN = NodeItr.next();
+  }
+
+  return pN->Pos();
+}
+
+
+        public void UpdateTriggerSystem(std::list<Raven_Bot*>& bots)
+{
+    m_TriggerSystem.Update(bots);
+}
+
+public TriggerList  GetTriggers() {return m_TriggerSystem.GetTriggers();}
+        public List<Wall2D>        GetWalls() {return m_Walls;}
+        public NavGraph GetNavGraph() {return m_pNavGraph;}
+        public List<Raven_Door>          GetDoors() { return m_Doors; }
+        public List<Vector3>       GetSpawnPoints() {return m_SpawnPoints;}
+        public CellSpacePartition<NavGraphNode> GetCellSpace() {return m_pSpacePartition;}
+        public Vector3 GetRandomSpawnPoint() { return m_SpawnPoints[ Misc.RandInt(0, m_SpawnPoints.Count - 1)]; }
+        public int GetSizeX() {return m_iSizeX;}
+        public int GetSizeY() {return m_iSizeY;}
+        public int GetMaxDimension() {return Math.Max(m_iSizeX, m_iSizeY);}
+        public float GetCellSpaceNeighborhoodRange() {return m_dCellSpaceNeighborhoodRange;}
+
+}
 
 }//end namespace
 
