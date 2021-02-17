@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
@@ -244,6 +245,36 @@ namespace Raven
 
     }   
 
+    public class HandyGraph
+    {
+            
+        static public void GraphHelper_DrawUsingGDI(NavGraph graph, Color color, bool DrawNodeIDs = false)
+        {   
+
+            //just return if the graph has no nodes
+            if (graph.NumNodes() == 0) return;
+            
+            //draw the nodes 
+            foreach (NavGraphNode pN in graph.GetListNodes())
+            {
+                DebugWide.DrawCircle(pN.Pos(), 2, color);
+                
+
+                if (DrawNodeIDs)
+                {
+                        Color c = new Color(200, 200, 200);
+                        DebugWide.PrintText(pN.Pos() + new Vector3(5, 0, -5), c, "" + pN.Index());
+                }
+
+                foreach(NavGraphEdge edge in graph.GetListEdges()[pN.Index()])
+                {
+                        DebugWide.DrawLine(pN.Pos(), graph.GetNode(edge.To()).Pos(), color);
+                  
+                }
+            }
+        } 
+    }
+
     //======================================================
     public class Goal_SeekToPosition : Goal<Raven_Bot>
     {
@@ -429,6 +460,8 @@ namespace Raven
     {
         public TriggerList GetTriggers(){ return null; }
         public void Register(trigger_type trigger) {}
+        public void Clear() { }
+        public void Render() { }
     }
 
     public class Raven_TargetingSystem
@@ -484,6 +517,9 @@ namespace Raven
         public void ShootAt(Vector3 p) { }
         public void ChangeWeapon(int i) { }
         public void Initialize() { }
+
+        public void AddWeapon(int i) { }
+        public void Clear() { }
     }
 
     //======================================================
@@ -498,13 +534,6 @@ namespace Raven
         public void Render() { }
 
         public void AddGrave(Vector3 bot) { }
-    }
-
-    public class Raven_Door
-    {
-        public int ID() { return 0; }
-        public List<int> GetSwitchIDs() { return null; }
-        public void Update() { }
     }
 
     public class Raven_Projectile : MovingEntity
@@ -647,7 +676,7 @@ namespace Raven
 
     public class Path : LinkedList<PathEdge> { }
 
-    public class NavGraph : SparseGraph<NavGraphNode, NavGraphEdge>
+    public class NavGraph : SparseGraph
     {
         public NavGraph(bool digraph) : base(digraph) {}
     }
@@ -741,14 +770,26 @@ namespace Raven
             m_SpawnPoints.Add(new Vector3(x, 0, z));
         }
 
-
-        void AddHealth_Giver(string line)
+        //ref : https://stackoverflow.com/questions/805264/how-to-define-generic-type-limit-to-primitive-types
+        public T GetFirstLetter<T>(string line, out string subLine) where T : struct, IComparable, IFormattable, IConvertible, IComparable<T>, IEquatable<T>
         {
             string[] sp = line.Split(' ');
 
-            int id = int.Parse(sp[0]);
+
             //ref : http://blog.naver.com/PostView.nhn?blogId=traeumen927&logNo=220965317204
-            string subLine = line.Substring(sp[0].Length); //앞에 읽은 문자를 제거한다 
+            subLine = line.Substring(sp[0].Length); //앞에 읽은 문자를 제거한다 
+
+            //ref : https://stackoverflow.com/questions/8625/generic-type-conversion-from-string
+            return (T)Convert.ChangeType(sp[0], typeof(T));
+
+        }
+
+        void AddHealth_Giver(string line)
+        {
+            //---------->
+            string subLine;
+            int id = GetFirstLetter<int>(line, out subLine);
+            //---------->
 
             Trigger_HealthGiver hg = new Trigger_HealthGiver(id, subLine);
 
@@ -763,40 +804,55 @@ namespace Raven
             SingleO.entityMgr.RegisterEntity(hg);
         }
 
-        void AddWeapon_Giver(int type_of_weapon, std::ifstream& in)
+        void AddWeapon_Giver(int type_of_weapon, string line)
         {
-            Trigger_WeaponGiver* wg = new Trigger_WeaponGiver(in);
+            //---------->
+            string subLine;
+            int id = GetFirstLetter<int>(line, out subLine);
+            //---------->
 
-            wg->SetEntityType(type_of_weapon);
+            Trigger_WeaponGiver wg = new Trigger_WeaponGiver(id, subLine);
+
+            wg.SetEntityType(type_of_weapon);
 
             //add it to the appropriate vectors
             m_TriggerSystem.Register(wg);
 
             //let the corresponding navgraph node point to this object
-            NavGraph::NodeType & node = m_pNavGraph->GetNode(wg->GraphNodeIndex());
+            NavGraphNode node = m_pNavGraph.GetNode(wg.GraphNodeIndex());
 
             node.SetExtraInfo(wg);
 
             //register the entity 
-            EntityMgr->RegisterEntity(wg);
+            SingleO.entityMgr.RegisterEntity(wg);
         }
-        void AddDoor(std::ifstream& in)
+        void AddDoor(string line)
         {
-            Raven_Door* pDoor = new Raven_Door(this, in);
+            //---------->
+            string subLine;
+            int id = GetFirstLetter<int>(line, out subLine);
+            //---------->
 
-            m_Doors.push_back(pDoor);
+            Raven_Door pDoor = new Raven_Door(this, id, subLine);
+
+            m_Doors.Add(pDoor);
 
             //register the entity 
-            EntityMgr->RegisterEntity(pDoor);
+            SingleO.entityMgr.RegisterEntity(pDoor);
         }
-        void AddDoorTrigger(std::ifstream& in)
+        void AddDoorTrigger(string line)
         {
-            Trigger_OnButtonSendMsg<Raven_Bot>* tr = new Trigger_OnButtonSendMsg<Raven_Bot>(in);
+            //---------->
+            string subLine;
+            int id = GetFirstLetter<int>(line, out subLine);
+            //---------->
+
+            Trigger_OnButtonSendMsg<Raven_Bot> tr = new Trigger_OnButtonSendMsg<Raven_Bot>(id, subLine);
 
             m_TriggerSystem.Register(tr);
 
             //register the entity 
-            EntityMgr->RegisterEntity(tr);
+            SingleO.entityMgr.RegisterEntity(tr);
 
         }
 
@@ -806,28 +862,28 @@ namespace Raven
             m_TriggerSystem.Clear();
 
             //delete the doors
-            std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
-            for (curDoor; curDoor != m_Doors.end(); ++curDoor)
-            {
-                delete* curDoor;
-            }
+            //std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
+            //for (curDoor; curDoor != m_Doors.end(); ++curDoor)
+            //{
+            //    delete* curDoor;
+            //}
 
-            m_Doors.clear();
+            //m_Doors.clear();
 
-            std::vector<Wall2D*>::iterator curWall = m_Walls.begin();
-            for (curWall; curWall != m_Walls.end(); ++curWall)
-            {
-                delete* curWall;
-            }
+            //std::vector<Wall2D*>::iterator curWall = m_Walls.begin();
+            //for (curWall; curWall != m_Walls.end(); ++curWall)
+            //{
+            //    delete* curWall;
+            //}
 
-            m_Walls.clear();
-            m_SpawnPoints.clear();
+            m_Walls.Clear();
+            m_SpawnPoints.Clear();
 
             //delete the navgraph
-            delete m_pNavGraph;
+            //delete m_pNavGraph;
 
             //delete the partioning info
-            delete m_pSpacePartition;
+            //delete m_pSpacePartition;
         }
 
 
@@ -844,166 +900,157 @@ namespace Raven
         public void Render()
         {
             //render the navgraph
-            if (UserOptions->m_bShowGraph)
+            if (UserOptions.m_bShowGraph)
             {
-                GraphHelper_DrawUsingGDI<NavGraph>(*m_pNavGraph, Cgdi::grey, UserOptions->m_bShowNodeIndices);
+                HandyGraph.GraphHelper_DrawUsingGDI(m_pNavGraph, Color.grey, UserOptions.m_bShowNodeIndices);
             }
 
             //render any doors
-            std::vector<Raven_Door*>::iterator curDoor = m_Doors.begin();
-            for (curDoor; curDoor != m_Doors.end(); ++curDoor)
+            foreach(Raven_Door curDoor in m_Doors)
             {
-                (*curDoor)->Render();
+                (curDoor).Render();
             }
 
             //render all the triggers
             m_TriggerSystem.Render();
 
             //render all the walls
-            std::vector<Wall2D*>::const_iterator curWall = m_Walls.begin();
-            for (curWall; curWall != m_Walls.end(); ++curWall)
+            foreach (Wall2D curWall in m_Walls)
             {
-                gdi->ThickBlackPen();
-                (*curWall)->Render();
+                //gdi->ThickBlackPen();
+                (curWall).Render();
             }
 
-            std::vector<Vector2D>::const_iterator curSp = m_SpawnPoints.begin();
-            for (curSp; curSp != m_SpawnPoints.end(); ++curSp)
+            foreach (Vector3 curSp in m_SpawnPoints)
             {
-                gdi->GreyBrush();
-                gdi->GreyPen();
-                gdi->Circle(*curSp, 7);
+                DebugWide.DrawCircle(curSp, 7, Color.grey);
             }
         }
 
         //loads an environment from a file
-        public bool LoadMap(const std::string& filename)
-{  
-  std::ifstream in(filename.c_str());
-  if (!in)
-  {
-    ErrorBox("Bad Map Filename");
-    return false;
-  }
+        public bool LoadMap(string filename)
+        {
 
-    Clear();
+            StreamReader stream = FileToStream.FileLoading(filename); //수정필요 
 
-    BaseGameEntity::ResetNextValidID();
+            Clear();
 
-  //first of all read and create the navgraph. This must be done before
-  //the entities are read from the map file because many of the entities
-  //will be linked to a graph node (the graph node will own a pointer
-  //to an instance of the entity)
-  m_pNavGraph = new NavGraph(false);
+            BaseGameEntity.ResetNextValidID();
 
-    m_pNavGraph->Load(in);
+          //first of all read and create the navgraph. This must be done before
+          //the entities are read from the map file because many of the entities
+          //will be linked to a graph node (the graph node will own a pointer
+          //to an instance of the entity)
+          m_pNavGraph = new NavGraph(false);
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "NavGraph for " << filename << " loaded okay" << "";
-#endif
+            m_pNavGraph.Load_Nav(stream);
 
-  //determine the average distance between graph nodes so that we can
-  //partition them efficiently
-  m_dCellSpaceNeighborhoodRange = CalculateAverageGraphEdgeLength(*m_pNavGraph) + 1;
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "NavGraph for " << filename << " loaded okay" << "";
+        //#endif
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "Average edge length is " << CalculateAverageGraphEdgeLength(*m_pNavGraph) << "";
-#endif
+          //determine the average distance between graph nodes so that we can
+          //partition them efficiently
+          m_dCellSpaceNeighborhoodRange = CalculateAverageGraphEdgeLength(m_pNavGraph) + 1;
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "Neighborhood range set to " << m_dCellSpaceNeighborhoodRange << "";
-#endif
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "Average edge length is " << CalculateAverageGraphEdgeLength(*m_pNavGraph) << "";
+        //#endif
+
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "Neighborhood range set to " << m_dCellSpaceNeighborhoodRange << "";
+        //#endif
 
 
-  //load in the map size and adjust the client window accordingly
-  in >> m_iSizeX >> m_iSizeY;
+          //load in the map size and adjust the client window accordingly
+          in >> m_iSizeX >> m_iSizeY;
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "Partitioning navgraph nodes..." << "";
-#endif
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "Partitioning navgraph nodes..." << "";
+        //#endif
 
-  //partition the graph nodes
-  PartitionNavGraph();
+          //partition the graph nodes
+          PartitionNavGraph();
 
 
-  //get the handle to the game window and resize the client area to accommodate
-  //the map
-  extern char* g_szApplicationName;
-  extern char* g_szWindowClassName;
-    HWND hwnd = FindWindow(g_szWindowClassName, g_szApplicationName);
-    const int ExtraHeightRqdToDisplayInfo = 50;
-    ResizeWindow(hwnd, m_iSizeX, m_iSizeY+ExtraHeightRqdToDisplayInfo);
+          //get the handle to the game window and resize the client area to accommodate
+          //the map
+          //extern char* g_szApplicationName;
+          //extern char* g_szWindowClassName;
+            //HWND hwnd = FindWindow(g_szWindowClassName, g_szApplicationName);
+            //const int ExtraHeightRqdToDisplayInfo = 50;
+            //ResizeWindow(hwnd, m_iSizeX, m_iSizeY+ExtraHeightRqdToDisplayInfo);
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "Loading map..." << "";
-#endif
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "Loading map..." << "";
+        //#endif
 
- 
-  //now create the environment entities
-  while (!in.eof())
-  {   
-    //get type of next map object
-    int EntityType;
-    
-    in >> EntityType;
+         
+          //now create the environment entities
+          while (!in.eof())
+          {   
+            //get type of next map object
+            int EntityType;
+            
+            in >> EntityType;
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << "Creating a " << GetNameOfType(EntityType) << "";
-#endif
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << "Creating a " << GetNameOfType(EntityType) << "";
+        //#endif
 
-    //create the object
-    switch(EntityType)
-    {
-    case type_wall:
- 
-        AddWall(in); break;
+            //create the object
+            switch(EntityType)
+            {
+            case (int)eObjType.wall:
+         
+                AddWall(in); break;
 
-    case type_sliding_door:
- 
-        AddDoor(in); break;
+            case (int)eObjType.sliding_door:
+         
+                AddDoor(in); break;
 
-    case type_door_trigger:
- 
-        AddDoorTrigger(in); break;
+            case (int)eObjType.door_trigger:
+         
+                AddDoorTrigger(in); break;
 
-   case type_spawn_point:
-     
-       AddSpawnPoint(in); break;
+           case (int)eObjType.spawn_point:
+             
+               AddSpawnPoint(in); break;
 
-   case type_health:
-     
-       AddHealth_Giver(in); break;
+           case (int)eObjType.health:
+             
+               AddHealth_Giver(in); break;
 
-   case type_shotgun:
-     
-       AddWeapon_Giver(type_shotgun, in); break;
+           case (int)eObjType.shotgun:
+             
+               AddWeapon_Giver(type_shotgun, in); break;
 
-   case type_rail_gun:
-     
-       AddWeapon_Giver(type_rail_gun, in); break;
+           case (int)eObjType.rail_gun:
+             
+               AddWeapon_Giver(type_rail_gun, in); break;
 
-   case type_rocket_launcher:
-     
-       AddWeapon_Giver(type_rocket_launcher, in); break;
+           case (int)eObjType.rocket_launcher:
+             
+               AddWeapon_Giver(type_rocket_launcher, in); break;
 
-    default:
-      
-      throw std::runtime_error("<Map::Load>: Attempting to load undefined object");
+            default:
+              
+              throw std::runtime_error("<Map::Load>: Attempting to load undefined object");
 
-      return false;
-      
-    }//end switch
-  }
+              return false;
+              
+            }//end switch
+          }
 
-#ifdef LOG_CREATIONAL_STUFF
-    debug_con << filename << " loaded okay" << "";
-#endif
+        //#ifdef LOG_CREATIONAL_STUFF
+            debug_con << filename << " loaded okay" << "";
+        //#endif
 
-   //calculate the cost lookup table
-  m_PathCosts = CreateAllPairsCostsTable(*m_pNavGraph);
+           //calculate the cost lookup table
+          m_PathCosts = CreateAllPairsCostsTable(m_pNavGraph);
 
-  return true;
-}
+          return true;
+        }
 
         //adds a wall and returns a pointer to that wall. (this method can be
         //used by objects such as doors to add walls to the environment)

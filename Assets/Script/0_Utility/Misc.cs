@@ -239,8 +239,31 @@ namespace UtilGS9
     /// 파일 읽어 메모리 스트림을 반환 
     /// </summary>
     ///////////////////////////////////////////////////////////////////////
-    public class FileToMemoryStream
+    public class FileToStream
     {
+
+#if UNITY_EDITOR
+        static public StreamReader FileLoading(string strFilePath)
+        {
+
+
+            DebugWide.LogBlue("FileLoading : " + strFilePath);
+
+            StreamReader reader = new StreamReader(strFilePath, System.Text.Encoding.ASCII);
+            if(null == reader)
+            {
+                DebugWide.LogRed("FileLoading error !! : " + strFilePath);
+            }
+            //string line;
+            //while ((line = reader.ReadLine()) != null)
+            //{
+            //    //todo ...
+            //}
+            //reader.Close();
+
+            return reader;
+        }
+#endif
 
         static public IEnumerator FileLoading(string strFilePath, System.Action<MemoryStream> result = null)
         {

@@ -35,6 +35,16 @@ public class NavGraphEdge : GraphEdge
         m_iIDofIntersectingEntity = id;
     }
 
+    public NavGraphEdge(string line)
+    {
+        string[] sp = line.Split(' ');
+        m_iFrom = int.Parse(sp[1]);
+        m_iTo = int.Parse(sp[3]);
+        m_dCost = float.Parse(sp[5]);
+        m_iFlags = int.Parse(sp[7]);
+        m_iIDofIntersectingEntity = int.Parse(sp[9]);
+    }
+
     public NavGraphEdge()
     { }
 

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.IO;
+using UnityEngine;
 using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,13 +7,13 @@ using System.Linq;
 
 
 //성긴그래프
-public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Edge : NavGraphEdge
-//public class SparseGraph
+
+public class SparseGraph
 {
 	//a couple more typedefs to save my fingers and to help with the formatting
 	//of the code on the printed page
-	public class NodeVector : List<T_Node> {}
-	public class EdgeList : LinkedList<T_Edge> {}
+	public class NodeVector : List<NavGraphNode> {}
+	public class EdgeList : LinkedList<NavGraphEdge> {}
 	public class EdgeListVector : List<EdgeList> {}
 
 	//public LinkedList<string> a = new LinkedList<string> ();
@@ -25,6 +26,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
     //list of edges associated with that node)
     protected EdgeListVector  m_Edges = new EdgeListVector();
 
+
     //다이그래프로 설정할 것인가 지정
     //=> 다이그래프란? 엣지의 방향성이 있는 그래프이다.
     //is this a directed graph?
@@ -33,12 +35,17 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
     //the index of the next node to be added
     protected int             m_iNextNodeIndex;
 
+
+    public List<NavGraphNode> GetListNodes() { return m_Nodes; }
+    public EdgeListVector GetListEdges() { return m_Edges; }
+
+
     //returns true if an edge is not already present in the graph. Used
     //when adding edges to make sure no duplicates are created.
     protected bool  UniqueEdge(int from, int to)
 	{
 
-		foreach(T_Edge iter in m_Edges[from])
+		foreach(NavGraphEdge iter in m_Edges[from])
 		{
 			if(iter.To() == to)
 			{
@@ -55,7 +62,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 	{
 		foreach (EdgeList list in m_Edges) 
 		{
-			foreach (T_Edge curEdge in list) 
+			foreach (NavGraphEdge curEdge in list) 
 			{
 				if (m_Nodes[curEdge.To()].Index() == GraphNode.INVALID_NODE_INDEX || 
 				    m_Nodes[curEdge.From()].Index() == GraphNode.INVALID_NODE_INDEX)
@@ -86,13 +93,13 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		return true;
 	}
 
-	public T_Node FindNearNode(Vector3 pos)
+	public NavGraphNode FindNearNode(Vector3 pos)
 	{
         Dictionary<int , float> distance_List = new Dictionary<int , float> ();
-        T_Node findNode = null;
+        NavGraphNode findNode = null;
 
         int index = 0;
-		foreach (T_Node node in m_Nodes) 
+		foreach (NavGraphNode node in m_Nodes) 
 		{
 			if(null != node)
 			{
@@ -106,7 +113,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		{
 			if (false == this.ClosedNode(nodeNum)) 
 			{
-				findNode = m_Nodes.ElementAt(nodeNum) as T_Node;
+				findNode = m_Nodes.ElementAt(nodeNum) as NavGraphNode;
 				break;
 			}
 		}
@@ -116,7 +123,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 
 
 	//returns the node at the given index
-	public T_Node GetNode(int idx)
+	public NavGraphNode GetNode(int idx)
 	{
 		//Assert.IsTrue( (idx < m_Nodes.Count) &&
 		       //(idx >=0),             
@@ -126,7 +133,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 	}
 	
 	//const method for obtaining a reference to an edge
-	public T_Edge GetEdge(int from, int to)
+	public NavGraphEdge GetEdge(int from, int to)
 	{
 		//Assert.IsTrue( (from < m_Nodes.Count) &&
 		       //(from >=0)              &&
@@ -138,7 +145,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		       //m_Nodes[to].Index() != GraphNode.INVALID_NODE_INDEX ,
 		       //"<SparseGraph::GetEdge>: invalid 'to' index");
 
-		foreach(T_Edge curEdge in m_Edges[from])
+		foreach(NavGraphEdge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to) return curEdge;
 		}
@@ -163,7 +170,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 	public int   GetNextFreeNodeIndex() {return m_iNextNodeIndex;}
 	
 	//adds a node to the graph and returns its index
-	public int   AddNode(T_Node node)
+	public int   AddNode(NavGraphNode node)
 	{
 		if (node.Index() < (int)m_Nodes.Count)
 		{
@@ -202,9 +209,9 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		if (!m_bDigraph)
 		{    
 			//visit each neighbour and erase any edges leading to this node
-			foreach (T_Edge curEdge in m_Edges[node])
+			foreach (NavGraphEdge curEdge in m_Edges[node])
 			{
-				foreach (T_Edge curE in m_Edges[curEdge.To()])
+				foreach (NavGraphEdge curE in m_Edges[curEdge.To()])
 				{
 					if (curE.To() == node)
 					{
@@ -230,7 +237,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 	//edge passed as a parameter is valid before adding it to the graph. If the
 	//graph is a digraph then a similar edge connecting the nodes in the opposite
 	//direction will be automatically added.
-	public void  AddEdge(T_Edge edge)
+	public void  AddEdge(NavGraphEdge edge)
 	{
 		//first make sure the from and to nodes exist within the graph 
 		//Assert.IsTrue( (edge.From() < m_iNextNodeIndex) && (edge.To() < m_iNextNodeIndex) ,
@@ -253,7 +260,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 				//check to make sure the edge is unique before adding
 				if (UniqueEdge(edge.To(), edge.From()))
 				{
-                    T_Edge NewEdge = edge.Clone() as T_Edge;
+                    NavGraphEdge NewEdge = edge.Clone() as NavGraphEdge;
 					
 					NewEdge.SetTo(edge.From());
 					NewEdge.SetFrom(edge.To());
@@ -274,13 +281,13 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 
 		if (!m_bDigraph)
 		{
-			foreach(T_Edge curEdge in m_Edges[to])
+			foreach(NavGraphEdge curEdge in m_Edges[to])
 			{
 				if (curEdge.To() == from){m_Edges[to].Remove(curEdge);break;}
 			}
 		}
 		
-		foreach(T_Edge curEdge in m_Edges[from])
+		foreach(NavGraphEdge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to){m_Edges[from].Remove(curEdge);break;}
 		}
@@ -294,7 +301,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		       //"<SparseGraph::SetEdgeCost>: invalid index");
 		
 		//visit each neighbour and erase any edges leading to this node
-		foreach(T_Edge curEdge in m_Edges[from])
+		foreach(NavGraphEdge curEdge in m_Edges[from])
 		{
 			if (curEdge.To() == to)
 			{
@@ -356,7 +363,7 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 	{
 		if (isNodePresent(from) && isNodePresent(from))
 		{
-			foreach(T_Edge curEdge in m_Edges[from])
+			foreach(NavGraphEdge curEdge in m_Edges[from])
 			{
 				if (curEdge.To() == to) return true;
 			}
@@ -378,6 +385,77 @@ public class SparseGraph<T_Node, T_Edge> where T_Node : NavGraphNode  where T_Ed
 		}
 	}
 
+    public bool Load_Nav(StreamReader stream)
+    {
+        Clear();
+
+        string line;
+        line = stream.ReadLine();
+        string[] sp = line.Split(' ');
+        int numNodes = int.Parse(sp[0]);
+        //get the number of nodes and read them in
+        for (int n = 0; n < numNodes; ++n)
+        {
+            line = stream.ReadLine();
+            NavGraphNode newNode = new NavGraphNode(line);
+
+            //when editing graphs it's possible to end up with a situation where some
+            //of the nodes have been invalidated (their id's set to invalid_node_index). Therefore
+            //when a node of index invalid_node_index is encountered, it must still be added.
+            if (newNode.Index() != GraphNode.INVALID_NODE_INDEX)
+            {
+                AddNode(newNode);
+            }
+            else
+            {
+                m_Nodes.Add(newNode);
+
+                //make sure an edgelist is added for each node
+                m_Edges.Add(new EdgeList());
+
+                ++m_iNextNodeIndex;
+            }
+        }
+
+        line = stream.ReadLine();
+        sp = line.Split(' ');
+        int numEdges = int.Parse(sp[0]);
+        //now add the edges
+        for (int e = 0; e < numEdges; ++e)
+        {
+            line = stream.ReadLine();
+            NavGraphEdge NextEdge = new NavGraphEdge(line);
+
+            AddEdge(NextEdge);
+        }
+
+        return true;
+    }
+
 }
+
+////<일반화 인수의 대입에러에 대하여 >
+//public class BBB
+//{ }
+//public class DDD : BBB
+//{ }
+
+//public class TTT<type> where type : DDD
+//{
+//    public void Add(type t) { }
+//    public void Main()
+//    {
+//        Add(new DDD()); //일반화 형이 정해지지 않은 상태에서의 인수대입은 에러가 발생
+//    }
+//}
+
+//public class MMM
+//{
+//    public void dddd()
+//    {
+//        TTT<DDD> t = new TTT<DDD>();
+//        t.Add(new DDD()); //일반화 형이 정해진 후에는 인수대입이 가능 
+//    }
+//}
 
 

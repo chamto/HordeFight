@@ -39,6 +39,18 @@ public class NavGraphNode : GraphNode , Base_Pos
         m_ExtraInfo = null;
     }
 
+    public NavGraphNode(string line)
+    {
+        string[] sp = line.Split(' ');
+        m_iIndex = int.Parse(sp[1]);
+        float x = float.Parse(sp[3]);
+        float z = float.Parse(sp[5]);
+
+        m_vPosition = new Vector3(x, 0, z);
+        m_ExtraInfo = null;
+
+    }
+
     public override string ToString()
     {
         return "" + base.ToString() + " " + m_vPosition;
