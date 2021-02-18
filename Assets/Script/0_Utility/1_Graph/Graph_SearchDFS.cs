@@ -7,7 +7,7 @@ using System.Collections.Generic;
 //
 //  class to implement a depth first search. 
 //-----------------------------------------------------------------------------
-public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge , new()
+public class Graph_SearchDFS
 {
 		
 		//to aid legibility
@@ -19,7 +19,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 	}
 		
 		//a reference to the graph to be searched
-	private	 SparseGraph<T_Node, T_Edge> m_Graph = null;
+	private	 SparseGraph m_Graph = null;
 	
 	//this records the indexes of all the nodes that are visited as the
 	//search progresses
@@ -33,7 +33,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 	//As the search progresses, this will hold all the edges the algorithm has
 	//examined. THIS IS NOT NECESSARY FOR THE SEARCH, IT IS HERE PURELY
 	//TO PROVIDE THE USER WITH SOME VISUAL FEEDBACK
-	private List<T_Edge>  m_SpanningTree = new List<T_Edge>();
+	private List<NavGraphEdge>  m_SpanningTree = new List<NavGraphEdge>();
 	
 	//the source and target node indices
 	private int               m_iSource, m_iTarget;
@@ -45,12 +45,12 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 	private bool Search()
 	{
 		//create a std stack of edges
-		Stack<T_Edge> stack = new Stack<T_Edge>();
+		Stack<NavGraphEdge> stack = new Stack<NavGraphEdge>();
 
         //create a dummy edge and put on the stack
 
         //T_Edge Dummy = new T_Edge(m_iSource, m_iSource, 0);
-        T_Edge Dummy = new T_Edge();
+        NavGraphEdge Dummy = new NavGraphEdge();
         Dummy.Init(m_iSource, m_iSource, 0);
         stack.Push(Dummy);
 		
@@ -58,7 +58,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 		while (0 != stack.Count)
 		{
             //grab the next edge
-            T_Edge Next = stack.Peek();
+            NavGraphEdge Next = stack.Peek();
 			//Debug.Log(Next); //chamto test
 			
 			//remove the edge from the stack
@@ -85,7 +85,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 			//push the edges leading from the node this edge points to onto
 			//the stack (provided the edge does not point to a previously 
 			//visited node)
-			foreach(T_Edge pE in m_Graph.GetEdges(Next.To()))
+			foreach(NavGraphEdge pE in m_Graph.GetEdges(Next.To()))
 			{
 				if (m_Visited[pE.To()] == (int)Aid.unvisited)
 				{
@@ -98,7 +98,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 		return false;
 	}
 
-	public void Init( SparseGraph<T_Node, T_Edge> graph,
+	public void Init( SparseGraph graph,
 		                int          source,
 		                int          target )
 	{  
@@ -129,7 +129,7 @@ public class Graph_SearchDFS<T_Node, T_Edge> where T_Node : NavGraphNode where T
 	}
 	
 	//returns a vector containing pointers to all the edges the search has examined
-	public List<T_Edge> GetSearchTree() {return m_SpanningTree;}
+	public List<NavGraphEdge> GetSearchTree() {return m_SpanningTree;}
 	
 	//returns true if the target node has been located
 	public bool   Found() {return m_bFound;}

@@ -14,7 +14,7 @@ namespace Raven
         Raven_Map m_pMap;
 
         //a list of all the bots that are inhabiting the map
-        LinkedList<Raven_Bot> m_Bots;
+        LinkedList<Raven_Bot> m_Bots = new LinkedList<Raven_Bot>();
 
         //the user may select a bot to control manually. This is a pointer to that
         //bot
@@ -22,7 +22,7 @@ namespace Raven
 
         //this list contains any active projectiles (slugs, rockets,
         //shotgun pellets, etc)
-        LinkedList<Raven_Projectile> m_Projectiles;
+        LinkedList<Raven_Projectile> m_Projectiles = new LinkedList<Raven_Projectile>();
 
         //this class manages all the path planning requests
         PathManager<Raven_PathPlanner> m_pPathManager;
@@ -384,7 +384,7 @@ namespace Raven
             return false;
         }
 
-        public void AddBots(uint NumBotsToAdd)
+        public void AddBots(int NumBotsToAdd)
         {
             while (0 != NumBotsToAdd--)
             {

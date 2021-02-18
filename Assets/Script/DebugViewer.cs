@@ -227,7 +227,7 @@ using UtilGS9;
                 from_1d = grid.ToPosition1D(from_XY_2d, boundsInt.size.x);
                 from_3d = grid.ToPosition3D(from_XY_2d);
 
-                SparseGraph<NavGraphNode,NavGraphEdge>.EdgeList list = finder._graph.GetEdges(from_1d);
+                SparseGraph.EdgeList list = finder._graph.GetEdges(from_1d);
                 foreach (NavGraphEdge e in list)
                 {
                     to_XY_2d = grid.ToPosition2D(e.To(), boundsInt.size.x);

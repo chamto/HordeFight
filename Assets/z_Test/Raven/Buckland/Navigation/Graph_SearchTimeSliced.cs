@@ -60,7 +60,7 @@ namespace Raven
         //typedef typename graph_type::EdgeType Edge;
         //typedef typename graph_type::NodeType Node;
 
-        SparseGraph<T_Node, T_Edge> m_Graph;
+        SparseGraph m_Graph;
 
         //indexed into my node. Contains the 'real' accumulative cost to that node
         List<float> m_GCosts;
@@ -80,9 +80,9 @@ namespace Raven
         //lowest overall F cost (G+H) are positioned at the front.
         IndexedPriorityQLow<float> m_pPQ;
 
-        public IHeuristic<T_Node, T_Edge> iHeuristic = null;
+        public IHeuristic iHeuristic = null;
 
-        public Graph_SearchAStar_TS(SparseGraph<T_Node, T_Edge> G,
+        public Graph_SearchAStar_TS(SparseGraph G,
                       int source, int target) :base(eSearchType.AStar)
   
         {
@@ -240,7 +240,7 @@ namespace Raven
         //typedef typename graph_type::EdgeType Edge;
         //typedef typename graph_type::NodeType Node;
 
-        SparseGraph<T_Node, T_Edge> m_Graph;
+        SparseGraph m_Graph;
 
         //indexed into my node. Contains the accumulative cost to that node
         List<float> m_CostToThisNode;
@@ -257,7 +257,7 @@ namespace Raven
 
         public Termination_Condition<T_Node, T_Edge> iCondition = null;
 
-        public Graph_SearchDijkstras_TS(SparseGraph<T_Node, T_Edge> G,
+        public Graph_SearchDijkstras_TS(SparseGraph G,
                               int source, int target ) :base(eSearchType.Dijkstra)
       
         {
@@ -413,7 +413,7 @@ namespace Raven
     public interface Termination_Condition<T_Node, T_Edge> where T_Node : NavGraphNode where T_Edge : NavGraphEdge
     {
         //bool isSatisfied(SparseGraph<NavGraphNode, NavGraphEdge> G, int target, int CurrentNodeIdx);
-        bool isSatisfied(SparseGraph<T_Node, T_Edge> G, int target, int CurrentNodeIdx);
+        bool isSatisfied(SparseGraph G, int target, int CurrentNodeIdx);
     }
 
     //--------------------------- FindNodeIndex -----------------------------------
@@ -424,7 +424,7 @@ namespace Raven
         where T_Node : NavGraphNode where T_Edge : NavGraphEdge
     {
 
-        public bool isSatisfied(SparseGraph<T_Node, T_Edge> G, int target, int CurrentNodeIdx)
+        public bool isSatisfied(SparseGraph G, int target, int CurrentNodeIdx)
         {
             return CurrentNodeIdx == target;
         }
@@ -440,7 +440,7 @@ namespace Raven
     {
     
   
-        public bool isSatisfied(SparseGraph<T_Node, T_Edge> G, int target, int CurrentNodeIdx)
+        public bool isSatisfied(SparseGraph G, int target, int CurrentNodeIdx)
         {
             bool bSatisfied = false;
 

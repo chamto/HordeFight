@@ -77,19 +77,18 @@ namespace Raven
         {
             float x = 0f, y = 0f, z = 0f;
 
-            string[] sp = line.Split(' ');
-            int idx = 0;
+            string[] sp = HandyString.SplitBlank(line);
 
-            x = float.Parse(sp[idx++]);
-            z = float.Parse(sp[idx++]);
+            x = float.Parse(sp[0]);
+            z = float.Parse(sp[1]);
             SetFrom(new Vector3(x, y, z));
 
-            x = float.Parse(sp[idx++]);
-            z = float.Parse(sp[idx++]);
+            x = float.Parse(sp[2]);
+            z = float.Parse(sp[3]);
             SetTo(new Vector3(x, y, z));
 
-            x = float.Parse(sp[idx++]);
-            z = float.Parse(sp[idx++]);
+            x = float.Parse(sp[4]);
+            z = float.Parse(sp[5]);
             SetNormal(new Vector3(x, y, z));
         }
 

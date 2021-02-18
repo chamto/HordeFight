@@ -1,4 +1,5 @@
 ﻿
+using UtilGS9;
 //==========================================================
 
 public class NavGraphEdge : GraphEdge
@@ -37,7 +38,7 @@ public class NavGraphEdge : GraphEdge
 
     public NavGraphEdge(string line)
     {
-        string[] sp = line.Split(' ');
+        string[] sp = HandyString.SplitBlank(line);
         m_iFrom = int.Parse(sp[1]);
         m_iTo = int.Parse(sp[3]);
         m_dCost = float.Parse(sp[5]);

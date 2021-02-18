@@ -4,7 +4,7 @@ using UnityEngine.Assertions;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using UtilGS9;
 
 //성긴그래프
 
@@ -391,7 +391,7 @@ public class SparseGraph
 
         string line;
         line = stream.ReadLine();
-        string[] sp = line.Split(' ');
+        string[] sp = HandyString.SplitBlank(line);
         int numNodes = int.Parse(sp[0]);
         //get the number of nodes and read them in
         for (int n = 0; n < numNodes; ++n)
@@ -418,7 +418,7 @@ public class SparseGraph
         }
 
         line = stream.ReadLine();
-        sp = line.Split(' ');
+        sp = HandyString.SplitBlank(line);
         int numEdges = int.Parse(sp[0]);
         //now add the edges
         for (int e = 0; e < numEdges; ++e)

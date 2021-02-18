@@ -165,7 +165,7 @@ namespace Raven
 
         public void Read(string line)
         {
-            string[] sp = line.Split(' ');
+            string[] sp = HandyString.SplitBlank(line);
 
             float x = float.Parse(sp[0]);
             float z = float.Parse(sp[1]);

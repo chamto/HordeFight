@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using UtilGS9;
 
 namespace Raven
 {
@@ -10,7 +10,7 @@ namespace Raven
     {
 
         //vrtex buffers for rocket shape
-        List<Vector3> m_vecRLVB;
+        List<Vector3> m_vecRLVB = new List<Vector3>();
         List<Vector3> m_vecRLVBTrans;
 
 
@@ -107,7 +107,7 @@ namespace Raven
 
         public void Read(string line)
         {
-            string[] sp = line.Split(' ');
+            string[] sp = HandyString.SplitBlank(line);
 
             float x = float.Parse(sp[0]);
             float z = float.Parse(sp[1]);

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UtilGS9;
 
 namespace Raven
 {
@@ -52,7 +52,7 @@ namespace Raven
         //public void Write(std::ostream&  os)const{}
         public void Read(string line)
         {
-            string[] sp = line.Split(' ');
+            string[] sp = HandyString.SplitBlank(line);
 
             m_iReceiver = int.Parse(sp[0]); //grab the id of the entity it messages
             m_iMessageToSend = int.Parse(sp[1]); //grab the message type

@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using UtilGS9;
 
 
 public interface Base_Pos
@@ -41,7 +41,7 @@ public class NavGraphNode : GraphNode , Base_Pos
 
     public NavGraphNode(string line)
     {
-        string[] sp = line.Split(' ');
+        string[] sp = HandyString.SplitBlank(line);
         m_iIndex = int.Parse(sp[1]);
         float x = float.Parse(sp[3]);
         float z = float.Parse(sp[5]);

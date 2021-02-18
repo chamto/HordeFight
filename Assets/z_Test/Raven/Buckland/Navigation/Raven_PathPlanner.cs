@@ -273,7 +273,7 @@ namespace Raven
             Graph_SearchAStar_TS<NavGraphNode, NavGraphEdge> graph = new Graph_SearchAStar_TS<NavGraphNode, NavGraphEdge>(m_NavGraph,
                                              ClosestNodeToBot,
                                          ClosestNodeToTarget);
-            graph.iHeuristic = new Heuristic_Euclid<NavGraphNode, NavGraphEdge>();
+            graph.iHeuristic = new Heuristic_Euclid();
             m_pCurrentSearch = graph;
 
 

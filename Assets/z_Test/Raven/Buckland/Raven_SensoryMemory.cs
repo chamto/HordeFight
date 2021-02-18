@@ -58,7 +58,7 @@ namespace Raven
         //this container is used to simulate memory of sensory events. A MemoryRecord
         //is created for each opponent in the environment. Each record is updated 
         //whenever the opponent is encountered. (when it is seen or heard)
-        MemoryMap m_MemoryMap;
+        MemoryMap m_MemoryMap = new MemoryMap();
 
         //a bot has a memory span equivalent to this value. When a bot requests a 
         //list of all recently sensed opponents this value is used to determine if 
@@ -78,7 +78,8 @@ namespace Raven
             {
                 MemoryRecord mr = new MemoryRecord();
                 mr.Init();
-                m_MemoryMap[pOpponent] = mr;
+                //m_MemoryMap[pOpponent] = mr;
+                m_MemoryMap.Add(pOpponent, mr);
 
             }
         }

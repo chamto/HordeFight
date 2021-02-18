@@ -46,19 +46,19 @@ namespace UtilGS9
     {
 #if UNITY_EDITOR
         public const string CURRENT_PLATFORM = "UNITY_EDITOR";
-        public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
+        public static string WWW_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
 #elif UNITY_IPHONE
         public const string CURRENT_PLATFORM = "UNITY_IPHONE";
-        public static string ASSET_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
+        public static string WWW_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
 #elif UNITY_ANDROID
         public const string CURRENT_PLATFORM = "UNITY_ANDROID";
-        public static string ASSET_PATH = "jar:file://" + UnityEngine.Application.dataPath + "!/assets/";
+        public static string WWW_PATH = "jar:file://" + UnityEngine.Application.dataPath + "!/assets/";
 #elif SERVER
         public const string CURRENT_PLATFORM = "SERVER";
-        public static string ASSET_PATH = "Data_KOR\\";
+        public static string WWW_PATH = "Data_KOR\\";
 #elif TOOL
         public const string CURRENT_PLATFORM = "TOOL";
-        public static string ASSET_PATH = "Data_KOR\\";
+        public static string WWW_PATH = "Data_KOR\\";
 #endif
     }
 
@@ -471,12 +471,45 @@ namespace UtilGS9
         }//end func
     }//end class
 
+    public class HandyString
+    {
+        static public string[] SplitBlank(string line)
+        {
+            line = line.Trim();
 
-    ///////////////////////////////////////////////////////////////////////
-    /// <summary>
-    /// int2 자료형
-    /// </summary>
-    ///////////////////////////////////////////////////////////////////////
+            //다중공백을 연속해서 잘라준다 
+            //ref : https://m.blog.naver.com/chandong83/221176119223
+            char[] delimiterChars = { ' ' };
+            string[] sp = line.Split(delimiterChars, System.StringSplitOptions.RemoveEmptyEntries);
+
+            //DebugWide.LogBlue("line:-->  _" + line + " _" + sp[0] + "_ " + " c:" + sp.Length);
+            //foreach (var s in sp) DebugWide.LogBlue("_" + s + "_");
+
+            return sp;
+        }
+
+        //첫번째 자른 문자를 요청된 기본타입으로 변환하여 반환 
+        //ref : https://stackoverflow.com/questions/805264/how-to-define-generic-type-limit-to-primitive-types
+        static public T GetFirstLetter<T>(string line, out string subLine) where T : struct, IComparable, IFormattable, IConvertible, IComparable<T>, IEquatable<T>
+        {
+            string[] sp = HandyString.SplitBlank(line);
+
+
+            //ref : http://blog.naver.com/PostView.nhn?blogId=traeumen927&logNo=220965317204
+            subLine = line.Substring(sp[0].Length); //앞에 읽은 문자를 제거한다 
+            subLine = subLine.Trim();
+            //ref : https://stackoverflow.com/questions/8625/generic-type-conversion-from-string
+            return (T)Convert.ChangeType(sp[0], typeof(T));
+
+        }
+
+    }
+
+        ///////////////////////////////////////////////////////////////////////
+        /// <summary>
+        /// int2 자료형
+        /// </summary>
+        ///////////////////////////////////////////////////////////////////////
     public struct Index2
     {
         public int x;

@@ -17,9 +17,9 @@ namespace HordeFight
     public class PathFinder : MonoBehaviour
     {
         //*
-        public SparseGraph<NavGraphNode, NavGraphEdge> _graph = new SparseGraph<NavGraphNode, NavGraphEdge>(false);
-        public Graph_SearchDFS<NavGraphNode, NavGraphEdge> _searchDFS = new Graph_SearchDFS<NavGraphNode, NavGraphEdge>();
-        public Graph_SearchAStar<NavGraphNode, NavGraphEdge> _searchAStar = new Graph_SearchAStar<NavGraphNode, NavGraphEdge>();
+        public SparseGraph _graph = new SparseGraph(false);
+        public Graph_SearchDFS _searchDFS = new Graph_SearchDFS();
+        public Graph_SearchAStar _searchAStar = new Graph_SearchAStar();
 
         public Transform _town = null;
 
