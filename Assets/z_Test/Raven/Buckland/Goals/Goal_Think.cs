@@ -72,13 +72,13 @@ namespace Raven
         //that has the highest score as the current goal
         public void Arbitrate()
         {
-            double best = 0;
+            float best = 0;
             Goal_Evaluator MostDesirable = null;
 
             //iterate through all the evaluators to see which produces the highest score
             foreach (Goal_Evaluator curDes in m_Evaluators)
             {
-                double desirabilty = curDes.CalculateDesirability(m_pOwner);
+                float desirabilty = curDes.CalculateDesirability(m_pOwner);
 
                 if (desirabilty >= best)
                 {

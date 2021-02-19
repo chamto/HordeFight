@@ -7,6 +7,9 @@ using UtilGS9;
 
 namespace Raven
 {
+
+
+    //*
     public class Raven_Game
     {
 
@@ -766,6 +769,6 @@ namespace Raven
         }
 
     }
-
+    //*/
 }//end namespace
 

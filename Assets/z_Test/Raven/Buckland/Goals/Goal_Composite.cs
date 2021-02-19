@@ -129,6 +129,7 @@ namespace Raven
         //adds a subgoal to the front of the subgoal list
         override public void AddSubgoal(Goal<entity_type> g)
         {
+            //DebugWide.LogBlue(m_SubGoals.Count);
             //add the new goal to the front of the list
             m_SubGoals.AddFirst(g);
             //m_SubGoals.push_front(g);

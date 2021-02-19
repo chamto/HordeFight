@@ -7,7 +7,7 @@ using UtilGS9;
 namespace Raven
 {
 
-    /*
+    //*
     public class Raven_Bot : MovingEntity //BaseGameEntity
     {
 
@@ -30,7 +30,7 @@ namespace Raven
 
         Regulator m_pGoalArbitrationRegulator;
 
-        public Raven_Bot(Raven_Game world, int id) : base(ConstV.v3_zero,
+        public Raven_Bot(Raven_Game world, Vector3 pos) : base(pos,
                Params.Bot_Scale,
                ConstV.v3_zero,
                0.3f,//Params.Bot_MaxSpeed, 
@@ -46,8 +46,8 @@ namespace Raven
 
             m_pSteering = new Raven_Steering(world, this);
 
-            m_pTargSys = new Raven_TargetingSystem();
-            m_pWeaponSys = new Raven_WeaponSystem();
+            m_pTargSys = new Raven_TargetingSystem(this);
+            m_pWeaponSys = new Raven_WeaponSystem(this, 0,0,0);
 
             m_pGoalArbitrationRegulator = new Regulator(5);
         }
@@ -144,10 +144,14 @@ namespace Raven
 
         public Vector3 Facing() { return ConstV.v3_zero; }
         public float FieldOfView() { return 0f; }
+        public void IncreaseHealth(int i) { }
+        public bool isReadyForTriggerUpdate() { return false; }
+        public bool isAlive() { return false; }
+
     }
     //*/
     
-    //*
+    /*
     public class Raven_Bot :  MovingEntity
     {
     
@@ -363,7 +367,7 @@ namespace Raven
 
     
         //the usual suspects
-        public void Render()
+        public override void Render()
         {
             //when a bot is hit by a projectile this value is set to a constant user
             //defined value which dictates how long the bot should have a thick red
@@ -425,7 +429,7 @@ namespace Raven
             }
         }
 
-        public void Update()
+        public override void Update()
         {
             //process the currently active goal. Note this is required even if the bot
             //is under user control. This is because a goal is created whenever a user 
@@ -434,6 +438,27 @@ namespace Raven
 
             //Calculate the steering force and update the bot's velocity and position
             UpdateMovement();
+
+            //------------
+            //m_pBrain.Arbitrate();
+            //GetBrain().AddGoal_Explore();
+
+            //Vector3 perp = Vector3.Cross(m_vFacing, ConstV.v3_up);
+            //Transformation.Draw_WorldTransform(m_vecBotVB,
+            //                                 Pos(),
+            //                                 Facing(),
+            //                                 perp,
+            //                                 Scale(),
+            //                                 Color.blue);
+
+
+
+            ////draw the head
+            //DebugWide.DrawCircle(Pos(), 6f * Scale().x, Color.magenta);
+
+
+            //return;
+            //------------
 
             //if the bot is under AI control but not scripted
             if (!isPossessed())
@@ -470,7 +495,7 @@ namespace Raven
             }
         }
 
-        public bool HandleMessage(Telegram msg)
+        public override bool HandleMessage(Telegram msg)
         {
           //first see if the current goal accepts the message
           if (GetBrain().HandleMessage(msg)) return true;
