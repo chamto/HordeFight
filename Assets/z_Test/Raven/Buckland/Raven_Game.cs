@@ -9,7 +9,46 @@ namespace Raven
 {
 
 
-    //*
+    public class Raven_Game
+    {
+        LinkedList<Raven_Bot> m_Bots;
+        Raven_Map m_pMap = new Raven_Map();
+        PathManager<Raven_PathPlanner> m_pPathManager = new PathManager<Raven_PathPlanner>(0);
+
+        public Raven_Map GetMap() { return m_pMap; }
+        public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
+        public bool isLOSOkay(Vector3 a, Vector3 b) { return false; }
+        public LinkedList<Raven_Bot> GetAllBots() { return null; }
+
+        public void TagRaven_BotsWithinViewRange(BaseGameEntity pRaven_Bot, float range)
+        { TagNeighbors(pRaven_Bot, m_Bots, range); }
+
+
+        void TagNeighbors(BaseGameEntity entity, LinkedList<Raven_Bot> others, float radius)
+        {
+
+            foreach (Raven_Bot it in others)
+            {
+                //first clear any current tag
+                (it).UnTag();
+
+                //work in distance squared to avoid sqrts
+                Vector3 to = (it).Pos() - entity.Pos();
+
+                //the bounding radius of the other is taken into account by adding it 
+                //to the range
+                float range = radius + (it).BRadius();
+
+                //if entity within range, tag for further consideration
+                if (((it) != entity) && (to.sqrMagnitude < range * range))
+                {
+                    (it).Tag();
+                }
+
+            }//next entity
+        }
+    }
+    /*
     public class Raven_Game
     {
 

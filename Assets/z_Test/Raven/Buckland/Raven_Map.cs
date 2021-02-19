@@ -7,6 +7,45 @@ using UtilGS9;
 
 namespace Raven
 {
+    //*
+    public class Raven_Map
+    {
+        List<Wall2D> m_Walls;
+        SparseGraph m_pNavGraph = new SparseGraph(false);
+        CellSpacePartition<NavGraphNode> m_pSpacePartition;
+        float m_dCellSpaceNeighborhoodRange;
+
+        TriggerSystem m_TriggerSystem;
+
+        public Raven_Map()
+        {
+            m_pSpacePartition = new CellSpacePartition<NavGraphNode>(100,
+                                                                  100,
+                                                                  10,
+                                                                  10,
+                                                                  m_pNavGraph.NumNodes());
+
+
+        }
+
+        public TriggerList GetTriggers() { return m_TriggerSystem.GetTriggers(); }
+        public Vector3 GetRandomNodeLocation()
+        {
+            //return ConstV.v3_zero;
+
+            return new Vector3(Misc.RandFloat() * 30, 0, Misc.RandFloat() * 30); //임시로 값 부여 
+        }
+        public SparseGraph GetNavGraph() { return m_pNavGraph; }
+        public float GetCellSpaceNeighborhoodRange() { return m_dCellSpaceNeighborhoodRange; }
+        public CellSpacePartition<NavGraphNode> GetCellSpace() { return m_pSpacePartition; }
+        public float CalculateCostToTravelBetweenNodes(int nd1, int nd2) { return 0f; }
+
+        public List<Wall2D> GetWalls() { return m_Walls; }
+
+        public Wall2D AddWall(Vector3 a, Vector3 b) { return new Wall2D(); }
+    }
+    //*/
+    /*
     public class Raven_Map
     {
 
@@ -400,6 +439,6 @@ namespace Raven
         public float GetCellSpaceNeighborhoodRange() { return m_dCellSpaceNeighborhoodRange; }
 
     }
-
+    //*/
 }//end namespace
 

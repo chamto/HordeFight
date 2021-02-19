@@ -16,6 +16,7 @@ namespace Raven
 
         override public float CalculateDesirability(Raven_Bot pBot)
         {
+
             //grab the distance to the closest instance of the weapon type
             float Distance = Feature.DistanceToItem(pBot, m_iWeaponType);
 

@@ -10,6 +10,7 @@ namespace Raven
 
         override public float CalculateDesirability(Raven_Bot pBot)
         {
+
             //first grab the distance to the closest instance of a health item
             float Distance = Feature.DistanceToItem(pBot, (int)eObjType.health);
 
