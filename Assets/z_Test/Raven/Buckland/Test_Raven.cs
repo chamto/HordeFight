@@ -39,7 +39,7 @@ namespace Raven
             _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero); //복합목표 출력
             _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15)); //생각을 위한 평가값들 출력
             _bot_0.Render();
-            //_game.GetMap().Render();
+            _game.GetMap().Render();
 
         }
     }

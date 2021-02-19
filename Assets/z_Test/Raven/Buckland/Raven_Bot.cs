@@ -147,6 +147,16 @@ namespace Raven
         public void IncreaseHealth(int i) { }
         public bool isReadyForTriggerUpdate() { return false; }
         public bool isAlive() { return false; }
+        public void ChangeWeapon(int i) { }
+        public void TakePossession() { }
+        public void FireWeapon(Vector3 a) { }
+        public void RotateFacingTowardPosition(Vector3 a) { }
+        public void Exorcise() { }
+        public bool isSpawning() { return false; }
+        public Raven_SensoryMemory GetSensoryMem() { return null; }
+        public void SetSpawning() { }
+        public bool isDead() { return false; }
+        public void Spawn(Vector3 a) { }
 
     }
     //*/

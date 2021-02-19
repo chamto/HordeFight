@@ -7,7 +7,7 @@ using UtilGS9;
 
 namespace Raven
 {
-    //*
+    /*
     public class Raven_Map
     {
         List<Wall2D> m_Walls;
@@ -45,7 +45,8 @@ namespace Raven
         public Wall2D AddWall(Vector3 a, Vector3 b) { return new Wall2D(); }
     }
     //*/
-    /*
+
+    //*
     public class Raven_Map
     {
 
@@ -415,7 +416,9 @@ namespace Raven
         //returns the position of a graph node selected at random
         public Vector3 GetRandomNodeLocation()
         {
-            int RandIndex = Misc.RandInt(0, m_pNavGraph.NumActiveNodes() - 1);
+            int y = m_pNavGraph.NumActiveNodes() - 1;
+            if (y < 0) y = 0;
+            int RandIndex = Misc.RandInt(0, y);
 
             return m_pNavGraph.GetNode(RandIndex).Pos();
         }

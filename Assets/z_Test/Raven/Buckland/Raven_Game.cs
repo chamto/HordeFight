@@ -8,17 +8,17 @@ using UtilGS9;
 namespace Raven
 {
 
-
+    /*
     public class Raven_Game
     {
-        LinkedList<Raven_Bot> m_Bots;
+        LinkedList<Raven_Bot> m_Bots = new LinkedList<Raven_Bot>();
         Raven_Map m_pMap = new Raven_Map();
         PathManager<Raven_PathPlanner> m_pPathManager = new PathManager<Raven_PathPlanner>(0);
 
         public Raven_Map GetMap() { return m_pMap; }
         public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
         public bool isLOSOkay(Vector3 a, Vector3 b) { return false; }
-        public LinkedList<Raven_Bot> GetAllBots() { return null; }
+        public LinkedList<Raven_Bot> GetAllBots() { return m_Bots; }
 
         public void TagRaven_BotsWithinViewRange(BaseGameEntity pRaven_Bot, float range)
         { TagNeighbors(pRaven_Bot, m_Bots, range); }
@@ -47,8 +47,12 @@ namespace Raven
 
             }//next entity
         }
+
+        public bool isPathObstructed(Vector3 a, Vector3 b, float f) { return false; }
     }
-    /*
+    //*/
+
+    //*
     public class Raven_Game
     {
 
