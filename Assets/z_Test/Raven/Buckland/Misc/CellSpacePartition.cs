@@ -127,7 +127,8 @@ namespace Raven
         //next and end methods to iterate through the vector.
         public void CalculateNeighbors(Vector3 TargetPos, float QueryRadius)
         {
-            
+            m_Neighbors.Clear();
+
             //create the query box that is the bounding box of the target's query
             //area
             InvertedAABBox2D QueryBox = new InvertedAABBox2D(TargetPos - new Vector3(QueryRadius, 0, QueryRadius),
@@ -136,6 +137,7 @@ namespace Raven
             //iterate through each cell and test to see if its bounding box overlaps
             //with the query box. If it does and it also contains entities then
             //make further proximity tests.
+            //DebugWide.LogBlue(m_Cells.Count);
             foreach (Cell<T> curCell in m_Cells)
             {
                 //test to see if this cell contains members and if it overlaps the
@@ -146,6 +148,7 @@ namespace Raven
                     //add any entities found within query radius to the neighbor list
                     foreach (T ent in curCell.Members)
                     {
+                        //DebugWide.LogBlue(m_Neighbors.Count);
                         Vector3 pos = ent.Pos();
                         if ((pos - TargetPos).sqrMagnitude < QueryRadius * QueryRadius)
                         {
