@@ -360,9 +360,7 @@ namespace Raven
             {
                 if (((it).EntityType() == GiverType) && (it).isActive())
                 {
-                    float cost =
-                    m_pOwner.GetWorld().GetMap().CalculateCostToTravelBetweenNodes(nd,
-                                                                    (it).GraphNodeIndex());
+                    float cost = m_pOwner.GetWorld().GetMap().CalculateCostToTravelBetweenNodes(nd, (it).GraphNodeIndex());
 
                     if (cost < ClosestSoFar)
                     {

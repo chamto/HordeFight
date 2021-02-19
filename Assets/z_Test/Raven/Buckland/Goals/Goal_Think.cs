@@ -72,6 +72,7 @@ namespace Raven
         //that has the highest score as the current goal
         public void Arbitrate()
         {
+
             float best = 0;
             Goal_Evaluator MostDesirable = null;
 
@@ -107,6 +108,7 @@ namespace Raven
         //the usual suspects
         override public int Process()
         {
+
             ActivateIfInactive();
 
             int SubgoalStatus = ProcessSubgoals();
@@ -176,6 +178,7 @@ namespace Raven
         public void RenderEvaluations(Vector3 pos)
         {
             //gdi->TextColor(Cgdi::black);
+            //DebugWide.LogBlue(m_Evaluators.Count + "  " + m_SubGoals.Count);
 
             foreach (Goal_Evaluator cur in m_Evaluators)
             {

@@ -7,7 +7,7 @@ using UtilGS9;
 namespace Raven
 {
 
-    //*
+    /*
     public class Raven_Bot : MovingEntity //BaseGameEntity
     {
 
@@ -161,14 +161,14 @@ namespace Raven
     }
     //*/
     
-    /*
+    //*
     public class Raven_Bot :  MovingEntity
     {
     
-        public enum eStatus { alive, dead, spawning };
+        public enum eStatus { alive = 0 , dead = 1 , spawning = 2 };
 
         //alive, dead or spawning?
-        eStatus m_Status;
+        public eStatus m_Status;
 
         //a pointer to the world data
         Raven_Game m_pWorld;
@@ -441,6 +441,7 @@ namespace Raven
 
         public override void Update()
         {
+
             //process the currently active goal. Note this is required even if the bot
             //is under user control. This is because a goal is created whenever a user 
             //clicks on an area of the map that necessitates a path planning request.
@@ -449,26 +450,6 @@ namespace Raven
             //Calculate the steering force and update the bot's velocity and position
             UpdateMovement();
 
-            //------------
-            //m_pBrain.Arbitrate();
-            //GetBrain().AddGoal_Explore();
-
-            //Vector3 perp = Vector3.Cross(m_vFacing, ConstV.v3_up);
-            //Transformation.Draw_WorldTransform(m_vecBotVB,
-            //                                 Pos(),
-            //                                 Facing(),
-            //                                 perp,
-            //                                 Scale(),
-            //                                 Color.blue);
-
-
-
-            ////draw the head
-            //DebugWide.DrawCircle(Pos(), 6f * Scale().x, Color.magenta);
-
-
-            //return;
-            //------------
 
             //if the bot is under AI control but not scripted
             if (!isPossessed())

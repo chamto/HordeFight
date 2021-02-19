@@ -199,6 +199,7 @@ namespace Raven
         //the usual suspects
         public void Render()
         {
+
             m_pGraveMarkers.Render();
 
             //render the map
@@ -221,9 +222,11 @@ namespace Raven
 
             else
             {
+
                 //render all the entities
                 foreach (Raven_Bot curBot in m_Bots)
                 {
+
                     if ((curBot).isAlive())
                     {
                         (curBot).Render();
@@ -311,6 +314,7 @@ namespace Raven
 
         public void Update()
         {
+
             //don't update if the user has paused the game
             if (m_bPaused) return;
 
@@ -352,6 +356,8 @@ namespace Raven
 
             foreach (Raven_Bot curBot in m_Bots)
             {
+                //DebugWide.LogBlue(curBot.m_Status + "  " + curBot.ID() + "  " + curBot.Pos() +  "  " + curBot.Health() );
+
                 //if this bot's status is 'respawning' attempt to resurrect it from
                 //an unoccupied spawn point
                 if ((curBot).isSpawning() && bSpawnPossible)

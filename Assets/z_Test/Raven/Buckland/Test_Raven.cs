@@ -19,6 +19,7 @@ namespace Raven
             _game = new Raven_Game();
 
             _bot_0 = new Raven_Bot(_game, ConstV.v3_zero);
+            _bot_0.m_Status = Raven_Bot.eStatus.alive;
         }
 
         // Update is called once per frame
@@ -136,7 +137,6 @@ namespace Raven
 
         public static bool m_bShowNodeIndices = false;
 
-        public static bool m_bShowPathOfSelectedBot = true;
 
         public static bool m_bShowTargetOfSelectedBot = false;
 
@@ -144,9 +144,11 @@ namespace Raven
 
         public static bool m_bOnlyShowBotsInTargetsFOV = false;
 
+        //think 정보 출력 
+        public static bool m_bShowPathOfSelectedBot = true;
         public static bool m_bShowGoalsOfSelectedBot = true;
-
         public static bool m_bShowGoalAppraisals = true;
+        //======
 
         public static bool m_bShowWeaponAppraisals = false;
 

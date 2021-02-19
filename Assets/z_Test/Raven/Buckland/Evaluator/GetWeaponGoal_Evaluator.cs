@@ -20,6 +20,7 @@ namespace Raven
             //grab the distance to the closest instance of the weapon type
             float Distance = Feature.DistanceToItem(pBot, m_iWeaponType);
 
+
             //if the distance feature is rated with a value of 1 it means that the
             //item is either not present on the map or too far away to be worth 
             //considering, therefore the desirability is zero
