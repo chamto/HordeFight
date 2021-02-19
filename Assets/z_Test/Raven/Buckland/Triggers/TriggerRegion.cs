@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-
+using System.Collections.Generic;
 
 namespace Raven
 {
@@ -66,5 +66,6 @@ namespace Raven
             return Box.isOverlappedWith(m_pTrigger);
         }
     }
+
 }
 

@@ -16,7 +16,7 @@ namespace Raven
         Raven_Bot m_pOwner;
 
         //a reference to the navgraph
-        NavGraph m_NavGraph;
+        SparseGraph m_NavGraph;
 
         //a pointer to an instance of the current graph search algorithm.
         Graph_SearchTimeSliced<NavGraphEdge> m_pCurrentSearch;

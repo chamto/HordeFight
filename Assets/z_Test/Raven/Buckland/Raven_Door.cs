@@ -20,7 +20,7 @@ namespace Raven
         protected Wall2D m_pWall2;
 
         //a container of the id's of the triggers able to open this door
-        protected List<int> m_Switches;
+        protected List<int> m_Switches = new List<int>();
 
         //how long the door remains open before it starts to shut again
         protected int m_iNumTicksStayOpen;
@@ -169,15 +169,18 @@ namespace Raven
 
             float x = float.Parse(sp[0]);
             float z = float.Parse(sp[1]);
-            int num = int.Parse(sp[2]);
-
             m_vP1 = new Vector3(x, 0, z);
-            m_vP2 = m_vP1;
+
+            x = float.Parse(sp[2]);
+            z = float.Parse(sp[3]);
+            m_vP2 = new Vector3(x, 0, z);
+
+            int num = int.Parse(sp[4]);
 
             //save the trigger IDs
             for (int i = 0; i < num; ++i)
             {
-                m_Switches.Add(int.Parse(sp[3 + i]));
+                m_Switches.Add(int.Parse(sp[5 + i]));
             }
         }
 

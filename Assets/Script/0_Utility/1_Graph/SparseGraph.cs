@@ -157,11 +157,12 @@ public class SparseGraph
 	
 	public EdgeList GetEdges(int node)
 	{
-		//Assert.IsTrue( (node < m_Nodes.Count) &&
-		              //(node >=0)              &&
-		              //m_Nodes[node].Index() != GraphNode.INVALID_NODE_INDEX ,
-		              //"<SparseGraph::GetEdges>: invalid 'node' index");
+        //Assert.IsTrue( (node < m_Nodes.Count) &&
+        //(node >=0)              &&
+        //m_Nodes[node].Index() != GraphNode.INVALID_NODE_INDEX ,
+        //"<SparseGraph::GetEdges>: invalid 'node' index");
 
+        //DebugWide.LogBlue(node + " _ct:" + m_Nodes.Count);
 		return m_Edges [node];
 	}
 	

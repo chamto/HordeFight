@@ -23,7 +23,7 @@ namespace Raven
         //trigger are objects that define a region of space. When a raven bot
         //enters that area, it 'triggers' an event. That event may be anything
         //from increasing a bot's health to opening a door or requesting a lift.
-        TriggerSystem<Trigger<Raven_Bot>> m_TriggerSystem = new TriggerSystem<Trigger<Raven_Bot>>();
+        TriggerSystem m_TriggerSystem = new TriggerSystem();
 
         //this holds a number of spawn positions. When a bot is instantiated
         //it will appear at a randomly selected point chosen from this vector
@@ -33,7 +33,7 @@ namespace Raven
         List<Raven_Door> m_Doors = new List<Raven_Door>();
 
         //this map's accompanying navigation graph
-        NavGraph m_pNavGraph;
+        SparseGraph m_pNavGraph;
 
         //the graph nodes will be partitioned enabling fast lookup
         CellSpacePartition<NavGraphNode> m_pSpacePartition;
@@ -252,7 +252,7 @@ namespace Raven
             //the entities are read from the map file because many of the entities
             //will be linked to a graph node (the graph node will own a pointer
             //to an instance of the entity)
-            m_pNavGraph = new NavGraph(false);
+            m_pNavGraph = new SparseGraph(false);
 
             m_pNavGraph.Load_Nav(stream);
 
@@ -389,7 +389,7 @@ namespace Raven
 
         public TriggerList GetTriggers() { return m_TriggerSystem.GetTriggers(); }
         public List<Wall2D> GetWalls() { return m_Walls; }
-        public NavGraph GetNavGraph() { return m_pNavGraph; }
+        public SparseGraph GetNavGraph() { return m_pNavGraph; }
         public List<Raven_Door> GetDoors() { return m_Doors; }
         public List<Vector3> GetSpawnPoints() { return m_SpawnPoints; }
         public CellSpacePartition<NavGraphNode> GetCellSpace() { return m_pSpacePartition; }

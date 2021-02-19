@@ -30,7 +30,7 @@ namespace Raven
         {
             if (null == _game) return;
 
-            //_game.Update(); //트리거시스템 구현 필요 
+            _game.Update();
             _game.Render();
 
             //_bot_0.Update();
@@ -130,7 +130,7 @@ namespace Raven
     public static class UserOptions
     {
 
-        public static bool m_bShowGraph = false;
+        public static bool m_bShowGraph = true;
 
         public static bool m_bShowNodeIndices = false;
 
@@ -249,7 +249,7 @@ namespace Raven
     public class HandyGraph
     {
             
-        static public void GraphHelper_DrawUsingGDI(NavGraph graph, Color color, bool DrawNodeIDs = false)
+        static public void GraphHelper_DrawUsingGDI(SparseGraph graph, Color color, bool DrawNodeIDs = false)
         {   
 
             //just return if the graph has no nodes
@@ -510,25 +510,8 @@ namespace Raven
 
     }
 
+    //======================================================
 
-
-    //public class TriggerType : Trigger<Raven_Bot>
-    //{
-    //    public TriggerType(int id) : base(id) { }
-    //}
-
-    public class TriggerList : LinkedList<Trigger<Raven_Bot>> 
-    {
-    }
-
-    public class TriggerSystem<trigger_type> where trigger_type : Trigger<Raven_Bot>
-    {
-        public TriggerList GetTriggers(){ return null; }
-        public void Register(trigger_type trigger) {}
-        public void Clear() { }
-        public void Render() { }
-        public void Update(LinkedList<Raven_Bot> bots) { }
-    }
 
     public class Raven_TargetingSystem
     {
@@ -697,55 +680,14 @@ namespace Raven
         public void UpdateSearches() { }
     }
 
-
-    //======================================================
-
-    /*
-    public class Raven_Map
-    {
-        List<Wall2D> m_Walls;
-        NavGraph m_pNavGraph = new NavGraph(false);
-        CellSpacePartition<NavGraphNode> m_pSpacePartition;
-        float m_dCellSpaceNeighborhoodRange;
-
-        TriggerSystem<Trigger<Raven_Bot>> m_TriggerSystem;
-
-        public Raven_Map()
-        {
-            m_pSpacePartition = new CellSpacePartition<NavGraphNode>(100,
-                                                                  100,
-                                                                  10,
-                                                                  10,
-                                                                  m_pNavGraph.NumNodes());
-
-
-        }
-
-        public TriggerList GetTriggers() { return m_TriggerSystem.GetTriggers(); }
-        public Vector3 GetRandomNodeLocation()
-        {
-            //return ConstV.v3_zero;
-
-            return new Vector3(Misc.RandFloat() * 30, 0, Misc.RandFloat() * 30); //임시로 값 부여 
-        }
-        public NavGraph GetNavGraph() { return m_pNavGraph; }
-        public float GetCellSpaceNeighborhoodRange() { return m_dCellSpaceNeighborhoodRange; }
-        public CellSpacePartition<NavGraphNode> GetCellSpace() { return m_pSpacePartition; }
-        public float CalculateCostToTravelBetweenNodes(int nd1, int nd2) { return 0f; }
-
-        public List<Wall2D> GetWalls() { return m_Walls; }
-    }
-    //*/
-
-
     //======================================================
 
     public class Path : LinkedList<PathEdge> { }
 
-    public class NavGraph : SparseGraph
-    {
-        public NavGraph(bool digraph) : base(digraph) {}
-    }
+    //public class NavGraph : SparseGraph
+    //{
+    //    public NavGraph(bool digraph) : base(digraph) {}
+    //}
 
 }//end namespace
 
