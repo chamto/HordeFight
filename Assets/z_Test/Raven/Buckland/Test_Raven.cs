@@ -31,16 +31,16 @@ namespace Raven
         {
             if (null == _game) return;
 
-            //_game.Update();
-            //_game.Render();
+            _game.Update();
+            _game.Render();
 
             if (null == _bot_0) return;
-            _bot_0.Update();
-            _bot_0.GetBrain().Render(); //위치출력
-            _bot_0.GetBrain().RenderAtPos(ConstV.v3_zero); //복합목표 출력
-            _bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15)); //생각을 위한 평가값들 출력
-            _bot_0.Render();
-            _game.GetMap().Render();
+            //_bot_0.Update();
+            //_bot_0.GetBrain().Render(); //위치출력
+            //_bot_0.GetBrain().RenderAtPos(ConstV.v3_zero); //복합목표 출력
+            //_bot_0.GetBrain().RenderEvaluations(new Vector3(0,0,15)); //생각을 위한 평가값들 출력
+            //_bot_0.Render();
+            //_game.GetMap().Render();
 
         }
     }
@@ -180,23 +180,25 @@ namespace Raven
 
             //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, forward);
 
-            int count = 0;
-            Vector3 tr, cur, prev = ConstV.v3_zero;
-            foreach (Vector3 v in points)
-            {
-                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-                //cur = (rotQ * tr) + pos;
-                cur = m.MultiplyPoint(tr) + pos;
 
-                if (count > 1)
-                {
-                    DebugWide.DrawLine(prev, cur, color);
-                }
+            Vector3 tr, cur, prev = ConstV.v3_zero;
+
+            Vector3 v = points[points.Count - 1];
+            tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
+            prev = m.MultiplyPoint(tr) + pos;
+            //prev = rotQ * v + pos;
+            for (int i=0;i<points.Count;i++)
+            {
+                v = points[i];
+                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
+                cur = m.MultiplyPoint(tr) + pos;
+                //cur = rotQ * points[i] + pos;
+
+                DebugWide.DrawLine(prev, cur, color);
 
                 prev = cur;
-
-                count++;
             }
+
         }
 
         static public List<Vector3> WorldTransform(List<Vector3> points,
@@ -242,9 +244,9 @@ namespace Raven
             return m.MultiplyPoint(point) + AgentPosition;
         }
 
-        static public void Vec2DRotateAroundOrigin(ref Vector3 v, float ang)
+        static public void Vec2DRotateAroundOrigin(ref Vector3 v, float radian)
         {
-            Quaternion rotQ = Quaternion.AngleAxis(ang, ConstV.v3_up);
+            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, ConstV.v3_up);
             v = rotQ * v;
         }
 

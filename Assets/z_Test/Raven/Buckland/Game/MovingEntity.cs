@@ -117,7 +117,8 @@ namespace Raven
             //clamp the amount to turn to the max turn rate
             if (angle > m_dMaxTurnRate) angle = m_dMaxTurnRate;
 
-            Quaternion rotQ = Quaternion.AngleAxis(angle, ConstV.v3_up);
+            Vector3 up = Vector3.Cross(m_vHeading, toTarget);
+            Quaternion rotQ = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, up);
             m_vHeading = rotQ * m_vHeading;
             m_vVelocity = rotQ * m_vVelocity;
 

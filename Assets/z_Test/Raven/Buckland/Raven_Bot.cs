@@ -287,10 +287,12 @@ namespace Raven
         {
             //setup the vertex buffers and calculate the bounding radius
             const int NumBotVerts = 4;
-            Vector3[] bot = new Vector3[NumBotVerts] {new Vector3(-3, 0, 8),
-                                     new Vector3(3 , 0, 10),
-                                     new Vector3(3 , 0, -10),
-                                     new Vector3(-3 , 0, -8)};
+            Vector3[] bot = new Vector3[NumBotVerts] {
+                                        new Vector3(-10, 0, 3),
+                                     new Vector3(10 , 0, 3),
+                                     new Vector3(8 , 0, -3),
+                                     new Vector3(-8 , 0, -3)
+                                     };
 
             m_dBoundingRadius = 0.0f;
             float scale = Params.Bot_Scale;
@@ -306,9 +308,9 @@ namespace Raven
                     m_dBoundingRadius = Math.Abs(bot[vtx].x * scale);
                 }
 
-                if (Math.Abs(bot[vtx].y) * scale > m_dBoundingRadius)
+                if (Math.Abs(bot[vtx].z) * scale > m_dBoundingRadius)
                 {
-                    m_dBoundingRadius = Math.Abs(bot[vtx].y) * scale;
+                    m_dBoundingRadius = Math.Abs(bot[vtx].z) * scale;
                 }
             }
         }
@@ -400,6 +402,7 @@ namespace Raven
 
             //draw the head
             DebugWide.DrawCircle(Pos(), 6f * Scale().x, Color.magenta);
+            DebugWide.DrawLine(Pos(), Pos() + Heading() * 20, Color.magenta);
 
             //render the bot's weapon
             m_pWeaponSys.RenderCurrentWeapon();
@@ -449,7 +452,7 @@ namespace Raven
 
             //Calculate the steering force and update the bot's velocity and position
             UpdateMovement();
-
+            RotateFacingTowardPosition(Pos() + Heading()); //chamto test
 
             //if the bot is under AI control but not scripted
             if (!isPossessed())
@@ -555,6 +558,7 @@ namespace Raven
         //position. Returns false if not facing at the target.
         public bool RotateFacingTowardPosition(Vector3 target)
         {
+
             Vector3 toTarget = VOp.Normalize(target - m_vPosition);
 
             float dot = Vector3.Dot(m_vFacing, toTarget);
@@ -563,7 +567,7 @@ namespace Raven
             dot = Mathf.Clamp(dot, -1f, 1f);
 
             //determine the angle between the heading vector and the target
-            float angle = (float)Mathf.Acos(dot);
+            float angle = (float)Math.Acos(dot);
 
             //return true if the bot's facing is within WeaponAimTolerance degs of
             //facing the target
@@ -577,8 +581,8 @@ namespace Raven
 
             //clamp the amount to turn to the max turn rate
             if (angle > m_dMaxTurnRate) angle = m_dMaxTurnRate;
-
-            Quaternion rotQ = Quaternion.AngleAxis(angle, ConstV.v3_up);
+            Vector3 up = Vector3.Cross(m_vFacing, toTarget);
+            Quaternion rotQ = Quaternion.AngleAxis(angle * Mathf.Rad2Deg, up);
             m_vFacing = rotQ * m_vFacing;
 
             return false;

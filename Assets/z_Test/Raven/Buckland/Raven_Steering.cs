@@ -136,12 +136,12 @@ namespace Raven
 
             //feeler to left
             Vector3 temp = m_pRaven_Bot.Heading();
-            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 3.5f);
+            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 3.5f); //7 * 0.5 = 315도 
             m_Feelers[1] = m_pRaven_Bot.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
 
             //feeler to right
             temp = m_pRaven_Bot.Heading();
-            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 0.5f);
+            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 0.5f); //0.5 = 45도 
             m_Feelers[2] = m_pRaven_Bot.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
         }
 
