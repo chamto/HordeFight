@@ -73,6 +73,10 @@ namespace Raven
         public void Arbitrate()
         {
 
+            //Goal_Evaluator cur = m_Evaluators[0];
+            //cur.CalculateDesirability(m_pOwner);
+            //return;
+
             float best = 0;
             Goal_Evaluator MostDesirable = null;
 

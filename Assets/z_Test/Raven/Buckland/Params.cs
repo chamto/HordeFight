@@ -10,7 +10,7 @@
 
         //--the number of bots the game instantiates
 
-        public const int NumBots = 1;
+        public const int NumBots = 3;
 
         //--this is the maximum number of search cycles allocated to *all* current path
         //-- planning searches per update

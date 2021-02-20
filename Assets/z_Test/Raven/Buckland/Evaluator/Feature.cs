@@ -21,20 +21,20 @@ namespace Raven
         public static float DistanceToItem(Raven_Bot pBot, int ItemType)
         {
             //determine the distance to the closest instance of the item type
-            float DistanceToItem = pBot.GetPathPlanner().GetCostToClosestItem(ItemType);
+            float distanceToItem = pBot.GetPathPlanner().GetCostToClosestItem(ItemType);
 
             //if the previous method returns a negative value then there is no item of
             //the specified type present in the game world at this time.
-            if (DistanceToItem < 0) return 1f;
+            if (distanceToItem < 0) return 1f;
 
             //these values represent cutoffs. Any distance over MaxDistance results in
             //a value of 0, and value below MinDistance results in a value of 1
             const float MaxDistance = 500.0f;
             const float MinDistance = 50.0f;
 
-            DistanceToItem = Mathf.Clamp(DistanceToItem, MinDistance, MaxDistance);
+            distanceToItem = Mathf.Clamp(distanceToItem, MinDistance, MaxDistance);
 
-            return DistanceToItem / MaxDistance;
+            return distanceToItem / MaxDistance;
         }
 
         //returns a value between 0 and 1 based on how much ammo the bot has for
