@@ -150,6 +150,7 @@ namespace Raven
 
         public override bool HandleMessage(Telegram msg)
         {
+            //DebugWide.LogBlue(m_Status);
             if (msg.Msg == (int)eMsg.OpenSesame)
             {
                 if (m_Status != eStatus.open)

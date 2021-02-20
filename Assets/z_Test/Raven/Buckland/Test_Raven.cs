@@ -7,7 +7,8 @@ namespace Raven
 {
     public class Test_Raven : MonoBehaviour
     {
-
+        Transform _mousePoint = null;
+        public bool _input_movePos = false;
         public static Raven_Game _game = null;
 
         Raven_Bot _bot_0 = null;
@@ -15,6 +16,7 @@ namespace Raven
         // Use this for initialization
         void Start()
         {
+            _mousePoint = GameObject.Find("MousePoint").transform;
             SingleO.Init();
             _game = new Raven_Game();
 
@@ -34,8 +36,16 @@ namespace Raven
         {
             if (null == _game) return;
 
+            if (true == _input_movePos)
+            {
+                _input_movePos = false;
+                var first = _game.GetAllBots().First;
+                _game.SelectMoveBot(first.Value, _mousePoint.position);
+            }
+
             _game.Update();
             _game.Render();
+
 
             if (null == _bot_0) return;
             //_bot_0.Update();
@@ -138,7 +148,7 @@ namespace Raven
 
         public static bool m_bShowGraph = true;
 
-        public static bool m_bShowNodeIndices = false;
+        public static bool m_bShowNodeIndices = true;
 
 
         public static bool m_bShowTargetOfSelectedBot = false;

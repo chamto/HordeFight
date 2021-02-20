@@ -25,7 +25,7 @@ namespace Raven
 
             if (isTouchingTrigger(pEnt.Pos(), pEnt.BRadius()))
             {
-
+                //DebugWide.LogRed(pEnt + "  try door ---- ");
                 SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                         ID(),
                                         m_iReceiver,
@@ -66,6 +66,8 @@ namespace Raven
             //create and set this trigger's region of fluence
             AddRectangularTriggerRegion(Pos() - new Vector3(BRadius(), 0, BRadius()),   //top left corner
                                         Pos() + new Vector3(BRadius(), 0, BRadius()));  //bottom right corner
+
+            //AddCircularTriggerRegion(Pos(), BRadius());
         }
 
         public override bool HandleMessage(Telegram msg)

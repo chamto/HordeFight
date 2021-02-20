@@ -60,8 +60,9 @@ namespace Raven
         //the given circle with the rectangle.
         public override bool isTouching(Vector3 pos, float EntityRadius)
         {
-            InvertedAABBox2D Box = new InvertedAABBox2D(new Vector3(pos.x - EntityRadius, pos.z - EntityRadius),
-                                 new Vector3(pos.x + EntityRadius, pos.z + EntityRadius));
+
+            InvertedAABBox2D Box = new InvertedAABBox2D(new Vector3(pos.x - EntityRadius, 0,pos.z - EntityRadius),
+                                 new Vector3(pos.x + EntityRadius, 0,pos.z + EntityRadius));
 
             return Box.isOverlappedWith(m_pTrigger);
         }
