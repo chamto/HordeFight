@@ -32,6 +32,7 @@ namespace Raven
             Vector3 posSw = m_pOwner.GetWorld().GetPosOfClosestSwitch(m_pOwner.Pos(),
                                                                     m_PathEdge.DoorID());
 
+            //DebugWide.LogGreen("goes_through_door ---------" + posSw);
             //because goals are *pushed* onto the front of the subgoal list they must
             //be added in reverse order.
 

@@ -631,7 +631,7 @@ namespace Raven
                     SwitchIDs = (curDoor).GetSwitchIDs(); break;
                 }
             }
-
+            //DebugWide.LogGreen(m_pMap.GetDoors().Count + "  " + SwitchIDs.Count + "   ------");
             Vector3 closest = ConstV.v3_zero;
             float ClosestDist = float.MaxValue;
 
@@ -642,6 +642,7 @@ namespace Raven
 
                 if (isLOSOkay(botPos, trig.Pos()))
                 {
+                    //DebugWide.LogGreen((botPos - trig.Pos()).magnitude + "  los ---" + trig.Pos());
                     float dist = (botPos - trig.Pos()).sqrMagnitude;
 
                     if (dist < ClosestDist)

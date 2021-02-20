@@ -40,7 +40,6 @@ namespace Raven
 
                 case (int)NavGraphEdge.eFlag.goes_through_door:
                     {
-
                         //also add a goal that is able to handle opening the door
                         AddSubgoal(new Goal_NegotiateDoor(m_pOwner, edge, 0 == m_Path.Count));
                     }

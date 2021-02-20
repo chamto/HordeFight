@@ -556,7 +556,7 @@ namespace UtilGS9
 
         static public bool Intersection(LineSegment3 segment0, LineSegment3 segment1)
         {
-
+            //선분이 방향값이 없는 점일 경우 계산을 못하는 문제가 발견됨 
             float s, c;
             float sq = DistanceSquared(segment0, segment1, out s, out c);
 
