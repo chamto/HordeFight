@@ -87,7 +87,7 @@ namespace Raven
             return true;
         }
 
-        public void Render()
+        override public void Render()
         {
             //forward the request to the subgoals
             base.Render();
@@ -100,7 +100,6 @@ namespace Raven
             DebugWide.DrawCircle(m_vDestination, 2, Color.yellow);
         }
     }
-
 
 }//end namespace
 

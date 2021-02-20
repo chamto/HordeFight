@@ -71,7 +71,7 @@ namespace Raven
         LinkedList<Raven_Projectile> m_Projectiles = new LinkedList<Raven_Projectile>();
 
         //this class manages all the path planning requests
-        PathManager<Raven_PathPlanner> m_pPathManager;
+        PathManager m_pPathManager;
 
 
         //if true the game will be paused
@@ -418,7 +418,7 @@ namespace Raven
 
             //in with the new
             m_pGraveMarkers = new GraveMarkers(Params.GraveLifetime);
-            m_pPathManager = new PathManager<Raven_PathPlanner>(Params.MaxSearchCyclesPerUpdateStep);
+            m_pPathManager = new PathManager(Params.MaxSearchCyclesPerUpdateStep);
             m_pMap = new Raven_Map();
 
             //make sure the entity manager is reset
@@ -677,15 +677,21 @@ namespace Raven
 
         public void TogglePause() { m_bPaused = !m_bPaused; }
 
-        //this method is called when the user clicks the right mouse button.
-        //The method checks to see if a bot is beneath the cursor. If so, the bot
-        //is recorded as selected.If the cursor is not over a bot then any selected
-        // bot/s will attempt to move to that position.
         public void ClickRightMouseButton(Vector3 p)
         {
             Vector3 wpos = Camera.main.ScreenToWorldPoint(p);
             wpos.y = 0;
             Raven_Bot pBot = GetBotAtPosition(wpos);
+
+            SelectMoveBot(pBot, wpos);
+        }
+
+        //this method is called when the user clicks the right mouse button.
+        //The method checks to see if a bot is beneath the cursor. If so, the bot
+        //is recorded as selected.If the cursor is not over a bot then any selected
+        // bot/s will attempt to move to that position.
+        public void SelectMoveBot(Raven_Bot pBot , Vector3 desPos)
+        {
 
             //if there is no selected bot just return;
             if (null == pBot && m_pSelectedBot == null) return;
@@ -718,14 +724,14 @@ namespace Raven
                 //movement command will be queued
                 if (Input.GetKey(KeyCode.Q))
                 {
-                    m_pSelectedBot.GetBrain().QueueGoal_MoveToPosition(wpos);
+                    m_pSelectedBot.GetBrain().QueueGoal_MoveToPosition(desPos);
                 }
                 else
                 {
                     //clear any current goals
                     m_pSelectedBot.GetBrain().RemoveAllSubgoals();
 
-                    m_pSelectedBot.GetBrain().AddGoal_MoveToPosition(wpos);
+                    m_pSelectedBot.GetBrain().AddGoal_MoveToPosition(desPos);
                 }
             }
         }
@@ -791,7 +797,7 @@ namespace Raven
 
         public Raven_Map GetMap() { return m_pMap; }
         public LinkedList<Raven_Bot> GetAllBots() { return m_Bots; }
-        public PathManager<Raven_PathPlanner> GetPathManager() { return m_pPathManager; }
+        public PathManager GetPathManager() { return m_pPathManager; }
         public int GetNumBots() { return m_Bots.Count; }
 
 

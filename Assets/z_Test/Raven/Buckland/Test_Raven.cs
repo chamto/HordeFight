@@ -18,8 +18,11 @@ namespace Raven
             SingleO.Init();
             _game = new Raven_Game();
 
-            _bot_0 = new Raven_Bot(_game, ConstV.v3_zero);
-            _bot_0.m_Status = Raven_Bot.eStatus.alive;
+            var first = _game.GetAllBots().First;
+            _game.SelectMoveBot(first.Value, Vector3.zero);
+
+            //_bot_0 = new Raven_Bot(_game, ConstV.v3_zero);
+            //_bot_0.m_Status = Raven_Bot.eStatus.alive;
         }
 
         // Update is called once per frame
@@ -346,20 +349,6 @@ namespace Raven
         }
     }
 
-    public class Goal_FollowPath : Goal_Composite<Raven_Bot>
-    {
-        //a local copy of the path returned by the path planner
-        Path m_Path;
-
-
-        public Goal_FollowPath(Raven_Bot pBot, Path path) : base(pBot, (int)eGoal.seek_to_position) {}
-
-        //the usual suspects
-        //override public void Activate() { }
-        //override public int Process() { return 0; }
-        //override public void Render() { }
-        //override public void Terminate() { }
-    }
 
     public class Goal_Wander : Goal<Raven_Bot>
     {
@@ -568,30 +557,6 @@ namespace Raven
         { }
     }
 
-    //======================================================
-
-    public class PathManager<path_planner>
-    {
-        public PathManager(float a) { }
-
-        public void Register(path_planner pPathPlanner)
-        { }
-        public void UnRegister(path_planner pPathPlanner)
-        {
-            //m_SearchRequests.remove(pPathPlanner);
-
-        }
-        public void UpdateSearches() { }
-    }
-
-    //======================================================
-
-    public class Path : LinkedList<PathEdge> { }
-
-    //public class NavGraph : SparseGraph
-    //{
-    //    public NavGraph(bool digraph) : base(digraph) {}
-    //}
 
 }//end namespace
 
