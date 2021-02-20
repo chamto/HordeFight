@@ -50,7 +50,6 @@ namespace HordeFight
             cha._belongCamp = null;
             cha.transform.position = champTR.position;
 
-            cha.Init();
 
             ////==============================================
             ////가지(촉수) 등록
@@ -59,6 +58,8 @@ namespace HordeFight
             cha._limbs.Init(cha, cha._move, cha._bone);
 
             ////======================
+
+            cha.Init();
 
             return cha;
         }
