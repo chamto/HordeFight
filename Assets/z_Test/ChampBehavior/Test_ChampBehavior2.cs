@@ -38,6 +38,7 @@ namespace HordeFight
 
         public ChampUnit CreateTestChamp(Transform champTR , ChampUnit.eKind eKind)
         {
+
             GameObject obj = champTR.gameObject;
             ChampUnit cha = obj.AddComponent<ChampUnit>();
 
@@ -52,15 +53,15 @@ namespace HordeFight
             cha._belongCamp = null;
             cha.transform.position = champTR.position;
 
-            cha.Init();
 
-            ////==============================================
             ////가지(촉수) 등록
             cha._bone.Load(champTR);
             cha._limbs = obj.GetComponentInChildren<Limbs>();
             cha._limbs.Init(cha, cha._move, cha._bone);
 
-            ////======================
+
+            cha.Init();
+
 
             return cha;
         }

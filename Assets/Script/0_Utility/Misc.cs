@@ -42,11 +42,12 @@ namespace UtilGS9
         MAX,
     }
 
-    public partial class ConstV
+    public static class PathInfo
     {
 #if UNITY_EDITOR
         public const string CURRENT_PLATFORM = "UNITY_EDITOR";
         public static string WWW_PATH = "file://" + UnityEngine.Application.dataPath + "/StreamingAssets/";
+        //public static string WWW_PATH = "";
 #elif UNITY_IPHONE
         public const string CURRENT_PLATFORM = "UNITY_IPHONE";
         public static string WWW_PATH = "file://" + UnityEngine.Application.dataPath + "/Raw/";
