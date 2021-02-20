@@ -515,6 +515,8 @@ namespace Raven
 
             Vector3 curPos = A;
 
+            //int count = 0;
+            //string str = "";
             while ((curPos - B).sqrMagnitude > BoundingRadius * BoundingRadius)
             {
 
@@ -526,6 +528,20 @@ namespace Raven
                 {
                     return true;
                 }
+
+                
+                //str += " " + count + " " + (curPos - B).magnitude + "  " + curPos;
+                //count++;
+                //if(100 < count)
+                //{
+                //    Vector3 pr = ToB * 0.5f * BoundingRadius;
+                //    DebugWide.LogGreen((B - A) + " "  + VOp.Normalize(B - A) + "  " + (B-A).normalized);
+                //    DebugWide.LogGreen(pr + "  " + (A+pr));
+                //    DebugWide.LogGreen(BoundingRadius + "  " + A + "  " + B + "  " + curPos + "  " + (A-B).magnitude);
+                //    DebugWide.LogBlue(str);
+                //    return false; 
+                //}
+
             }
 
             return false;

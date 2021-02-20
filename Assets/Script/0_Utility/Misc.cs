@@ -613,7 +613,9 @@ namespace UtilGS9
         //Vector3.normalize 보다 빠르다
         static public Vector3 Normalize(Vector3 vector3)
         {
-            if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
+            //if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가 => 잘못작성된 알고리즘 
+            //총합이 의도치 않게 0이 나오는 경우가 있음 , 예) (30, 0, -30) 
+            if (0 == vector3.x && 0 == vector3.y && 0 == vector3.z ) return vector3; //NaN 예외처리 추가
 
             float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
             vector3.x *= len;
