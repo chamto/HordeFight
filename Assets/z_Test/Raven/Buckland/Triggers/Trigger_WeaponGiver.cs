@@ -59,11 +59,11 @@ namespace Raven
                     case (int)eObjType.rail_gun:
                         {
 
-                            DebugWide.DrawCircle(Pos(), 3, Color.blue);
+                            DebugWide.DrawCircle(Pos(), 3, Color.red);
 
                             Vector3 PosTo = Pos();
-                            PosTo.z -= PosTo.z;
-                            DebugWide.DrawLine(Pos(), PosTo, Color.blue);
+                            PosTo.z -= 9;
+                            DebugWide.DrawLine(Pos(), PosTo, Color.red);
 
                         }
 
@@ -75,11 +75,11 @@ namespace Raven
                             const float sz = 3.0f;
                             Vector3 cen = Pos();
                             cen.x -= sz;
-                            DebugWide.DrawCircle(cen, sz, Color.black);
+                            DebugWide.DrawCircle(cen, sz, Color.red);
 
                             cen = Pos();
                             cen.x += sz;
-                            DebugWide.DrawCircle(cen, sz, Color.black);
+                            DebugWide.DrawCircle(cen, sz, Color.red);
 
                         }
 
@@ -88,7 +88,7 @@ namespace Raven
                     case (int)eObjType.rocket_launcher:
                         {
 
-                            Vector3 facing = new Vector3(-1, 0, 0);
+                            Vector3 facing = ConstV.v3_forward;
 
                             Transformation.Draw_WorldTransform(m_vecRLVB,
                                                            Pos(),
