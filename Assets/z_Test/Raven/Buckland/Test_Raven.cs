@@ -360,6 +360,9 @@ namespace Raven
     }
 
 
+    //=======================================================
+
+
     public class Goal_Wander : Goal<Raven_Bot>
     {
     
@@ -370,69 +373,8 @@ namespace Raven
         //override public void Terminate() { }
     }
 
-    public class Goal_HuntTarget : Goal_Composite<Raven_Bot>
-    {
-    
-        //this value is set to true if the last visible position of the target
-        //bot has been searched without success
-         bool m_bLVPTried;
+    //=======================================================
 
-
-        public Goal_HuntTarget(Raven_Bot pBot) :base(pBot, (int)eGoal.hunt_target)
-        {
-            m_bLVPTried = false;
-        }
-
-        //the usual suspects
-        //void Activate();
-        //int Process();
-        //void Terminate() { }
-        //void Render();
-    }
-
-    public class Goal_DodgeSideToSide : Goal<Raven_Bot>
-    {
-    
-        Vector3 m_vStrafeTarget;
-
-        bool m_bClockwise;
-
-        //Vector3 GetStrafeTarget();
-
-
-        public Goal_DodgeSideToSide(Raven_Bot pBot) :base(pBot, (int)eGoal.strafe)
-        {
-            m_bClockwise = Misc.RandBool();
-        }
-
-
-        //void Activate();
-        //int Process();
-        //void Render();
-        //void Terminate();
-
-    }
-
-    //======================================================
-
-
-    public class Raven_TargetingSystem
-    {
-        //the owner of this system
-        Raven_Bot m_pOwner;
-
-        //the current target (this will be null if there is no target assigned)
-        Raven_Bot m_pCurrentTarget;
-
-        public Raven_TargetingSystem(Raven_Bot bot) { }
-
-        public void Update() { }
-
-        public bool isTargetPresent() {return m_pCurrentTarget != null;}
-        public bool isTargetShootable() { return false; }
-        public Raven_Bot GetTarget() {return m_pCurrentTarget;}
-        public void ClearTarget() { }
-    }
 
     public class Raven_Weapon
     {

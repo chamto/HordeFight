@@ -126,7 +126,7 @@ namespace Raven
         //this removes a bot's record from memory
         public void RemoveBotFromMemory(Raven_Bot pBot)
         {
-            if (true == m_MemoryMap.ContainsKey(pBot))
+            if (null != pBot && true == m_MemoryMap.ContainsKey(pBot))
             {
                 m_MemoryMap.Remove(pBot);
             }
@@ -193,7 +193,7 @@ namespace Raven
         public bool isOpponentShootable(Raven_Bot pOpponent)
         {
 
-            if (true == m_MemoryMap.ContainsKey(pOpponent))
+            if (null != pOpponent && true == m_MemoryMap.ContainsKey(pOpponent))
             {
                 return m_MemoryMap[pOpponent].bShootable;
             }
@@ -203,7 +203,8 @@ namespace Raven
 
         public bool isOpponentWithinFOV(Raven_Bot pOpponent)
         {
-            if (true == m_MemoryMap.ContainsKey(pOpponent))
+            //DebugWide.LogBlue(pOpponent+"_");
+            if (null != pOpponent && true == m_MemoryMap.ContainsKey(pOpponent))
             {
                 return m_MemoryMap[pOpponent].bWithinFOV;
             }
@@ -213,7 +214,7 @@ namespace Raven
 
         public Vector3 GetLastRecordedPositionOfOpponent(Raven_Bot pOpponent)
         {
-            if (true == m_MemoryMap.ContainsKey(pOpponent))
+            if (null != pOpponent && true == m_MemoryMap.ContainsKey(pOpponent))
             {
                 return m_MemoryMap[pOpponent].vLastSensedPosition;
 

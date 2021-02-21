@@ -33,7 +33,7 @@ namespace Raven
             {
                 //if the bot has space to strafe then do so
                 Vector3 dummy = ConstV.v3_zero;
-                if (m_pOwner.canStepLeft(dummy) || m_pOwner.canStepRight(dummy))
+                if (m_pOwner.canStepLeft(out dummy) || m_pOwner.canStepRight(out dummy))
                 {
                     AddSubgoal(new Goal_DodgeSideToSide(m_pOwner));
                 }
@@ -68,7 +68,6 @@ namespace Raven
         override public void Terminate() { m_iStatus = (int)eStatus.completed; }
 
     }
-
 
 }//end namespace
 

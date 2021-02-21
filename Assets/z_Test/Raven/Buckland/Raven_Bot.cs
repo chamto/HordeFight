@@ -710,7 +710,7 @@ namespace Raven
 
         //returns true if there is space enough to step in the indicated direction
         //If true PositionOfStep will be assigned the offset position
-        public bool canStepLeft(Vector3 PositionOfStep)
+        public bool canStepLeft(out Vector3 PositionOfStep)
         {
             float StepDistance = BRadius() * 2f;
             Vector3 perp = Vector3.Cross(m_vFacing, ConstV.v3_up);
@@ -718,7 +718,7 @@ namespace Raven
 
             return canWalkTo(PositionOfStep);
         }
-        public bool canStepRight(Vector3 PositionOfStep)
+        public bool canStepRight(out Vector3 PositionOfStep)
         {
             float StepDistance = BRadius() * 2f;
             Vector3 perp = Vector3.Cross(m_vFacing, ConstV.v3_up);
@@ -726,7 +726,7 @@ namespace Raven
 
             return canWalkTo(PositionOfStep);
         }
-        public bool canStepForward(Vector3 PositionOfStep)
+        public bool canStepForward(out Vector3 PositionOfStep)
         {
             float StepDistance = BRadius() * 2f;
             
@@ -734,7 +734,7 @@ namespace Raven
 
             return canWalkTo(PositionOfStep);
         }
-        public bool canStepBackward(Vector3 PositionOfStep)
+        public bool canStepBackward(out Vector3 PositionOfStep)
         {
             float StepDistance = BRadius() * 2f;
 
