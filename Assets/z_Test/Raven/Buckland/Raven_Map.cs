@@ -311,6 +311,7 @@ namespace Raven
 
             //load in the map size and adjust the client window accordingly
             string line = stream.ReadLine();
+            if(string.Empty == line) line = stream.ReadLine();
             string[] sp = HandyString.SplitBlank(line);
             m_iSizeX = int.Parse(sp[0]);
             m_iSizeY = int.Parse(sp[1]);

@@ -146,9 +146,9 @@ namespace Raven
     public static class UserOptions
     {
 
-        public static bool m_bShowGraph = true;
+        public static bool m_bShowGraph = false;
 
-        public static bool m_bShowNodeIndices = true;
+        public static bool m_bShowNodeIndices = false;
 
 
         public static bool m_bShowTargetOfSelectedBot = false;
