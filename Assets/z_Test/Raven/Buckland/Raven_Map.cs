@@ -400,10 +400,10 @@ namespace Raven
         }
 
 
-        //public void AddSoundTrigger(Raven_Bot pSoundSource, float range)
-        //{
-        //    m_TriggerSystem.Register(new Trigger_SoundNotify(pSoundSource, range));
-        //}
+        public void AddSoundTrigger(Raven_Bot pSoundSource, float range)
+        {
+            m_TriggerSystem.Register(new Trigger_SoundNotify(pSoundSource, range));
+        }
 
         public float CalculateCostToTravelBetweenNodes(int nd1, int nd2)
         {

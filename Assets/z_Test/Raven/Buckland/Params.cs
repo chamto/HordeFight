@@ -127,8 +127,8 @@
 
         public const float Blaster_FiringFreq = 3;
         public const float Blaster_MaxSpeed = 5;
-        public const float Blaster_DefaultRounds = 0; //--not used, a blaster always has ammo
-        public const float Blaster_MaxRoundsCarried = 0; //--as above
+        public const int Blaster_DefaultRounds = 0; //--not used, a blaster always has ammo
+        public const int Blaster_MaxRoundsCarried = 0; //--as above
         public const float Blaster_IdealRange = 50;
         public const float Blaster_SoundRange = 100;
 
@@ -141,8 +141,8 @@
 
 
         public const float RocketLauncher_FiringFreq = 1.5f;
-        public const float RocketLauncher_DefaultRounds = 15;
-        public const float RocketLauncher_MaxRoundsCarried = 50;
+        public const int RocketLauncher_DefaultRounds = 15;
+        public const int RocketLauncher_MaxRoundsCarried = 50;
         public const float RocketLauncher_IdealRange = 150;
         public const float RocketLauncher_SoundRange = 400;
 
@@ -156,8 +156,8 @@
 
 
         public const float RailGun_FiringFreq = 1f;
-        public const float RailGun_DefaultRounds = 15f;
-        public const float RailGun_MaxRoundsCarried = 50;
+        public const int RailGun_DefaultRounds = 15;
+        public const int RailGun_MaxRoundsCarried = 50;
         public const float RailGun_IdealRange = 200;
         public const float RailGun_SoundRange = 400;
 
@@ -171,8 +171,8 @@
 
 
         public const float ShotGun_FiringFreq = 1;
-        public const float ShotGun_DefaultRounds = 15;
-        public const float ShotGun_MaxRoundsCarried = 50;
+        public const int ShotGun_DefaultRounds = 15;
+        public const int ShotGun_MaxRoundsCarried = 50;
         public const float ShotGun_NumBallsInShell = 10;
         public const float ShotGun_Spread = 0.05f;
         public const float ShotGun_IdealRange = 100;

@@ -252,7 +252,7 @@ namespace Raven
 
         public float GetTimeOpponentHasBeenOutOfView(Raven_Bot pOpponent)
         {
-            if (true == m_MemoryMap.ContainsKey(pOpponent))
+            if (null != pOpponent && true == m_MemoryMap.ContainsKey(pOpponent))
             {
                 return Time.time - m_MemoryMap[pOpponent].fTimeLastVisible;
             }

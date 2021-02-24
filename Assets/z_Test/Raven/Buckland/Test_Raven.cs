@@ -16,6 +16,14 @@ namespace Raven
         // Use this for initialization
         void Start()
         {
+            //Vector3 a = new Vector3(3, 7, 2);
+            //Vector3 b = new Vector3(3, 1, 7);
+            //Vector3 c = Vector3.Cross(a, b);
+            ////float det = c.x + c.y + c.z;
+            //float det = Vector3.Dot(c, c.normalized);
+            //DebugWide.LogBlue(c.magnitude + "  " + det);
+
+
             _mousePoint = GameObject.Find("MousePoint").transform;
             SingleO.Init();
             _game = new Raven_Game();
@@ -25,6 +33,7 @@ namespace Raven
 
             //_bot_0 = new Raven_Bot(_game, ConstV.v3_zero);
             //_bot_0.m_Status = Raven_Bot.eStatus.alive;
+
         }
 
         // Update is called once per frame
@@ -376,51 +385,7 @@ namespace Raven
     //=======================================================
 
 
-    public class Raven_Weapon
-    {
-        int m_iNumRoundsLeft;
-        public int NumRoundsRemaining() {return m_iNumRoundsLeft;}
-    }
-
-    public class Raven_WeaponSystem
-    {
-        public Raven_WeaponSystem(Raven_Bot bot , float a , float b , float c) { }
-
-        public Raven_Weapon GetWeaponFromInventory(int weapon_type)
-        {
-
-            //return m_WeaponMap[weapon_type];
-            return null;
-        }
-
-        public int GetAmmoRemainingForWeapon(int weapon_type)
-        {
-            //if (m_WeaponMap[weapon_type])
-            //{
-            //    return m_WeaponMap[weapon_type]->NumRoundsRemaining();
-            //}
-
-            return 0;
-        }
-
-        public void RenderDesirabilities() { }
-        public void RenderCurrentWeapon() { }
-        public void SelectWeapon() { }
-        public void TakeAimAndShoot() { }
-
-        public void ShootAt(Vector3 p) { }
-        public void ChangeWeapon(int i) { }
-        public void Initialize() { }
-
-        public void AddWeapon(int i) { }
-        public void Clear() { }
-    }
-
-    //======================================================
-
-    
-
-    public class GraveMarkers 
+    public class GraveMarkers
     {
         public GraveMarkers(float v) { }
 
@@ -429,6 +394,10 @@ namespace Raven
 
         public void AddGrave(Vector3 bot) { }
     }
+
+    //======================================================
+
+
 
     public class Raven_Projectile : MovingEntity
     {
@@ -464,6 +433,19 @@ namespace Raven
 
             public bool isDead() { return false; }
     }
+
+    public class Bolt : Raven_Projectile
+    {
+        public Bolt(Raven_Bot shooter, Vector3 target)
+            : base(target,
+                         shooter.GetWorld(),
+                         shooter.ID(),
+                         shooter.Pos(),
+                         shooter.Facing(),
+                         1, 1, 1, 1, 1)
+        { }
+    }
+
     public class Rocket : Raven_Projectile
     { 
         public Rocket(Raven_Bot shooter, Vector3 target)
@@ -497,18 +479,6 @@ namespace Raven
                          1, 1, 1, 1, 1)
         { } 
     }
-    public class Bolt : Raven_Projectile
-    { 
-        public Bolt(Raven_Bot shooter, Vector3 target)
-            : base(target,
-                         shooter.GetWorld(),
-                         shooter.ID(),
-                         shooter.Pos(),
-                         shooter.Facing(),
-                         1, 1, 1, 1, 1)
-        { }
-    }
-
 
 }//end namespace
 
