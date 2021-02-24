@@ -136,7 +136,7 @@
         public const float Bolt_Mass = 1;
         public const float Bolt_MaxForce = 100.0f;
         public const float Bolt_Scale = Bot_Scale;
-        public const float Bolt_Damage = 1f;
+        public const int Bolt_Damage = 1;
 
 
 
@@ -151,7 +151,7 @@
         public const float Rocket_Mass = 1;
         public const float Rocket_MaxForce = 10.0f;
         public const float Rocket_Scale = Bot_Scale;
-        public const float Rocket_Damage = 10;
+        public const int Rocket_Damage = 10;
         public const float Rocket_ExplosionDecayRate = 2.0f;   //--how fast the explosion occurs(in secs)
 
 
@@ -166,7 +166,7 @@
         public const float Slug_MaxForce = 10000.0f;
         public const float Slug_Scale = Bot_Scale;
         public const float Slug_Persistance = 0.2f;
-        public const float Slug_Damage = 10;
+        public const int Slug_Damage = 10;
 
 
 
@@ -183,7 +183,7 @@
         public const float Pellet_MaxForce = 1000.0f;
         public const float Pellet_Scale = Bot_Scale;
         public const float Pellet_Persistance = 0.1f;
-        public const float Pellet_Damage = 1;
+        public const int Pellet_Damage = 1;
     }
 
 

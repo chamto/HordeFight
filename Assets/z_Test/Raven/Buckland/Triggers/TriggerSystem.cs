@@ -16,6 +16,7 @@ namespace Raven
         //have their m_bRemoveFromGame field set to true.
         void UpdateTriggers()
         {
+            List<Trigger<Raven_Bot>> del_list = new List<Trigger<Raven_Bot>>();
             foreach (Trigger<Raven_Bot> curTrg in m_Triggers)
             {
                 //remove trigger if dead
@@ -23,15 +24,21 @@ namespace Raven
                 {
                     //delete* curTrg;
 
-                    m_Triggers.Remove(curTrg);
-                }
-                else
-                {
-                    //update this trigger
-                    (curTrg).Update();
+                    //m_Triggers.Remove(curTrg);
 
+                    del_list.Add(curTrg);
+                }else
+                {
+                    (curTrg).Update();
                 }
             }
+
+            //삭제할 목록을 따로 만들어 제거한다 
+            foreach (Trigger<Raven_Bot> delTrg in del_list)
+            {
+                m_Triggers.Remove(delTrg);
+            }
+
         }
 
         //this method iterates through the container of entities passed as a

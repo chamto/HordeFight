@@ -21,10 +21,10 @@ namespace Raven
             //setup the vertex buffer
             const int NumWeaponVerts = 4;
             Vector3[] weapon = new Vector3[NumWeaponVerts]{
-                                                new Vector3(0,0, -1),
-                                                   new Vector3(10,0, -1),
-                                                   new Vector3(10,0, 1),
-                                                   new Vector3(0,0, 1)
+                                                new Vector3(-1,0, 0),
+                                                   new Vector3(-1,0, 10),
+                                                   new Vector3(1,0, 10),
+                                                   new Vector3(1,0, 0)
                                                    };
 
 
@@ -140,6 +140,7 @@ namespace Raven
         {
         }
     }
+
 
 }//end namespace
 

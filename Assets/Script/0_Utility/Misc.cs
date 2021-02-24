@@ -631,7 +631,8 @@ namespace UtilGS9
         }
 
         //수직내적의 값이 0 이면 평행 , 양수면 반시계 방향 , 음수면 시계 방향으로 v->w 회전 
-        //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@ 
+        //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@
+        //수직내적 , 행렬식값 , 부호가 있는 외적길이
         static public float PerpDot(Vector2 v, Vector2 w)         {
             //v(x,y) => vㅗ(-y,x) v를 반시계방향으로 90도 회전 한다. 유니티는 왼손좌표계 시계방향 회전인데 이렇게 써도 되나 ??? - 20210112 chamto
             return (-v.y * w.x + v.x * w.y);         }

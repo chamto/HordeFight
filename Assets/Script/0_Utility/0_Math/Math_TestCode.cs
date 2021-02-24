@@ -84,7 +84,7 @@ namespace UtilGS9
                 // compute cross product to get area of parallelograms
                 Vector3 a = Vector3.Cross(u, w);
                 Vector3 b = Vector3.Cross(v, w);
-                Vector3 c = Vector3.Cross(u, v);
+                Vector3 c = Vector3.Cross(u, v); //기준이 되는 면적값 
 
                 //외적의 값(평행사변형의 면적)을 이용하여 0~1 값의 비율로 만든다   
                 // compute barycentric coordinates as ratios of areas

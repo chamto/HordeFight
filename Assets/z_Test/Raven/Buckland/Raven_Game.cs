@@ -332,6 +332,8 @@ namespace Raven
                 (curDoor).Update();
             }
 
+            //==============================================
+            List<Raven_Projectile> del_list = new List<Raven_Projectile>();
             //update any current projectiles
             foreach (Raven_Projectile curW in m_Projectiles)
             {
@@ -347,10 +349,17 @@ namespace Raven
                     //delete* curW;
 
                     //curW = m_Projectiles.erase(curW);
-                    m_Projectiles.Remove(curW);
+                    //m_Projectiles.Remove(curW);
+                    del_list.Add(curW);
                 }
             }
 
+            //삭제할 목록을 따로 만들어 제거한다 
+            foreach (Raven_Projectile delW in del_list)
+            {
+                m_Projectiles.Remove(delW);
+            }
+            //==============================================
             //update the bots
             bool bSpawnPossible = true;
 

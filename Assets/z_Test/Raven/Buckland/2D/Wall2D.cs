@@ -94,42 +94,7 @@ namespace Raven
 
         //==================================================
 
-        //ref : https://bowbowbow.tistory.com/17
-        //ref : https://gaussian37.github.io/math-algorithm-line_intersection/
-        //선분AB 와 CD 가 만나는지 검사 
-        static public bool LineIntersection2D(Vector3 Ao, Vector3 Al,
-                           Vector3 Bo, Vector3 Bl)
-        {
-            //수직내적을 풀어놓은 식 
-            //float rTop = (Ao.z - Bo.z) * (Bl.x - Bo.x) - (Ao.x - Bo.x) * (Bl.z - Bo.z); 
-            //float sTop = (Ao.z - Bo.z) * (Al.x - Ao.x) - (Ao.x - Bo.x) * (Al.z - Ao.z);
-            //float Bot = (Al.x - Ao.x) * (Bl.z - Bo.z) - (Al.z - Ao.z) * (Bl.x - Bo.x);
-
-            //수직내적임 perpDot , ccw 검사라고도 함 
-            float rTop = VOp.PerpDot(Ao - Bo, Bl - Bo);
-            float sTop = VOp.PerpDot(Ao - Bo, Al - Ao);
-            float Bot = VOp.PerpDot(Al - Ao, Bl - Bo);
-
-            if (Bot == 0)//parallel
-            {
-                return false;
-            }
-
-            //ref : https://sncap.tistory.com/910 크래머 공식 
-            float invBot = 1.0f / Bot;
-            float r = rTop * invBot;
-            float s = sTop * invBot;
-
-            if ((r > 0) && (r < 1) && (s > 0) && (s < 1))
-            {
-                //lines intersect
-                return true;
-            }
-
-            //lines do not intersect
-            return false;
-        }
-
+        
         //----------------------- doWallsObstructLineSegment --------------------------
         //
         //  given a line segment defined by the points from and to, iterate through all
@@ -147,7 +112,7 @@ namespace Raven
                 //DebugWide.LogGreen(AB + "  _" + curWall.From() + "  " + curWall.To());
                 //do a line segment intersection test
                 //if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To())) ) //선분이 점인 경우 계산에 문제가 발생 
-                if(LineIntersection2D(from,to, curWall.From(), curWall.To()))
+                if(Geometry.LineIntersection2D(from,to, curWall.From(), curWall.To()))
                 {
                     //DebugWide.LogGreen(count + "  __ " + AB + "  _" + curWall.From() + "  " + curWall.To());
                     return true;
@@ -217,7 +182,8 @@ namespace Raven
                 Vector3 point;
 
 
-                if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To()), out dist, out point))
+                //if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To()), out dist, out point))
+                if (Geometry.LineIntersection2D(A, B, curWall.From(), curWall.To(), out dist, out point))
                 {
                     if (dist < distance)
                     {
@@ -244,7 +210,9 @@ namespace Raven
             {
 
                 //do a line segment intersection test
-                if (Geo.IntersectLineSegment(p, r, new LineSegment3(curWall.From(), curWall.To()), out intr))
+                //if (Geo.IntersectLineSegment(p, r, new LineSegment3(curWall.From(), curWall.To()), out intr))
+                if(Geometry.LineSegmentCircleIntersection(curWall.From(), curWall.To(),p,r))
+
                 {
                     return true;
                 }

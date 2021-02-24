@@ -452,7 +452,7 @@ namespace Raven
 
             //Calculate the steering force and update the bot's velocity and position
             UpdateMovement();
-            RotateFacingTowardPosition(Pos() + Heading()); //chamto test
+            //RotateFacingTowardPosition(Pos() + Heading()); //chamto test
 
             //if the bot is under AI control but not scripted
             if (!isPossessed())
@@ -480,7 +480,7 @@ namespace Raven
                 //the inventory
                 if (m_pWeaponSelectionRegulator.isReady())
                 {
-                    m_pWeaponSys.SelectWeapon();
+                    //m_pWeaponSys.SelectWeapon(); //임시로 무기 선택못하게 한다 , 관련 무기들도 구현안되어 있음 
                 }
 
                 //this method aims the bot's current weapon at the current target
