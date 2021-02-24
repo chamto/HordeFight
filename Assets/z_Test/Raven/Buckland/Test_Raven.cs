@@ -468,11 +468,11 @@ namespace Raven
             dist = 0;
             point = ConstV.v3_zero;
 
-            float rTop = (Ao.y - Bo.y) * (Bl.x - Bo.x) - (Ao.x - Bo.x) * (Bl.y - Bo.y);
-            float rBot = (Al.x - Ao.x) * (Bl.y - Bo.y) - (Al.y - Ao.y) * (Bl.x - Bo.x);
+            float rTop = (Ao.z - Bo.z) * (Bl.x - Bo.x) - (Ao.x - Bo.x) * (Bl.z - Bo.z);
+            float rBot = (Al.x - Ao.x) * (Bl.z - Bo.z) - (Al.z - Ao.z) * (Bl.x - Bo.x);
 
-            float sTop = (Ao.y - Bo.y) * (Al.x - Ao.x) - (Ao.x - Bo.x) * (Al.y - Ao.y);
-            float sBot = (Al.x - Ao.x) * (Bl.y - Bo.y) - (Al.y - Ao.y) * (Bl.x - Bo.x);
+            float sTop = (Ao.z - Bo.z) * (Al.x - Ao.x) - (Ao.x - Bo.x) * (Al.z - Ao.z);
+            float sBot = (Al.x - Ao.x) * (Bl.z - Bo.z) - (Al.z - Ao.z) * (Bl.x - Bo.x);
 
             if ((rBot == 0) || (sBot == 0))
             {
