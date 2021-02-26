@@ -275,6 +275,11 @@ namespace Raven
                     //gdi->Line(p.x + b, p.y - b, p.x + b, p.y + b);
                     //gdi->Line(p.x + b, p.y + b, p.x - b, p.y + b);
                     //gdi->Line(p.x - b, p.y + b, p.x - b, p.y - b);
+
+                    if(isLOSOkay(m_pSelectedBot.Pos(), p))
+                    {
+                        DebugWide.DrawLine(m_pSelectedBot.Pos(), p, Color.red);
+                    }
                 }
 
 

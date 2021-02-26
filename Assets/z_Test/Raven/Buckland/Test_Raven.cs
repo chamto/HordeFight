@@ -31,6 +31,9 @@ namespace Raven
             var first = _game.GetAllBots().First;
             _game.SelectMoveBot(first.Value, Vector3.zero);
 
+            //var second = first.Next;
+            //second.Value._pause = true;
+
             //_bot_0 = new Raven_Bot(_game, ConstV.v3_zero);
             //_bot_0.m_Status = Raven_Bot.eStatus.alive;
 
@@ -50,6 +53,7 @@ namespace Raven
                 _input_movePos = false;
                 var first = _game.GetAllBots().First;
                 _game.SelectMoveBot(first.Value, _mousePoint.position);
+
             }
 
             _game.Update();
@@ -160,9 +164,9 @@ namespace Raven
         public static bool m_bShowNodeIndices = false;
 
 
-        public static bool m_bShowTargetOfSelectedBot = false;
+        public static bool m_bShowTargetOfSelectedBot = true;
 
-        public static bool m_bShowOpponentsSensedBySelectedBot = true;
+        public static bool m_bShowOpponentsSensedBySelectedBot = false;
 
         public static bool m_bOnlyShowBotsInTargetsFOV = false;
 

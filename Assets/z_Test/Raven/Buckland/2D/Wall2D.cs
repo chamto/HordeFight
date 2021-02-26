@@ -111,8 +111,8 @@ namespace Raven
             {
                 //DebugWide.LogGreen(AB + "  _" + curWall.From() + "  " + curWall.To());
                 //do a line segment intersection test
-                //if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To())) ) //선분이 점인 경우 계산에 문제가 발생 
-                if(Geometry.LineIntersection2D(from,to, curWall.From(), curWall.To()))
+                if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To())) ) //선분이 점인 경우 계산에 문제가 발생 
+                //if(Geometry.LineIntersection2D(from,to, curWall.From(), curWall.To())) //제대로 계산이 안됨 , 분석필요 
                 {
                     //DebugWide.LogGreen(count + "  __ " + AB + "  _" + curWall.From() + "  " + curWall.To());
                     return true;

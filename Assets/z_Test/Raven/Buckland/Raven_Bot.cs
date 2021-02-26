@@ -442,8 +442,10 @@ namespace Raven
             }
         }
 
+        public bool _pause = false;
         public override void Update()
         {
+            if (true == _pause) return;
 
             //process the currently active goal. Note this is required even if the bot
             //is under user control. This is because a goal is created whenever a user 
