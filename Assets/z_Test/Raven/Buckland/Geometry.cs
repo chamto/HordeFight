@@ -58,7 +58,7 @@ namespace Raven
             return (P - Point).sqrMagnitude;
         }
 
-        //ref : https://bowbowbow.tistory.com/17
+        //실험노트 2021-2-27 참고  
         //선분AB 와 CD 가 만나는지 검사 
         static public bool LineIntersection2D(Vector3 Ao, Vector3 Al,
                            Vector3 Bo, Vector3 Bl)
@@ -71,11 +71,15 @@ namespace Raven
             Vector3 Alo = Al - Ao;
             Vector3 Blo = Bl - Bo;
             Vector3 ABo = Ao - Bo;
+            Vector3 BAo = Bo - Ao;
 
             //수직내적 , 행렬식값 , 부호가 있는 외적길이  
-            float rTop = VOp.PerpDot_XZ(Blo, ABo); //v, w => v.x*w.z - v.z*w.x 
-            float sTop = VOp.PerpDot_XZ(Alo, ABo);
-            //float Bot = VOp.PerpDot_XZ(Blo, Alo); //잘못된 계산을 했던 부분 
+            //float rTop = VOp.PerpDot_XZ(Blo, ABo); //v, w => v.x*w.z - v.z*w.x 
+            //float sTop = VOp.PerpDot_XZ(Alo, ABo);
+
+
+            float rTop = VOp.PerpDot_XZ(BAo , Blo); //v, w => v.x*w.z - v.z*w.x 
+            float sTop = VOp.PerpDot_XZ(BAo, Alo);
             float Bot = VOp.PerpDot_XZ(Alo, Blo);
 
 
@@ -84,7 +88,9 @@ namespace Raven
                 return false;
             }
 
-            //무게중심좌표 구하는 공식과 관련있는 듯  
+            //연립방정식 이용 
+            //ref : https://bowbowbow.tistory.com/17  이 링크의 연립방정식을 외적으로 바꾸는 부분은 잘못된 것임. 
+            //외적은 스칼라값이 아님. 외적이 아닌 행렬식값 또는 수직내적 이다. 2차원에서만 쓸수있는 공식. 3차원에는 크래머의 법칙으로 연립방정식을 풀어야함 
             float invBot = 1.0f / Bot;
             float r = rTop * invBot;
             float s = sTop * invBot;
