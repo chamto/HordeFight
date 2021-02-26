@@ -638,7 +638,7 @@ namespace UtilGS9
             return (-v.y * w.x + v.x * w.y);         }
 
         //x-z 평면을 가정한 식 
-        static public float PerpDot(Vector3 v, Vector3 w)
+        static public float PerpDot_XZ(Vector3 v, Vector3 w)
         {
             return (-v.z * w.x + v.x * w.z);
         } 

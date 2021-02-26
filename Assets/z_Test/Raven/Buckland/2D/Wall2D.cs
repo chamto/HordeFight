@@ -105,14 +105,18 @@ namespace Raven
         {
             LineSegment3 AB = new LineSegment3(from, to);
 
+            float dist;
+            Vector3 point;
+
             //test against the walls
             int count = 0;
             foreach (Wall2D curWall in walls)
             {
                 //DebugWide.LogGreen(AB + "  _" + curWall.From() + "  " + curWall.To());
                 //do a line segment intersection test
-                if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To())) ) //선분이 점인 경우 계산에 문제가 발생 
-                //if(Geometry.LineIntersection2D(from,to, curWall.From(), curWall.To())) //제대로 계산이 안됨 , 분석필요 
+                //if (LineSegment3.Intersection(AB, new LineSegment3(curWall.From(), curWall.To())) ) //선분이 점인 경우 계산에 문제가 발생 
+                if(Geometry.LineIntersection2D(from,to, curWall.From(), curWall.To())) //제대로 계산이 안됨 , 분석필요 
+                //if (Geometry.LineIntersection2D(from, to, curWall.From(), curWall.To(), out dist, out point))
                 {
                     //DebugWide.LogGreen(count + "  __ " + AB + "  _" + curWall.From() + "  " + curWall.To());
                     return true;
