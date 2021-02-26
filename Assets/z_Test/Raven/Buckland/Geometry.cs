@@ -75,8 +75,8 @@ namespace Raven
             //수직내적 , 행렬식값 , 부호가 있는 외적길이  
             float rTop = VOp.PerpDot_XZ(Blo, ABo); //v, w => v.x*w.z - v.z*w.x 
             float sTop = VOp.PerpDot_XZ(Alo, ABo);
-            float Bot = VOp.PerpDot_XZ(Blo, Alo);
-            //float Bot = VOp.PerpDot_XZ(Alo, Blo);
+            //float Bot = VOp.PerpDot_XZ(Blo, Alo); //잘못된 계산을 했던 부분 
+            float Bot = VOp.PerpDot_XZ(Alo, Blo);
 
 
             if (Bot == 0)//parallel
