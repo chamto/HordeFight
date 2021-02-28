@@ -90,7 +90,7 @@ namespace Raven
 
             //연립방정식 이용 
             //ref : https://bowbowbow.tistory.com/17  이 링크의 연립방정식을 외적으로 바꾸는 부분은 잘못된 것임. 
-            //외적은 스칼라값이 아님. 외적이 아닌 행렬식값 또는 수직내적 이다. 2차원에서만 쓸수있는 공식. 3차원에는 크래머의 법칙으로 연립방정식을 풀어야함 
+            //외적은 스칼라값이 아님. 외적이 아닌 행렬식값 또는 수직내적 으로 바꿔야 한다 
             float invBot = 1.0f / Bot;
             float r = rTop * invBot;
             float s = sTop * invBot;

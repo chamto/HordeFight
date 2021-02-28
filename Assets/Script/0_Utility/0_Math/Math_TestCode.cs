@@ -120,45 +120,6 @@ namespace UtilGS9
             // v = a3 / a = q ⋅ d / a 
             //
             //-------------------------------------------------------------------------------
-            static public bool TriangleIntersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray)
-            {
-                // test ray direction against triangle
-                t = 0f;
-                Vector3 e1 = P1 - P0;
-                Vector3 e2 = P2 - P0;
-                Vector3 p = Vector3.Cross(ray.direction, e2);
-                float a = Vector3.Dot(e1, p);
-
-                // if result zero, no intersection or infinite intersections
-                // (ray parallel to triangle plane)
-                //if ( ::IsZero(a) )
-                if (Math.Abs(a) < float.Epsilon)
-                    return false;
-
-                // compute denominator
-                float f = 1.0f / a;
-
-                // compute barycentric coordinates
-                Vector3 s = ray.origin - P0;
-                float u = f * Vector3.Dot(s, p);
-
-                // ray falls outside triangle
-                if (u < 0.0f || u > 1.0f)
-                    return false;
-
-                Vector3 q = Vector3.Cross(s, e1);
-                float v = f * Vector3.Dot(ray.direction, q);
-
-                // ray falls outside triangle
-                if (v < 0.0f || u + v > 1.0f)
-                    return false;
-
-                // compute line parameter
-                t = f * Vector3.Dot(e2, q);
-
-                return (t >= 0.0f);
-            }
-
             static public bool TriangleIntersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, LineSegment3 line)
             {
                 t = 0f;
@@ -198,6 +159,47 @@ namespace UtilGS9
 
                 return (t >= 0.0f && t <= 1f);
             }
+
+
+            static public bool TriangleIntersect(out float t, Vector3 P0, Vector3 P1, Vector3 P2, Ray3 ray)
+            {
+                // test ray direction against triangle
+                t = 0f;
+                Vector3 e1 = P1 - P0;
+                Vector3 e2 = P2 - P0;
+                Vector3 p = Vector3.Cross(ray.direction, e2);
+                float a = Vector3.Dot(e1, p);
+
+                // if result zero, no intersection or infinite intersections
+                // (ray parallel to triangle plane)
+                //if ( ::IsZero(a) )
+                if (Math.Abs(a) < float.Epsilon)
+                    return false;
+
+                // compute denominator
+                float f = 1.0f / a;
+
+                // compute barycentric coordinates
+                Vector3 s = ray.origin - P0;
+                float u = f * Vector3.Dot(s, p);
+
+                // ray falls outside triangle
+                if (u < 0.0f || u > 1.0f)
+                    return false;
+
+                Vector3 q = Vector3.Cross(s, e1);
+                float v = f * Vector3.Dot(ray.direction, q);
+
+                // ray falls outside triangle
+                if (v < 0.0f || u + v > 1.0f)
+                    return false;
+
+                // compute line parameter
+                t = f * Vector3.Dot(e2, q);
+
+                return (t >= 0.0f);
+            }
+
 
             //-------------------------------------------------------------------------------
             // @ ::TriangleClassify()
