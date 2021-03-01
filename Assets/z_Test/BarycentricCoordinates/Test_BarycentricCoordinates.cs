@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
+
+//실험노트 2021-3-2 에 정리 : 무게중심좌표와 교점구할때 공통적인 연립방정식을 쓴다는 것을 발견함 
+// 행렬식값으로 uv 를 구하는데 스칼라삼중곱 형태로 나타낼 수 있었음 (행렬식값 == 스칼라삼중곱)
+// uv 를 구하는 스칼라삼중곱 식을 분석해봄. 기하학적으로 내가 직접 쓸수 있지 않을까 했음 
+// 연립방정식의 해를 구하기 위한 식으로 도출해낸 것임
+// 기하학적인 의미를 분석해내지 못함. 
 public class Test_BarycentricCoordinates : MonoBehaviour 
 {
 
@@ -121,12 +127,38 @@ public class Test_BarycentricCoordinates : MonoBehaviour
         w = 1.0f - u - v; //w
         //무게중심좌표 : t(u,v) = (1 - u - v)P0 + uP1 + vP2
 
+        //test 1 - 행렬식값의 비율이 아닌 e1,e2 길이의 비율이므로 정상계산 못함 
+        //u = Vector3.Dot(pp, e1) / Vector3.Dot(e1, e1);
+        //v = Vector3.Dot(pp, e2) / Vector3.Dot(e2, e2);
+        //w = 1.0f - u - v; //w
+
+        //test 2 - cos90 =0 이 되어 nan에러가 발생 
+        //u = Vector3.Dot(pp, c) / Vector3.Dot(e1, c);
+        //v = Vector3.Dot(pp, c) / Vector3.Dot(e2, c);
+        //w = 1.0f - u - v; //w
+
+        //test 3 - cos90 =0 이 안되는 임의의 노멀에 성립하는지 시험 , 정상동작 !!!! 
+        // 점이 삼각형 평면에 있을 때만 성립되는 특수한 경우였음 , 방향선분의 끝부분이 삼각형의 평면에 있을 때도 성립 
+        //Vector3 nm = c.normalized;
+        //Vector3 nm = new Vector3(5, -3, 4);
+        //nm.Normalize();
+        //denom = 1.0f / Vector3.Dot(nm, c);
+        //u = denom * Vector3.Dot(nm, b); //denom : e1 , pp/e1
+        //v = denom * Vector3.Dot(nm, a); //denom : e2 , pp/e2
+        //w = 1.0f - u - v; //w
+
+        //test 4 - 임의의 축에 동작하는지 시험 , 정상계산 못함  
+        //Vector3 nm = Vector3.forward;
+        //u = Vector3.Dot(pp, nm) / Vector3.Dot(e1, nm);
+        //v = Vector3.Dot(pp, nm) / Vector3.Dot(e2, nm);
+        //w = 1.0f - u - v; //w
+
         //==================
         DebugWide.DrawLine(P0, P0 + e1 * u, Color.green);
         DebugWide.DrawLine(P0, P0 + e2 * v, Color.green);
 
-        //DebugWide.DrawLine(P0, P0 + (e1 * u)+(e2 * v), Color.green); //아래와 같은 표현 
-        DebugWide.DrawLine(P0, w*P0 + u*P1 + v*P2, Color.green);
+        DebugWide.DrawLine(P0, P0 + (e1 * u)+(e2 * v), Color.green); //아래와 같은 표현 
+        //DebugWide.DrawLine(P0, w*P0 + u*P1 + v*P2, Color.green);
 
         DebugWide.LogBlue("w: " + w + " u:" + u + " v:" + v + " u+v:" + (u+v));
     }
@@ -198,8 +230,6 @@ public class Test_BarycentricCoordinates : MonoBehaviour
         //u -> pp . (l_dir x e2) -> pp . (l_dir x e2)
         //v -> l_dir . (pp x e1) -> pp . (e1 x l_dir)
         //t -> e2 . (pp x e1) -> pp . (e1 x e2) -> -pp . (e2 x e1)
-        //분모와 분자를 같은 기저축상에서 "길이의 비율"로 나타내는 용도로 스칼라삼중곱이 사용되고 있다 
-        //스칼라삼중곱 없이 처리를 하려면 길이와 노멀방향을 따로 구해야 하므로 처리 할게 많아진다 
 
         // compute denominator
         float denom = 1.0f / a;
