@@ -94,53 +94,5 @@ namespace Raven
     }
 
 
-    //====================================================
-    public class RailGun : Raven_Weapon
-    {
-
-        public RailGun(Raven_Bot owner) :
-
-                      base((int)eObjType.blaster,
-                                   Params.Blaster_DefaultRounds,
-                                   Params.Blaster_MaxRoundsCarried,
-                                   Params.Blaster_FiringFreq,
-                                   Params.Blaster_IdealRange,
-                                   Params.Bolt_MaxSpeed,
-                                   owner)
-        {
-        }
-    }
-    public class ShotGun : Raven_Weapon
-    {
-
-        public ShotGun(Raven_Bot owner) :
-
-                      base((int)eObjType.blaster,
-                                   Params.Blaster_DefaultRounds,
-                                   Params.Blaster_MaxRoundsCarried,
-                                   Params.Blaster_FiringFreq,
-                                   Params.Blaster_IdealRange,
-                                   Params.Bolt_MaxSpeed,
-                                   owner)
-        {
-        }
-    }
-    public class RocketLauncher : Raven_Weapon
-    {
-
-        public RocketLauncher(Raven_Bot owner) :
-
-                      base((int)eObjType.blaster,
-                                   Params.Blaster_DefaultRounds,
-                                   Params.Blaster_MaxRoundsCarried,
-                                   Params.Blaster_FiringFreq,
-                                   Params.Blaster_IdealRange,
-                                   Params.Bolt_MaxSpeed,
-                                   owner)
-        {
-        }
-    }
-
-
 }//end namespace
 

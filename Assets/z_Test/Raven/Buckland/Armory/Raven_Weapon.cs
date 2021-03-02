@@ -10,34 +10,34 @@ namespace Raven
         protected Raven_Bot m_pOwner;
 
         //an enumeration indicating the type of weapon
-        int m_iType;
+        protected int m_iType;
 
         //fuzzy logic is used to determine the desirability of a weapon. Each weapon
         //owns its own instance of a fuzzy module because each has a different rule 
         //set for inferring desirability.
-        FuzzyModule m_FuzzyModule;
+        protected FuzzyModule m_FuzzyModule;
 
         //amount of ammo carried for this weapon
-        int m_iNumRoundsLeft;
+        protected int m_iNumRoundsLeft;
 
         //maximum number of rounds a bot can carry for this weapon
-        int m_iMaxRoundsCarried;
+        protected int m_iMaxRoundsCarried;
 
         //the number of times this weapon can be fired per second
-        float m_dRateOfFire;
+        protected float m_dRateOfFire;
 
         //the earliest time the next shot can be taken
-        float m_dTimeNextAvailable;
+        protected float m_dTimeNextAvailable;
 
         //this is used to keep a local copy of the previous desirability score
         //so that we can give some feedback for debugging
-        float m_dLastDesirabilityScore;
+        protected float m_dLastDesirabilityScore;
 
         //this is the prefered distance from the enemy when using this weapon
-        float m_dIdealRange;
+        protected float m_dIdealRange;
 
         //the max speed of the projectile this weapon fires
-        float m_dMaxProjectileSpeed;
+        protected float m_dMaxProjectileSpeed;
 
         //The number of times a weapon can be discharges depends on its rate of fire.
         //This method returns true if the weapon is able to be discharged at the 

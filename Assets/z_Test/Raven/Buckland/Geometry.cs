@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UtilGS9;
-
+using System;
 
 namespace Raven
 {
@@ -161,6 +161,56 @@ namespace Raven
                 return false;
             }
 
+        }
+
+        static public bool GetLineSegmentCircleClosestIntersectionPoint(Vector3 A,
+                                                         Vector3 B,
+                                                         Vector3 pos,
+                                                         float radius,
+                                                         ref Vector3 IntersectionPoint)
+        {
+            //IntersectionPoint = ConstV.v3_zero;
+            Vector3 toBNorm = VOp.Normalize(B - A);
+
+            //move the circle into the local space defined by the vector B-A with origin
+            //at A
+            Vector3 perp = Vector3.Cross(toBNorm, ConstV.v3_up);
+            Vector3 LocalPos = Misc.PointToLocalSpace(pos, toBNorm, perp, A);
+
+            bool ipFound = false;
+
+            //if the local position + the radius is negative then the circle lays behind
+            //point A so there is no intersection possible. If the local x pos minus the 
+            //radius is greater than length A-B then the circle cannot intersect the 
+            //line segment
+            if ((LocalPos.x + radius >= 0) &&
+               ((LocalPos.x - radius) * (LocalPos.x - radius) <= (B - A).sqrMagnitude))
+            {
+                //if the distance from the x axis to the object's position is less
+                //than its radius then there is a potential intersection.
+                if (Mathf.Abs(LocalPos.y) < radius)
+                {
+                    //now to do a line/circle intersection test. The center of the 
+                    //circle is represented by A, B. The intersection points are 
+                    //given by the formulae x = A +/-sqrt(r^2-B^2), y=0. We only 
+                    //need to look at the smallest positive value of x.
+                    float a = LocalPos.x;
+                    float b = LocalPos.y;
+
+                    float ip = a - (float)Math.Sqrt(radius * radius - b * b);
+
+                    if (ip <= 0)
+                    {
+                        ip = a + (float)Math.Sqrt(radius * radius - b * b);
+                    }
+
+                    ipFound = true;
+
+                    IntersectionPoint = A + toBNorm * ip;
+                }
+            }
+
+            return ipFound;
         }
     }
 

@@ -6,39 +6,39 @@ namespace Raven
 {
 
 
-    public class Rocket : Raven_Projectile
-    {
-        public Rocket(Raven_Bot shooter, Vector3 target)
-                         : base(target,
-                         shooter.GetWorld(),
-                         shooter.ID(),
-                         shooter.Pos(),
-                         shooter.Facing(),
-                         1, 1, 1, 1, 1)
-        { }
-    }
-    public class Slug : Raven_Projectile
-    {
-        public Slug(Raven_Bot shooter, Vector3 target)
-        : base(target,
-                         shooter.GetWorld(),
-                         shooter.ID(),
-                         shooter.Pos(),
-                         shooter.Facing(),
-                         1, 1, 1, 1, 1)
-        { }
-    }
-    public class Pellet : Raven_Projectile
-    {
-        public Pellet(Raven_Bot shooter, Vector3 target)
-            : base(target,
-                         shooter.GetWorld(),
-                         shooter.ID(),
-                         shooter.Pos(),
-                         shooter.Facing(),
-                         1, 1, 1, 1, 1)
-        { }
-    }
+    //public class Rocket : Raven_Projectile
+    //{
+    //    public Rocket(Raven_Bot shooter, Vector3 target)
+    //                     : base(target,
+    //                     shooter.GetWorld(),
+    //                     shooter.ID(),
+    //                     shooter.Pos(),
+    //                     shooter.Facing(),
+    //                     1, 1, 1, 1, 1)
+    //    { }
+    //}
+    //public class Slug : Raven_Projectile
+    //{
+    //    public Slug(Raven_Bot shooter, Vector3 target)
+    //    : base(target,
+    //                     shooter.GetWorld(),
+    //                     shooter.ID(),
+    //                     shooter.Pos(),
+    //                     shooter.Facing(),
+    //                     1, 1, 1, 1, 1)
+    //    { }
+    //}
+    //public class Pellet : Raven_Projectile
+    //{
+    //    public Pellet(Raven_Bot shooter, Vector3 target)
+    //        : base(target,
+    //                     shooter.GetWorld(),
+    //                     shooter.ID(),
+    //                     shooter.Pos(),
+    //                     shooter.Facing(),
+    //                     1, 1, 1, 1, 1)
+    //    { }
+    //}
 
     //=======================================================
 

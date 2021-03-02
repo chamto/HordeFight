@@ -173,7 +173,7 @@
         public const float ShotGun_FiringFreq = 1;
         public const int ShotGun_DefaultRounds = 15;
         public const int ShotGun_MaxRoundsCarried = 50;
-        public const float ShotGun_NumBallsInShell = 10;
+        public const int ShotGun_NumBallsInShell = 10;
         public const float ShotGun_Spread = 0.05f;
         public const float ShotGun_IdealRange = 100;
         public const float ShotGun_SoundRange = 400;

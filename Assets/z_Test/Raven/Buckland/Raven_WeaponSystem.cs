@@ -98,12 +98,17 @@ namespace Raven
             m_WeaponMap.Clear();
 
             //set up the container
-            m_pCurrentWeapon = new Blaster(m_pOwner);
+            //m_pCurrentWeapon = new Blaster(m_pOwner);
+            //m_WeaponMap.Add((int)eObjType.blaster, m_pCurrentWeapon);
+            //m_WeaponMap.Add((int)eObjType.shotgun, null);
+            //m_WeaponMap.Add((int)eObjType.rail_gun, null);
+            //m_WeaponMap.Add((int)eObjType.rocket_launcher, null);
 
+            m_pCurrentWeapon = new Blaster(m_pOwner);
             m_WeaponMap.Add((int)eObjType.blaster, m_pCurrentWeapon);
-            m_WeaponMap.Add((int)eObjType.shotgun, null);
-            m_WeaponMap.Add((int)eObjType.rail_gun, null);
-            m_WeaponMap.Add((int)eObjType.rocket_launcher, null);
+            m_WeaponMap.Add((int)eObjType.shotgun, new ShotGun(m_pOwner));
+            m_WeaponMap.Add((int)eObjType.rail_gun, new RailGun(m_pOwner));
+            m_WeaponMap.Add((int)eObjType.rocket_launcher, new RocketLauncher(m_pOwner));
 
         }
 
@@ -112,6 +117,8 @@ namespace Raven
         //from Raven_Bot::Update)
         public void TakeAimAndShoot()
         {
+            //DebugWide.LogBlue((eObjType)GetCurrentWeapon().GetType());
+
           //aim the weapon only if the current target is shootable or if it has only
           //very recently gone out of view (this latter condition is to ensure the 
           //weapon is aimed at the target even if it temporarily dodges behind a wall
@@ -257,7 +264,7 @@ namespace Raven
         public void ChangeWeapon(int type)
         {
             Raven_Weapon w = GetWeaponFromInventory(type);
-
+            //DebugWide.LogBlue(w + " " + (eObjType)type+ "  " + (eObjType)w.GetType());
             if (null != w) m_pCurrentWeapon = w;
         }
 

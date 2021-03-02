@@ -52,9 +52,13 @@ namespace Raven
             {
                 _input_movePos = false;
                 var first = _game.GetAllBots().First;
-                _game.SelectMoveBot(first.Value, _mousePoint.position);
+                //_game.SelectMoveBot(first.Value, _mousePoint.position);
 
+                first.Value.ChangeWeapon((int)eObjType.shotgun);
+                //first.Value.ChangeWeapon((int)eObjType.rail_gun);
+                //first.Value.ChangeWeapon((int)eObjType.rocket_launcher);
             }
+
 
             _game.Update();
             _game.Render();
