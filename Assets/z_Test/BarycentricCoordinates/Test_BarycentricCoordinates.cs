@@ -259,8 +259,15 @@ public class Test_BarycentricCoordinates : MonoBehaviour
         //Vector3 ABo = Ao - Bo;
         Vector3 BAo = Bo - Ao;
 
-        // 행렬식값 , 스칼라삼중적
 
+
+        //2차원 행렬식값 , 수직내적
+        //float rTop = VOp.PerpDot_XZ(BAo, B_dir); //v, w => v.x*w.z - v.z*w.x 
+        //float sTop = VOp.PerpDot_XZ(BAo, A_dir);
+        //float Bot = VOp.PerpDot_XZ(A_dir, B_dir);
+
+
+        //3차원 행렬식값 , 스칼라삼중적
         //denom : (a_dir x b_dir) . (a_dir x b_dir)
         // u : (bao x b_dir) . (a_dir x b_dir)
         // v : (bao x a_dir) . (a_dir x b_dir)
