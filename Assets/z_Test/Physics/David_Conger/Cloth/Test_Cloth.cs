@@ -115,6 +115,7 @@ namespace pmframework
             return (randomNumber);
         }
 
+        public bool _Active_Impulse = false;
         static float frameCount = 0;
         static int currentRow = 0;
         bool UpdateFrame()
@@ -125,8 +126,10 @@ namespace pmframework
                 return (true);
 
             // After a certain number of frames go by...
-            if (frameCount >= CLOTH_PARTICLE_ROWS * 10)
+            //if (frameCount >= CLOTH_PARTICLE_ROWS * 10)
+            if(_Active_Impulse)
             {
+                _Active_Impulse = false;
                 //
                 // Apply a force to a row of particles.
                 //
@@ -141,7 +144,8 @@ namespace pmframework
                 for (int i = 0; i < CLOTH_PARTICLE_COLS; i++)
                 {
                     theCloth.ParticleImpulseForce(
-                        currentRow++,
+                        //currentRow++,
+                        4,
                         i,
                         impulse);
                 }

@@ -52,6 +52,7 @@ namespace pmframework
         float linearDampeningCoefficient;
 
 
+        //파티클 불안정해지는 문제가 발생 , 원인 찾기 , 최대힘에 대한 제약이 없어서 생기는 문제로 추정 - 20210311 chamto
         void HandleCollision(Vector3 separationDistance, float changeInTime, index_pair firstParticle, index_pair secondParticle)
         {
             int row1 = firstParticle.row;
@@ -83,11 +84,13 @@ namespace pmframework
                 ((1 + averageE) * allParticles[row2, col2].Mass() *
                 velocity2)) / (allParticles[row1, col1].Mass() +
                 allParticles[row2, col2].Mass());
+
             float finalVelocity2 =
                 (((allParticles[row2, col2].Mass() -
                 (averageE * allParticles[row1, col1].Mass())) * velocity2) +
                 ((1 + averageE) * allParticles[row1, col1].Mass() * velocity1)) /
                 (allParticles[row1, col1].Mass() + allParticles[row2, col2].Mass());
+
             allParticles[row1, col1].LinearVelocity(
                 (finalVelocity1 - velocity1) * unitNormal +
                 allParticles[row1, col1].LinearVelocity());
