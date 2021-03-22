@@ -2,6 +2,12 @@
 
 namespace Cyclone
 {
+
+    public class Core
+    {
+        public static float sleepEpsilon = 0.3f;
+    }
+
     public struct Vector3
     {
 
@@ -457,6 +463,7 @@ namespace Cyclone
             k += q.k * 0.5f;
         }
 
+        //20210323 chamto need to test - 테스트 필요한 함수임 , 쿼터니언 벡터 회전 공식이 잘못되었음 , Rqp = qpq-1 인데 qp 로 짜여있음 , 사용처 없음 
         public void rotateByVector(Vector3 vector)
         {
             Quaternion q = new Quaternion(0, vector.x, vector.y, vector.z); //순사원수 , w값이 0 
@@ -549,24 +556,24 @@ namespace Cyclone
          * Returns a matrix which is this matrix multiplied by the given
          * other matrix.
          */
-        public static Matrix4 operator *(Matrix4 o1, Matrix4 o2)
+        public static Matrix4 operator *(Matrix4 m, Matrix4 o2)
         {
             Matrix4 result = Matrix4.identityMatrix;
-            result[0] = (o2[0] * o1[0]) + (o2[4] * o1[1]) + (o2[8] * o1[2]);
-            result[4] = (o2[0] * o1[4]) + (o2[4] * o1[5]) + (o2[8] * o1[6]);
-            result[8] = (o2[0] * o1[8]) + (o2[4] * o1[9]) + (o2[8] * o1[10]);
+            result[0] = (o2[0] * m[0]) + (o2[4] * m[1]) + (o2[8] * m[2]);
+            result[4] = (o2[0] * m[4]) + (o2[4] * m[5]) + (o2[8] * m[6]);
+            result[8] = (o2[0] * m[8]) + (o2[4] * m[9]) + (o2[8] * m[10]);
 
-            result[1] = (o2[1] * o1[0]) + (o2[5] * o1[1]) + (o2[9] * o1[2]);
-            result[5] = (o2[1] * o1[4]) + (o2[5] * o1[5]) + (o2[9] * o1[6]);
-            result[9] = (o2[1] * o1[8]) + (o2[5] * o1[9]) + (o2[9] * o1[10]);
+            result[1] = (o2[1] * m[0]) + (o2[5] * m[1]) + (o2[9] * m[2]);
+            result[5] = (o2[1] * m[4]) + (o2[5] * m[5]) + (o2[9] * m[6]);
+            result[9] = (o2[1] * m[8]) + (o2[5] * m[9]) + (o2[9] * m[10]);
 
-            result[2] = (o2[2] * o1[0]) + (o2[6] * o1[1]) + (o2[10] * o1[2]);
-            result[6] = (o2[2] * o1[4]) + (o2[6] * o1[5]) + (o2[10] * o1[6]);
-            result[10] = (o2[2] * o1[8]) + (o2[6] * o1[9]) + (o2[10] * o1[10]);
+            result[2] = (o2[2] * m[0]) + (o2[6] * m[1]) + (o2[10] * m[2]);
+            result[6] = (o2[2] * m[4]) + (o2[6] * m[5]) + (o2[10] * m[6]);
+            result[10] = (o2[2] * m[8]) + (o2[6] * m[9]) + (o2[10] * m[10]);
 
-            result[3] = (o2[3] * o1[0]) + (o2[7] * o1[1]) + (o2[11] * o1[2]) + o1[3];
-            result[7] = (o2[3] * o1[4]) + (o2[7] * o1[5]) + (o2[11] * o1[6]) + o1[7];
-            result[11] = (o2[3] * o1[8]) + (o2[7] * o1[9]) + (o2[11] * o1[10]) + o1[11];
+            result[3] = (o2[3] * m[0]) + (o2[7] * m[1]) + (o2[11] * m[2]) + m[3];
+            result[7] = (o2[3] * m[4]) + (o2[7] * m[5]) + (o2[11] * m[6]) + m[7];
+            result[11] = (o2[3] * m[8]) + (o2[7] * m[9]) + (o2[11] * m[10]) + m[11];
 
             return result;
         }
@@ -785,6 +792,7 @@ namespace Cyclone
          * Sets this matrix to be the rotation matrix corresponding to
          * the given quaternion.
          */
+        //20210323 chamto need to test - 테스트 필요한 함수임 , 행렬이 전치되어 있음 , 좌표계상의 회전반향과 반대로 회전할것으로 예상 , 사용처가 없음 
         public void setOrientationAndPos(Quaternion q, Vector3 pos)
         {
             this[0] = 1 - (2 * q.j * q.j + 2 * q.k * q.k);
@@ -1073,9 +1081,11 @@ namespace Cyclone
             this[0] = (m[4] * m[8] - m[5] * m[7]) * t17;
             this[1] = -(m[1] * m[8] - m[2] * m[7]) * t17;
             this[2] = (m[1] * m[5] - m[2] * m[4]) * t17;
+
             this[3] = -(m[3] * m[8] - m[5] * m[6]) * t17;
             this[4] = (m[0] * m[8] - t14) * t17;
             this[5] = -(t6 - t10) * t17;
+
             this[6] = (m[3] * m[7] - m[4] * m[6]) * t17;
             this[7] = -(m[0] * m[7] - t12) * t17;
             this[8] = (t4 - t8) * t17;
@@ -1127,20 +1137,20 @@ namespace Cyclone
          * Returns a matrix which is this matrix multiplied by the given
          * other matrix.
          */
-        public static Matrix3 operator *(Matrix3 o1, Matrix3 o2)
+        public static Matrix3 operator *(Matrix3 lf, Matrix3 rf)
         {
             return new Matrix3(
-                o1[0] * o2[0] + o1[1] * o2[3] + o1[2] * o2[6],
-                o1[0] * o2[1] + o1[1] * o2[4] + o1[2] * o2[7],
-                o1[0] * o2[2] + o1[1] * o2[5] + o1[2] * o2[8],
+                lf[0] * rf[0] + lf[1] * rf[3] + lf[2] * rf[6],
+                lf[0] * rf[1] + lf[1] * rf[4] + lf[2] * rf[7],
+                lf[0] * rf[2] + lf[1] * rf[5] + lf[2] * rf[8],
 
-                o1[3] * o2[0] + o1[4] * o2[3] + o1[5] * o2[6],
-                o1[3] * o2[1] + o1[4] * o2[4] + o1[5] * o2[7],
-                o1[3] * o2[2] + o1[4] * o2[5] + o1[5] * o2[8],
+                lf[3] * rf[0] + lf[4] * rf[3] + lf[5] * rf[6],
+                lf[3] * rf[1] + lf[4] * rf[4] + lf[5] * rf[7],
+                lf[3] * rf[2] + lf[4] * rf[5] + lf[5] * rf[8],
 
-                o1[6] * o2[0] + o1[7] * o2[3] + o1[8] * o2[6],
-                o1[6] * o2[1] + o1[7] * o2[4] + o1[8] * o2[7],
-                o1[6] * o2[2] + o1[7] * o2[5] + o1[8] * o2[8]
+                lf[6] * rf[0] + lf[7] * rf[3] + lf[8] * rf[6],
+                lf[6] * rf[1] + lf[7] * rf[4] + lf[8] * rf[7],
+                lf[6] * rf[2] + lf[7] * rf[5] + lf[8] * rf[8]
                 );
         }
 
@@ -1200,14 +1210,17 @@ namespace Cyclone
          * Sets this matrix to be the rotation matrix corresponding to
          * the given quaternion.
          */
+         //20210323 chamto need to test - 테스트 필요한 함수임 , 행렬이 전치되어 있음 , 좌표계상의 회전반향과 반대로 회전할것으로 예상
         public void setOrientation(Quaternion q)
         {
             this[0] = 1 - (2 * q.j * q.j + 2 * q.k * q.k);
             this[1] = 2 * q.i * q.j + 2 * q.k * q.r;
             this[2] = 2 * q.i * q.k - 2 * q.j * q.r;
+
             this[3] = 2 * q.i * q.j - 2 * q.k * q.r;
             this[4] = 1 - (2 * q.i * q.i + 2 * q.k * q.k);
             this[5] = 2 * q.j * q.k + 2 * q.i * q.r;
+
             this[6] = 2 * q.i * q.k + 2 * q.j * q.r;
             this[7] = 2 * q.j * q.k - 2 * q.i * q.r;
             this[8] = 1 - (2 * q.i * q.i + 2 * q.j * q.j);
