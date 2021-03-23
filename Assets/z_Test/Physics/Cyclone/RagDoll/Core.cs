@@ -45,6 +45,7 @@ namespace Cyclone
 
         }
 
+        public static readonly Vector3 ZERO = new Vector3(0, 0, 0);
         public static readonly Vector3 GRAVITY = new Vector3(0, -9.81f, 0);
         public static readonly Vector3 HIGH_GRAVITY = new Vector3(0, -19.62f, 0);
         public static readonly Vector3 UP = new Vector3(0, 1f, 0);
@@ -1188,23 +1189,31 @@ namespace Cyclone
         /**
          * Multiplies this matrix in place by the given scalar.
          */
-        //public void operator*=(const real scalar)
-        //{
-        //    data[0] *= scalar; data[1] *= scalar; data[2] *= scalar;
-        //    data[3] *= scalar; data[4] *= scalar; data[5] *= scalar;
-        //    data[6] *= scalar; data[7] *= scalar; data[8] *= scalar;
-        //}
+        public static Matrix3 operator *(Matrix3 lf, float scalar)
+        {
+            Matrix3 mr = Matrix3.identityMatrix;
+
+            mr[0] = lf[0] * scalar; mr[1] = lf[1] * scalar; mr[2] = lf[2] * scalar;
+            mr[3] = lf[3] * scalar; mr[4] = lf[4] * scalar; mr[5] = lf[5] * scalar;
+            mr[6] = lf[6] * scalar; mr[7] = lf[7] * scalar; mr[8] = lf[8] * scalar;
+
+            return mr;
+        }
 
         /**
          * Does a component-wise addition of this matrix and the given
          * matrix.
          */
-        //public void operator+=(const Matrix3 &o)
-        //{
-        //    data[0] += o.data[0]; data[1] += o.data[1]; data[2] += o.data[2];
-        //    data[3] += o.data[3]; data[4] += o.data[4]; data[5] += o.data[5];
-        //    data[6] += o.data[6]; data[7] += o.data[7]; data[8] += o.data[8];
-        //}
+        public static Matrix3 operator +(Matrix3 lf, Matrix3 rf)
+        {
+            Matrix3 mr = Matrix3.identityMatrix;
+
+            mr[0] = lf[0] + rf[0]; mr[1] = lf[1] + rf[1]; mr[2] = lf[2] + rf[2];
+            mr[3] = lf[3] + rf[3]; mr[4] = lf[4] + rf[4]; mr[5] = lf[5] + rf[5];
+            mr[6] = lf[6] + rf[6]; mr[7] = lf[7] + rf[7]; mr[8] = lf[8] + rf[8];
+
+            return mr;
+        }
 
         /**
          * Sets this matrix to be the rotation matrix corresponding to
