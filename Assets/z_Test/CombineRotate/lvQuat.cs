@@ -16,14 +16,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class IvQuat 
+public class IvQuat //struct 로 변경하기 
 {
 	// member variables
 	public float w, x, y, z;      
 
 	// useful defaults
-	static public IvQuat   zero = new IvQuat(0,0,0,0);
-	static public IvQuat   identity = new IvQuat(1f,0,0,0);
+	static readonly public IvQuat   zero = new IvQuat(0,0,0,0);
+	static readonly public IvQuat   identity = new IvQuat(1f,0,0,0);
 
 
 
