@@ -928,7 +928,7 @@ namespace Cyclone
                                     // with the second body in a contact.
                                     c[i].contactVelocity +=
                                         c[i].contactToWorld.transformTranspose(deltaVel)
-                                        * (b ? -1 : 1);
+                                        * (1 == b ? -1 : 1);
                                     c[i].calculateDesiredDeltaVelocity(duration);
                                 }
                             }
@@ -1005,7 +1005,7 @@ namespace Cyclone
                                     // subtracting the resolution)..
                                     c[i].penetration +=
                                         deltaPosition.scalarProduct(c[i].contactNormal)
-                                        * (b ? 1 : -1);
+                                        * (1 == b ? 1 : -1);
                                 }
                             }
                         }
