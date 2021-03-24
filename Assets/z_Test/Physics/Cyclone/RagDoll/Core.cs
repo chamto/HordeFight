@@ -67,6 +67,12 @@ namespace Cyclone
                 if (i == 1) return y;
                 return z;
             }
+            set
+            {
+                if (i == 0) x = value;
+                if (i == 1) y = value;
+                if (i == 2) z = value;
+            }
         }
 
 
