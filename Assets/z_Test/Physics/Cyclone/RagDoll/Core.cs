@@ -368,10 +368,7 @@ namespace Cyclone
          * The default constructor creates a quaternion representing
          * a zero rotation.
          */
-        //public Quaternion()
-        //{
-        //    r = i = j = k = 0;
-        //}
+        public static readonly Quaternion identity = new Quaternion(1, 0, 0, 0);
 
         /**
          * The explicit constructor creates a quaternion with the given

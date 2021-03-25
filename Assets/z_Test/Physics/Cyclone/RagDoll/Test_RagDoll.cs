@@ -336,18 +336,28 @@ namespace Cyclone
             //glEnd();
             //glEnable(GL_DEPTH_TEST);
 
+            UnityEngine.Vector3 prev = new UnityEngine.Vector3();
+            UnityEngine.Vector3 cur = new UnityEngine.Vector3();
+
             // Draw some scale circles
             //glColor3f(0.75, 0.75, 0.75);
-            //for (unsigned i = 1; i < 20; i++)
-            //{
-            //    glBegin(GL_LINE_LOOP);
-            //    for (unsigned j = 0; j < 32; j++)
-            //    {
-            //        float theta = 3.1415926f * j / 16.0f;
-            //        glVertex3f(i * cosf(theta), 0.0f, i * sinf(theta));
-            //    }
-            //    glEnd();
-            //}
+            for (uint i = 1; i < 20; i++)
+            {
+
+
+                //glBegin(GL_LINE_LOOP);
+                for (uint j = 0; j < 32; j++)
+                {
+                    float theta = 3.1415926f * j / 16.0f;
+                    //glVertex3f(i * cosf(theta), 0.0f, i * sinf(theta));
+
+                    cur.x = i * (float)Math.Cos(theta);
+                    cur.z = i * (float)Math.Sin(theta);
+                    DebugWide.DrawLine(prev, cur, Color.white);
+                    prev = cur;
+                }
+                //glEnd();
+            }
             //glBegin(GL_LINES);
             //glVertex3f(-20, 0, 0);
             //glVertex3f(20, 0, 0);
@@ -601,7 +611,7 @@ namespace Cyclone
         public void setState(Vector3 position, Vector3 extents)
         {
             body.setPosition(position);
-            body.setOrientation(new Quaternion());
+            body.setOrientation(Quaternion.identity);
             body.setVelocity(Vector3.ZERO);
             body.setRotation(Vector3.ZERO);
             halfSize = extents;
