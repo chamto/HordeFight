@@ -465,7 +465,7 @@ namespace Cyclone
                     // Move onto the next contact
                     //contact++;
                     contactsUsed++;
-                    contact = data.contactArray[contactsUsed];
+                    contact = data.contactArray[data.contactCount + contactsUsed];
                     if (contactsUsed == data.contactsLeft) return contactsUsed;
                 }
             }
