@@ -40,7 +40,8 @@ namespace Cyclone
             if (s == 0)
             {
                 //s = (uint)clock(); //ms단위로 반환 (함수설명에는 tick이지만 ms로 반환한다) 
-                s = (uint)System.DateTime.Now.Millisecond;
+                //s = (uint)System.DateTime.Now.Millisecond;
+                s = (uint)System.DateTime.Now.Ticks;
             }
 
             // Fill the buffer with some basic random numbers

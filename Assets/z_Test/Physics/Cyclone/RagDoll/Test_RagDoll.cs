@@ -48,7 +48,52 @@ public class Test_RagDoll : MonoBehaviour
     }
 }
 
+public class Test_RagDoll22 : MonoBehaviour
+{
+    Cyclone.BoneTest test = null;
+
+    private void Start()
+    {
+        test = new Cyclone.BoneTest();
+        test.Init();
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (null == test) return;
+
+        test.display();
+    }
+}
+
 namespace Cyclone
+{
+    public class BoneTest
+    {
+        Bone bone = new Bone();
+
+        public void Init()
+        {
+            bone.setState(Vector3.ZERO, new Vector3(1, 1, 1));
+        }
+
+        public void update()
+        {
+
+            bone.body.integrate(0.05f);
+            bone.calculateInternals();
+        }
+
+        public void display()
+        {
+            bone.render();
+        }
+
+
+    }
+}
+
+    namespace Cyclone
 {
 
     public class RagdollDemo : RigidBodyApplication
