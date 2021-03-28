@@ -229,7 +229,7 @@ namespace Cyclone
      * A helper structure that contains information for the detector to use
      * in building its contact data.
      */
-    public struct CollisionData
+    public class CollisionData
     {
         /**
          * Holds the base of the collision data: the first contact
@@ -430,7 +430,7 @@ namespace Cyclone
 
             // Go through each combination of + and - for each half-size
             //static real mults[8][3] = {{1,1,1},{-1,1,1},{1,-1,1},{-1,-1,1},
-                                   //{1,1,-1},{-1,1,-1},{1,-1,-1},{-1,-1,-1}};
+            //{1,1,-1},{-1,1,-1},{1,-1,-1},{-1,-1,-1}};
 
             Contact contact = data.contacts;
             uint contactsUsed = 0;

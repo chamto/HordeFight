@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Test_RagDoll : MonoBehaviour 
+public class Test_RagDoll22 : MonoBehaviour 
 {
 
     Cyclone.RagdollDemo demo = null;
@@ -48,7 +48,7 @@ public class Test_RagDoll : MonoBehaviour
     }
 }
 
-public class Test_RagDoll22 : MonoBehaviour
+public class Test_RagDoll : MonoBehaviour
 {
     Cyclone.BoneTest test = null;
 
@@ -62,6 +62,7 @@ public class Test_RagDoll22 : MonoBehaviour
     {
         if (null == test) return;
 
+        test.update();
         test.display();
     }
 }
@@ -70,11 +71,87 @@ namespace Cyclone
 {
     public class BoneTest
     {
+        protected static readonly uint maxContacts = 256;
+
+        /** Holds the array of contacts. */
+        protected Contact[] contacts = new Contact[maxContacts];
+
+        /** Holds the collision data structure for collision detection. */
+        protected CollisionData cData = new CollisionData();
+
+        /** Holds the contact resolver. */
+        protected ContactResolver resolver;
+
         Bone bone = new Bone();
 
         public void Init()
         {
-            bone.setState(Vector3.ZERO, new Vector3(1, 1, 1));
+            resolver = new ContactResolver(maxContacts * 8);
+
+            for (int i = 0; i < maxContacts; i++)
+            {
+                contacts[i] = new Contact();
+            }
+            cData.contactArray = contacts;
+
+            bone.setState(new Vector3(0,5,0), new Vector3(1, 1, 1));
+        }
+
+        protected void GenerateContacts()
+        {
+            // Create the ground plane data
+            CollisionPlane plane = new CollisionPlane();
+            plane.direction = new Cyclone.Vector3(0, 1, 0);
+            plane.offset = 0;
+
+            // Set up the collision data structure
+            cData.reset(maxContacts);
+            cData.friction = 0.9f;
+            cData.restitution = 0.6f;
+            cData.tolerance = 0.1f;
+
+
+            if (!cData.hasMoreContacts()) return;
+            CollisionDetector.boxAndHalfSpace(bone, plane, cData);
+            DebugWide.LogBlue(cData.contactCount + "  ______");
+            //for (int i = 0; i < NUM_BONES; i++)
+            //{
+            //    Bone bone = bones[i];
+
+            //    // Check for collisions with the ground plane
+            //    if (!cData.hasMoreContacts()) return;
+            //    CollisionDetector.boxAndHalfSpace(bone, plane, cData);
+
+            //    CollisionSphere boneSphere = bone.getCollisionSphere();
+
+            //    // Check for collisions with each other box
+            //    //for (Bone* other = bone + 1; other < bones + NUM_BONES; other++)
+            //    for (int j = i + 1; j < NUM_BONES; j++)
+            //    {
+            //        Bone other = bones[j];
+
+            //        if (!cData.hasMoreContacts()) return;
+
+            //        CollisionSphere otherSphere = other.getCollisionSphere();
+
+            //        CollisionDetector.sphereAndSphere(
+            //            boneSphere,
+            //            otherSphere,
+            //            cData
+            //            );
+            //    }
+            //}
+
+            //// Check for joint violation
+            ////for (Joint* joint = joints; joint < joints + NUM_JOINTS; joint++)
+            //for (int i = 0; i < NUM_JOINTS; i++)
+            //{
+            //    Joint joint = joints[i];
+
+            //    if (!cData.hasMoreContacts()) return;
+            //    uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
+            //    cData.addContacts(added);
+            //}
         }
 
         public void update()
@@ -82,6 +159,15 @@ namespace Cyclone
 
             bone.body.integrate(0.05f);
             bone.calculateInternals();
+
+            GenerateContacts();
+
+            DebugWide.LogBlue(cData.contactCount);
+            resolver.resolveContacts(
+                cData.contactArray,
+                cData.contactCount,
+                0.05f
+                );
         }
 
         public void display()
@@ -398,7 +484,7 @@ namespace Cyclone
 
                     cur.x = i * (float)Math.Cos(theta);
                     cur.z = i * (float)Math.Sin(theta);
-                    DebugWide.DrawLine(prev, cur, Color.white);
+                    //DebugWide.DrawLine(prev, cur, Color.white);
                     prev = cur;
                 }
                 //glEnd();
