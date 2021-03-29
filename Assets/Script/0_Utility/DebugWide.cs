@@ -231,6 +231,9 @@ public class DebugWide
         Gizmos.color = cc;
 
         if (null == __cubeMesh) __cubeMesh = CreateCubeMesh();
+        pos.x -= size.x * 0.5f;
+        pos.y -= size.y * 0.5f;
+        pos.z -= size.z * 0.5f;
         Gizmos.DrawWireMesh(__cubeMesh, pos, rotation, size);
 #endif
     }
