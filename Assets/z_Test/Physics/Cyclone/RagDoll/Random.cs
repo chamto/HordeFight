@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Runtime.InteropServices;
 
 
 namespace Cyclone
@@ -42,6 +43,7 @@ namespace Cyclone
                 //s = (uint)clock(); //ms단위로 반환 (함수설명에는 tick이지만 ms로 반환한다) 
                 //s = (uint)System.DateTime.Now.Millisecond;
                 s = (uint)System.DateTime.Now.Ticks;
+                //DebugWide.LogBlue(DateTime.Now.Ticks + "  __^^__  " + DateTime.Now.Millisecond);
             }
 
             // Fill the buffer with some basic random numbers
@@ -89,7 +91,7 @@ namespace Cyclone
             [FieldOffset(0)]    //메모리내 시작 위치
             public double value;
 
-            [FieldOffset(0)]    //0에서 시작
+            [FieldOffset(4)]    //0에서 시작 //윈도우와 유닉스간의 비트읽는 순서가 달라 이렇게 하드코딩하면 안될것 같음. 원래 코드에서는 0이었으나 정상동작 안되어 4에서 시작되게 함 
             public uint word;
 
         }
@@ -111,7 +113,7 @@ namespace Cyclone
         /**
          * Returns a random floating point number between 0 and 1.
          */
-        public double randomReal()
+        public double randomReal_1()
         {
             // Get the random number
             uint bits = randomBits();
@@ -129,8 +131,16 @@ namespace Cyclone
             // and using the bits to create the fraction part of the float.
             convert.word = (bits >> 9) | 0x3f800000;
 
+            //DebugWide.LogBlue(UtilGS9.Misc.IntToBinaryString((int)bits) + " ==== 1");
+            //DebugWide.LogBlue(UtilGS9.Misc.IntToBinaryString((int)(bits >> 9)) + " ==== 2");
+            //DebugWide.LogBlue(UtilGS9.Misc.IntToBinaryString((int)(0x3f800000)) + " ==== 3");
+            //DebugWide.LogBlue(UtilGS9.Misc.IntToBinaryString(-1) + " ==== 4");
+            //DebugWide.LogBlue(UtilGS9.Misc.IntToBinaryString((int)convert.word) + " ==== 5");
+            //DebugWide.LogBlue(UtilGS9.Misc.DoubleToBinaryString(convert.value) + " ==== 6");
+            //DebugWide.LogBlue(UtilGS9.Misc.DoubleToBinaryString(-1) + " ==== 7");
+            //DebugWide.LogBlue(UtilGS9.Misc.DoubleToBinaryString(convert.value - 1.0) + " ==== 8");
             // And return the value
-            return convert.value - 1.0f;
+            return convert.value - 1.0;
         }
 
         public double randomReal_2()
@@ -155,6 +165,13 @@ namespace Cyclone
 
             // And return the value
             return convert.value - 1.0;
+        }
+
+        //randomBits 가 정상동작 안되어 씨샵함수 사용함  
+        private static System.Random rand = new System.Random();
+        public double randomReal()
+        {
+            return ((float)rand.Next() / (float)(int.MaxValue));
         }
 
         /**
