@@ -1496,11 +1496,11 @@ namespace UtilGS9
         //.NextDouble() : 0 보다 크고 1.0 보다 작은 임의의 실수값 (1.0은 포함되지 않는다)
         //.Sample() : 0 과 1.0 사이의 실수값 (1.0은 포함된다)
         //.Next(int minValue, int maxValue) : minValue ~ maxValue 사이의 값을 반환한다. (maxValue 는 포함되지 않는다)
-        private static System.Random _rand = new System.Random();
-        static public System.Random rand
-        {
-            get { return _rand; }
-        }
+        public static System.Random rand = new System.Random();
+        //static public System.Random rand
+        //{
+        //    get { return _rand; }
+        //}
 
         //==============================================
         //ref : Mat Buckland - Programming Game AI by Example
@@ -1944,18 +1944,54 @@ namespace UtilGS9
         //ref : https://davidzych.com/converting-an-int-to-a-binary-string-in-c/
         public static string IntToBinaryString(int number)
         {
-            if (0 == number) return "0";
+            //if (0 == number) return "0";
 
             const int mask = 1; //첫번째 1비트만 걸러내는 마스크 
             string binary = string.Empty;
-            while (number > 0)
+            int count = 32;
+            //while (number > 0)
+            while(count > 0)
             {
+
+                if (count % 8 == 0)
+                    binary = "," + binary;
+
                 // Logical AND the number and prepend it to the result string
                 binary = (number & mask) + binary;
                 number = number >> 1;
+
+                count--;
+
             }
 
             return binary;
+        }
+
+        //ref : https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.doubletoint64bits?view=net-5.0
+        public static string DoubleToBinaryString(double argument)
+        {
+            long number = BitConverter.DoubleToInt64Bits(argument);
+
+            const int mask = 1; //첫번째 1비트만 걸러내는 마스크 
+            string binary = string.Empty;
+            int count = 64;
+            //while (number > 0)
+            while (count > 0)
+            {
+
+                if (count % 8 == 0)
+                    binary = "," + binary;
+
+                // Logical AND the number and prepend it to the result string
+                binary = (number & mask) + binary;
+                number = number >> 1;
+
+                count--;
+
+            }
+
+            return binary;
+
         }
 
         //========================================================
