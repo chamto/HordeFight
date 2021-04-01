@@ -52,15 +52,32 @@ public class Test_RagDoll : MonoBehaviour
 {
     Cyclone.BoneTest test = null;
 
+    Transform mousePT = null;
+
     private void Start()
     {
+        mousePT = GameObject.Find("mousePt").transform;
         test = new Cyclone.BoneTest();
         test.Init();
+
+        //Vector3[] aa = new Vector3[2];
+        //DebugWide.LogRed(aa[0] + "  =====");
+        //TestRef(aa);
+        //DebugWide.LogRed(aa[1]);
     }
+
+    //void TestRef(Vector3[] par)
+    //{
+    //    par[0].y = 10f;
+    //    par[1] = new Vector3(3, 4, 5);
+    //}
 
     private void OnDrawGizmos()
     {
         if (null == test) return;
+
+        Vector3 pos = mousePT.transform.position;
+        test.InputMousePt(pos.x, pos.y, pos.z);
 
         test.update();
         test.display();
@@ -69,6 +86,7 @@ public class Test_RagDoll : MonoBehaviour
 
 namespace Cyclone
 {
+
     public class BoneTest
     {
         protected static readonly uint maxContacts = 256;
@@ -82,7 +100,11 @@ namespace Cyclone
         /** Holds the contact resolver. */
         protected ContactResolver resolver;
 
-        Bone bone = new Bone();
+        Bone bone_0 = new Bone();
+        Bone bone_1 = new Bone();
+        Joint joint = new Joint();
+
+
 
         public void Init()
         {
@@ -94,7 +116,39 @@ namespace Cyclone
             }
             cData.contactArray = contacts;
 
-            bone.setState(new Vector3(0,5,0), new Vector3(1, 1, 1));
+            //bone.setState(new Vector3(0, 5, 0), new Vector3(1, 1, 1));
+
+            bone_0.setState(
+                new Vector3(-0.054f, 4.683f, 0.013f),
+                new Vector3(0.415f, 0.392f, 0.690f));
+            bone_1.setState(
+                new Vector3(0.043f, 5.603f, 0.013f),
+                new Vector3(0.301f, 0.367f, 0.693f));
+
+            joint.set(
+                bone_0.body, new Vector3(0.054f, 0.50f, 0),
+                bone_1.body, new Vector3(-0.043f, -0.45f, 0),
+                0.15f
+                );
+
+            bone_0.body.addForce(new Vector3(0,0,100f));
+            //bone.body.addForceAtBodyPoint(
+            //new Vector3(1000f, 0, 0), new Vector3());
+
+            //bone.body.addForceAtBodyPoint(
+            ////new Vector3(1000f, 0, 1000f),
+            //new Vector3(0, 0, 0),
+            ////new Vector3(4f, 3.0f, 0));
+            //new Vector3(4, 0, 0));
+        }
+
+        public void InputMousePt(float x, float y, float z)
+        {
+            //bone_0.body.setAcceleration(0, 0, 0);
+
+            //bone_1.body.setPosition(x, y, z);
+            //bone_1.body.setAcceleration(0, 0, 0);
+            //bone_1.body.calculateDerivedData();
         }
 
         protected void GenerateContacts()
@@ -112,8 +166,23 @@ namespace Cyclone
 
 
             if (!cData.hasMoreContacts()) return;
-            CollisionDetector.boxAndHalfSpace(bone, plane, cData);
-            DebugWide.LogBlue(cData.contactCount + "  ______");
+            CollisionDetector.boxAndHalfSpace(bone_0, plane, cData);
+            CollisionDetector.boxAndHalfSpace(bone_1, plane, cData);
+
+            if (!cData.hasMoreContacts()) return;
+            CollisionSphere boneSphere_0 = bone_0.getCollisionSphere();
+            CollisionSphere boneSphere_1 = bone_1.getCollisionSphere();
+            CollisionDetector.sphereAndSphere(
+                        boneSphere_0,
+                        boneSphere_1,
+                        cData
+                        );
+
+            //if (!cData.hasMoreContacts()) return;
+            //uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
+            //cData.addContacts(added);
+
+            //DebugWide.LogBlue(cData.contactCount + "  ______");
             //for (int i = 0; i < NUM_BONES; i++)
             //{
             //    Bone bone = bones[i];
@@ -157,12 +226,15 @@ namespace Cyclone
         public void update()
         {
 
-            bone.body.integrate(0.05f);
-            bone.calculateInternals();
+            bone_0.body.integrate(0.05f);
+            bone_0.calculateInternals();
+            bone_1.body.integrate(0.05f);
+            bone_1.calculateInternals();
 
             GenerateContacts();
 
             DebugWide.LogBlue(cData.contactCount);
+
             resolver.resolveContacts(
                 cData.contactArray,
                 cData.contactCount,
@@ -172,7 +244,8 @@ namespace Cyclone
 
         public void display()
         {
-            bone.render();
+            bone_0.render();
+            bone_1.render();
         }
 
 
@@ -271,40 +344,43 @@ namespace Cyclone
         {
             bones[0].setState(
                 new Vector3(0, 0.993f, -0.5f),
-                new Vector3(0.301f, 1.0f, 0.234f));
+                new Vector3(0.301f, 1.0f, 0.234f)); //다리 
             bones[1].setState(
                 new Vector3(0, 3.159f, -0.56f),
                 new Vector3(0.301f, 1.0f, 0.234f));
             bones[2].setState(
                 new Vector3(0, 0.993f, 0.5f),
-                new Vector3(0.301f, 1.0f, 0.234f));
+                new Vector3(0.301f, 1.0f, 0.234f)); //다리 
             bones[3].setState(
                 new Vector3(0, 3.15f, 0.56f),
                 new Vector3(0.301f, 1.0f, 0.234f));
+
             bones[4].setState(
                 new Vector3(-0.054f, 4.683f, 0.013f),
                 new Vector3(0.415f, 0.392f, 0.690f));
             bones[5].setState(
                 new Vector3(0.043f, 5.603f, 0.013f),
-                new Vector3(0.301f, 0.367f, 0.693f));
+                new Vector3(0.301f, 0.367f, 0.693f)); //몸통 
             bones[6].setState(
                 new Vector3(0, 6.485f, 0.013f),
                 new Vector3(0.435f, 0.367f, 0.786f));
+
             bones[7].setState(
                 new Vector3(0, 7.759f, 0.013f),
-                new Vector3(0.45f, 0.598f, 0.421f));
+                new Vector3(0.45f, 0.598f, 0.421f)); //머리
+
             bones[8].setState(
                 new Vector3(0, 5.946f, -1.066f),
                 new Vector3(0.267f, 0.888f, 0.207f));
             bones[9].setState(
                 new Vector3(0, 4.024f, -1.066f),
-                new Vector3(0.267f, 0.888f, 0.207f));
+                new Vector3(0.267f, 0.888f, 0.207f)); //팔
             bones[10].setState(
                 new Vector3(0, 5.946f, 1.066f),
                 new Vector3(0.267f, 0.888f, 0.207f));
             bones[11].setState(
                 new Vector3(0, 4.024f, 1.066f),
-                new Vector3(0.267f, 0.888f, 0.207f));
+                new Vector3(0.267f, 0.888f, 0.207f)); //팔
 
             float strength = (float)-random.randomReal(500.0f, 1000.0f);
             for (uint i = 0; i < NUM_BONES; i++)
@@ -462,7 +538,7 @@ namespace Cyclone
 
                 UnityEngine.Vector3 start = new UnityEngine.Vector3(a_pos.x, a_pos.y, a_pos.z);
                 UnityEngine.Vector3 end = new UnityEngine.Vector3(b_pos.x, b_pos.y, b_pos.z);
-                DebugWide.DrawLine(start, end, Color.red);
+                DebugWide.DrawLine(start, end, Color.green);
             }
             //glEnd();
             //glEnable(GL_DEPTH_TEST);
@@ -501,183 +577,6 @@ namespace Cyclone
     }
 }
 
-namespace Cyclone
-{
-    public class RigidBodyApplication
-    {
-
-        /** Holds the maximum number of contacts. */
-        protected static readonly uint maxContacts = 256;
-
-        /** Holds the array of contacts. */
-        protected Contact[] contacts = new Contact[maxContacts];
-
-        /** Holds the collision data structure for collision detection. */
-        protected CollisionData cData = new CollisionData();
-
-        /** Holds the contact resolver. */
-        protected ContactResolver resolver;
-
-        /** Holds the camera angle. */
-        protected float theta;
-
-        /** Holds the camera elevation. */
-        protected float phi;
-
-        /** Holds the position of the mouse at the last frame of a drag. */
-        protected int last_x, last_y;
-
-        /** True if the contacts should be rendered. */
-        protected bool renderDebugInfo;
-
-        /** True if the simulation is paused. */
-        protected bool pauseSimulation;
-
-        /** Pauses the simulation after the next frame automatically */
-        protected bool autoPauseSimulation;
-
-        /** Processes the contact generation code. */
-        protected virtual void generateContacts() { }
-
-        /** Processes the objects in the simulation forward in time. */
-        protected virtual void updateObjects(float duration) { }
-
-
-        public RigidBodyApplication()
-        {
-            theta = 0.0f;
-            phi = 15.0f;
-            resolver = new ContactResolver(maxContacts * 8);
-
-            renderDebugInfo = false;
-            pauseSimulation = true;
-            autoPauseSimulation = false;
-
-            for (int i=0;i< maxContacts;i++)
-            {
-                contacts[i] = new Contact();
-            }
-            cData.contactArray = contacts;
-        }
-
-        /** 
-         * Finishes drawing the frame, adding debugging information 
-         * as needed.
-         */
-        //protected void drawDebug();
-        protected void drawDebug()
-        {
-            if (!renderDebugInfo) return;
-
-            // Recalculate the contacts, so they are current (in case we're
-            // paused, for example).
-            generateContacts();
-
-            // Render the contacts, if required
-            //glBegin(GL_LINES);
-            for (uint i = 0; i < cData.contactCount; i++)
-            {
-                Color cc = Color.green;
-                // Interbody contacts are in green, floor contacts are red.
-                if (null != contacts[i].body[1])
-                {
-                    //glColor3f(0, 1, 0);
-                    cc = Color.green;
-                }
-                else
-                {
-                    //glColor3f(1, 0, 0);
-                    cc = Color.red;
-                }
-
-                Vector3 vec = contacts[i].contactPoint;
-                //glVertex3f(vec.x, vec.y, vec.z);
-
-                Vector3 vec2 = vec + contacts[i].contactNormal;
-                //glVertex3f(vec.x, vec.y, vec.z);
-
-                UnityEngine.Vector3 start = new UnityEngine.Vector3(vec.x, vec.y, vec.z);
-                UnityEngine.Vector3 end = new UnityEngine.Vector3(vec2.x, vec2.y, vec2.z);
-                DebugWide.DrawLine(start, end, cc);
-            }
-            //glEnd();
-        }
-
-        /** Resets the simulation. */
-        //protected virtual void reset() = 0;
-
-
-        /** 
-         * Creates a new application object.
-         */
-        //public RigidBodyApplication();
-
-        ///** Display the application. */
-        //public virtual void display();
-
-        ///** Update the objects. */
-        //public virtual void update();
-        public void update()
-        {
-            // Find the duration of the last frame in seconds
-            //float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
-            float duration = (float)System.DateTime.Now.Millisecond * 0.001f;
-            if (duration <= 0.0f) return;
-            else if (duration > 0.05f) duration = 0.05f;
-
-            //// Exit immediately if we aren't running the simulation
-            if (pauseSimulation)
-            {
-                //update();
-                return;
-            }
-            else if (autoPauseSimulation)
-            {
-                pauseSimulation = true;
-                autoPauseSimulation = false;
-            }
-
-            // Update the objects
-            updateObjects(duration);
-
-            // Perform the contact generation
-            generateContacts();
-
-            // Resolve detected contacts
-            resolver.resolveContacts(
-                cData.contactArray,
-                cData.contactCount,
-                duration
-                );
-
-            //Application::update();
-        }
-
-        ///** Handle a mouse click. */
-        //public virtual void mouse(int button, int state, int x, int y);
-
-        ///** Handle a mouse drag */
-        //public virtual void mouseDrag(int x, int y);
-
-        ///** Handles a key press. */
-        //public virtual void key(unsigned char key);
-
-        public void Input_RenderDebugInfo()
-        {
-            renderDebugInfo = !renderDebugInfo;
-        }
-        public void Input_PauseSimul()
-        {
-            pauseSimulation = !pauseSimulation;
-        }
-        public void Input_AutoPause()
-        {
-            autoPauseSimulation = true;
-            pauseSimulation = false;
-        }
-            
-    } 
-}
 
 namespace Cyclone
 {
