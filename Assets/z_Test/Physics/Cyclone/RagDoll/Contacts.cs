@@ -314,7 +314,7 @@ namespace Cyclone
         {
             // Get hold of the inverse mass and inverse inertia tensor, both in
             // world coordinates.
-            Matrix3[] inverseInertiaTensor = new Matrix3[2];
+            Matrix3[] inverseInertiaTensor = new Matrix3[2] { Matrix3.identityMatrix, Matrix3.identityMatrix};
             body[0].getInverseInertiaTensorWorld(out inverseInertiaTensor[0]);
             if (null != body[1])
                 body[1].getInverseInertiaTensorWorld(out inverseInertiaTensor[1]);

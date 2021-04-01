@@ -79,7 +79,7 @@ namespace Cyclone
          *
          * @see inverseMass
          */
-        protected Matrix3 inverseInertiaTensor;
+        protected Matrix3 inverseInertiaTensor = Matrix3.identityMatrix;
 
         /**
          * Holds the amount of damping applied to linear
@@ -105,7 +105,7 @@ namespace Cyclone
          * Holds the angular orientation of the rigid body in
          * world space.
          */
-        protected Quaternion orientation;
+        protected Quaternion orientation = Quaternion.identity;
 
         /**
          * Holds the linear velocity of the rigid body in
@@ -137,7 +137,7 @@ namespace Cyclone
          *
          * @see inverseInertiaTensor
          */
-        protected Matrix3 inverseInertiaTensorWorld;
+        protected Matrix3 inverseInertiaTensorWorld = Matrix3.identityMatrix;
 
         /**
          * Holds the amount of motion of the body. This is a recency
@@ -168,7 +168,7 @@ namespace Cyclone
          * @see getPointInWorldSpace
          * @see getTransform
          */
-        protected Matrix4 transformMatrix;
+        protected Matrix4 transformMatrix = Matrix4.identityMatrix;
 
         /*@}*/
 

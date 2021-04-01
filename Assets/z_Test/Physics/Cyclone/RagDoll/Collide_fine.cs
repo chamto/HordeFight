@@ -24,13 +24,14 @@ namespace Cyclone
         /**
          * The offset of this primitive from the given rigid body.
          */
-        public Matrix4 offset;
+        public Matrix4 offset = Matrix4.identityMatrix;
 
         /**
          * Calculates the internals for the primitive.
          */
         public void calculateInternals()
         {
+            //DebugWide.LogRed(offset);
             transform = body.getTransform() * offset;
         }
 
@@ -60,7 +61,7 @@ namespace Cyclone
          * calculated by combining the offset of the primitive
          * with the transform of the rigid body.
          */
-        public Matrix4 transform;
+        public Matrix4 transform = Matrix4.identityMatrix;
     }
 
     /**
@@ -780,6 +781,8 @@ namespace Cyclone
                 return 0;
             }
 
+            //DebugWide.LogRed(centre + " - - - " + relCentre + "  ----- " + sphere.radius + "  ----- " + box.halfSize.x);
+
             Vector3 closestPt = Vector3.ZERO;
             float dist;
 
@@ -813,6 +816,7 @@ namespace Cyclone
             contact.penetration = sphere.radius - (float)Math.Sqrt(dist);
             contact.setBodyData(box.body, sphere.body, data.friction, data.restitution);
 
+            //DebugWide.LogRed(" ==== " + Math.Sqrt(dist));
             data.addContacts(1);
             return 1;
         }
