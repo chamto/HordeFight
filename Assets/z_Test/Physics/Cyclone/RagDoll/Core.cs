@@ -51,13 +51,16 @@ namespace Cyclone
         public static readonly Vector3 UP = new Vector3(0, 1f, 0);
         public static readonly Vector3 RIGHT = new Vector3(1, 0, 0);
         public static readonly Vector3 OUT_OF_SCREEN = new Vector3(0, 0, 1);
-        public static readonly Vector3 X = new Vector3(0, 1, 0);
-        public static readonly Vector3 Y = new Vector3(1, 0, 0);
+        public static readonly Vector3 X = new Vector3(1, 0, 0);
+        public static readonly Vector3 Y = new Vector3(0, 1, 0);
         public static readonly Vector3 Z = new Vector3(0, 0, 1);
 
         // ... Other Vector3 code as before ...
 
-
+        public override string ToString()
+        {
+            return x + ", " + y + ", " + z; 
+        }
 
         public float this[uint i]
         {
@@ -545,6 +548,13 @@ namespace Cyclone
 
         }
 
+        public override string ToString()
+        {
+            return m00 + ", " + m01 + ", " + m02 + ", " + m03 + "/n" +
+                m10 + ", " + m11 + ", " + m12 + ", " + m13 + "/n" +
+                m20 + ", " + m21 + ", " + m22 + ", " + m23 + "/n";
+
+        }
 
         /**
          * Sets the matrix to be a diagonal matrix with the given coefficients.
@@ -758,12 +768,19 @@ namespace Cyclone
          *
          * @param vector The vector to transform.
          */
+         // 0 1 2  3
+         // 4 5 6  7
+         // 8 9 10 11
         public Vector3 transformInverse(Vector3 vector)
         {
+
             Vector3 tmp = vector;
+            //DebugWide.LogBlue("1===  " + tmp + "  ___ " + getAxisVector(3) );
             tmp.x -= this[3];
             tmp.y -= this[7];
             tmp.z -= this[11];
+            //DebugWide.LogBlue("2===  " + tmp + "  ___ " + this[3] + ", " + this[7] + ", " + this[11]);
+            //DebugWide.LogBlue("3===  " + transformDirection(tmp) + " ___" + this[8] + ", " + this[9] + ", " + this[10]);
             return new Vector3(
                 tmp.x * this[0] +
                 tmp.y * this[4] +
@@ -922,6 +939,14 @@ namespace Cyclone
             m00 = c0; m01 = c1; m02 = c2;
             m10 = c3; m11 = c4; m12 = c5;
             m20 = c6; m21 = c7; m22 = c8;
+        }
+
+        public override string ToString()
+        {
+            return m00 + ", " + m01 + ", " + m02 + "/n" +
+                m10 + ", " + m11 + ", " + m12 + "/n" +
+                m20 + ", " + m21 + ", " + m22 + "/n";
+
         }
 
         /**
