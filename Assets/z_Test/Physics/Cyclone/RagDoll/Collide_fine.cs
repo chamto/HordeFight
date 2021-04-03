@@ -409,6 +409,14 @@ namespace Cyclone
 
         static float[,] mults = new float[8,3]{{1,1,1},{-1,1,1},{1,-1,1},{-1,-1,1},
                                    {1,1,-1},{-1,1,-1},{1,-1,-1},{-1,-1,-1}};
+        //static float[][] mults = new float[8][]{ new float[]{1,1,1},
+                                   // new float[]{-1,1,1},
+                                   // new float[]{1,-1,1},
+                                   // new float[]{-1,-1,1},
+                                   //new float[]{1,1,-1},
+                                   //new float[]{-1,1,-1},
+                                   //new float[]{1,-1,-1},
+                                   //new float[]{-1,-1,-1}};
         /**
          * Does a collision test on a collision box and a plane representing
          * a half-space (i.e. the normal of the plane
@@ -440,6 +448,7 @@ namespace Cyclone
 
                 // Calculate the position of each vertex
                 Vector3 vertexPos = new Vector3(mults[i,0], mults[i,1], mults[i,2]);
+                //Vector3 vertexPos = new Vector3(mults[i][ 0], mults[i][ 1], mults[i][ 2]);
                 vertexPos.componentProductUpdate(box.halfSize);
                 vertexPos = box.transform.transform(vertexPos);
 
@@ -456,7 +465,7 @@ namespace Cyclone
                     // distance and add the vertex location.
                     contact.contactPoint = plane.direction;
                     contact.contactPoint *= (vertexDistance-plane.offset);
-                    contact.contactPoint = vertexPos;
+                    contact.contactPoint += vertexPos;
                     contact.contactNormal = plane.direction;
                     contact.penetration = plane.offset - vertexDistance;
 
