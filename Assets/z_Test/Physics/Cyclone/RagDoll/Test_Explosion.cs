@@ -154,8 +154,18 @@ namespace Cyclone
             //glutSolidCube(1.0f);
             //glPopMatrix();
 
+            //Matrix4 tr = body.getTransform();
+            //UnityEngine.Matrix4x4 u_tr = Matrix4x4.identity;
+            //u_tr.m00 = tr.m00; u_tr.m01 = tr.m01; u_tr.m02 = tr.m02; u_tr.m03 = tr.m03;
+            //u_tr.m10 = tr.m10; u_tr.m11 = tr.m11; u_tr.m12 = tr.m12; u_tr.m13 = tr.m13;
+            //u_tr.m20 = tr.m20; u_tr.m21 = tr.m21; u_tr.m22 = tr.m22; u_tr.m23 = tr.m23;
+            //UnityEngine.Vector3 u_pos = new UnityEngine.Vector3(tr.m03, tr.m13, tr.m23);
+            //UnityEngine.Quaternion u_rot = u_tr.rotation;
+
+
             Vector3 pos = body.getPosition();
             Quaternion rot = body.getOrientation();
+            //rot.normalise();
             Vector3 size = new Vector3(halfSize.x * 2, halfSize.y * 2, halfSize.z * 2);
             //Vector3 size = new Vector3(halfSize.x * 1, halfSize.y * 1, halfSize.z * 1);
 
@@ -268,7 +278,7 @@ namespace Cyclone
 
             boxData[1].setState(new Vector3(0, 1, 0),
             Quaternion.identity,
-            new Vector3(1, 1, 1),
+            new Vector3(3, 1, 4),
             new Vector3(0, 0, 0));
 
             //ballData[0].setState(new Vector3(0, 2, 0),

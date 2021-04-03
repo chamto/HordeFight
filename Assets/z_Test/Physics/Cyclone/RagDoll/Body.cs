@@ -1309,7 +1309,7 @@ namespace Cyclone
             Vector3 pt = getPointInWorldSpace(point);
             addForceAtPoint(force, pt);
 
-            isAwake = true;
+            //isAwake = true;
         }
 
         /**

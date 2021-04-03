@@ -214,17 +214,17 @@ namespace Cyclone
         /** Checks if the two vectors have identical components. */
         public static bool operator ==(Vector3 v1, Vector3 v2)
         {
-            //실수비교 문제 때문에 엔진코드 안씀 
-            //return v1.x == v2.x &&
-            //v1.y == v2.y &&
-            //v1.z == v2.z;
+            //실수비교 문제 있음 
+            return v1.x == v2.x &&
+            v1.y == v2.y &&
+            v1.z == v2.z;
 
-            Vector3 v3 = v1 - v2;
-            float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
-            if (0 > value) value *= -1f;
-            if (float.Epsilon < value)
-                return false;
-            return true;
+            //Vector3 v3 = v1 - v2;
+            //float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
+            //if (0 > value) value *= -1f;
+            //if (float.Epsilon < value)
+            //    return false;
+            //return true;
         }
 
         /** Checks if the two vectors have non-identical components. */
@@ -266,11 +266,11 @@ namespace Cyclone
          */
         public static bool operator <=(Vector3 v1, Vector3 v2)
         {
-            //실수비교 문제 때문에 엔진코드 안씀 
-            //return v1.x <= v2.x && v1.y <= v2.y && v1.z <= v2.z;
+            //실수비교 문제 
+            return v1.x <= v2.x && v1.y <= v2.y && v1.z <= v2.z;
 
-            if (v1 == v2) return true;
-            return v1 < v2;
+            //if (v1 == v2) return true;
+            //return v1 < v2;
         }
 
         /**
@@ -282,11 +282,11 @@ namespace Cyclone
          */
         public static bool operator >=(Vector3 v1, Vector3 v2)
         {
-            //실수비교 문제 때문에 엔진코드 안씀 
-            //return v1.x >= v2.x && v1.y >= v2.y && v1.z >= v2.z;
+            //실수비교 문제
+            return v1.x >= v2.x && v1.y >= v2.y && v1.z >= v2.z;
 
-            if (v1 == v2) return true;
-            return v1 > v2;
+            //if (v1 == v2) return true;
+            //return v1 > v2;
         }
 
         /** Zero all the components of the vector. */
@@ -415,7 +415,7 @@ namespace Cyclone
 
             // Check for zero length quaternion, and use the no-rotation
             // quaternion in that case.
-            if (d == 0)
+            if (d < float.Epsilon)
             {
                 r = 1;
                 return;
@@ -494,6 +494,9 @@ namespace Cyclone
         public float m10, m11, m12, m13;
         public float m20, m21, m22, m23;
 
+        //0 1 2  3
+        //4 5 6  7
+        //8 9 10 11
         //public float m30 , m31, m32, m33;
 
 
@@ -550,9 +553,9 @@ namespace Cyclone
 
         public override string ToString()
         {
-            return m00 + ", " + m01 + ", " + m02 + ", " + m03 + "/n" +
-                m10 + ", " + m11 + ", " + m12 + ", " + m13 + "/n" +
-                m20 + ", " + m21 + ", " + m22 + ", " + m23 + "/n";
+            return m00 + ", " + m01 + ", " + m02 + ", " + m03 + "\n" +
+                m10 + ", " + m11 + ", " + m12 + ", " + m13 + "\n" +
+                m20 + ", " + m21 + ", " + m22 + ", " + m23 + "\n";
 
         }
 
@@ -845,17 +848,17 @@ namespace Cyclone
         //    array[2] = (float) data[8];
         //    array[3] = (float)0;
 
-        //                array[4] = (float) data[1];
+        //    array[4] = (float) data[1];
         //    array[5] = (float) data[5];
         //    array[6] = (float) data[9];
         //    array[7] = (float)0;
 
-        //                array[8] = (float) data[2];
+        //    array[8] = (float) data[2];
         //    array[9] = (float) data[6];
         //    array[10] = (float) data[10];
         //    array[11] = (float)0;
 
-        //                array[12] = (float) data[3];
+        //    array[12] = (float) data[3];
         //    array[13] = (float) data[7];
         //    array[14] = (float) data[11];
         //    array[15] = (float)1;
@@ -943,9 +946,9 @@ namespace Cyclone
 
         public override string ToString()
         {
-            return m00 + ", " + m01 + ", " + m02 + "/n" +
-                m10 + ", " + m11 + ", " + m12 + "/n" +
-                m20 + ", " + m21 + ", " + m22 + "/n";
+            return m00 + ", " + m01 + ", " + m02 + "\n" +
+                m10 + ", " + m11 + ", " + m12 + "\n" +
+                m20 + ", " + m21 + ", " + m22 + "\n";
 
         }
 
