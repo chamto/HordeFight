@@ -25,7 +25,7 @@ namespace Cyclone
         protected float phi;
 
         /** Holds the position of the mouse at the last frame of a drag. */
-        protected int last_x, last_y;
+        protected float last_x, last_y, last_z;
 
         /** True if the contacts should be rendered. */
         protected bool renderDebugInfo;

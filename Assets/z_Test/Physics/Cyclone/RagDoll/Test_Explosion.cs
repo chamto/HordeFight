@@ -20,7 +20,8 @@ public class Test_Explosion : MonoBehaviour
         if (null == demo) return;
 
         Vector3 pos = mousePT.transform.position;
-        demo.InputMousePt(pos.x, pos.y, pos.z);
+        //demo.InputMousePt(pos.x, pos.y, pos.z);
+        demo.mouseDrag(pos.x, pos.y, pos.z);
 
         if (Input.GetKey(KeyCode.F))
         {
@@ -260,9 +261,9 @@ namespace Cyclone
         {
             //Box* box = boxData;
 
-            boxData[0].setState(new Vector3(0, 5, 0),
+            boxData[0].setState(new Vector3(0, 1, 5),
                             Quaternion.identity,
-                            new Vector3(1, 2, 1),
+                            new Vector3(1, 1, 1),
                             new Vector3(0, 0, 0));
 
             boxData[1].setState(new Vector3(0, 1, 0),
@@ -270,7 +271,12 @@ namespace Cyclone
             new Vector3(1, 1, 1),
             new Vector3(0, 0, 0));
 
-            //ballData[0].setState(new Vector3(0, 5, 0),
+            //ballData[0].setState(new Vector3(0, 2, 0),
+            //                Quaternion.identity,
+            //                1f,
+            //                new Vector3(0, 0, 0));
+
+            //ballData[1].setState(new Vector3(0, 1, 5),
                             //Quaternion.identity,
                             //1f,
                             //new Vector3(0, 0, 0));
@@ -288,7 +294,7 @@ namespace Cyclone
 
             for (int i = 0; i < balls; i++)
             {
-                ballData[i].random(random);
+                //ballData[i].random(random);
             }
 
             // Reset the contacts
@@ -365,6 +371,11 @@ namespace Cyclone
             }
 
             DebugWide.LogBlue(cData.contactCount);
+            //for(int i=0;i< cData.contactCount;i++)
+            //{
+            //    Contact contact = cData.contactArray[i];
+            //    DebugWide.LogBlue("" + i + "  __ " + contact);
+            //}
         }
 
         /** Processes the objects in the simulation forward in time. */
@@ -456,8 +467,37 @@ namespace Cyclone
             //ballData[0].body.addForce(pos * -1000.0f);
             //ballData[0].body.addForce(Vector3.Y * -1000.0f);
 
-            boxData[0].body.addForceAtBodyPoint(
-            new Vector3(0, 500f, 0), new Vector3(4,0,0));
+            //boxData[0].body.addForceAtBodyPoint(
+            //new Vector3(0, 500f, 0), new Vector3(0,0,0));
+
+            boxData[0].body.addForce(new Vector3(0, 500f, 0));
+        }
+
+        public void mouseDrag(float x, float y, float z)
+        {
+            float gamdo = 2.2f;
+            boxData[0].body.setPosition(boxData[0].body.getPosition() +
+                    new Vector3(
+                        (x - last_x) * gamdo,
+                        (y - last_y) * gamdo,
+                        (z - last_z) * gamdo
+                        )
+                    );
+            boxData[0].body.calculateDerivedData();
+
+            //ballData[0].body.setPosition(ballData[0].body.getPosition() +
+            //        new Vector3(
+            //            (x - last_x) * gamdo,
+            //            (y - last_y) * gamdo,
+            //            (z - last_z) * gamdo
+            //            )
+            //        );
+            //ballData[0].body.calculateDerivedData();
+
+            // Remember the position
+            last_x = x;
+            last_y = y;
+            last_z = z;
         }
     }
 }

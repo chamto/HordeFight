@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class Test_RagDoll22 : MonoBehaviour 
+public class Test_RagDoll : MonoBehaviour 
 {
 
     Cyclone.RagdollDemo demo = null;
@@ -48,7 +48,7 @@ public class Test_RagDoll22 : MonoBehaviour
     }
 }
 
-public class Test_RagDoll : MonoBehaviour
+public class Test_RagDoll22 : MonoBehaviour
 {
     Cyclone.BoneTest test = null;
 
