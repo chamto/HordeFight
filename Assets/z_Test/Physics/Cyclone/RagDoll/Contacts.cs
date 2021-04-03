@@ -80,13 +80,17 @@ namespace Cyclone
             this.restitution = restitution;
         }
 
+        public override string ToString()
+        {
+            return "cp: " + contactPoint + " cn: " + contactNormal + " pen: " + penetration;
+        }
 
         /**
          * A transform matrix that converts co-ordinates in the contact's
          * frame of reference to world co-ordinates. The columns of this
          * matrix form an orthonormal set of vectors.
          */
-        public Matrix3 contactToWorld;
+        public Matrix3 contactToWorld = Matrix3.identityMatrix;
 
         /**
          * Holds the closing velocity at the point of contact. This is set
@@ -189,7 +193,8 @@ namespace Cyclone
 
             if (body[0].getAwake())
             {
-                //body[0].getLastFrameAcceleration() * duration * contactNormal; //원본소스에 대입식이 없음 
+                velocityFromAcc +=
+                    body[0].getLastFrameAcceleration() * duration * contactNormal;
             }
 
             if (null != body[1] && body[1].getAwake())
@@ -226,7 +231,7 @@ namespace Cyclone
             velocity += thisBody.getVelocity();
 
             // Turn the velocity into contact-coordinates.
-            Vector3 contactVelocity = contactToWorld.transformTranspose(velocity);
+            Vector3 contactVelocity_ = contactToWorld.transformTranspose(velocity);
 
             // Calculate the ammount of velocity that is due to forces without
             // reactions.
@@ -241,10 +246,10 @@ namespace Cyclone
 
             // Add the planar velocities - if there's enough friction they will
             // be removed during velocity resolution
-            contactVelocity += accVelocity;
+            contactVelocity_ += accVelocity;
 
             // And return it
-            return contactVelocity;
+            return contactVelocity_;
         }
 
         /**
