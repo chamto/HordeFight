@@ -177,6 +177,14 @@ public class DebugWide
 #endif
     }
 
+    static public void DrawSphere(Vector3 pos, float radius, Color cc)
+    {
+#if UNITY_EDITOR
+        Gizmos.color = cc;
+        Gizmos.DrawSphere(pos, radius);
+#endif
+    }
+
     static public void DrawCube(Vector3 pos, Vector3 size, Color cc)
     {
 #if UNITY_EDITOR
@@ -199,6 +207,14 @@ public class DebugWide
             new Vector3 (1, 0, 1),
             new Vector3 (0, 0, 1),
         };
+
+        //중점에서 그리는 처리
+        for(int i=0;i< vertices.Length;i++)
+        {
+            vertices[i].x -= 0.5f;
+            vertices[i].y -= 0.5f;
+            vertices[i].z -= 0.5f;
+        }
 
         int[] triangles = {
             0, 2, 1, //face front
@@ -231,9 +247,9 @@ public class DebugWide
         Gizmos.color = cc;
 
         if (null == __cubeMesh) __cubeMesh = CreateCubeMesh();
-        pos.x -= size.x * 0.5f;
-        pos.y -= size.y * 0.5f;
-        pos.z -= size.z * 0.5f;
+        //pos.x -= size.x * 0.5f; //중점에 그리는 처리를 잘못한 코드 제거 
+        //pos.y -= size.y * 0.5f;
+        //pos.z -= size.z * 0.5f;
         Gizmos.DrawWireMesh(__cubeMesh, pos, rotation, size);
 #endif
     }
