@@ -315,8 +315,11 @@ namespace Cyclone
          * contact alone.
          */
         //Vector3 velocityChange[2], Vector3 rotationChange[2]
-         public void applyVelocityChange(Vector3[] velocityChange, Vector3[] rotationChange)
+         public void applyVelocityChange(out Vector3[] velocityChange, out Vector3[] rotationChange)
         {
+            velocityChange = new Vector3[2];
+            rotationChange = new Vector3[2];
+
             // Get hold of the inverse mass and inverse inertia tensor, both in
             // world coordinates.
             Matrix3[] inverseInertiaTensor = new Matrix3[2] { Matrix3.identityMatrix, Matrix3.identityMatrix};
@@ -337,6 +340,7 @@ namespace Cyclone
                 // Otherwise we may have impulses that aren't in the direction of the
                 // contact, so we need the more complex version.
                 impulseContact = calculateFrictionImpulse(inverseInertiaTensor);
+                //DebugWide.LogRed("calculateFrictionImpulse");
             }
 
             // Convert impulse to world coordinates
@@ -372,9 +376,12 @@ namespace Cyclone
          * contact alone.
          */
         //Vector3 linearChange[2], Vector3 angularChange[2]
-         public void applyPositionChange(Vector3[] linearChange, Vector3[] angularChange,
+         public void applyPositionChange(out Vector3[] linearChange, out Vector3[] angularChange,
                                   float penetration)
         {
+            linearChange = new Vector3[2];
+            angularChange = new Vector3[2];
+
             const float angularLimit = 0.2f;
             float[] angularMove = new float[2];
             float[] linearMove = new float[2];
@@ -516,6 +523,7 @@ namespace Cyclone
         //Matrix3[2] inverseInertiaTensor
         protected Vector3 calculateFrictionlessImpulse(Matrix3[] inverseInertiaTensor)
         {
+
             Vector3 impulseContact = Vector3.ZERO;
 
             // Build a vector that shows the change in velocity in
@@ -883,7 +891,7 @@ namespace Cyclone
                                        uint numContacts,
                                        float duration)
         {
-            Vector3[] velocityChange = new Vector3[2], rotationChange = new Vector3[2];
+            Vector3[] velocityChange , rotationChange;
             Vector3 deltaVel;
 
             // iteratively handle impacts in order of severity.
@@ -907,7 +915,7 @@ namespace Cyclone
                 c[index].matchAwakeState();
 
                 // Do the resolution on the contact that came out top.
-                c[index].applyVelocityChange(velocityChange, rotationChange);
+                c[index].applyVelocityChange(out velocityChange, out rotationChange);
 
                 // With the change in velocity of the two bodies, the update of
                 // contact velocities means that some of the relative closing
@@ -955,7 +963,7 @@ namespace Cyclone
                                       float duration)
         {
             uint i, index;
-            Vector3[] linearChange = new Vector3[2], angularChange = new Vector3[2];
+            Vector3[] linearChange, angularChange;
             float max;
             Vector3 deltaPosition;
 
@@ -981,8 +989,8 @@ namespace Cyclone
 
                 // Resolve the penetration.
                 c[index].applyPositionChange(
-                    linearChange,
-                    angularChange,
+                    out linearChange,
+                    out angularChange,
                     max);
 
                 // Again this action may have changed the penetration of other

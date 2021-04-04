@@ -1,7 +1,6 @@
 ﻿using System;
 using UnityEngine;
 
-
 public class Test_Explosion : MonoBehaviour
 {
 
@@ -174,6 +173,7 @@ namespace Cyclone
             UnityEngine.Vector3 u_size = new UnityEngine.Vector3(size.x, size.y, size.z);
 
             DebugWide.DrawCube(u_pos, u_rot, u_size, cc);
+            //DebugWide.DrawSphere(u_pos, halfSize.x, cc);
         }
 
 
@@ -240,7 +240,7 @@ namespace Cyclone
         /**
          * Holds the number of balls in the simulation.
          */
-        const uint balls = 0;//OBJECTS;
+        const uint balls = 1;//OBJECTS;
 
         /** Holds the ball data. */
         Ball[] ballData = new Ball[balls];
@@ -281,10 +281,10 @@ namespace Cyclone
             new Vector3(3, 1, 4),
             new Vector3(0, 0, 0));
 
-            //ballData[0].setState(new Vector3(0, 2, 0),
-            //                Quaternion.identity,
-            //                1f,
-            //                new Vector3(0, 0, 0));
+            ballData[0].setState(new Vector3(0, 2, 0),
+                            Quaternion.identity,
+                            1f,
+                            new Vector3(0, 0, 0));
 
             //ballData[1].setState(new Vector3(0, 1, 5),
                             //Quaternion.identity,
@@ -486,23 +486,23 @@ namespace Cyclone
         public void mouseDrag(float x, float y, float z)
         {
             float gamdo = 2.2f;
-            boxData[0].body.setPosition(boxData[0].body.getPosition() +
-                    new Vector3(
-                        (x - last_x) * gamdo,
-                        (y - last_y) * gamdo,
-                        (z - last_z) * gamdo
-                        )
-                    );
-            boxData[0].body.calculateDerivedData();
-
-            //ballData[0].body.setPosition(ballData[0].body.getPosition() +
+            //boxData[0].body.setPosition(boxData[0].body.getPosition() +
             //        new Vector3(
             //            (x - last_x) * gamdo,
             //            (y - last_y) * gamdo,
             //            (z - last_z) * gamdo
             //            )
             //        );
-            //ballData[0].body.calculateDerivedData();
+            //boxData[0].body.calculateDerivedData();
+
+            ballData[0].body.setPosition(ballData[0].body.getPosition() +
+                    new Vector3(
+                        (x - last_x) * gamdo,
+                        (y - last_y) * gamdo,
+                        (z - last_z) * gamdo
+                        )
+                    );
+            ballData[0].body.calculateDerivedData();
 
             // Remember the position
             last_x = x;

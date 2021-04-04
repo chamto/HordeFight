@@ -184,11 +184,15 @@ namespace Cyclone
 
         long __prevMs = 0;
         long __prevTick = 0;
-
         long __timeStepMs = 0;
+        //Random random = new Random();
         /** Update the particle positions. */
         public void update()
         {
+
+            //float strength = (float)-random.randomReal(500.0f, 1000.0f);
+            //DebugWide.LogBlue(strength);
+
             // Find the duration of the last frame in seconds
             //float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
 
