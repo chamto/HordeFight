@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
-
+using System.Diagnostics;
 
 namespace Cyclone
 {
     public class RigidBodyApplication
     {
+        Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
 
         /** Holds the maximum number of contacts. */
         protected static readonly uint maxContacts = 256;
@@ -116,12 +117,16 @@ namespace Cyclone
         //public virtual void display();
 
         ///** Update the objects. */
-        //public virtual void update();
+        long __prevMs = 0;
+        long __timeStepMs = 0;
         public void update()
         {
+            __timeStepMs = (stopWatch.ElapsedMilliseconds - __prevMs);
+            __prevMs = stopWatch.ElapsedMilliseconds;
+
             // Find the duration of the last frame in seconds
             //float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
-            float duration = (float)System.DateTime.Now.Millisecond * 0.001f;
+            float duration = (float)__prevMs * 0.001f;
             if (duration <= 0.0f) return;
             else if (duration > 0.05f) duration = 0.05f;
 

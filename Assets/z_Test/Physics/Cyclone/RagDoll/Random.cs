@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-
+using System.Diagnostics;
 
 namespace Cyclone
 {
@@ -15,6 +15,8 @@ namespace Cyclone
         // Internal mechanics
         int p1, p2;
         uint[] buffer = new uint[17];
+
+        Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
 
         /**
          * Creates a new random number stream with a seed based on
@@ -41,9 +43,7 @@ namespace Cyclone
             if (s == 0)
             {
                 //s = (uint)clock(); //ms단위로 반환 (함수설명에는 tick이지만 ms로 반환한다) 
-                //s = (uint)System.DateTime.Now.Millisecond;
-                s = (uint)System.DateTime.Now.Ticks;
-                //DebugWide.LogBlue(DateTime.Now.Ticks + "  __^^__  " + DateTime.Now.Millisecond);
+                s = (uint)stopWatch.ElapsedMilliseconds;
             }
 
             // Fill the buffer with some basic random numbers
