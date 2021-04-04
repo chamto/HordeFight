@@ -9,8 +9,6 @@ public class Test_RagDoll : MonoBehaviour
 
     Cyclone.RagdollDemo demo = null;
 
-    public bool opt_pauseSimul = false;
-    public bool opt_autoPause = false;
     public bool opt_renderDebugInfo = false;
 
     // Use this for initialization
@@ -22,235 +20,39 @@ public class Test_RagDoll : MonoBehaviour
     // Update is called once per frame
     //void Update () {
     //}
-
-    private void OnDrawGizmos()
+    private void Update()
     {
-        if (null == demo) return;
-
-        if(true == opt_pauseSimul)
-        {
-            opt_pauseSimul = !opt_pauseSimul;
-            demo.Input_PauseSimul(); 
-        }
-        if (true == opt_autoPause)
-        {
-            opt_autoPause = !opt_autoPause;
-            demo.Input_AutoPause();
-        }
         if (true == opt_renderDebugInfo)
         {
             opt_renderDebugInfo = !opt_renderDebugInfo;
             demo.Input_RenderDebugInfo();
         }
 
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            demo.Input_PauseSimul();
+        }
+
+
         demo.update();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            demo.Input_AutoPause();
+            DebugWide.LogBlue("Input_AutoPause");
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (null == demo) return;
+
+
         demo.display();
     }
 }
 
-public class Test_RagDoll22 : MonoBehaviour
-{
-    Cyclone.BoneTest test = null;
-
-    Transform mousePT = null;
-
-    private void Start()
-    {
-        mousePT = GameObject.Find("mousePt").transform;
-        test = new Cyclone.BoneTest();
-        test.Init();
-
-        //Vector3[] aa = new Vector3[2];
-        //DebugWide.LogRed(aa[0] + "  =====");
-        //TestRef(aa);
-        //DebugWide.LogRed(aa[1]);
-    }
-
-    //void TestRef(Vector3[] par)
-    //{
-    //    par[0].y = 10f;
-    //    par[1] = new Vector3(3, 4, 5);
-    //}
-
-    private void OnDrawGizmos()
-    {
-        if (null == test) return;
-
-        Vector3 pos = mousePT.transform.position;
-        test.InputMousePt(pos.x, pos.y, pos.z);
-
-        test.update();
-        test.display();
-    }
-}
-
-namespace Cyclone
-{
-
-    public class BoneTest
-    {
-        protected static readonly uint maxContacts = 256;
-
-        /** Holds the array of contacts. */
-        protected Contact[] contacts = new Contact[maxContacts];
-
-        /** Holds the collision data structure for collision detection. */
-        protected CollisionData cData = new CollisionData();
-
-        /** Holds the contact resolver. */
-        protected ContactResolver resolver;
-
-        Bone bone_0 = new Bone();
-        Bone bone_1 = new Bone();
-        Joint joint = new Joint();
-
-
-
-        public void Init()
-        {
-            resolver = new ContactResolver(maxContacts * 8);
-
-            for (int i = 0; i < maxContacts; i++)
-            {
-                contacts[i] = new Contact();
-            }
-            cData.contactArray = contacts;
-
-            //bone.setState(new Vector3(0, 5, 0), new Vector3(1, 1, 1));
-
-            bone_0.setState(
-                new Vector3(-0.054f, 4.683f, 0.013f),
-                new Vector3(0.415f, 0.392f, 0.690f));
-            bone_1.setState(
-                new Vector3(0.043f, 5.603f, 0.013f),
-                new Vector3(0.301f, 0.367f, 0.693f));
-
-            joint.set(
-                bone_0.body, new Vector3(0.054f, 0.50f, 0),
-                bone_1.body, new Vector3(-0.043f, -0.45f, 0),
-                0.15f
-                );
-
-            bone_0.body.addForce(new Vector3(0,0,100f));
-            //bone.body.addForceAtBodyPoint(
-            //new Vector3(1000f, 0, 0), new Vector3());
-
-            //bone.body.addForceAtBodyPoint(
-            ////new Vector3(1000f, 0, 1000f),
-            //new Vector3(0, 0, 0),
-            ////new Vector3(4f, 3.0f, 0));
-            //new Vector3(4, 0, 0));
-        }
-
-        public void InputMousePt(float x, float y, float z)
-        {
-            //bone_0.body.setAcceleration(0, 0, 0);
-
-            //bone_1.body.setPosition(x, y, z);
-            //bone_1.body.setAcceleration(0, 0, 0);
-            //bone_1.body.calculateDerivedData();
-        }
-
-        protected void GenerateContacts()
-        {
-            // Create the ground plane data
-            CollisionPlane plane = new CollisionPlane();
-            plane.direction = new Cyclone.Vector3(0, 1, 0);
-            plane.offset = 0;
-
-            // Set up the collision data structure
-            cData.reset(maxContacts);
-            cData.friction = 0.9f;
-            cData.restitution = 0.6f;
-            cData.tolerance = 0.1f;
-
-
-            if (!cData.hasMoreContacts()) return;
-            CollisionDetector.boxAndHalfSpace(bone_0, plane, cData);
-            CollisionDetector.boxAndHalfSpace(bone_1, plane, cData);
-
-            if (!cData.hasMoreContacts()) return;
-            CollisionSphere boneSphere_0 = bone_0.getCollisionSphere();
-            CollisionSphere boneSphere_1 = bone_1.getCollisionSphere();
-            CollisionDetector.sphereAndSphere(
-                        boneSphere_0,
-                        boneSphere_1,
-                        cData
-                        );
-
-            //if (!cData.hasMoreContacts()) return;
-            //uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
-            //cData.addContacts(added);
-
-            //DebugWide.LogBlue(cData.contactCount + "  ______");
-            //for (int i = 0; i < NUM_BONES; i++)
-            //{
-            //    Bone bone = bones[i];
-
-            //    // Check for collisions with the ground plane
-            //    if (!cData.hasMoreContacts()) return;
-            //    CollisionDetector.boxAndHalfSpace(bone, plane, cData);
-
-            //    CollisionSphere boneSphere = bone.getCollisionSphere();
-
-            //    // Check for collisions with each other box
-            //    //for (Bone* other = bone + 1; other < bones + NUM_BONES; other++)
-            //    for (int j = i + 1; j < NUM_BONES; j++)
-            //    {
-            //        Bone other = bones[j];
-
-            //        if (!cData.hasMoreContacts()) return;
-
-            //        CollisionSphere otherSphere = other.getCollisionSphere();
-
-            //        CollisionDetector.sphereAndSphere(
-            //            boneSphere,
-            //            otherSphere,
-            //            cData
-            //            );
-            //    }
-            //}
-
-            //// Check for joint violation
-            ////for (Joint* joint = joints; joint < joints + NUM_JOINTS; joint++)
-            //for (int i = 0; i < NUM_JOINTS; i++)
-            //{
-            //    Joint joint = joints[i];
-
-            //    if (!cData.hasMoreContacts()) return;
-            //    uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
-            //    cData.addContacts(added);
-            //}
-        }
-
-        public void update()
-        {
-
-            bone_0.body.integrate(0.05f);
-            bone_0.calculateInternals();
-            bone_1.body.integrate(0.05f);
-            bone_1.calculateInternals();
-
-            GenerateContacts();
-
-            DebugWide.LogBlue(cData.contactCount);
-
-            resolver.resolveContacts(
-                cData.contactArray,
-                cData.contactCount,
-                0.05f
-                );
-        }
-
-        public void display()
-        {
-            bone_0.render();
-            bone_1.render();
-        }
-
-
-    }
-}
 
     namespace Cyclone
 {
@@ -382,7 +184,7 @@ namespace Cyclone
                 new Vector3(0, 4.024f, 1.066f),
                 new Vector3(0.267f, 0.888f, 0.207f)); //팔
 
-            float strength = (float)-random.randomReal(500.0f, 1000.0f);
+            float strength = (float)-random.randomReal(100.0f, 400.0f);
             for (uint i = 0; i < NUM_BONES; i++)
             {
                 bones[i].body.addForceAtBodyPoint(
