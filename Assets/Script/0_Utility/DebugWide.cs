@@ -177,7 +177,7 @@ public class DebugWide
 #endif
     }
 
-    static public void DrawSphere(Vector3 pos, float radius, Color cc)
+    static public void DrawSolidCircle(Vector3 pos, float radius, Color cc)
     {
 #if UNITY_EDITOR
         Gizmos.color = cc;
@@ -251,6 +251,19 @@ public class DebugWide
         //pos.y -= size.y * 0.5f;
         //pos.z -= size.z * 0.5f;
         Gizmos.DrawWireMesh(__cubeMesh, pos, rotation, size);
+#endif
+    }
+
+    static public void DrawSolidCube(Vector3 pos, Quaternion rotation, Vector3 size, Color cc)
+    {
+#if UNITY_EDITOR
+        Gizmos.color = cc;
+
+        if (null == __cubeMesh) __cubeMesh = CreateCubeMesh();
+        //pos.x -= size.x * 0.5f; //중점에 그리는 처리를 잘못한 코드 제거 
+        //pos.y -= size.y * 0.5f;
+        //pos.z -= size.z * 0.5f;
+        Gizmos.DrawMesh(__cubeMesh, pos, rotation, size);
 #endif
     }
 
