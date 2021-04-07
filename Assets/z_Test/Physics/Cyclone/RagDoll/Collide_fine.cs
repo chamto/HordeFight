@@ -563,7 +563,7 @@ namespace Cyclone
             contact.setBodyData(one.body, two.body, data.friction, data.restitution);
         }
 
-        static Vector3 contactPoint(Vector3 pOne, Vector3 dOne, float oneSize, Vector3 pTwo, Vector3 dTwo, float twoSize,
+        static Vector3 ContactPoint(Vector3 pOne, Vector3 dOne, float oneSize, Vector3 pTwo, Vector3 dTwo, float twoSize,
         // If this is true, and the contact point is outside
         // the edge (in the case of an edge-face contact) then
         // we use one's midpoint, otherwise we use two's.
@@ -713,7 +713,7 @@ namespace Cyclone
                 // So we have a point and a direction for the colliding edges.
                 // We need to find out point of closest approach of the two
                 // line-segments.
-                Vector3 vertex = contactPoint(
+                Vector3 vertex = ContactPoint(
                     ptOnOneEdge, oneAxis, one.halfSize[oneAxisIndex],
                     ptOnTwoEdge, twoAxis, two.halfSize[twoAxisIndex],
                     bestSingleAxis > 2

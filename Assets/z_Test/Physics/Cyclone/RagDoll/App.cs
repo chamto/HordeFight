@@ -5,7 +5,9 @@ namespace Cyclone
 {
     public class RigidBodyApplication
     {
-        Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
+        protected Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
+
+        protected Random random = new Random();
 
         /** Holds the maximum number of contacts. */
         protected static readonly uint maxContacts = 256;
