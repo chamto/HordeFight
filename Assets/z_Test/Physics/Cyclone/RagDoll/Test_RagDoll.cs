@@ -35,13 +35,13 @@ public class Test_RagDoll : MonoBehaviour
         }
 
 
-        demo.update();
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             demo.Input_AutoPause();
             DebugWide.LogBlue("Input_AutoPause");
         }
+
+        demo.update();
     }
 
     private void OnDrawGizmos()
@@ -62,7 +62,7 @@ public class Test_RagDoll : MonoBehaviour
         const int NUM_BONES = 12;
         const int NUM_JOINTS = 11;
 
-        Random random = new Random();
+        //Random random = new Random();
 
         /** Holds the bone bodies. */
         Bone[] bones = new Bone[NUM_BONES];
