@@ -65,7 +65,7 @@ namespace Cyclone
                 Color cc; //= Color.black;
                 cc = new Color(0, 0, 0);
                 UnityEngine.Vector3 u_pos = new UnityEngine.Vector3(position.x, position.y, position.z);
-                DebugWide.DrawSphere(u_pos, 0.3f, cc);
+                DebugWide.DrawSolidCircle(u_pos, 0.3f, cc);
                 //DebugWide.DrawCircle(u_pos, 1f, cc);
 
                 //DebugWide.LogBlue(position);
@@ -78,7 +78,7 @@ namespace Cyclone
 
                 cc = new Color(0.75f, 0.75f, 0.75f);
                 u_pos.y = 0;
-                DebugWide.DrawSphere(u_pos, 0.6f, cc);
+                DebugWide.DrawSolidCircle(u_pos, 0.6f, cc);
             }
         }
 
