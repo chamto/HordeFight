@@ -3,6 +3,87 @@ using System.Diagnostics;
 
 namespace Cyclone
 {
+
+    public class MassAggregateApplication
+    {
+        protected Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
+        protected Random random = new Random();
+
+        ParticleWorld world;
+        protected Particle[] particleArray;
+        protected GroundContacts groundContactGenerator = new GroundContacts();
+
+
+        public MassAggregateApplication(uint particleCount)
+        {
+            world = new ParticleWorld(particleCount * 10);
+            particleArray = new Particle[particleCount];
+            for (uint i = 0; i < particleCount; i++)
+            {
+                particleArray[i] = new Particle();
+                world.getParticles().Add(particleArray[i]);
+            }
+
+            groundContactGenerator.init(world.getParticles());
+
+            world.getContactGenerators().Add(groundContactGenerator);
+        }
+
+        long __prevMs = 0;
+        long __timeStepMs = 0;
+        /** Update the particle positions. */
+        public virtual void update()
+        {
+            __timeStepMs = (stopWatch.ElapsedMilliseconds - __prevMs);
+            __prevMs = stopWatch.ElapsedMilliseconds;
+
+            float duration = (float)__timeStepMs * 0.001f;
+
+            // Clear accumulators
+            world.startFrame();
+
+            // Find the duration of the last frame in seconds
+            //float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
+            if (duration <= 0.0f) return;
+
+            // Run the simulation
+            world.runPhysics_MassAggregate(duration);
+
+        }
+
+
+        /** Display the particles. */
+        public void display()
+        {
+            // Clear the view port and set the camera direction
+            //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //glLoadIdentity();
+            //gluLookAt(0.0, 3.5, 8.0, 0.0, 3.5, 0.0, 0.0, 1.0, 0.0);
+
+            //glColor3f(0, 0, 0);
+
+            foreach(Particle p in world.getParticles())
+            {
+                Vector3 pos = p.getPosition();
+                UnityEngine.Vector3 u_pos = new UnityEngine.Vector3(pos.x, pos.y, pos.z);
+                DebugWide.DrawCircle(u_pos, 0.1f, Color.black); 
+            }
+
+            //cyclone::ParticleWorld::Particles & particles = world.getParticles();
+            //for (cyclone::ParticleWorld::Particles::iterator p = particles.begin();
+            //    p != particles.end();
+            //    p++)
+            //{
+            //    cyclone::Particle* particle = *p;
+            //    const cyclone::Vector3 &pos = particle->getPosition();
+            //    glPushMatrix();
+            //    glTranslatef(pos.x, pos.y, pos.z);
+            //    glutSolidSphere(0.1f, 20, 10);
+            //    glPopMatrix();
+            //}
+        }
+    }
+
     public class RigidBodyApplication
     {
         protected Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
@@ -128,7 +209,7 @@ namespace Cyclone
 
             // Find the duration of the last frame in seconds
             //float duration = (float)TimingData::get().lastFrameDuration * 0.001f;
-            float duration = (float)__prevMs * 0.001f;
+            float duration = (float)__timeStepMs * 0.001f;
             if (duration <= 0.0f) return;
             else if (duration > 0.05f) duration = 0.05f;
 

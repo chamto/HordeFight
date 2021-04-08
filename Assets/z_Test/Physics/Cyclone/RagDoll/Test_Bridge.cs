@@ -4,3 +4,7 @@ public class Test_Bridge : MonoBehaviour
 {
 
 }
+
+namespace Cyclone
+{
+}
