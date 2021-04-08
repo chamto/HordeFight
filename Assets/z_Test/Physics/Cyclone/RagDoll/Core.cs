@@ -78,6 +78,10 @@ namespace Cyclone
             }
         }
 
+        public UnityEngine.Vector3 ToUnity()
+        {
+            return new UnityEngine.Vector3(x, y, z);
+        }
 
         public static Vector3 operator +(Vector3 v1, Vector3 v2)
         {

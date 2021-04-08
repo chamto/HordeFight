@@ -297,6 +297,7 @@
     public class ParticleContactGenerator
     {
 
+        public bool _isContactList = false;
         /**
          * Fills the given contact structure with the generated
          * contact. The contact pointer should point to the first

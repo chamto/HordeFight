@@ -9,7 +9,7 @@ namespace Cyclone
         protected Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
         protected Random random = new Random();
 
-        ParticleWorld world;
+        protected ParticleWorld world;
         protected Particle[] particleArray;
         protected GroundContacts groundContactGenerator = new GroundContacts();
 
@@ -47,7 +47,7 @@ namespace Cyclone
             if (duration <= 0.0f) return;
 
             // Run the simulation
-            world.runPhysics_MassAggregate(duration);
+            world.runPhysics(duration);
 
         }
 

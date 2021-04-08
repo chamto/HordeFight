@@ -32,7 +32,7 @@ namespace Cyclone
         /**
          * Holds the force generators for the particles in this world.
          */
-        protected ParticleForceRegistry registry;
+        protected ParticleForceRegistry registry = new ParticleForceRegistry();
 
         /**
          * Holds the resolver for contacts.
@@ -68,6 +68,10 @@ namespace Cyclone
             this.resolver = new ParticleContactResolver(iterations);
             this.maxContacts = maxContacts;
             contacts = new ParticleContact[maxContacts];
+            for(int i=0;i< maxContacts;i++)
+            {
+                contacts[i] = new ParticleContact();
+            }
             calculateIterations = (iterations == 0);
 
         }
@@ -77,31 +81,31 @@ namespace Cyclone
          * Calls each of the registered contact generators to report
          * their contacts. Returns the number of generated contacts.
          */
+        //public uint generateContacts()
+        //{
+        //    uint limit = maxContacts;
+        //    //ParticleContact* nextContact = contacts;
+        //    ParticleContact nextContact = contacts[0];
+        //    uint count = 0;
+        //    foreach (ParticleContactGenerator g in contactGenerators)
+        //    {
+        //        uint used = g.addContact(nextContact, limit);
+        //        limit -= used;
+        //        //nextContact += used;
+        //        nextContact = contacts[count + used];
+        //        count += used;
+
+        //        // We've run out of contacts to fill. This means we're missing
+        //        // contacts.
+        //        if (limit <= 0) break;
+        //    }
+
+
+        //    // Return the number of contacts used.
+        //    return maxContacts - limit;
+        //}
+
         public uint generateContacts()
-        {
-            uint limit = maxContacts;
-            //ParticleContact* nextContact = contacts;
-            ParticleContact nextContact = contacts[0];
-            uint count = 0;
-            foreach (ParticleContactGenerator g in contactGenerators)
-            {
-                uint used = g.addContact(nextContact, limit);
-                limit -= used;
-                //nextContact += used;
-                nextContact = contacts[count + used];
-                count += used;
-
-                // We've run out of contacts to fill. This means we're missing
-                // contacts.
-                if (limit <= 0) break;
-            }
-
-
-            // Return the number of contacts used.
-            return maxContacts - limit;
-        }
-
-        public uint generateContacts_MassAggregate()
         {
             uint limit = maxContacts;
             //ParticleContact* nextContact = contacts;
@@ -110,7 +114,10 @@ namespace Cyclone
             uint used = 0;
             foreach (ParticleContactGenerator g in contactGenerators)
             {
-                used = g.addContactList(contacts, (int)(count + used), limit);
+                if(true == g._isContactList)
+                    used = g.addContactList(contacts, (int)(count + used), limit);
+                else
+                    used = g.addContact(nextContact, limit);
                 limit -= used;
                 //nextContact += used;
                 nextContact = contacts[count + used];
@@ -169,24 +176,24 @@ namespace Cyclone
             }
         }
 
-        public void runPhysics_MassAggregate(float duration)
-        {
-            // First apply the force generators
-            registry.updateForces(duration);
+        //public void runPhysics_MassAggregate(float duration)
+        //{
+        //    // First apply the force generators
+        //    registry.updateForces(duration);
 
-            // Then integrate the objects
-            integrate(duration);
+        //    // Then integrate the objects
+        //    integrate(duration);
 
-            // Generate contacts
-            uint usedContacts = generateContacts_MassAggregate();
+        //    // Generate contacts
+        //    uint usedContacts = generateContacts_MassAggregate();
 
-            // And process them
-            if (0 != usedContacts)
-            {
-                if (calculateIterations) resolver.setIterations(usedContacts * 2);
-                resolver.resolveContacts(contacts, usedContacts, duration);
-            }
-        }
+        //    // And process them
+        //    if (0 != usedContacts)
+        //    {
+        //        if (calculateIterations) resolver.setIterations(usedContacts * 2);
+        //        resolver.resolveContacts(contacts, usedContacts, duration);
+        //    }
+        //}
 
         /**
          * Initializes the world for a simulation frame. This clears
@@ -247,6 +254,7 @@ namespace Cyclone
 
         public void init(Particles particles)
         {
+            _isContactList = true; //addContactList 를 재정의 한것을 구별하기 위해 추가  - chamto 
             this.particles = particles;
         }
 
@@ -257,9 +265,11 @@ namespace Cyclone
             ParticleContact contact = contactList[cIdx];
             foreach (Particle p in particles)
             {
+
                 float y = p.getPosition().y;
                 if (y < 0.0f)
                 {
+                    //DebugWide.LogBlue(cIdx + "  " + count + "  " + limit);
                     contact.contactNormal = Vector3.UP;
                     contact.particle[0] = p;
                     contact.particle[1] = null;
