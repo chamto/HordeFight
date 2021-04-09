@@ -14,10 +14,15 @@ namespace Cyclone
         protected GroundContacts groundContactGenerator = new GroundContacts();
 
 
-        public MassAggregateApplication(uint particleCount)
+        public MassAggregateApplication()
         {
-            world = new ParticleWorld(particleCount * 10);
+        }
+
+        public void Init(uint particleCount)
+        {
             particleArray = new Particle[particleCount];
+
+            world = new ParticleWorld(particleCount * 10);
             for (uint i = 0; i < particleCount; i++)
             {
                 particleArray[i] = new Particle();
@@ -25,7 +30,6 @@ namespace Cyclone
             }
 
             groundContactGenerator.init(world.getParticles());
-
             world.getContactGenerators().Add(groundContactGenerator);
         }
 
@@ -248,7 +252,26 @@ namespace Cyclone
         //public virtual void mouseDrag(int x, int y);
 
         ///** Handles a key press. */
-        //public virtual void key(unsigned char key);
+        public void key()
+        {
+            if (Input.GetKeyDown(KeyCode.I))
+            {
+                renderDebugInfo = !renderDebugInfo;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                pauseSimulation = !pauseSimulation;
+            }
+
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                autoPauseSimulation = true;
+                pauseSimulation = false;
+            }
+        }
 
         public void Input_RenderDebugInfo()
         {

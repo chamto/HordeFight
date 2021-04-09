@@ -42,6 +42,8 @@ namespace Cyclone
         Vector3 massPos;
         Vector3 massDisplayPos;
 
+        const int PARTICLE_COUNT = 12;
+
         /**
          * Updates particle masses to take into account the mass
          * that's crossing the bridge.
@@ -50,7 +52,7 @@ namespace Cyclone
         //c# 에서의 나머지 연산자는 float , double 에도 적용된다
         public void updateAdditionalMass()
         {
-            for (uint i = 0; i < 12; i++)
+            for (uint i = 0; i < PARTICLE_COUNT; i++)
             {
                 particleArray[i].setMass(BASE_MASS);
             }
@@ -119,15 +121,16 @@ namespace Cyclone
 
 
         /** Creates a new demo object. */
-        public BridgeDemo() : base(12)
+        public BridgeDemo() //: base(12)
         {
+            Init(PARTICLE_COUNT);
 
             massPos = new Vector3(0, 0, 0.5f);
 
             // Create the masses and connections.
-            for (uint i = 0; i < 12; i++)
+            for (uint i = 0; i < PARTICLE_COUNT; i++)
             {
-                uint x = (i % 12) / 2;
+                uint x = (i % PARTICLE_COUNT) / 2;
                 particleArray[i].setPosition(
                     (float)(i / 2) * 2.0f - 5.0f,
                     4,
@@ -141,7 +144,7 @@ namespace Cyclone
 
             // Add the links
             cables = new ParticleCable[CABLE_COUNT];
-            for (uint i = 0; i < 10; i++)
+            for (uint i = 0; i < CABLE_COUNT; i++)
             {
                 cables[i] = new ParticleCable();
                 cables[i].particle[0] = particleArray[i];
@@ -168,7 +171,7 @@ namespace Cyclone
             }
 
             rods = new ParticleRod[ROD_COUNT];
-            for (uint i = 0; i < 6; i++)
+            for (uint i = 0; i < ROD_COUNT; i++)
             {
                 rods[i] = new ParticleRod();
                 rods[i].particle[0] = particleArray[i * 2];

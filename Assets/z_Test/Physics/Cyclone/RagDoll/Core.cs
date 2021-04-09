@@ -409,6 +409,11 @@ namespace Cyclone
             this.k = k;
         }
 
+        public UnityEngine.Quaternion ToUnit()
+        {
+            return new UnityEngine.Quaternion(i, j, k, r);
+        }
+
         /**
          * Normalises the quaternion to unit length, making it a valid
          * orientation quaternion.
