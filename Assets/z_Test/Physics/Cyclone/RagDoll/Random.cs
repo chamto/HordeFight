@@ -18,6 +18,12 @@ namespace Cyclone
 
         Stopwatch stopWatch = Stopwatch.StartNew(); //new Stopwatch();
 
+        static Random _sRandom = new Random(); 
+        public static Random GetI()
+        {
+            return _sRandom;
+        }
+
         /**
          * Creates a new random number stream with a seed based on
          * timing data.

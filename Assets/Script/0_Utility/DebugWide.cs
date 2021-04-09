@@ -267,6 +267,35 @@ public class DebugWide
 #endif
     }
 
+
+    static public Mesh CreateQuads(Vector3 pos0, Vector3 pos1, Vector3 pos2, Vector3 pos3)
+    {
+        Vector3[] vertices = {pos0, pos1, pos2, pos3};
+
+
+        int[] triangles = {
+            0, 2, 1, //face front
+            0, 3, 2,
+        };
+
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+
+        mesh.RecalculateNormals();
+
+        return mesh;
+    }
+    static public void DrawSolidQuads(Vector3 pos0, Vector3 pos1, Vector3 pos2, Vector3 pos3, Color cc)
+    {
+#if UNITY_EDITOR
+        Gizmos.color = cc;
+
+
+        Gizmos.DrawMesh(CreateQuads(pos0,pos1,pos2,pos3));
+#endif
+    }
+
     static public void PrintText(Vector3 pos, Color cc, string text)
     {
 #if UNITY_EDITOR
