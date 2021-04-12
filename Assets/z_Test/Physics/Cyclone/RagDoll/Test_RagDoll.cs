@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Test_RagDoll : MonoBehaviour 
 {
 
@@ -54,7 +53,7 @@ public class Test_RagDoll : MonoBehaviour
 }
 
 
-    namespace Cyclone
+namespace Cyclone
 {
 
     public class RagdollDemo : RigidBodyApplication

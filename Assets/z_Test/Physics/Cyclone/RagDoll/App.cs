@@ -257,12 +257,14 @@ namespace Cyclone
             if (Input.GetKeyDown(KeyCode.I))
             {
                 renderDebugInfo = !renderDebugInfo;
+                DebugWide.LogBlue("renderDebugInfo : " + renderDebugInfo);
             }
 
 
             if (Input.GetKeyDown(KeyCode.P))
             {
                 pauseSimulation = !pauseSimulation;
+                DebugWide.LogBlue("pauseSimulation : " + pauseSimulation);
             }
 
 
@@ -270,6 +272,8 @@ namespace Cyclone
             {
                 autoPauseSimulation = true;
                 pauseSimulation = false;
+
+                DebugWide.LogBlue("autoPauseSimulation");
             }
         }
 
