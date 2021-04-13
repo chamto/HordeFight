@@ -15,7 +15,7 @@ public class Test_BVHNode : MonoBehaviour
 
     private void Update()
     {
-
+        demo.InsertNode();
         demo.key();
         demo.update();
     }
@@ -29,7 +29,7 @@ public class Test_BVHNode : MonoBehaviour
 
 namespace Cyclone
 {
-
+    //BVHNode 에 대한 사용소스가 없어서 제작 - 20210414 chamto 
     public class BVHNodeDemo : RigidBodyApplication
     {
         const int SPHERE_COUNT = 10;
@@ -54,10 +54,12 @@ namespace Cyclone
             {
                 bSpheres[i] = new BSphere();
 
-                //float rp = (float)random.randomReal(0, i * 3);
-                //float rp1 = (float)random.randomReal(0, i * 3);
-                float rp = 0.9f * i;
-                float rp1 = 0.9f * i;
+                float rp = (float)random.randomReal(0, i * 1.5f);
+                float rp1 = (float)random.randomReal(0, i * 1.5f);
+                //float rp = 0.9f * i;
+                //float rp1 = 0.9f * i;
+                //float rp = 2.2f * i;
+                //float rp1 = 2.2f * i;
                 bSpheres[i].setState(new Vector3(rp, rp1, 0), 1);
 
                 //float flag = (float)Math.Pow(-1, i);
@@ -71,9 +73,11 @@ namespace Cyclone
                 _find_BSphere.Add(bSpheres[i].body, bSpheres[i]); //강체를 키로 하는 정보구축
             }
 
+            node0 = new BVHNode(null, bSpheres[0].getBoundingSphere(), bSpheres[0].body);
+
         }
 
-        public void ResetBVHNode()
+        public void UpdateBVHNode()
         {
             //접촉가능성 정보 초기화 
             for (int i = 0; i < POTENTIAL_COUNT; i++)
@@ -89,18 +93,37 @@ namespace Cyclone
 
                 node0.insert(bSpheres[i].body, bSpheres[i].getBoundingSphere());
             }
+
+            BVHNode.GetPotentialContacts(node0, ref potentialContacts, 0,POTENTIAL_COUNT);
+            //uint count = node0.getPotentialContacts(ref potentialContacts, POTENTIAL_COUNT);
+        }
+
+        int __count = 1;
+        public void InsertNode()
+        {
+            if(Input.GetKeyDown(KeyCode.A))
+            {
+                if (SPHERE_COUNT <= __count) return;
+                DebugWide.LogBlue(__count);
+
+
+                node0.insert(bSpheres[__count].body, bSpheres[__count].getBoundingSphere());
+                __count++;
+
+                BVHNode.GetPotentialContacts(node0, ref potentialContacts, 0,POTENTIAL_COUNT);
+                //uint count = node0.getPotentialContacts(ref potentialContacts, POTENTIAL_COUNT);
+            }
         }
 
         protected override void updateObjects(float duration)
         {
-
-            ResetBVHNode();
 
             for (int i = 0; i < SPHERE_COUNT; i++)
             {
                 bSpheres[i].body.integrate(duration);
                 bSpheres[i].calculateInternals();
             }
+
         }
 
         protected override void generateContacts()
@@ -110,22 +133,20 @@ namespace Cyclone
             cData.restitution = 0.6f;
             cData.tolerance = 0.1f;
 
-            uint count = node0.getPotentialContacts(ref potentialContacts, SPHERE_COUNT);
-
-            DebugWide.LogBlue(count);
+            //UpdateBVHNode(); //실시간으로 처리하고 싶으면 주석풀기 
 
             for (int i = 0; i < POTENTIAL_COUNT; i++)
             {
                 if(null != potentialContacts[i].body[0])
                 {
-                    //if(_find_BSphere.ContainsKey(potentialContacts[i].body[0]))
-                    //{
-                    //    CollisionDetector.sphereAndSphere(
-                    //        _find_BSphere[potentialContacts[i].body[0]],
-                    //        _find_BSphere[potentialContacts[i].body[1]],
-                    //        cData
-                    //        );
-                    //}
+                    if(_find_BSphere.ContainsKey(potentialContacts[i].body[0]))
+                    {
+                        CollisionDetector.sphereAndSphere(
+                            _find_BSphere[potentialContacts[i].body[0]],
+                            _find_BSphere[potentialContacts[i].body[1]],
+                            cData
+                            );
+                    }
 
                 }
             }

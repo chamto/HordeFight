@@ -24,6 +24,7 @@ namespace Cyclone
          * Creates a bounding sphere to enclose the two given bounding
          * spheres.
          */
+         //두 원을 포함하는 큰원을 만든다 - 20210413 실험노트 참조 
         public BoundingSphere(BoundingSphere one, BoundingSphere two)
         {
             Vector3 centreOffset = two.centre - one.centre;
@@ -31,6 +32,7 @@ namespace Cyclone
             float radiusDiff = two.radius - one.radius;
 
             // Check if the larger sphere encloses the small one
+            //한원이 다른원에 완전히 포함된 경우 
             if (radiusDiff * radiusDiff >= distance)
             {
                 if (one.radius > two.radius)
@@ -47,6 +49,7 @@ namespace Cyclone
 
             // Otherwise we need to work with partially
             // overlapping spheres
+            //두 원이 겹쳐있거나 떨어져 있는 경우 
             else
             {
                 distance = (float)Math.Sqrt(distance);
@@ -112,6 +115,7 @@ namespace Cyclone
          */
         //public RigidBody* body[2];
         public RigidBody[] body;
+
         public void Init()
         {
             body = new RigidBody[2];
@@ -188,7 +192,8 @@ namespace Cyclone
          * given limit). Returns the number of potential contacts it
          * found.
          */
-        public uint getPotentialContacts(ref PotentialContact[] contacts, uint limit) 
+         //한노드에 대해서만 처리함 , 전체 노드를 재귀로 처리한다고 오해하고 사용할 수 있어 외부에서 사용못하게 막음 
+        protected uint getPotentialContacts(ref PotentialContact[] contacts, uint cIdx ,uint limit) 
         {
             // Early out if we don't have the room for contacts, or
             // if we're a leaf node.
@@ -197,14 +202,37 @@ namespace Cyclone
             // Get the potential contacts of one of our children with
             // the other
             return children[0].getPotentialContactsWith(
-                children[1], contacts,0, limit
+                children[1], contacts,cIdx, limit
                 );
         }
+
+        //모든 노드를 순회하여 접촉가능성 정보를 모은다 
+        //ref : https://blog.naver.com/ndb796/221233560789
+        //트리의 전위순회를 통해 구현 
+        static public uint GetPotentialContacts(BVHNode node, ref PotentialContact[] contacts, uint cIdx , uint limit)
+        {
+            if (null == node) return 0;
+
+            uint count = node.getPotentialContacts(ref contacts, cIdx, limit);
+
+            uint n_idx = cIdx + count;
+            uint n_limit = limit - count;
+            count = GetPotentialContacts(node.children[0], ref contacts, n_idx, n_limit);
+
+            n_idx = n_idx + count;
+            n_limit = n_limit - count;
+            count = GetPotentialContacts(node.children[1], ref contacts, n_idx, n_limit);
+
+            return count;
+        }
+
+
         /**
          * Inserts the given rigid body, with the given bounding volume,
          * into the hierarchy. This may involve the creation of
          * further bounding volume nodes.
          */
+        //20210413 실험노트  - 트리성장 모습 분석
         public void insert(RigidBody newBody, BoundingSphere newVolume)
         {
             // If we are a leaf, then the only option is to spawn two
@@ -234,13 +262,13 @@ namespace Cyclone
             // least to incorporate it.
             else
             {
-                if (children[0].volume.getGrowth(newVolume) <
-                    children[1].volume.getGrowth(newVolume))
+                if (children[0].volume.getGrowth(newVolume) < children[1].volume.getGrowth(newVolume))
                 {
                     children[0].insert(newBody, newVolume);
                 }
                 else
                 {
+                    //성장도가 같다면 오른쪽으로 트리 성장시킴 
                     children[1].insert(newBody, newVolume);
                 }
             }
@@ -332,6 +360,7 @@ namespace Cyclone
             // If we're both at leaf nodes, then we have a potential contact
             if (isLeaf() && other.isLeaf())
             {
+                DebugWide.LogBlue("___^__0 :" + ctIdx);
                 contacts[ctIdx].body[0] = body;
                 contacts[ctIdx].body[1] = other.body;
                 return 1;
@@ -343,9 +372,9 @@ namespace Cyclone
             if (other.isLeaf() ||
                 (!isLeaf() && volume.getSize() >= other.volume.getSize()))
             {
+                DebugWide.LogBlue("_____1 :" + ctIdx);
                 // Recurse into ourself
                 uint count = children[0].getPotentialContactsWith(other, contacts, ctIdx, limit);
-                //uint count = children[0].getPotentialContactsWith(children[1], contacts, ctIdx, limit);
 
                 // Check we have enough slots to do the other side too
                 if (limit > count) {
@@ -358,6 +387,7 @@ namespace Cyclone
             }
             else
             {
+                DebugWide.LogBlue("_____2 :" + ctIdx);
                 // Recurse into the other node
                 uint count = getPotentialContactsWith(
                     other.children[0], contacts, ctIdx, limit
@@ -418,6 +448,17 @@ namespace Cyclone
 
             DrawTree(node.children[0]);
             DrawTree(node.children[1]);
+
+        }
+
+        static public BVHNode GetRoot(BVHNode node)
+        {
+            if (null != node.parent) return GetRoot(node.parent);
+            else
+            {
+                //DebugWide.LogBlue(node.parent);
+                return node;
+            }
 
         }
     }
