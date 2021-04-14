@@ -26,6 +26,7 @@ namespace Cyclone
 {
     public class PlatformDemo : MassAggregateApplication
     {
+        const int PARTICLE_COUNT = 6;
         const int ROD_COUNT = 15;
 
         const int BASE_MASS = 1;
@@ -42,7 +43,7 @@ namespace Cyclone
          */
         void updateAdditionalMass()
         {
-            for (uint i = 2; i < 6; i++)
+            for (uint i = 2; i < PARTICLE_COUNT; i++)
             {
                 particleArray[i].setMass(BASE_MASS);
             }
@@ -93,7 +94,7 @@ namespace Cyclone
         /** Creates a new demo object. */
         public PlatformDemo()
         {
-            Init(6);
+            Init(PARTICLE_COUNT);
             massPos = new Vector3(0, 0, 0.5f);
             // Create the masses and connections.
             particleArray[0].setPosition(0, 0, 1);
@@ -102,7 +103,7 @@ namespace Cyclone
             particleArray[3].setPosition(-3, 2, -1);
             particleArray[4].setPosition(4, 2, 1);
             particleArray[5].setPosition(4, 2, -1);
-            for (uint i = 0; i < 6; i++)
+            for (uint i = 0; i < PARTICLE_COUNT; i++)
             {
                 particleArray[i].setMass(BASE_MASS);
                 particleArray[i].setVelocity(0, 0, 0);
@@ -214,6 +215,14 @@ namespace Cyclone
         /** Handle a key press. */
         public void key()
         {
+            if(Input.GetKeyDown(KeyCode.R))
+            {
+                //for (uint i = 0; i < ROD_COUNT; i++)
+                //{
+                //    world.getContactGenerators().Add(rods[i]);
+                //}
+            }
+
             if (Input.GetKey(KeyCode.UpArrow))
             {
                 massPos.z += 0.1f;

@@ -60,8 +60,8 @@ namespace Cyclone
     public class JointDemo : RigidBodyApplication
     {
 
-        Cube bone_0 = new Cube();
-        Cube bone_1 = new Cube();
+        Sphere bone_0 = new Sphere();
+        Sphere bone_1 = new Sphere();
         Sphere bone_2 = new Sphere();
         Sphere bone_3 = new Sphere();
 
@@ -77,25 +77,25 @@ namespace Cyclone
                 joints[i] = new Joint();
             }
 
-            bone_0.setState(new Vector3(), Quaternion.identity, new Vector3(1, 1, 1), new Vector3());
-            bone_1.setState(new Vector3(0,0,2), Quaternion.identity, new Vector3(1, 1, 1), new Vector3());
-            bone_2.setState(new Vector3(0,0,4), Quaternion.identity, 1, new Vector3());
-            bone_3.setState(new Vector3(0,0,7), Quaternion.identity, 2, new Vector3());
+            bone_0.setState(new Vector3(), Quaternion.identity, 1, new Vector3());
+            bone_1.setState(new Vector3(0,0,2.5f), Quaternion.identity, 1, new Vector3());
+            bone_2.setState(new Vector3(0,0,5.5f), Quaternion.identity, 1, new Vector3());
+            bone_3.setState(new Vector3(0,0,10), Quaternion.identity, 2, new Vector3());
 
             joints[0].set(
                 bone_0.body, new Vector3(0, 0f, 1.0f),
                 bone_1.body, new Vector3(0, 0f, -1.0f),
-                1.0f
+                0.001f
                 );
             joints[1].set(
                 bone_1.body, new Vector3(0, 0f, 1.0f),
                 bone_2.body, new Vector3(0, 0f, -1.0f),
-                1.0f
+                0.001f
                 );
             joints[2].set(
                 bone_2.body, new Vector3(0, 0f, 1.0f),
                 bone_3.body, new Vector3(0, 0f, -1.0f),
-                1.0f
+                0.001f
                 );
 
 
@@ -137,8 +137,8 @@ namespace Cyclone
 
 
             if (!cData.hasMoreContacts()) return;
-            CollisionDetector.boxAndHalfSpace(bone_0, plane, cData);
-            CollisionDetector.boxAndHalfSpace(bone_1, plane, cData);
+            CollisionDetector.sphereAndHalfSpace(bone_0, plane, cData);
+            CollisionDetector.sphereAndHalfSpace(bone_1, plane, cData);
             CollisionDetector.sphereAndHalfSpace(bone_2, plane, cData);
             CollisionDetector.sphereAndHalfSpace(bone_3, plane, cData);
 

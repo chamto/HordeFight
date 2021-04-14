@@ -11,13 +11,13 @@
          */
         //friend class ParticleContactResolver;
 
-        
+
         /**
          * Holds the particles that are involved in the contact. The
          * second of these can be NULL, for contacts with the scenery.
          */
         //Particle particle[2];
-        public Particle[] particle = new Particle[2] {new Particle(),new Particle() };
+        public Particle[] particle = new Particle[2];
 
         /**
          * Holds the normal restitution coefficient at the contact.
