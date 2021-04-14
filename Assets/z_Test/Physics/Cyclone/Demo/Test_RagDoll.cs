@@ -8,38 +8,23 @@ public class Test_RagDoll : MonoBehaviour
 
     Cyclone.RagdollDemo demo = null;
 
-    public bool opt_renderDebugInfo = false;
+    Transform mousePT = null;
 
     // Use this for initialization
     void Start () 
     {
+        mousePT = GameObject.Find("mousePt").transform;
         demo = new Cyclone.RagdollDemo();
     }
 
-    // Update is called once per frame
-    //void Update () {
-    //}
+
     private void Update()
     {
-        if (true == opt_renderDebugInfo)
-        {
-            opt_renderDebugInfo = !opt_renderDebugInfo;
-            demo.Input_RenderDebugInfo();
-        }
 
+        Vector3 pos = mousePT.transform.position;
+        //demo.InputMousePt(pos.x, pos.y, pos.z);
 
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            demo.Input_PauseSimul();
-        }
-
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            demo.Input_AutoPause();
-            DebugWide.LogBlue("Input_AutoPause");
-        }
-
+        demo.key();
         demo.update();
     }
 
@@ -293,6 +278,13 @@ namespace Cyclone
             reset();
         }
 
+        public void InputMousePt(float x, float y, float z)
+        {
+
+            bones[7].body.setPosition(x, y, z);
+            bones[7].body.calculateDerivedData();
+
+        }
 
         /** Display the particle positions. */
         public void display()
@@ -331,15 +323,16 @@ namespace Cyclone
                 Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
                 float length = (b_pos - a_pos).magnitude();
 
-                //if (length > joint->error) glColor3f(1, 0, 0);
-                //else glColor3f(0, 1, 0);
+                Color cc;
+                if (length > joint.error) cc = new Color(1, 0, 0);
+                else cc = new Color(0, 1, 0);
 
                 //glVertex3f(a_pos.x, a_pos.y, a_pos.z);
                 //glVertex3f(b_pos.x, b_pos.y, b_pos.z);
 
                 UnityEngine.Vector3 start = new UnityEngine.Vector3(a_pos.x, a_pos.y, a_pos.z);
                 UnityEngine.Vector3 end = new UnityEngine.Vector3(b_pos.x, b_pos.y, b_pos.z);
-                DebugWide.DrawLine(start, end, Color.green);
+                DebugWide.DrawLine(start, end, cc);
             }
             //glEnd();
             //glEnable(GL_DEPTH_TEST);
@@ -351,7 +344,6 @@ namespace Cyclone
             //glColor3f(0.75, 0.75, 0.75);
             for (uint i = 1; i < 20; i++)
             {
-
 
                 //glBegin(GL_LINE_LOOP);
                 for (uint j = 0; j < 32; j++)
