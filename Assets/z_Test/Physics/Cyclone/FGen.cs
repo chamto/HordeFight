@@ -287,7 +287,7 @@ namespace Cyclone
          * only it takes an explicit tensor.
          */
         protected void updateForceFromTensor(RigidBody body, float duration,
-                                  Matrix3 tensor)
+                                  Matrix3 tensor_)
         {
             // Calculate total velocity (windspeed and body's velocity).
             Vector3 velocity = body.getVelocity();
@@ -297,7 +297,7 @@ namespace Cyclone
             Vector3 bodyVel = body.getTransform().transformInverseDirection(velocity);
 
             // Calculate the force in body coordinates
-            Vector3 bodyForce = tensor.transform(bodyVel);
+            Vector3 bodyForce = tensor_.transform(bodyVel);
             Vector3 force = body.getTransform().transformDirection(bodyForce);
 
             // Apply the force

@@ -18,6 +18,8 @@ namespace Cyclone
         //Vector3 position[2];
         public Vector3[] position = new Vector3[2];
 
+        public float length;
+
         /**
          * Holds the maximum displacement at the joint before the
          * joint is considered to be violated. This is normally a
@@ -39,6 +41,12 @@ namespace Cyclone
             position[1] = b_pos;
 
             this.error = error;
+
+            //Vector3 a_pos_world = body[0].getPointInWorldSpace(position[0]);
+            //Vector3 b_pos_world = body[1].getPointInWorldSpace(position[1]);
+            //Vector3 a_to_b = b_pos_world - a_pos_world;
+            //length = a_to_b.magnitude();
+
         }
 
         /**
@@ -50,23 +58,39 @@ namespace Cyclone
             // Calculate the position of each connection point in world coordinates
             Vector3 a_pos_world = body[0].getPointInWorldSpace(position[0]);
             Vector3 b_pos_world = body[1].getPointInWorldSpace(position[1]);
+            //Vector3 a_pos_world = body[0].getPosition();
+            //Vector3 b_pos_world = body[1].getPosition();
 
             // Calculate the length of the joint
             Vector3 a_to_b = b_pos_world - a_pos_world;
             Vector3 normal = a_to_b;
             normal.normalise();
-            float length = a_to_b.magnitude();
+            float curLength = a_to_b.magnitude();
 
             // Check if it is violated
-            if (Math.Abs(length) > error)
+            //if (Math.Abs(curLength) > error)
+            if (curLength > error)
             {
                 contact.body[0] = body[0];
                 contact.body[1] = body[1];
                 contact.contactNormal = normal;
                 contact.contactPoint = (a_pos_world + b_pos_world) * 0.5f;
-                contact.penetration = length-error;
+                contact.penetration = curLength-error;
                 contact.friction = 1.0f;
                 contact.restitution = 0;
+
+                //ParticleRod 를 따라해 본다 
+                //if (curLength > length)
+                //{
+                //    contact.contactNormal = normal;
+                //    contact.penetration = curLength - length;
+                //}
+                //else
+                //{
+                //    contact.contactNormal = normal * -1;
+                //    contact.penetration = length - curLength;
+                //}
+
                 return 1;
             }
 

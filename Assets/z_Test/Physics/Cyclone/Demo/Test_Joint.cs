@@ -80,10 +80,12 @@ namespace Cyclone
             bone_0.setState(new Vector3(), Quaternion.identity, 1, new Vector3());
             bone_1.setState(new Vector3(0,0,2.5f), Quaternion.identity, 1, new Vector3());
             bone_2.setState(new Vector3(0,0,5.5f), Quaternion.identity, 1, new Vector3());
-            bone_3.setState(new Vector3(0,0,10), Quaternion.identity, 2, new Vector3());
+            bone_3.setState(new Vector3(0,0,10), Quaternion.identity, 1, new Vector3());
+
+            //bone_3.body.setAcceleration(0, -10.0f, 0); //조인트 떠는 문제 떄문에 마지막 본에만 가속을 줘봤다
 
             joints[0].set(
-                bone_0.body, new Vector3(0, 0f, 1.0f),
+                bone_0.body, new Vector3(0, 0f, 2.0f),
                 bone_1.body, new Vector3(0, 0f, -1.0f),
                 0.001f
                 );
@@ -94,7 +96,7 @@ namespace Cyclone
                 );
             joints[2].set(
                 bone_2.body, new Vector3(0, 0f, 1.0f),
-                bone_3.body, new Vector3(0, 0f, -1.0f),
+                bone_3.body, new Vector3(0, 0f, -2.0f),
                 0.001f
                 );
 
@@ -116,9 +118,14 @@ namespace Cyclone
 
         public void InputMousePt(float x, float y, float z)
         {
-
-            bone_0.body.setPosition(x, y, z);
-            bone_0.body.calculateDerivedData();
+            RigidBody target = bone_0.body;
+            //target.setAwake(false);
+            target.setPosition(x, y, z);
+            target.setOrientation(1, 0, 0, 0);
+            target.setVelocity(0, 0, 0);
+            target.setRotation(0, 0, 0);
+            target.setAcceleration(0, 0, 0);
+            target.calculateDerivedData();
 
         }
 
@@ -136,20 +143,17 @@ namespace Cyclone
             cData.tolerance = 0.1f;
 
 
-            if (!cData.hasMoreContacts()) return;
-            CollisionDetector.sphereAndHalfSpace(bone_0, plane, cData);
-            CollisionDetector.sphereAndHalfSpace(bone_1, plane, cData);
-            CollisionDetector.sphereAndHalfSpace(bone_2, plane, cData);
-            CollisionDetector.sphereAndHalfSpace(bone_3, plane, cData);
 
             //if (!cData.hasMoreContacts()) return;
-            //CollisionSphere boneSphere_0 = bone_0.getCollisionSphere();
-            //CollisionSphere boneSphere_1 = bone_1.getCollisionSphere();
-            //CollisionDetector.sphereAndSphere(
-                        //boneSphere_0,
-                        //boneSphere_1,
-                        //cData
-                        //);
+            //CollisionDetector.sphereAndHalfSpace(bone_0, plane, cData);
+            //CollisionDetector.sphereAndHalfSpace(bone_1, plane, cData);
+            //CollisionDetector.sphereAndHalfSpace(bone_2, plane, cData);
+            //CollisionDetector.sphereAndHalfSpace(bone_3, plane, cData);
+
+            //CollisionDetector.sphereAndSphere(bone_0, bone_1, cData);
+            //CollisionDetector.sphereAndSphere(bone_1, bone_2, cData);
+            //CollisionDetector.sphereAndSphere(bone_2, bone_3, cData);
+
 
             if (!cData.hasMoreContacts()) return;
             for (int i = 0; i < NUM_JOINTS; i++)
@@ -160,6 +164,8 @@ namespace Cyclone
                 uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
                 cData.addContacts(added);
             }
+
+
 
 
         }
@@ -197,9 +203,9 @@ namespace Cyclone
                 else cc = new Color(0, 1, 0);
 
 
-                UnityEngine.Vector3 start = new UnityEngine.Vector3(a_pos.x, a_pos.y, a_pos.z);
-                UnityEngine.Vector3 end = new UnityEngine.Vector3(b_pos.x, b_pos.y, b_pos.z);
-                DebugWide.DrawLine(start, end, cc);
+                DebugWide.DrawLine(a_pos.ToUnity(), b_pos.ToUnity(), cc);
+
+                //DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
             }
         }
 
@@ -257,7 +263,7 @@ namespace Cyclone
             body.clearAccumulators();
             body.setAcceleration(0, -10.0f, 0);
 
-            //body->setCanSleep(false);
+            //body.setCanSleep(false);
             body.setAwake(true);
 
             body.calculateDerivedData();

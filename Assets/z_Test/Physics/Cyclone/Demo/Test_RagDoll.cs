@@ -32,7 +32,6 @@ public class Test_RagDoll : MonoBehaviour
     {
         if (null == demo) return;
 
-
         demo.display();
     }
 }

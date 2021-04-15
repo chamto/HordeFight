@@ -50,7 +50,7 @@ namespace Cyclone
         public SailboatDemo()
         {
             r = Random.GetI();
-            windspeed = new Vector3(0, 0, 0);
+            windspeed = new Vector3(1, 0, 1);
 
             sail = new Aero(new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, -1.0f), new Vector3(2.0f, 0, 0), windspeed);
            // sail = new AeroControl(new Matrix3(0, 0, 0, 0, 0, 0, 0, 0, -1.0f),
@@ -216,6 +216,8 @@ namespace Cyclone
 
             // Change the wind speed.
             windspeed = windspeed * 0.9f + r.randomXZVector(1.0f);
+            //windspeed += r.randomXZVector(1.0f);
+            sail.windspeed = windspeed;
 
         }
 

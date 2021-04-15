@@ -281,7 +281,7 @@ namespace Cyclone
 
                 if (aircraft.getVelocity().y < -10.0f)
                 {
-                    //resetPlane(); //임시로 주석 
+                    resetPlane(); //임시로 주석 
                 }
             }
 
