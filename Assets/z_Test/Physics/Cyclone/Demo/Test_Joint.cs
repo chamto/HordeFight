@@ -60,18 +60,35 @@ namespace Cyclone
     public class JointDemo : RigidBodyApplication
     {
 
-        Sphere bone_0 = new Sphere();
-        Sphere bone_1 = new Sphere();
-        Sphere bone_2 = new Sphere();
-        Sphere bone_3 = new Sphere();
+        //Sphere bone_0 = new Sphere();
+        //Sphere bone_1 = new Sphere();
+        //Sphere bone_2 = new Sphere();
+        //Sphere bone_3 = new Sphere();
 
-        const int NUM_JOINTS = 3;
-        Joint[] joints = new Joint[NUM_JOINTS];
+        const int SPHERE_COUNT = 4;
+        Sphere[] spheres = new Sphere[SPHERE_COUNT];
+        const int SPHERE_JOINT_COUNT = 3;
+        Joint[] sphere_joints = new Joint[SPHERE_JOINT_COUNT];
 
         const int CUBE_COUNT = 3;
         Cube[] cubes = new Cube[CUBE_COUNT];
         const int CUBE_JOINT_COUNT = 2;
         Joint[] cube_joints = new Joint[CUBE_JOINT_COUNT];
+
+
+        public void InitSphere()
+        {
+            for (int i = 0; i < SPHERE_COUNT; i++)
+            {
+                spheres[i] = new Sphere();
+                spheres[i].setState(new Vector3(), Quaternion.identity, 1, Vector3.ZERO);
+            }
+            for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
+            {
+                sphere_joints[i] = new Joint();
+                sphere_joints[i].set(spheres[i].body, new Vector3(0, 0f, 3.0f), spheres[i + 1].body, new Vector3(0, 0f, -2.0f), 0.01f);
+            }
+        }
 
         public void InitCube()
         {
@@ -92,34 +109,7 @@ namespace Cyclone
         public JointDemo()
         {
 
-            for(int i=0;i<NUM_JOINTS;i++)
-            {
-                joints[i] = new Joint();
-            }
-
-            bone_0.setState(new Vector3(), Quaternion.identity, 1, new Vector3());
-            bone_1.setState(new Vector3(0,0,2.5f), Quaternion.identity, 1, new Vector3());
-            bone_2.setState(new Vector3(0,0,5.5f), Quaternion.identity, 1, new Vector3());
-            bone_3.setState(new Vector3(0,0,10), Quaternion.identity, 1, new Vector3());
-
-            //bone_3.body.setAcceleration(0, -10.0f, 0); //조인트 떠는 문제 떄문에 마지막 본에만 가속을 줘봤다
-
-            joints[0].set(
-                bone_0.body, new Vector3(0, 0f, 2.0f),
-                bone_1.body, new Vector3(0, 0f, -1.0f),
-                0.001f
-                );
-            joints[1].set(
-                bone_1.body, new Vector3(0, 0f, 1.0f),
-                bone_2.body, new Vector3(0, 0f, -1.0f),
-                0.001f
-                );
-            joints[2].set(
-                bone_2.body, new Vector3(0, 0f, 1.0f),
-                bone_3.body, new Vector3(0, 0f, -2.0f),
-                0.001f
-                );
-
+            InitSphere();
             InitCube();
         }
 
@@ -128,15 +118,15 @@ namespace Cyclone
             DebugWide.LogBlue("Fire");
 
 
-            bone_0.body.addForceAtBodyPoint(
+            cubes[0].body.addForceAtBodyPoint(
             new Vector3(0, 0, -1000f),
             new Vector3(0, 0, 0));
         }
 
         public void InputMousePt(float x, float y, float z)
         {
-            //RigidBody target = bone_0.body;
-            RigidBody target = cubes[0].body;
+            //RigidBody target = cubes[0].body;
+            RigidBody target = spheres[3].body;
             //target.setAwake(false);
             target.setPosition(x, y, z);
             target.setOrientation(1, 0, 0, 0);
@@ -161,22 +151,19 @@ namespace Cyclone
             cData.tolerance = 0.1f;
 
 
-
-            //if (!cData.hasMoreContacts()) return;
-            //CollisionDetector.sphereAndHalfSpace(bone_0, plane, cData);
-            //CollisionDetector.sphereAndHalfSpace(bone_1, plane, cData);
-            //CollisionDetector.sphereAndHalfSpace(bone_2, plane, cData);
-            //CollisionDetector.sphereAndHalfSpace(bone_3, plane, cData);
-
-            //CollisionDetector.sphereAndSphere(bone_0, bone_1, cData);
-            //CollisionDetector.sphereAndSphere(bone_1, bone_2, cData);
-            //CollisionDetector.sphereAndSphere(bone_2, bone_3, cData);
-
+            //for(int i=0;i<SPHERE_COUNT;i++)
+            //{
+            //    CollisionDetector.sphereAndHalfSpace(spheres[i], plane, cData);
+            //}
+            //for(int i=0;i<CUBE_COUNT;i++)
+            //{
+            //    CollisionDetector.boxAndHalfSpace(cubes[i], plane, cData);
+            //}
 
             if (!cData.hasMoreContacts()) return;
-            for (int i = 0; i < NUM_JOINTS; i++)
+            for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
             {
-                Joint joint = joints[i];
+                Joint joint = sphere_joints[i];
 
                 if (!cData.hasMoreContacts()) return;
                 uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
@@ -195,21 +182,42 @@ namespace Cyclone
 
         protected override void updateObjects(float duration)
         {
-            bone_0.body.setPosition(Vector3.ZERO); //chamto test
-            bone_0.body.integrate(duration);
-            bone_0.calculateInternals();
-            bone_1.body.integrate(duration);
-            bone_1.calculateInternals();
-            bone_2.body.integrate(duration);
-            bone_2.calculateInternals();
-            bone_3.body.integrate(duration);
-            bone_3.calculateInternals();
 
+            for (int i = 0; i < SPHERE_COUNT; i++)
+            {
+                spheres[i].body.integrate(duration);
+                spheres[i].calculateInternals();
+            }
 
             for (int i = 0; i < CUBE_COUNT; i++)
             {
                 cubes[i].body.integrate(duration);
                 cubes[i].calculateInternals();
+            }
+        }
+
+        public void SphereRender()
+        {
+            for (int i = 0; i < SPHERE_COUNT; i++)
+            {
+                spheres[i].render();
+            }
+
+            for (uint i = 0; i < SPHERE_JOINT_COUNT; i++)
+            {
+                Joint joint = sphere_joints[i];
+                Vector3 a_pos = joint.body[0].getPointInWorldSpace(joint.position[0]);
+                Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
+                float length = (b_pos - a_pos).magnitude();
+
+                Color cc;
+                if (length > joint.error) cc = new Color(1, 0, 0);
+                else cc = new Color(0, 1, 0);
+
+
+                DebugWide.DrawLine(a_pos.ToUnity(), b_pos.ToUnity(), cc);
+
+                //DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
             }
         }
 
@@ -240,29 +248,10 @@ namespace Cyclone
 
         public void display()
         {
-            bone_0.render();
-            bone_1.render();
-            bone_2.render();
-            bone_3.render();
+            SphereRender();
 
             CubeRender();
 
-            for (uint i = 0; i < NUM_JOINTS; i++)
-            {
-                Joint joint = joints[i];
-                Vector3 a_pos = joint.body[0].getPointInWorldSpace(joint.position[0]);
-                Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
-                float length = (b_pos - a_pos).magnitude();
-
-                Color cc;
-                if (length > joint.error) cc = new Color(1, 0, 0);
-                else cc = new Color(0, 1, 0);
-
-
-                DebugWide.DrawLine(a_pos.ToUnity(), b_pos.ToUnity(), cc);
-
-                //DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
-            }
         }
 
 
