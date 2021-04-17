@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UtilGS9;
+using Buckland;
 
 namespace Raven
 {
@@ -46,7 +47,7 @@ namespace Raven
 
             //send a message to the bot to let it know it's been hit, and who the
             //shot came from
-            SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+            MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                         m_iShooterID,
                                         hit.ID(),
                                         (int)eMsg.TakeThatMF,

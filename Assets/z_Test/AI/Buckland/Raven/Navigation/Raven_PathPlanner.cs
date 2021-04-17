@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-
+using Buckland;
 
 namespace Raven
 {
@@ -392,7 +392,7 @@ namespace Raven
             if (result == (int)eReturn.target_not_found)
             {
 
-                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                      Const.SENDER_ID_IRRELEVANT,
                                      m_pOwner.ID(),
                                      (int)eMsg.NoPathAvailable,
@@ -411,7 +411,7 @@ namespace Raven
                 m_NavGraph.GetNode(m_pCurrentSearch.GetPathToTarget().Last.Value).ExtraInfo<Trigger<Raven_Bot>>();
 
 
-                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                 Const.SENDER_ID_IRRELEVANT,
                                 m_pOwner.ID(),
                                 (int)eMsg.PathReady,

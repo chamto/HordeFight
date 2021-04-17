@@ -1,4 +1,6 @@
-﻿namespace Raven
+﻿using Buckland;
+
+namespace Raven
 {
     ///////////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +32,7 @@
             if (isTouchingTrigger(pBot.Pos(), pBot.BRadius()))
             {
 
-                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                         Const.SENDER_ID_IRRELEVANT,
                                         pBot.ID(),
                                         (int)eMsg.GunshotSound,

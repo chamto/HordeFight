@@ -5,7 +5,7 @@ using UnityEngine;
 using UtilGS9;
 using Buckland;
 
-namespace SimpleSoccer
+namespace Test_SoccerBall
 {
     public class Test_SoccerBall : MonoBehaviour
     {

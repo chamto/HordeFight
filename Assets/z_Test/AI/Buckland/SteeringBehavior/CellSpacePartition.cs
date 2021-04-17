@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Buckland
+namespace SteeringBehavior
 {
     public struct InvertedAABBox2D
     {

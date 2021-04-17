@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UtilGS9;
+using Buckland;
 
 namespace Raven
 {
@@ -26,7 +27,7 @@ namespace Raven
             if (isTouchingTrigger(pEnt.Pos(), pEnt.BRadius()))
             {
                 //DebugWide.LogRed(pEnt + "  try door ---- ");
-                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                         ID(),
                                         m_iReceiver,
                                         m_iMessageToSend,

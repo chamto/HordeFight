@@ -1,17 +1,23 @@
 ﻿using System.Collections.Generic;
 
 
-namespace Raven
+namespace Buckland
 {
     //======================================================
 
     public class EntityManager
     {
-        //public static EntityManager Instance = null;
 
         private Dictionary<int, BaseGameEntity> m_EntityMap = new Dictionary<int, BaseGameEntity>();
 
+        private static EntityManager _instance = null;
+        public static EntityManager Instance()
+        {
+            if (null == _instance)
+                _instance = new EntityManager();
 
+            return _instance; 
+        }
 
         //this method stores a pointer to the entity in the std::vector
         //m_Entities at the index position indicated by the entity's ID

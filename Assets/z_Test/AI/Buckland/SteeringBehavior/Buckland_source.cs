@@ -5,7 +5,7 @@ using UnityEngine;
 using UtilGS9;
 
 
-namespace Buckland
+namespace SteeringBehavior
 {
     public class Const
     {
@@ -983,7 +983,7 @@ namespace Buckland
 
         //some steering behaviors give jerky looking movement. The
         //following members are used to smooth the vehicle's heading
-        Smoother<Vector2, Vectoc2Calc> m_pHeadingSmoother;
+        Buckland.Smoother<Vector2, Buckland.Vectoc2Calc> m_pHeadingSmoother;
 
         //this vector represents the average of the vehicle's heading
         //vector smoothed over the last few frames
@@ -1055,7 +1055,7 @@ namespace Buckland
             m_pSteering = new SteeringBehavior(this);
 
             //set up the smoother
-            m_pHeadingSmoother = new Smoother<Vector2, Vectoc2Calc>(SingleO.prm.NumSamplesForSmoothing, new Vector2(0.0f, 0.0f));
+            m_pHeadingSmoother = new Buckland.Smoother<Vector2, Buckland.Vectoc2Calc>(SingleO.prm.NumSamplesForSmoothing, new Vector2(0.0f, 0.0f));
 
         }
 

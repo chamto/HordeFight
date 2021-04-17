@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Raven
+namespace Buckland
 {
 
     public class BaseGameEntity

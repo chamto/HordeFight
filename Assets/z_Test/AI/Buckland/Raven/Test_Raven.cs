@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-
+using Buckland;
 
 namespace Raven
 {
@@ -25,7 +25,7 @@ namespace Raven
 
 
             _mousePoint = GameObject.Find("MousePoint").transform;
-            SingleO.Init();
+            //SingleO.Init();
             _game = new Raven_Game();
 
             var first = _game.GetAllBots().First;
@@ -77,17 +77,17 @@ namespace Raven
 
     //======================================================
 
-    public static class SingleO
-    {
-        public static EntityManager entityMgr = null;
-        public static MessageDispatcher dispatcher = null;
+    //public static class SingleO
+    //{
+    //    //public static EntityManager entityMgr = null;
+    //    //public static MessageDispatcher dispatcher = null;
 
-        public static void Init()
-        {
-            entityMgr = new EntityManager();
-            dispatcher = new MessageDispatcher();
-        }
-    }
+    //    public static void Init()
+    //    {
+    //        //entityMgr = new EntityManager();
+    //        //dispatcher = new MessageDispatcher();
+    //    }
+    //}
 
     public enum eObjType
     {

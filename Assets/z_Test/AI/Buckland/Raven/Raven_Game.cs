@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UtilGS9;
-
+using Buckland;
 
 namespace Raven
 {
@@ -172,7 +172,7 @@ namespace Raven
             foreach (Raven_Bot curBot in m_Bots)
             {
 
-                SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                       Const.SENDER_ID_IRRELEVANT,
                                       (curBot).ID(),
                                       (int)eMsg.UserHasRemovedBot,
@@ -436,7 +436,7 @@ namespace Raven
             m_pMap = new Raven_Map();
 
             //make sure the entity manager is reset
-            SingleO.entityMgr.Reset();
+            EntityManager.Instance().Reset();
 
 
             //load the new map data
@@ -465,7 +465,7 @@ namespace Raven
                 m_Bots.AddLast(rb);
 
                 //register the bot with the entity manager
-                SingleO.entityMgr.RegisterEntity(rb);
+                EntityManager.Instance().RegisterEntity(rb);
 
                 DebugWide.LogBlue("Adding bot with ID " + rb.ID());
 
@@ -652,7 +652,7 @@ namespace Raven
             //now test to see which one is closest and visible
             foreach (int it in SwitchIDs)
             {
-                BaseGameEntity trig = SingleO.entityMgr.GetEntityFromID(it);
+                BaseGameEntity trig = EntityManager.Instance().GetEntityFromID(it);
 
                 if (isLOSOkay(botPos, trig.Pos()))
                 {

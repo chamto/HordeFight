@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-
+using Buckland;
 
 namespace Raven
 {
@@ -152,7 +152,7 @@ namespace Raven
             node.SetExtraInfo(hg);
 
             //register the entity 
-            SingleO.entityMgr.RegisterEntity(hg);
+            EntityManager.Instance().RegisterEntity(hg);
         }
 
         void AddWeapon_Giver(int type_of_weapon, string line)
@@ -175,7 +175,7 @@ namespace Raven
             node.SetExtraInfo(wg);
 
             //register the entity 
-            SingleO.entityMgr.RegisterEntity(wg);
+            EntityManager.Instance().RegisterEntity(wg);
         }
         void AddDoor(string line)
         {
@@ -189,7 +189,7 @@ namespace Raven
             m_Doors.Add(pDoor);
 
             //register the entity 
-            SingleO.entityMgr.RegisterEntity(pDoor);
+            EntityManager.Instance().RegisterEntity(pDoor);
         }
         void AddDoorTrigger(string line)
         {
@@ -203,7 +203,7 @@ namespace Raven
             m_TriggerSystem.Register(tr);
 
             //register the entity 
-            SingleO.entityMgr.RegisterEntity(tr);
+            EntityManager.Instance().RegisterEntity(tr);
 
         }
 

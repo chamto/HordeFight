@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Raven
+namespace Buckland
 {
 
     public class MessageDispatcher
@@ -12,6 +12,16 @@ namespace Raven
         //because of the benefit of automatic sorting and avoidance
         //of duplicates. Messages are sorted by their dispatch time.
         private SortedSet<Telegram> PriorityQ = new SortedSet<Telegram>();
+
+
+        private static MessageDispatcher _instance = null;
+        public static MessageDispatcher Instance()
+        {
+            if (null == _instance)
+                _instance = new MessageDispatcher();
+
+            return _instance;
+        }
 
         //this method is utilized by DispatchMsg or DispatchDelayedMessages.
         //This method calls the message handling member function of the receiving
@@ -38,7 +48,7 @@ namespace Raven
         {
 
             //get a pointer to the receiver
-            BaseGameEntity pReceiver =  SingleO.entityMgr.GetEntityFromID(receiver);
+            BaseGameEntity pReceiver =  EntityManager.Instance().GetEntityFromID(receiver);
 
             //make sure the receiver is valid
             if (pReceiver == null)
@@ -55,7 +65,7 @@ namespace Raven
             {
                 //DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 DebugWide.LogWhite("\nInstant telegram dispatched at time: " + Time.time +
-                " by " + sender + " for " + receiver + ". Msg is " + (eMsg)msg);
+                " by " + sender + " for " + receiver + ". Msg is " + msg);
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
             }
@@ -72,7 +82,7 @@ namespace Raven
                 PriorityQ.Add(telegram);
 
                 DebugWide.LogWhite("Delayed telegram from " + sender + " recorded at time " + Time.time
-                + " for " + receiver + ". Msg is " + (eMsg)msg);
+                + " for " + receiver + ". Msg is " + msg);
             }
         }
 
@@ -91,11 +101,11 @@ namespace Raven
                 Telegram telegram = PriorityQ.Min;
 
                 //find the recipient
-                BaseGameEntity pReceiver = SingleO.entityMgr.GetEntityFromID(telegram.Receiver);
+                BaseGameEntity pReceiver = EntityManager.Instance().GetEntityFromID(telegram.Receiver);
 
 
                 DebugWide.LogWhite("Queued telegram ready for dispatch: Sent to " + pReceiver.ID()
-                    + ". Msg is " + (eMsg)telegram.Msg);
+                    + ". Msg is " + telegram.Msg);
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
 

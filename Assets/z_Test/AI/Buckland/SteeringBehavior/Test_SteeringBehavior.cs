@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-namespace Buckland
+namespace SteeringBehavior
 {
 
     public static class SingleO
@@ -368,13 +368,13 @@ namespace Buckland
             SingleO.prm.Update(); //가장먼저 갱신되어야 함 
 
             const int SampleRate = 10;
-            _FrameRateSmoother = new Smoother<float, FloatCalc>(SampleRate, 0.0f);
+            _FrameRateSmoother = new Buckland.Smoother<float, Buckland.FloatCalc>(SampleRate, 0.0f);
 
             Init_GameWorld();
 		}
 
 
-        Smoother<float, FloatCalc> _FrameRateSmoother;
+        Buckland.Smoother<float, Buckland.FloatCalc> _FrameRateSmoother;
         public void Update()
         {
             

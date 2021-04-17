@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using UtilGS9;
 //using DWORD = System.UInt32;
+using Buckland;
 
 namespace Raven
 {
@@ -511,7 +512,7 @@ namespace Raven
                         if (isDead())
                         {
 
-                            SingleO.dispatcher.DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
+                            MessageDispatcher.Instance().DispatchMsg(Const.SEND_MSG_IMMEDIATELY,
                                           ID(),
                                           msg.Sender,
                                           (int)eMsg.YouGotMeYouSOB,

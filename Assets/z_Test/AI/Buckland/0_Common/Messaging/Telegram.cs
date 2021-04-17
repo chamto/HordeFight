@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Raven
+namespace Buckland
 {
     public struct Telegram : IEquatable<Telegram>, IComparable<Telegram>
     {

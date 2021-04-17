@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-namespace Buckland
+namespace SteeringBehavior
 {
     public class SteeringBehavior
     {

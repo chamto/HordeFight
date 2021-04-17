@@ -1,4 +1,6 @@
-﻿namespace Raven
+﻿using Buckland;
+
+namespace Raven
 {
     public class Trigger_LimitedLifetime<entity_type> : Trigger<entity_type>
     {

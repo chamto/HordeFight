@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UtilGS9;
 
-namespace Raven
+namespace Buckland
 {
     //조절장치 : 초당 몇번 실행할지를 알려주는 용도로 사용 
     // NumUpdatesPerSecondRqd 값이 5 인 경우 5초 마다 알려주는 것이 아닌, 1초에 5번 알려준다는 것임 
