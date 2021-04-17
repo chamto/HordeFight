@@ -68,6 +68,26 @@ namespace Cyclone
         const int NUM_JOINTS = 3;
         Joint[] joints = new Joint[NUM_JOINTS];
 
+        const int CUBE_COUNT = 3;
+        Cube[] cubes = new Cube[CUBE_COUNT];
+        const int CUBE_JOINT_COUNT = 2;
+        Joint[] cube_joints = new Joint[CUBE_JOINT_COUNT];
+
+        public void InitCube()
+        {
+            for(int i =0;i< CUBE_COUNT;i++)
+            {
+                cubes[i] = new Cube();
+                cubes[i].setState(new Vector3(), Quaternion.identity, new Vector3(1, 1, 2), Vector3.ZERO);
+            }
+            for (int i = 0; i < CUBE_JOINT_COUNT; i++)
+            {
+                cube_joints[i] = new Joint();
+                cube_joints[i].set(cubes[i].body, new Vector3(0, 0f, 3.0f), cubes[i + 1].body, new Vector3(0, 0f, -2.0f), 0.01f);
+            }
+
+
+        }
 
         public JointDemo()
         {
@@ -100,10 +120,7 @@ namespace Cyclone
                 0.001f
                 );
 
-
-            //bone_0.body.addForceAtBodyPoint(
-            //new Vector3(1000f, 0, 1000f),
-            //new Vector3(4, 0, 0));
+            InitCube();
         }
 
         public void Fire()
@@ -118,7 +135,8 @@ namespace Cyclone
 
         public void InputMousePt(float x, float y, float z)
         {
-            RigidBody target = bone_0.body;
+            //RigidBody target = bone_0.body;
+            RigidBody target = cubes[0].body;
             //target.setAwake(false);
             target.setPosition(x, y, z);
             target.setOrientation(1, 0, 0, 0);
@@ -166,13 +184,18 @@ namespace Cyclone
             }
 
 
-
-
+            for (int i = 0; i < CUBE_JOINT_COUNT; i++)
+            {
+                Joint joint = cube_joints[i];
+                if (!cData.hasMoreContacts()) return;
+                uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
+                cData.addContacts(added);
+            }
         }
 
         protected override void updateObjects(float duration)
         {
-
+            bone_0.body.setPosition(Vector3.ZERO); //chamto test
             bone_0.body.integrate(duration);
             bone_0.calculateInternals();
             bone_1.body.integrate(duration);
@@ -182,6 +205,37 @@ namespace Cyclone
             bone_3.body.integrate(duration);
             bone_3.calculateInternals();
 
+
+            for (int i = 0; i < CUBE_COUNT; i++)
+            {
+                cubes[i].body.integrate(duration);
+                cubes[i].calculateInternals();
+            }
+        }
+
+        public void CubeRender()
+        {
+            for (int i = 0; i < CUBE_COUNT; i++)
+            {
+                cubes[i].render();
+            }
+
+            for (uint i = 0; i < CUBE_JOINT_COUNT; i++)
+            {
+                Joint joint = cube_joints[i];
+                Vector3 a_pos = joint.body[0].getPointInWorldSpace(joint.position[0]);
+                Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
+                float length = (b_pos - a_pos).magnitude();
+
+                Color cc;
+                if (length > joint.error) cc = new Color(1, 0, 0);
+                else cc = new Color(0, 1, 0);
+
+
+                DebugWide.DrawLine(a_pos.ToUnity(), b_pos.ToUnity(), cc);
+
+                //DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
+            }
         }
 
         public void display()
@@ -190,6 +244,8 @@ namespace Cyclone
             bone_1.render();
             bone_2.render();
             bone_3.render();
+
+            CubeRender();
 
             for (uint i = 0; i < NUM_JOINTS; i++)
             {
