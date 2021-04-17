@@ -6,49 +6,6 @@ using UtilGS9;
 
 namespace David_Conger
 {
-    [System.Serializable]
-    public struct Point_mass
-    {
-        public float mass;
-        public Vector3 location; //centerOfMassLocation;
-        public Vector3 linearVelocity;
-        public Vector3 linearAcceleration;
-        public Vector3 forces;
-
-        public float radius;
-        public float elasticity; //coefficientOfRestitution
-
-
-        public void Update(float changeInTime)
-        {
-            //
-            // Begin calculating linear dynamics.
-            //
-
-            // Find the linear acceleration.
-            // a = F/m
-            //assert(mass != 0);
-            linearAcceleration = forces / mass;
-
-            // Find the linear velocity.
-            linearVelocity += linearAcceleration * changeInTime;
-
-            // Find the new location of the center of mass.
-            location += linearVelocity * changeInTime;
-
-            //
-            // End calculating linear dynamics.
-            //
-
-        }
-
-        public void Draw(Color color)
-        {
-            DebugWide.DrawCircle(location, radius, color);
-            DebugWide.DrawLine(location, location+forces, color);
-            DebugWide.DrawLine(location, location + linearVelocity, Color.green);
-        }
-    }
 
     [System.Serializable]
     public class Test_ParticleBounce : MonoBehaviour
@@ -80,16 +37,9 @@ namespace David_Conger
 
         }
 
-        // Update is called once per frame
+        private bool forceApplied = false;
         void Update()
         {
-
-        }
-
-        private bool forceApplied = false;
-		public void OnDrawGizmos()
-		{
-            
             // If the force has not yet been applied...
             if (!forceApplied)
             {
@@ -103,6 +53,13 @@ namespace David_Conger
                 allParticles[1].forces = ConstV.v3_zero;
             }
 
+            float timeInterval = 0.5f;
+            for (int i = 0; i < COUNT; i++)
+            {
+                allParticles[i].Update(timeInterval);
+
+            }
+
             // 
             // Test for a collision.
             //
@@ -114,9 +71,8 @@ namespace David_Conger
             // Find the square of the sum of the radii of the balls.
             float minDistanceSquared =
                 allParticles[0].radius + allParticles[1].radius;
-            minDistanceSquared  = minDistanceSquared * minDistanceSquared;
+            minDistanceSquared = minDistanceSquared * minDistanceSquared;
 
-            float timeInterval = 0.5f;
 
             // If there is a collision...
             if (distanceSquared < minDistanceSquared)
@@ -126,12 +82,11 @@ namespace David_Conger
                 HandleCollision(ref allParticles[0], ref allParticles[1], distance, timeInterval);
             }
 
+        }
 
-            for (int i = 0; i < COUNT;i++)
-            {
-                allParticles[i].Update(timeInterval);
+		public void OnDrawGizmos()
+		{
 
-            }
             allParticles[0].Draw(Color.white);
             allParticles[1].Draw(Color.black);
 		}
@@ -192,6 +147,51 @@ namespace David_Conger
                 acceleration1 * pm0.mass);
             pm1.forces = (
                 acceleration2 * pm1.mass);
+        }
+    }
+
+
+    [System.Serializable]
+    public struct Point_mass
+    {
+        public float mass;
+        public Vector3 location; //centerOfMassLocation;
+        public Vector3 linearVelocity;
+        public Vector3 linearAcceleration;
+        public Vector3 forces;
+
+        public float radius;
+        public float elasticity; //coefficientOfRestitution
+
+
+        public void Update(float changeInTime)
+        {
+            //
+            // Begin calculating linear dynamics.
+            //
+
+            // Find the linear acceleration.
+            // a = F/m
+            //assert(mass != 0);
+            linearAcceleration = forces / mass;
+
+            // Find the linear velocity.
+            linearVelocity += linearAcceleration * changeInTime;
+
+            // Find the new location of the center of mass.
+            location += linearVelocity * changeInTime;
+
+            //
+            // End calculating linear dynamics.
+            //
+
+        }
+
+        public void Draw(Color color)
+        {
+            DebugWide.DrawCircle(location, radius, color);
+            DebugWide.DrawLine(location, location + forces, color);
+            DebugWide.DrawLine(location, location + linearVelocity, Color.green);
         }
     }
 }
