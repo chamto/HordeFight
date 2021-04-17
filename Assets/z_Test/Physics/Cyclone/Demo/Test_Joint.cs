@@ -65,9 +65,9 @@ namespace Cyclone
         //Sphere bone_2 = new Sphere();
         //Sphere bone_3 = new Sphere();
 
-        const int SPHERE_COUNT = 4;
+        const int SPHERE_COUNT = 6;
         Sphere[] spheres = new Sphere[SPHERE_COUNT];
-        const int SPHERE_JOINT_COUNT = 3;
+        const int SPHERE_JOINT_COUNT = 5;
         Joint[] sphere_joints = new Joint[SPHERE_JOINT_COUNT];
 
         const int CUBE_COUNT = 3;
@@ -80,13 +80,20 @@ namespace Cyclone
         {
             for (int i = 0; i < SPHERE_COUNT; i++)
             {
+                float r = 1f;
+                if (0 == i)
+                    r = 1;
+                else if (SPHERE_COUNT - 1 == i)
+                    r = 2;
+
                 spheres[i] = new Sphere();
-                spheres[i].setState(new Vector3(), Quaternion.identity, 1, Vector3.ZERO);
+                spheres[i].setState(new Vector3(), Quaternion.identity, r, Vector3.ZERO);
+
             }
             for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
             {
                 sphere_joints[i] = new Joint();
-                sphere_joints[i].set(spheres[i].body, new Vector3(0, 0f, 3.0f), spheres[i + 1].body, new Vector3(0, 0f, -2.0f), 0.01f);
+                sphere_joints[i].set(spheres[i].body, new Vector3(0, 0f, 3.0f), spheres[i + 1].body, new Vector3(0, 0f, -3.0f), 0.01f);
             }
         }
 
@@ -100,7 +107,7 @@ namespace Cyclone
             for (int i = 0; i < CUBE_JOINT_COUNT; i++)
             {
                 cube_joints[i] = new Joint();
-                cube_joints[i].set(cubes[i].body, new Vector3(0, 0f, 3.0f), cubes[i + 1].body, new Vector3(0, 0f, -2.0f), 0.01f);
+                cube_joints[i].set(cubes[i].body, new Vector3(0, 0f, 3.0f), cubes[i + 1].body, new Vector3(0, 0f, -3.0f), 0.01f);
             }
 
 
@@ -123,10 +130,12 @@ namespace Cyclone
             new Vector3(0, 0, 0));
         }
 
+
+        Vector3 __prev_pos = Vector3.ZERO;
         public void InputMousePt(float x, float y, float z)
         {
             //RigidBody target = cubes[0].body;
-            RigidBody target = spheres[3].body;
+            RigidBody target = spheres[0].body;
             //target.setAwake(false);
             target.setPosition(x, y, z);
             target.setOrientation(1, 0, 0, 0);
@@ -135,6 +144,14 @@ namespace Cyclone
             target.setAcceleration(0, 0, 0);
             target.calculateDerivedData();
 
+            //쇠사슬에 힘을 전달하는 것을 표현할려고 의도했으나 안됨
+            //Vector3 dir = new Vector3(x, y, z) - __prev_pos;
+            //dir.normalise();
+            //for (int i=1;i<SPHERE_COUNT;i++)
+            //{
+            //    spheres[i].body.addForce(dir*10f * i);
+            //}
+            __prev_pos = new Vector3(x, y, z);
         }
 
         protected override void generateContacts()
@@ -151,6 +168,7 @@ namespace Cyclone
             cData.tolerance = 0.1f;
 
 
+            //바닥 충돌 정보 수집  
             //for(int i=0;i<SPHERE_COUNT;i++)
             //{
             //    CollisionDetector.sphereAndHalfSpace(spheres[i], plane, cData);
@@ -160,24 +178,24 @@ namespace Cyclone
             //    CollisionDetector.boxAndHalfSpace(cubes[i], plane, cData);
             //}
 
-            if (!cData.hasMoreContacts()) return;
-            for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
-            {
-                Joint joint = sphere_joints[i];
 
-                if (!cData.hasMoreContacts()) return;
-                uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
-                cData.addContacts(added);
-            }
+            //엔진을 통한 조인트 처리 : 컨텍트리졸브가 처리 할 수 있게 정보 수집 (충돌처리로 조인트를 구현하는 것임 , 문제있음) 
+            //for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
+            //{
+            //    Joint joint = sphere_joints[i];
+            //    if (!cData.hasMoreContacts()) return;
+            //    uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
+            //    cData.addContacts(added);
+            //}
 
 
-            for (int i = 0; i < CUBE_JOINT_COUNT; i++)
-            {
-                Joint joint = cube_joints[i];
-                if (!cData.hasMoreContacts()) return;
-                uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
-                cData.addContacts(added);
-            }
+            //for (int i = 0; i < CUBE_JOINT_COUNT; i++)
+            //{
+            //    Joint joint = cube_joints[i];
+            //    if (!cData.hasMoreContacts()) return;
+            //    uint added = joint.addContact(cData.contacts, (uint)cData.contactsLeft);
+            //    cData.addContacts(added);
+            //}
         }
 
         protected override void updateObjects(float duration)
@@ -194,9 +212,57 @@ namespace Cyclone
                 cubes[i].body.integrate(duration);
                 cubes[i].calculateInternals();
             }
+
+            //20210418 chamto - 철퇴 시뮬레이션 하기 위한 조인트시험
+            //David_Conger 의 파티클에 대하여 이렇게 계산하는 것을 보고 따라해봄 , 컨텍트 리졸브를 통하지 않고 조인트를 직접 계산함
+            //구형 파티클에 대해서만 쓸수 있는 방식임
+            //!! 컨텍트 리졸브를 통한 조인트처리시 강체가 떠는 문제가 있음, 조인트가 늘어지는 문제가 있음
+            //@@ 조인트는 구속시킬 두 강체를 구라고 여기고 충돌 처리해주는 것임
+            //자연스럽게 휘둘러지지 않음 
+            //쇠사슬을 시뮬레이션 하기에는 적당하지 않은것 같음 
+            SphereJointUpdate(3);
+
+            //큐브와 큐브의 충돌처리 없이 위치값 만으로 조인트 시켜 토크가 없어 정상적으로 보이지 않음 
+            //CubeJointUpdate(3);
         }
 
-        public void SphereRender()
+        public void SphereJointUpdate(float len)
+        {
+            for (int i = 0; i < SPHERE_JOINT_COUNT; i++)
+            {
+                Vector3 dir = spheres[i].body.getPosition() - spheres[i + 1].body.getPosition();
+                dir.normalise();
+                spheres[i + 1].body.setPosition(spheres[i].body.getPosition() + (dir * -1 * len));
+
+                //Joint joint = sphere_joints[i];
+                //Vector3 a_pos = joint.body[0].getPointInWorldSpace(joint.position[0]);
+                //Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
+                //Vector3 dir = a_pos - b_pos;
+                //dir.normalise();
+                //joint.body[1].setPosition(joint.body[0].getPosition() + (dir * -1 * len));
+            }
+        }
+
+        public void CubeJointUpdate(float len)
+        {
+            for (int i = 0; i < CUBE_JOINT_COUNT; i++)
+            {
+                Vector3 dir = cubes[i].body.getPosition() - cubes[i + 1].body.getPosition();
+                dir.normalise();
+                cubes[i + 1].body.setPosition(cubes[i].body.getPosition() + (dir * -1 * len));
+
+
+                //Joint joint = cube_joints[i];
+                //Vector3 a_pos = joint.body[0].getPointInWorldSpace(joint.position[0]);
+                //Vector3 b_pos = joint.body[1].getPointInWorldSpace(joint.position[1]);
+                //Vector3 dir = a_pos - b_pos;
+                //dir.normalise();
+                //joint.body[1].setPosition(joint.body[0].getPosition() + (dir * -1 * len));
+            }
+
+        }
+
+            public void SphereRender()
         {
             for (int i = 0; i < SPHERE_COUNT; i++)
             {
@@ -217,7 +283,7 @@ namespace Cyclone
 
                 DebugWide.DrawLine(a_pos.ToUnity(), b_pos.ToUnity(), cc);
 
-                //DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
+                DebugWide.DrawLine(joint.body[0].getPosition().ToUnity(), joint.body[1].getPosition().ToUnity(), Color.white);
             }
         }
 
