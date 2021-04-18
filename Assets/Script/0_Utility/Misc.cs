@@ -652,6 +652,11 @@ namespace UtilGS9
             return v3;
         }
 
+        public static Vector3 Reflect(Vector3 v2, Vector3 norm)
+        {
+            return v2 + 2f * Vector3.Dot(v2, norm) * (-norm);
+        }
+
         //Vector3의 ToString 함수는 값전체를 출력해주지 않는 문제가 있음.
         //벡터의 소수점값 전체를 출력하는 함수 
         static public string ToString(Vector3 src)
