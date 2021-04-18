@@ -392,7 +392,7 @@ namespace Raven
             if (isDead() || isSpawning()) return;
 
             Vector3 perp = Vector3.Cross(m_vFacing, ConstV.v3_up);
-            Transformation.Draw_WorldTransform(m_vecBotVB,
+            Transformations.Draw_WorldTransform(m_vecBotVB,
                                              Pos(),
                                              Facing(),
                                              perp,

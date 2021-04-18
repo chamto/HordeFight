@@ -3,7 +3,6 @@
 
 namespace Buckland
 {
-    //======================================================
 
     public class EntityManager
     {

@@ -4,8 +4,52 @@ using System;
 
 namespace Buckland
 {
+    public enum span_type { plane_backside, plane_front, on_plane };
+
     public class Geometry
     {
+        //given a plane and a ray this function determins how far along the ray 
+        //an interestion occurs. Returns negative if the ray is parallel
+        static public float DistanceToRayPlaneIntersection(Vector3 RayOrigin,
+                                                     Vector3 RayHeading,
+                                                     Vector3 PlanePoint,  //any point on the plane
+                                                     Vector3 PlaneNormal)
+        {
+
+            float d = Vector3.Dot(-PlaneNormal, PlanePoint);
+            float numer = Vector3.Dot(PlaneNormal, RayOrigin) + d;
+            float denom = Vector3.Dot(PlaneNormal, RayHeading);
+
+            // normal is parallel to vector
+            if ((denom < 0.000001f) && (denom > -0.000001f))
+            {
+                return (-1.0f);
+            }
+
+            return -(numer / denom);
+        }
+
+        static public span_type WhereIsPoint(Vector3 point,
+                                      Vector3 PointOnPlane, //any point on the plane
+                                      Vector3 PlaneNormal)
+        {
+            Vector3 dir = PointOnPlane - point;
+
+            float d = Vector3.Dot(dir, PlaneNormal);
+
+            if (d < -0.000001f)
+            {
+                return span_type.plane_front;
+            }
+
+            else if (d > 0.000001f)
+            {
+                return span_type.plane_backside;
+            }
+
+            return span_type.on_plane;
+        }
+
         static public float DistToLineSegment(Vector3 A, Vector3 B, Vector3 P)
         {
             //if the angle is obtuse between PA and AB is obtuse then the closest

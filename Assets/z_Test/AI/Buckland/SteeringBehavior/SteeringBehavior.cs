@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
+using Buckland;
 
 namespace SteeringBehavior
 {
@@ -175,12 +176,12 @@ namespace SteeringBehavior
 
             //feeler to left
             Vector2 temp = m_pVehicle.Heading();
-            temp = Util.Vec2DRotateAroundOrigin(temp, Const.HalfPi * 3.5f);
+            temp = Transformations.Vec2DRotateAroundOrigin(temp, Const.HalfPi * 3.5f);
             m_Feelers[1] = m_pVehicle.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
 
             //feeler to right
             temp = m_pVehicle.Heading();
-            temp = Util.Vec2DRotateAroundOrigin(temp, Const.HalfPi * 0.5f);
+            temp = Transformations.Vec2DRotateAroundOrigin(temp, Const.HalfPi * 0.5f);
             m_Feelers[2] = m_pVehicle.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
         }
 
@@ -310,7 +311,7 @@ namespace SteeringBehavior
         Vector2 OffsetPursuit(Vehicle leader, Vector2 offset)
         {
             //calculate the offset's position in world space
-            Vector2 WorldOffsetPos = Util.PointToWorldSpace(offset,
+            Vector2 WorldOffsetPos = Transformations.PointToWorldSpace(offset,
                                                             leader.Heading(),
                                                             leader.Side(),
                                                             leader.Pos());
@@ -380,7 +381,7 @@ namespace SteeringBehavior
             Vector2 target = m_vWanderTarget + new Vector2(m_dWanderDistance, 0);
 
             //project the target into world space
-            Vector2 Target = Util.PointToWorldSpace(target,
+            Vector2 Target = Transformations.PointToWorldSpace(target,
                                                    m_pVehicle.Heading(),
                                                    m_pVehicle.Side(), 
                                                    m_pVehicle.Pos());
@@ -422,7 +423,7 @@ namespace SteeringBehavior
                 if (curOb.IsTagged())
                 {
                     //calculate this obstacle's position in local space
-                    Vector2 LocalPos = Util.PointToLocalSpace(curOb.Pos(),
+                    Vector2 LocalPos = Transformations.PointToLocalSpace(curOb.Pos(),
                                                            m_pVehicle.Heading(),
                                                            m_pVehicle.Side(),
                                                            m_pVehicle.Pos());
@@ -497,7 +498,7 @@ namespace SteeringBehavior
             }
 
             //finally, convert the steering vector from local to world space
-            return Util.VectorToWorldSpace(SteeringForce,
+            return Transformations.VectorToWorldSpace(SteeringForce,
                                       m_pVehicle.Heading(),
                                       m_pVehicle.Side());
         }
@@ -1685,7 +1686,7 @@ namespace SteeringBehavior
 
                 
                 //calculate the center of the wander circle
-                Vector2 m_vTCC = Util.PointToWorldSpace(new Vector2(m_dWanderDistance*m_pVehicle.BRadius(), 0),
+                Vector2 m_vTCC = Transformations.PointToWorldSpace(new Vector2(m_dWanderDistance*m_pVehicle.BRadius(), 0),
                                                      m_pVehicle.Heading(),
                                                      m_pVehicle.Side(),
                                                      m_pVehicle.Pos());
@@ -1693,7 +1694,7 @@ namespace SteeringBehavior
                 DebugWide.DrawCircle(m_vTCC, m_dWanderRadius * m_pVehicle.BRadius(), Color.green);
 
                 //draw the wander target
-                Vector2 p_temp = Util.PointToWorldSpace((m_vWanderTarget + new Vector2(m_dWanderDistance, 0)) * m_pVehicle.BRadius(),
+                Vector2 p_temp = Transformations.PointToWorldSpace((m_vWanderTarget + new Vector2(m_dWanderDistance, 0)) * m_pVehicle.BRadius(),
                                               m_pVehicle.Heading(),
                                               m_pVehicle.Side(),
                                                       m_pVehicle.Pos());
@@ -1722,12 +1723,12 @@ namespace SteeringBehavior
               
                 if (!m_pVehicle.isSmoothingOn())
                 {
-                    box = Util.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.Heading(),m_pVehicle.Side());
+                    box = Transformations.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.Heading(),m_pVehicle.Side());
                   //gdi->ClosedShape(box);
                 }
                 else
                 {
-                    box = Util.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.SmoothedHeading(), VOp.Perp(m_pVehicle.SmoothedHeading()));
+                    box = Transformations.WorldTransform(box,m_pVehicle.Pos(),m_pVehicle.SmoothedHeading(), VOp.Perp(m_pVehicle.SmoothedHeading()));
                   //gdi->ClosedShape(box);
                 } 
                 DebugWide.DrawLine(box[0], box[1], Color.gray);
@@ -1760,7 +1761,7 @@ namespace SteeringBehavior
                     if (curOb.IsTagged())
                     {
                         //calculate this obstacle's position in local space
-                        Vector2 LocalPos = Util.PointToLocalSpace(curOb.Pos(),
+                        Vector2 LocalPos = Transformations.PointToLocalSpace(curOb.Pos(),
                                                              m_pVehicle.Heading(),
                                                              m_pVehicle.Side(),
                                                              m_pVehicle.Pos());

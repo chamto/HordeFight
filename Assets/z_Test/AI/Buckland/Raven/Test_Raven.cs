@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UtilGS9;
 using Buckland;
 
 namespace Raven
@@ -191,96 +190,6 @@ namespace Raven
 
         public static bool m_bShowScore = false;
     }
-
-    public class Transformation
-    {
-
-        static public void Draw_WorldTransform(List<Vector3> points,
-                                  Vector3 pos,
-                                  Vector3 forward,
-                                  Vector3 side,
-                                  Vector3 scale,
-                                  Color color)
-        {
-            Vector3 up = Vector3.Cross(forward, side);
-            Matrix4x4 m = Matrix4x4.identity;
-            m.SetColumn(0, side); //열값 삽입
-            m.SetColumn(1, up);
-            m.SetColumn(2, forward);
-
-            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, forward);
-
-
-            Vector3 tr, cur, prev = ConstV.v3_zero;
-
-            Vector3 v = points[points.Count - 1];
-            tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-            prev = m.MultiplyPoint(tr) + pos;
-            //prev = rotQ * v + pos;
-            for (int i=0;i<points.Count;i++)
-            {
-                v = points[i];
-                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-                cur = m.MultiplyPoint(tr) + pos;
-                //cur = rotQ * points[i] + pos;
-
-                DebugWide.DrawLine(prev, cur, color);
-
-                prev = cur;
-            }
-
-        }
-
-        static public List<Vector3> WorldTransform(List<Vector3> points,
-                                  Vector3   pos,
-                                  Vector3   forward,
-                                  Vector3   side,
-                                  Vector3   scale)
-        {
-            Vector3 up = Vector3.Cross(forward, side);
-            Matrix4x4 m = Matrix4x4.identity;
-            m.SetColumn(0, side); //열값 삽입
-            m.SetColumn(1, up);
-            m.SetColumn(2, forward);
-
-            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, forward);
-
-            List<Vector3> list = new List<Vector3>();
-
-            Vector3 tr;
-            foreach (Vector3 v in points)
-            {
-                tr = new Vector3(v.x * scale.x, v.y * scale.y, v.z * scale.z);
-                //list.Add((rotQ * tr) + pos);
-                list.Add((m.MultiplyPoint(tr)) + pos);
-            }
-            return list;
-
-        }
-
-        static public Vector3 PointToWorldSpace(Vector3 point,
-                                    Vector3 AgentHeading,
-                                    Vector3 AgentSide,
-                                    Vector3 AgentPosition)
-        {
-            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
-            Matrix4x4 m = Matrix4x4.identity;
-            m.SetColumn(0, AgentSide); //열값 삽입
-            m.SetColumn(1, AgentUp);
-            m.SetColumn(2, AgentHeading);
-
-            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, AgentHeading);
-
-            return m.MultiplyPoint(point) + AgentPosition;
-        }
-
-        static public void Vec2DRotateAroundOrigin(ref Vector3 v, float radian)
-        {
-            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, ConstV.v3_up);
-            v = rotQ * v;
-        }
-
-    }   
 
     public class HandyGraph
     {

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-
+using Buckland;
 
 namespace SteeringBehavior
 {
@@ -77,188 +77,7 @@ namespace SteeringBehavior
             return v2 + 2f * Vector2.Dot(v2, norm) * (-norm);
         }
 
-    //--------------------------- WorldTransform -----------------------------
-    //
-    //  given a std::vector of 2D vectors, a position, orientation and scale,
-    //  this function transforms the 2D vectors into the object's world space
-    //------------------------------------------------------------------------
-    public static List<Vector2> WorldTransform(List<Vector2> points,
-                                             Vector2 pos,
-                                             Vector2 forward,
-                                             Vector2 side,
-                                             Vector2 scale)
-        {
-            //copy the original vertices into the buffer about to be transformed
-            List<Vector2> TranVector2Ds = new List<Vector2>(points);
-            //DebugWide.LogBlue(pos + "  " + forward + "  " + side + "   " + scale);
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-
-            //scale
-            if ((scale.x != 1.0f) || (scale.y != 1.0f))
-            {
-                matTransform.Scale(scale.x, scale.y);
-            }
-
-            //rotate
-            matTransform.RotateY(forward, side);
-
-            //and translate
-            matTransform.Translate(pos.x, pos.y);
-
-            //now transform the object's vertices
-            C2DMatrix.Transform(ref matTransform, ref TranVector2Ds);
-
-            return TranVector2Ds;
-        }
-
-        //--------------------------- WorldTransform -----------------------------
-        //
-        //  given a std::vector of 2D vectors, a position and  orientation
-        //  this function transforms the 2D vectors into the object's world space
-        //------------------------------------------------------------------------
-        public static List<Vector2> WorldTransform(List<Vector2> points,
-                                  Vector2 pos,
-                                  Vector2 forward,
-                                  Vector2 side)
-        {
-            //copy the original vertices into the buffer about to be transformed
-            List<Vector2> TranVector2Ds = new List<Vector2>(points);
-
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-            //rotate
-            matTransform.RotateY(forward, side);
-
-            //and translate
-            matTransform.Translate(pos.x, pos.y);
-
-            //now transform the object's vertices
-            C2DMatrix.Transform(ref matTransform, ref TranVector2Ds);
-
-            return TranVector2Ds;
-        }
-
-        //--------------------- PointToWorldSpace --------------------------------
-        //
-        //  Transforms a point from the agent's local space into world space
-        //------------------------------------------------------------------------
-        public static Vector2 PointToWorldSpace(Vector2 point,
-                                     Vector2 AgentHeading,
-                                     Vector2 AgentSide,
-                                     Vector2 AgentPosition)
-        {
-            //make a copy of the point
-            Vector2 TransPoint = point;
-
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-
-            //rotate
-            matTransform.RotateY(AgentHeading, AgentSide);
-
-            //and translate
-            matTransform.Translate(AgentPosition.x, AgentPosition.y);
-
-            //now transform the vertices
-            C2DMatrix.Transform(ref matTransform, ref point);
-
-            return point;
-        }
-
-        //실험노트 20210115 에 분선한 글이 있다. 참고하기 
-        public static Vector2 PointToLocalSpace(Vector2 point,
-                             Vector2 AgentHeading,
-                             Vector2 AgentSide,
-                             Vector2 AgentPosition)
-        {
-
-            //make a copy of the point
-            Vector2 TransPoint = point;
-
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-
-            //로컬좌표기준 이동량을 구한다 
-            float Tx = -Vector2.Dot(AgentPosition, AgentHeading);
-            float Ty = -Vector2.Dot(AgentPosition, AgentSide);
-
-            //기저축 정보를 이용하여 바로 역행렬을 만든다 
-            matTransform._11 = AgentHeading.x; matTransform._12 = AgentSide.x;
-            matTransform._21 = AgentHeading.y; matTransform._22 = AgentSide.y;
-
-            //이동량 적용
-            matTransform._31 = Tx; matTransform._32 = Ty;
-
-            //내부적으로 대상점에 회전행렬을 곱한 후 이동량이 더해진다 p' = (m*p)+t
-            C2DMatrix.Transform(ref matTransform, ref TransPoint);
-
-            return TransPoint;
-        }
-
-        public static Vector2 VectorToLocalSpace(Vector2 vec,
-                              Vector2 AgentHeading,
-                              Vector2 AgentSide)
-        {
-
-            //make a copy of the point
-            Vector2 TransPoint = vec;
-
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-
-            //create the transformation matrix
-            matTransform._11 = AgentHeading.x; matTransform._12 = AgentSide.x;
-            matTransform._21 = AgentHeading.y; matTransform._22 = AgentSide.y;
-
-            //now transform the vertices
-            C2DMatrix.Transform(ref matTransform, ref TransPoint);
-
-            return TransPoint;
-        }
-
-        //--------------------- VectorToWorldSpace --------------------------------
-        //
-        //  Transforms a vector from the agent's local space into world space
-        //------------------------------------------------------------------------
-        public static Vector2 VectorToWorldSpace(Vector2 vec,
-                                      Vector2 AgentHeading,
-                                      Vector2 AgentSide)
-        {
-            //make a copy of the point
-            Vector2 TransVec = vec;
-
-            //create a transformation matrix
-            C2DMatrix matTransform = C2DMatrix.identity;
-
-            //rotate
-            matTransform.RotateY(AgentHeading, AgentSide);
-
-            //now transform the vertices
-            C2DMatrix.Transform(ref matTransform, ref TransVec);
-
-            return TransVec;
-        }
-
-        //-------------------------- Vec2DRotateAroundOrigin --------------------------
-        //
-        //  rotates a vector ang rads around the origin
-        //-----------------------------------------------------------------------------
-        public static Vector2 Vec2DRotateAroundOrigin(Vector2 v, float ang)
-        {
-            //create a transformation matrix
-            C2DMatrix mat = C2DMatrix.identity;
-
-            //rotate
-            mat.RotateY(ang);
-
-            //now transform the object's vertices
-            C2DMatrix.Transform(ref mat, ref v);
-
-            return v;
-        }
-
-
+    
         //----------------------------- TwoCirclesOverlapped ---------------------
         //
         //  Returns true if the two circles overlap
@@ -297,21 +116,7 @@ namespace SteeringBehavior
             }
         }
 
-        //-------------------------- Vec2DRotateAroundOrigin --------------------------
-        //
-        //  rotates a vector ang rads around the origin
-        //-----------------------------------------------------------------------------
-        public static void Vec2DRotateAroundOrigin(ref Vector2 v, float ang)
-        {
-            //create a transformation matrix
-            C2DMatrix mat = C2DMatrix.identity;
 
-            //rotate
-            mat.RotateY(ang);
-
-            //now transform the object's vertices
-            C2DMatrix.Transform(ref mat, ref v);
-        }
 
         //------------------------- Overlapped -----------------------------------
         //
@@ -549,169 +354,6 @@ namespace SteeringBehavior
             }
         }
 
-    }
-
-    public struct C2DMatrix
-    {
-        public float _11, _12, _13;
-        public float _21, _22, _23;
-        public float _31, _32, _33;
-
-        //multiplies m_Matrix with mIn
-        public static C2DMatrix operator *(C2DMatrix a, C2DMatrix b)
-        {
-            C2DMatrix matrix = new C2DMatrix();
-
-            //first row
-            matrix._11 = (a._11 * b._11) + (a._12 * b._21) + (a._13 * b._31);
-            matrix._12 = (a._11 * b._12) + (a._12 * b._22) + (a._13 * b._32);
-            matrix._13 = (a._11 * b._13) + (a._12 * b._23) + (a._13 * b._33);
-
-            //second
-            matrix._21 = (a._21 * b._11) + (a._22 * b._21) + (a._23 * b._31);
-            matrix._22 = (a._21 * b._12) + (a._22 * b._22) + (a._23 * b._32);
-            matrix._23 = (a._21 * b._13) + (a._22 * b._23) + (a._23 * b._33);
-
-            //third
-            matrix._31 = (a._31 * b._11) + (a._32 * b._21) + (a._33 * b._31);
-            matrix._32 = (a._31 * b._12) + (a._32 * b._22) + (a._33 * b._32);
-            matrix._33 = (a._31 * b._13) + (a._32 * b._23) + (a._33 * b._33);
-
-            return matrix;
-        }
-
-        public override string ToString()
-        {
-            return _11 + " " + _12 + " " + _13 + "\n" +
-                _21 + " " + _22 + " " + _23 + "\n" +
-                _31 + " " + _32 + " " + _33 ;
-        }
-
-        public void InitZero()
-        {
-            _11 = 0.0f; _12 = 0.0f; _13 = 0.0f;
-            _21 = 0.0f; _22 = 0.0f; _23 = 0.0f;
-            _31 = 0.0f; _32 = 0.0f; _33 = 0.0f;
-        }
-
-        //create an identity matrix
-        public void Identity()
-        {
-            _11 = 1; _12 = 0; _13 = 0;
-
-            _21 = 0; _22 = 1; _23 = 0;
-
-            _31 = 0; _32 = 0; _33 = 1;
-        }
-
-        static public C2DMatrix identity
-        {
-            get 
-            {
-                C2DMatrix m = new C2DMatrix();
-                m.Identity();
-                return m; 
-            }
-        }
-
-        //create a transformation matrix
-        public void Translate(float x, float y)
-        {
-            C2DMatrix mat = new C2DMatrix();
-
-            mat._11 = 1; mat._12 = 0; mat._13 = 0;
-
-            mat._21 = 0; mat._22 = 1; mat._23 = 0;
-
-            mat._31 = x; mat._32 = y; mat._33 = 1;
-
-            //and multiply
-            this = this * mat;
-            //MatrixMultiply(mat);
-        }
-
-        //create a scale matrix
-        public void Scale(float xScale, float yScale)
-        {
-            C2DMatrix mat = new C2DMatrix();
-
-            mat._11 = xScale; mat._12 = 0; mat._13 = 0;
-
-            mat._21 = 0; mat._22 = yScale; mat._23 = 0;
-
-            mat._31 = 0; mat._32 = 0; mat._33 = 1;
-
-            //and multiply
-            this = this * mat;
-            //MatrixMultiply(mat);
-        }
-
-        //create a rotation matrix
-        public void RotateY(float rot)
-        {
-            C2DMatrix mat;
-
-            float Sin = (float)Math.Sin(rot);
-            float Cos = (float)Math.Cos(rot);
-
-            mat._11 = Cos; mat._12 = Sin; mat._13 = 0;
-
-            mat._21 = -Sin; mat._22 = Cos; mat._23 = 0;
-
-            mat._31 = 0; mat._32 = 0; mat._33 = 1;
-
-            //and multiply
-            this = this * mat;
-            //MatrixMultiply(mat);
-        }
-
-        // | cos@  sin@|   | head |   | @      |
-        // |-sin@  cos@| = | side | = | @ + 90 |
-        // side = perp(head)
-        // 회전행렬을 가로축으로 배치된 벡터로 보았을때 첫번째행 백터와 두번째행 벡터는 90도가 차이가 난다 
-        // 이 특징을 이용하여 정규화된 특정 방향백터 하나의 값으로 회전행렬을 구할 수 있다  
-        //create a rotation matrix from a fwd and side 2D vector
-        public void RotateY(Vector2 fwd, Vector2 side)
-        {
-            C2DMatrix mat = new C2DMatrix();
-
-            mat._11 = fwd.x; mat._12 = fwd.y; mat._13 = 0;
-
-            mat._21 = side.x; mat._22 = side.y; mat._23 = 0;
-
-            mat._31 = 0; mat._32 = 0; mat._33 = 1;
-
-            //DebugWide.LogBlue(this + " \n " + mat);
-            //and multiply
-            this = this * mat;
-            //MatrixMultiply(mat);
-        }
-
-        //applys a transformation matrix to a std::vector of points
-        public static void Transform(ref C2DMatrix matrix, ref List<Vector2> vPoints)
-        {
-            
-            for (int i = 0; i < vPoints.Count; ++i)
-            {
-                Vector2 temp = new Vector2();
-                temp.x = (matrix._11 * vPoints[i].x) + (matrix._21 * vPoints[i].y) + (matrix._31);
-
-                temp.y = (matrix._12 * vPoints[i].x) + (matrix._22 * vPoints[i].y) + (matrix._32);
-
-                vPoints[i] = temp;
-            }
-        }
-
-        //applys a transformation matrix to a point
-        public static void Transform(ref C2DMatrix matrix, ref Vector2 vPoint)
-        {
-            Vector2 temp = new Vector2();
-            temp.x = (matrix._11 * vPoint.x) + (matrix._21 * vPoint.y) + (matrix._31);
-
-            temp.y = (matrix._12 * vPoint.x) + (matrix._22 * vPoint.y) + (matrix._32);
-
-            vPoint = temp;
-        }
     }
 
     public class BaseGameEntity
@@ -1142,7 +784,7 @@ namespace SteeringBehavior
 
             if (isSmoothingOn())
             {
-                m_vecVehicleVBTrans = Util.WorldTransform(m_vecVehicleVB,
+                m_vecVehicleVBTrans = Transformations.WorldTransform(m_vecVehicleVB,
                                                      Pos(),
                                                      SmoothedHeading(),
                                                           VOp.Perp(SmoothedHeading()),
@@ -1151,7 +793,7 @@ namespace SteeringBehavior
 
             else
             {
-                m_vecVehicleVBTrans = Util.WorldTransform(m_vecVehicleVB,
+                m_vecVehicleVBTrans = Transformations.WorldTransform(m_vecVehicleVB,
                                                      Pos(),
                                                      Heading(),
                                                      Side(),
@@ -1338,7 +980,7 @@ namespace SteeringBehavior
 
                 Vector2 temp = new Vector2(RadialDist, 0.0f);
 
-                Util.Vec2DRotateAroundOrigin(ref temp, i * spacing);
+                Transformations.Vec2DRotateAroundOrigin(ref temp, i * spacing);
 
                 temp.x += midX; temp.y += midY;
 

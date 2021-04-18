@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UtilGS9;
+using Buckland;
 
 namespace Raven
 {
@@ -86,7 +87,7 @@ namespace Raven
         public override void Render()
         {
             Vector3 perp = Vector3.Cross(m_pOwner.Facing(), Vector3.up);
-            Transformation.Draw_WorldTransform(m_vecWeaponVB,
+            Transformations.Draw_WorldTransform(m_vecWeaponVB,
                                             m_pOwner.Pos(),
                                             m_pOwner.Facing(),
                                             perp,
@@ -110,7 +111,7 @@ namespace Raven
                     Vector3 AdjustedTarget = pos - m_pOwner.Pos();
 
                     //rotate the target vector by the deviation
-                    Transformation.Vec2DRotateAroundOrigin(ref AdjustedTarget, deviation);
+                    Transformations.Vec3RotateYAroundOrigin(ref AdjustedTarget, deviation);
 
                     //add a pellet to the game world
                     m_pOwner.GetWorld().AddShotGunPellet(m_pOwner, AdjustedTarget + m_pOwner.Pos());

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
+using Buckland;
 
 namespace Raven
 {
@@ -64,7 +65,7 @@ namespace Raven
         {
           Vector3 toPos = AimingPos - m_pOwner.Pos();
 
-           Transformation.Vec2DRotateAroundOrigin(ref toPos, Misc.RandFloat(-m_dAimAccuracy, m_dAimAccuracy));
+           Transformations.Vec3RotateYAroundOrigin(ref toPos, Misc.RandFloat(-m_dAimAccuracy, m_dAimAccuracy));
 
           AimingPos = toPos + m_pOwner.Pos();
         }

@@ -137,12 +137,12 @@ namespace Raven
 
             //feeler to left
             Vector3 temp = m_pRaven_Bot.Heading();
-            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 3.5f); //7 * 0.5 = 315도 
+            Transformations.Vec3RotateYAroundOrigin(ref temp, ConstV.HalfPi * 3.5f); //7 * 0.5 = 315도 
             m_Feelers[1] = m_pRaven_Bot.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
 
             //feeler to right
             temp = m_pRaven_Bot.Heading();
-            Transformation.Vec2DRotateAroundOrigin(ref temp, ConstV.HalfPi * 0.5f); //0.5 = 45도 
+            Transformations.Vec3RotateYAroundOrigin(ref temp, ConstV.HalfPi * 0.5f); //0.5 = 45도 
             m_Feelers[2] = m_pRaven_Bot.Pos() + m_dWallDetectionFeelerLength / 2.0f * temp;
         }
 
@@ -216,7 +216,7 @@ namespace Raven
             Vector3 target = m_vWanderTarget + new Vector3(m_dWanderDistance, 0, 0);
 
             //project the target into world space
-            Vector3 Target = Transformation.PointToWorldSpace(target,
+            Vector3 Target = Transformations.PointToWorldSpace(target,
                                                  m_pRaven_Bot.Heading(),
                                                  m_pRaven_Bot.Side(),
                                                  m_pRaven_Bot.Pos());
