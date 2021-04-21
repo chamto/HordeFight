@@ -281,7 +281,7 @@ namespace Test_SimpleSoccer
         public bool InHotRegion()
         {
             return Math.Abs(Pos().y - Team().OpponentsGoal().Center().y) <
-                   Pitch().PlayingArea().magnitude / 3.0f;
+                   Pitch().PlayingArea().Length() / 3.0f;
         }
 
         public player_role Role() { return m_PlayerRole; }

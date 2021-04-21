@@ -256,9 +256,41 @@ namespace Buckland
 
             return ipFound;
         }
-    }
 
 
+        //------------------------------------------------------------------------
+        //  Given a point P and a circle of radius R centered at C this function
+        //  determines the two points on the circle that intersect with the 
+        //  tangents from P to the circle. Returns false if P is within the circle.
+        //
+        //  thanks to Dave Eberly for this one.
+        //------------------------------------------------------------------------
+        //테스트 필요함 , 접점을 제대로 구하는 것 같지가 않음 
+        static public bool GetTangentPoints(Vector3 C, float R, Vector3 P, out Vector3 T1, out Vector3 T2)
+        {
+            T1 = T2 = Vector3.zero;
+
+            Vector3 PmC = P - C;
+            float SqrLen = PmC.sqrMagnitude;
+            float RSqr = R * R;
+            if (SqrLen <= RSqr)
+            {
+                // P is inside or on the circle
+                return false;
+            }
+
+            float InvSqrLen = 1 / SqrLen;
+            float Root = (float)Math.Sqrt(Math.Abs(SqrLen - RSqr));
+
+            T1.x = C.x + R * (R * PmC.x - PmC.z * Root) * InvSqrLen;
+            T1.z = C.z + R * (R * PmC.z + PmC.x * Root) * InvSqrLen;
+            T2.x = C.x + R * (R * PmC.x + PmC.z * Root) * InvSqrLen;
+            T2.z = C.z + R * (R * PmC.z - PmC.x * Root) * InvSqrLen;
+
+            return true;
+        }
+
+    }//end class
 
 }//end namespace
 

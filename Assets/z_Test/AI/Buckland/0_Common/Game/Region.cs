@@ -4,7 +4,6 @@ using UtilGS9;
 
 namespace Buckland
 {
-
     public enum region_modifier { halfsize, normal };
     public class Region
     {

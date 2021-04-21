@@ -21,7 +21,7 @@ namespace Test_SimpleSoccer
         //  prior to kicking the ball using the ball's position and the ball target as
         //  parameters.
         //-----------------------------------------------------------------------------
-        public Vector3 AddNoiseToKick(Vector3 BallPos, Vector3 BallTarget)
+        static public Vector3 AddNoiseToKick(Vector3 BallPos, Vector3 BallTarget)
         {
 
             float displacement = (ConstV.Pi - ConstV.Pi * Prm.PlayerKickingAccuracy) * Misc.RandomClamped();

@@ -8,8 +8,8 @@
         public const int GoalWidth = 100;
 
         //use to set up the sweet spot calculator
-        public const int NumSweetSpotsX = 13;
-        public const int NumSweetSpotsY = 6;
+        public const int NumSweetSpotsX = 13; //NumSupportSpotsX
+        public const int NumSweetSpotsY = 6; //NumSupportSpotsY
 
         //these values tweak the various rules used to calculate the support spots
         public const float Spot_CanPassScore = 2.0f;
@@ -75,7 +75,7 @@
         public const float WithinRangeOfSweetSpot = 15.0f; //WithinRangeOfSweetSpot
 
         //the minimum distance a receiving player must be from the passing player
-        public const float MinPassDistance = 120.0f;
+        public const float MinPassDistance = 120.0f; //MinPassDist
         //the minimum distance a player must be from the goalkeeper before it will
         //pass the ball
         public const float GoalkeeperMinPassDistance = 50.0f;
@@ -93,13 +93,13 @@
 
         //these (boolean) values control the amount of player and pitch info shown
         //1=ON; 0=OFF
-        public const int ViewStates = 1;
-        public const int ViewIDs = 1;
-        public const int ViewSupportSpots = 1;
+        public const int ViewStates = 1; //bStates
+        public const int ViewIDs = 1; //bIDs
+        public const int ViewSupportSpots = 1; //bSupportSpots
         public const int ViewRegions = 0;
         public const int bShowControllingTeam = 1;
-        public const int ViewTargets = 0;
-        public const int HighlightIfThreatened = 0;
+        public const int bViewTargets = 0; //bViewTargets
+        public const int bHighlightIfThreatened = 0; //bHighlightIfThreatened
 
         //simple soccer's physics are calculated using each tick as the unit of time
         //so changing this will adjust the speed
