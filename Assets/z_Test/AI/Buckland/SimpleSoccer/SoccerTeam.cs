@@ -517,7 +517,7 @@ namespace Test_SimpleSoccer
             //of the tangents from the ball to the receiver's range circle.
             Vector3 ip1, ip2;
 
-            Geometry.GetTangentPoints(receiver.Pos(),
+            Geometry.GetTangentPointsXZ(receiver.Pos(),
                              InterceptRange,
                              Pitch().Ball().Pos(),
                              out ip1,

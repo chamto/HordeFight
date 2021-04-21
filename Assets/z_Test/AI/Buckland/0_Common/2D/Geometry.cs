@@ -265,8 +265,11 @@ namespace Buckland
         //
         //  thanks to Dave Eberly for this one.
         //------------------------------------------------------------------------
-        //테스트 필요함 , 접점을 제대로 구하는 것 같지가 않음 
-        static public bool GetTangentPoints(Vector3 C, float R, Vector3 P, out Vector3 T1, out Vector3 T2)
+        //ref : https://en.wikipedia.org/wiki/Tangent_lines_to_circles
+        //ref : https://j1w2k3.tistory.com/860
+        //원의 방정식과 접점의 방정식을 이용하여 식을 세운다 
+        //20210422 - 실험노트 참고 
+        static public bool GetTangentPointsXZ(Vector3 C, float R, Vector3 P, out Vector3 T1, out Vector3 T2)
         {
             T1 = T2 = Vector3.zero;
 
@@ -289,6 +292,7 @@ namespace Buckland
 
             return true;
         }
+
 
     }//end class
 

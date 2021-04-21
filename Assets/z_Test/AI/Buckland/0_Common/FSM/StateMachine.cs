@@ -89,7 +89,7 @@
         //class passed as a parameter. 
         public bool isInState( State<entity_type> st)
         {
-            //chamto test - 자식타입으로 출력하는지 시험 필요함 
+            //chamto - 자식타입으로 출력하는것 확인
             if (m_pCurrentState.GetType() == st.GetType()) return true;
             return false;
         }
