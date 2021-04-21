@@ -635,12 +635,29 @@ namespace UtilGS9
         //수직내적 , 행렬식값 , 부호가 있는 외적길이
         static public float PerpDot(Vector2 v, Vector2 w)         {
             //v(x,y) => vㅗ(-y,x) v를 반시계방향으로 90도 회전 한다. 유니티는 왼손좌표계 시계방향 회전인데 이렇게 써도 되나 ??? - 20210112 chamto
+            //20210421 chamto - 수학식과 좌표계는 상관없다. 뷰변환에 의해 왼손/오른손 좌표계가 정해지는 것이지 좌표계에 따라 식이 변하는 것이 아님 
+            //왼손좌표계라면 당연히 시계방향 회전이 되는 것임 , 이것도 분리해서 생각하면 안됨 (오른손좌표계라면 반시계방향 회전이 됨)
+            //행우선/열우선 어떤방식을 사용하는가에 따라 행렬의 모습이 다르다, 이건 좌표계와 상관이 없다.  
             return (-v.y * w.x + v.x * w.y);         }
 
         //x-z 평면을 가정한 식 
         static public float PerpDot_XZ(Vector3 v, Vector3 w)
         {
             return (-v.z * w.x + v.x * w.z);
+        }
+
+        public const int clockwise = 1;
+        public const int anticlockwise = -1;
+        public static int Sign_XZ(Vector3 a, Vector3 b)
+        {
+            if (a.z * b.x > a.x * b.z)
+            {
+                return anticlockwise;
+            }
+            else
+            {
+                return clockwise;
+            }
         } 
         public static Vector3 Truncate(Vector3 v3, float max)
         {
