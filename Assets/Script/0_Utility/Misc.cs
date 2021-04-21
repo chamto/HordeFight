@@ -1442,8 +1442,65 @@ namespace UtilGS9
             //DebugWide.LogBlue(coord + "  cand: " + candidatePlane);
 
             return true;              /* ray hits box */
-        }  
+        }
 
+
+        //ref : https://en.wikipedia.org/wiki/Tangent_lines_to_circles
+        //ref : https://j1w2k3.tistory.com/860
+        //원의 방정식과 접점의 방정식을 이용하여 식을 세운다 
+        //20210422 - 실험노트 참고 
+        static public bool GetTangentPointsXZ(Vector3 C, float R, Vector3 P, out Vector3 T1, out Vector3 T2)
+        {
+            T1 = T2 = Vector3.zero;
+
+            Vector3 PmC = P - C;
+            float SqrLen = PmC.sqrMagnitude;
+            float RSqr = R * R;
+            if (SqrLen <= RSqr)
+            {
+                // P is inside or on the circle
+                return false;
+            }
+
+            float InvSqrLen = 1 / SqrLen;
+            float Root = (float)Math.Sqrt(Math.Abs(SqrLen - RSqr));
+
+            T1.x = C.x + R * (R * PmC.x - PmC.z * Root) * InvSqrLen;
+            T1.z = C.z + R * (R * PmC.z + PmC.x * Root) * InvSqrLen;
+            T2.x = C.x + R * (R * PmC.x + PmC.z * Root) * InvSqrLen;
+            T2.z = C.z + R * (R * PmC.z - PmC.x * Root) * InvSqrLen;
+
+            return true;
+        }
+
+
+        //정규화된 O_up 값을 넣어야 한다 
+        static public bool GetTangentPoints(Vector3 O, float O_R, Vector3 O_up, Vector3 P0, out Vector3 T1, out Vector3 T2)
+        {
+            T1 = T2 = Vector3.zero;
+
+            Vector3 O_P0 = P0 - O;
+            float SqrLen = O_P0.sqrMagnitude;
+            float RSqr = O_R * O_R;
+            if (SqrLen <= RSqr)
+            {
+                // P is inside or on the circle
+                return false;
+            }
+
+            float len = (float)Math.Sqrt(SqrLen);
+            float InvLen = 1 / len;
+            float Root = (float)Math.Sqrt(SqrLen - RSqr);
+
+            Vector3 n_O_P0 = O_P0 * InvLen;
+            Vector3 e1 = n_O_P0;
+            Vector3 e2 = Vector3.Cross(O_up, n_O_P0);
+
+            T1 = O + (RSqr * InvLen * e1) + (O_R * InvLen * Root * e2);
+            T2 = O + (RSqr * InvLen * e1) - (O_R * InvLen * Root * e2);
+
+            return true;
+        }
 
     }//end geo
 
