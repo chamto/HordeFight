@@ -453,7 +453,7 @@ namespace Test_SimpleSoccer
             //to make the shot
             if (player.Team().CanShoot(player.Ball().Pos(),
                                          power,
-                                         ref BallTarget) ||
+                                         out BallTarget) ||
                (Misc.RandFloat() < Prm.ChancePlayerAttemptsPotShot))
             {
 //# ifdef PLAYER_STATE_INFO_ON
@@ -661,9 +661,9 @@ namespace Test_SimpleSoccer
 
             //if this player has a shot at the goal AND the attacker can pass
             //the ball to him the attacker should pass the ball to this player
-            Vector3 temp = Vector3.zero;
+            Vector3 temp;
             if (player.Team().CanShoot(player.Pos(),
-                                         Prm.MaxShootingForce, ref temp))
+                                         Prm.MaxShootingForce, out temp))
             {
                 player.Team().RequestPass(player);
             }

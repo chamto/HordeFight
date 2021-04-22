@@ -390,13 +390,15 @@ namespace Test_SimpleSoccer
         //returns true if player has a clean shot at the goal and sets ShotTarget
         //to a normalized vector pointing in the direction the shot should be
         //made. Else returns false and sets heading to a zero vector
-        public bool CanShoot(Vector3 BallPos, float power, ref Vector3 ShotTarget)
+        public bool CanShoot(Vector3 BallPos, float power, out Vector3 ShotTarget)
         {
-          //the number of randomly created shot targets this method will test 
-          int NumAttempts = Prm.NumAttemptsToFindValidStrike;
+            ShotTarget = Vector3.zero;
 
-          while (0 != NumAttempts)
-          {
+            //the number of randomly created shot targets this method will test 
+            int NumAttempts = Prm.NumAttemptsToFindValidStrike;
+
+            while (0 != NumAttempts)
+            {
                 NumAttempts--;
                 //choose a random position along the opponent's goal mouth. (making
                 //sure the ball's radius is taken into account)

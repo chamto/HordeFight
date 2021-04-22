@@ -78,7 +78,7 @@
         public const float MinPassDistance = 120.0f; //MinPassDist
         //the minimum distance a player must be from the goalkeeper before it will
         //pass the ball
-        public const float GoalkeeperMinPassDistance = 50.0f;
+        public const float GoalkeeperMinPassDistance = 50.0f; //GoalkeeperMinPassDist
 
         //this is the distance the keeper puts between the back of the net 
         //and the ball when using the interpose steering behavior
@@ -96,7 +96,7 @@
         public const int ViewStates = 1; //bStates
         public const int ViewIDs = 1; //bIDs
         public const int ViewSupportSpots = 1; //bSupportSpots
-        public const int ViewRegions = 0;
+        public const int ViewRegions = 0; //bRegions
         public const int bShowControllingTeam = 1;
         public const int bViewTargets = 0; //bViewTargets
         public const int bHighlightIfThreatened = 0; //bHighlightIfThreatened

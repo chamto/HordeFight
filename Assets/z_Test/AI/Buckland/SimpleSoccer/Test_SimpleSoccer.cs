@@ -41,8 +41,8 @@ namespace Test_SimpleSoccer
             DebugWide.DrawCircle(_tr_2.position, r, Color.gray);
 
             Vector3 p1, p2;
-            Geometry.GetTangentPointsXZ(_tr_2.position, r, _tr_1.position, out p1, out p2);
-            //Geo.GetTangentPoints(_tr_2.position, r, _tr_up.position.normalized,  _tr_1.position, out p1, out p2);
+            //Geometry.GetTangentPointsXZ(_tr_2.position, r, _tr_1.position, out p1, out p2);
+            Geo.GetTangentPoints(_tr_2.position, r, _tr_up.position.normalized,  _tr_1.position, out p1, out p2);
             DebugWide.DrawCircle(p1, 2.5f, Color.red);
             DebugWide.DrawCircle(p2, 2.5f, Color.red);
 
@@ -84,6 +84,8 @@ namespace Test_SimpleSoccer
         public const float HalfPi = Pi / 2f;
         public const float QuarterPi = Pi / 4f;
         //------------------------------------------------------------------------ 
+
+        public const int TeamSize = 5;
     }
 
     public enum player_role { goal_keeper, attacker, defender };
