@@ -167,7 +167,7 @@ namespace Test_SimpleSoccer
             DebugWide.DrawCube(pos, size, cc);
 
             //render regions
-            if (0 != Prm.ViewRegions)
+            if (Prm.ViewRegions)
             {
                 for (int r = 0; r < m_Regions.Count; ++r)
                 {

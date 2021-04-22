@@ -12,7 +12,7 @@
         public const int NumSweetSpotsY = 6; //NumSupportSpotsY
 
         //these values tweak the various rules used to calculate the support spots
-        public const float Spot_CanPassScore = 2.0f;
+        public const float Spot_CanPassScore = 2.0f; //Spot_PassSafeScore
         public const float Spot_CanScoreFromPositionScore = 1.0f;
         public const float Spot_DistFromControllingPlayerScore = 2.0f;
         public const float Spot_ClosenessToSupportingPlayerScore = 0.0f;
@@ -93,13 +93,13 @@
 
         //these (boolean) values control the amount of player and pitch info shown
         //1=ON; 0=OFF
-        public const int ViewStates = 1; //bStates
-        public const int ViewIDs = 1; //bIDs
-        public const int ViewSupportSpots = 1; //bSupportSpots
-        public const int ViewRegions = 0; //bRegions
-        public const int bShowControllingTeam = 1;
-        public const int bViewTargets = 0; //bViewTargets
-        public const int bHighlightIfThreatened = 0; //bHighlightIfThreatened
+        public static bool ViewStates = true; //bStates
+        public static bool ViewIDs = true; //bIDs
+        public static bool ViewSupportSpots = true; //bSupportSpots
+        public static bool ViewRegions = false; //bRegions
+        public static bool bShowControllingTeam = true;
+        public static bool bViewTargets = false; //bViewTargets
+        public static bool bHighlightIfThreatened = false; //bHighlightIfThreatened
 
         //simple soccer's physics are calculated using each tick as the unit of time
         //so changing this will adjust the speed
@@ -113,7 +113,10 @@
         public const float ViewDistance = 30.0f;
 
         //1=ON; 0=OFF
-        public const int bNonPenetrationConstraint = 0;
+        public static bool bNonPenetrationConstraint = false;
+
+        public static bool SHOW_TEAM_STATE = false;
+        public static bool SHOW_SUPPORTING_PLAYERS_TARGET = false;
 
         public const float BallWithinReceivingRangeSq = BallWithinReceivingRange* BallWithinReceivingRange;
         public const float KeeperInBallRangeSq = KeeperInBallRange* KeeperInBallRange;

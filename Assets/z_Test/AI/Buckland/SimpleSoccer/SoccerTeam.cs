@@ -271,7 +271,7 @@ namespace Test_SimpleSoccer
             Color cc = UnityEngine.Color.white;
 
             //show the controlling team and player at the top of the display
-            if (1 == Prm.bShowControllingTeam)
+            if (Prm.bShowControllingTeam)
             {
                 //gdi->TextColor(Cgdi::white);
 
@@ -294,57 +294,73 @@ namespace Test_SimpleSoccer
             }
 
             //render the sweet spots
-            if (1 == Prm.ViewSupportSpots && InControl())
+            if (Prm.ViewSupportSpots && InControl())
             {
                 m_pSupportSpotCalc.Render();
             }
 
             //#define SHOW_TEAM_STATE
             //#ifdef SHOW_TEAM_STATE
-        //    if (Color() == team_color.red)
-        //    {
-        //        //gdi->TextColor(Cgdi::white);
-        //        cc = Color.white;
+            if(Prm.SHOW_TEAM_STATE)
+            {
+                if (Color() == team_color.red)
+                {
+                    //gdi->TextColor(Cgdi::white);
+                    cc = UnityEngine.Color.white;
 
-        //        if (CurrentState() == Attacking::Instance())
-        //    {
-        //      gdi->TextAtPos(160, 20, "Attacking");
-        //    }
-        //    if (CurrentState() == Defending::Instance())
-        //    {
-        //      gdi->TextAtPos(160, 20, "Defending");
-        //    }
-        //    if (CurrentState() == PrepareForKickOff::Instance())
-        //    {
-        //      gdi->TextAtPos(160, 20, "Kickoff");
-        //    }
-        //  }
-        //  else
-        //  {
-        //    if (CurrentState() == Attacking::Instance())
-        //    {
-        //      gdi->TextAtPos(160, Pitch()->cyClient()-40, "Attacking");
-        //    }
-        //    if (CurrentState() == Defending::Instance())
-        //    {
-        //      gdi->TextAtPos(160, Pitch()->cyClient()-40, "Defending");
-        //    }
-        //    if (CurrentState() == PrepareForKickOff::Instance())
-        //    {
-        //      gdi->TextAtPos(160, Pitch()->cyClient()-40, "Kickoff");
-        //    }
-        //  }
-        ////#endif
+                    if (m_pStateMachine.CurrentState() == Attacking.instance)
+                    {
+                        //gdi->TextAtPos(160, 20, "Attacking");
+                        DebugWide.PrintText(new Vector3(160, 0, 20), cc, "Attacking");
+                    }
+                    if (m_pStateMachine.CurrentState() == Defending.instance)
+                    {
+                        //gdi->TextAtPos(160, 20, "Defending");
+                        DebugWide.PrintText(new Vector3(160, 0, 20), cc, "Defending");
+                    }
+                    if (m_pStateMachine.CurrentState() == PrepareForKickOff.instance)
+                    {
+                        //gdi->TextAtPos(160, 20, "Kickoff");
+                        DebugWide.PrintText(new Vector3(160, 0, 20), cc, "Kickoff");
+                    }
+                }
+                else
+                {
+                    if (m_pStateMachine.CurrentState() == Attacking.instance)
+                    {
+                        //gdi->TextAtPos(160, Pitch().cyClient() - 40, "Attacking");
+                        DebugWide.PrintText(new Vector3(160, 0, Pitch().cyClient() - 40), cc, "Attacking");
+                    }
+                    if (m_pStateMachine.CurrentState() == Defending.instance)
+                    {
+                        //gdi->TextAtPos(160, Pitch().cyClient() - 40, "Defending");
+                        DebugWide.PrintText(new Vector3(160, 0, Pitch().cyClient() - 40), cc, "Defending");
+                    }
+                    if (m_pStateMachine.CurrentState() == PrepareForKickOff.instance)
+                    {
+                        //gdi->TextAtPos(160, Pitch().cyClient() - 40, "Kickoff");
+                        DebugWide.PrintText(new Vector3(160, 0, Pitch().cyClient() - 40), cc, "Kickoff");
+                    }
+                }
+            }
 
-        ////#define SHOW_SUPPORTING_PLAYERS_TARGET
-        ////#ifdef SHOW_SUPPORTING_PLAYERS_TARGET
-        //  if (m_pSupportingPlayer)
-        //  {
-        //    gdi->BlueBrush();
-        //gdi->RedPen();
-        //gdi->Circle(m_pSupportingPlayer->Steering()->Target(), 4);
+        //#endif
 
-          //}
+        //#define SHOW_SUPPORTING_PLAYERS_TARGET
+        //#ifdef SHOW_SUPPORTING_PLAYERS_TARGET
+
+            if(Prm.SHOW_SUPPORTING_PLAYERS_TARGET)
+            {
+                if (null != m_pSupportingPlayer)
+                {
+                    //gdi->BlueBrush();
+                    //gdi->RedPen();
+                    //gdi->Circle(m_pSupportingPlayer.Steering().Target(), 4);
+
+                    DebugWide.DrawCircle(m_pSupportingPlayer.Steering().Target(), 4, UnityEngine.Color.red);
+                }
+            }
+
         //#endif
 
         }

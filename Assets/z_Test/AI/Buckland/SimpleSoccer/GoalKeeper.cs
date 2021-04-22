@@ -63,7 +63,7 @@ namespace Test_SimpleSoccer
 
 
             //enforce a non-penetration constraint if desired
-            if (0 != Prm.bNonPenetrationConstraint)
+            if (Prm.bNonPenetrationConstraint)
             {
                 EntityFunctionTemplates.EnforceNonPenetrationContraint(this, AutoList < PlayerBase >.GetAllMembers());
             }
@@ -106,7 +106,7 @@ namespace Test_SimpleSoccer
             DebugWide.DrawCircle(Pos(), 6, cc);
 
             //draw the ID
-            if (0 != Prm.ViewIDs)
+            if (Prm.ViewIDs)
             {
                 //gdi->TextColor(0, 170, 0); ;
                 //gdi->TextAtPos(Pos().x - 20, Pos().y - 20, ttos(ID()));
@@ -116,7 +116,7 @@ namespace Test_SimpleSoccer
             }
 
             //draw the state
-            if (0 != Prm.ViewStates)
+            if (Prm.ViewStates)
             {
                 //gdi->TextColor(0, 170, 0);
                 //gdi->TransparentText();
