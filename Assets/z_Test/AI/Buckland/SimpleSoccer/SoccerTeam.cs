@@ -640,7 +640,7 @@ namespace Test_SimpleSoccer
             //if the distance to the opponent's y position is less than his running
             //range plus the radius of the ball and the opponents radius then the
             //ball can be intercepted
-            if (Math.Abs(LocalPosOpp.y) < reach)
+            if (Math.Abs(LocalPosOpp.z) < reach)
             {
                 return false;
             }

@@ -72,7 +72,7 @@ namespace Buckland
           if (r == region_modifier.normal)
           {
             return ((pos.x > m_dLeft) && (pos.x<m_dRight) &&
-                 (pos.y > m_dTop) && (pos.y<m_dBottom));
+                 (pos.z > m_dTop) && (pos.z<m_dBottom));
           }
           else
           {
@@ -80,7 +80,7 @@ namespace Buckland
             float marginY = m_dHeight * 0.25f;
 
             return ((pos.x > (m_dLeft+marginX)) && (pos.x<(m_dRight-marginX)) &&
-                 (pos.y > (m_dTop+marginY)) && (pos.y<(m_dBottom-marginY)));
+                 (pos.z > (m_dTop+marginY)) && (pos.z<(m_dBottom-marginY)));
           }
 
         }

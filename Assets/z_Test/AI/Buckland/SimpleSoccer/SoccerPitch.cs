@@ -96,7 +96,7 @@ namespace Test_SimpleSoccer
 
 
             //create the soccer ball
-            m_pBall = new SoccerBall(new Vector3((float)m_cxClient / 2.0f, (float)m_cyClient / 2.0f),
+            m_pBall = new SoccerBall(new Vector3((float)m_cxClient / 2.0f,0, (float)m_cyClient / 2.0f),
                                      Prm.BallSize,
                                      Prm.BallMass,
                                      m_vecWalls);

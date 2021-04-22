@@ -65,10 +65,10 @@ namespace Test_SimpleSoccer
 
             //setup the vertex buffers and calculate the bounding radius
             const int NumPlayerVerts = 4;
-            Vector3[] player = new Vector3[NumPlayerVerts]{new Vector3(-3, 8),
-                                            new Vector3(3,10),
-                                            new Vector3(3,-10),
-                                            new Vector3(-3,-8)};
+            Vector3[] player = new Vector3[NumPlayerVerts]{new Vector3(-3,0, 8),
+                                            new Vector3(3,0,10),
+                                            new Vector3(3,0,-10),
+                                            new Vector3(-3,0,-8)};
 
             for (int vtx = 0; vtx < NumPlayerVerts; ++vtx)
             {
@@ -280,7 +280,7 @@ namespace Test_SimpleSoccer
         //the area close to the opponent's goal
         public bool InHotRegion()
         {
-            return Math.Abs(Pos().y - Team().OpponentsGoal().Center().y) <
+            return Math.Abs(Pos().z - Team().OpponentsGoal().Center().z) <
                    Pitch().PlayingArea().Length() / 3.0f;
         }
 
