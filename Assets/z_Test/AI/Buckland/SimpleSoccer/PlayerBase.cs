@@ -29,9 +29,9 @@ namespace Test_SimpleSoccer
 
 
         //the vertex buffer
-        protected List<Vector3> m_vecPlayerVB;
+        protected List<Vector3> m_vecPlayerVB = new List<Vector3>();
         //the buffer for the transformed vertices
-        protected List<Vector3> m_vecPlayerVBTrans;
+        protected List<Vector3> m_vecPlayerVBTrans = null;
 
 
         public PlayerBase(SoccerTeam home_team,

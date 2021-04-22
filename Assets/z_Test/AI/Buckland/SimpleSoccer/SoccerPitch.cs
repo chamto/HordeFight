@@ -19,7 +19,7 @@ namespace Test_SimpleSoccer
         public Goal m_pBlueGoal;
 
         //container for the boundary walls
-        public List<Wall2D> m_vecWalls;
+        public List<Wall2D> m_vecWalls = new List<Wall2D>();
 
         //defines the dimensions of the playing area
         public Region m_pPlayingArea;

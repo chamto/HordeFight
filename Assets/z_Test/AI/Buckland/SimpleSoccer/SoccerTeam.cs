@@ -17,7 +17,7 @@ namespace Test_SimpleSoccer
         team_color m_Color;
 
         //pointers to the team members
-        List<PlayerBase> m_Players;
+        List<PlayerBase> m_Players = new List<PlayerBase>();
 
         //a pointer to the soccer pitch
         SoccerPitch m_pPitch;

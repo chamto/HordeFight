@@ -25,7 +25,7 @@ namespace Test_SimpleSoccer
 
         SoccerTeam m_pTeam;
 
-        List<SupportSpot> m_Spots;
+        List<SupportSpot> m_Spots = new List<SupportSpot>();
 
         //a pointer to the highest valued spot from the last update
         SupportSpot m_pBestSupportingSpot;
