@@ -1463,7 +1463,7 @@ namespace UtilGS9
             }
 
             float InvSqrLen = 1 / SqrLen;
-            float Root = (float)Math.Sqrt(Math.Abs(SqrLen - RSqr));
+            float Root = (float)Math.Sqrt(SqrLen - RSqr);
 
             T1.x = C.x + R * (R * PmC.x - PmC.z * Root) * InvSqrLen;
             T1.z = C.z + R * (R * PmC.z + PmC.x * Root) * InvSqrLen;
@@ -1488,16 +1488,20 @@ namespace UtilGS9
                 return false;
             }
 
-            float len = (float)Math.Sqrt(SqrLen);
-            float InvLen = 1 / len;
+
             float Root = (float)Math.Sqrt(SqrLen - RSqr);
 
-            Vector3 n_O_P0 = O_P0 * InvLen;
-            Vector3 e1 = n_O_P0;
-            Vector3 e2 = Vector3.Cross(O_up, n_O_P0);
+            float InvSqrLen = 1 / SqrLen;
+            Vector3 e1 = O_P0;
+            Vector3 e2 = Vector3.Cross(O_up, O_P0);
 
-            T1 = O + (RSqr * InvLen * e1) + (O_R * InvLen * Root * e2);
-            T2 = O + (RSqr * InvLen * e1) - (O_R * InvLen * Root * e2);
+            //벡터의 합으로 접점을 표현 
+            //T1 = O + (RSqr * InvSqrLen * e1) + (O_R * Root * InvSqrLen * e2);
+            //T2 = O + (RSqr * InvSqrLen * e1) - (O_R * Root * InvSqrLen * e2);
+
+            //위의 식을 다시 정리함 
+            T1 = O + O_R * ((O_R * e1) + (Root * e2)) * InvSqrLen;
+            T2 = O + O_R * ((O_R * e1) - (Root * e2)) * InvSqrLen;
 
             return true;
         }
