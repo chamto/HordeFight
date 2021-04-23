@@ -65,10 +65,17 @@ namespace Test_SimpleSoccer
 
             //setup the vertex buffers and calculate the bounding radius
             const int NumPlayerVerts = 4;
-            Vector3[] player = new Vector3[NumPlayerVerts]{new Vector3(-3,0, 8),
-                                            new Vector3(3,0,10),
-                                            new Vector3(3,0,-10),
-                                            new Vector3(-3,0,-8)};
+            //Vector3[] player = new Vector3[NumPlayerVerts]{new Vector3(-3,0, 8),
+                                            //new Vector3(3,0,10),
+                                            //new Vector3(3,0,-10),
+                                            //new Vector3(-3,0,-8)};
+
+            Vector3[] player = new Vector3[NumPlayerVerts] {
+                                        new Vector3(-10, 0, 3),
+                                     new Vector3(10 , 0, 3),
+                                     new Vector3(8 , 0, -3),
+                                     new Vector3(-8 , 0, -3)
+                                     };
 
             for (int vtx = 0; vtx < NumPlayerVerts; ++vtx)
             {

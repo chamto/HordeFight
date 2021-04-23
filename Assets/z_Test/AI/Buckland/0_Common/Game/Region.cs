@@ -50,19 +50,30 @@ namespace Buckland
 
         //virtual ~Region() { }
 
+        static public void DrawXZ(float left, float top, float right, float bottom, Color cc)
+        {
+            Vector3 center = new Vector3((left + right) * 0.5f, 0, (top + bottom) * 0.5f);
+            float dWidth = Math.Abs(right - left);
+            float dHeight = Math.Abs(bottom - top);
+
+            DebugWide.DrawCube(center, new Vector3(dWidth, 0, dHeight),cc);
+        }
+
         public virtual  void Render(bool ShowID = false)
         {
             //gdi->HollowBrush();
             //gdi->GreenPen();
             //gdi->Rect(m_dLeft, m_dTop, m_dRight, m_dBottom);
 
-            DebugWide.DrawCube(m_vCenter, new Vector3(m_dWidth * 0.5f, 0, m_dHeight * 0.5f), Color.green);
+            DebugWide.DrawCube(m_vCenter, new Vector3(m_dWidth, 0, m_dHeight), new Color(0,0.5f,0));
 
-          //if (ShowID)
-          //{ 
-          //      gdi->TextColor(Cgdi::green);
-          //      gdi->TextAtPos(Center(), ttos(ID()));
-          //}
+            if (ShowID)
+            {  
+                //gdi->TextColor(Cgdi::green);
+                //gdi->TextAtPos(Center(), ttos(ID()));
+
+                DebugWide.PrintText(Center(), Color.green, ID() + "");
+            }
         }
 
         //returns true if the given position lays inside the region. The

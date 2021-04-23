@@ -160,11 +160,8 @@ namespace Test_SimpleSoccer
             //gdi->DarkGreenPen();
             //gdi->DarkGreenBrush();
             //gdi->Rect(0, 0, m_cxClient, m_cyClient);
-
-            Vector3 pos = Vector3.zero;
-            Vector3 size = new Vector3(m_cxClient, 0, m_cyClient);
             Color cc = Color.green;
-            DebugWide.DrawCube(pos, size, cc);
+            Region.DrawXZ(0, 0, m_cxClient, m_cyClient, cc);
 
             //render regions
             if (Prm.ViewRegions)
@@ -179,19 +176,15 @@ namespace Test_SimpleSoccer
             //gdi->HollowBrush();
             //gdi->RedPen();
             //gdi->Rect(m_pPlayingArea.Left(), (m_cyClient - Prm.GoalWidth) / 2, m_pPlayingArea.Left() + 40, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2);
-            pos = new Vector3(m_pPlayingArea.Left(), 0, (m_cyClient - Prm.GoalWidth) / 2);
-            size = new Vector3(m_pPlayingArea.Left() + 40, 0, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2);
             cc = Color.red;
-            DebugWide.DrawCube(pos, size, cc);
+            Region.DrawXZ(m_pPlayingArea.Left(), (m_cyClient - Prm.GoalWidth) / 2, m_pPlayingArea.Left() + 40, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2, cc);
 
             //gdi->BluePen();
             //gdi->Rect(m_pPlayingArea.Right(), (m_cyClient - Prm.GoalWidth) / 2, m_pPlayingArea.Right() - 40, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2);
-
-            pos = new Vector3(m_pPlayingArea.Right(), 0,(m_cyClient - Prm.GoalWidth) / 2);
-            size = new Vector3(m_pPlayingArea.Right() - 40, 0,m_cyClient - (m_cyClient - Prm.GoalWidth) / 2);
             cc = Color.blue;
-            DebugWide.DrawCube(pos, size, cc);
+            Region.DrawXZ(m_pPlayingArea.Right(), (m_cyClient - Prm.GoalWidth) / 2, m_pPlayingArea.Right() - 40, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2, cc);
 
+            m_pPlayingArea.Render(true);
 
             //render the pitch markings
             //gdi->WhitePen();
@@ -204,6 +197,7 @@ namespace Test_SimpleSoccer
             DebugWide.DrawCircle(m_pPlayingArea.Center(), m_pPlayingArea.Width() * 0.125f, cc);
             DebugWide.DrawLine(new Vector3(m_pPlayingArea.Center().x, 0, m_pPlayingArea.Top()), new Vector3(m_pPlayingArea.Center().x,0, m_pPlayingArea.Bottom()), cc);
             DebugWide.DrawCircle(m_pPlayingArea.Center(), 2f, cc);
+
 
             //the ball
             //gdi->WhitePen();
@@ -228,7 +222,7 @@ namespace Test_SimpleSoccer
             //gdi->TextColor(Cgdi::blue);
             //gdi->TextAtPos((m_cxClient / 2) + 10, m_cyClient - 18, "Blue: " + ttos(m_pRedGoal->NumGoalsScored()));
 
-            pos = new Vector3((m_cxClient / 2) - 50, 0, m_cyClient - 18);
+            Vector3 pos = new Vector3((m_cxClient / 2) - 50, 0, m_cyClient - 18);
             cc = Color.red;
             DebugWide.PrintText(pos, cc, m_pBlueGoal.NumGoalsScored() + "");
 
