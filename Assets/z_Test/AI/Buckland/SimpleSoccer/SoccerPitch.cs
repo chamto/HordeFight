@@ -52,11 +52,12 @@ namespace Test_SimpleSoccer
             {
                 for (int row = 0; row < NumRegionsVertical; ++row)
                 {
-                    m_Regions[idx--] = new Region(PlayingArea().Left() + col * width,
+                    m_Regions[idx] = new Region(PlayingArea().Left() + col * width,
                                                  PlayingArea().Top() + row * height,
                                                  PlayingArea().Left() + (col + 1) * width,
                                                  PlayingArea().Top() + (row + 1) * height,
                                                  idx);
+                    idx--;
                 }
             }
         }

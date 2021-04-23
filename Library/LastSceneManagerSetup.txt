@@ -1,0 +1,4 @@
+sceneSetups:
+- path: Assets/z_Test/Physics/Cyclone/RagDoll/Test_Fireworks.unity
+  isLoaded: 1
+  isActive: 1
