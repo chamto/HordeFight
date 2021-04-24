@@ -101,7 +101,15 @@
         //only ever used during debugging to grab the name of the current state
         public string GetNameOfCurrentState()
         {
-            return m_pCurrentState.GetType().ToString();
+            string full = m_pCurrentState.GetType().ToString();
+            string[] split  = full.Split('.');
+
+            //마지막 문자를 찾는다 
+            if (0 != split.Length)
+                full = split[split.Length-1];
+
+            //DebugWide.LogBlue(full);
+            return full;
         }
     }
 }
