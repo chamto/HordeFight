@@ -422,6 +422,7 @@ namespace Test_SimpleSoccer
             Vector3 ToBall = player.Ball().Pos() - player.Pos();
             float dot = Vector3.Dot(player.Heading(), ToBall.normalized);
 
+
             //cannot kick the ball if the goalkeeper is in possession or if it is 
             //behind the player or if there is already an assigned receiver. So just
             //continue chasing the ball
@@ -437,7 +438,8 @@ namespace Test_SimpleSoccer
 
                 return;
             }
-
+            //DebugWide.LogRed(dot + " kickball!!"); //chamto test      
+            DebugWide.DrawCircle(player.Pos(), 10, Color.yellow); //chamto test
             /* Attempt a shot at the goal */
 
             //if a shot is possible, this vector will hold the position along the 
@@ -446,21 +448,27 @@ namespace Test_SimpleSoccer
 
             //the dot product is used to adjust the shooting force. The more
             //directly the ball is ahead, the more forceful the kick
+            //dot = 1;
             float power = Prm.MaxShootingForce * dot;
             //DebugWide.LogRed(BallTarget + " shoot!!");
             //if it is determined that the player could score a goal from this position
             //OR if he should just kick the ball anyway, the player will attempt
             //to make the shot
+            float rand = Misc.RandFloat();
             if (player.Team().CanShoot(player.Ball().Pos(),
                                          power,
                                          out BallTarget) ||
-               (Misc.RandFloat() < Prm.ChancePlayerAttemptsPotShot))
+               (rand < Prm.ChancePlayerAttemptsPotShot))
             {
                 //# ifdef PLAYER_STATE_INFO_ON
                 //                debug_con << "Player " << player->ID() << " attempts a shot at " << BallTarget << "";
                 //#endif
 
-                //DebugWide.LogRed(BallTarget + " shoot!!"); //chamto test      
+                //if((rand < Prm.ChancePlayerAttemptsPotShot))
+                if(SoccerTeam.team_color.red == player.Team().Color())
+                    DebugWide.LogRed(rand + " shoot!!"); //chamto test
+                else
+                    DebugWide.LogBlue(rand + " shoot!!"); //chamto test
                 //add some noise to the kick. We don't want players who are 
                 //too accurate! The amount of noise can be adjusted by altering
                 //Prm.PlayerKickingAccuracy
@@ -479,6 +487,7 @@ namespace Test_SimpleSoccer
                 return;
             }
 
+            //DebugWide.LogRed(" shoot next!!"); //chamto test      
 
             /* Attempt a pass to a player */
 

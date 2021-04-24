@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 using Buckland;
@@ -31,7 +32,7 @@ namespace Test_SimpleSoccer
         private void Update()
         {
             _main.Key();
-            _main.Update();
+            //_main.Update();
         }
 
         private void OnGUI()
@@ -43,8 +44,13 @@ namespace Test_SimpleSoccer
         private void OnDrawGizmos()
         {
             if (null == (object)_tr_1) return;
+
+            _main.Update();
             _main.Render();
+
             //Test_TangentPoints();
+
+            //Test_isPassSafeFromOpponent();
         }
 
 
@@ -76,6 +82,131 @@ namespace Test_SimpleSoccer
 
             DebugWide.LogBlue(a.GetType() + "  " + b.GetType());
             DebugWide.LogBlue(a.GetType() == b.GetType());
+        }
+
+
+        public void Test_isPassSafeFromOpponent()
+        {
+            //Vector3 ToBall = player.Ball().Pos() - player.Pos();
+            //float dot = Vector3.Dot(player.Heading(), ToBall.normalized);
+            float dot = 1f;
+            float power = Prm.MaxShootingForce * dot;
+
+            bool result = isPassSafeFromOpponent(_tr_1.position, _tr_2.position, Vector3.zero, _tr_3.position, power, false);
+            DebugWide.LogBlue(result);
+
+            DebugWide.DrawLine(_tr_1.position, _tr_2.position, Color.black);
+            DebugWide.DrawLine(_tr_2.position, _tr_3.position, Color.gray);
+        }
+
+        public bool isPassSafeFromOpponent(Vector3 from,
+                                        Vector3 target,
+                                        Vector3 receiver,
+                                        Vector3 opp,
+                                        float PassingForce,
+                                        bool test_receiver)
+        {
+            //move the opponent into local space.
+            Vector3 ToTarget = target - from;
+            Vector3 ToTargetNormalized = (ToTarget).normalized;
+
+            Vector3 perp = Vector3.Cross(Vector3.up, ToTargetNormalized);
+            //Vector3 perp = Vector3.Cross(ToTargetNormalized, Vector3.up);
+
+            Vector3 LocalPosOpp = Misc.PointToLocalSpace_3(opp,
+                                       ToTargetNormalized,
+                                       perp,
+                                       from);
+            DebugWide.LogBlue(LocalPosOpp);
+            //if opponent is behind the kicker then pass is considered okay(this is 
+            //based on the assumption that the ball is going to be kicked with a 
+            //velocity greater than the opponent's max velocity)
+            if (LocalPosOpp.z < 0)
+            {
+                return true;
+            }
+
+            //if the opponent is further away than the target we need to consider if
+            //the opponent can reach the position before the receiver.
+            if ((from - target).sqrMagnitude < (opp - from).sqrMagnitude)
+            {
+                if (true == test_receiver)
+                {
+                    if ((target - opp).sqrMagnitude >
+                         (target - receiver).sqrMagnitude)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            //calculate how long it takes the ball to cover the distance to the 
+            //position orthogonal to the opponents position
+            float TimeForBall =
+            TimeToCoverDistance(Vector3.zero,
+                                                 new Vector3(LocalPosOpp.z, 0, 0),
+                                                 PassingForce);
+            float opp_maxSpeed = 1.6f;
+            float ballSize = 5f;
+            float opp_radius = 10f;
+            //now calculate how far the opponent can run in this time
+            float reach = opp_maxSpeed * TimeForBall +
+                          ballSize +
+                          opp_radius;
+
+            DebugWide.LogBlue(reach);
+            DebugWide.DrawCircle(opp, reach, Color.red);
+
+            //if the distance to the opponent's y position is less than his running
+            //range plus the radius of the ball and the opponents radius then the
+            //ball can be intercepted
+            if (Math.Abs(LocalPosOpp.x) < reach)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public float TimeToCoverDistance(Vector3 A, Vector3 B, float force)
+        {
+            float m_dMass = 1f;
+            //this will be the velocity of the ball in the next time step *if*
+            //the player was to make the pass. 
+            float speed = force / m_dMass;
+
+            //calculate the velocity at B using the equation
+            //
+            //  v^2 = u^2 + 2as
+            //
+
+            //first calculate s (the distance between the two positions)
+            float DistanceToCover = (A - B).magnitude;
+
+            float term = speed * speed + 2.0f * DistanceToCover * Prm.Friction;
+
+            //if  (u^2 + 2as) is negative it means the ball cannot reach point B.
+            if (term <= 0.0) return -1.0f;
+
+            float v = (float)Math.Sqrt(term);
+
+            //it IS possible for the ball to reach B and we know its speed when it
+            //gets there, so now it's easy to calculate the time using the equation
+            //
+            //    t = v-u
+            //        ---
+            //         a
+            //
+            return (v - speed) / Prm.Friction;
         }
     }
 

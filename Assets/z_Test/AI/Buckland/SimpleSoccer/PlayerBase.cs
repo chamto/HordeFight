@@ -210,6 +210,7 @@ namespace Test_SimpleSoccer
         //returns true if the ball is within kicking range
         public bool BallWithinKickingRange()
         {
+            //DebugWide.DrawCircle(Pos(), (float)Math.Sqrt(Prm.PlayerKickingDistanceSq), Color.black);
             return ((Ball().Pos() - Pos()).sqrMagnitude < Prm.PlayerKickingDistanceSq);
         }
 

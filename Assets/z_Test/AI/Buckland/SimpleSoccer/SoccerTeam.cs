@@ -438,9 +438,10 @@ namespace Test_SimpleSoccer
                 //can intercept it.
                 if (time >= 0)
                 {
+                    //DebugWide.LogRed(time + "  prev can shoot !!");
                     if (isPassSafeFromAllOpponents(BallPos, ShotTarget, null, power))
                     {
-                        //DebugWide.LogRed(BallPos + "  can shoot !!");
+                        //DebugWide.LogBlue(BallPos + "  can shoot !!");
                         return true;
                     }
                 }
@@ -597,10 +598,12 @@ namespace Test_SimpleSoccer
                                        perp,
                                        from);
 
+
             //if opponent is behind the kicker then pass is considered okay(this is 
             //based on the assumption that the ball is going to be kicked with a 
             //velocity greater than the opponent's max velocity)
-            if (LocalPosOpp.x < 0)
+            //if (LocalPosOpp.x < 0)
+            if (LocalPosOpp.z < 0)
             {     
                 return true;
             }
@@ -628,11 +631,16 @@ namespace Test_SimpleSoccer
                 } 
             }
 
+            DebugWide.DrawLine(from, target, UnityEngine.Color.black);
+            DebugWide.DrawLine(target, opp.Pos(), UnityEngine.Color.gray);
+
+
             //calculate how long it takes the ball to cover the distance to the 
             //position orthogonal to the opponents position
             float TimeForBall =
             Pitch().Ball().TimeToCoverDistance(Vector3.zero,
-                                                 new Vector3(LocalPosOpp.x, 0, 0),
+                                                 //new Vector3(LocalPosOpp.x, 0, 0),
+                                                 new Vector3(0, 0, LocalPosOpp.z),
                                                  PassingForce);
 
             //now calculate how far the opponent can run in this time
@@ -640,13 +648,17 @@ namespace Test_SimpleSoccer
                           Pitch().Ball().BRadius() +
                           opp.BRadius();
 
+            //DebugWide.LogGreen(reach + "  " + TimeForBall + "  " + opp.MaxSpeed() + "  " + Pitch().Ball().BRadius() + "  " + opp.BRadius());
             //if the distance to the opponent's y position is less than his running
             //range plus the radius of the ball and the opponents radius then the
             //ball can be intercepted
-            if (Math.Abs(LocalPosOpp.z) < reach)
+            //if (Math.Abs(LocalPosOpp.z) < reach)
+            if (Math.Abs(LocalPosOpp.x) < reach*0.7f) //reach 값이 너무 크게 나옴 , 무엇이 잘못된건지 모르겠음 , 적당히 줄여봄 - chamto test
             {
                 return false;
             }
+
+            DebugWide.DrawCircle(opp.Pos(), reach, UnityEngine.Color.red);
 
             return true;
         }
@@ -803,9 +815,10 @@ namespace Test_SimpleSoccer
 
         public void SetPlayerHomeRegion(int plyr, int region)
         {
-          //assert((plyr>=0) && (plyr<(int)m_Players.size()) );
+            //assert((plyr>=0) && (plyr<(int)m_Players.size()) );
+            if (m_Players.Count <= plyr) return;
 
-          m_Players[plyr].SetHomeRegion(region);
+            m_Players[plyr].SetHomeRegion(region);
         }
 
         public void DetermineBestSupportingPosition() {m_pSupportSpotCalc.DetermineBestSupportingPosition();}

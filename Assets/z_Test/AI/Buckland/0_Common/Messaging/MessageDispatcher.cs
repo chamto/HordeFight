@@ -69,8 +69,8 @@ namespace Buckland
             if (delay <= 0.0f)
             {
                 //DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
-                DebugWide.LogWhite("\nInstant telegram dispatched at time: " + Time.time +
-                " by " + sender + " for " + receiver + ". Msg is " + pReceiver.ToStringMessage(msg));
+                //DebugWide.LogWhite("\nInstant telegram dispatched at time: " + Time.time +
+                //" by " + sender + " for " + receiver + ". Msg is " + pReceiver.ToStringMessage(msg));
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
             }
