@@ -104,6 +104,7 @@ namespace Test_SimpleSoccer
         }
         //virtual ~PlayerBase();
 
+        public override string ToStringMessage(int msgNum) { return ((MessageType)msgNum).ToString(); }
         //------------------------------------------------------------------------
         //
         //binary predicates for std::sort (see CanPassForward/Backward)

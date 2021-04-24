@@ -64,7 +64,8 @@ namespace Buckland
         public virtual void Render() { }
   
         public virtual bool HandleMessage(Telegram msg){return false;}
-  
+
+        public virtual string ToStringMessage(int msgNum) { return ""; }
 
         //use this to grab the next valid ID
         public static int GetNextValidID() { return m_iNextValidID; }

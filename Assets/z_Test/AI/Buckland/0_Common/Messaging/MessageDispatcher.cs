@@ -70,7 +70,7 @@ namespace Buckland
             {
                 //DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
                 DebugWide.LogWhite("\nInstant telegram dispatched at time: " + Time.time +
-                " by " + sender + " for " + receiver + ". Msg is " + msg);
+                " by " + sender + " for " + receiver + ". Msg is " + pReceiver.ToStringMessage(msg));
                 //send the telegram to the recipient
                 Discharge(pReceiver, telegram);
             }
@@ -87,7 +87,7 @@ namespace Buckland
                 PriorityQ.Add(telegram);
 
                 DebugWide.LogWhite("Delayed telegram from " + sender + " recorded at time " + Time.time
-                + " for " + receiver + ". Msg is " + msg);
+                + " for " + receiver + ". Msg is " + pReceiver.ToStringMessage(msg));
             }
         }
 
