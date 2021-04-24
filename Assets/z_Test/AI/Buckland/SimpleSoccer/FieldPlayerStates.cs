@@ -447,7 +447,7 @@ namespace Test_SimpleSoccer
             //the dot product is used to adjust the shooting force. The more
             //directly the ball is ahead, the more forceful the kick
             float power = Prm.MaxShootingForce * dot;
-
+            //DebugWide.LogRed(BallTarget + " shoot!!");
             //if it is determined that the player could score a goal from this position
             //OR if he should just kick the ball anyway, the player will attempt
             //to make the shot
@@ -456,10 +456,11 @@ namespace Test_SimpleSoccer
                                          out BallTarget) ||
                (Misc.RandFloat() < Prm.ChancePlayerAttemptsPotShot))
             {
-//# ifdef PLAYER_STATE_INFO_ON
-//                debug_con << "Player " << player->ID() << " attempts a shot at " << BallTarget << "";
-//#endif
+                //# ifdef PLAYER_STATE_INFO_ON
+                //                debug_con << "Player " << player->ID() << " attempts a shot at " << BallTarget << "";
+                //#endif
 
+                //DebugWide.LogRed(BallTarget + " shoot!!"); //chamto test      
                 //add some noise to the kick. We don't want players who are 
                 //too accurate! The amount of noise can be adjusted by altering
                 //Prm.PlayerKickingAccuracy

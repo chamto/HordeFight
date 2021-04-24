@@ -423,7 +423,7 @@ namespace SteeringBehavior
                 if (curOb.IsTagged())
                 {
                     //calculate this obstacle's position in local space
-                    Vector2 LocalPos = Transformations.PointToLocalSpace(curOb.Pos(),
+                    Vector2 LocalPos = Transformations.Point2DToLocalSpace(curOb.Pos(),
                                                            m_pVehicle.Heading(),
                                                            m_pVehicle.Side(),
                                                            m_pVehicle.Pos());
@@ -498,7 +498,7 @@ namespace SteeringBehavior
             }
 
             //finally, convert the steering vector from local to world space
-            return Transformations.VectorToWorldSpace(SteeringForce,
+            return Transformations.Vector2DToWorldSpace(SteeringForce,
                                       m_pVehicle.Heading(),
                                       m_pVehicle.Side());
         }
@@ -1761,7 +1761,7 @@ namespace SteeringBehavior
                     if (curOb.IsTagged())
                     {
                         //calculate this obstacle's position in local space
-                        Vector2 LocalPos = Transformations.PointToLocalSpace(curOb.Pos(),
+                        Vector2 LocalPos = Transformations.Point2DToLocalSpace(curOb.Pos(),
                                                              m_pVehicle.Heading(),
                                                              m_pVehicle.Side(),
                                                              m_pVehicle.Pos());

@@ -440,12 +440,13 @@ namespace Test_SimpleSoccer
                 {
                     if (isPassSafeFromAllOpponents(BallPos, ShotTarget, null, power))
                     {
+                        //DebugWide.LogRed(BallPos + "  can shoot !!");
                         return true;
                     }
                 }
             }
-          
-          return false;
+
+            return false;
         }
 
         //The best pass is considered to be the pass that cannot be intercepted 
@@ -590,7 +591,8 @@ namespace Test_SimpleSoccer
             Vector3 ToTargetNormalized = (ToTarget).normalized;
 
             Vector3 perp = Vector3.Cross(Vector3.up, ToTargetNormalized);
-            Vector3 LocalPosOpp = Transformations.PointToLocalSpace(opp.Pos(),
+
+            Vector3 LocalPosOpp = Misc.PointToLocalSpace_3(opp.Pos(),
                                        ToTargetNormalized,
                                        perp,
                                        from);

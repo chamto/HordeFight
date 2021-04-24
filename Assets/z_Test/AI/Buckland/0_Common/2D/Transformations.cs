@@ -72,7 +72,7 @@ namespace Buckland
         //
         //  Transforms a point from the agent's local space into world space
         //------------------------------------------------------------------------
-        public static Vector2 PointToWorldSpace(Vector2 point,
+        public static Vector2 Point2DToWorldSpace(Vector2 point,
                                      Vector2 AgentHeading,
                                      Vector2 AgentSide,
                                      Vector2 AgentPosition)
@@ -96,7 +96,7 @@ namespace Buckland
         }
 
         //실험노트 20210115 에 분선한 글이 있다. 참고하기 
-        public static Vector2 PointToLocalSpace(Vector2 point,
+        public static Vector2 Point2DToLocalSpace(Vector2 point,
                              Vector2 AgentHeading,
                              Vector2 AgentSide,
                              Vector2 AgentPosition)
@@ -125,7 +125,7 @@ namespace Buckland
             return TransPoint;
         }
 
-        public static Vector2 VectorToLocalSpace(Vector2 vec,
+        public static Vector2 Vector2DToLocalSpace(Vector2 vec,
                               Vector2 AgentHeading,
                               Vector2 AgentSide)
         {
@@ -150,7 +150,7 @@ namespace Buckland
         //
         //  Transforms a vector from the agent's local space into world space
         //------------------------------------------------------------------------
-        public static Vector2 VectorToWorldSpace(Vector2 vec,
+        public static Vector2 Vector2DToWorldSpace(Vector2 vec,
                                       Vector2 AgentHeading,
                                       Vector2 AgentSide)
         {
