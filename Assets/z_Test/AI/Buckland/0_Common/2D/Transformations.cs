@@ -287,13 +287,13 @@ namespace Buckland
 
         static public Vector3 Vec3RotateYAroundOrigin(Vector3 v, float radian)
         {
-            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, Vector3.zero);
+            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, Vector3.up);
             return rotQ * v;
         }
 
         static public void Vec3RotateYAroundOrigin(ref Vector3 v, float radian)
         {
-            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, Vector3.zero);
+            Quaternion rotQ = Quaternion.AngleAxis(radian * Mathf.Rad2Deg, Vector3.up);
             v = rotQ * v;
         }
     }

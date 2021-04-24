@@ -23,6 +23,11 @@ namespace Buckland
             return _instance;
         }
 
+        public static void Init()
+        {
+            _instance = new MessageDispatcher(); 
+        }
+
         //this method is utilized by DispatchMsg or DispatchDelayedMessages.
         //This method calls the message handling member function of the receiving
         //entity, pReceiver, with the newly created telegram

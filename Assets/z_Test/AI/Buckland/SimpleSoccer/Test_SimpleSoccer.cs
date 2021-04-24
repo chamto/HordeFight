@@ -92,7 +92,7 @@ namespace Test_SimpleSoccer
         {
             if(Input.GetKeyDown(KeyCode.R))
             {
-                g_SoccerPitch = new SoccerPitch(800, 600);
+                g_SoccerPitch = new SoccerPitch(700, 400);
             }
             if (Input.GetKeyDown(KeyCode.P))
             {
@@ -176,6 +176,11 @@ namespace Test_SimpleSoccer
     public static class AutoList<T>
     {
         static LinkedList<T> _allMember = new LinkedList<T>();
+
+        public static void Reset()
+        {
+            _allMember.Clear();
+        }
 
         public static void Add(T data)
         {

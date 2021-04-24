@@ -186,6 +186,7 @@ namespace Test_SimpleSoccer
 
             }
 
+            //메시지를 보내기위한 용도로 등록한다 
             //register the players with the entity manager
             foreach(PlayerBase pb in m_Players)
             {

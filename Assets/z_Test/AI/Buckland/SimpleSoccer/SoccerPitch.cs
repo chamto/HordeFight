@@ -66,6 +66,10 @@ namespace Test_SimpleSoccer
 
         public SoccerPitch(int cx, int cy)
         {
+            EntityManager.Instance().Reset();
+            MessageDispatcher.Init();
+            AutoList<PlayerBase>.Reset();
+
             m_cxClient = cx;
             m_cyClient = cy;
             m_bPaused = false;
@@ -185,7 +189,7 @@ namespace Test_SimpleSoccer
             cc = Color.blue;
             Region.DrawXZ(m_pPlayingArea.Right(), (m_cyClient - Prm.GoalWidth) / 2, m_pPlayingArea.Right() - 40, m_cyClient - (m_cyClient - Prm.GoalWidth) / 2, cc);
 
-            m_pPlayingArea.Render(true);
+            //m_pPlayingArea.Render(true);
 
             //render the pitch markings
             //gdi->WhitePen();
