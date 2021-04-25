@@ -417,6 +417,8 @@ namespace Test_SimpleSoccer
 
         public override void Execute(FieldPlayer player)
         {
+            DebugViewer.Clear(); //chamto test
+
             //calculate the dot product of the vector pointing to the ball
             //and the player's heading
             Vector3 ToBall = player.Ball().Pos() - player.Pos();
@@ -439,7 +441,7 @@ namespace Test_SimpleSoccer
                 return;
             }
             //DebugWide.LogRed(dot + " kickball!!"); //chamto test      
-            DebugWide.DrawCircle(player.Pos(), 10, Color.yellow); //chamto test
+            //DebugWide.DrawCircle(player.Pos(), 10, Color.yellow); //chamto test
             /* Attempt a shot at the goal */
 
             //if a shot is possible, this vector will hold the position along the 
@@ -455,9 +457,11 @@ namespace Test_SimpleSoccer
             //OR if he should just kick the ball anyway, the player will attempt
             //to make the shot
             float rand = Misc.RandFloat();
+            //rand = 1;
+            bool DebugView = true;
             if (player.Team().CanShoot(player.Ball().Pos(),
                                          power,
-                                         out BallTarget) ||
+                                         out BallTarget, DebugView) ||
                (rand < Prm.ChancePlayerAttemptsPotShot))
             {
                 //# ifdef PLAYER_STATE_INFO_ON
@@ -504,6 +508,11 @@ namespace Test_SimpleSoccer
                                         power,
                                         Prm.MinPassDistance))
             {
+                if (SoccerTeam.team_color.red == player.Team().Color())
+                    DebugWide.LogRed(power + " pass  !!"); //chamto test
+                else
+                    DebugWide.LogBlue(power + " pass  !!"); //chamto test
+
                 //add some noise to the kick
                 BallTarget = SoccerBall.AddNoiseToKick(player.Ball().Pos(), BallTarget);
 

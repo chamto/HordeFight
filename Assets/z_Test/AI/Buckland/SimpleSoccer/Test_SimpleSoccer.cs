@@ -17,6 +17,20 @@ namespace Test_SimpleSoccer
 
         Main_SimpleSoccer _main = new Main_SimpleSoccer();
 
+        public int _frameRate = 60;
+
+        //ref : https://blog.naver.com/ateliersera/220434042885
+        //v싱크 끄기 ,  60 프레임 제한
+        void Awake()
+        {
+
+            QualitySettings.vSyncCount = 0;
+
+            Application.targetFrameRate = _frameRate;
+
+        }
+
+
         private void Start()
         {
             _tr_1 = GameObject.Find("tr_1").transform;
@@ -31,8 +45,12 @@ namespace Test_SimpleSoccer
 
         private void Update()
         {
+            Application.targetFrameRate = _frameRate;
+
             _main.Key();
             //_main.Update();
+
+
         }
 
         private void OnGUI()
@@ -48,9 +66,12 @@ namespace Test_SimpleSoccer
             _main.Update();
             _main.Render();
 
+            DebugViewer.OnDrawGizmos();
+
             //Test_TangentPoints();
 
             //Test_isPassSafeFromOpponent();
+
         }
 
 
@@ -87,10 +108,15 @@ namespace Test_SimpleSoccer
 
         public void Test_isPassSafeFromOpponent()
         {
-            //Vector3 ToBall = player.Ball().Pos() - player.Pos();
-            //float dot = Vector3.Dot(player.Heading(), ToBall.normalized);
-            float dot = 1f;
+            Vector3 ToBall = _tr_up.position - _tr_1.position;
+            Vector3 head = (_tr_2.position - _tr_1.position).normalized;
+            float dot = Vector3.Dot(head, ToBall.normalized);
+
+            if (dot < 0)
+                dot = 0;
+            //float dot = 1f;
             float power = Prm.MaxShootingForce * dot;
+            DebugWide.LogGreen("dot: "+ dot + " d*pw: " + power);
 
             bool result = isPassSafeFromOpponent(_tr_1.position, _tr_2.position, Vector3.zero, _tr_3.position, power, false);
             DebugWide.LogBlue(result);
@@ -117,7 +143,7 @@ namespace Test_SimpleSoccer
                                        ToTargetNormalized,
                                        perp,
                                        from);
-            DebugWide.LogBlue(LocalPosOpp);
+            DebugWide.LogBlue("localPos:  "+LocalPosOpp);
             //if opponent is behind the kicker then pass is considered okay(this is 
             //based on the assumption that the ball is going to be kicked with a 
             //velocity greater than the opponent's max velocity)
@@ -163,8 +189,9 @@ namespace Test_SimpleSoccer
                           ballSize +
                           opp_radius;
 
-            DebugWide.LogBlue(reach);
+            DebugWide.LogBlue("time: "+TimeForBall + "  reach: " + reach + " radiusSum: " + (ballSize + opp_radius));
             DebugWide.DrawCircle(opp, reach, Color.red);
+            DebugWide.DrawCircle(opp, ballSize+ opp_radius, Color.green);
 
             //if the distance to the opponent's y position is less than his running
             //range plus the radius of the ball and the opponents radius then the
@@ -208,6 +235,56 @@ namespace Test_SimpleSoccer
             //
             return (v - speed) / Prm.Friction;
         }
+    }
+
+    public class DebugViewer
+    {
+        private static Queue<DrawInfo> _drawQ = new Queue<DrawInfo>();
+
+        public static void AddDrawInfo(DrawInfo info)
+        {
+            _drawQ.Enqueue(info);
+        }
+
+        public static void AddDraw_Circle(Vector3 origin, float radius, Color color)
+        {
+
+            DrawInfo drawInfo = new DrawInfo();
+            drawInfo.kind = DrawInfo.eKind.Circle;
+            drawInfo.origin = origin;
+            drawInfo.radius = radius;
+            drawInfo.color = color;
+
+            AddDrawInfo(drawInfo);
+        }
+
+        public static void AddDraw_Line(Vector3 origin, Vector3 last, Color color)
+        {
+            DrawInfo drawInfo = new DrawInfo();
+            drawInfo.kind = DrawInfo.eKind.Line;
+            drawInfo.origin = origin;
+            drawInfo.last = last;
+            drawInfo.color = color;
+
+            AddDrawInfo(drawInfo);
+        }
+
+        public static void Clear()
+        {
+            _drawQ.Clear(); 
+        }
+
+
+        public static void OnDrawGizmos()
+        {
+            foreach (DrawInfo info in _drawQ)
+            {
+                info.Draw();
+            }
+
+        }
+
+
     }
 
     public class Main_SimpleSoccer

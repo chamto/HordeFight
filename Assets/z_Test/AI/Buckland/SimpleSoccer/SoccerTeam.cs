@@ -407,8 +407,9 @@ namespace Test_SimpleSoccer
         //returns true if player has a clean shot at the goal and sets ShotTarget
         //to a normalized vector pointing in the direction the shot should be
         //made. Else returns false and sets heading to a zero vector
-        public bool CanShoot(Vector3 BallPos, float power, out Vector3 ShotTarget)
+        public bool CanShoot(Vector3 BallPos, float power, out Vector3 ShotTarget , bool debug = false)
         {
+
             ShotTarget = Vector3.zero;
 
             //the number of randomly created shot targets this method will test 
@@ -439,7 +440,7 @@ namespace Test_SimpleSoccer
                 if (time >= 0)
                 {
                     //DebugWide.LogRed(time + "  prev can shoot !!");
-                    if (isPassSafeFromAllOpponents(BallPos, ShotTarget, null, power))
+                    if (isPassSafeFromAllOpponents(BallPos, ShotTarget, null, power, debug))
                     {
                         //DebugWide.LogBlue(BallPos + "  can shoot !!");
                         return true;
@@ -585,7 +586,7 @@ namespace Test_SimpleSoccer
                                         Vector3 target,
                                         PlayerBase receiver,
                                         PlayerBase opp,
-                                        float PassingForce)
+                                        float PassingForce , bool debug = false)
         {
             //move the opponent into local space.
             Vector3 ToTarget = target - from;
@@ -631,8 +632,8 @@ namespace Test_SimpleSoccer
                 } 
             }
 
-            DebugWide.DrawLine(from, target, UnityEngine.Color.black);
-            DebugWide.DrawLine(target, opp.Pos(), UnityEngine.Color.gray);
+            //DebugWide.DrawLine(from, target, UnityEngine.Color.black);
+            //DebugWide.DrawLine(target, opp.Pos(), UnityEngine.Color.gray);
 
 
             //calculate how long it takes the ball to cover the distance to the 
@@ -648,17 +649,25 @@ namespace Test_SimpleSoccer
                           Pitch().Ball().BRadius() +
                           opp.BRadius();
 
+            if (debug)
+            {
+                DebugViewer.AddDraw_Line(from, target, UnityEngine.Color.black);
+                DebugViewer.AddDraw_Line(target, opp.Pos(), UnityEngine.Color.gray);
+                DebugViewer.AddDraw_Circle(opp.Pos(), reach, UnityEngine.Color.red);
+
+            }
+
             //DebugWide.LogGreen(reach + "  " + TimeForBall + "  " + opp.MaxSpeed() + "  " + Pitch().Ball().BRadius() + "  " + opp.BRadius());
             //if the distance to the opponent's y position is less than his running
             //range plus the radius of the ball and the opponents radius then the
             //ball can be intercepted
             //if (Math.Abs(LocalPosOpp.z) < reach)
-            if (Math.Abs(LocalPosOpp.x) < reach*0.7f) //reach 값이 너무 크게 나옴 , 무엇이 잘못된건지 모르겠음 , 적당히 줄여봄 - chamto test
+            if (Math.Abs(LocalPosOpp.x) < reach) //reach 값이 너무 크게 나옴
             {
                 return false;
             }
 
-            DebugWide.DrawCircle(opp.Pos(), reach, UnityEngine.Color.red);
+            //DebugWide.DrawCircle(opp.Pos(), reach, UnityEngine.Color.red);
 
             return true;
         }
@@ -669,12 +678,12 @@ namespace Test_SimpleSoccer
         public bool isPassSafeFromAllOpponents(Vector3 from,
                                             Vector3 target,
                                             PlayerBase receiver,
-                                            float PassingForce)
+                                            float PassingForce , bool debug = false)
         {
 
             foreach (PlayerBase opp in Opponents().Members())
             {
-                if (!isPassSafeFromOpponent(from, target, receiver, opp, PassingForce))
+                if (!isPassSafeFromOpponent(from, target, receiver, opp, PassingForce , debug))
                 {
                     //debug_on
         
