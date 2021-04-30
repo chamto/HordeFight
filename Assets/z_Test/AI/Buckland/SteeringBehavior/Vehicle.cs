@@ -147,6 +147,7 @@ namespace SteeringBehavior
             if (isSmoothingOn())
             {
                 m_vSmoothedHeading = m_pHeadingSmoother.Update(Heading());
+                m_vSmoothedHeading.Normalize();
             }
         }
 
