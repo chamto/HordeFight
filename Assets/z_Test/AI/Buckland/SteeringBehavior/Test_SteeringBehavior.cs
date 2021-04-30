@@ -187,17 +187,7 @@ namespace SteeringBehavior
 
 //#define SHOAL
 //# ifdef SHOAL
-            m_Vehicles[SingleO.prm.NumAgents - 1].Steering().FlockingOff();
-            m_Vehicles[SingleO.prm.NumAgents - 1].SetScale(new Vector2(10, 10));
-            m_Vehicles[SingleO.prm.NumAgents - 1].Steering().WanderOn();
-            m_Vehicles[SingleO.prm.NumAgents - 1].SetMaxSpeed(70);
 
-
-            for (int i = 0; i < SingleO.prm.NumAgents - 1; ++i)
-            {
-                m_Vehicles[i].Steering().EvadeOn(m_Vehicles[SingleO.prm.NumAgents - 1]);
-
-            }
 //#endif
 
             //create any obstacles or walls
@@ -205,7 +195,43 @@ namespace SteeringBehavior
             //CreateWalls();
         }
 
-		public void Start()
+        bool __isShoal = false;
+        public void SwitchShoal()
+        {
+            __isShoal = !__isShoal;
+
+            if (__isShoal)
+            {
+                m_Vehicles[SingleO.prm.NumAgents - 1].Steering().FlockingOff();
+                m_Vehicles[SingleO.prm.NumAgents - 1].SetScale(new Vector2(10, 10));
+                m_Vehicles[SingleO.prm.NumAgents - 1].Steering().WanderOn();
+                m_Vehicles[SingleO.prm.NumAgents - 1].SetMaxSpeed(70);
+
+
+                for (int i = 0; i < SingleO.prm.NumAgents - 1; ++i)
+                {
+                    m_Vehicles[i].Steering().EvadeOn(m_Vehicles[SingleO.prm.NumAgents - 1]);
+
+                }
+            }
+            else
+            {
+                m_Vehicles[SingleO.prm.NumAgents - 1].Steering().FlockingOn();
+                m_Vehicles[SingleO.prm.NumAgents - 1].SetScale(SingleO.prm.VehicleScale);
+                m_Vehicles[SingleO.prm.NumAgents - 1].Steering().WanderOff();
+                m_Vehicles[SingleO.prm.NumAgents - 1].SetMaxSpeed(SingleO.prm.MaxSpeed);
+
+
+                for (int i = 0; i < SingleO.prm.NumAgents - 1; ++i)
+                {
+                    m_Vehicles[i].Steering().EvadeOff();
+
+                }
+            }
+
+        }
+
+        public void Start()
 		{
             SingleO.prm = _prm;
             SingleO.prm.Update(); //가장먼저 갱신되어야 함 
@@ -541,6 +567,12 @@ namespace SteeringBehavior
                 }
             }
             count++;
+            if (GUI.Button(new Rect(x * count, y * 3, x, y), new GUIContent("11 SwitchShoal")))
+            {
+                SwitchShoal();
+            }
+
+
         }
 
 
