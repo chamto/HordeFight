@@ -57,6 +57,11 @@ namespace SteeringBehavior
         bool m_bViewKeys;
         bool m_bShowCellSpaceInfo;
 
+        //void Awake()
+        //{
+        //    QualitySettings.vSyncCount = 0;
+        //    Application.targetFrameRate = 60;
+        //}
 
         void CreateObstacles() 
         {
@@ -177,6 +182,7 @@ namespace SteeringBehavior
                                                SingleO.prm.VehicleScale);        //scale
 
                 pVehicle.Steering().FlockingOn();
+                //pVehicle.Steering().WanderOn();
 
                 m_Vehicles.Add(pVehicle);
                 //DebugWide.LogBlue(pVehicle.Pos() + " ---- ");
@@ -218,7 +224,6 @@ namespace SteeringBehavior
             {
                 m_Vehicles[SingleO.prm.NumAgents - 1].Steering().FlockingOn();
                 m_Vehicles[SingleO.prm.NumAgents - 1].SetScale(SingleO.prm.VehicleScale);
-                m_Vehicles[SingleO.prm.NumAgents - 1].Steering().WanderOff();
                 m_Vehicles[SingleO.prm.NumAgents - 1].SetMaxSpeed(SingleO.prm.MaxSpeed);
 
 
