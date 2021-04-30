@@ -1,39 +1,36 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-
-namespace Test_Steering_1
+namespace Test_Steering_Pursuit
 {
-    [System.Serializable]
-    public class Test_Steering_1 : MonoBehaviour
+    public class Test_Pursuit : MonoBehaviour
     {
         public Transform _tr_target = null;
 
-        public Param _prm = new Param();
         List<Vehicle> _list_vehicle = new List<Vehicle>();
+
+        public const int Num_Agents = 1;
 
         // Use this for initialization
         void Start()
         {
-            SingleO.prm = _prm;
 
-            for (int i = 0; i < _prm.NumAgents; i++)
+            for (int i = 0; i < Num_Agents; i++)
             {
                 Vehicle v = new Vehicle();
                 v.Init();
                 _list_vehicle.Add(v);
             }
 
-            _list_vehicle[1]._mode = 1;
-            _list_vehicle[1]._leader = _list_vehicle[0];
-            _list_vehicle[1]._offset = new Vector3(1f, 0, -1f);
+            _list_vehicle[0]._mode = SteeringBehavior.eType.wander;
+            //_list_vehicle[0]._leader = _list_vehicle[0];
+            _list_vehicle[0]._offset = new Vector3(1f, 0, -1f);
 
-            _list_vehicle[2]._mode = 1;
-            _list_vehicle[2]._leader = _list_vehicle[0];
-            _list_vehicle[2]._offset = new Vector3(-1f, 0, -1f);
+            //_list_vehicle[1]._mode = SteeringBehavior.eType.pursuit;
+            //_list_vehicle[1]._leader = _list_vehicle[0];
+            //_list_vehicle[1]._offset = new Vector3(-1f, 0, -1f);
 
         }
 
@@ -46,7 +43,7 @@ namespace Test_Steering_1
         {
             foreach (Vehicle v in _list_vehicle)
             {
-                if(null != (object)_tr_target)
+                if (null != _tr_target)
                     v._target = _tr_target.position;
 
                 v.Update();
@@ -55,27 +52,13 @@ namespace Test_Steering_1
         }
     }
 
-    //======================================================
-
-    public static class SingleO
-    {
-        public static Param prm = null;
-    }
-
-    [System.Serializable]
-    public class Param
-    {
-        [Space]
-        public int NumAgents = 10;
-    }
-
     public class Vehicle
     {
-        public Vector3 _pos = ConstV.v3_zero;
+        public Vector3 _pos = Vector3.zero;
 
-        public Vector3 _velocity;
+        public Vector3 _velocity = new Vector3(0,0,0);
 
-        public Vector3 _heading;
+        public Vector3 _heading = Vector3.forward;
 
         //public Vector3 _side;
 
@@ -83,18 +66,20 @@ namespace Test_Steering_1
 
         public float _speed;
 
-        public float _maxSpeed = 150f;
+        public float _maxSpeed = 50f;
 
-        public float _maxForce;
+        public float _maxForce = 400f;
 
-        public float _maxTurnRate;
+        //public float _maxTurnRate;
+
+        public Vector3 _size = new Vector3(3, 0, 3);
 
         public Quaternion _rotatioin = Quaternion.identity;
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
         public Vehicle _leader = null;
-        public int _mode = 0;
+        public SteeringBehavior.eType _mode = SteeringBehavior.eType.none;
 
         Vector3[] _array_VB = new Vector3[3];
 
@@ -109,18 +94,27 @@ namespace Test_Steering_1
             _steeringBehavior._vehicle = this;
         }
 
+
+        float __WanderWeight = 200f;
         public void Update()
         {
 
             //Vector3 SteeringForce = m_pSteering.Calculate();
             Vector3 SteeringForce = ConstV.v3_zero;
-            if(0 == _mode)
+            if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.normal);
-            else if(1 == _mode)
+            else if (SteeringBehavior.eType.offset_pursuit == _mode)
                 SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset);
+            else if (SteeringBehavior.eType.wander == _mode)
+                SteeringForce = _steeringBehavior.Wander() * __WanderWeight;
+            else if (SteeringBehavior.eType.pursuit == _mode)
+                SteeringForce = _steeringBehavior.Pursuit(_leader);
+
+            SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
 
             //Acceleration = Force/Mass
             Vector3 acceleration = SteeringForce / _mass;
+            //DebugWide.LogBlue(acceleration.magnitude);
 
             //update velocity
             _velocity += acceleration * Time.deltaTime;
@@ -135,22 +129,39 @@ namespace Test_Steering_1
             {
                 _heading = VOp.Normalize(_velocity);
                 _speed = _velocity.magnitude;
+                DebugWide.LogBlue(_speed); 
                 _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
             }
 
+            _pos = WrapAroundXZ(_pos, 100, 100);
+
         }
+
+        public Vector3 WrapAroundXZ(Vector3 pos, int MaxX, int MaxY)
+        {
+            if (pos.x > MaxX) { pos.x = 0.0f; }
+
+            if (pos.x < 0) { pos.x = (float)MaxX; }
+
+            if (pos.z < 0) { pos.z = (float)MaxY; }
+
+            if (pos.z > MaxY) { pos.z = 0.0f; }
+
+            return pos;
+        }
+
         public void Draw(Color color)
         {
             Vector3 vb0, vb1, vb2;
-            vb0 = _rotatioin * _array_VB[0];
-            vb1 = _rotatioin * _array_VB[1];
-            vb2 = _rotatioin * _array_VB[2];
+            vb0 = _rotatioin * _array_VB[0] * _size.z;
+            vb1 = _rotatioin * _array_VB[1] * _size.z;
+            vb2 = _rotatioin * _array_VB[2] * _size.z;
 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
             DebugWide.DrawLine(_pos + vb2, _pos + vb0, color);
-            DebugWide.DrawCircle(_pos, 1f, color); //test
+            DebugWide.DrawCircle(_pos, 1f * _size.z, color); //test
         }
     }
 
@@ -194,6 +205,15 @@ namespace Test_Steering_1
         //public Vector3 _target;
 
         //==================================================
+
+        public Vector3 Seek(Vector3 TargetPos)
+        {
+            Vector3 DesiredVelocity = (TargetPos - _vehicle._pos).normalized
+                            * _vehicle._maxSpeed;
+
+            return (DesiredVelocity - _vehicle._velocity);
+        }
+
 
         public Vector3 Arrive(Vector3 TargetPos,
                         Deceleration deceleration)
@@ -242,6 +262,80 @@ namespace Test_Steering_1
 
             //now Arrive at the predicted future position of the offset
             return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
+        }
+
+        public Vector3 Pursuit(Vehicle evader)
+        {
+            //if the evader is ahead and facing the agent then we can just seek
+            //for the evader's current position.
+            Vector3 ToEvader = evader._pos - _vehicle._pos;
+
+            float RelativeHeading = Vector2.Dot(_vehicle._heading, evader._heading);
+
+            if ((Vector3.Dot(ToEvader, _vehicle._heading) > 0f) &&
+                 (RelativeHeading < -0.95))  //acos(0.95)=18 degs
+            {
+                return Seek(evader._pos);
+            }
+
+            //Not considered ahead so we predict where the evader will be.
+
+            //the lookahead time is propotional to the distance between the evader
+            //and the pursuer; and is inversely proportional to the sum of the
+            //agent's velocities
+            float LookAheadTime = ToEvader.magnitude /
+                                  (_vehicle._maxSpeed + evader._speed);
+
+            //now seek to the predicted future position of the evader
+            return Seek(evader._pos + evader._velocity * LookAheadTime);
+        }
+
+        public float TurnaroundTime(Vehicle agent , Vector3 targetPos)
+        {
+            Vector3 toTarget = (targetPos - agent._pos).normalized;
+
+            float dot = Vector3.Dot(agent._heading, toTarget);
+
+            const float coefficient = 0.5f;
+
+            return (dot - 1f) * -coefficient;
+        }
+
+        Vector3 m_vWanderTarget = Vector3.zero;
+
+        //explained above
+        float m_dWanderJitter = 80f;
+        float m_dWanderRadius = 1.2f;
+        float m_dWanderDistance = 2.0f;
+        public Vector3 Wander()
+        {
+            //this behavior is dependent on the update rate, so this line must
+            //be included when using time independent framerate.
+            float JitterThisTimeSlice = m_dWanderJitter * Time.deltaTime;
+
+            //first, add a small random vector to the target's position
+            m_vWanderTarget += new Vector3(Misc.RandomClamped() * JitterThisTimeSlice,0,
+                                          Misc.RandomClamped() * JitterThisTimeSlice);
+
+            //reproject this new vector back on to a unit circle
+            m_vWanderTarget.Normalize();
+
+            //increase the length of the vector to the same as the radius
+            //of the wander circle
+            m_vWanderTarget *= m_dWanderRadius;
+
+            //move the target into a position WanderDist in front of the agent
+            Vector3 targetLocal = m_vWanderTarget + new Vector3(0,0, m_dWanderDistance);
+
+            //project the target into world space
+            Vector3 targetWorld = (_vehicle._rotatioin * targetLocal) + _vehicle._pos; //PointToWorldSpace
+
+            //DebugWide.DrawCircle(_vehicle._pos, 1, Color.red);
+            DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * m_dWanderDistance, m_dWanderRadius, Color.green);
+            DebugWide.DrawLine(_vehicle._pos, targetWorld, Color.green);
+            //and steer towards it
+            return targetWorld - _vehicle._pos;
+            //return Vector3.zero;
         }
     }
 }
