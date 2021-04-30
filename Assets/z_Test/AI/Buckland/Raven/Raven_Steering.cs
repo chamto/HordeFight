@@ -213,7 +213,7 @@ namespace Raven
             m_vWanderTarget *= m_dWanderRadius;
 
             //move the target into a position WanderDist in front of the agent
-            Vector3 target = m_vWanderTarget + new Vector3(m_dWanderDistance, 0, 0);
+            Vector3 target = m_vWanderTarget + new Vector3( 0, 0, m_dWanderDistance);
 
             //project the target into world space
             Vector3 Target = Transformations.PointToWorldSpace(target,
