@@ -11,7 +11,7 @@ namespace Test_Steering_Pursuit
 
         List<Vehicle> _list_vehicle = new List<Vehicle>();
 
-        public const int Num_Agents = 1;
+        public const int Num_Agents = 2;
 
         // Use this for initialization
         void Start()
@@ -26,11 +26,13 @@ namespace Test_Steering_Pursuit
 
             _list_vehicle[0]._mode = SteeringBehavior.eType.wander;
             //_list_vehicle[0]._leader = _list_vehicle[0];
-            _list_vehicle[0]._offset = new Vector3(1f, 0, -1f);
+            //_list_vehicle[0]._offset = new Vector3(1f, 0, -1f);
+            //_list_vehicle[0]._maxSpeed = 20f;
 
-            //_list_vehicle[1]._mode = SteeringBehavior.eType.pursuit;
-            //_list_vehicle[1]._leader = _list_vehicle[0];
+            _list_vehicle[1]._mode = SteeringBehavior.eType.pursuit;
+            _list_vehicle[1]._leader = _list_vehicle[0];
             //_list_vehicle[1]._offset = new Vector3(-1f, 0, -1f);
+            //_list_vehicle[1]._maxSpeed = 20f;
 
         }
 
@@ -66,7 +68,7 @@ namespace Test_Steering_Pursuit
 
         public float _speed;
 
-        public float _maxSpeed = 50f;
+        public float _maxSpeed = 30f;
 
         public float _maxForce = 400f;
 
@@ -94,7 +96,7 @@ namespace Test_Steering_Pursuit
             _steeringBehavior._vehicle = this;
         }
 
-
+        float __PursuitWeight = 200f;
         float __WanderWeight = 200f;
         public void Update()
         {
@@ -108,7 +110,7 @@ namespace Test_Steering_Pursuit
             else if (SteeringBehavior.eType.wander == _mode)
                 SteeringForce = _steeringBehavior.Wander() * __WanderWeight;
             else if (SteeringBehavior.eType.pursuit == _mode)
-                SteeringForce = _steeringBehavior.Pursuit(_leader);
+                SteeringForce = _steeringBehavior.Pursuit(_leader) * __PursuitWeight;
 
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
 
@@ -129,7 +131,7 @@ namespace Test_Steering_Pursuit
             {
                 _heading = VOp.Normalize(_velocity);
                 _speed = _velocity.magnitude;
-                DebugWide.LogBlue(_speed); 
+                //DebugWide.LogBlue(_speed); 
                 _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
             }
@@ -211,6 +213,7 @@ namespace Test_Steering_Pursuit
             Vector3 DesiredVelocity = (TargetPos - _vehicle._pos).normalized
                             * _vehicle._maxSpeed;
 
+
             return (DesiredVelocity - _vehicle._velocity);
         }
 
@@ -272,9 +275,13 @@ namespace Test_Steering_Pursuit
 
             float RelativeHeading = Vector2.Dot(_vehicle._heading, evader._heading);
 
+
             if ((Vector3.Dot(ToEvader, _vehicle._heading) > 0f) &&
                  (RelativeHeading < -0.95))  //acos(0.95)=18 degs
             {
+            
+                //DebugWide.DrawCircle(evader._pos, 2, Color.red);
+
                 return Seek(evader._pos);
             }
 
@@ -285,6 +292,14 @@ namespace Test_Steering_Pursuit
             //agent's velocities
             float LookAheadTime = ToEvader.magnitude /
                                   (_vehicle._maxSpeed + evader._speed);
+
+            //------------------------
+            Vector3 DesiredVelocity, prPos;
+            DesiredVelocity = ((evader._pos + evader._velocity * LookAheadTime) - _vehicle._pos);
+
+            prPos = _vehicle._pos + (DesiredVelocity);
+            DebugWide.DrawCircle(prPos, 2, Color.red);
+            //------------------------
 
             //now seek to the predicted future position of the evader
             return Seek(evader._pos + evader._velocity * LookAheadTime);
