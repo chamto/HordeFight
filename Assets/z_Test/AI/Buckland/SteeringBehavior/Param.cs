@@ -3,13 +3,13 @@
 namespace SteeringBehavior
 {
     //======================================================
-    [System.Serializable]
+    //[System.Serializable]
     public class Param
     {
-        public int cxClient = 100;
-        public int cyClient = 100;
+        public int cxClient = 200;
+        public int cyClient = 200;
         [Space]
-        public int NumAgents = 300;
+        public int NumAgents = 50;
         public int NumObstacles = 7;
         public float MinObstacleRadius = 10;
         public float MaxObstacleRadius = 30;

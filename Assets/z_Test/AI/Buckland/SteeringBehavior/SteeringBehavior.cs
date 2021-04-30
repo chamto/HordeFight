@@ -130,7 +130,7 @@ namespace SteeringBehavior
         //this function tests if a specific bit of m_iFlags is set
         bool On(eType bt) { return (m_iFlags & (int)bt) == (int)bt; }
 
-        bool AccumulateForce(Vector2 RunningTot, Vector2 ForceToAdd)
+        bool AccumulateForce(ref Vector2 RunningTot, Vector2 ForceToAdd)
         {
             //calculate how much steering force the vehicle has used so far
             float MagnitudeSoFar = RunningTot.magnitude;
@@ -1042,7 +1042,7 @@ namespace SteeringBehavior
                 force = WallAvoidance(m_pVehicle.World().Walls()) *
                         m_dWeightWallAvoidance;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.obstacle_avoidance))
@@ -1050,7 +1050,7 @@ namespace SteeringBehavior
                 force = ObstacleAvoidance(m_pVehicle.World().Obstacles()) *
                         m_dWeightObstacleAvoidance;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.evade))
@@ -1059,7 +1059,7 @@ namespace SteeringBehavior
 
                 force = Evade(m_pTargetAgent1) * m_dWeightEvade;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
@@ -1067,7 +1067,7 @@ namespace SteeringBehavior
             {
                 force = Flee(m_pVehicle.World().Crosshair()) * m_dWeightFlee;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
@@ -1080,21 +1080,21 @@ namespace SteeringBehavior
                 {
                     force = Separation(m_pVehicle.World().Agents()) * m_dWeightSeparation;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
 
                 if (On(eType.allignment))
                 {
                     force = Alignment(m_pVehicle.World().Agents()) * m_dWeightAlignment;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
 
                 if (On(eType.cohesion))
                 {
                     force = Cohesion(m_pVehicle.World().Agents()) * m_dWeightCohesion;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
             }
 
@@ -1105,21 +1105,21 @@ namespace SteeringBehavior
                 {
                     force = SeparationPlus(m_pVehicle.World().Agents()) * m_dWeightSeparation;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
 
                 if (On(eType.allignment))
                 {
                     force = AlignmentPlus(m_pVehicle.World().Agents()) * m_dWeightAlignment;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
 
                 if (On(eType.cohesion))
                 {
                     force = CohesionPlus(m_pVehicle.World().Agents()) * m_dWeightCohesion;
 
-                    if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                    if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
                 }
             }
 
@@ -1127,7 +1127,7 @@ namespace SteeringBehavior
             {
                 force = Seek(m_pVehicle.World().Crosshair()) * m_dWeightSeek;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
@@ -1135,14 +1135,16 @@ namespace SteeringBehavior
             {
                 force = Arrive(m_pVehicle.World().Crosshair(), m_Deceleration) * m_dWeightArrive;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.wander))
             {
                 force = Wander() * m_dWeightWander;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+
+                //DebugWide.LogBlue(m_vSteeringForce + "  " + m_pVehicle.Speed());
             }
 
             if (On(eType.pursuit))
@@ -1151,7 +1153,7 @@ namespace SteeringBehavior
 
                 force = Pursuit(m_pTargetAgent1) * m_dWeightPursuit;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.offset_pursuit))
@@ -1161,7 +1163,7 @@ namespace SteeringBehavior
 
                 force = OffsetPursuit(m_pTargetAgent1, m_vOffset);
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.interpose))
@@ -1170,7 +1172,7 @@ namespace SteeringBehavior
 
                 force = Interpose(m_pTargetAgent1, m_pTargetAgent2) * m_dWeightInterpose;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
             if (On(eType.hide))
@@ -1179,7 +1181,7 @@ namespace SteeringBehavior
 
                 force = Hide(m_pTargetAgent1, m_pVehicle.World().Obstacles()) * m_dWeightHide;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
 
@@ -1187,8 +1189,9 @@ namespace SteeringBehavior
             {
                 force = FollowPath() * m_dWeightFollowPath;
 
-                if (!AccumulateForce(m_vSteeringForce, force)) return m_vSteeringForce;
+                if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
+
 
             return m_vSteeringForce;
         }
@@ -1496,6 +1499,7 @@ namespace SteeringBehavior
                 }
             }
 
+            //DebugWide.LogBlue(m_SummingMethod + "  " + m_pVehicle.Speed());
             switch (m_SummingMethod)
             {
                 case SummingMethod.weighted_average:
