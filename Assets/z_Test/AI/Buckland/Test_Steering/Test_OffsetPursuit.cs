@@ -5,10 +5,10 @@ using UnityEngine;
 using UtilGS9;
 
 
-namespace Test_Steering_1
+namespace Test_Steering_OffsetPursuit
 {
     [System.Serializable]
-    public class Test_Steering_1 : MonoBehaviour
+    public class Test_OffsetPursuit : MonoBehaviour
     {
         public Transform _tr_target = null;
 
