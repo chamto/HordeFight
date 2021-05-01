@@ -24,11 +24,13 @@ namespace Test_Steering_Pursuit
                 _list_vehicle.Add(v);
             }
 
-            _list_vehicle[0]._mode = SteeringBehavior.eType.wander;
+            _list_vehicle[0]._mode = SteeringBehavior.eType.evade;
+            _list_vehicle[0]._v_target = _list_vehicle[1];
 
-            _list_vehicle[1]._mode = SteeringBehavior.eType.pursuit;
+            //_list_vehicle[1]._pos = new Vector3(10, 0, 0);
+            _list_vehicle[1]._mode = SteeringBehavior.eType.pursuit; //추격 
             _list_vehicle[1]._v_target = _list_vehicle[0];
-
+            //_list_vehicle[1]._maxSpeed = 60;
         }
 
         // Update is called once per frame
@@ -63,7 +65,7 @@ namespace Test_Steering_Pursuit
 
         public float _speed;
 
-        public float _maxSpeed = 50f;
+        public float _maxSpeed = 20f;
 
         public float _maxForce = 400f;
 
@@ -91,21 +93,25 @@ namespace Test_Steering_Pursuit
             _steeringBehavior._vehicle = this;
         }
 
-        float __PursuitWeight = 200f;
         float __WanderWeight = 200f;
+        float __PursuitWeight = 200f;
+        //float __WeightEvade = 0.01f * 200f;
+        float __WeightEvade = 200f;
         public void Update()
         {
 
             //Vector3 SteeringForce = m_pSteering.Calculate();
             Vector3 SteeringForce = ConstV.v3_zero;
-            if (SteeringBehavior.eType.arrive == _mode)
-                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.normal);
-            else if (SteeringBehavior.eType.offset_pursuit == _mode)
-                SteeringForce = _steeringBehavior.OffsetPursuit(_v_target, _offset);
-            else if (SteeringBehavior.eType.wander == _mode)
+            if (SteeringBehavior.eType.wander == _mode)
                 SteeringForce = _steeringBehavior.Wander() * __WanderWeight;
             else if (SteeringBehavior.eType.pursuit == _mode)
                 SteeringForce = _steeringBehavior.Pursuit(_v_target) * __PursuitWeight;
+            else if (SteeringBehavior.eType.evade == _mode)
+            {
+                SteeringForce = _steeringBehavior.Evade(_v_target) * __WeightEvade;
+                SteeringForce += _steeringBehavior.Wander() * __WanderWeight;
+            }
+
 
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
 
@@ -191,8 +197,8 @@ namespace Test_Steering_Pursuit
             obstacle_avoidance = 0x00100,
             wall_avoidance = 0x00200,
             follow_path = 0x00400,
-            pursuit = 0x00800,
-            evade = 0x01000,
+            pursuit = 0x00800, //이동위치 예측 추격
+            evade = 0x01000, //추격위치 예측 회피
             interpose = 0x02000,
             hide = 0x04000,
             flock = 0x08000,
@@ -218,55 +224,6 @@ namespace Test_Steering_Pursuit
             return (DesiredVelocity - _vehicle._velocity);
         }
 
-
-        public Vector3 Arrive(Vector3 TargetPos,
-                        Deceleration deceleration)
-        {
-            Vector3 ToTarget = TargetPos - _vehicle._pos;
-
-            //calculate the distance to the target
-            float dist = ToTarget.magnitude;
-
-            if (dist > 0)
-            {
-                //because Deceleration is enumerated as an int, this value is required
-                //to provide fine tweaking of the deceleration..
-                const float DecelerationTweaker = 0.3f;
-
-                //calculate the speed required to reach the target given the desired
-                //deceleration
-                float speed = dist / ((float)deceleration * DecelerationTweaker);
-
-                //make sure the velocity does not exceed the max
-                speed = Math.Min(speed, _vehicle._maxSpeed);
-
-                //from here proceed just like Seek except we don't need to normalize 
-                //the ToTarget vector because we have already gone to the trouble
-                //of calculating its length: dist. 
-                Vector3 DesiredVelocity = ToTarget * speed / dist;
-
-                return (DesiredVelocity - _vehicle._velocity);
-            }
-
-            return Vector3.zero;
-        }
-
-        public Vector3 OffsetPursuit(Vehicle leader, Vector3 offset)
-        {
-            //calculate the offset's position in world space
-            Vector3 WorldOffsetPos = (leader._rotatioin * offset) + leader._pos; //PointToWorldSpace
-
-            Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
-
-            //the lookahead time is propotional to the distance between the leader
-            //and the pursuer; and is inversely proportional to the sum of both
-            //agent's velocities
-            float LookAheadTime = ToOffset.magnitude /
-                                  (_vehicle._maxSpeed + leader._speed);
-
-            //now Arrive at the predicted future position of the offset
-            return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
-        }
 
         public Vector3 Pursuit(Vehicle evader)
         {
@@ -294,27 +251,28 @@ namespace Test_Steering_Pursuit
             float LookAheadTime = ToEvader.magnitude /
                                   (_vehicle._maxSpeed + evader._speed);
 
-            //------------------------
-            Vector3 DesiredVelocity, prPos;
-            DesiredVelocity = ((evader._pos + evader._velocity * LookAheadTime) - _vehicle._pos);
+            //LookAheadTime += TurnaroundTime(_vehicle, evader._pos , 1); //이렇게 턴시간 늘리는 것은 아닌것 같음 
 
-            prPos = _vehicle._pos + (DesiredVelocity);
+            //------------------------
+            Vector3 prPos = evader._pos + evader._velocity * LookAheadTime;
             DebugWide.DrawCircle(prPos, 2, Color.red);
+            //DebugWide.LogBlue(LookAheadTime);
             //------------------------
 
             //now seek to the predicted future position of the evader
             return Seek(evader._pos + evader._velocity * LookAheadTime);
         }
 
-        public float TurnaroundTime(Vehicle agent , Vector3 targetPos)
+        public float TurnaroundTime(Vehicle agent , Vector3 targetPos , float turnSecond)
         {
             Vector3 toTarget = (targetPos - agent._pos).normalized;
 
             float dot = Vector3.Dot(agent._heading, toTarget);
 
-            const float coefficient = 0.5f;
+            float coefficient = 0.5f * turnSecond; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 1초
+            //const float coefficient = 0.5f * 5; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 5초
 
-            return (dot - 1f) * -coefficient;
+            return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
         }
 
 
@@ -359,6 +317,54 @@ namespace Test_Steering_Pursuit
             Vector3 targetWorld = (_vehicle._rotatioin * targetLocal) + _vehicle._pos; //PointToWorldSpace
             DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * _wanderDistance, _wanderRadius, Color.green);
             DebugWide.DrawLine(_vehicle._pos, targetWorld, Color.green);
+        }
+
+
+        public Vector3 Flee(Vector3 TargetPos)
+        {
+            //only flee if the target is within 'panic distance'. Work in distance
+            //squared space.
+            //const float PanicDistanceSq = 100.0f * 100.0f;
+            //if ((m_pVehicle.Pos() - TargetPos).sqrMagnitude > PanicDistanceSq)
+            //{
+            //    return Vector2.zero;
+            //}
+
+
+            Vector3 DesiredVelocity = (_vehicle._pos - TargetPos).normalized
+                                      * _vehicle._maxSpeed;
+
+            return (DesiredVelocity - _vehicle._velocity);
+        }
+
+        public Vector3 Evade(Vehicle pursuer)
+        {
+            /* Not necessary to include the check for facing direction this time */
+
+            Vector3 ToPursuer = pursuer._pos - _vehicle._pos;
+
+            //uncomment the following two lines to have Evade only consider pursuers 
+            //within a 'threat range'
+            const float ThreatRange = 30.0f;
+            DebugWide.DrawCircle(_vehicle._pos, ThreatRange, Color.gray);
+            if (ToPursuer.sqrMagnitude > ThreatRange * ThreatRange) return Vector3.zero;
+
+            //the lookahead time is propotional to the distance between the pursuer
+            //and the pursuer; and is inversely proportional to the sum of the
+            //agents' velocities
+            float LookAheadTime = ToPursuer.magnitude /
+                                   (_vehicle._maxSpeed + pursuer._speed);
+
+            //LookAheadTime += TurnaroundTime(_vehicle, pursuer._pos , -1); //이렇게 턴시간 늘리는 것은 아닌것 같음 
+
+            //------------------------
+            Vector3 prPos = pursuer._pos + pursuer._velocity * LookAheadTime;
+            DebugWide.DrawCircle(prPos, 2, Color.blue);
+
+            //------------------------
+
+            //now flee away from predicted future position of the pursuer
+            return Flee(pursuer._pos + pursuer._velocity * LookAheadTime);
         }
     }
 }
