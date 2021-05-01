@@ -25,14 +25,9 @@ namespace Test_Steering_Pursuit
             }
 
             _list_vehicle[0]._mode = SteeringBehavior.eType.wander;
-            //_list_vehicle[0]._leader = _list_vehicle[0];
-            //_list_vehicle[0]._offset = new Vector3(1f, 0, -1f);
-            //_list_vehicle[0]._maxSpeed = 20f;
 
             _list_vehicle[1]._mode = SteeringBehavior.eType.pursuit;
-            _list_vehicle[1]._leader = _list_vehicle[0];
-            //_list_vehicle[1]._offset = new Vector3(-1f, 0, -1f);
-            //_list_vehicle[1]._maxSpeed = 20f;
+            _list_vehicle[1]._v_target = _list_vehicle[0];
 
         }
 
@@ -68,7 +63,7 @@ namespace Test_Steering_Pursuit
 
         public float _speed;
 
-        public float _maxSpeed = 30f;
+        public float _maxSpeed = 50f;
 
         public float _maxForce = 400f;
 
@@ -80,7 +75,7 @@ namespace Test_Steering_Pursuit
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
-        public Vehicle _leader = null;
+        public Vehicle _v_target = null;
         public SteeringBehavior.eType _mode = SteeringBehavior.eType.none;
 
         Vector3[] _array_VB = new Vector3[3];
@@ -106,11 +101,11 @@ namespace Test_Steering_Pursuit
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.normal);
             else if (SteeringBehavior.eType.offset_pursuit == _mode)
-                SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset);
+                SteeringForce = _steeringBehavior.OffsetPursuit(_v_target, _offset);
             else if (SteeringBehavior.eType.wander == _mode)
                 SteeringForce = _steeringBehavior.Wander() * __WanderWeight;
             else if (SteeringBehavior.eType.pursuit == _mode)
-                SteeringForce = _steeringBehavior.Pursuit(_leader) * __PursuitWeight;
+                SteeringForce = _steeringBehavior.Pursuit(_v_target) * __PursuitWeight;
 
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
 
@@ -160,10 +155,16 @@ namespace Test_Steering_Pursuit
             vb1 = _rotatioin * _array_VB[1] * _size.z;
             vb2 = _rotatioin * _array_VB[2] * _size.z;
 
+            //에이젼트 출력 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
             DebugWide.DrawLine(_pos + vb2, _pos + vb0, color);
             DebugWide.DrawCircle(_pos, 1f * _size.z, color); //test
+
+            if (SteeringBehavior.eType.wander == _mode)
+            {
+                _steeringBehavior.DrawWander();
+            }
         }
     }
 
@@ -316,41 +317,48 @@ namespace Test_Steering_Pursuit
             return (dot - 1f) * -coefficient;
         }
 
-        Vector3 m_vWanderTarget = Vector3.zero;
 
         //explained above
-        float m_dWanderJitter = 80f;
-        float m_dWanderRadius = 1.2f;
-        float m_dWanderDistance = 2.0f;
+        float _wanderJitter = 80f;
+        float _wanderRadius = 1.2f;
+        float _wanderDistance = 2.0f;
+        Vector3 _vWanderTarget = Vector3.zero;
         public Vector3 Wander()
         {
             //this behavior is dependent on the update rate, so this line must
             //be included when using time independent framerate.
-            float JitterThisTimeSlice = m_dWanderJitter * Time.deltaTime;
+            float JitterThisTimeSlice = _wanderJitter * Time.deltaTime;
 
             //first, add a small random vector to the target's position
-            m_vWanderTarget += new Vector3(Misc.RandomClamped() * JitterThisTimeSlice,0,
+            _vWanderTarget += new Vector3(Misc.RandomClamped() * JitterThisTimeSlice,0,
                                           Misc.RandomClamped() * JitterThisTimeSlice);
 
             //reproject this new vector back on to a unit circle
-            m_vWanderTarget.Normalize();
+            _vWanderTarget.Normalize();
 
             //increase the length of the vector to the same as the radius
             //of the wander circle
-            m_vWanderTarget *= m_dWanderRadius;
+            _vWanderTarget *= _wanderRadius;
 
             //move the target into a position WanderDist in front of the agent
-            Vector3 targetLocal = m_vWanderTarget + new Vector3(0,0, m_dWanderDistance);
+            Vector3 targetLocal = _vWanderTarget + new Vector3(0,0, _wanderDistance);
 
             //project the target into world space
             Vector3 targetWorld = (_vehicle._rotatioin * targetLocal) + _vehicle._pos; //PointToWorldSpace
 
-            //DebugWide.DrawCircle(_vehicle._pos, 1, Color.red);
-            DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * m_dWanderDistance, m_dWanderRadius, Color.green);
-            DebugWide.DrawLine(_vehicle._pos, targetWorld, Color.green);
+            //DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * _wanderDistance, _wanderRadius, Color.green);
+            //DebugWide.DrawLine(_vehicle._pos, targetWorld, Color.green);
             //and steer towards it
             return targetWorld - _vehicle._pos;
-            //return Vector3.zero;
+
+        }
+
+        public void DrawWander()
+        {
+            Vector3 targetLocal = _vWanderTarget + new Vector3(0, 0, _wanderDistance);
+            Vector3 targetWorld = (_vehicle._rotatioin * targetLocal) + _vehicle._pos; //PointToWorldSpace
+            DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * _wanderDistance, _wanderRadius, Color.green);
+            DebugWide.DrawLine(_vehicle._pos, targetWorld, Color.green);
         }
     }
 }
