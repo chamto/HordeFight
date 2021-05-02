@@ -425,6 +425,8 @@ namespace Test_Steering_Flocking
 
         public Vector3 CalculateWeightedSum()
         {
+            _steeringForce = Vector3.zero;
+
             _steeringForce += Separation(EntityMgr.list) * _WeightSeparation;
             //DebugWide.LogBlue(_vehicle._id + " Separation : " + force);
             _steeringForce += Alignment(EntityMgr.list) * _WeightAlignment;
@@ -439,6 +441,8 @@ namespace Test_Steering_Flocking
 
         public Vector3 CalculatePrioritized()
         {
+            _steeringForce = Vector3.zero;
+
             Vector3 force = Vector3.zero;
 
             force = Separation(EntityMgr.list) * _WeightSeparation;
@@ -452,7 +456,7 @@ namespace Test_Steering_Flocking
 
             force = Wander() * _WanderWeight;
             if (!AccumulateForce(ref _steeringForce, force)) return _steeringForce;
-
+            //DebugWide.LogBlue(_vehicle._id+ " wander : " +force);
 
             return _steeringForce;
         }
