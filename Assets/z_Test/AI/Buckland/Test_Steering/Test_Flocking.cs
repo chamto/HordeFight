@@ -43,9 +43,111 @@ namespace Test_Steering_Flocking
         }
 
         // Update is called once per frame
-        //void Update()
-        //{
-        //}
+        void Update()
+        {
+            SteeringBehavior sb0 = EntityMgr.list[0]._steeringBehavior;
+            float sep = sb0._WeightSeparation;
+            float ali = sb0._WeightAlignment;
+            float coh = sb0._WeightCohesion;
+            float wan = sb0._WanderWeight;
+            string mode = sb0._calcMode.ToString() + "  isNp[Z]: " + EntityMgr.list[0]._isNonpenetration;
+            DebugWide.LogBlue("0_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode);
+
+            //분리
+            if (Input.GetKey(KeyCode.Q))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightSeparation += 10f;
+                }
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightSeparation -= 10f;
+                    if (0 > v._steeringBehavior._WeightSeparation) v._steeringBehavior._WeightSeparation = 0;
+                }
+            }
+            //정렬
+            if (Input.GetKey(KeyCode.W))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightAlignment += 10f;
+                }
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightAlignment -= 10f;
+                    if (0 > v._steeringBehavior._WeightAlignment) v._steeringBehavior._WeightAlignment = 0;
+                }
+            }
+            //응집 
+            if (Input.GetKey(KeyCode.E))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightCohesion += 10f;
+                }
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WeightCohesion -= 10f;
+                    if (0 > v._steeringBehavior._WeightCohesion) v._steeringBehavior._WeightCohesion = 0;
+                }
+            }
+            //방황
+            if (Input.GetKey(KeyCode.R))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WanderWeight += 10f;
+                }
+            }
+            if (Input.GetKey(KeyCode.F))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._WanderWeight -= 10f;
+                    if (0 > v._steeringBehavior._WanderWeight) v._steeringBehavior._WanderWeight = 0;
+                }
+            }
+            //계산모드 
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._calcMode = SteeringBehavior.eCalcMode.CalculateWeightedSum;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.G))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._calcMode = SteeringBehavior.eCalcMode.CalculatePrioritized;
+                }
+            }
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v._steeringBehavior._calcMode = SteeringBehavior.eCalcMode.CalculateDithered;
+                }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Z))
+            {   
+                foreach(Vehicle v in EntityMgr.list)
+                {
+                    v._isNonpenetration = !v._isNonpenetration;
+                }
+            }
+        }
 
         private void OnDrawGizmos()
         {
@@ -96,7 +198,7 @@ namespace Test_Steering_Flocking
 
         Vector3[] _array_VB = new Vector3[3];
 
-        SteeringBehavior _steeringBehavior = new SteeringBehavior();
+        public SteeringBehavior _steeringBehavior = new SteeringBehavior();
 
         public void Init()
         {
@@ -107,7 +209,7 @@ namespace Test_Steering_Flocking
             _steeringBehavior._vehicle = this;
         }
 
-
+        public bool _isNonpenetration = false;
         public void Update()
         {
 
@@ -135,7 +237,8 @@ namespace Test_Steering_Flocking
 
             }
 
-            //EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            if(_isNonpenetration)
+                EnforceNonPenetrationConstraint(this, EntityMgr.list);
 
             _pos = WrapAroundXZ(_pos, 100, 100);
 
@@ -398,16 +501,26 @@ namespace Test_Steering_Flocking
             return Flee(pursuer._pos + pursuer._velocity * LookAheadTime);
         }
 
-        float _maxForce = 400;
-        float _ViewDistance = 30;
+        public float _SteeringForceTweaker = 200;
 
-        float _WeightSeparation = 1 * 200;
-        float _WeightAlignment = 1 * 200;
-        float _WeightCohesion = 2 * 200;
+        public float _maxForce = 2 * 200;
+        public float _ViewDistance = 30;
 
-        float _WanderWeight = 1 * 200f;
-        float _PursuitWeight = 1 * 200f;
-        float _WeightEvade = 1 * 200f;
+        public float _WeightSeparation = 1 * 200;
+        public float _WeightAlignment = 1 * 200;
+        public float _WeightCohesion = 2 * 200;
+
+        public float _WanderWeight = 1 * 200f;
+        public float _PursuitWeight = 1 * 200f;
+        public float _WeightEvade = 1 * 200f;
+
+        public enum eCalcMode
+        {
+            CalculateWeightedSum = 0,
+            CalculatePrioritized,
+            CalculateDithered
+        }
+        public eCalcMode _calcMode = eCalcMode.CalculateWeightedSum;
         public Vector3 Calculate()
         {
             TagNeighbors(_vehicle, EntityMgr.list, _ViewDistance);
@@ -415,9 +528,12 @@ namespace Test_Steering_Flocking
             if(0 == _vehicle._id)
                 DrawTagNeighbors(_vehicle);
 
-            //_steeringForce = CalculateWeightedSum();
-            _steeringForce = CalculatePrioritized();
-            //_steeringForce = CalculateDithered();
+            if(eCalcMode.CalculateWeightedSum == _calcMode)
+                _steeringForce = CalculateWeightedSum();
+            else if(eCalcMode.CalculatePrioritized == _calcMode)
+                _steeringForce = CalculatePrioritized();
+            else if (eCalcMode.CalculateDithered == _calcMode)
+                _steeringForce = CalculateDithered();
 
             return _steeringForce;
 
