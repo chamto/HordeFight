@@ -19,7 +19,8 @@ namespace Test_Steering_Flocking
     {
         public Transform _tr_target = null;
 
-        public const int Num_Agents = 5*5;
+        public const int Num_Agents_X = 5;
+        public const int Num_Agents_Y = 5;
 
         // Use this for initialization
         void Start()
@@ -27,9 +28,9 @@ namespace Test_Steering_Flocking
 
             _tr_target = GameObject.Find("tr_target").transform;
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < Num_Agents_Y; i++)
             {
-                for (int j = 0; j < 5; j++)
+                for (int j = 0; j < Num_Agents_X; j++)
                 {
                     Vehicle v = new Vehicle();
                     v.Init();
@@ -37,7 +38,7 @@ namespace Test_Steering_Flocking
                     v._steeringBehavior._WeightAlignment = 0;
                     v._steeringBehavior._WeightCohesion = 0;
                     v._steeringBehavior._WanderWeight = 0;
-                    v._pos = new Vector3(j*6, 0, i * 6);
+                    v._pos = new Vector3(j*6 + 30, 0, i * 6 + 30);
                     EntityMgr.Add(v);
                 }
 
@@ -59,9 +60,31 @@ namespace Test_Steering_Flocking
 
         }
 
+        public void Reset(float sep , float ali , float coh, float wander)
+        {
+            for (int i = 0; i < Num_Agents_Y; i++)
+            {
+                for (int j = 0; j < Num_Agents_X; j++)
+                {
+                    //00 01 02 03 04 
+                    //10 11 12 13 14
+                    int idx = i * Num_Agents_X + j;
+                    Vehicle v = EntityMgr.list[idx];
+                    v.Reset();
+                    v._steeringBehavior._WeightSeparation = sep;
+                    v._steeringBehavior._WeightAlignment = ali;
+                    v._steeringBehavior._WeightCohesion = coh;
+                    v._steeringBehavior._WanderWeight = wander;
+                    v._pos = new Vector3(j * 6 + 30, 0, i * 6 + 30);
+
+                }
+
+            }
+        }
 
 
         int ID = 0;
+        bool _one_ctr = true;
         void Update()
         {
 
@@ -72,15 +95,31 @@ namespace Test_Steering_Flocking
             float coh = sb._WeightCohesion;
             float wan = sb._WanderWeight;
             string mode = sb._calcMode.ToString() + "  isNp[Z]: " + vh._isNonpenetration;
-            DebugWide.LogBlue(ID+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode);
+            DebugWide.LogBlue(ID+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode + "  one_ctr[XC]: " + _one_ctr);
 
 
-            //foreach (Vehicle v in EntityMgr.list)
+            if(Input.GetKeyDown(KeyCode.X))
             {
-                Vehicle v = EntityMgr.list[ID];
-                v.KeyInput();
-
+                _one_ctr = true;
+                Reset(0, 0, 0, 0);
             }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                _one_ctr = false;
+                Reset(200, 200, 400, 200);
+            }
+
+            if(_one_ctr)
+            {
+                vh.KeyInput();
+            }else
+            {
+                foreach (Vehicle v in EntityMgr.list)
+                {
+                    v.KeyInput();
+                }
+            }
+
 
         }
 
@@ -142,6 +181,22 @@ namespace Test_Steering_Flocking
         Vector3[] _array_VB = new Vector3[3];
 
         public SteeringBehavior _steeringBehavior = new SteeringBehavior();
+
+        public void Reset()
+        {
+            _velocity = new Vector3(0, 0, 0);
+            _heading = Vector3.forward;
+            _speed = 0;
+
+            _tag = false;
+
+            _rotatioin = Quaternion.identity;
+
+            _target = ConstV.v3_zero;
+            _offset = ConstV.v3_zero;
+            _v_target = null;
+            _mode = SteeringBehavior.eType.none;
+        }
 
         public void Init()
         {
