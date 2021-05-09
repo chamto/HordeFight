@@ -131,6 +131,8 @@ namespace SteeringBehavior
                 m_vHeading = m_vVelocity.normalized;
 
                 m_vSide = VOp.Perp(m_vHeading);
+
+                //DebugWide.LogBlue("vel: " +  m_vVelocity.magnitude + "  acc: " + acceleration.magnitude); //chamto test
             }
 
             //EnforceNonPenetrationConstraint(this, World()->Agents());

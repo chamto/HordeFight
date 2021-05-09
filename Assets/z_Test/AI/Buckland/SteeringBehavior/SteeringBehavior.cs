@@ -1144,7 +1144,7 @@ namespace SteeringBehavior
 
                 if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
 
-                //DebugWide.LogBlue(m_vSteeringForce + "  " + m_pVehicle.Speed());
+                //DebugWide.LogBlue(m_vSteeringForce.magnitude + "  wander: " + force.magnitude + "  " + m_dWeightWander);
             }
 
             if (On(eType.pursuit))
