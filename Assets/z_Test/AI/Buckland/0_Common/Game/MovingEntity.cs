@@ -123,7 +123,7 @@ namespace Buckland
             m_vVelocity = rotQ * m_vVelocity;
 
             //finally recreate m_vSide
-            m_vSide = Vector3.Cross(m_vHeading, ConstV.v3_up);
+            m_vSide = Vector3.Cross(ConstV.v3_up, m_vHeading);
 
             return false;
         }
