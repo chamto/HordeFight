@@ -300,7 +300,7 @@ namespace Test_SimpleSoccer
         //with the vehicle heading
         public float SideComponent()
         {
-            return Vector3.Dot( m_pPlayer.Side(), m_vSteeringForce) * m_pPlayer.MaxTurnRate();
+            return Vector3.Dot(m_pPlayer.Side(), m_vSteeringForce)* m_pPlayer.MaxTurnRate();
         }
 
         public Vector3 Force() {return m_vSteeringForce;}

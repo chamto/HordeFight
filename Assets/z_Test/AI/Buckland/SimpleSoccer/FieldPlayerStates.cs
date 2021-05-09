@@ -671,7 +671,8 @@ namespace Test_SimpleSoccer
 
 
             //if the best supporting spot changes, change the steering target
-            if (player.Team().GetSupportSpot() != player.Steering().Target())
+            //if (player.Team().GetSupportSpot() != player.Steering().Target())
+            if (false == Misc.IsZero(player.Team().GetSupportSpot() - player.Steering().Target()))
             {
                 player.Steering().SetTarget(player.Team().GetSupportSpot());
 
