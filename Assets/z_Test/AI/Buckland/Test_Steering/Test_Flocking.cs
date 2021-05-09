@@ -792,7 +792,12 @@ namespace Test_Steering_Flocking
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 curEntity = EntityMgr.list[i];
-                if(curEntity._tag)
+
+                Vector3 to = curEntity._pos - entity._pos;
+
+                float range = _ViewDistance + curEntity._radius;
+
+                if ((curEntity != entity) && (to.sqrMagnitude < range * range))
                 {
                     DebugWide.DrawLine(entity._pos, curEntity._pos, Color.green);
                 }
@@ -854,6 +859,8 @@ namespace Test_Steering_Flocking
 
                 }
             }
+            //if(0 == _vehicle._id)
+                //DebugWide.LogBlue(SteeringForce);
 
             return SteeringForce;
         }
@@ -895,6 +902,9 @@ namespace Test_Steering_Flocking
                 AverageHeading -= _vehicle._heading;
             }
 
+            //if (0 == _vehicle._id)
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading * 10, Color.red);
+
             return AverageHeading;
         }
 
@@ -929,6 +939,8 @@ namespace Test_Steering_Flocking
                 SteeringForce = Seek(CenterOfMass);
             }
 
+            if (0 == _vehicle._id)
+                DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
             //the magnitude of cohesion is usually much larger than separation or
             //allignment so it usually helps to normalize it.
             return SteeringForce.normalized;
