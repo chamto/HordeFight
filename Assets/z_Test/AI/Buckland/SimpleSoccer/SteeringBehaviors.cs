@@ -293,6 +293,8 @@ namespace Test_SimpleSoccer
         //with the vehicle heading
         public float ForwardComponent()
         {
+            //조종힘이 heading 과 방향이 같을때 최대값 , 90도 일때 최소값을 가지게 된다 
+            //heading 방향시 최대힘으로 달리다가 방향전환시 줄어든 힘으로 달리게 된다 
             return Vector3.Dot( m_pPlayer.Heading(),m_vSteeringForce);
         }
 
@@ -300,6 +302,9 @@ namespace Test_SimpleSoccer
         //with the vehicle heading
         public float SideComponent()
         {
+            //조종힘이 side 와 방향이 같을때 최대값 , 0도 일때 최소값을 가지게 된다
+            //조종힘이 side 방향시 최대힘으로 회전 , 조종힘이 heading 방향시 최소값 회전하게 된다 
+            //회전방향이 90도 에서 최대값으로 회전 , 0도 에서 최소값으로 회전 , 각도가 높을 수록 빠르게 회전하는 효과 
             return Vector3.Dot(m_pPlayer.Side(), m_vSteeringForce)* m_pPlayer.MaxTurnRate();
         }
 

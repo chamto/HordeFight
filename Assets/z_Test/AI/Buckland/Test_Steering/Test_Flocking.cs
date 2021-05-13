@@ -899,7 +899,7 @@ namespace Test_Steering_Flocking
             {
                 AverageHeading /= (float)NeighborCount;
 
-                AverageHeading -= _vehicle._heading;
+                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식 추정 
             }
 
             //if (0 == _vehicle._id)
