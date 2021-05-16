@@ -54,7 +54,7 @@ namespace Test_SoccerBall
     //======================================================
     public static class Prm
     {
-        static public float Friction = -0.015f;
+        static public float Friction = -0.015f; //마찰계수가 아닌 감속비율임(가속도에 해당)
         static public float PlayerKickingAccuracy = 0.99f;
     }
 
@@ -112,96 +112,6 @@ namespace Test_SoccerBall
             //m_dMaxForce = 0f; //max force - unused
         }
 
-        //tests to see if the ball has collided with a ball and reflects 
-        //the ball's velocity accordingly
-        //public void TestCollisionWithWalls(List<Wall2D> walls)
-        //{  
-        //    //test ball against each wall, find out which is closest
-        //    int idxClosest = -1;
-
-        //    Vector3 VelNormal = m_vVelocity.normalized;
-
-        //    Vector3 IntersectionPoint, CollisionPoint;
-
-        //    double DistToIntersection = float.MaxValue;
-
-        //    //iterate through each wall and calculate if the ball intersects.
-        //    //If it does then store the index into the closest intersecting wall
-        //    for (int w = 0; w<walls.Count; ++w)
-        //    {
-        //        //assuming a collision if the ball continued on its current heading 
-        //        //calculate the point on the ball that would hit the wall. This is 
-        //        //simply the wall's normal(inversed) multiplied by the ball's radius
-        //        //and added to the balls center (its position)
-        //        Vector3 ThisCollisionPoint = _pos - (walls[w].Normal() * BRadius());
-
-        //        //fixme => 3d
-        //        //calculate exactly where the collision point will hit the plane    
-        //        if (Util.WhereIsPoint(ThisCollisionPoint,
-        //                         walls[w].From(),
-        //                         walls[w].Normal()) == Util.span_type.plane_backside)
-        //        {
-        //            float DistToWall = Util.DistanceToRayPlaneIntersection(ThisCollisionPoint,
-        //                                                         walls[w].Normal(),
-        //                                                         walls[w].From(),
-        //                                                         walls[w].Normal());
-
-        //            IntersectionPoint = ThisCollisionPoint + (DistToWall* walls[w].Normal());
-              
-        //        }
-        //        else
-        //        {
-        //            float DistToWall = Util.DistanceToRayPlaneIntersection(ThisCollisionPoint,
-        //                                                         VelNormal,
-        //                                                         walls[w].From(),
-        //                                                         walls[w].Normal());
-
-        //            IntersectionPoint = ThisCollisionPoint + (DistToWall* VelNormal);
-        //        }
-
-        //        //check to make sure the intersection point is actually on the line
-        //        //segment
-        //        bool OnLineSegment = false;
-
-        //        //fixme => 3d
-        //        if (Util.LineIntersection2D(walls[w].From(), 
-        //                               walls[w].To(),
-        //                               ThisCollisionPoint - walls[w].Normal()*20.0f,
-        //                               ThisCollisionPoint + walls[w].Normal()*20.0f))
-        //        {
-
-        //            OnLineSegment = true;                                               
-        //        }
-
-                                                                            
-        //        //Note, there is no test for collision with the end of a line segment
-            
-        //        //now check to see if the collision point is within range of the
-        //        //velocity vector. [work in distance squared to avoid sqrt] and if it
-        //        //is the closest hit found so far. 
-        //        //If it is that means the ball will collide with the wall sometime
-        //        //between this time step and the next one.
-        //        float distSq =(ThisCollisionPoint - IntersectionPoint).sqrMagnitude;
-
-        //        if ((distSq <= m_vVelocity.sqrMagnitude) && (distSq<DistToIntersection) && OnLineSegment)            
-        //        {        
-        //          DistToIntersection = distSq;
-        //          idxClosest = w;
-        //          CollisionPoint = IntersectionPoint;
-        //        }     
-        //    }//next wall
-
-            
-        //    //to prevent having to calculate the exact time of collision we
-        //    //can just check if the velocity is opposite to the wall normal
-        //    //before reflecting it. This prevents the case where there is overshoot
-        //    //and the ball gets reflected back over the line before it has completely
-        //    //reentered the playing area.
-        //    if ((idxClosest >= 0 ) && Vector3.Dot(VelNormal, walls[idxClosest].Normal()) < 0)
-        //    {
-        //        m_vVelocity = Util.Reflect(m_vVelocity, walls[idxClosest].Normal());   
-        //    }
-        //}
 
 
         //----------------------------- Update -----------------------------------
@@ -222,7 +132,7 @@ namespace Test_SoccerBall
 
             //Simulate Prm.Friction. Make sure the speed is positive 
             //first though
-            if (m_vVelocity.sqrMagnitude > Prm.Friction * Prm.Friction)
+            if (m_vVelocity.sqrMagnitude > Prm.Friction * Prm.Friction) //마찰계수가 아닌 감속비율임(가속도에 해당)
             {
                 m_vVelocity += m_vVelocity.normalized * Prm.Friction;
 

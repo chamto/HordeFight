@@ -30,7 +30,7 @@
 
         public const float BallSize = 5.0f;
         public const float BallMass = 1.0f;
-        public const float Friction = -0.015f;
+        public const float Friction = -0.015f; //마찰계수가 아닌 감속비율임(가속도에 해당)
 
         //the goalkeeper has to be this close to the ball to be able to interact with it
         public const float KeeperInBallRange = 10.0f;
