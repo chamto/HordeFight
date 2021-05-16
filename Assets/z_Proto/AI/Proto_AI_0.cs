@@ -166,7 +166,7 @@ namespace Proto_AI_0
 
             _pos += _velocity * Time.deltaTime;
 
-            DebugWide.LogBlue("F: " + F + " A: " + A + " rot: " + rot + " vel: " + VOp.ToString(_velocity));
+            DebugWide.LogBlue("F: " + F + " A: " + A.ToString("00.00") + " rot: " + rot + " vel: " + VOp.ToString(_velocity));
             _pos = WrapAroundXZ(_pos, 100, 100);
         }
 
