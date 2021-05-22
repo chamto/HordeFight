@@ -84,11 +84,13 @@ namespace HordeFight
 
             int from_1d = 0, to_1d = 0;
             Index2 to_2d = ConstV.id2_zero;
-            GraphEdge edge = new GraphEdge(0, 1);
+            NavGraphEdge edge = new NavGraphEdge(0, 1, 1);
             Index2[] grid3x3 = SingleO.gridManager._indexesNxN[3];
             BoundsInt boundsInt = new BoundsInt(Vector3Int.zero, tileBlock_size); //타일맵 크기 : (3939, 87, 1) , 타일맵의 음수부분은 사용하지 않는다
             foreach (Vector3Int v3from_2d in boundsInt.allPositionsWithin)
             {
+                //DebugWide.LogGreen(v3from_2d); //chamto test
+
                 //구조물이 있는 셀에는 엣지를 연결하지 않는다 - 임시처리 : 엣지를 어떻게 연결할지 좀더 생각해 봐야 함
                 if (true == SingleO.gridManager.HasStructTile_InPostion2D(v3from_2d)) continue;
 
@@ -120,7 +122,7 @@ namespace HordeFight
                     //자기자신을 연결하는 엣지는 추가하면 안된다 
                     if (from_1d == to_1d) continue;
 
-                    //DebugWide.LogBlue(from + "  " + to); //chamto test
+                    //DebugWide.LogBlue(from_1d + "  " + to_1d); //chamto test
                     edge.SetFrom(from_1d);
                     edge.SetTo(to_1d);
                     edge.SetCost(1.0f);
