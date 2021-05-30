@@ -161,13 +161,300 @@ namespace HordeFight
 
             DebugWide.LogBlue("덮개타일 생성 완료 : " + tileScript.name);
 
+            //확장영역에 구조물 경계선 추가 
+            Load_StructLine();
         }
 
 
-        //private void Update()
-        //{
+        public struct BoundaryTile
+        {
+            //public Vector3 standard_pos;
+            //public Vector3 push_dir;
+            public LineSegment3 line;
+            public bool isBoundary;
+            public CellSpace cell;
 
-        //}
+            public void Init()
+            {
+                //standard_pos = Vector3.zero;
+                //push_dir = Vector3.zero;
+                //line = new LineSegment3();
+                isBoundary = true;
+                cell = null;
+            }
+        }
+        public class BoundaryTileList : LinkedList<BoundaryTile>
+        { }
+        public Dictionary<Vector3Int, BoundaryTileList> _boundaryList = new Dictionary<Vector3Int, BoundaryTileList>(new Vector3IntComparer());
+
+        public void Load_StructLine()
+        {
+            foreach (KeyValuePair<Vector3Int, CellSpace> t in _structTileList)
+            {
+                //덮개타일은 걸러낸다 
+                if(eDirection8.none != t.Value._eDir)
+                {
+                    BoundaryTile info = new BoundaryTile();
+                    info.Init();
+                    info.cell = t.Value;
+
+                    LineSegment3 line;
+                    CalcBoundaryLine(t.Value, out line);
+                    info.line = line;
+
+
+                    Vector3Int dir1 = Misc.GetDir8_Normal2D(t.Value._eDir);
+                    Vector3Int dir2 = dir1, dir3 = dir1;
+                    Vector3Int key;
+                    bool diag = false; //대각 
+
+
+                    switch (t.Value._eDir)
+                    {
+                        case eDirection8.leftUp:
+                            if (CellSpace.Specifier_DiagonalFixing == t.Value._specifier) break;
+                            dir2 = Misc.GetDir8_Normal2D(eDirection8.left);
+                            dir3 = Misc.GetDir8_Normal2D(eDirection8.up);
+                            diag = true;
+                            break;
+                        case eDirection8.leftDown:
+                            if (CellSpace.Specifier_DiagonalFixing == t.Value._specifier) break;
+                            dir2 = Misc.GetDir8_Normal2D(eDirection8.left);
+                            dir3 = Misc.GetDir8_Normal2D(eDirection8.down);
+                            diag = true;
+                            break;
+                        case eDirection8.rightUp:
+                            if (CellSpace.Specifier_DiagonalFixing == t.Value._specifier) break;
+                            dir2 = Misc.GetDir8_Normal2D(eDirection8.right);
+                            dir3 = Misc.GetDir8_Normal2D(eDirection8.up);
+                            diag = true;
+                            break;
+                        case eDirection8.rightDown:
+                            if (CellSpace.Specifier_DiagonalFixing == t.Value._specifier) break;
+                            dir2 = Misc.GetDir8_Normal2D(eDirection8.right);
+                            dir3 = Misc.GetDir8_Normal2D(eDirection8.down);
+                            diag = true;
+                            break;
+                        
+                    }
+
+                    BoundaryTileList list = null;
+
+                    key = t.Key ;
+                    _boundaryList.TryGetValue(key, out list);
+                    if (null == list)
+                    {
+                        list = new BoundaryTileList();
+                        _boundaryList.Add(key, list);
+                    }
+                    info.isBoundary = false;
+                    list.AddLast(info);
+
+                    //대각고정은 자기자신만 추가한다 
+                    if (CellSpace.Specifier_DiagonalFixing == t.Value._specifier) continue;
+
+                    //한칸 이동한 방향에 추가  
+                    key = t.Key + dir1;
+                    _boundaryList.TryGetValue(key, out list);
+                    if (null == list)
+                    {
+                        list = new BoundaryTileList();
+                        _boundaryList.Add(key, list);
+                    }
+                    info.isBoundary = true;
+                    list.AddLast(info);
+
+                    //대각인 경우 방향을 수평,수직으로 분리해서 추가 
+                    if(true == diag)
+                    {
+                        key = t.Key + dir2;
+                        _boundaryList.TryGetValue(key, out list);
+                        if (null == list)
+                        {
+                            list = new BoundaryTileList();
+                            _boundaryList.Add(key, list);
+                        }
+                        info.isBoundary = true;
+                        list.AddLast(info);
+
+                        key = t.Key + dir3;
+                        _boundaryList.TryGetValue(key, out list);
+                        if (null == list)
+                        {
+                            list = new BoundaryTileList();
+                            _boundaryList.Add(key, list);
+                        }
+                        info.isBoundary = true;
+                        list.AddLast(info);
+                    }
+                }
+
+            }
+        }
+
+
+        public bool CalcBoundaryLine(CellSpace cell , out LineSegment3 line)
+        {
+            line = new LineSegment3();
+            if (null == cell) return false;
+            if (eDirection8.none == cell._eDir) return false;
+            if (CellSpace.Specifier_DiagonalFixing == cell._specifier) return false;
+
+            //타일맵 정수 좌표계와 게임 정수 좌표계가 다름
+            //타일맵 정수 좌표계 : x-y , 게임 정수 좌표계 : x-z
+            //==========================================
+
+            float size = SingleO.gridManager._cellSize_x * 0.5f;
+
+            //Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(cell._eDir);
+            //info.standard_pos = cell._pos3d_center - info.push_dir * size;
+
+
+            Vector3 temp = cell._pos3d_center;
+            switch (cell._eDir)
+            {
+                case eDirection8.up:
+                    {
+                        temp.z = temp.z + size;
+                        temp.x = cell._pos3d_center.x - size;
+                        line.origin = temp;
+
+                        temp.x = cell._pos3d_center.x + size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.down:
+                    {
+                        temp.z = temp.z - size;
+                        temp.x = cell._pos3d_center.x - size;
+                        line.origin = temp;
+
+                        temp.x = cell._pos3d_center.x + size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.left:
+                    {
+                        temp.x = temp.x - size;
+                        temp.z = cell._pos3d_center.z + size;
+                        line.origin = temp;
+
+                        temp.z = cell._pos3d_center.z - size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.right:
+                    {
+                        temp.x = temp.x + size;
+                        temp.z = cell._pos3d_center.z + size;
+                        line.origin = temp;
+
+                        temp.z = cell._pos3d_center.z - size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.leftUp:
+                    {
+                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        {
+                            return false;
+                        }
+
+                        temp = cell._pos3d_center;
+                        temp.x -= size;
+                        temp.z -= size;
+                        line.origin = temp;
+
+                        temp = cell._pos3d_center;
+                        temp.x += size;
+                        temp.z += size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.rightUp:
+                    {
+                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        {
+                            return false;
+                        }
+
+                        temp = cell._pos3d_center;
+                        temp.x -= size;
+                        temp.z += size;
+                        line.origin = temp;
+
+                        temp = cell._pos3d_center;
+                        temp.x += size;
+                        temp.z -= size;
+                        line.last = temp;
+
+
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        {
+                            return false;
+                        }
+
+                        temp = cell._pos3d_center;
+                        temp.x -= size;
+                        temp.z += size;
+                        line.origin = temp;
+
+                        temp = cell._pos3d_center;
+                        temp.x += size;
+                        temp.z -= size;
+                        line.last = temp;
+
+                    }
+                    break;
+                case eDirection8.rightDown:
+                    {
+                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        {
+                            return false;
+                        }
+
+                        temp = cell._pos3d_center;
+                        temp.x -= size;
+                        temp.z -= size;
+                        line.origin = temp;
+
+                        temp = cell._pos3d_center;
+                        temp.x += size;
+                        temp.z += size;
+                        line.last = temp;
+
+                    }
+                    break;
+
+            }//end switch
+
+            return true;
+        }
+
+        public void Draw_BoundaryTile()
+        {
+            foreach (KeyValuePair<Vector3Int , BoundaryTileList> info1 in _boundaryList)
+            {
+                Vector3 pos = SingleO.cellPartition.ToPosition3D_Center(new Index2(info1.Key.x, info1.Key.y));
+                DebugWide.DrawCircle(pos, 0.3f, Color.gray);
+                DebugWide.PrintText(pos, Color.black, "" + info1.Value.Count);
+
+                foreach(BoundaryTile info2 in info1.Value)
+                {
+                    DebugWide.DrawLine(info2.cell._pos3d_center, pos, Color.gray);
+                }
+
+            }
+        }
 
         public void DrawLine_StructTile()
         {
@@ -327,7 +614,8 @@ namespace HordeFight
             }
         }
 
-        public Vector3 GetBorder_StructTile(Vector3 srcPos, CellSpace structTile)
+
+        public Vector3 GetBorder_StructTile(Vector3 srcPos, float radius, CellSpace structTile)
         {
             if (null == structTile) return srcPos;
 
@@ -344,23 +632,27 @@ namespace HordeFight
                 case eDirection8.up:
                     {
                         srcPos.z = structTile._pos3d_center.z + size;
+                        return srcPos + push_dir * radius;
                     }
-                    break;
+                    //break;
                 case eDirection8.down:
                     {
                         srcPos.z = structTile._pos3d_center.z - size;
+                        return srcPos + push_dir * radius;
                     }
-                    break;
+                    //break;
                 case eDirection8.left:
                     {
                         srcPos.x = structTile._pos3d_center.x - size;
+                        return srcPos + push_dir * radius;
                     }
-                    break;
+                    //break;
                 case eDirection8.right:
                     {
                         srcPos.x = structTile._pos3d_center.x + size;
+                        return srcPos + push_dir * radius;
                     }
-                    break;
+                    //break;
                 case eDirection8.leftUp:
                     {
                         //down , right
@@ -368,11 +660,11 @@ namespace HordeFight
                         {
                             srcPos.x = structTile._pos3d_center.x - size;
                             srcPos.z = structTile._pos3d_center.z + size;
-                            break;
+                            return srcPos + push_dir * radius;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
-                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        //if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
                         temp = structTile._pos3d_center;
                         temp.x -= size;
                         temp.z -= size;
@@ -383,7 +675,11 @@ namespace HordeFight
                         temp.z += size;
                         line3.last = temp;
 
-                        srcPos = line3.ClosestPoint(srcPos);
+                        if (true == Geo.IntersectLineSegment(srcPos, radius, line3.origin, line3.last))
+                        {
+                            srcPos = line3.ClosestPoint(srcPos);
+                            return srcPos + push_dir * radius;
+                        }
 
                     }
                     break;
@@ -394,11 +690,11 @@ namespace HordeFight
                         {
                             srcPos.x = structTile._pos3d_center.x + size;
                             srcPos.z = structTile._pos3d_center.z + size;
-                            break;
+                            return srcPos + push_dir * radius;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
-                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        //if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
                         temp = structTile._pos3d_center;
                         temp.x -= size;
                         temp.z += size;
@@ -409,7 +705,11 @@ namespace HordeFight
                         temp.z -= size;
                         line3.last = temp;
 
-                        srcPos = line3.ClosestPoint(srcPos);
+                        if (true == Geo.IntersectLineSegment(srcPos, radius, line3.origin, line3.last))
+                        {
+                            srcPos = line3.ClosestPoint(srcPos);
+                            return srcPos + push_dir * radius;
+                        }
                     }
                     break;
                 case eDirection8.leftDown:
@@ -419,11 +719,11 @@ namespace HordeFight
                         {
                             srcPos.x = structTile._pos3d_center.x - size;
                             srcPos.z = structTile._pos3d_center.z - size;
-                            break;
+                            return srcPos + push_dir * radius;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
-                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        //if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
                         temp = structTile._pos3d_center;
                         temp.x -= size;
                         temp.z += size;
@@ -434,7 +734,12 @@ namespace HordeFight
                         temp.z -= size;
                         line3.last = temp;
 
-                        srcPos = line3.ClosestPoint(srcPos);
+                        if (true == Geo.IntersectLineSegment(srcPos, radius, line3.origin, line3.last))
+                        {
+                            srcPos = line3.ClosestPoint(srcPos);
+                            return srcPos + push_dir * radius;
+                        }
+
                     }
                     break;
                 case eDirection8.rightDown:
@@ -444,11 +749,11 @@ namespace HordeFight
                         {
                             srcPos.x = structTile._pos3d_center.x + size;
                             srcPos.z = structTile._pos3d_center.z - size;
-                            break;
+                            return srcPos + push_dir * radius;
                         }
 
                         //중심점 방향으로 부터 반대방향이면 충돌영역에 도달한것이 아니다 
-                        if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
+                        //if (0 < Vector3.Dot(centerToSrc_dir, push_dir)) return srcPos;
                         temp = structTile._pos3d_center;
                         temp.x -= size;
                         temp.z -= size;
@@ -459,13 +764,57 @@ namespace HordeFight
                         temp.z += size;
                         line3.last = temp;
 
-                        srcPos = line3.ClosestPoint(srcPos);
+                        if (true == Geo.IntersectLineSegment(srcPos, radius, line3.origin, line3.last))
+                        {
+                            srcPos = line3.ClosestPoint(srcPos);
+                            return srcPos + push_dir * radius;
+                        }
                     }
                     break;
 
             }
 
             return srcPos;
+
+        }
+
+        public Vector3 Collision_StructLine(Vector3 srcPos , float RADIUS)
+        {
+
+            Index2 temp_2d = SingleO.cellPartition.ToPosition2D(srcPos);
+            Vector3Int pos_2d = new Vector3Int(temp_2d.x, temp_2d.y, 0); 
+
+            BoundaryTileList list = null;
+            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
+
+
+            //RADIUS = 1.0f;
+            foreach (BoundaryTile info in list)
+            {
+                //주변경계타일인 경우
+                if (true == info.isBoundary)
+                {
+
+                    if (true == Geo.IntersectLineSegment(srcPos, RADIUS, info.line.origin, info.line.last))
+                    {
+
+                        Vector3 cp = info.line.ClosestPoint(srcPos);
+                        Vector3 n = VOp.Normalize(srcPos - cp);
+                        srcPos = cp + n * RADIUS;
+
+                    }
+                }
+                //경계타일인 경우 
+                else
+                {
+                    srcPos = GetBorder_StructTile(srcPos, RADIUS, info.cell);
+                }
+
+
+            }
+
+            return srcPos;
+
 
         }
 

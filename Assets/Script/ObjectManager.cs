@@ -321,13 +321,18 @@ namespace HordeFight
 
                 //==========================================
                 //동굴벽과 캐릭터 충돌처리 
-                //if (SingleO.gridManager.HasStructTile(src.transform.position, out structTile))
-                if (SingleO.cellPartition.HasStructTile(src.GetPos3D(), out structTile))
-                {
-                    //CollisionPush_StructTile(src, structTile);
-                    Vector3 getPos = SingleO.gridManager.GetBorder_StructTile(src.GetPos3D(), structTile);
-                    src.SetPos(getPos);
-                }
+                //if (SingleO.cellPartition.HasStructTile(src.GetPos3D(), out structTile))
+                //{
+                //    //CollisionPush_StructTile(src, structTile);
+                //    Vector3 getPos = SingleO.gridManager.GetBorder_StructTile(src.GetPos3D(),0, structTile);
+                //    src.SetPos(getPos);
+                //}
+
+                float maxR = Mathf.Clamp(src._collider_radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+                //동굴벽과 캐릭터 경계원 충돌처리 
+                Vector3 getPos = SingleO.gridManager.Collision_StructLine(src.GetPos3D(), maxR);
+                src.SetPos(getPos);
+
                 //==========================================
 
                 src.Apply_UnityPosition();
@@ -1387,7 +1392,7 @@ namespace HordeFight
                 //champ.SetColor(Color.black);
             }
 
-            numMax_create = 50;
+            numMax_create = 40;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());

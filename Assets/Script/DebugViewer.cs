@@ -534,6 +534,7 @@ using UtilGS9;
             {
                 //UpdateDraw_StructTileDir();    
                 SingleO.gridManager.DrawLine_StructTile();
+                //SingleO.gridManager.Draw_BoundaryTile();
             }
             if(_draw_FogOfWar)
             {
