@@ -70,7 +70,11 @@ namespace HordeFight
                 }
                 if (Input.GetKey(KeyCode.S))
                 {
-                    champ._skill_attack.Play(hit.point - _selected.transform.position, null); //테스트    
+                    //DebugWide.LogBlue(hit.point + " " + _selected.transform.position);
+                    Vector3 end_dir = hit.point - _selected.transform.position;
+                    end_dir.y = 0; //y =0 이라는 가정아래 충돌처리가 들어가 있기 때문에, 이 처리를 안해주면 충돌처리가 안되는 현산이 생길수 있다 
+                    //end_dir = VOp.Normalize(end_dir);
+                    champ._skill_attack.Play(end_dir, null); //테스트    
                 }
 
             }
