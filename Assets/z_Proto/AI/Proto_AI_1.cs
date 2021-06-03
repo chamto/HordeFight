@@ -85,16 +85,16 @@ namespace Proto_AI_1
         public GridManager _gridMgr = new GridManager();
 
         //v싱크 끄기 ,  60 프레임 제한
-        //void Awake()
-        //{
-        //    QualitySettings.vSyncCount = 0;
-        //    Application.targetFrameRate = 60;
-        //}
+        void Awake()
+        {
+            QualitySettings.vSyncCount = 0;
+            Application.targetFrameRate = 60;
+        }
 
         // Use this for initialization
         void Start()
         {
-            //_gridMgr.Init();
+            _gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
 
             Vehicle v = new Vehicle();
@@ -163,6 +163,7 @@ namespace Proto_AI_1
 
         }
 
+        public bool _Draw_BoundaryTile = false;
         private void OnDrawGizmos()
         {
             foreach (Vehicle v in EntityMgr.list)
@@ -170,7 +171,8 @@ namespace Proto_AI_1
                 v.Draw(Color.black);
             }
 
-            //_gridMgr.Draw_BoundaryTile();
+            if(true == _Draw_BoundaryTile)
+                _gridMgr.Draw_BoundaryTile();
 
             DebugViewer.ClearAfterTime(1);
             DebugViewer.OnDrawGizmos();
