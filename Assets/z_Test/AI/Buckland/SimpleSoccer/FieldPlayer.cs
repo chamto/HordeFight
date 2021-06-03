@@ -71,6 +71,7 @@ namespace Test_SimpleSoccer
             //can only turn by PlayerMaxTurnRate rads per update.
             float TurningForce = m_pSteering.SideComponent();
 
+            //라디안 0.4는 약 22도 , 60분의1프레임에서 최대 22도 회전가능  
             TurningForce = Mathf.Clamp(TurningForce, -Prm.PlayerMaxTurnRate, Prm.PlayerMaxTurnRate);
 
             //rotate the heading vector
