@@ -84,11 +84,12 @@ namespace Proto_AI_1
         public Transform _tr_target = null;
         public GridManager _gridMgr = new GridManager();
 
-        //v싱크 끄기 ,  60 프레임 제한
         void Awake()
         {
-            QualitySettings.vSyncCount = 0;
-            Application.targetFrameRate = 60;
+            //QualitySettings.vSyncCount = 0; //v싱크 끄기
+            //Application.targetFrameRate = 60; //60 프레임 제한
+
+            FrameTime.SetFixedFrame_FPS_30(); //30프레임 제한 설정
         }
 
         // Use this for initialization
@@ -307,6 +308,11 @@ namespace Proto_AI_1
         float _weight = 20;
         public void Update()
         {
+            //프레임이 크게 떨어질시 Time.delta 값이 과하게 커지는 경우가 발생 , 이럴경우 벽통과등의 문제등이 생긴다. 
+            //deltaTime 값을 작게 유지하여 프로그램 무결성을 유지시킨다. 속도가 느려지고 시간이 안맞는 것은 어쩔 수 없다 
+            float deltaTime = FrameTime.DeltaTime(); 
+
+
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
@@ -321,14 +327,13 @@ namespace Proto_AI_1
             A = acceleration.magnitude;
             _velocity *= F; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
                             
-                            //_velocity = (_velocity) + (_heading * A) * Time.deltaTime;
-            _velocity +=  acceleration * Time.deltaTime;
+            _velocity +=  acceleration * deltaTime;
 
             //_maxSpeed = 10f;
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
 
-            _pos += _velocity * Time.deltaTime;
+            _pos += _velocity * deltaTime;
 
 
             if (_velocity.sqrMagnitude > 0.00001f)
@@ -339,7 +344,7 @@ namespace Proto_AI_1
                 {
                     float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
                     def = Mathf.Clamp(def, -1, 1);
-                    float angle = _rot2 * -def * Time.deltaTime;
+                    float angle = _rot2 * -def * deltaTime;
                     //if (_rot2 > max_angle)
                     //_rot2 = max_angle;
                     _rotatioin = Quaternion.AngleAxis(angle, Vector3.up);
