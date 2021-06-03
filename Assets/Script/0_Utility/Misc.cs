@@ -643,14 +643,14 @@ namespace UtilGS9
         //x-z 평면을 가정한 식 
         static public float PerpDot_XZ(Vector3 v, Vector3 w)
         {
-            return (-v.z * w.x + v.x * w.z);
+            return (-v.z * w.x + v.x * w.z); //-v.z * w.x 의 값이 크다면 음수 , v.x * w.z 의 값이 크다면 양수라고 생각 할 수 있다 
         }
 
         public const int clockwise = 1;
         public const int anticlockwise = -1;
-        public static int Sign_XZ(Vector3 a, Vector3 b)
+        public static int Sign_XZ(Vector3 v, Vector3 w)
         {
-            if (a.z * b.x > a.x * b.z)
+            if (v.z * w.x > v.x * w.z)
             {
                 return anticlockwise;
             }
