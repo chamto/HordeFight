@@ -5,7 +5,7 @@ using UnityEngine;
 using UtilGS9;
 
 
-namespace Proto_AI_1
+namespace Proto_Move
 {
     public static class DebugViewer
     {
@@ -49,10 +49,10 @@ namespace Proto_AI_1
         {
             _elapsedTime += Time.deltaTime;
 
-            if(second < _elapsedTime)
+            if (second < _elapsedTime)
             {
                 _drawQ.Clear();
-                _elapsedTime = 0; 
+                _elapsedTime = 0;
             }
         }
 
@@ -79,10 +79,9 @@ namespace Proto_AI_1
         }
     }
 
-    public class Proto_AI_1 : MonoBehaviour
+    public class Proto_Move : MonoBehaviour
     {
         public Transform _tr_target = null;
-        public GridManager _gridMgr = new GridManager();
 
         void Awake()
         {
@@ -95,30 +94,30 @@ namespace Proto_AI_1
         // Use this for initialization
         void Start()
         {
-            _gridMgr.Init();
+
             _tr_target = GameObject.Find("tr_target").transform;
 
             Vehicle v = new Vehicle();
             v.Init();
-            v._pos = new Vector3(17, 0, 12);
+            //v._pos = new Vector3(17, 0, 12);
             EntityMgr.Add(v);
             v._mode = SteeringBehavior.eType.arrive;
 
-            v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
-            v._leader = EntityMgr.list[0];
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //v.Init();
+            //v._pos = new Vector3(17, 0, 12);
+            //EntityMgr.Add(v);
+            //v._leader = EntityMgr.list[0];
+            //v._offset = new Vector3(1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
-            v._leader = EntityMgr.list[0];
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //v.Init();
+            //v._pos = new Vector3(17, 0, 12);
+            //EntityMgr.Add(v);
+            //v._leader = EntityMgr.list[0];
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
         }
 
 
@@ -148,20 +147,6 @@ namespace Proto_AI_1
                 v.Update();
             }
 
-            foreach (Vehicle v in EntityMgr.list)
-            {
-
-                //==========================================
-                //동굴벽과 캐릭터 충돌처리 
-
-                float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
-                //동굴벽과 캐릭터 경계원 충돌처리 
-                v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
-
-                //==========================================
-
-            }
-
         }
 
         public bool _Draw_BoundaryTile = false;
@@ -171,9 +156,6 @@ namespace Proto_AI_1
             {
                 v.Draw(Color.black);
             }
-
-            if(true == _Draw_BoundaryTile)
-                _gridMgr.Draw_BoundaryTile();
 
             DebugViewer.ClearAfterTime(1);
             DebugViewer.OnDrawGizmos();
@@ -203,7 +185,7 @@ namespace Proto_AI_1
 
         //public float _maxTurnRate;
 
-        public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
+        public Vector3 _size = new Vector3(0.5f, 0, 0.5f);
 
         public bool _tag = false;
         public float _radius = 0.5f;
@@ -244,79 +226,23 @@ namespace Proto_AI_1
             _steeringBehavior._vehicle = this;
         }
 
-        public bool _isNonpenetration = false;
-        public void Update2()
-        {
-
-            //Vector3 SteeringForce = _steeringBehavior.Calculate();
-            Vector3 SteeringForce = new Vector3(0, 0, 1);
-
-            //Acceleration = Force/Mass
-            Vector3 acceleration = SteeringForce / _mass;
-            //DebugWide.LogBlue(acceleration.magnitude);
-
-            //update velocity
-            _velocity += acceleration * Time.deltaTime;
-
-            _velocity = VOp.Truncate(_velocity, _maxSpeed);
-
-            //update the position
-            _pos += _velocity * Time.deltaTime;
-
-            //update the heading if the vehicle has a non zero velocity
-            if (_velocity.sqrMagnitude > 0.00000001f)
-            {
-                _heading = VOp.Normalize(_velocity);
-                _speed = _velocity.magnitude;
-                //DebugWide.LogBlue(_speed); 
-                _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
-
-            }
-
-            //if (_isNonpenetration)
-            //EnforceNonPenetrationConstraint(this, EntityMgr.list);
-
-            _pos = WrapAroundXZ(_pos, 100, 100);
-
-        }
 
         //게임잼4 332p 참고 
         float F = 0.85f; //마찰력 
-        float A = 0; //가속도 
-        float rot = 0;
-        public void Update1()
-        {
 
-            _rotatioin = Quaternion.AngleAxis(rot * Time.deltaTime, Vector3.up);
-
-            _velocity *= F; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
-            DebugWide.LogGreen(VOp.ToString(_velocity));
-            _heading = _rotatioin * _heading;
-            _velocity = (_velocity) + (_heading * A) * Time.deltaTime;
-
-            //_maxSpeed = 3f;
-            //_velocity = VOp.Truncate(_velocity, _maxSpeed);
-            //_velocity *= F;
-
-            _pos += _velocity * Time.deltaTime;
-
-            DebugWide.LogBlue("F: " + F + " A: " + A.ToString("00.00") + " rot: " + rot + " vel: " + VOp.ToString(_velocity));
-            _pos = WrapAroundXZ(_pos, 100, 100);
-        }
-
-        float _rot2 = 180;
+        float _rotPerSecond = 180;
         float _weight = 20;
         public void Update()
         {
             //프레임이 크게 떨어질시 Time.delta 값이 과하게 커지는 경우가 발생 , 이럴경우 벽통과등의 문제등이 생긴다. 
             //deltaTime 값을 작게 유지하여 프로그램 무결성을 유지시킨다. 속도가 느려지고 시간이 안맞는 것은 어쩔 수 없다 
-            float deltaTime = FrameTime.DeltaTime(); 
+            float deltaTime = FrameTime.DeltaTime();
 
 
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
-                //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
+            //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
             else if (SteeringBehavior.eType.offset_pursuit == _mode)
                 SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
 
@@ -324,10 +250,10 @@ namespace Proto_AI_1
 
             //F = 0;
             Vector3 acceleration = SteeringForce / _mass;
-            A = acceleration.magnitude;
+
             _velocity *= F; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
-                            
-            _velocity +=  acceleration * deltaTime;
+
+            _velocity += acceleration * deltaTime;
 
             //_maxSpeed = 10f;
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
@@ -344,28 +270,31 @@ namespace Proto_AI_1
                 {
                     float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
                     def = Mathf.Clamp(def, -1, 1);
-                    float angle = _rot2 * -def * deltaTime;
-                    //if (_rot2 > max_angle)
-                    //_rot2 = max_angle;
+                    float angle = _rotPerSecond * -def * deltaTime;
+
                     _rotatioin = Quaternion.AngleAxis(angle, Vector3.up);
                     _heading = _rotatioin * _heading;
-                    _heading = VOp.Normalize(_heading);
+                    //_heading = VOp.Normalize(_heading);
 
                     //_rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
                     //_heading = VOp.Normalize(_velocity);
 
-                    //DebugViewer.AddDraw_Line(_pos, _pos + _heading, Color.grey);
+                    DebugViewer.AddDraw_Line(_pos, _pos + _heading, Color.grey);
                 }
 
             }
 
             //if (_isNonpenetration)
-                EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            EnforceNonPenetrationConstraint(this, EntityMgr.list);
 
-            //if (0 == _id)
-                //DebugWide.LogBlue("F: " + F + " A: " + A.ToString("00.00") + " rot2: " + _rot2 + " vel: " + VOp.ToString(_velocity) + " " + _velocity.magnitude + "  he: " + _heading);
-            
-                //_pos = WrapAroundXZ(_pos, 100, 100);
+            if (0 == _id)
+            {
+                float A = acceleration.magnitude;
+                DebugWide.LogBlue("F: " + F + " A: " + A.ToString("00.00") + " rot2: " + _rotPerSecond + " vel: " + VOp.ToString(_velocity) + " " + _velocity.magnitude + "  he: " + _heading);
+            }
+
+
+            //_pos = WrapAroundXZ(_pos, 100, 100);
         }
 
         public Vector3 WrapAroundXZ(Vector3 pos, int MaxX, int MaxY)
@@ -437,64 +366,6 @@ namespace Proto_AI_1
 
         public void KeyInput()
         {
-            bool isRot = false;
-            float RotatePerSecond = 15;
-
-            //왼쪽회전
-            if (Input.GetKey(KeyCode.Q))
-            {
-                float Angle = -180;
-                rot -= RotatePerSecond;
-                if (rot < Angle)
-                    rot = Angle;
-
-                isRot = true;
-            }
-            //오른쪽회전
-            if (Input.GetKey(KeyCode.E))
-            {
-                float Angle = 180;
-                rot += RotatePerSecond;
-                if (rot > Angle)
-                    rot = Angle;
-
-                isRot = true;
-            }
-            if (false == isRot)
-            {
-                if (rot > 0)
-                {
-                    rot -= RotatePerSecond;
-                }
-                else if (rot < 0)
-                {
-                    rot += RotatePerSecond;
-                }
-            }
-
-            //가속
-            if (Input.GetKey(KeyCode.W))
-            {
-
-                A += 10f;
-                //if (A > 1)
-                //A = 1;
-            }
-            //브레이크
-            if (Input.GetKey(KeyCode.S))
-            {
-                if (0 > Vector3.Dot(_heading, _velocity))
-                {
-                    A = 0;
-                    _velocity = Vector3.zero;
-                }
-
-                if (false == Misc.IsZero(_velocity))
-                {
-                    A -= 10f;
-                }
-
-            }
 
             //마찰력
             if (Input.GetKey(KeyCode.R))
@@ -511,11 +382,11 @@ namespace Proto_AI_1
             }
             if (Input.GetKey(KeyCode.T))
             {
-                _rot2 += 15;
+                _rotPerSecond += 15;
             }
             if (Input.GetKey(KeyCode.G))
             {
-                _rot2 -= 15;
+                _rotPerSecond -= 15;
             }
 
         }
