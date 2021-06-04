@@ -317,7 +317,7 @@ namespace UtilGS9
     /// frame skip 시 해당프레임의 deltaTime을 최소 프레임시간으로 설정한다.
     /// </summary>
     ///////////////////////////////////////////////////////////////////////
-    public class FrameTime
+    public static class FrameTime
     {
         public const float DELTA_FPS_30 = 1f / 30f; 
         public const float DELTA_FPS_60 = 1f / 60f; 
@@ -335,6 +335,7 @@ namespace UtilGS9
         {
             //참고 : http://prosto.tistory.com/79
             //유니티 프레임 고정 , VSyn을 꺼야 적용된다함 , ProjectSettings => Quality => VSynCount
+            QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = fps; 
 
             _deltaTime_mix = 1f / (float)fps;
