@@ -670,9 +670,10 @@ namespace UtilGS9
             return v3;
         }
 
-        public static Vector3 Reflect(Vector3 v2, Vector3 norm)
+        //반사벡터 구하기 
+        public static Vector3 Reflect(Vector3 v, Vector3 norm)
         {
-            return v2 + 2f * Vector3.Dot(v2, norm) * (-norm);
+            return v + 2f * Vector3.Dot(v, norm) * (-norm);
         }
 
         //Vector3의 ToString 함수는 값전체를 출력해주지 않는 문제가 있음.
