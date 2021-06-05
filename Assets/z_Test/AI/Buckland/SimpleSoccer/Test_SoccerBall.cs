@@ -269,7 +269,7 @@ namespace Test_SoccerBall
             Vector3 toTarget = BallTarget - BallPos;
 
             //toTarget = Util.Vec2DRotateAroundOrigin(toTarget, displacement); //2d
-            toTarget = Quaternion.AngleAxis(displacement, ConstV.v3_up) * toTarget; //3d
+            toTarget = Quaternion.AngleAxis(displacement * Mathf.Rad2Deg, ConstV.v3_up) * toTarget; //3d
 
             return toTarget + BallPos;
         }
