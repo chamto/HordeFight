@@ -437,5 +437,108 @@ public class DebugWide
 #endif
     }
 
+
+    //==================================================================
+    //==================================================================
+    //==================================================================
+    //==================================================================
+    public struct DrawInfo
+    {
+        public enum eKind
+        {
+            Circle,
+            Line,
+        }
+
+        public eKind kind;
+        public Vector3 origin;
+        public Vector3 last;
+        public float radius;
+        public Color color;
+
+        public void Draw()
+        {
+            switch (kind)
+            {
+                case eKind.Circle:
+                    DebugWide.DrawCircle(origin, radius, color);
+                    break;
+                case eKind.Line:
+                    DebugWide.DrawLine(origin, last, color);
+                    break;
+
+            }
+
+        }
+
+    }
+    private static Queue<DrawInfo> _drawQ = new Queue<DrawInfo>();
+
+    public static void AddDrawQ(DrawInfo info)
+    {
+        _drawQ.Enqueue(info);
+    }
+
+    public static void AddDrawQ_Circle(Vector3 origin, float radius, Color color)
+    {
+
+        DrawInfo drawInfo = new DrawInfo();
+        drawInfo.kind = DrawInfo.eKind.Circle;
+        drawInfo.origin = origin;
+        drawInfo.radius = radius;
+        drawInfo.color = color;
+
+        AddDrawQ(drawInfo);
+    }
+
+    public static void AddDrawQ_Line(Vector3 origin, Vector3 last, Color color)
+    {
+        DrawInfo drawInfo = new DrawInfo();
+        drawInfo.kind = DrawInfo.eKind.Line;
+        drawInfo.origin = origin;
+        drawInfo.last = last;
+        drawInfo.color = color;
+
+        AddDrawQ(drawInfo);
+    }
+
+    public static void ClearDrawQ()
+    {
+        _drawQ.Clear();
+    }
+
+    static float _elapsedTime = 0;
+    public static void ClearDrawQ_AfterTime(float second)
+    {
+        _elapsedTime += Time.deltaTime;
+
+        if (second < _elapsedTime)
+        {
+            _drawQ.Clear();
+            _elapsedTime = 0;
+        }
+    }
+
+    public static void DrawQ_All()
+    {
+        foreach (DrawInfo info in _drawQ)
+        {
+            info.Draw();
+        }
+
+    }
+
+    public static void DrawQ_All_AfterTime(float second)
+    {
+        ClearDrawQ_AfterTime(second);
+
+        foreach (DrawInfo info in _drawQ)
+        {
+            info.Draw();
+        }
+
+    }
+
+
 }
 
