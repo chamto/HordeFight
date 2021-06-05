@@ -137,6 +137,7 @@ namespace Cyclone
          * Calculates and returns the vector product of this vector
          * with the given vector.
          */
+         // %연산자로 외적을 계산 
         public static Vector3 operator %(Vector3 v1, Vector3 v2)
         {
             return new Vector3(v1.y * v2.z - v1.z * v2.y,
@@ -158,6 +159,7 @@ namespace Cyclone
          * Calculates and returns the scalar product of this vector
          * with the given vector.
          */
+         // * 연산자로 내적을 계산 
         public static float operator *(Vector3 v1, Vector3 v2)
         {
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
