@@ -5,6 +5,10 @@ public class Test_Bounce : MonoBehaviour
     Cyclone.BounceDemo demo = null;
     Transform t_pos = null;
 
+    public float Friction = 0.9f;
+    public float Restitution = 0.8f;
+    public float Tolerance = 0.1f;
+
     private void Start()
     {
         demo = new Cyclone.BounceDemo();
@@ -13,7 +17,10 @@ public class Test_Bounce : MonoBehaviour
 
     private void Update()
     {
-        demo.fire();
+        demo.Friction = Friction;
+        demo.Restitution = Restitution;
+        demo.Tolerance = Tolerance;
+
         demo.key();
         demo.update();
     }
@@ -33,13 +40,18 @@ namespace Cyclone
 
         public BounceDemo() : base()
         {
+            Init();
+        }
+
+        public void Init()
+        {
             sphere = new CollisionSphere();
             sphere.body = new RigidBody();
             sphere.body.setMass(200.0f); // 200.0kg
             sphere.body.setVelocity(0.0f, 8.0f, 5.0f);
             sphere.body.setAcceleration(Vector3.GRAVITY);
             //sphere.body.setDamping(0.99f, 0.8f);
-            sphere.body.setDamping(0.9f,0.8f); //감쇠 
+            sphere.body.setDamping(0.9f, 0.8f); //감쇠 
             sphere.radius = 0.4f;
             sphere.body.setCanSleep(false);
             sphere.body.setAwake(true);
@@ -53,13 +65,17 @@ namespace Cyclone
             // Clear the force accumulators
             sphere.body.calculateDerivedData();
             sphere.calculateInternals();
-
         }
+
         protected override void updateObjects(float duration)
         {
             sphere.body.integrate(duration);
             sphere.calculateInternals();
         }
+
+        public float Friction = 0.9f;
+        public float Restitution = 0.8f;
+        public float Tolerance = 0.1f;
         protected override void generateContacts()
         {
             // Create the ground plane data
@@ -69,9 +85,9 @@ namespace Cyclone
 
             // Set up the collision data structure
             cData.reset(maxContacts);
-            cData.friction = 0.9f; //마찰력
-            cData.restitution = 0.8f; //반반력
-            cData.tolerance = 0.1f;
+            cData.friction = Friction; //마찰력
+            cData.restitution = Restitution; //반반력 , 탄성계수? 
+            cData.tolerance = Tolerance;
 
             CollisionDetector.sphereAndHalfSpace(sphere, plane, cData);
         }
@@ -81,11 +97,13 @@ namespace Cyclone
             DebugWide.DrawCircle(sphere.body.getPosition().ToUnity(), sphere.radius, Color.blue);
         }
 
-        public void fire()
+        public void key()
         {
-            if(Input.GetKeyDown(KeyCode.F))
+            base.key();
+
+            if(Input.GetKeyDown(KeyCode.R))
             {
-             
+                Init();
             }
         }
     }
