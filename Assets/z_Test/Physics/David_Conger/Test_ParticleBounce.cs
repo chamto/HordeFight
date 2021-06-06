@@ -22,42 +22,42 @@ namespace David_Conger
             }
 
 
-            allParticles[0].mass = 11;
-            allParticles[0].elasticity = 0.9f;
-            allParticles[0].radius = 0.75f;
+            allParticles[0].mass = 1;
+            allParticles[0].elasticity = 1f;
+            allParticles[0].radius = 1;
             allParticles[0].location = new Vector3(-5.0f, 0.0f, 0.0f);
-            allParticles[0].forces = new Vector3(2.0f, 0.0f, 0.0f);
+            allParticles[0].forces = new Vector3(50.0f, 0.0f, 0.0f);
 
-            allParticles[1].mass = 11;
-            allParticles[1].elasticity = 0.9f;
-            allParticles[1].radius = 0.75f;
-            allParticles[1].location = new Vector3(0.0f, -5.0f, 0.0f);
-            allParticles[1].forces = new Vector3(0.0f, 2.0f, 0.0f);
+            allParticles[1].mass = 1;
+            allParticles[1].elasticity = 1f;
+            allParticles[1].radius = 1f;
+            allParticles[1].location = new Vector3(0.0f, 0, 0.0f);
+            allParticles[1].forces = new Vector3(-10.0f, 0, 5.0f);
 
 
         }
 
-        private bool forceApplied = false;
+        //private bool forceApplied = false;
         void Update()
         {
             // If the force has not yet been applied...
-            if (!forceApplied)
-            {
-                forceApplied = true;
-            }
-            // Else the force was already applied...
-            else
-            {
-                // Set the forces to zero.
-                allParticles[0].forces = ConstV.v3_zero;
-                allParticles[1].forces = ConstV.v3_zero;
-            }
+            //if (false == forceApplied)
+            //{
+            //    forceApplied = true;
+            //}
+            //// Else the force was already applied...
+            //else
+            //{
+            //    // Set the forces to zero.
+            //    //allParticles[0].forces = ConstV.v3_zero;
+            //    //allParticles[1].forces = ConstV.v3_zero;
+            //}
 
-            float timeInterval = 0.5f;
+            float timeInterval = Time.deltaTime;
             for (int i = 0; i < COUNT; i++)
             {
                 allParticles[i].Update(timeInterval);
-
+                allParticles[i].forces = ConstV.v3_zero; //힘 적용후 바로 초기화 
             }
 
             // 
@@ -190,7 +190,7 @@ namespace David_Conger
         public void Draw(Color color)
         {
             DebugWide.DrawCircle(location, radius, color);
-            DebugWide.DrawLine(location, location + forces, color);
+            //DebugWide.DrawLine(location, location + forces, color);
             DebugWide.DrawLine(location, location + linearVelocity, Color.green);
         }
     }
