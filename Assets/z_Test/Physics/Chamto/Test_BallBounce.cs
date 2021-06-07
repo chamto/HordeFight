@@ -13,6 +13,7 @@ namespace Test_BallBounce
 
         public Transform _tr_force = null;
 
+        public float Mass = 1;
         public float Friction = 0.9f; //마찰력
         public float Restitution = 0.7f; //반반력 , 탄성계수 
         public float Damping = 1;
@@ -50,11 +51,12 @@ namespace Test_BallBounce
             //    ball.forces = Vector3.zero;
             //}
 
-            if(Input.GetKeyDown(KeyCode.R))
+            if (Input.GetKeyDown(KeyCode.R))
             {
-                Init(); 
+                Init();
             }
 
+            ball.mass = Mass;
             ball.damping = Damping;
 
             //ball.Update(Time.deltaTime);
@@ -65,27 +67,52 @@ namespace Test_BallBounce
         void generateContacts()
         {
             // Create the ground plane data
-            CollisionPlane plane = new CollisionPlane(); ;
-            plane.direction = new Vector3(0, 0, 1); //정규화된 값이어야 함 
-            plane.offset = 0;
+            CollisionPlane planeZ = new CollisionPlane();
+            planeZ.direction = new Vector3(0, 0, 1); //정규화된 값이어야 함 
+            planeZ.offset = 0;
+            planeZ.mass = 1;
+            planeZ.elasticity = 1;
 
+            CollisionPlane planeX = new CollisionPlane();
+            planeX.direction = new Vector3(-1, 0, 0); //정규화된 값이어야 함 
+            planeX.offset = -30;
+            planeX.mass = 1;
+            planeX.elasticity = 1;
 
             Contact contact;
-            if(CollisionDetector.sphereAndHalfSpace(ball, plane, out contact))
+            if (CollisionDetector.sphereAndHalfSpace(ball, planeZ, out contact))
             {
                 //충돌처리  
                 DebugWide.LogBlue(contact.contactPoint + "  " + contact.penetration);
 
 
-                ball.position += contact.contactNormal * contact.penetration;
-                Vector3 refl = VOp.Reflect(ball.linearVelocity, contact.contactNormal);
+                ball.position += contact.contactNormal * contact.penetration; //겹침 계산 
 
-                //축을 분리해서 적용해야 하지만 간단히 하드코딩으로 탄성력과 마찰력을 적용한다 
-                refl.z *= Restitution; 
-                refl.x *= Friction;
-                ball.linearVelocity = refl;
 
-                //ball.linearVelocity *= Friction;
+
+                //하드코딩
+                if (false)
+                {
+                    Vector3 refl = VOp.Reflect(ball.linearVelocity, contact.contactNormal);
+
+                    //축을 분리해서 적용해야 하지만 간단히 하드코딩으로 탄성력과 마찰력을 적용한다 
+                    refl.z *= Restitution;
+                    refl.x *= Friction;
+                    ball.linearVelocity = refl;
+
+                }
+
+                if (true)
+                {
+                    HandleCollision(ref ball, ref planeZ, Time.deltaTime);
+                }
+
+            }
+            if (CollisionDetector.sphereAndHalfSpace(ball, planeX, out contact))
+            {
+                ball.position += contact.contactNormal * contact.penetration; //겹침 계산 
+
+                HandleCollision(ref ball, ref planeX, Time.deltaTime);
             }
         }
 
@@ -96,7 +123,45 @@ namespace Test_BallBounce
             //DebugWide.DrawLine(ball.location, _tr_force.position, Color.white);
             ball.Draw(Color.white);
         }
+
+        public void HandleCollision(ref Point_mass pm0, ref CollisionPlane plane, float changeInTime)
+        {
+            Vector3 unitNormal = plane.direction;
+
+            float velocity1 = Vector3.Dot(pm0.linearVelocity, unitNormal);
+            float velocity2 = -velocity1; //반작용 속도 설정 
+
+
+            // Find the average coefficent of restitution.
+            float averageE = (pm0.elasticity + plane.elasticity) / 2f;
+            averageE = Restitution; //임시 
+
+            float finalVelocity1 =
+            (((pm0.mass -
+               (averageE * plane.mass)) * velocity1) +
+             ((1 + averageE) * plane.mass * velocity2)) /
+            (pm0.mass + plane.mass);
+
+
+
+            pm0.linearVelocity = (
+                (finalVelocity1 - velocity1) * unitNormal +
+                pm0.linearVelocity);
+
+            pm0.linearVelocity *= Friction;
+
+
+            //공이 벽에 부딪혔을 때 빨라지는 효과??
+            //Vector3 acceleration1 =
+            //pm0.linearVelocity / changeInTime;
+             
+            //pm0.forces = (
+            //acceleration1 * pm0.mass);
+
+        }
+
     }
+
 
 
     //public struct CollisionSphere
@@ -113,9 +178,12 @@ namespace Test_BallBounce
     public struct CollisionPlane
     {
 
-        /**
-         * The plane normal
-         */
+        public float mass;
+        public float elasticity;
+
+                                 /**
+                                  * The plane normal
+                                  */
         public Vector3 direction;
 
         /**
