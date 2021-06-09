@@ -13,49 +13,43 @@ public class Parabola : MonoBehaviour
 	private void Start()
 	{
         if (null == _start || null == _end) return;
-        StartPos = _start.position;
-        DestPos = _end.position;
 
-        PreCalculate();
+        Reset();
 	}
 
 	private void Update()
 	{
         if (null == _start || null == _end) return;
-        transform.Translate(Move());
-	}
 
-    //public void Create_Path(Transform parent, Vector3 start, Vector3 end)
-    //{
-    //    GameObject obj = new GameObject();
-    //    LineRenderer render = obj.AddComponent<LineRenderer>();
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            Reset(); 
+        }
 
-    //    render.name = "Parabola_Path";
-    //    render.material = new Material(Shader.Find("Sprites/Default"));
-    //    render.useWorldSpace = true;
-    //    render.transform.parent = parent;//부모객체 지정
+        Vector3 move = Move();
 
+        DebugWide.AddDrawQ_Line(transform.position,  move, Color.white);
 
-    //    render.positionCount = 20;
-    //    render.transform.localPosition = Vector3.zero;
-    //    render.startWidth = 0.01f;
-    //    render.endWidth = 0.01f;
+        transform.position = move;
 
+    }
 
-    //    float deg = 360f / render.positionCount;
+    private void OnDrawGizmos()
+    {
+        DebugWide.DrawQ_All();
+    }
 
-    //    Vector3 pos = Vector3.right;
-    //    for (int i = 0; i < render.positionCount; i++)
-    //    {
-    //        pos.x = Mathf.Cos(deg * i * Mathf.Deg2Rad) * radius;
-    //        pos.z = Mathf.Sin(deg * i * Mathf.Deg2Rad) * radius;
+    public void Reset()
+    {
+        DebugWide.ClearDrawQ();
 
-    //        render.SetPosition(i, pos);
-    //        //DebugWide.LogBlue(Mathf.Cos(deg * i * Mathf.Deg2Rad) + " _ " + deg*i);
-    //    }
+        transform.position = _start.position;
+        StartPos = _start.position;
+        DestPos = _end.position;
+        t = 0;
 
-    //}
-
+        PreCalculate();
+    }
 
     //ref : https://www.slideshare.net/semin204/ss-16331290
 
@@ -70,35 +64,40 @@ public class Parabola : MonoBehaviour
     float mh; //최고점 - 시작점(높이) 
     float dh; //도착점 높이
     float t = 0f; //진행시간
-    float MAX_Y = 70f; //최고점 높이 
-    float mht = 1.6f; //최고점 도달 시간
+    public float MAX_Y = 50f; //최고점 높이 
+    public float mht = 0.2f; //최고점 도달 시간
 
+    //등가속도 상황에서의 운동방정식 5가지
+    //ref : https://en.wikipedia.org/wiki/Equations_of_motion
     void PreCalculate()
     {
         dh = DestPos.y - StartPos.y;
         mh = MAX_Y - StartPos.y;
 
-        g = 2 * mh / (mht * mht);
+        g = 2 * mh / (mht * mht); //운동방정식2번 이용 , 초기속도 0 인것을 이용하여 식을 정리한다 
 
-        vy = Mathf.Sqrt(2 * g * mh);
+        vy = Mathf.Sqrt(2 * g * mh); //운동방정식4번 이용 , 초기속도 0 
 
+        //2차 방정식을 어떻게 세운것인지 모르겠다 ??
         float a = g;
         float b = -2 * vy;
         float c = 2 * dh;
 
-        dat = (-b + Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a);
-        vx = -(StartPos.x - DestPos.x) / dat;
+        dat = (-b + Mathf.Sqrt(b * b - 4 * a * c)) / (2 * a); //근의 공식으로 전체 시간길이를 구한다  
+        vx = -(StartPos.x - DestPos.x) / dat; //v = s/t
 
     }
 
     Vector3 Move()
     {
-        t += Time.deltaTime;
+        //t += Time.deltaTime;
+        t += 0.02f;
 
-        if (t > dat) return Vector3.zero;
+        if (t > dat) return DestPos;
 
-        float x = StartPos.x + vx * t;
-        float y = StartPos.y + vy * t - 0.5f * g * t * t;
+        //운동방정식2번 이용 
+        float x = StartPos.x + vx * t; //등속도 운동 
+        float y = StartPos.y + vy * t - 0.5f * g * t * t; //g만큼 등가속도 운동 
 
         return new Vector3(x, y, 0);
     }
