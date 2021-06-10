@@ -462,14 +462,15 @@ namespace HordeFight
             //_sortingGroup.sortingOrder = GetSortingOrder(add);
         }
 
-
+        public bool _apply_transform_pos = false;
         //한 프레임에서 start 다음에 running 이 바로 시작되게 한다. 상태 타이밍 이벤트는 콜벡함수로 처리한다 
         public virtual bool UpdateAll()
         {
             _collider_radius = _collider.radius; //임시로 추가 
             _collider_sqrRadius = _collider_radius * _collider_radius;
 
-            _getPos3D = _transform.position; //chamto test
+            if(_apply_transform_pos)
+                _getPos3D = _transform.position; //chamto test
 
             _effect.Apply_BarRed((float)_hp_cur / (float)_hp_max);
 
