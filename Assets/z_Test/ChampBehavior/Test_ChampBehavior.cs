@@ -42,14 +42,17 @@ namespace HordeFight
             cha._move = obj.AddComponent<Movement>();
             cha._move._being = cha;
 
+            cha.SetPos(champTR.position);
+
             //mov._eDir8 = eDirection8.up;
             cha._ai = obj.AddComponent<AI>();
             cha._ai.Init();
             cha._id = 0;
             cha._kind = eKind;
             cha._belongCamp = null;
-            cha.transform.position = champTR.position;
-
+            cha._collider = obj.GetComponent<SphereCollider>();
+            cha._collider_radius = cha._collider.radius;
+            cha._collider_sqrRadius = cha._collider_radius * cha._collider_radius;
 
             ////==============================================
             ////가지(촉수) 등록
