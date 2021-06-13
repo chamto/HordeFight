@@ -15,7 +15,8 @@ namespace Test_BallJoint
         ParticleRod[] cables = new ParticleRod[CABLE_COUNT];
         //ParticleCable[] cables = new ParticleCable[CABLE_COUNT];
 
-        public Transform _tr_force = null;
+        public Transform _tr_center = null;
+        public Transform _tr_dir = null;
 
         public float Mass = 1;
         public float Friction = 0.9f; //마찰력
@@ -25,9 +26,11 @@ namespace Test_BallJoint
         // Use this for initialization
         void Start()
         {
-            _tr_force = GameObject.Find("tr_force").transform;
+            _tr_center = GameObject.Find("tr_center").transform;
+            _tr_dir = GameObject.Find("tr_dir_0").transform;
 
-            for(int i=0;i< BALL_COUNT; i++ )
+
+            for (int i=0;i< BALL_COUNT; i++ )
             {
                 balls[i] = new Point_mass(); 
             }
@@ -52,33 +55,61 @@ namespace Test_BallJoint
         {
             for (int i = 0; i < BALL_COUNT; i++)
             {
-                balls[i].position = new Vector3(0, 0, 5);
-                balls[i].mass = 1;
-                balls[i].radius = 1;
+                balls[i].position = new Vector3(0, 0, 5+i); //같은 위치 설정시 컨텍트 노멀을 구하지 못해 공이 붙어있는 문제 발생함 
+                balls[i].mass = Mass;
+                balls[i].radius = 0.5f;
                 balls[i].forces = Vector3.zero;
                 balls[i].linearAcceleration = new Vector3(0, 0, -9.8f);
                 balls[i].linearVelocity = new Vector3(0, 0, 0);
-                balls[i].damping = 1f;
+                balls[i].damping = Damping;
             }
-
+            balls[0].linearAcceleration = new Vector3(0, 0, 0); //조인트를 조종하는 공에는 가속도가 설정되면 안됨 , 조금씩 떨어지는 버그 발생 
+            balls[3].radius = 1f;
+            balls[3].mass = 2;
         }
 
-        public Vector3 Seek(Vector3 TargetPos)
-        {
-            Vector3 DesiredVelocity = (TargetPos - balls[0].position).normalized
-                            * 50;
 
-
-            return (DesiredVelocity - balls[0].linearVelocity);
-        }
-
-        float TIME_D = 0.02f;
-        // Update is called once per frame
+        float TIME_D = 0.05f;
+        Vector3 _dir = Vector3.forward;
+        public float _angle = 15;
+        public float _force = 30;
         void Update()
         {
+            //철퇴 회전시키기 
+            if (Input.GetKey(KeyCode.A))
+            {
+                //자동회전 
+                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
 
-            balls[0].position = _tr_force.position;
-            //balls[0].forces = Seek(_tr_force.position)*10;
+                //직접조종
+                //_dir = _tr_dir.position - _tr_center.position;
+                //_dir.Normalize();
+
+                balls[0].position = _tr_center.position + _dir * 5f;
+
+                //충돌효과가 난것처럼 따라한다 
+                Vector3 v = _dir * _force;
+                Vector3 a = v / TIME_D;
+                for (int i = 1; i < BALL_COUNT; i++)
+                {
+                    balls[i].linearVelocity = v;
+                    balls[i].forces = a * balls[i].mass; //힘을 적용하면 철퇴가 자연스럽게 가속하는 모습을 볼 수 있다
+
+                }
+            }
+            //철퇴회전이 멈추면 중력이 적용되게 한다 
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                for (int i = 1; i < BALL_COUNT; i++)
+                {
+                    //조화운동을 하지 않아 부자연스럽게 보인다 
+                    balls[i].linearVelocity = new Vector3(0, 0, -15) * balls[i].mass; //임의의 적당한 값을 넣는다 
+
+                }
+            }
+
+
+
 
             if (Input.GetKeyDown(KeyCode.R))
             {
@@ -89,6 +120,8 @@ namespace Test_BallJoint
             {
                 balls[i].integrate(TIME_D);
             }
+
+
 
             generateContacts();
         }
@@ -132,9 +165,11 @@ namespace Test_BallJoint
 
         private void OnDrawGizmos()
         {
-            if (null == _tr_force) return;
+            if (null == _tr_dir) return;
 
             //DebugWide.DrawLine(ball.location, _tr_force.position, Color.white);
+
+            DebugWide.DrawCircle(_tr_center.position, 0.5f, Color.red);
 
             for (int i = 0; i < BALL_COUNT; i++)
             {
@@ -394,12 +429,10 @@ namespace Test_BallJoint
         public float damping;
 
 
-
+        public float _MAX_VELO = 100;
         public void integrate(float changeInTime)
         {
 
-            // Update linear position.
-            position += linearVelocity * changeInTime;
 
             // Work out the acceleration from the force
             Vector3 resultingAcc = linearAcceleration;
@@ -411,6 +444,11 @@ namespace Test_BallJoint
             // Impose drag.
             linearVelocity *= (float)Math.Pow(damping, changeInTime);
 
+            linearVelocity = VOp.Truncate(linearVelocity, _MAX_VELO);
+
+            // Update linear position.
+            position += linearVelocity * changeInTime;
+
             // Clear the forces.
             forces = Vector3.zero;
         }
@@ -418,7 +456,7 @@ namespace Test_BallJoint
         public void Draw(Color color)
         {
             DebugWide.DrawCircle(position, radius, color);
-            //DebugWide.DrawLine(location, location + forces, color);
+            //DebugWide.DrawLine(position, position + forces, color);
             DebugWide.DrawLine(position, position + linearVelocity, Color.green);
         }
     }
