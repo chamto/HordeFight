@@ -275,6 +275,7 @@ namespace Cyclone
                     contact.particle[1] = null;
                     contact.penetration = -y;
                     contact.restitution = 0.2f;
+                    //contact.restitution = 0.9f;
 
                     //contact++;
                     count++;
