@@ -55,7 +55,7 @@ namespace Cyclone
 
         }
 
-
+        public bool _viewVelocity = false;
         /** Display the particles. */
         public void display()
         {
@@ -70,7 +70,14 @@ namespace Cyclone
             {
                 Vector3 pos = p.getPosition();
                 UnityEngine.Vector3 u_pos = new UnityEngine.Vector3(pos.x, pos.y, pos.z);
-                DebugWide.DrawCircle(u_pos, 0.1f, Color.black); 
+                DebugWide.DrawCircle(u_pos, 0.1f, Color.black);
+
+                if(_viewVelocity)
+                {
+                    UnityEngine.Vector3 u_vel = p.getVelocity().ToUnity();
+                    DebugWide.DrawLine(u_pos, u_pos + u_vel, Color.green);
+                }
+
             }
 
             //cyclone::ParticleWorld::Particles & particles = world.getParticles();
