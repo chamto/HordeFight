@@ -81,6 +81,7 @@ namespace Cyclone
                 world.getContactGenerators().Add(supports[i]);
             }
 
+            //0 ~ 3
             // Add the links
             cables = new ParticleCable[CABLE_COUNT];
             for (uint i = 0; i < CABLE_COUNT; i++)
@@ -93,6 +94,7 @@ namespace Cyclone
                 world.getContactGenerators().Add(cables[i]);
             }
 
+            //4 ~ 7
             int next = CABLE_COUNT+1;
             rods = new ParticleRod[ROD_COUNT];
             for (uint i = 0; i < ROD_COUNT; i++)
@@ -154,12 +156,16 @@ namespace Cyclone
             base.update();
         }
 
-        /** Handle a key press. */
+        UnityEngine.Vector3 _u_dir = new UnityEngine.Vector3(0,1,0);
         public void key()
         {
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.A))
             {
-               
+                _u_dir = UnityEngine.Quaternion.AngleAxis(15, new UnityEngine.Vector3(0,0,1)) * _u_dir;
+
+                Vector3 dir = new Vector3(_u_dir.x, _u_dir.y, _u_dir.z );
+                particleArray[4].setPosition(supports[0].anchor + dir * 5f);
+
             }
 
         }
@@ -168,8 +174,10 @@ namespace Cyclone
         {
 
             supports[0].anchor = new Vector3(x, y, z);
-            //particleArray[3].setPosition(x, y, z);
+            //particleArray[0].setPosition(x, y, z);
 
+            this._viewVelocity = true;
+            //particleArray[4].setAcceleration(Vector3.ZERO);
             //particleArray[4].setPosition(x, y, z);
         }
     }
