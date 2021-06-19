@@ -148,6 +148,7 @@ MonoBehaviour:
   Damping: 1
   _angle: 15
   _force: 30
+  _norm_force: 0.35
 --- !u!4 &186686757
 Transform:
   m_ObjectHideFlags: 0
