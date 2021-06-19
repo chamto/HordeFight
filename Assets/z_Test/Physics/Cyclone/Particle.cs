@@ -156,7 +156,7 @@ namespace Cyclone
             velocity.addScaledVector(resultingAcc, duration);
 
             // Impose drag.
-            velocity *= (float)Math.Pow(damping, duration);
+            velocity *= (float)Math.Pow(damping, duration); //0일때 0 , 1일때 1초간 1값 , 줄어드는 정도를 제곱그래프로 나타낸다? , 그려보기   
 
             // Clear the forces.
             clearAccumulator();

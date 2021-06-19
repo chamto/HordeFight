@@ -57,7 +57,7 @@
         {
             Vector3 relativeVelocity = particle[0].getVelocity();
             if (null != particle[1]) relativeVelocity -= particle[1].getVelocity();
-            return relativeVelocity * contactNormal;
+            return relativeVelocity * contactNormal; //내적표현 , * 연산자가 재정의 되어 있음 
         }
 
 
@@ -266,7 +266,7 @@
                 {
                     if (contactArray[i].particle[0] == contactArray[maxIndex].particle[0])
                     {
-                        contactArray[i].penetration -= move[0] * contactArray[i].contactNormal;
+                        contactArray[i].penetration -= move[0] * contactArray[i].contactNormal; //내적 표현 
                     }
                     else if (contactArray[i].particle[0] == contactArray[maxIndex].particle[1])
                     {
