@@ -145,10 +145,11 @@ MonoBehaviour:
   Mass: 1
   Friction: 0.9
   Restitution: 0.7
-  Damping: 1
+  Damping: 0.7
   _angle: 15
   _force: 30
-  _norm_force: 0.35
+  _totalMass: 0.5
+  _totalMass2: 0.5
 --- !u!4 &186686757
 Transform:
   m_ObjectHideFlags: 0
