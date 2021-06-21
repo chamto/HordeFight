@@ -65,11 +65,15 @@ namespace Cyclone
                 particleArray[i].clearAccumulator();
             }
 
+            //Cable 테스트 , 떨림이 비정상적으로 발생함. 엔진에 원래 결함이 있는것 같음 
+            //particleArray[0].setAcceleration(Vector3.ZERO);
+            //particleArray[3].setMass(10); 
+
             supports = new ParticleRodConstraint[SUPPORT_COUNT];
             for (uint i = 0; i < SUPPORT_COUNT; i++)
             {
                 supports[i] = new ParticleRodConstraint();
-                supports[i].particle = particleArray[4]; //0 , 4
+                supports[i].particle = particleArray[0]; //0 , 4
                 supports[i].anchor = new Vector3(
                     0,
                     6,
@@ -89,8 +93,8 @@ namespace Cyclone
                 cables[i] = new ParticleCable();
                 cables[i].particle[0] = particleArray[i];
                 cables[i].particle[1] = particleArray[i + 1];
-                cables[i].maxLength = 1.9f;
-                cables[i].restitution = 0.3f;
+                cables[i].maxLength = 2f;
+                cables[i].restitution = 0.5f;
                 world.getContactGenerators().Add(cables[i]);
             }
 

@@ -21,9 +21,15 @@ namespace Test_BallJoint
         public Transform _tr_dir = null;
 
         public float Mass = 1;
-        public float Friction = 0.9f; //마찰력
-        public float Restitution = 0.7f; //반반력 , 탄성계수 
         public float Damping = 1;
+        public float Rot_Angle = 15;
+        public float Rot_Force = 30;
+        public float Cable_Length = 2f;
+        public float Cable_Restitution = 0.5f; //케이블의 반반력 
+        public float End_Mass = 3;
+
+        public float Ground_Friction = 0.9f; //마찰력
+        public float Ground_Restitution = 0.7f; //반반력 , 탄성계수 
 
         // Use this for initialization
         void Start()
@@ -37,25 +43,11 @@ namespace Test_BallJoint
                 balls[i] = new Point_mass(); 
             }
 
+            //고정막대기 
             constraint.anchor = _tr_center.position;
             constraint.particle = balls[0];
             constraint.length = 3f;
 
-            for (int i = 0; i < CABLE_COUNT; i++)
-            {
-                cables[i] = new ParticleRod();
-                cables[i].particle[0] = balls[i];
-                cables[i].particle[1] = balls[i+1];
-                cables[i].length = 2f;
-
-
-
-                //cables[i] = new ParticleCable();
-                //cables[i].particle[0] = balls[i];
-                //cables[i].particle[1] = balls[i + 1];
-                //cables[i].maxLength = 2f;
-                //cables[i].restitution = 0.8f;
-            }
 
             Init();
 
@@ -64,6 +56,22 @@ namespace Test_BallJoint
 
         public void Init()
         {
+            for (int i = 0; i < CABLE_COUNT; i++)
+            {
+                cables[i] = new ParticleRod();
+                cables[i].particle[0] = balls[i];
+                cables[i].particle[1] = balls[i+1];
+                cables[i].length = Cable_Length;
+
+
+
+                //cables[i] = new ParticleCable();
+                //cables[i].particle[0] = balls[i];
+                //cables[i].particle[1] = balls[i + 1];
+                //cables[i].maxLength = Cable_Length;
+                //cables[i].restitution = Cable_Restitution;
+            }
+
             for (int i = 0; i < BALL_COUNT; i++)
             {
                 balls[i].position = new Vector3(0, 0, 5+i); //같은 위치 설정시 컨텍트 노멀을 구하지 못해 공이 붙어있는 문제 발생함 
@@ -75,34 +83,37 @@ namespace Test_BallJoint
                 balls[i].damping = Damping;
             }
             balls[0].linearAcceleration = new Vector3(0, 0, 0); //조인트를 조종하는 공에는 가속도가 설정되면 안됨 , 조금씩 떨어지는 버그 발생 
-            balls[3].radius = 1f;
-            balls[3].mass = 3;
+            //balls[3].radius = 1f;
+            //balls[3].mass = End_Mass;
         }
 
 
         float TIME_D = 0.05f;
         Vector3 _dir = Vector3.forward;
-        public float _angle = 15;
-        public float _force = 30;
         public float _totalMass = 0.5f;
         public float _totalMass2 = 0.5f;
 
         private void Update()
         {
+            //케이블 탄성력 적용 시험 ,,실패
+            //Update5();
+            //Update2();
 
-            //조화운동이 적용된 철퇴 회전 
-            Update4(); //_totalMass 계산 
-            //Update1(); //_totalMass 임의로 조정
+            //조화운동이 적용된 철퇴 회전 , rod 에서만 정상동작
+            //Update4(); //_totalMass 사용안함 , 계산 
+            Update1(); //_totalMass 사용함 , 임의로 조정하는게 결과가 가장 나음
         }
 
         void Update5()
         {
 
+            balls[3].mass = Mathf.Max(1,End_Mass);
+
             //철퇴 회전시키기 
             if (Input.GetKey(KeyCode.A))
             {
                 //자동회전 
-                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
+                _dir = Quaternion.AngleAxis(Rot_Angle, Vector3.up) * _dir;
 
                 //직접조종
                 //_dir = _tr_dir.position - _tr_center.position;
@@ -111,109 +122,7 @@ namespace Test_BallJoint
                 //balls[0].position = _tr_center.position + _dir * 5f;
 
                 //충돌효과가 난것처럼 따라한다 
-                Vector3 v = _dir * _force;
-                Vector3 a = v / TIME_D;
-                for (int i = 1; i < BALL_COUNT; i++)
-                {
-                    balls[i].linearVelocity = v;
-                    balls[i].forces = a * balls[i].mass; //힘을 적용하면 철퇴가 자연스럽게 가속하는 모습을 볼 수 있다
-
-                }
-            }
-            balls[0].position = _tr_center.position + _dir * 3f;
-
-
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                Init();
-            }
-
-            for (int i = 0; i < BALL_COUNT; i++)
-            {
-                balls[i].integrate(TIME_D);
-            }
-
-
-            Contact contact;
-            for (int i = 0; i < CABLE_COUNT; i++)
-            {
-                if (cables[i].GetContact(out contact))
-                {
-
-                    Vector3 relativeVelocity = contact.particle[0].linearVelocity - contact.particle[1].linearVelocity;
-                    float separatingVelocity = Vector3.Dot(relativeVelocity, contact.contactNormal);
-
-
-                    //float totalInverseMass = _totalMass;
-                    float newSepVelocity = -separatingVelocity * contact.restitution;
-                    float deltaVelocity = newSepVelocity - separatingVelocity;
-                    float impulse = deltaVelocity * _totalMass;
-
-                    Vector3 impulsePerIMass = contact.contactNormal * impulse;
-
-                    //contact.particle[0].linearVelocity += impulsePerIMass;
-                    //contact.particle[1].linearVelocity -= impulsePerIMass;
-
-                    if (0 == i)
-                    {
-                        contact.particle[1].linearVelocity -= impulsePerIMass;
-
-                        Vector3 movePerIMass = contact.contactNormal * (contact.penetration / 1);
-                        //contact.particle[0].position += movePerIMass;
-                        contact.particle[1].position -= movePerIMass;
-                    }
-                    else
-                    {
-                        contact.particle[0].linearVelocity += impulsePerIMass;
-                        contact.particle[1].linearVelocity -= impulsePerIMass;
-
-                        //Vector3 movePerIMass = contact.contactNormal * (contact.penetration / 2);
-                        Vector3 movePerIMass = contact.contactNormal * (contact.penetration * _totalMass);
-                        contact.particle[0].position += movePerIMass;
-                        contact.particle[1].position -= movePerIMass;
-                    }
-
-                    //contact.particle[1].position -= contact.contactNormal * contact.penetration;
-                    //DebugWide.LogBlue(i + "  " + contact.particle[1].position + "  " + contact.contactNormal + "  " + contact.penetration);
-                }
-            }
-            //===============================
-            // Create the ground plane data
-            CollisionPlane planeZ = new CollisionPlane();
-            planeZ.direction = new Vector3(0, 0, 1); //정규화된 값이어야 함 
-            planeZ.offset = 0;
-            planeZ.mass = 1;
-            planeZ.elasticity = 1f;
-
-            for (int i = 0; i < BALL_COUNT; i++)
-            {
-                if (CollisionDetector.sphereAndHalfSpace(balls[i], planeZ, out contact))
-                {
-
-                    balls[i].position += contact.contactNormal * contact.penetration; //겹침 계산 
-                    HandleCollision(ref balls[i], ref planeZ, TIME_D);
-
-                }
-            }
-        }
-
-        void Update4()
-        {
-
-            //철퇴 회전시키기 
-            if (Input.GetKey(KeyCode.A))
-            {
-                //자동회전 
-                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
-
-                //직접조종
-                //_dir = _tr_dir.position - _tr_center.position;
-                //_dir.Normalize();
-
-                //balls[0].position = _tr_center.position + _dir * 5f;
-
-                //충돌효과가 난것처럼 따라한다 
-                Vector3 v = _dir * _force;
+                Vector3 v = _dir * Rot_Force;
                 Vector3 a = v / TIME_D;
                 for (int i = 1; i < BALL_COUNT; i++)
                 {
@@ -250,16 +159,167 @@ namespace Test_BallJoint
                     if (0 == i)
                         totalInverseMass = contact.particle[1].getInverseMass();
 
-                    float deltaVelocity = - separatingVelocity;
+                    float newSepVelocity = -separatingVelocity * contact.restitution;
+
+                    //------
+                    Vector3 accCausedVelocity = contact.particle[0].linearAcceleration;
+                    accCausedVelocity -= contact.particle[0].linearAcceleration;
+                    float accCausedSepVelocity = Vector3.Dot(accCausedVelocity, contact.contactNormal) * TIME_D;
+
+                    // If we've got a closing velocity due to acceleration build-up,
+                    // remove it from the new separating velocity
+                    if (accCausedSepVelocity < 0)
+                    {
+                        newSepVelocity += contact.restitution * accCausedSepVelocity;
+
+                        // Make sure we haven't removed more than was
+                        // there to remove.
+                        if (newSepVelocity < 0) newSepVelocity = 0;
+                    }
+                    //------
+
+                    float deltaVelocity = newSepVelocity - separatingVelocity;
                     //float impulse = deltaVelocity * _totalMass;
                     float impulse = deltaVelocity / totalInverseMass;
+
+                    Vector3 impulsePerIMass = contact.contactNormal * impulse;
+
+                    //contact.particle[0].linearVelocity += impulsePerIMass;
+                    //contact.particle[1].linearVelocity -= impulsePerIMass;
+
+                    if (separatingVelocity > 0)
+                    {
+                        DebugWide.LogBlue("aaaaa");
+                    }
+                    else
+                    {
+                        if (0 == i)
+                        {
+                            contact.particle[1].linearVelocity -= impulsePerIMass * contact.particle[1].getInverseMass();
+
+                        }
+                        else
+                        {
+                            contact.particle[0].linearVelocity += impulsePerIMass * contact.particle[0].getInverseMass();
+                            contact.particle[1].linearVelocity -= impulsePerIMass * contact.particle[1].getInverseMass();
+
+                        }
+                    }
+
+
+                    if (contact.penetration <= 0)
+                    {
+                        DebugWide.LogBlue("bbbbb");
+
+
+                    }else
+                    {
+                        if (0 == i)
+                        {
+                            Vector3 movePerIMass = contact.contactNormal * (contact.penetration / totalInverseMass);
+                            //contact.particle[0].position += movePerIMass;
+                            contact.particle[1].position -= movePerIMass * contact.particle[1].getInverseMass();
+                        }
+                        else
+                        {
+                            Vector3 movePerIMass = contact.contactNormal * (contact.penetration / totalInverseMass);
+                            //Vector3 movePerIMass = contact.contactNormal * (contact.penetration * _totalMass);
+                            contact.particle[0].position += movePerIMass * contact.particle[0].getInverseMass();
+                            contact.particle[1].position -= movePerIMass * contact.particle[1].getInverseMass();
+                        }
+                    }
+
+
+
+                    //contact.particle[1].position -= contact.contactNormal * contact.penetration;
+                    //DebugWide.LogBlue(i + "  " + contact.particle[1].position + "  " + contact.contactNormal + "  " + contact.penetration);
+                }
+            }
+            //===============================
+            // Create the ground plane data
+            CollisionPlane planeZ = new CollisionPlane();
+            planeZ.direction = new Vector3(0, 0, 1); //정규화된 값이어야 함 
+            planeZ.offset = 0;
+            planeZ.mass = 1;
+            planeZ.elasticity = 1f;
+
+            for (int i = 0; i < BALL_COUNT; i++)
+            {
+                if (CollisionDetector.sphereAndHalfSpace(balls[i], planeZ, out contact))
+                {
+
+                    balls[i].position += contact.contactNormal * contact.penetration; //겹침 계산 
+                    HandleCollision(ref balls[i], ref planeZ, TIME_D);
+
+                }
+            }
+        }
+
+        void Update4()
+        {
+            balls[3].mass = Mathf.Max(1, End_Mass);
+
+            //철퇴 회전시키기 
+            if (Input.GetKey(KeyCode.A))
+            {
+                //자동회전 
+                _dir = Quaternion.AngleAxis(Rot_Angle, Vector3.up) * _dir;
+
+                //직접조종
+                //_dir = _tr_dir.position - _tr_center.position;
+                //_dir.Normalize();
+
+                //balls[0].position = _tr_center.position + _dir * 5f;
+
+                //충돌효과가 난것처럼 따라한다 
+                Vector3 v = _dir * Rot_Force;
+                Vector3 a = v / TIME_D;
+                for (int i = 1; i < BALL_COUNT; i++)
+                {
+                    balls[i].linearVelocity = v;
+                    balls[i].forces = a * balls[i].mass; //힘을 적용하면 철퇴가 자연스럽게 가속하는 모습을 볼 수 있다
+
+                }
+            }
+            balls[0].position = _tr_center.position + _dir * 3f;
+
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Init();
+            }
+
+            for (int i = 0; i < BALL_COUNT; i++)
+            {
+                balls[i].integrate(TIME_D);
+            }
+
+
+            Contact contact;
+            for (int i = 0; i < CABLE_COUNT; i++)
+            {
+                if (cables[i].GetContact(out contact))
+                {
+
+                    Vector3 relativeVelocity = contact.particle[0].linearVelocity - contact.particle[1].linearVelocity;
+                    float separatingVelocity = Vector3.Dot(relativeVelocity, contact.contactNormal);
+
+
+                    float totalInverseMass = contact.particle[0].getInverseMass() + contact.particle[1].getInverseMass();
+                    if (0 == i)
+                        totalInverseMass = contact.particle[1].getInverseMass();
+                        
+                    float newSepVelocity = -separatingVelocity * contact.restitution;
+
+                    float deltaVelocity = newSepVelocity - separatingVelocity;
+                    float impulse = deltaVelocity / totalInverseMass;
+                    //float impulse = deltaVelocity * _totalMass;
+
                     Vector3 impulsePerIMass = contact.contactNormal * impulse;
 
                     contact.particle[1].linearVelocity -= impulsePerIMass * contact.particle[1].getInverseMass();
 
-
-
-                    contact.particle[1].position -= contact.contactNormal * contact.penetration;
+                    contact.particle[1].position -= contact.contactNormal * contact.penetration; //* contact.particle[1].getInverseMass();
                     //DebugWide.LogBlue(i + "  " + contact.particle[1].position + "  " + contact.contactNormal + "  " + contact.penetration);
                 }
             }
@@ -294,7 +354,7 @@ namespace Test_BallJoint
             if (Input.GetKey(KeyCode.A))
             {
                 //자동회전 
-                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
+                _dir = Quaternion.AngleAxis(Rot_Angle, Vector3.up) * _dir;
 
                 //직접조종
                 //_dir = _tr_dir.position - _tr_center.position;
@@ -303,7 +363,7 @@ namespace Test_BallJoint
                 //balls[0].position = _tr_center.position + _dir * 5f;
 
                 //충돌효과가 난것처럼 따라한다 
-                Vector3 v = _dir * _force;
+                Vector3 v = _dir * Rot_Force;
                 Vector3 a = v / TIME_D;
                 for (int i = 1; i < BALL_COUNT; i++)
                 {
@@ -480,7 +540,7 @@ namespace Test_BallJoint
             if (Input.GetKey(KeyCode.A))
             {
                 //자동회전 
-                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
+                _dir = Quaternion.AngleAxis(Rot_Angle, Vector3.up) * _dir;
 
                 //직접조종
                 //_dir = _tr_dir.position - _tr_center.position;
@@ -489,7 +549,7 @@ namespace Test_BallJoint
                 balls[0].position = _tr_center.position + _dir * 5f;
 
                 //충돌효과가 난것처럼 따라한다 
-                Vector3 v = _dir * _force;
+                Vector3 v = _dir * Rot_Force;
                 Vector3 a = v / TIME_D;
                 for (int i = 1; i < BALL_COUNT; i++)
                 {
@@ -527,7 +587,7 @@ namespace Test_BallJoint
             if (Input.GetKey(KeyCode.A))
             {
                 //자동회전 
-                _dir = Quaternion.AngleAxis(_angle, Vector3.up) * _dir;
+                _dir = Quaternion.AngleAxis(Rot_Angle, Vector3.up) * _dir;
 
                 //직접조종
                 //_dir = _tr_dir.position - _tr_center.position;
@@ -536,7 +596,7 @@ namespace Test_BallJoint
                 //balls[0].position = _tr_center.position + _dir * 5f;
 
                 //충돌효과가 난것처럼 따라한다 
-                Vector3 v = _dir * _force;
+                Vector3 v = _dir * Rot_Force;
                 Vector3 a = v / TIME_D;
                 for (int i = 1; i < BALL_COUNT; i++)
                 {
@@ -735,7 +795,7 @@ namespace Test_BallJoint
 
             // Find the average coefficent of restitution.
             float averageE = (pm0.elasticity + plane.elasticity) / 2f;
-            averageE = Restitution; //임시 
+            averageE = Ground_Restitution; //임시 
 
             float finalVelocity1 =
             (((pm0.mass -
@@ -749,7 +809,7 @@ namespace Test_BallJoint
                 (finalVelocity1 - velocity1) * unitNormal +
                 pm0.linearVelocity);
 
-            pm0.linearVelocity *= Friction;
+            pm0.linearVelocity *= Ground_Friction;
 
 
             //공이 벽에 부딪혔을 때 빨라지는 효과??
@@ -1183,7 +1243,7 @@ namespace Test_BallJoint
             // Impose drag.
             linearVelocity *= (float)Math.Pow(damping, changeInTime);
 
-            linearVelocity = VOp.Truncate(linearVelocity, _MAX_VELO);
+            //linearVelocity = VOp.Truncate(linearVelocity, _MAX_VELO);
 
             // Update linear position.
             position += linearVelocity * changeInTime;
