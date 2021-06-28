@@ -1828,6 +1828,15 @@ namespace UtilGS9
             return true;
         }
 
+        static public bool IsZero(float value , float epsilon)
+        {
+            if (0 > value) value *= -1f;
+            if (epsilon < value)
+                return false;
+
+            return true;
+        }
+
         static public bool IsZero(Vector2 v2)
         {
             float value = v2.x * v2.x + v2.y * v2.y; //내적의 값이 0에 가까운지 검사 
