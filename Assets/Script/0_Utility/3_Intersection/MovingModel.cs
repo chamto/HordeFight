@@ -105,7 +105,8 @@ namespace UtilGS9
 
         }//end class
 
-        public MovingSegement3 _movingSegment = new MovingSegement3();
+        //public MovingSegement3 _movingSegment = new MovingSegement3();
+        public SegementCCD _movingSegment = new SegementCCD();
         public Frame _frame_A = new Frame();
         public Frame _frame_B = new Frame();
 
@@ -136,7 +137,7 @@ namespace UtilGS9
             __init = true;
             _frame_A = frame_A;
             _frame_B = frame_B;
-            Init_Prev_AB_Order();
+            //Init_Prev_AB_Order();
 
             _allowFixed_a = allowFixed_a;
             _allowFixed_b = allowFixed_b;
@@ -155,25 +156,25 @@ namespace UtilGS9
             _frame_B.Init(frame_B);
 
 
-            Init_Prev_AB_Order();
+            //Init_Prev_AB_Order();
 
         }
 
-        public void Init_Prev_AB_Order()
-        {
-            Vector3 pt_start, pt_end;
-            __prev_A_B_order = new Vector3[_frame_A._seg_count, _frame_B._seg_count];
-            for (int a = 0; a < _frame_A._seg_count; a++)
-            {
-                for (int b = 0; b < _frame_B._seg_count; b++)
-                {
-                    LineSegment3.ClosestPoints(out pt_start, out pt_end,
-                                               _frame_A._info[a].ToSegment(), _frame_B._info[b].ToSegment());
-                    _movingSegment.__prev_A_B_order = pt_end - pt_start;
-                    __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
-                }
-            }
-        }
+        //public void Init_Prev_AB_Order()
+        //{
+        //    Vector3 pt_start, pt_end;
+        //    __prev_A_B_order = new Vector3[_frame_A._seg_count, _frame_B._seg_count];
+        //    for (int a = 0; a < _frame_A._seg_count; a++)
+        //    {
+        //        for (int b = 0; b < _frame_B._seg_count; b++)
+        //        {
+        //            LineSegment3.ClosestPoints(out pt_start, out pt_end,
+        //                                       _frame_A._info[a].ToSegment(), _frame_B._info[b].ToSegment());
+        //            _movingSegment.__prev_A_B_order = pt_end - pt_start;
+        //            __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
+        //        }
+        //    }
+        //}
 
         //private Quaternion __prev_A_rot = Quaternion.identity;
         //private Quaternion __prev_B_rot = Quaternion.identity;
@@ -205,8 +206,8 @@ namespace UtilGS9
             bool contact = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b, _frame_A._tr_frame, _frame_B._tr_frame);
             if (true == contact)
             {
-                _frame_A._tr_frame.rotation = _movingSegment.__localRota_A * _frame_A._tr_frame.rotation; //실제적용 
-                _frame_B._tr_frame.rotation = _movingSegment.__localRota_B * _frame_B._tr_frame.rotation;
+                _frame_A._tr_frame.rotation = _movingSegment._localRota_A * _frame_A._tr_frame.rotation; //실제적용 
+                _frame_B._tr_frame.rotation = _movingSegment._localRota_B * _frame_B._tr_frame.rotation;
 
                 //_frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * __prev_A_rot; //실제적용 
                 //_frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * __prev_B_rot;
@@ -218,7 +219,7 @@ namespace UtilGS9
 
             _frame_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
             _frame_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
-            __prev_A_B_order[idx, idx] = _movingSegment.__prev_A_B_order;
+            //__prev_A_B_order[idx, idx] = _movingSegment.__prev_A_B_order;
             //_frame_sword_A.Prev_Update();
             //_frame_sword_B.Prev_Update();
         }
@@ -259,7 +260,7 @@ namespace UtilGS9
                     prev_B = _frame_B._info[b].prev_seg;
                     cur_B = _frame_B._info[b].cur_seg;
 
-                    _movingSegment.__prev_A_B_order = __prev_A_B_order[a, b]; //*** 이전순서 복원 ***
+                    //_movingSegment.__prev_A_B_order = __prev_A_B_order[a, b]; //*** 이전순서 복원 ***
 
                     _movingSegment._radius_A = _frame_A._info[a].radius;
                     _movingSegment._radius_B = _frame_B._info[b].radius;
@@ -271,14 +272,14 @@ namespace UtilGS9
                     recalc = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b,
                                                                   _frame_A._tr_frame, _frame_B._tr_frame);
 
-                    if(0 < _movingSegment.__test_value)
-                    {
-                        DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
-                    }
+                    //if(0 < _movingSegment.__test_value)
+                    //{
+                    //    DebugWide.LogBlue("  a: " + a + "  b: " + b + " ------- ");
+                    //}
 
                     //_frame_A._info[a].prev_seg = _movingSegment._prev_seg_A;
                     //_frame_B._info[b].prev_seg = _movingSegment._prev_seg_B;
-                    __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
+                    //__prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                     //=============
 
                     if (recalc)
@@ -290,7 +291,7 @@ namespace UtilGS9
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
                         float new_len = _movingSegment.__cur_A_B_order.sqrMagnitude;
-                        if (true == _movingSegment.__intr_A_B_inside)
+                        if (true == _movingSegment._intr_A_B_inside)
                         {
                             //반지름의 합 내에서 발생
                             //선분 vs 선분  :  최소거리 찾기 
@@ -300,10 +301,10 @@ namespace UtilGS9
                             {
                                 min_len = new_len;
 
-                                __min_A_rot = _movingSegment.__localRota_A;
-                                __min_B_rot = _movingSegment.__localRota_B;
-                                __dir_move_A = _movingSegment.__dir_move_A;
-                                __dir_move_B = _movingSegment.__dir_move_B;
+                                __min_A_rot = _movingSegment._localRota_A;
+                                __min_B_rot = _movingSegment._localRota_B;
+                                __dir_move_A = _movingSegment._dir_move_A;
+                                __dir_move_B = _movingSegment._dir_move_B;
 
                                 __find_seg_A = _movingSegment._cur_seg_A;
                                 __find_seg_B = _movingSegment._cur_seg_B;
@@ -319,10 +320,10 @@ namespace UtilGS9
                             {
                                 max_len = new_len;
 
-                                __min_A_rot = _movingSegment.__localRota_A;
-                                __min_B_rot = _movingSegment.__localRota_B;
-                                __dir_move_A = _movingSegment.__dir_move_A;
-                                __dir_move_B = _movingSegment.__dir_move_B;
+                                __min_A_rot = _movingSegment._localRota_A;
+                                __min_B_rot = _movingSegment._localRota_B;
+                                __dir_move_A = _movingSegment._dir_move_A;
+                                __dir_move_B = _movingSegment._dir_move_B;
 
                                 __find_seg_A = _movingSegment._cur_seg_A;
                                 __find_seg_B = _movingSegment._cur_seg_B;
@@ -341,7 +342,7 @@ namespace UtilGS9
             //적용 
             if (_update)
             {
-                DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
+                //DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
                 if(true == _allowFixed_a)
                 {
                     _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     

@@ -1160,7 +1160,7 @@ namespace UtilGS9
 
             //DebugWide.LogBlue(__isSeg_A + "  " + __isSeg_B);
 
-            //선분상태를 유지 한채 이동한 경우 선분으로 안나옴
+            //선분상태를 유지한 채 이동한 경우 선분으로 안나옴
             //__isSeg_B = Misc.IsZero(__dir_B);
             //__isSeg_A = Misc.IsZero(__dir_A);
 
