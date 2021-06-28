@@ -34,7 +34,7 @@ namespace HordeFight
 
             DebugWide.DrawQ_All_AfterTime(1);
 
-            //_movingModel.Draw();
+            _movingModel.Draw();
             //_frame_ch_0.Draw(Color.red);
         }
 
@@ -197,6 +197,8 @@ namespace HordeFight
 
                 //_champ_0.SetPos(_movingModel._frame_A._tr_frame.position);
                 //_champ_1.SetPos(_movingModel._frame_B._tr_frame.position);
+
+                _test.position = new Vector3(_test.position.x, 0 ,_test.position.z); //y값이 생기는 경우가 있어 예외처리 함 
             }
 
             //==================================================

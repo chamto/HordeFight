@@ -580,15 +580,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68a1b43f1c3d74227a00377c8d75e039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ref_being: {fileID: 0}
-  _ref_movement: {fileID: 0}
+  _being: {fileID: 0}
+  _move: {fileID: 0}
   _light_dir: {x: 0, y: 0, z: 0}
   _groundY: {x: 0, y: 0, z: 0}
   _sight_dir: {x: 0, y: 0, z: 0}
   _upperBody_dir: {x: 0, y: 0, z: 0}
   _foot_dir: {x: 0, y: 0, z: 0}
-  _tr_hand_left: {fileID: 0}
-  _tr_hand_right: {fileID: 0}
   _hs_objectDir: {fileID: 0}
   _hs_standard: {fileID: 0}
   _hs_ani_start: {fileID: 0}
@@ -604,7 +602,7 @@ MonoBehaviour:
   _twoHand_max_length: 0.8
   _part_control: 1
   _eHandStandard: 0
-  _eStance_hand_left: 2
+  _eStance_hand_left: 1
   _eStance_hand_right: 2
   _equipment_handLeft: 3
   _equipment_handRight: 0
