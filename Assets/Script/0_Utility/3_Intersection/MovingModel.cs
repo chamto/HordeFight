@@ -290,7 +290,7 @@ namespace UtilGS9
 
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
-                        float new_len = _movingSegment.__cur_A_B_order.sqrMagnitude;
+                        float new_len = _movingSegment._cur_A_B_order.sqrMagnitude;
                         if (true == _movingSegment._intr_A_B_inside)
                         {
                             //반지름의 합 내에서 발생
