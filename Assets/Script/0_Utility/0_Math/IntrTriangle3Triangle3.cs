@@ -23,16 +23,31 @@ namespace UtilGS9
     {
         public Vector3 _normal;
         public float _offset; //원점으로 부터 평면이 떨어져 있는 거리 
+        public bool _isPlane; //평면인지 아닌지 상태를 나타낸다 
 
         public IntrPlane(Vector3 p0, Vector3 p1, Vector3 p2)
         {
+
             Vector3 edge1 = p1 - p0;
             Vector3 edge2 = p2 - p0;
             _normal = Vector3.Cross(edge1, edge2);
+
+            //평면인지 검사한다. 선분이나 점을 걸러내기 위함 
+            _isPlane = true;
+            const float EPSILON = 0.0000001f; //적당히 작은값을 지정한다. float.epsilon 은 값이 너무 작아서 걸러내지 못함 
+            if (Misc.IsZero(_normal, EPSILON))
+                _isPlane = false;
+
             _normal = UtilGS9.VOp.Normalize(_normal);
 
             _offset = Vector3.Dot(_normal, p0);
 
+            //DebugWide.LogBlue("plan  " + _isPlane + "  "+ p0 + " " + p1 + " " + p2 + " " + Vector3.Cross(edge1, edge2).sqrMagnitude);
+
+            //if (_normal.sqrMagnitude < float.Epsilon)
+            //{
+            //    DebugWide.LogRed("평면이 아님 !!!"); 
+            //}
             //이 처리가 있으면 [seg0 vs tri1] 상황에서 교점을 찾지 못하는 문제가 발생한다. 애션셜수학 코드의 평면코드는 안쓰는것으로 함 
             //if (_normal.sqrMagnitude < float.Epsilon)
             //{   //평면의 방향을 계산 할 수 없을때 
@@ -735,6 +750,12 @@ namespace UtilGS9
             // Get the plane of triangle0.
             IntrPlane plane0 = new IntrPlane(tri0.V[0], tri0.V[1], tri0.V[2]);
 
+            if (false == plane0._isPlane)
+            {
+                //tri0이 삼각형이 아닌 선분이나,점으로 들어오면 정상적인 처리를 하지 못한다 
+                //선분이나 점은 처리하지 않는다 
+                return false; 
+            }
             // Compute the signed distances of triangle1 vertices to plane0.  Use
             // an epsilon-thick plane test.
             int pos1, neg1, zero1;
@@ -857,11 +878,20 @@ namespace UtilGS9
                         intr1 = tri1.V[i] + t * (tri1.V[iP] - tri1.V[i]);
 
                         //DebugWide.DrawCircle(intr0,0.05f,Color.green);
-                        //DebugWide.LogBlue("3---  di:" + dist1[i] + "   dm:" + dist1[iM] +  "   dp:" + dist1[iP] + "   intr0:" + intr0 + "    intr1:" + intr1); //chamto test
-
+                        //DebugWide.LogBlue("3---  di:" + _dist1[i] + "   dm:" + _dist1[iM] +  "   dp:" + _dist1[iP] + "   intr0:" + intr0 + "    intr1:" + intr1); //chamto test
+                        //DebugWide.AddDrawQ_Circle(intr0, 0.01f, Color.red);
+                        //DebugWide.AddDrawQ_Circle(intr1, 0.01f, Color.red);
                         //intr0 과 intr1 이 같다면 점과 교차하는 처리를 한다 
                         if (Misc.IsZero(intr0 - intr1))
-                            return ContainsPoint(tri0, intr0);
+                        {
+                            //DebugWide.LogBlue("3_1---");
+                            //return ContainsPoint(tri0, intr0);
+
+                            bool result = ContainsPoint(tri0, intr0);
+                            //DebugWide.LogBlue("3---  r:"+ result + "  di:" + _dist1[i] + "   dm:" + _dist1[iM] + "   dp:" + _dist1[iP] + "   intr0:" + intr0 + "    intr1:" + intr1); //chamto test
+                            return result;
+                        }
+
 
                         return IntersectsSegment(plane0, tri0, intr0, intr1);
                     }
@@ -886,7 +916,7 @@ namespace UtilGS9
                             //t = 0;
                         intr0 = tri1.V[iM] + t * (tri1.V[iP] - tri1.V[iM]);
 
-                        //DebugWide.LogBlue("4---"); //chamto test
+                        DebugWide.LogBlue("4---"); //chamto test
                         //DebugWide.LogBlue("4---" + tri1.V[i] + "  " + intr0);
                         return IntersectsSegment(plane0, tri0, tri1.V[i], intr0);
                     }
@@ -1196,6 +1226,7 @@ namespace UtilGS9
             return true;
         }//end func
 
+        //tri 이 삼각형이 아닌 선분형태로 들어왔을 경우 처리해주지 못한다. 점도 처리 못할것으로 예상 
         public bool ContainsPoint(Triangle3 tri, Vector3 point)
         {
             Vector3 v0 = tri.V[1] - tri.V[0];
@@ -1207,11 +1238,12 @@ namespace UtilGS9
                                           //교점이 선분위에 있으면 외적의 값이 0에 가까워 진다 (같은 방향의 벡터 외적 , sin0 = 0) 
                                           //외적값이 0에 가까운지로 교점이 선분위에 있는것을 검사한다 
                                           //교점이 선분위에 있으면 내적테스트와 상관없이 통과시킨다 (wTest.sqrMagnitude <= F_Epsilon)
-
+            //F_Epsilon = float.Epsilon;
             //외적의 180도 기점으로 방향이 바뀌는 점을 이용 , 벡터v0이 나누는 공간에서 어느공간에 점이 있는지 테스트하게 된다  
             Vector3 wTest = Vector3.Cross(v0, (point - tri.V[0]));
             //DebugWide.DrawLine(P0, P0 + wTest, Color.yellow);
             //DebugWide.LogBlue("0 -> "+Vector3.Dot(wTest, n));
+            //DebugWide.LogBlue("0 " + wTest.sqrMagnitude);
             if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
@@ -1220,6 +1252,7 @@ namespace UtilGS9
             wTest = Vector3.Cross(v1, (point - tri.V[1]));
             //DebugWide.DrawLine(P1, P1 + wTest, Color.white);
             //DebugWide.LogBlue("1 -> " + Vector3.Dot(wTest, n) + "    wT:" + wTest + "  " + wTest.sqrMagnitude);
+            //DebugWide.LogBlue("1 "+ wTest.sqrMagnitude);
             if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
@@ -1229,10 +1262,17 @@ namespace UtilGS9
             wTest = Vector3.Cross(v2, (point - tri.V[2]));
             //DebugWide.DrawLine(P2, P2 + wTest, Color.cyan);
             //DebugWide.LogBlue("2 -> " + Vector3.Dot(wTest, n));
+            //DebugWide.LogBlue("2 "+wTest.sqrMagnitude);
             if (Vector3.Dot(wTest, n) < 0.0f && wTest.sqrMagnitude > F_Epsilon)
             {
                 return false;
             }
+
+            //DebugWide.LogRed("333!! ");
+
+            //DebugWide.AddDrawQ_Line(tri.V[1], tri.V[0], Color.red);
+            //DebugWide.AddDrawQ_Line(tri.V[1], tri.V[2], Color.red);
+            //DebugWide.AddDrawQ_Line(tri.V[0], tri.V[2], Color.red);
 
             //------ 포함 !! ------  
             mIntersectionType = eIntersectionType.POINT;
