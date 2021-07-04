@@ -496,6 +496,10 @@ namespace UtilGS9
                 }
 
             }
+            //else
+            //{
+            //    Collision_Test3(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
+            //}
 
 
             return result_contact;
@@ -598,6 +602,92 @@ namespace UtilGS9
         public void ResolveInterpenetration()
         { }
 
+        public void Collision_Test3(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
+        {
+            //DebugWide.LogGreen("!! c_n2 현재선분검사  " + __isSeg_A + "  " + __isSeg_B + "  " + __dir_A + "  " + __dir_B);
+
+            LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
+
+            //------
+            LineSegment3.ClosestPoints(out _pt_close_A, out _pt_close_B, _cur_seg_A, _cur_seg_B);
+            _cur_A_B_order = _pt_close_B - _pt_close_A;
+
+            //float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
+            Vector3 dir_drop = VOp.Normalize(_cur_A_B_order);
+            float rad_AB = _radius_A + _radius_B;
+
+            _intr_A_B_inside = false;
+            if (rad_AB * rad_AB > (_pt_close_A - _pt_close_B).sqrMagnitude)
+            {
+                _intr_A_B_inside = true;
+            }
+            else
+            {
+                return; 
+            }
+            //------
+            Vector3 maxV = _pt_close_A;
+            Vector3 minV = _pt_close_B;
+            Vector3 meetPt = minV + (maxV - minV) * rateAtoB;
+            Vector3 lastPt1 = meetPt;
+            Vector3 lastPt2 = meetPt;
+
+            float dropping = (_radius_A + _radius_B) * (1f - rateAtoB);
+            if (true == allowFixed_a)
+            {
+
+                lastPt1 += -dir_drop * dropping; //dropping 처리 
+                _meetPt_A = lastPt1;
+
+                //현재 선분에 회전적용
+                Vector3 firstPt = CalcTGuard_FirstPt2(lastPt1, root_0, _cur_seg_A);
+                RotateTGuard_FirstToLast(firstPt, lastPt1, root_0.position, _cur_seg_A, out newSegA, out _localRota_A);
+
+            }
+            else
+            {
+
+                lastPt1 += -dir_drop * dropping;
+                _dir_move_A = lastPt1 - maxV;
+                _meetPt_A = lastPt1;
+
+                newSegA = LineSegment3.Move(_cur_seg_A, _dir_move_A);
+
+            }
+
+            dropping = (_radius_A + _radius_B) * (rateAtoB);
+            if (true == allowFixed_b)
+            {
+
+                lastPt2 += dir_drop * dropping; //dropping 처리
+                _meetPt_B = lastPt2;
+
+                //현재 선분에 회전적용
+                Vector3 firstPt = CalcTGuard_FirstPt2(lastPt2, root_1, _cur_seg_B);
+                RotateTGuard_FirstToLast(firstPt, lastPt2, root_1.position, _cur_seg_B, out newSegB, out _localRota_B);
+
+            }
+            else
+            {
+
+                //pt_close_A
+                lastPt2 += dir_drop * dropping;
+                _dir_move_B = lastPt2 - minV;
+                _meetPt_B = lastPt2;
+
+                newSegB = LineSegment3.Move(_cur_seg_B, _dir_move_B);
+
+            }
+
+            //------
+            _cur_seg_A = newSegA;
+            _cur_seg_B = newSegB;
+            _prev_seg_A = newSegA;
+            _prev_seg_B = newSegB;
+
+
+        }
+
         public void Collision_Normal2(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
             //DebugWide.LogGreen("!! c_n2 현재선분검사  " + __isSeg_A + "  " + __isSeg_B + "  " + __dir_A + "  " + __dir_B);
@@ -605,7 +695,7 @@ namespace UtilGS9
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
 
-            float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
+            //float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
             Vector3 dir_drop = VOp.Normalize(_cur_A_B_order);
 
             //------
@@ -817,12 +907,14 @@ namespace UtilGS9
                                 //B가 A를 민다
                                 if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
                                 {
-                                    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_B.origin, _cur_seg_B.last));
+                                    //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                                 }
                                 //A가 B를 민다
                                 else
                                 {
-                                    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_A.origin, _cur_seg_A.last));
+                                    //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
 
                                     //swap
                                     none = minV;
@@ -861,8 +953,10 @@ namespace UtilGS9
                         //사각꼴이 서로 방향이 다른 경우 
                         else
                         {
-                            Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
-                            Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                            LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_A.origin, _cur_seg_A.last));
+                            LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), new LineSegment3(_cur_seg_B.origin, _cur_seg_B.last));
+                            //Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                            //Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         }
                     }
 
