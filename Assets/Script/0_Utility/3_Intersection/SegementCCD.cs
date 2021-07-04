@@ -860,7 +860,9 @@ namespace UtilGS9
                         }
                         //사각꼴이 서로 방향이 다른 경우 
                         else
-                        { 
+                        {
+                            Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                            Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         }
                     }
 
