@@ -792,7 +792,7 @@ namespace UtilGS9
                     GetMinMax_ContactPt(_cur_seg_A.origin, out ori, out last, 4);
 
                     //순서를 맞춰준다 
-                    if(0 > Vector3.Dot(_cur_seg_A.direction, _cur_seg_B.direction))
+                    if(0 > Vector3.Dot(_prev_seg_A.direction, _prev_seg_B.direction))
                     {
                         //swap
                         none = ori;
@@ -833,7 +833,7 @@ namespace UtilGS9
                     GetMinMax_ContactPt(_cur_seg_B.origin, out ori, out last, 4);
 
                     //순서를 맞춰준다 
-                    if (0 > Vector3.Dot(_cur_seg_A.direction, _cur_seg_B.direction))
+                    if (0 > Vector3.Dot(_prev_seg_B .direction, _prev_seg_B.direction))
                     {
                         //swap
                         none = ori;
