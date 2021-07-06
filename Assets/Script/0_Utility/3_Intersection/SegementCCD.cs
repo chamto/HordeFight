@@ -819,7 +819,7 @@ namespace UtilGS9
                         maxV = last;
                     }
 
-                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_B * 10000), new LineSegment3(_cur_seg_B.origin, _cur_seg_B.last));
+                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_B * 10000), _cur_seg_B);
 
 
                     result_contact = true;
@@ -860,7 +860,7 @@ namespace UtilGS9
                         maxV = last;
                     }
 
-                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_A * 10000), new LineSegment3(_cur_seg_A.origin, _cur_seg_A.last));
+                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_A * 10000), _cur_seg_A);
 
                     //swap
                     none = minV;
@@ -986,13 +986,13 @@ namespace UtilGS9
                                 //B가 A를 민다
                                 if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
                                 {
-                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_B.origin, _cur_seg_B.last));
+                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_B);
                                     //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                                 }
                                 //A가 B를 민다
                                 else
                                 {
-                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_A.origin, _cur_seg_A.last));
+                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
                                     //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
 
                                     //swap
@@ -1032,8 +1032,8 @@ namespace UtilGS9
                         //사각꼴이 서로 방향이 다른 경우 
                         else
                         {
-                            LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), new LineSegment3(_cur_seg_A.origin, _cur_seg_A.last));
-                            LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), new LineSegment3(_cur_seg_B.origin, _cur_seg_B.last));
+                            LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
+                            LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), _cur_seg_B);
                             //Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                             //Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                         }
