@@ -828,12 +828,12 @@ namespace UtilGS9
                 else if (false == __isSeg_A && true == __isSeg_B)
                 {
                     //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
-                    result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out minV, out maxV, 4);
+                    //result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out minV, out maxV, 4);
 
                     GetMinMax_ContactPt(_cur_seg_B.origin, out ori, out last, 4);
 
                     //순서를 맞춰준다 
-                    if (0 > Vector3.Dot(_prev_seg_B .direction, _prev_seg_B.direction))
+                    if (0 > Vector3.Dot(_prev_seg_A .direction, _prev_seg_B.direction))
                     {
                         //swap
                         none = ori;
@@ -876,7 +876,11 @@ namespace UtilGS9
                     //  잘못된 정보에 의해 접촉한것으로 계산하게 되며 초기값에 의해 방향성을 가지게 되어 
                     //  dropping 에서 잘못된 방향으로 무한히 떨어뜨리게 된다.
                     //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
-                    result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out minV, out maxV, 6);
+
+                    GetMinMax_ContactPt(_cur_seg_A.origin, out ori, out none, 6);
+                    GetMinMax_ContactPt(_cur_seg_A.origin, out none, out last, 6);
+
+                    result_contact = true;
 
                 }
                 meetPt = minV + (maxV - minV) * rateAtoB;
