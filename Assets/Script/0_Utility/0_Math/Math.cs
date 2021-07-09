@@ -62,8 +62,17 @@ namespace UtilGS9
 
             return l.origin + (proj/vsq) * l.direction;
 
-        } 
+        }
 
+        static public Vector3 ClosestPoint(Vector3 origin, Vector3 direction, Vector3 point)
+        {
+            Vector3 w = point - origin;
+            float vsq = Vector3.Dot(direction, direction);
+            float proj = Vector3.Dot(w, direction);
+
+            return origin + (proj / vsq) * direction;
+
+        }
     }
 
     public struct Ray3

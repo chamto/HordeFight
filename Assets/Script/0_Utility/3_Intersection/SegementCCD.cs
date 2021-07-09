@@ -144,7 +144,7 @@ namespace UtilGS9
                 //DebugWide.PrintText(_intr_1_3.mPoint[i], Color.green , (comparisonSt - _intr_1_3.mPoint[i]).magnitude + "");
 
 
-                //교점이 점 , 선분일때 처리 
+                //교점이 있을때 
                 if (i < _intr_0_2.mQuantity)
                 {
                     SortMinMax(_intr_0_2.mPoint[i], comparisonSt, ref minV, ref maxV, ref minD, ref maxD);
@@ -180,6 +180,122 @@ namespace UtilGS9
             //_intr_1_3.Draw(Color.black);
 
             return result;
+        }
+
+        //선분과 접촉점의 최소값 첫번쨰와 두번째값을 찾는다 
+        public void SortMin0Min1(Vector3 ctp, LineSegment3 line, 
+                                         ref Vector3 min0, ref Vector3 min1, ref float len0, ref float len1)
+        {
+
+            Vector3 pt = Line3.ClosestPoint(line.origin, line.direction, ctp);
+            float sqrDis = (pt - ctp).sqrMagnitude;
+            if (len0 > sqrDis)
+            {
+                //min1로 값을 옮긴다 
+                if (len1 > len0)
+                {
+                    len1 = len0;
+                    min1 = min0;
+                }
+
+                len0 = sqrDis;
+                min0 = ctp;
+            }
+            else
+            {
+                if (len1 > sqrDis)
+                {
+                    len1 = sqrDis;
+                    min1 = ctp;
+                }
+            }
+        }
+
+        //의도한데로 작동하지 않음 - 사용하지 말것 , 내부 개별알고리즘음은 맞음 
+        //충돌점중 선분과 가까운 점을 찾는다 
+        public bool GetMinMax_Tetragon(LineSegment3 line, out Vector3 min, out Vector3 max)
+        {
+            bool contact = false;
+            Vector3[] arr = new Vector3[8];
+            float[] lens = new float[8];
+            for (int i = 0; i < 8; i++) lens[i] = 2000000; //SortMin0Min1 의 정렬을 하기 위해 최대값으로 초기화가 되어야함 
+
+            min = ConstV.v3_zero;
+            max = ConstV.v3_zero;
+
+
+            const int COUNT = 6; //최대 교점 검사
+            for (int i = 0; i < COUNT; i++)
+            {
+                //교점이 있을때 
+                if (i < _intr_0_2.mQuantity)
+                {
+                    SortMin0Min1(_intr_0_2.mPoint[i], line, ref arr[0], ref arr[1], ref lens[0], ref lens[1]);
+                    contact = true;
+                }
+                if (i < _intr_0_3.mQuantity)
+                {
+                    SortMin0Min1(_intr_0_3.mPoint[i], line, ref arr[2], ref arr[3], ref lens[2], ref lens[3]);
+                    contact = true;
+                }
+                if (i < _intr_1_2.mQuantity)
+                {
+                    SortMin0Min1(_intr_1_2.mPoint[i], line, ref arr[4], ref arr[5], ref lens[4], ref lens[5]);
+                    contact = true;
+                }
+                if (i < _intr_1_3.mQuantity)
+                {
+                    SortMin0Min1(_intr_1_3.mPoint[i], line, ref arr[6], ref arr[7], ref lens[6], ref lens[7]);
+                    contact = true;
+                }
+            }
+
+            if (false == contact) return false;
+
+            //선택정렬을 한다 
+            Vector3 vTemp;
+            float fTemp;
+            for (int a = 0; a < 8; a++)
+            {
+                for (int i = a+1; i < 8; i++)
+                {
+                    if (lens[a] > lens[i])
+                    {
+                        vTemp = arr[a];
+                        arr[a] = arr[i];
+                        arr[i] = vTemp;
+
+                        fTemp = lens[a];
+                        lens[a] = lens[i];
+                        lens[i] = fTemp;
+                    }
+                }
+            }
+
+
+            //선분위에서 최소값과 최대값을 찾는다 
+            float sqrDis, minDis = 1000000, maxDis = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                DebugWide.DrawCircle(arr[i], 0.008f + 0.005f * i, Color.green);
+                DebugWide.LogBlue(i + "  " + lens[i]);
+                if (lens[i] > 1000000) continue; //교점없는 점은 거른다 
+
+                sqrDis = (line.origin - arr[i]).sqrMagnitude;
+                if(minDis > sqrDis)
+                {
+                    minDis = sqrDis;
+                    min = arr[i]; 
+                }
+
+                if (maxDis <= sqrDis)
+                {
+                    maxDis = sqrDis;
+                    max = arr[i];
+                }
+            }
+
+            return true; 
         }
 
         //선분과 점 처리 전용함수 
@@ -423,6 +539,7 @@ namespace UtilGS9
         }
 
         Vector3 _pt_close_A, _pt_close_B;
+        Vector3 _pt_prev_A, _pt_prev_B;
         public bool _intr_A_B_inside = false;
         public bool Find_TGuard_vs_TGuard(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
@@ -439,8 +556,8 @@ namespace UtilGS9
             _dir_move_A = ConstV.v3_zero;
             _dir_move_B = ConstV.v3_zero;
 
-            LineSegment3.ClosestPoints(out _pt_close_A, out _pt_close_B, _prev_seg_A, _prev_seg_B);
-            _prev_A_B_order = _pt_close_B - _pt_close_A;
+            LineSegment3.ClosestPoints(out _pt_prev_A, out _pt_prev_B, _prev_seg_A, _prev_seg_B);
+            _prev_A_B_order = _pt_prev_B - _pt_prev_A;
             LineSegment3.ClosestPoints(out _pt_close_A, out _pt_close_B, _cur_seg_A, _cur_seg_B);
             _cur_A_B_order = _pt_close_B - _pt_close_A;
 
@@ -451,30 +568,6 @@ namespace UtilGS9
             {
                 _intr_A_B_inside = true;
 
-                //캡슐과 캡슐이 겹치는 길이에 있으며,
-                //서로 통과하지 않고 반지름 길이안으로 닿았을때 
-
-                //if (0 < Vector3.Dot(dir_A_B, __dir_A) && 0 > Vector3.Dot(dir_A_B, __dir_B))
-                //{
-                //    _intr_A_B_inside = true;
-                //}
-
-                //if (false == __isSeg_A)
-                //{
-                //    if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
-                //    {
-                //        _intr_A_B_inside = true;
-                //    }
-                //}
-                //else if (false == __isSeg_B)
-                //{
-                //    if (0 > Vector3.Dot(_cur_A_B_order, __dir_B))
-                //    {
-                //        _intr_A_B_inside = true;
-                //    }
-                //}
-
-                
             }
 
             //if(_intr_A_B_inside)
@@ -494,7 +587,6 @@ namespace UtilGS9
                     Collision_Normal2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
                     result_contact = true;
                 }
-
             }
             //Collision_CCD 계산후 캡슐과 캡슐이 겹쳐있는 경우가 있음. 겹침계산을 다시 해준다 
             //else
@@ -688,10 +780,18 @@ namespace UtilGS9
 
         public void Collision_Normal2(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
+
+            if (Misc.IsZero(_cur_A_B_order))
+            {
+                _prev_seg_A = _cur_seg_A;
+                _prev_seg_B = _cur_seg_B;
+                return;
+            }
+
             //DebugWide.LogGreen("!! c_n2 현재선분검사  " + __isSeg_A + "  " + __isSeg_B + "  " + __dir_A + "  " + __dir_B);
 
-            LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
+            LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
             //float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
             Vector3 dir_drop = VOp.Normalize(_cur_A_B_order);
@@ -702,10 +802,18 @@ namespace UtilGS9
             Vector3 meetPt = minV + (maxV - minV) * rateAtoB;
             Vector3 lastPt1 = meetPt;
             Vector3 lastPt2 = meetPt;
+            float rad_AB = _radius_A + _radius_B;
 
-            float dropping = (_radius_A + _radius_B) * (1f - rateAtoB);
+            float dropping = rad_AB * (1f - rateAtoB);
             if (true == allowFixed_a)
             {
+                //이상회전을 막는다 
+                if ((_cur_seg_A.origin - _pt_close_B).sqrMagnitude <= rad_AB*rad_AB)
+                {
+                    _prev_seg_A = _cur_seg_A;
+                    _prev_seg_B = _cur_seg_B;
+                    return;
+                }
 
                 lastPt1 += -dir_drop * dropping; //dropping 처리 
                 _meetPt_A = lastPt1;
@@ -726,9 +834,16 @@ namespace UtilGS9
 
             }
 
-            dropping = (_radius_A + _radius_B) * (rateAtoB);
+            dropping = rad_AB * (rateAtoB);
             if (true == allowFixed_b)
             {
+                //이상회전을 막는다 
+                if ((_cur_seg_B.origin - _pt_close_A).sqrMagnitude <= rad_AB * rad_AB)
+                {
+                    _prev_seg_A = _cur_seg_A;
+                    _prev_seg_B = _cur_seg_B;
+                    return;
+                }
 
                 lastPt2 += dir_drop * dropping; //dropping 처리
                 _meetPt_B = lastPt2;
@@ -762,12 +877,13 @@ namespace UtilGS9
         public bool Collision_CCD(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
             bool result_contact = false;
-            bool isContact_onPlan = false;
+            //bool isContact_onPlan = false;
             Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
             float rad_AB = _radius_A + _radius_B;
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
             //DebugWide.LogGreen("!! 사각꼴(선분) vs 사각꼴(선분) 검사 ");
+
 
             _intr_0_2.Find_Twice();
             _intr_0_3.Find_Twice();
@@ -780,14 +896,19 @@ namespace UtilGS9
                 eIntersectionType.PLANE == _intr_1_2.mIntersectionType ||
                 eIntersectionType.PLANE == _intr_1_3.mIntersectionType)
             {
-                //isContact_onPlan = true;
+
+                //평면에서 만난 경우 처리하지 않는다. 계산실패 
+                _prev_seg_A = _cur_seg_A;
+                _prev_seg_B = _cur_seg_B;
+                return false;
+
                 Vector3 none;
                 Vector3 ori, last;
+                float radAB = _radius_A + _radius_B;
                 //선분과 사각꼴이 같은 평면에서 만난경우
                 if (true == __isSeg_A && false == __isSeg_B)
                 {
                     //DebugWide.LogBlue("!! 선분 vs 사각꼴 ");
-                    //result_contact = GetMinMax_ContactPt(_prev_seg_B.origin, out minV, out maxV, 4);
 
                     GetMinMax_ContactPt(_cur_seg_A.origin, out ori, out last, 4);
 
@@ -821,14 +942,12 @@ namespace UtilGS9
 
                     LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_B * 10000), _cur_seg_B);
 
-
                     result_contact = true;
 
                 }
                 else if (false == __isSeg_A && true == __isSeg_B)
                 {
                     //DebugWide.LogBlue("!! 사각꼴 vs 선분 ");
-                    //result_contact = GetMinMax_ContactPt(_prev_seg_A.origin, out minV, out maxV, 4);
 
                     GetMinMax_ContactPt(_cur_seg_B.origin, out ori, out last, 4);
 
@@ -877,192 +996,155 @@ namespace UtilGS9
                     //  dropping 에서 잘못된 방향으로 무한히 떨어뜨리게 된다.
                     //DebugWide.LogRed("!! 사각꼴과 사각꼴이 같은 평면에서 만난경우 ");
 
-                    GetMinMax_ContactPt(_cur_seg_A.origin, out ori, out none, 6);
-                    GetMinMax_ContactPt(_cur_seg_A.origin, out none, out last, 6);
 
-                    result_contact = true;
+                    //GetMinMax_Tetragon(_cur_seg_A, out ori, out last);
+                    //DebugWide.DrawCircle(ori, 0.02f, Color.white);
+                    //DebugWide.DrawCircle(last, 0.04f, Color.white);
+
+                    //_prev_seg_A = _cur_seg_A;
+                    //_prev_seg_B = _cur_seg_B;
+                    //return false; //평면에서 만난 경우 처리하지 않는다 
+
+                    //평면에서 만난 경우 처리하지 않는다 
+                    result_contact = false;
 
                 }
                 meetPt = minV + (maxV - minV) * rateAtoB;
 
-                if (result_contact)
-                {
-                    DebugWide.LogBlue("!! 사각꼴(선분)이 같은 평면에서 만난 경우 ");
-
-                    DebugWide.DrawCircle(minV, 0.02f, Color.red);
-                    DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
-                    DebugWide.DrawCircle(maxV, 0.06f, Color.red);
-
-                    //_prev_seg_A = _cur_seg_A;
-                    //_prev_seg_B = _cur_seg_B;
-                    //return false; //평면에서 만난 경우 처리하지 않는다 , 나중에 처리하기  
-                }
-
                 //DebugWide.LogBlue("!! c_ccd 0 현재선분검사  " + __isSeg_A + "  " + __isSeg_B + "  " + __dir_A + "  " + __dir_B);
-
-                //DebugWide.DrawCircle(minV, 0.02f, Color.red);
-                //DebugWide.DrawCircle(meetPt, 0.04f, Color.red);
-                //DebugWide.DrawCircle(maxV, 0.06f, Color.red);
 
             }
             //사각꼴(선분)이 서로 엇갈려 만난경우
-            else
+            else if (1 <= _intr_0_2.mQuantity || 1 <= _intr_0_3.mQuantity || 1 <= _intr_1_2.mQuantity || 1 <= _intr_1_3.mQuantity)
             {
-
-                if (true == __isSeg_A && true == __isSeg_B)
-                {
-                   
-                    LineSegment3 mer_a = LineSegment3.Merge(_prev_seg_A, _cur_seg_A);
-                    LineSegment3 mer_b = LineSegment3.Merge(_prev_seg_B, _cur_seg_B);
-                    //mer_a.Draw(Color.black);
-                    //mer_b.Draw(Color.white);
-
-                    LineSegment3.ClosestPoints(out minV, out maxV, mer_a, mer_b);
-                    //LineSegment3.ClosestPoints(out minV, out maxV, _cur_seg_A, _cur_seg_B);
-                    //DebugWide.DrawCircle(minV, 0.01f, Color.green);
-                    //DebugWide.DrawCircle(maxV, 0.03f, Color.green);
-                    //DebugWide.LogBlue("교점이 있음 1  : " + (minV - maxV).sqrMagnitude);
-                    //if(float.Epsilon > (minV-maxV).sqrMagnitude)
-                    //적당히 작은값을 설정해준다. 너무 작은값은 검사를 통과하지 못한다 
-                    if (0.0000001f > (minV - maxV).sqrMagnitude)
-                    {
-                        //DebugWide.LogBlue("교점이 있음 2");
-                        //교점이 있음 
-                        isContact_onPlan = true;
-                        result_contact = true;
-                    }
-
-                    //DebugWide.LogBlue(result_contact + "  " + 4);
-                }
-                else
-                {
-
-                    //선분vs사각꼴 , 사각꼴vs선분의 경우 minV 와 maxV가 동일함. 한점에서 만나기 때문. 그렇기 때문에 __dir_A 값과 상관없음 
-                    //사각꼴vs사각꼴의 경우에 minV 와 maxV가 다름. __dir_A값 기준으로 minV 와 maxV를 구하게  됨
-                    result_contact = GetMinMax_Segement(__dir_A, out minV, out maxV);
-                    //DebugWide.LogBlue(VOp.ToString(__dir_A) + "  " + result_contact + "  " + 5);
-
-
-                    //return false; 
-                }
 
                 //GetMinMax_ContactPt 함수는 선분값 상태에서 최소/최대값을 제대로 못찾는다. 선분값에서는 GetMinMax_Segement 함수 사용하기
                 //result_contact = GetMinMax_ContactPt(_cur_seg_A.origin, out _minV, out _maxV, 2);
 
                 //DebugWide.LogBlue("엇갈려 " + result_contact + "  " );
 
-                if (true == result_contact)
+                //선분vs사각꼴 , 사각꼴vs선분의 경우 minV 와 maxV가 동일함. 한점에서 만나기 때문. 그렇기 때문에 __dir_A 값과 상관없음 
+                //사각꼴vs사각꼴의 경우에 minV 와 maxV가 다름. __dir_A값 기준으로 minV 와 maxV를 구하게  됨
+                GetMinMax_Segement(__dir_A, out minV, out maxV);
+
+                result_contact = true;
+
+                //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
+                if (true == __isSeg_A && false == __isSeg_B)
                 {
 
-                    //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
-                    if (true == __isSeg_A && false == __isSeg_B)
+                    //min 구하기 
+                    Vector3 none;
+                    Line3.ClosestPoints(out minV, out none, new Line3(maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                    //DebugWide.LogBlue("aaa ");
+
+                }
+                else if (false == __isSeg_A && true == __isSeg_B)
+                {
+
+                    //max 구하기
+                    Vector3 none;
+                    Line3.ClosestPoints(out maxV, out none, new Line3(minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                    //DebugWide.LogBlue("bbb ");
+
+                }
+                //사각꼴과 사각꼴이 만난 경우
+                else if (false == __isSeg_A && false == __isSeg_B)
+                {
+                    Vector3 dir = maxV - minV;
+                    Vector3 none;
+
+                    //사각꼴이 서로 방향이 같은 경우 
+                    if (0 < Vector3.Dot(__dir_A, __dir_B))
                     {
 
-                        //min 구하기 
-                        Vector3 none;
-                        Line3.ClosestPoints(out minV, out none, new Line3(maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
-                        //DebugWide.LogBlue("aaa ");
-
-                    }
-                    else if (false == __isSeg_A && true == __isSeg_B)
-                    {
-
-                        //max 구하기
-                        Vector3 none;
-                        Line3.ClosestPoints(out maxV, out none, new Line3(minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
-                        //DebugWide.LogBlue("bbb ");
-
-                    }
-                    //사각꼴과 사각꼴이 만난 경우
-                    else if (false == __isSeg_A && false == __isSeg_B)
-                    {
-                        Vector3 dir = maxV - minV;
-                        Vector3 none;
-
-                        //사각꼴이 서로 방향이 같은 경우 
-                        if (0 < Vector3.Dot(__dir_A, __dir_B))
+                        //20210705 실험노트에 알고리즘 있음 
+                        //밀기처리 할 수 있음
+                        if (0 > Vector3.Dot(_cur_A_B_order, _prev_A_B_order))
                         {
-
-                            //20210705 실험노트에 알고리즘 있음 
-                            //밀기처리 할 수 있음
-                            if (0 > Vector3.Dot(_cur_A_B_order, _prev_A_B_order))
+                            //B가 A를 민다
+                            if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
                             {
-                                //B가 A를 민다
-                                if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
-                                {
-                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_B);
-                                    //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
-                                }
-                                //A가 B를 민다
-                                else
-                                {
-                                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
-                                    //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
-
-                                    //swap
-                                    none = minV;
-                                    minV = maxV;
-                                    maxV = none;
-                                }
+                                LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_B);
+                                //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                             }
-                            //밀기처리 할 수 없음
+                            //A가 B를 민다
                             else
                             {
+                                LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
+                                //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
 
-                                _prev_seg_A = _cur_seg_A;
-                                _prev_seg_B = _cur_seg_B;
-                                return false;
-
-                                //--밀기처리 시험 , 논리적으로 선택 할 수 없는 문제가 있음  
-                                //B가 A를 민다
-                                //if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
-                                //{
-                                //    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
-                                //}
-                                ////A가 B를 민다
-                                //else
-                                //{
-                                //    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
-
-                                //    //swap
-                                //    none = minV;
-                                //    minV = maxV;
-                                //    maxV = none;
-                                //}
-
+                                //swap
+                                none = minV;
+                                minV = maxV;
+                                maxV = none;
                             }
-
                         }
-                        //사각꼴이 서로 방향이 다른 경우 
+                        //밀기처리 할 수 없음
                         else
                         {
-                            LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
-                            LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), _cur_seg_B);
-                            //Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
-                            //Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                            result_contact = false;
+                            //_prev_seg_A = _cur_seg_A;
+                            //_prev_seg_B = _cur_seg_B;
+                            //return false;
+
+                            //--밀기처리 시험 , 논리적으로 선택 할 수 없는 문제가 있음  
+                            //B가 A를 민다
+                            //if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
+                            //{
+                            //    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                            //}
+                            ////A가 B를 민다
+                            //else
+                            //{
+                            //    Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+
+                            //    //swap
+                            //    none = minV;
+                            //    minV = maxV;
+                            //    maxV = none;
+                            //}
+
                         }
+
                     }
-
-                    //DebugWide.AddDrawQ_Line(minV, maxV, Color.green);
-                    //DebugWide.AddDrawQ_Circle(maxV, _radius_A, Color.green);
-                    //DebugWide.DrawLine(minV, maxV, Color.green);
-                    //DebugWide.DrawCircle(maxV, 0.02f, Color.green);
-
-                    //DebugWide.AddDrawQ_Line(_cur_seg_A.origin, _cur_seg_A.last, Color.gray);
-                    //DebugWide.AddDrawQ_Line(_prev_seg_A.origin, _prev_seg_A.last, Color.gray);
-
-                    //DebugWide.AddDrawQ_Line(_cur_seg_B.origin, _cur_seg_B.last, Color.black);
-                    //DebugWide.AddDrawQ_Line(_prev_seg_B.origin, _prev_seg_B.last, Color.black);
-
-                    //DebugWide.LogRed("-----------------------------------------------");
-                    //return false;
+                    //사각꼴이 서로 방향이 다른 경우 
+                    else
+                    {
+                        LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
+                        LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), _cur_seg_B);
+                        //Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                        //Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                    }
                 }
-
 
                 meetPt = minV + (maxV - minV) * rateAtoB;
 
-                //DebugWide.DrawLine(minV, maxV, Color.gray);
+            }else
+            {
+                //if (true == __isSeg_A && true == __isSeg_B)
+                //{
 
+                //    LineSegment3 mer_a = LineSegment3.Merge(_prev_seg_A, _cur_seg_A);
+                //    LineSegment3 mer_b = LineSegment3.Merge(_prev_seg_B, _cur_seg_B);
+                //    //mer_a.Draw(Color.black);
+                //    //mer_b.Draw(Color.white);
+
+                //    LineSegment3.ClosestPoints(out minV, out maxV, mer_a, mer_b);
+
+                //    //적당히 작은값을 설정해준다. 너무 작은값은 검사를 통과하지 못한다 
+                //    if (0.0000001f > (minV - maxV).sqrMagnitude)
+                //    {
+                //        //DebugWide.LogBlue("교점이 있음 2");
+                //        //교점이 있음 
+                //        //isContact_onPlan = true;
+                //        result_contact = true;
+                //    }
+
+                //    DebugWide.LogBlue(result_contact + "  " + 4);
+                //} 
+
+                result_contact = false;
             }
 
             //==================================================
@@ -1075,19 +1157,7 @@ namespace UtilGS9
                 //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);
 
                 Vector3 dir_drop = maxV - minV;
-                //if (true == isContact_onPlan)
-                //{
-                //    //평면위에 접촉점이 있는 경우 
-                //    dir_drop = __dir_A + __dir_B; //ab 둘다 방향값이 있을때 성립하는지 모르겠다.. 
-                //}
                 dir_drop = VOp.Normalize(dir_drop);
-
-                //float drop_sign = 1f;
-                //if (0 > Vector3.Dot(dir_drop, __prev_A_B_order))
-                //{
-                //    DebugWide.LogRed("min max 방향이 달라졌음 ! aa");
-                //    drop_sign = -1f;
-                //}
 
                 Vector3 lastPt1 = meetPt, lastPt2 = meetPt;
                 float dropping = (_radius_A + _radius_B) * (1f - rateAtoB);
@@ -1151,17 +1221,20 @@ namespace UtilGS9
                     //DebugWide.AddDrawQ_Circle(_meetPt_B, _radius_B, Color.black);
                 }
 
+                _cur_seg_A = newSegA;
+                _cur_seg_B = newSegB;
+                _prev_seg_A = newSegA;
+                _prev_seg_B = newSegB;
 
+                _minV = minV;
+                _maxV = maxV;
+                _meetPt = meetPt;
             }
-
-            _cur_seg_A = newSegA;
-            _cur_seg_B = newSegB;
-            _prev_seg_A = newSegA;
-            _prev_seg_B = newSegB;
-
-            _minV = minV;
-            _maxV = maxV;
-            _meetPt = meetPt;
+            else
+            {
+                _prev_seg_A = _cur_seg_A;
+                _prev_seg_B = _cur_seg_B;
+            }
 
             return result_contact;
         }
