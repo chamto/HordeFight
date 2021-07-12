@@ -37,6 +37,7 @@ public class Test_TGuardCollision : MonoBehaviour
         _movingModel.Update();
 
         _movingModel.Draw();
+        DebugWide.DrawQ_All();
 	}
 
 	private void Start()

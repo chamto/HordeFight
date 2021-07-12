@@ -631,6 +631,13 @@ namespace UtilGS9
         static public Vector2 Perp(Vector2 v)         {             return new Vector2(-v.y, v.x); //반시계 방향으로 90도 회전 
         }
 
+        //90도 회전한 벡터의 노멀을 반환 
+        static public Vector3 PerpN(Vector3 v , Vector3 up)
+        {
+            Vector3 perp = Vector3.Cross(v, up);
+            return VOp.Normalize(perp); 
+        }
+
         //수직내적의 값이 0 이면 평행 , 양수면 반시계 방향 , 음수면 시계 방향으로 v->w 회전 
         //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@
         //수직내적 , 행렬식값 , 부호가 있는 외적길이

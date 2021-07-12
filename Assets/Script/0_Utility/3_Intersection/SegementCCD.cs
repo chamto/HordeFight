@@ -96,6 +96,13 @@ namespace UtilGS9
 
             }
 
+            Vector3 dirN = VOp.PerpN(_cur_seg_A.direction, Vector3.up);
+            DebugWide.DrawLine(_cur_seg_A.origin + dirN * _radius_A, _cur_seg_A.last + dirN * _radius_A, Color.gray);
+            DebugWide.DrawLine(_cur_seg_A.origin - dirN * _radius_A, _cur_seg_A.last - dirN * _radius_A, Color.gray);
+
+            dirN = VOp.PerpN(_cur_seg_B.direction, Vector3.up);
+            DebugWide.DrawLine(_cur_seg_B.origin + dirN * _radius_B, _cur_seg_B.last + dirN * _radius_B, Color.gray);
+            DebugWide.DrawLine(_cur_seg_B.origin - dirN * _radius_B, _cur_seg_B.last - dirN * _radius_B, Color.gray);
         }
 
         //ctp : 접촉점 
@@ -538,7 +545,7 @@ namespace UtilGS9
             }
         }
 
-        Vector3 _pt_close_A, _pt_close_B;
+        Vector3 _pt_cur_A, _pt_cur_B;
         Vector3 _pt_prev_A, _pt_prev_B;
         public bool _intr_A_B_inside = false;
         public bool Find_TGuard_vs_TGuard(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
@@ -558,13 +565,13 @@ namespace UtilGS9
 
             LineSegment3.ClosestPoints(out _pt_prev_A, out _pt_prev_B, _prev_seg_A, _prev_seg_B);
             _prev_A_B_order = _pt_prev_B - _pt_prev_A;
-            LineSegment3.ClosestPoints(out _pt_close_A, out _pt_close_B, _cur_seg_A, _cur_seg_B);
-            _cur_A_B_order = _pt_close_B - _pt_close_A;
+            LineSegment3.ClosestPoints(out _pt_cur_A, out _pt_cur_B, _cur_seg_A, _cur_seg_B);
+            _cur_A_B_order = _pt_cur_B - _pt_cur_A;
 
             //DebugWide.LogBlue(_cur_A_B_order.magnitude);//test
 
             _intr_A_B_inside = false;
-            if (rad_AB * rad_AB > (_pt_close_A - _pt_close_B).sqrMagnitude)
+            if (rad_AB * rad_AB > (_pt_cur_A - _pt_cur_B).sqrMagnitude)
             {
                 _intr_A_B_inside = true;
 
@@ -647,14 +654,14 @@ namespace UtilGS9
 
             if (true == allowFixed_a)
             {
-                CalcTGuard_First_ClosePt(false, penetration * (1f - rateAtoB), _pt_close_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
-                RotateTGuard_FirstToLast(_pt_close_A, pt_first_A, root_0.position, _cur_seg_A, out newSegA, out _localRota_A);
+                CalcTGuard_First_ClosePt(false, penetration * (1f - rateAtoB), _pt_cur_A, n_close_BA, root_0, out pt_center_A, out pt_first_A);
+                RotateTGuard_FirstToLast(_pt_cur_A, pt_first_A, root_0.position, _cur_seg_A, out newSegA, out _localRota_A);
                 _meetPt_A = pt_first_A;
             }
             else
             {
-                pt_first_A = _pt_close_A + n_close_BA * (penetration * (1f - rateAtoB));
-                _dir_move_A = pt_first_A - _pt_close_A;
+                pt_first_A = _pt_cur_A + n_close_BA * (penetration * (1f - rateAtoB));
+                _dir_move_A = pt_first_A - _pt_cur_A;
                 //DebugWide.LogBlue(VOp.ToString(__dir_move_A));
                 _meetPt_A = pt_first_A;
                 //newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
@@ -663,15 +670,15 @@ namespace UtilGS9
 
             if (true == allowFixed_b)
             {
-                CalcTGuard_First_ClosePt(false, penetration * (rateAtoB), _pt_close_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
-                RotateTGuard_FirstToLast(_pt_close_B, pt_first_B, root_1.position, _cur_seg_B, out newSegB, out _localRota_B);
+                CalcTGuard_First_ClosePt(false, penetration * (rateAtoB), _pt_cur_B, -n_close_BA, root_1, out pt_center_B, out pt_first_B);
+                RotateTGuard_FirstToLast(_pt_cur_B, pt_first_B, root_1.position, _cur_seg_B, out newSegB, out _localRota_B);
                 _meetPt_B = pt_first_B;
             }
             else
             {
 
-                pt_first_B = _pt_close_B + -n_close_BA * (penetration * (rateAtoB));
-                _dir_move_B = pt_first_B - _pt_close_B;
+                pt_first_B = _pt_cur_B + -n_close_BA * (penetration * (rateAtoB));
+                _dir_move_B = pt_first_B - _pt_cur_B;
                 _meetPt_B = pt_first_B;
                 //newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
                 newSegB = LineSegment3.Move(_cur_seg_B, _dir_move_B);
@@ -716,8 +723,8 @@ namespace UtilGS9
 
 
             //------
-            Vector3 maxV = _pt_close_A;
-            Vector3 minV = _pt_close_B;
+            Vector3 maxV = _pt_cur_A;
+            Vector3 minV = _pt_cur_B;
             Vector3 meetPt = minV + (maxV - minV) * rateAtoB;
             Vector3 lastPt1 = meetPt;
             Vector3 lastPt2 = meetPt;
@@ -797,8 +804,8 @@ namespace UtilGS9
             Vector3 dir_drop = VOp.Normalize(_cur_A_B_order);
 
             //------
-            Vector3 maxV = _pt_close_A;
-            Vector3 minV = _pt_close_B;
+            Vector3 maxV = _pt_cur_A;
+            Vector3 minV = _pt_cur_B;
             Vector3 meetPt = minV + (maxV - minV) * rateAtoB;
             Vector3 lastPt1 = meetPt;
             Vector3 lastPt2 = meetPt;
@@ -808,7 +815,7 @@ namespace UtilGS9
             if (true == allowFixed_a)
             {
                 //이상회전을 막는다 
-                if ((_cur_seg_A.origin - _pt_close_B).sqrMagnitude <= rad_AB*rad_AB)
+                if ((_cur_seg_A.origin - _pt_cur_B).sqrMagnitude <= rad_AB*rad_AB)
                 {
                     _prev_seg_A = _cur_seg_A;
                     _prev_seg_B = _cur_seg_B;
@@ -838,7 +845,7 @@ namespace UtilGS9
             if (true == allowFixed_b)
             {
                 //이상회전을 막는다 
-                if ((_cur_seg_B.origin - _pt_close_A).sqrMagnitude <= rad_AB * rad_AB)
+                if ((_cur_seg_B.origin - _pt_cur_A).sqrMagnitude <= rad_AB * rad_AB)
                 {
                     _prev_seg_A = _cur_seg_A;
                     _prev_seg_B = _cur_seg_B;
@@ -878,7 +885,7 @@ namespace UtilGS9
         {
             bool result_contact = false;
             //bool isContact_onPlan = false;
-            Vector3 minV = ConstV.v3_zero, maxV = ConstV.v3_zero;
+            Vector3 close_B = ConstV.v3_zero, close_A = ConstV.v3_zero;
             Vector3 meetPt = ConstV.v3_zero;
             float rad_AB = _radius_A + _radius_B;
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
@@ -927,20 +934,20 @@ namespace UtilGS9
                     b_sqr = (last - _prev_seg_B.last).sqrMagnitude;
                     if(a_sqr >= b_sqr)
                     {
-                        maxV = last;
+                        close_A = last;
                     }
                     else
                     {
-                        maxV = ori;
+                        close_A = ori;
                     }
 
                     //삼각형인 경우 
                     if (Misc.IsZero(_cur_seg_B.origin - _prev_seg_B.origin))
                     {
-                        maxV = last;
+                        close_A = last;
                     }
 
-                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_B * 10000), _cur_seg_B);
+                    LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A + __dir_B * 10000), _cur_seg_B);
 
                     result_contact = true;
 
@@ -966,25 +973,25 @@ namespace UtilGS9
                     b_sqr = (last - _prev_seg_A.last).sqrMagnitude;
                     if (a_sqr >= b_sqr)
                     {
-                        maxV = last;
+                        close_A = last;
                     }
                     else
                     {
-                        maxV = ori;
+                        close_A = ori;
                     }
 
                     //삼각형인 경우 
                     if (Misc.IsZero(_cur_seg_A.origin - _prev_seg_A.origin))
                     {
-                        maxV = last;
+                        close_A = last;
                     }
 
-                    LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + __dir_A * 10000), _cur_seg_A);
+                    LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A + __dir_A * 10000), _cur_seg_A);
 
                     //swap
-                    none = minV;
-                    minV = maxV;
-                    maxV = none;
+                    none = close_B;
+                    close_B = close_A;
+                    close_A = none;
 
                     result_contact = true;
                 }
@@ -1009,7 +1016,7 @@ namespace UtilGS9
                     result_contact = false;
 
                 }
-                meetPt = minV + (maxV - minV) * rateAtoB;
+                meetPt = close_B + (close_A - close_B) * rateAtoB;
 
                 //DebugWide.LogBlue("!! c_ccd 0 현재선분검사  " + __isSeg_A + "  " + __isSeg_B + "  " + __dir_A + "  " + __dir_B);
 
@@ -1025,7 +1032,7 @@ namespace UtilGS9
 
                 //선분vs사각꼴 , 사각꼴vs선분의 경우 minV 와 maxV가 동일함. 한점에서 만나기 때문. 그렇기 때문에 __dir_A 값과 상관없음 
                 //사각꼴vs사각꼴의 경우에 minV 와 maxV가 다름. __dir_A값 기준으로 minV 와 maxV를 구하게  됨
-                GetMinMax_Segement(__dir_A, out minV, out maxV);
+                GetMinMax_Segement(__dir_A, out close_B, out close_A);
 
                 result_contact = true;
 
@@ -1035,7 +1042,7 @@ namespace UtilGS9
 
                     //min 구하기 
                     Vector3 none;
-                    Line3.ClosestPoints(out minV, out none, new Line3(maxV, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
+                    Line3.ClosestPoints(out close_B, out none, new Line3(close_A, __dir_B), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                     //DebugWide.LogBlue("aaa ");
 
                 }
@@ -1044,14 +1051,14 @@ namespace UtilGS9
 
                     //max 구하기
                     Vector3 none;
-                    Line3.ClosestPoints(out maxV, out none, new Line3(minV, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
+                    Line3.ClosestPoints(out close_A, out none, new Line3(close_B, __dir_A), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                     //DebugWide.LogBlue("bbb ");
 
                 }
                 //사각꼴과 사각꼴이 만난 경우
                 else if (false == __isSeg_A && false == __isSeg_B)
                 {
-                    Vector3 dir = maxV - minV;
+                    Vector3 dir_BtoA = close_A - close_B;
                     Vector3 none;
 
                     //사각꼴이 서로 방향이 같은 경우 
@@ -1065,19 +1072,19 @@ namespace UtilGS9
                             //B가 A를 민다
                             if (0 < Vector3.Dot(_cur_A_B_order, __dir_A))
                             {
-                                LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_B);
+                                LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A + dir_BtoA * 10000), _cur_seg_B);
                                 //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                             }
                             //A가 B를 민다
                             else
                             {
-                                LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
+                                LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A + dir_BtoA * 10000), _cur_seg_A);
                                 //Line3.ClosestPoints(out minV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
 
                                 //swap
-                                none = minV;
-                                minV = maxV;
-                                maxV = none;
+                                none = close_B;
+                                close_B = close_A;
+                                close_A = none;
                             }
                         }
                         //밀기처리 할 수 없음
@@ -1111,14 +1118,14 @@ namespace UtilGS9
                     //사각꼴이 서로 방향이 다른 경우 
                     else
                     {
-                        LineSegment3.ClosestPoints(out none, out maxV, new LineSegment3(maxV, maxV + dir * 10000), _cur_seg_A);
-                        LineSegment3.ClosestPoints(out none, out minV, new LineSegment3(maxV, maxV - dir * 10000), _cur_seg_B);
+                        LineSegment3.ClosestPoints(out none, out close_A, new LineSegment3(close_A, close_A + dir_BtoA * 10000), _cur_seg_A);
+                        LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A - dir_BtoA * 10000), _cur_seg_B);
                         //Line3.ClosestPoints(out maxV, out none, new Line3(maxV, dir), new Line3(_cur_seg_A.origin, _cur_seg_A.direction));
                         //Line3.ClosestPoints(out minV, out none, new Line3(maxV, -dir), new Line3(_cur_seg_B.origin, _cur_seg_B.direction));
                     }
                 }
 
-                meetPt = minV + (maxV - minV) * rateAtoB;
+                meetPt = close_B + (close_A - close_B) * rateAtoB;
 
             }else
             {
@@ -1154,17 +1161,33 @@ namespace UtilGS9
             if (result_contact)
             {
 
+                //DebugWide.AddDrawQ_Line(close_A, close_B, Color.red);
+                //DebugWide.AddDrawQ_Circle(meetPt, 0.02f, Color.red);
                 //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);
 
-                Vector3 dir_drop = maxV - minV;
-                dir_drop = VOp.Normalize(dir_drop);
+                Vector3 dir_BtoA = close_A - close_B;
+                dir_BtoA = VOp.Normalize(dir_BtoA);
 
                 Vector3 lastPt1 = meetPt, lastPt2 = meetPt;
-                float dropping = (_radius_A + _radius_B) * (1f - rateAtoB);
+
+
+                //----------
+                //sin@ = b/a , b = rad_AB 로 알고있음 , a를 구해야함 , a * sin@ = b , a = b / sin@
+                Vector3 dir2 = _cur_seg_B.direction;
+                if (0 < Vector3.Dot(_cur_seg_B.direction, __dir_A))
+                {
+                    dir2 *= -1;
+                }
+                float theta = Geo.AngleSigned(dir_BtoA, dir2, Vector3.Cross(dir_BtoA, dir2));
+                float dropping = rad_AB / (float)Math.Sin(theta * Mathf.Deg2Rad);
+                dropping *= (1f - rateAtoB);
+                //----------
+
+                //float dropping = rad_AB * (1f - rateAtoB);
                 if (true == allowFixed_a)
                 {
 
-                    lastPt1 += -dir_drop  * dropping; //dropping 처리 
+                    lastPt1 += -dir_BtoA  * dropping ; //dropping 처리 
                     _meetPt_A = lastPt1;
                     //이전 선분에 회전적용
                     //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt1 ,root_0, _prev_seg_A);
@@ -1180,8 +1203,8 @@ namespace UtilGS9
                 else
                 {
 
-                    lastPt1 += -dir_drop  * dropping;
-                    _dir_move_A = lastPt1 - maxV;
+                    lastPt1 += -dir_BtoA  * dropping;
+                    _dir_move_A = lastPt1 - close_A;
                     _meetPt_A = lastPt1;
                     //newSegA = LineSegment3.Move(_prev_seg_A, __dir_move_A);
                     newSegA = LineSegment3.Move(_cur_seg_A, _dir_move_A);
@@ -1190,11 +1213,23 @@ namespace UtilGS9
                     //DebugWide.AddDrawQ_Circle(_meetPt_A, _radius_A, Color.red);
                 }
 
-                dropping = (_radius_A + _radius_B) * (rateAtoB);
+                //----------
+                //sin@ = b/a , b = rad_AB 로 알고있음 , a를 구해야함 , a * sin@ = b , a = b / sin@
+                dir2 = _cur_seg_A.direction;
+                if (0 < Vector3.Dot(_cur_seg_A.direction, __dir_B))
+                {
+                    dir2 *= -1;
+                }
+                theta = Geo.AngleSigned(dir_BtoA, dir2, Vector3.Cross(dir_BtoA, dir2));
+                dropping = rad_AB / (float)Math.Sin(theta * Mathf.Deg2Rad);
+                dropping *= (rateAtoB);
+                //----------
+
+                //dropping = rad_AB * (rateAtoB);
                 if (true == allowFixed_b)
                 {
 
-                    lastPt2 += dir_drop  * dropping; //dropping 처리
+                    lastPt2 += dir_BtoA  * dropping; //dropping 처리
                     _meetPt_B = lastPt2;
                     //이전 선분에 회전적용
                     //Vector3 firstPt = CalcTGuard_FirstPt2(lastPt2, root_1, _prev_seg_B);
@@ -1211,8 +1246,8 @@ namespace UtilGS9
                 {
 
                     //pt_close_A
-                    lastPt2 += dir_drop  * dropping;
-                    _dir_move_B = lastPt2 - minV;
+                    lastPt2 += dir_BtoA  * dropping;
+                    _dir_move_B = lastPt2 - close_B;
                     _meetPt_B = lastPt2;
                     //newSegB = LineSegment3.Move(_prev_seg_B, __dir_move_B);
                     newSegB = LineSegment3.Move(_cur_seg_B, _dir_move_B);
@@ -1226,8 +1261,8 @@ namespace UtilGS9
                 _prev_seg_A = newSegA;
                 _prev_seg_B = newSegB;
 
-                _minV = minV;
-                _maxV = maxV;
+                _minV = close_B;
+                _maxV = close_A;
                 _meetPt = meetPt;
             }
             else
