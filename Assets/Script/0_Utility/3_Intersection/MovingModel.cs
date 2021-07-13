@@ -241,8 +241,9 @@ namespace UtilGS9
             LineSegment3 prev_B, cur_B;
             //Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
             bool recalc = false;
+            bool inter_outside = false;
             _update = false;
-            float min_len = 1000000f;
+            float min_len = 1000000;
             float max_len = 0f;
             __min_A_rot = Quaternion.identity;
             __min_B_rot = Quaternion.identity;
@@ -290,16 +291,22 @@ namespace UtilGS9
 
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
-                        float new_len = _movingSegment._cur_A_B_order.sqrMagnitude;
-                        if (true == _movingSegment._intr_A_B_inside)
+                        //float new_len = _movingSegment._cur_A_B_order.sqrMagnitude;
+
+                        if (true == _movingSegment._intr_A_B_inside && false == inter_outside)
                         {
+
+                            float len_in = _movingSegment._prev_A_B_order.sqrMagnitude;
+                            Vector3 dir_drop = VOp.Normalize(_movingSegment._cur_A_B_order);
+                            //DebugWide.LogGreen(a + "  " + b + " -1-  " + len_in+ "   " + dir_drop);
+
                             //반지름의 합 내에서 발생
                             //선분 vs 선분  :  최소거리 찾기 
                             //선분 vs 사각꼴   :  최소거리 찾기 
                             //사각꼴 vs 사각꼴  :  최소거리 찾기 
-                            if (min_len > new_len)
+                            if (min_len > len_in)
                             {
-                                min_len = new_len;
+                                min_len = len_in;
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
@@ -310,15 +317,20 @@ namespace UtilGS9
                                 __find_seg_B = _movingSegment._cur_seg_B;
                                 find_a = a;
                                 find_b = b;
+
                             }
                         }
-                        else
+                        else 
                         {
+
+                            float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
+
+                            //DebugWide.LogBlue(a + "  " + b + " -2-  " + len_out);
                             //선분 vs 사각꼴   :  최대거리 찾기 
                             //사각꼴 vs 사각꼴  :  최대거리 찾기 
-                            if (max_len < new_len)
+                            if (max_len < len_out)
                             {
-                                max_len = new_len;
+                                max_len = len_out;
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
@@ -329,6 +341,8 @@ namespace UtilGS9
                                 __find_seg_B = _movingSegment._cur_seg_B;
                                 find_a = a;
                                 find_b = b;
+
+                                inter_outside = true;
                             }
                         }
 

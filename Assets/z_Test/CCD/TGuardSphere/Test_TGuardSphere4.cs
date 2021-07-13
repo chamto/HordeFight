@@ -225,9 +225,9 @@ namespace Test_TGuardSphere4
             _tgs_A.Draw();
             _tgs_B.Draw();
 
-            DebugWide.DrawCircle(_movTgs._minV, 0.02f, Color.yellow);
+            DebugWide.DrawCircle(_movTgs._close_B, 0.02f, Color.yellow);
             DebugWide.DrawCircle(_movTgs._meetPt, 0.04f, Color.yellow);
-            DebugWide.DrawCircle(_movTgs._maxV, 0.06f, Color.yellow);
+            DebugWide.DrawCircle(_movTgs._close_A, 0.06f, Color.yellow);
 
             DebugWide.DrawCircle(_movTgs._meetPt_A, _movTgs._radius_A, Color.gray);
             DebugWide.DrawCircle(_movTgs._meetPt_B, _movTgs._radius_B, Color.gray);
@@ -236,8 +236,8 @@ namespace Test_TGuardSphere4
             DebugWide.DrawLine(_movTgs._cur_seg_B.origin, _movTgs._cur_seg_B.last, Color.white);
 
             DebugWide.DrawCircle(_movTgs._cur_seg_A.origin, _movTgs._radius_A, Color.blue);
-            DebugWide.DrawCircle(_movTgs._cur_seg_B.origin, _movTgs._radius_B, Color.magenta);
             DebugWide.DrawCircle(_movTgs._cur_seg_A.last, _movTgs._radius_A, Color.blue);
+            DebugWide.DrawCircle(_movTgs._cur_seg_B.origin, _movTgs._radius_B, Color.magenta);
             DebugWide.DrawCircle(_movTgs._cur_seg_B.last, _movTgs._radius_B, Color.magenta);
 
             DebugWide.DrawQ_All();

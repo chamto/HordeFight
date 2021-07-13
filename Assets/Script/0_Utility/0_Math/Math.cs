@@ -714,6 +714,8 @@ namespace UtilGS9
             // normalize for cheap distance checks
             float lensq = w.x * w.x + w.y * w.y + w.z * w.z;
 
+            //DebugWide.LogRed(lensq + "  " + p0 + "  " + p1 + "  " + p2 );
+
             // recover gracefully
             ///if ( ::IsZero(lensq))
             if (lensq < float.Epsilon)
@@ -787,7 +789,37 @@ namespace UtilGS9
             I = S.origin + sI * u;               // compute segment intersect point
             return 1;
         }
-                
+
+        //교점구하는 방법 : close_PT = mLine.origin + mLineParameter * mLine.direction;
+        static public int Intersect(out float mLineParameter, Line3 mLine, Plane mPlane)
+        {
+            mLineParameter = 0;
+
+            float DdN = Vector3.Dot(mLine.direction, mPlane._normal);
+            float signedDistance = mPlane.Test(mLine.origin);
+            if (Math.Abs(DdN) > float.Epsilon)
+            {
+                // The line is not parallel to the plane, so they must intersect.
+                mLineParameter = -signedDistance / DdN;
+
+                return 1;
+            }
+
+            // The Line and plane are parallel.  Determine if they are numerically
+            // close enough to be coincident.
+            if (Math.Abs(signedDistance) <= float.Epsilon)
+            {
+                // The line is coincident with the plane, so choose t = 0 for the
+                // parameter.
+                mLineParameter = 0;
+
+                return 2;
+            }
+
+
+            return 0;
+        }
+
         public void Draw(float length, Color cc)
         {
             Vector3 ori = GetPos();
