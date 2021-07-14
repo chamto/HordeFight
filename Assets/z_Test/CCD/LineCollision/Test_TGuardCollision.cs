@@ -22,7 +22,7 @@ public class Test_TGuardCollision : MonoBehaviour
 
         __count++;
 
-
+        if (0 >= __c2) __c2 = 1;
         if(0 == __count%__c2)
         {
             __sign *= -1f;
