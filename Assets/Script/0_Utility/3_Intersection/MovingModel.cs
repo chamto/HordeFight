@@ -122,8 +122,8 @@ namespace UtilGS9
             _frame_A.Draw(Color.blue);
             _frame_B.Draw(Color.magenta);
 
-            DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
-            DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
+            //DebugWide.DrawCircle(_movingSegment._meetPt_A, _movingSegment._radius_A, Color.gray);
+            //DebugWide.DrawCircle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.gray);
 
             _movingSegment.Draw();
 
@@ -226,6 +226,8 @@ namespace UtilGS9
 
         public LineSegment3 __find_seg_A = new LineSegment3();
         public LineSegment3 __find_seg_B = new LineSegment3();
+        public LineSegment3 __find_prev_A = new LineSegment3();
+        public LineSegment3 __find_prev_B = new LineSegment3();
         public Vector3 __dir_move_A = ConstV.v3_zero;
         public Vector3 __dir_move_B = ConstV.v3_zero;
         public bool Update()
@@ -248,6 +250,7 @@ namespace UtilGS9
             __min_A_rot = Quaternion.identity;
             __min_B_rot = Quaternion.identity;
             int find_a=-1, find_b=-1;
+            Color color = Color.gray;
 
             //DebugWide.LogBlue(_frame_sword_A._seg_count);
             for (int a = 0; a < _frame_A._seg_count; a++)
@@ -285,7 +288,8 @@ namespace UtilGS9
 
                     if (recalc)
                     {
-                        
+                        if(false == _update)
+                            DebugWide.LogRed("--------------------------------------------------------");
 
                         _update = true;
 
@@ -293,19 +297,28 @@ namespace UtilGS9
                         //하나의 프레임에서 하나의 유형만 발생한다.
                         //float new_len = _movingSegment._cur_A_B_order.sqrMagnitude;
 
-                        if (true == _movingSegment._intr_A_B_inside && false == inter_outside)
+                        if (true == _movingSegment._intr_A_B_inside)
                         {
 
-                            float len_in = _movingSegment._prev_A_B_order.sqrMagnitude;
-                            Vector3 dir_drop = VOp.Normalize(_movingSegment._cur_A_B_order);
-                            //DebugWide.LogGreen(a + "  " + b + " -1-  " + len_in+ "   " + dir_drop);
 
+                            float len_in = _movingSegment._sqrLen_TestCCD_Cur_A_B_Order;
+                            //float len_in = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
+                            //float len_in = _movingSegment._cur_A_B_order.sqrMagnitude;
+                            //float len_in = _movingSegment._prev_A_B_order.sqrMagnitude;
+
+                            DebugWide.LogGreen(a + "  " + b + " -1-  " + len_in + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+
+
+                            if (true == inter_outside) continue;
+
+                            //DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.green);
                             //반지름의 합 내에서 발생
                             //선분 vs 선분  :  최소거리 찾기 
                             //선분 vs 사각꼴   :  최소거리 찾기 
                             //사각꼴 vs 사각꼴  :  최소거리 찾기 
                             if (min_len > len_in)
                             {
+
                                 min_len = len_in;
 
                                 __min_A_rot = _movingSegment._localRota_A;
@@ -313,6 +326,8 @@ namespace UtilGS9
                                 __dir_move_A = _movingSegment._dir_move_A;
                                 __dir_move_B = _movingSegment._dir_move_B;
 
+                                __find_prev_A = __find_seg_A;
+                                __find_prev_B = __find_seg_B;
                                 __find_seg_A = _movingSegment._cur_seg_A;
                                 __find_seg_B = _movingSegment._cur_seg_B;
                                 find_a = a;
@@ -323,9 +338,17 @@ namespace UtilGS9
                         else 
                         {
 
-                            float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
+                            color = Color.red;
+                            float len_out = _movingSegment._cur_A_B_order.sqrMagnitude;
+                            //float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
 
-                            //DebugWide.LogBlue(a + "  " + b + " -2-  " + len_out);
+                            DebugWide.LogBlue(a + "  " + b + " -2-  " + len_out + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+                            //DebugWide.AddDrawQ_Circle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.cyan);
+
+                            DebugWide.AddDrawQ_Circle(_movingSegment._cur_seg_B.origin, a * 0.01f, Color.green);
+                            DebugWide.AddDrawQ_Line(_movingSegment._tetr23.GetLine_Last().origin, _movingSegment._tetr23.GetLine_Last().last, Color.cyan);
+                            DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.black);
+
                             //선분 vs 사각꼴   :  최대거리 찾기 
                             //사각꼴 vs 사각꼴  :  최대거리 찾기 
                             if (max_len < len_out)
@@ -337,13 +360,15 @@ namespace UtilGS9
                                 __dir_move_A = _movingSegment._dir_move_A;
                                 __dir_move_B = _movingSegment._dir_move_B;
 
+                                __find_prev_A = __find_seg_A;
+                                __find_prev_B = __find_seg_B;
                                 __find_seg_A = _movingSegment._cur_seg_A;
                                 __find_seg_B = _movingSegment._cur_seg_B;
                                 find_a = a;
                                 find_b = b;
 
-                                inter_outside = true;
                             }
+                            inter_outside = true;
                         }
 
                         //DebugWide.DrawCircle(_movingSegment._meetPt, 0.05f, Color.red);
@@ -356,8 +381,12 @@ namespace UtilGS9
             //적용 
             if (_update)
             {
+
+                //DebugWide.AddDrawQ_Line(__find_prev_B.origin, __find_seg_B.origin, color);
+                //DebugWide.AddDrawQ_Circle(__find_seg_B.origin, _movingSegment._radius_B, color);
+
                 //DebugWide.LogGreen("  find_a: " + find_a + "  find_b: " + find_b + " ------- ");
-                if(true == _allowFixed_a)
+                if (true == _allowFixed_a)
                 {
                     _frame_A._tr_frame.rotation = __min_A_rot * _frame_A._tr_frame.rotation; //실제적용     
                 }

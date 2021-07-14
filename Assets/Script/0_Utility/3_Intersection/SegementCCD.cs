@@ -13,8 +13,8 @@ namespace UtilGS9
         public LineSegment3 _cur_seg_B;
 
         //삼각형 0,1 합친모양의 사각형
-        private Tetragon3 _tetr01;
-        private Tetragon3 _tetr23;
+        public Tetragon3 _tetr01;
+        public Tetragon3 _tetr23;
 
         private IntrTriangle3Triangle3 _intr_0_2;
         private IntrTriangle3Triangle3 _intr_0_3;
@@ -1421,13 +1421,13 @@ namespace UtilGS9
             else if (1 <= _intr_0_2.mQuantity || 1 <= _intr_0_3.mQuantity || 1 <= _intr_1_2.mQuantity || 1 <= _intr_1_3.mQuantity)
             {
 
-                //DebugWide.LogBlue("엇갈려 " + result_contact + "  " );
-
                 //선분vs사각꼴 , 사각꼴vs선분의 경우 minV 와 maxV가 동일함. 한점에서 만나기 때문. 그렇기 때문에 __dir_A 값과 상관없음 
                 //사각꼴vs사각꼴의 경우에 minV 와 maxV가 다름. __dir_A값 기준으로 minV 와 maxV를 구하게  됨
                 GetMinMax_Segement(__dir_A, out close_B, out close_A);
 
                 result_contact = true;
+
+                //DebugWide.LogBlue("엇갈려 " + result_contact + "  ");
 
                 //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                 if (true == __isSeg_A && false == __isSeg_B)

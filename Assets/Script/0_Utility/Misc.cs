@@ -1937,17 +1937,34 @@ namespace UtilGS9
 
             //360 / 45 = 8
             int quad = (int)((deg / 45f) + 1.5f);
-        if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
+            if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
             
 
             //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
             return (eDirection8)quad;
         }
 
+        static public eDirection8 GetDir8_AxisZ(Vector3 dir)
+        {
+            float rad = (float)Math.Atan2(dir.y, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+            else if (0 == dir.x && 0 == dir.y) return eDirection8.none;
+
+            //360 / 45 = 8
+            int quad = (int)((deg / 45f) + 1.5f);
+            if ((int)eDirection8.max == quad) quad = (int)eDirection8.right; //9 값이 나올때 1로 변경한다. 9는 방향값이 아니다. fixme : 최적화 방법 생각하기 
+
+
+            //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
+            return (eDirection8)quad;
+        }
 
         //static public int GetDirN_AxisY(ushort equal_division, Vector3 dir)
         //{
-            
+
         //    float rad = (float)Math.Atan2(dir.z, dir.x);
         //    float deg = Mathf.Rad2Deg * rad;
 
