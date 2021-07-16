@@ -572,17 +572,21 @@ namespace UtilGS9
             _sqrLen_TestCCD_Prev_A_B_Order = TestCCD_Prev_A_B_Order(_pt_prev_A, _pt_prev_B);
 
             _intr_A_B_inside = false;
-            result_contact = Collision_CCD_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
-            //DebugWide.LogBlue("ccd : " + result_contact);
-            if (false == result_contact)
             {
-                if (rad_AB * rad_AB > (_pt_cur_A - _pt_cur_B).sqrMagnitude)
+                result_contact = Collision_CCD_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
+                //DebugWide.LogBlue("ccd : " + result_contact);
+                if (false == result_contact)
                 {
-                    _intr_A_B_inside = true;
-                    result_contact = Collision_Normal_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
-                }
+                    if (rad_AB * rad_AB > (_pt_cur_A - _pt_cur_B).sqrMagnitude)
+                    {
+                        _intr_A_B_inside = true;
+                        result_contact = Collision_Normal_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
+                    }
 
+                }
             }
+
+
 
             if(false == result_contact)
             {
@@ -1601,6 +1605,12 @@ namespace UtilGS9
                 //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);
 
                 Vector3 dir_BtoA = close_A - close_B;
+
+
+                if (rad_AB * rad_AB > (_pt_prev_A - _pt_prev_B).sqrMagnitude)
+                {
+                    dir_BtoA = _prev_A_B_order; 
+                }
                 dir_BtoA = VOp.Normalize(dir_BtoA);
 
                 Vector3 lastPt1 = meetPt, lastPt2 = meetPt;
