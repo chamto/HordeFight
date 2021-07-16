@@ -568,10 +568,13 @@ namespace UtilGS9
             LineSegment3.ClosestPoints(out _pt_cur_A, out _pt_cur_B, _cur_seg_A, _cur_seg_B);
             _cur_A_B_order = _pt_cur_B - _pt_cur_A;
 
-            
+            //첫번째 통과선분을 찾아내기 위한 최소제곱거리 반환 , 정지상태를 가정하고 검사한다
+            _sqrLen_TestCCD_Prev_A_B_Order = TestCCD_Prev_A_B_Order(_pt_prev_A, _pt_prev_B);
+
             _intr_A_B_inside = false;
             result_contact = Collision_CCD_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
-            if(false == result_contact)
+            //DebugWide.LogBlue("ccd : " + result_contact);
+            if (false == result_contact)
             {
                 if (rad_AB * rad_AB > (_pt_cur_A - _pt_cur_B).sqrMagnitude)
                 {
@@ -688,7 +691,59 @@ namespace UtilGS9
 
         //유사 CCD검사를 하여 close_A 와 close_B 사이의 제곱길이를 반환한다 
         //사각꼴과 선분이 서로 닿지 않고 반지름내 충돌상황인 경우 , 평면과 선분 검사를 하여 교점을 찾아낸다  
-        public float TestCCD_Cur_A_B_Order(Vector3 close_A, Vector3 close_B)
+        //public float TestCCD_Cur_A_B_Order(Vector3 close_A, Vector3 close_B)
+        //{
+        //    Vector3 none;
+
+        //    if (false == __isSeg_A)
+        //    {
+        //        Plane plane = new Plane(_cur_seg_A.origin, _cur_seg_A.last, _prev_seg_A.last);
+
+        //        float inT;
+        //        int result = Plane.Intersect(out inT, new Line3(_cur_seg_B.origin, _cur_seg_B.direction), plane);
+        //        //DebugWide.LogBlue("plane 1 " + result);
+        //        if (1 == result)
+        //        {
+        //            close_B = _cur_seg_B.origin + inT * _cur_seg_B.direction;
+
+        //            if (true == __isSeg_B)
+        //            {
+        //                LineSegment3.ClosestPoints(out none, out close_A, new LineSegment3(close_B, close_B - __dir_A * 10000), _cur_seg_A);
+        //            }
+        //        }
+
+        //    }
+
+        //    if (false == __isSeg_B)
+        //    {
+
+        //        Plane plane = new Plane(_cur_seg_B.origin, _cur_seg_B.last, _prev_seg_B.last);
+        //        //plane.Draw(5, Color.white);
+        //        //Vector3 inPt;
+        //        float inT;
+        //        //int result = Plane.Intersect(out inPt, _cur_seg_A, plane);
+        //        int result = Plane.Intersect(out inT, new Line3(_cur_seg_A.origin, _cur_seg_A.direction), plane);
+        //        //DebugWide.LogBlue("plane 1 " + result);
+        //        if (1 == result)
+        //        {
+        //            close_A = _cur_seg_A.origin + inT * _cur_seg_A.direction;
+        //            //close_A = inPt;
+
+        //            if (true == __isSeg_A)
+        //            {
+        //                LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A - __dir_B * 10000), _cur_seg_B);
+        //            }
+        //        }
+
+        //    }
+
+        //    return (close_A - close_B).sqrMagnitude;
+        //}
+
+        //정지상태를 가정하고 검사한다
+        //유사 CCD검사를 하여 close_A 와 close_B 사이의 제곱길이를 반환한다 
+        //사각꼴과 선분이 서로 닿지 않고 반지름내 충돌상황인 경우 , 평면과 선분 검사를 하여 교점을 찾아낸다  
+        public float TestCCD_Prev_A_B_Order(Vector3 close_A, Vector3 close_B)
         {
             Vector3 none;
 
@@ -697,15 +752,15 @@ namespace UtilGS9
                 Plane plane = new Plane(_cur_seg_A.origin, _cur_seg_A.last, _prev_seg_A.last);
 
                 float inT;
-                int result = Plane.Intersect(out inT, new Line3(_cur_seg_B.origin, _cur_seg_B.direction), plane);
+                int result = Plane.Intersect(out inT, new Line3(_prev_seg_B.origin, _prev_seg_B.direction), plane);
                 //DebugWide.LogBlue("plane 1 " + result);
                 if (1 == result)
                 {
-                    close_B = _cur_seg_B.origin + inT * _cur_seg_B.direction;
+                    close_B = _prev_seg_B.origin + inT * _prev_seg_B.direction;
 
                     if (true == __isSeg_B)
                     {
-                        LineSegment3.ClosestPoints(out none, out close_A, new LineSegment3(close_B, close_B - __dir_A * 10000), _cur_seg_A);
+                        LineSegment3.ClosestPoints(out none, out close_A, new LineSegment3(close_B, close_B - __dir_A * 10000), _prev_seg_A);
                     }
                 }
 
@@ -719,16 +774,16 @@ namespace UtilGS9
                 //Vector3 inPt;
                 float inT;
                 //int result = Plane.Intersect(out inPt, _cur_seg_A, plane);
-                int result = Plane.Intersect(out inT, new Line3(_cur_seg_A.origin, _cur_seg_A.direction), plane);
+                int result = Plane.Intersect(out inT, new Line3(_prev_seg_A.origin, _prev_seg_A.direction), plane);
                 //DebugWide.LogBlue("plane 1 " + result);
                 if (1 == result)
                 {
-                    close_A = _cur_seg_A.origin + inT * _cur_seg_A.direction;
+                    close_A = _prev_seg_A.origin + inT * _prev_seg_A.direction;
                     //close_A = inPt;
 
                     if (true == __isSeg_A)
                     {
-                        LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A - __dir_B * 10000), _cur_seg_B);
+                        LineSegment3.ClosestPoints(out none, out close_B, new LineSegment3(close_A, close_A - __dir_B * 10000), _prev_seg_B);
                     }
                 }
 
@@ -737,6 +792,7 @@ namespace UtilGS9
             return (close_A - close_B).sqrMagnitude;
         }
 
+        //close_A 와 close_B 가 같을때의 예외처리가 안되어 있음 , 같을때 엉뚱한 위치로 계산한다  - fixme 
         public bool Collision_Normal_3(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
 
@@ -800,6 +856,20 @@ namespace UtilGS9
             Vector3 lastPt2 = meetPt;
             Vector3 dir_drop = VOp.Normalize(close_B - close_A);
 
+            //if(Misc.IsZero(_pt_cur_A - _pt_cur_B))
+            //{
+            //    DebugWide.LogBlue("zero llllll"); 
+            //}
+            //if (Misc.IsZero(dir_drop))
+            //{
+            //    DebugWide.LogBlue("zero 22222");
+            //}
+
+            //모서리에서 이상한 계산 막음 
+            if (0 > Vector3.Dot(_prev_A_B_order, _cur_A_B_order))
+            {
+                dir_drop *= -1; 
+            }
             //------
             Vector3 dir2 = _cur_seg_B.direction;
             if (0 < Vector3.Dot(_cur_seg_B.direction, __dir_A))
@@ -893,7 +963,7 @@ namespace UtilGS9
             return true;
         }
 
-        public float _sqrLen_TestCCD_Cur_A_B_Order = 0;
+        public float _sqrLen_TestCCD_Prev_A_B_Order = 0;
         public bool Collision_Normal_2(float rateAtoB, bool allowFixed_a, bool allowFixed_b, Transform root_0, Transform root_1)
         {
             //평면상에서의 선분vs선분의 겹침처리를 안하려고 추가했으나 , 엇갈려 만날을 때를 처리하지 않는문제 때문에 주석한다 
@@ -910,7 +980,14 @@ namespace UtilGS9
             LineSegment3 newSegA = _cur_seg_A, newSegB = _cur_seg_B;
 
             //float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
-            Vector3 dir_drop = VOp.Normalize(_cur_A_B_order);
+
+            //_cur_A_B_order 가 0이 될때 방향을 못구하는 문제가 발생할떄 _prev_A_B_order 를 쓴다  
+            Vector3 dir_drop = _cur_A_B_order;
+            if (Misc.IsZero(_cur_A_B_order))
+            {
+                dir_drop = _prev_A_B_order;
+            }
+            dir_drop = VOp.Normalize(dir_drop);
 
             //------
             Vector3 close_A = _pt_cur_A;
@@ -921,7 +998,7 @@ namespace UtilGS9
             float rad_AB = _radius_A + _radius_B;
 
             //------
-            _sqrLen_TestCCD_Cur_A_B_Order = TestCCD_Cur_A_B_Order(close_A, close_B);
+            //_sqrLen_TestCCD_Cur_A_B_Order = TestCCD_Cur_A_B_Order(close_A, close_B);
             //------
 
             float dropping = rad_AB * (1f - rateAtoB);
@@ -1271,7 +1348,11 @@ namespace UtilGS9
 
             //==================================================
 
-
+            //동일한 점일떄는 CCD를 처리하지 못한다 
+            if (Misc.IsZero(close_A - close_B))
+            {
+                result_contact = false;
+            }
 
             if (result_contact)
             {
@@ -1427,7 +1508,7 @@ namespace UtilGS9
 
                 result_contact = true;
 
-                //DebugWide.LogBlue("엇갈려 " + result_contact + "  ");
+                //DebugWide.LogBlue("엇갈려 " + result_contact + "  " + __isSeg_A + "  " + __isSeg_B);
 
                 //사각꼴과 선분이 만난 경우 : 교점이 하나만 나오므로 max를 따로 구해야 한다 
                 if (true == __isSeg_A && false == __isSeg_B)
@@ -1506,7 +1587,11 @@ namespace UtilGS9
 
             //==================================================
 
-
+            //동일한 점일떄는 CCD를 처리하지 못한다 
+            if (Misc.IsZero(close_A - close_B))
+            {
+                result_contact = false;
+            }
 
             if (result_contact)
             {

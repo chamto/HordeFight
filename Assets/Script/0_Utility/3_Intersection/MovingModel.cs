@@ -246,7 +246,8 @@ namespace UtilGS9
             bool inter_outside = false;
             _update = false;
             float min_len = 1000000;
-            float max_len = 0f;
+            //float max_len = 0f;
+            float min2_len = 1000000;
             __min_A_rot = Quaternion.identity;
             __min_B_rot = Quaternion.identity;
             int find_a=-1, find_b=-1;
@@ -299,17 +300,16 @@ namespace UtilGS9
 
                         if (true == _movingSegment._intr_A_B_inside)
                         {
+                            if (true == inter_outside) continue;
 
-
-                            float len_in = _movingSegment._sqrLen_TestCCD_Cur_A_B_Order;
+                            color = Color.gray;
+                            float len_in = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
                             //float len_in = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
                             //float len_in = _movingSegment._cur_A_B_order.sqrMagnitude;
                             //float len_in = _movingSegment._prev_A_B_order.sqrMagnitude;
 
                             DebugWide.LogGreen(a + "  " + b + " -1-  " + len_in + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
 
-
-                            if (true == inter_outside) continue;
 
                             //DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.green);
                             //반지름의 합 내에서 발생
@@ -339,21 +339,23 @@ namespace UtilGS9
                         {
 
                             color = Color.red;
-                            float len_out = _movingSegment._cur_A_B_order.sqrMagnitude;
+                            float len_out = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
+                            //float len_out = _movingSegment._cur_A_B_order.sqrMagnitude;
                             //float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
 
                             DebugWide.LogBlue(a + "  " + b + " -2-  " + len_out + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
                             //DebugWide.AddDrawQ_Circle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.cyan);
 
-                            DebugWide.AddDrawQ_Circle(_movingSegment._cur_seg_B.origin, a * 0.01f, Color.green);
-                            DebugWide.AddDrawQ_Line(_movingSegment._tetr23.GetLine_Last().origin, _movingSegment._tetr23.GetLine_Last().last, Color.cyan);
-                            DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.black);
+                            //DebugWide.AddDrawQ_Circle(_movingSegment._cur_seg_B.origin, a * 0.01f, Color.green);
+                            //DebugWide.AddDrawQ_Line(_movingSegment._tetr23.GetLine_Last().origin, _movingSegment._tetr23.GetLine_Last().last, Color.cyan);
+                            //DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.green);
 
                             //선분 vs 사각꼴   :  최대거리 찾기 
                             //사각꼴 vs 사각꼴  :  최대거리 찾기 
-                            if (max_len < len_out)
+                            //if (max_len < len_out)
+                            if (min2_len > len_out)
                             {
-                                max_len = len_out;
+                                min2_len = len_out;
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
