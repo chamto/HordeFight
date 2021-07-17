@@ -17,8 +17,8 @@ public class Test_TGuardCollision : MonoBehaviour
 
     public bool _vibration_auto_angle = false;
     public bool _auto_angle = false;
-    public bool _forward_angle = false;
     public bool _backward_angle = false;
+    public bool _forward_angle = false;
 
     int __count = 0;
     float __sign = 1f;

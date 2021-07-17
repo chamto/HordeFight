@@ -577,12 +577,13 @@ namespace UtilGS9
                 //DebugWide.LogBlue("ccd : " + result_contact);
                 if (false == result_contact)
                 {
-                    if (rad_AB * rad_AB > (_pt_cur_A - _pt_cur_B).sqrMagnitude)
+
+                    if (rad_AB * rad_AB > _cur_A_B_order.sqrMagnitude)
                     {
                         _intr_A_B_inside = true;
                         result_contact = Collision_Normal_2(rateAtoB, allowFixed_a, allowFixed_b, root_0, root_1);
                     }
-
+                    //DebugWide.LogBlue("inside : " + _intr_A_B_inside);
                 }
             }
 
@@ -985,7 +986,7 @@ namespace UtilGS9
 
             //float penetration = (_radius_A + _radius_B) - _cur_A_B_order.magnitude;
 
-            //_cur_A_B_order 가 0이 될때 방향을 못구하는 문제가 발생할떄 _prev_A_B_order 를 쓴다  
+            //_cur_A_B_order 가 0이 될때 방향을 못구하는 문제가 발생한다. 이때 _prev_A_B_order 를 쓴다  
             Vector3 dir_drop = _cur_A_B_order;
             if (Misc.IsZero(_cur_A_B_order))
             {
@@ -1604,13 +1605,9 @@ namespace UtilGS9
                 //DebugWide.AddDrawQ_Circle(meetPt, 0.02f, Color.red);
                 //DebugWide.LogBlue("!! 사각꼴(선분)이 서로 엇갈려 만난 경우  r:" + result_contact + "  sA:" + __isSeg_A + "  sB:" + __isSeg_B);
 
-                Vector3 dir_BtoA = close_A - close_B;
-
-
-                if (rad_AB * rad_AB > (_pt_prev_A - _pt_prev_B).sqrMagnitude)
-                {
-                    dir_BtoA = _prev_A_B_order; 
-                }
+                //Vector3 dir_BtoA = close_A - close_B; //만나는 각이 커질수록 파고드는 현상이 있음 
+                //_cur_A_B_order를 사용하면 collision_nomal_2 과 연계해 표현이 자연스러워 진다 
+                Vector3 dir_BtoA = -_cur_A_B_order;
                 dir_BtoA = VOp.Normalize(dir_BtoA);
 
                 Vector3 lastPt1 = meetPt, lastPt2 = meetPt;
