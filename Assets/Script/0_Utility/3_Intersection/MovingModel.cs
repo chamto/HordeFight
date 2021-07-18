@@ -47,7 +47,7 @@ namespace UtilGS9
             }
 
 
-            public void Init(Transform tr_frame)
+            public void Init(Transform tr_frame , string root_name)
             {
                 //_prev_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
                 //_cur_seg = new LineSegment3[MAX_SEGMENT_NUMBER];
@@ -61,7 +61,7 @@ namespace UtilGS9
                 {
                     if (0 == i)
                     {
-                        seg = Hierarchy.GetTransform(tr_frame, "root");
+                        seg = Hierarchy.GetTransform(tr_frame, root_name);
                         root = seg;
                     }
                     else
@@ -152,40 +152,48 @@ namespace UtilGS9
             //_frame_A = new Frame();
             //_frame_B = new Frame();
 
-            _frame_A.Init(frame_A);
-            _frame_B.Init(frame_B);
+            _frame_A.Init(frame_A , "root");
+            _frame_B.Init(frame_B , "root");
 
 
         }
 
-
-        //private Quaternion __prev_A_rot = Quaternion.identity;
-        //private Quaternion __prev_B_rot = Quaternion.identity;
-        private Quaternion __min_A_rot = Quaternion.identity;
-        private Quaternion __min_B_rot = Quaternion.identity;
 
         public bool Update()
         {
+            _sum_dir_move_A = ConstV.v3_zero;
+            _sum_dir_move_A = ConstV.v3_zero;
+
             bool result = false;
-            if (true == Resolve())
+            if (true == ContactResolve())
+            {
                 result = true;
 
-            //첫번째 계산후 결과선분이 다른선분과 겹쳐질수 있다 
-            //겹쳐있는데도 불구하고 통과하지도 않고 , 현재선분의 최소거리가 반지름내에도 있지 않다면 계산을 할수가 없다
-            //이를 고치기 위해 계산이 끝난 정지상태에서 다시 계산을 하여 안정화시킨다 
-            if (true == Resolve())
-                result = true;
+                //첫번째 계산후 결과선분이 다른선분과 겹쳐질수 있다 
+                //겹쳐있는데도 불구하고 통과하지도 않고 , 현재선분의 최소거리가 반지름내에도 있지 않다면 계산을 할 수가 없다
+                //이를 고치기 위해 계산이 끝난 정지상태에서 다시 계산을 하여 안정화시킨다 
+                ContactResolve();
+
+            }
+
 
             return result;
         }
+
+        public void Resolve()
+        { }
 
         public LineSegment3 __find_seg_A = new LineSegment3();
         public LineSegment3 __find_seg_B = new LineSegment3();
         public LineSegment3 __find_prev_A = new LineSegment3();
         public LineSegment3 __find_prev_B = new LineSegment3();
-        public Vector3 __dir_move_A = ConstV.v3_zero;
-        public Vector3 __dir_move_B = ConstV.v3_zero;
-        public bool Resolve()
+        public Vector3 _sum_dir_move_A = ConstV.v3_zero;
+        public Vector3 _sum_dir_move_B = ConstV.v3_zero;
+
+        private Quaternion __min_A_rot = Quaternion.identity;
+        private Quaternion __min_B_rot = Quaternion.identity;
+
+        public bool ContactResolve()
         {
 
             if (false == __init) return false;
@@ -196,6 +204,7 @@ namespace UtilGS9
 
             LineSegment3 prev_A, cur_A;
             LineSegment3 prev_B, cur_B;
+            Vector3 dir_move_A = ConstV.v3_zero, dir_move_B = ConstV.v3_zero;
             //Vector3 stand = _frame_sword_A._prev_seg[ROOT0].origin;
             bool recalc = false;
             bool inter_outside = false;
@@ -284,8 +293,10 @@ namespace UtilGS9
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
-                                __dir_move_A = _movingSegment._dir_move_A;
-                                __dir_move_B = _movingSegment._dir_move_B;
+                                dir_move_A = _movingSegment._dir_move_A;
+                                dir_move_B = _movingSegment._dir_move_B;
+                                _sum_dir_move_A += _movingSegment._dir_move_A;
+                                _sum_dir_move_B += _movingSegment._dir_move_B;
 
                                 __find_prev_A = __find_seg_A;
                                 __find_prev_B = __find_seg_B;
@@ -322,8 +333,10 @@ namespace UtilGS9
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
-                                __dir_move_A = _movingSegment._dir_move_A;
-                                __dir_move_B = _movingSegment._dir_move_B;
+                                dir_move_A = _movingSegment._dir_move_A;
+                                dir_move_B = _movingSegment._dir_move_B;
+                                _sum_dir_move_A += _movingSegment._dir_move_A;
+                                _sum_dir_move_B += _movingSegment._dir_move_B;
 
                                 __find_prev_A = __find_seg_A;
                                 __find_prev_B = __find_seg_B;
@@ -360,7 +373,7 @@ namespace UtilGS9
                 }
                 else
                 {
-                    _frame_A._tr_frame.position += __dir_move_A;
+                    _frame_A._tr_frame.position += dir_move_A;
                     //DebugWide.DrawLine(__dir_move_A + _frame_A._tr_frame.position, _frame_A._tr_frame.position, Color.white);
                     //DebugWide.LogBlue("aa  " + __dir_move_A);
 
@@ -372,7 +385,7 @@ namespace UtilGS9
                 }
                 else
                 {
-                    _frame_B._tr_frame.position += __dir_move_B;
+                    _frame_B._tr_frame.position += dir_move_B;
                     //DebugWide.DrawLine(__dir_move_B + _frame_B._tr_frame.position, _frame_B._tr_frame.position, Color.white);
                     //DebugWide.LogBlue("bb  " + __dir_move_B);
                 }

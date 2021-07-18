@@ -53,7 +53,7 @@ namespace HordeFight
             _view_spr = Hierarchy.GetTransform(_tr_view, "arm_spr").GetComponent<SpriteRenderer>();
 
             _tr_frame = Hierarchy.GetTransform(arm, "frame");
-            _frame.Init(_tr_frame);
+            _frame.Init(_tr_frame , "root");
             _tr_frame_start =    _frame._info[0].start;
             _tr_frame_end =      _frame._info[0].end;
 

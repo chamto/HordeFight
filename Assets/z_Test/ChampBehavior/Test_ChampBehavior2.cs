@@ -32,7 +32,7 @@ namespace HordeFight
         private void OnDrawGizmos()
         {
 
-            DebugWide.DrawQ_All_AfterTime(1);
+            DebugWide.DrawQ_All();
 
             _movingModel.Draw();
             //_frame_ch_0.Draw(Color.red);
@@ -82,12 +82,12 @@ namespace HordeFight
 
             GameObject gobj = GameObject.Find("lothar");
             _champ_0 = CreateTestChamp(gobj.transform, ChampUnit.eKind.lothar);
-            _frame_ch_0.Init(_champ_0.transform);
+            _frame_ch_0.Init( _champ_0.transform , "bone");
             _frame_ch_0._info[0].radius = _champ_0._collider_radius;
 
             gobj = GameObject.Find("footman");
             _champ_1 = CreateTestChamp(gobj.transform, ChampUnit.eKind.footman);
-            _frame_ch_1.Init(_champ_1.transform);
+            _frame_ch_1.Init(_champ_1.transform , "bone");
             _frame_ch_1._info[0].radius = _champ_1._collider_radius;
 
             _effect = Hierarchy.GetTransform(gobj.transform, "emotion");
@@ -100,14 +100,14 @@ namespace HordeFight
 
             gobj = GameObject.Find("test");
             _test = gobj.transform;
-            _frame_test.Init(_test);
+            _frame_test.Init(_test , "root");
             _frame_test._info[0].radius = 0.4f;
             //_movingModel.Init(_champ_0._limbs._armed_left._tr_frame, _champ_1._limbs._armed_left._tr_frame);
 
-            //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
             //_movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_ch_1);
             //_movingModel.SetFrame(true, true, _champ_0._limbs._armed_left._frame, _champ_1._limbs._armed_left._frame);
 
+            //_movingModel.SetFrame(false, false, _frame_ch_0, _frame_ch_1);
             _movingModel.SetFrame(false, false, _champ_0._limbs._armed_left._frame, _frame_test);
         }
 
@@ -190,11 +190,13 @@ namespace HordeFight
                 //len_two = _champ_1._limbs._twoHand_length;
                 //_champ_1._limbs._tr_hand_right.position = pos_o + dir_two.normalized * len_two;
 
-                _movingModel.__dir_move_A.y = 0;
-                _movingModel.__dir_move_B.y = 0;
-                _champ_0.SetPos(_champ_0.GetPos3D() + _movingModel.__dir_move_A);
-                //_champ_1.SetPos(_champ_1.GetPos3D() + _movingModel.__dir_move_B);
 
+                _movingModel._sum_dir_move_A.y = 0;
+                _movingModel._sum_dir_move_B.y = 0;
+                _champ_0.SetPos(_champ_0.GetPos3D() + _movingModel._sum_dir_move_A);
+                _champ_1.SetPos(_champ_1.GetPos3D() + _movingModel._sum_dir_move_B);
+
+                //frame 값이 캐릭터의 위치값이 아닐때도 있으므로 바로 적용하는데 주의필요 
                 //_champ_0.SetPos(_movingModel._frame_A._tr_frame.position);
                 //_champ_1.SetPos(_movingModel._frame_B._tr_frame.position);
 
