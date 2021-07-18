@@ -127,8 +127,8 @@ namespace UtilGS9
 
             _movingSegment.Draw();
 
-            __find_seg_A.Draw(Color.white);
-            __find_seg_B.Draw(Color.black);
+            //__find_seg_A.Draw(Color.white);
+            //__find_seg_B.Draw(Color.black);
 
         }
 
@@ -156,73 +156,13 @@ namespace UtilGS9
             _frame_B.Init(frame_B);
 
 
-            //Init_Prev_AB_Order();
-
         }
 
-        //public void Init_Prev_AB_Order()
-        //{
-        //    Vector3 pt_start, pt_end;
-        //    __prev_A_B_order = new Vector3[_frame_A._seg_count, _frame_B._seg_count];
-        //    for (int a = 0; a < _frame_A._seg_count; a++)
-        //    {
-        //        for (int b = 0; b < _frame_B._seg_count; b++)
-        //        {
-        //            LineSegment3.ClosestPoints(out pt_start, out pt_end,
-        //                                       _frame_A._info[a].ToSegment(), _frame_B._info[b].ToSegment());
-        //            _movingSegment.__prev_A_B_order = pt_end - pt_start;
-        //            __prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
-        //        }
-        //    }
-        //}
 
         //private Quaternion __prev_A_rot = Quaternion.identity;
         //private Quaternion __prev_B_rot = Quaternion.identity;
         private Quaternion __min_A_rot = Quaternion.identity;
         private Quaternion __min_B_rot = Quaternion.identity;
-        public void Update_2()
-        {
-            if (false == __init) return;
-
-            _frame_A.Cur_Update();
-            _frame_B.Cur_Update();
-            //=================================================
-
-            LineSegment3 prev_A, cur_A;
-            LineSegment3 prev_B, cur_B;
-
-            int idx = 0;
-
-            prev_A = _frame_A._info[idx].prev_seg;
-            cur_A = _frame_A._info[idx].cur_seg;
-
-            prev_B = _frame_B._info[idx].prev_seg;
-            cur_B = _frame_B._info[idx].cur_seg;
-
-            _movingSegment._radius_A = _frame_A._info[idx].radius;
-            _movingSegment._radius_B = _frame_B._info[idx].radius;
-            _movingSegment.Input_TGuard(prev_A, prev_B, cur_A, cur_B);
-
-            bool contact = _movingSegment.Find_TGuard_vs_TGuard(_rateAtoB, _allowFixed_a, _allowFixed_b, _frame_A._tr_frame, _frame_B._tr_frame);
-            if (true == contact)
-            {
-                _frame_A._tr_frame.rotation = _movingSegment._localRota_A * _frame_A._tr_frame.rotation; //실제적용 
-                _frame_B._tr_frame.rotation = _movingSegment._localRota_B * _frame_B._tr_frame.rotation;
-
-                //_frame_sword_A._tr_frame.rotation = _movingSegment.__localRota_A * __prev_A_rot; //실제적용 
-                //_frame_sword_B._tr_frame.rotation = _movingSegment.__localRota_B * __prev_B_rot;
-            }
-
-            //=================================================
-            //__prev_A_rot = _frame_sword_A._tr_frame.rotation;
-            //__prev_B_rot = _frame_sword_B._tr_frame.rotation;
-
-            _frame_A._info[idx].prev_seg = _movingSegment._prev_seg_A;
-            _frame_B._info[idx].prev_seg = _movingSegment._prev_seg_B;
-            //__prev_A_B_order[idx, idx] = _movingSegment.__prev_A_B_order;
-            //_frame_sword_A.Prev_Update();
-            //_frame_sword_B.Prev_Update();
-        }
 
         public bool Update()
         {
@@ -310,8 +250,8 @@ namespace UtilGS9
 
                     if (recalc)
                     {
-                        if(false == _update)
-                            DebugWide.LogRed("--------------------------------------------------------");
+                        //if(false == _update)
+                            //DebugWide.LogRed("--------------------------------------------------------");
 
                         _update = true;
 
@@ -321,7 +261,7 @@ namespace UtilGS9
                         float new_len = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
                         if (true == _movingSegment._intr_A_B_inside)
                         {
-                            DebugWide.LogGreen(a + "  " + b + " -1-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+                            //DebugWide.LogGreen(a + "  " + b + " -1-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
 
                             if (true == inter_outside) continue;
 
@@ -364,7 +304,7 @@ namespace UtilGS9
                             //float len_out = _movingSegment._cur_A_B_order.sqrMagnitude;
                             //float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
 
-                            DebugWide.LogBlue(a + "  " + b + " -2-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+                            //DebugWide.LogBlue(a + "  " + b + " -2-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
                             //DebugWide.AddDrawQ_Circle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.cyan);
 
                             //DebugWide.AddDrawQ_Circle(_movingSegment._cur_seg_B.origin, a * 0.01f, Color.green);
