@@ -224,13 +224,28 @@ namespace UtilGS9
             //_frame_sword_B.Prev_Update();
         }
 
+        public bool Update()
+        {
+            bool result = false;
+            if (true == Resolve())
+                result = true;
+
+            //첫번째 계산후 결과선분이 다른선분과 겹쳐질수 있다 
+            //겹쳐있는데도 불구하고 통과하지도 않고 , 현재선분의 최소거리가 반지름내에도 있지 않다면 계산을 할수가 없다
+            //이를 고치기 위해 계산이 끝난 정지상태에서 다시 계산을 하여 안정화시킨다 
+            if (true == Resolve())
+                result = true;
+
+            return result;
+        }
+
         public LineSegment3 __find_seg_A = new LineSegment3();
         public LineSegment3 __find_seg_B = new LineSegment3();
         public LineSegment3 __find_prev_A = new LineSegment3();
         public LineSegment3 __find_prev_B = new LineSegment3();
         public Vector3 __dir_move_A = ConstV.v3_zero;
         public Vector3 __dir_move_B = ConstV.v3_zero;
-        public bool Update()
+        public bool Resolve()
         {
 
             if (false == __init) return false;
@@ -287,6 +302,12 @@ namespace UtilGS9
                     //__prev_A_B_order[a, b] = _movingSegment.__prev_A_B_order;
                     //=============
 
+                    //if(a == 4)
+                    //{
+                    //    DebugWide.AddDrawQ_Line(_movingSegment._tetr01.GetLine_Last().origin, _movingSegment._tetr01.GetLine_Last().last, Color.cyan);
+                    //    DebugWide.AddDrawQ_Line(_movingSegment._tetr01.GetLine_Origin().origin, _movingSegment._tetr01.GetLine_Origin().last, Color.green);
+                    //}
+
                     if (recalc)
                     {
                         if(false == _update)
@@ -297,18 +318,18 @@ namespace UtilGS9
 
                         //하나의 프레임에서 하나의 유형만 발생한다.
                         //float new_len = _movingSegment._cur_A_B_order.sqrMagnitude;
-
+                        float new_len = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
                         if (true == _movingSegment._intr_A_B_inside)
                         {
+                            DebugWide.LogGreen(a + "  " + b + " -1-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+
                             if (true == inter_outside) continue;
 
                             color = Color.gray;
-                            float len_in = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
+
                             //float len_in = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
                             //float len_in = _movingSegment._cur_A_B_order.sqrMagnitude;
                             //float len_in = _movingSegment._prev_A_B_order.sqrMagnitude;
-
-                            DebugWide.LogGreen(a + "  " + b + " -1-  " + len_in + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
 
 
                             //DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.green);
@@ -316,10 +337,10 @@ namespace UtilGS9
                             //선분 vs 선분  :  최소거리 찾기 
                             //선분 vs 사각꼴   :  최소거리 찾기 
                             //사각꼴 vs 사각꼴  :  최소거리 찾기 
-                            if (min_len > len_in)
+                            if (min_len > new_len)
                             {
 
-                                min_len = len_in;
+                                min_len = new_len;
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
@@ -339,23 +360,25 @@ namespace UtilGS9
                         {
 
                             color = Color.red;
-                            float len_out = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
+                            //float len_out = _movingSegment._sqrLen_TestCCD_Prev_A_B_Order;
                             //float len_out = _movingSegment._cur_A_B_order.sqrMagnitude;
                             //float len_out = (_movingSegment._meetPt_A - _movingSegment._meetPt_B).sqrMagnitude;
 
-                            DebugWide.LogBlue(a + "  " + b + " -2-  " + len_out + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
+                            DebugWide.LogBlue(a + "  " + b + " -2-  " + new_len + "  " + Misc.GetDir8_AxisZ(_movingSegment._cur_A_B_order));
                             //DebugWide.AddDrawQ_Circle(_movingSegment._meetPt_B, _movingSegment._radius_B, Color.cyan);
 
                             //DebugWide.AddDrawQ_Circle(_movingSegment._cur_seg_B.origin, a * 0.01f, Color.green);
                             //DebugWide.AddDrawQ_Line(_movingSegment._tetr23.GetLine_Last().origin, _movingSegment._tetr23.GetLine_Last().last, Color.cyan);
+                            //DebugWide.AddDrawQ_Line(_movingSegment._tetr01.GetLine_Last().origin, _movingSegment._tetr01.GetLine_Last().last, Color.cyan);
+                            //DebugWide.AddDrawQ_Line(_movingSegment._tetr01.GetLine_Origin().origin, _movingSegment._tetr01.GetLine_Origin().last, Color.green);
                             //DebugWide.AddDrawQ_Line(_movingSegment._meetPt_A, _movingSegment._meetPt_B, Color.green);
 
                             //선분 vs 사각꼴   :  최대거리 찾기 
                             //사각꼴 vs 사각꼴  :  최대거리 찾기 
                             //if (max_len < len_out)
-                            if (min2_len > len_out)
+                            if (min2_len > new_len)
                             {
-                                min2_len = len_out;
+                                min2_len = new_len;
 
                                 __min_A_rot = _movingSegment._localRota_A;
                                 __min_B_rot = _movingSegment._localRota_B;
@@ -383,6 +406,9 @@ namespace UtilGS9
             //적용 
             if (_update)
             {
+                //DebugWide.AddDrawQ_Circle(__find_seg_A.origin, _movingSegment._radius_A, Color.cyan);
+                //DebugWide.AddDrawQ_Circle(__find_seg_A.last, _movingSegment._radius_A, Color.cyan);
+                //DebugWide.AddDrawQ_Line(__find_seg_A.origin, __find_seg_A.last, Color.cyan);
 
                 //DebugWide.AddDrawQ_Line(__find_prev_B.origin, __find_seg_B.origin, color);
                 //DebugWide.AddDrawQ_Circle(__find_seg_B.origin, _movingSegment._radius_B, color);
