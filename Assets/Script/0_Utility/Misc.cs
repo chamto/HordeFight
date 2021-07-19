@@ -639,24 +639,28 @@ namespace UtilGS9
         }
 
         //수직내적의 값이 0 이면 평행 , 양수면 반시계 방향 , 음수면 시계 방향으로 v->w 회전 
-        //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@
+        //수직내적 : 2차원상의 외적값 , 수학책 35p ,  vㅗ⋅w = |v||w|sin@ = vㅗ(-y,x)⋅w(x,y) , v를 90도 회전시킨후 w와 내적한 값이다  
         //수직내적 , 행렬식값 , 부호가 있는 외적길이
         static public float PerpDot(Vector2 v, Vector2 w)         {
             //v(x,y) => vㅗ(-y,x) v를 반시계방향으로 90도 회전 한다. 유니티는 왼손좌표계 시계방향 회전인데 이렇게 써도 되나 ??? - 20210112 chamto
             //20210421 chamto - 수학식과 좌표계는 상관없다. 뷰변환에 의해 왼손/오른손 좌표계가 정해지는 것이지 좌표계에 따라 식이 변하는 것이 아님 
             //왼손좌표계라면 당연히 시계방향 회전이 되는 것임 , 이것도 분리해서 생각하면 안됨 (오른손좌표계라면 반시계방향 회전이 됨)
-            //행우선/열우선 어떤방식을 사용하는가에 따라 행렬의 모습이 다르다, 이건 좌표계와 상관이 없다.  
+            //행우선/열우선 어떤방식을 사용하는가에 따라 행렬의 모습이 다르다, 이건 좌표계와 상관이 없다.
+            //20210720 chamto - 수학식과 좌표계는 상관없지만 수직내적은 다른 경우이다. 식 자체가 오른손좌표계용 , 왼손좌표계용이 다르다
+            //오른손좌표계용 식을 모두 왼손좌표계로 변경해야 한다. 이미 사용하고 있는 코드에 어떤 영향을 미칠지 모른다  
             return (-v.y * w.x + v.x * w.y);         }
 
+        //오른손좌표계용으로 작성된 식이므로 사용하지 말것 , 관련처리 제거해야함
         //x-z 평면을 가정한 식 
-        static public float PerpDot_XZ(Vector3 v, Vector3 w)
+        static public float PerpDot_XZ_RightHand(Vector3 v, Vector3 w)
         {
             return (-v.z * w.x + v.x * w.z); //-v.z * w.x 의 값이 크다면 음수 , v.x * w.z 의 값이 크다면 양수라고 생각 할 수 있다 
         }
 
+        //오른손좌표계용으로 작성된 식이므로 사용하지 말것 , 관련처리 제거해야함
         public const int clockwise = 1;
         public const int anticlockwise = -1;
-        public static int Sign_XZ(Vector3 v, Vector3 w)
+        public static int Sign_XZ_RightHand(Vector3 v, Vector3 w)
         {
             if (v.z * w.x > v.x * w.z)
             {
@@ -666,6 +670,40 @@ namespace UtilGS9
             {
                 return clockwise;
             }
+        }
+
+        //vㅗ⋅w = |v||w|sin@ = vㅗ(z, -x)⋅w(x, z)
+        //왼손좌표계용 
+        //수직내적의 값이 양수면 시계방향 , 음수면 반시계방향
+        static public float PerpDot_ZX(Vector3 v, Vector3 w)
+        {
+            //(v.z * w.x) > (v.x * w.z) 시계방향회전
+            //(v.z * w.x) < (v.x * w.z) 반시계방향회전
+            return (v.z * w.x - v.x * w.z); 
+        }
+
+        //왼손좌표계용
+        public static int Sign_ZX(Vector3 v, Vector3 w)
+        {
+            //내적값을 분리해 판단할 수 있다
+            if (v.z * w.x > v.x * w.z)
+            {
+                return 1;//clockwise;
+            }
+            else
+            {
+                return -1;//anticlockwise;
+            }
+
+            //내적값을 그대로 이용해 판단할 수 있다 
+            //if (0 < (v.z * w.x - v.x * w.z))
+            //{
+            //    return 1;//clockwise;
+            //}
+            //else
+            //{
+            //    return -1;//anticlockwise;
+            //}
         } 
         public static Vector3 Truncate(Vector3 v3, float max)
         {

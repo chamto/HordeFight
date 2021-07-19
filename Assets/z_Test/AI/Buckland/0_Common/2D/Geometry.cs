@@ -122,9 +122,9 @@ namespace Buckland
             //float sTop = VOp.PerpDot_XZ(Alo, ABo);
 
 
-            float rTop = VOp.PerpDot_XZ(BAo , Blo); //v, w => v.x*w.z - v.z*w.x 
-            float sTop = VOp.PerpDot_XZ(BAo, Alo);
-            float Bot = VOp.PerpDot_XZ(Alo, Blo);
+            float rTop = VOp.PerpDot_XZ_RightHand(BAo , Blo); //v, w => v.x*w.z - v.z*w.x 
+            float sTop = VOp.PerpDot_XZ_RightHand(BAo, Alo);
+            float Bot = VOp.PerpDot_XZ_RightHand(Alo, Blo);
 
 
             if (Bot == 0)//parallel

@@ -265,7 +265,7 @@ namespace Proto_Move
             if (_velocity.sqrMagnitude > 0.00001f)
             {
 
-                float def = VOp.PerpDot_XZ(_heading, _velocity);
+                float def = VOp.PerpDot_XZ_RightHand(_heading, _velocity);
                 //if (Math.Abs(def) > 0.000001f)
                 {
                     float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);

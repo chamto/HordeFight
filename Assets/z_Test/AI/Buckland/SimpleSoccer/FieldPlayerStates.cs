@@ -218,7 +218,7 @@ namespace Test_SimpleSoccer
                 //calculate the sign (+/-) of the angle between the player heading and the 
                 //facing direction of the goal so that the player rotates around in the 
                 //correct direction
-                int sign = VOp.Sign_XZ(player.Team().HomeGoal().Facing(), player.Heading());
+                int sign = VOp.Sign_XZ_RightHand(player.Team().HomeGoal().Facing(), player.Heading());
                 float angle = Const.QuarterPi * -1 * sign;
 
                 Transformations.Vec3RotateYAroundOrigin(ref direction, angle);
