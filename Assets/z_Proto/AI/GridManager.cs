@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 using UtilGS9;
 
 
-namespace Proto_AI_1
+namespace Proto_AI
 {
     public class Vector3IntComparer : IEqualityComparer<Vector3Int>
     {

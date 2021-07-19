@@ -22,7 +22,7 @@ namespace Proto_AI_1
     public class Proto_AI_1 : MonoBehaviour
     {
         public Transform _tr_target = null;
-        public GridManager _gridMgr = new GridManager();
+        public Proto_AI.GridManager _gridMgr = new Proto_AI.GridManager();
 
         void Awake()
         {
