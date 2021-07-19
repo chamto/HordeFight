@@ -7,66 +7,6 @@ using UtilGS9;
 
 namespace Proto_AI_1
 {
-    public static class DebugViewer
-    {
-        private static Queue<DrawInfo> _drawQ = new Queue<DrawInfo>();
-
-        public static void AddDrawInfo(DrawInfo info)
-        {
-            _drawQ.Enqueue(info);
-        }
-
-        public static void AddDraw_Circle(Vector3 origin, float radius, Color color)
-        {
-
-            DrawInfo drawInfo = new DrawInfo();
-            drawInfo.kind = DrawInfo.eKind.Circle;
-            drawInfo.origin = origin;
-            drawInfo.radius = radius;
-            drawInfo.color = color;
-
-            AddDrawInfo(drawInfo);
-        }
-
-        public static void AddDraw_Line(Vector3 origin, Vector3 last, Color color)
-        {
-            DrawInfo drawInfo = new DrawInfo();
-            drawInfo.kind = DrawInfo.eKind.Line;
-            drawInfo.origin = origin;
-            drawInfo.last = last;
-            drawInfo.color = color;
-
-            AddDrawInfo(drawInfo);
-        }
-
-        public static void Clear()
-        {
-            _drawQ.Clear();
-        }
-
-        static float _elapsedTime = 0;
-        public static void ClearAfterTime(float second)
-        {
-            _elapsedTime += Time.deltaTime;
-
-            if(second < _elapsedTime)
-            {
-                _drawQ.Clear();
-                _elapsedTime = 0; 
-            }
-        }
-
-        public static void OnDrawGizmos()
-        {
-            foreach (DrawInfo info in _drawQ)
-            {
-                info.Draw();
-            }
-
-        }
-
-
-    }
 
     public class EntityMgr
     {
@@ -175,8 +115,7 @@ namespace Proto_AI_1
             if(true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
 
-            DebugViewer.ClearAfterTime(1);
-            DebugViewer.OnDrawGizmos();
+            DebugWide.DrawQ_All_AfterTime(1);
         }
     }
 
