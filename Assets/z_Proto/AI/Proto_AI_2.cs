@@ -154,7 +154,7 @@ namespace Proto_AI_2
         public bool _tag = false;
         public float _radius = 0.5f;
 
-        public Quaternion _rotatioin = Quaternion.identity;
+        public Quaternion _rotation = Quaternion.identity;
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
@@ -172,7 +172,7 @@ namespace Proto_AI_2
 
             _tag = false;
 
-            _rotatioin = Quaternion.identity;
+            _rotation = Quaternion.identity;
 
             _target = ConstV.v3_zero;
             _offset = ConstV.v3_zero;
@@ -217,7 +217,7 @@ namespace Proto_AI_2
             _pos += _velocity * deltaTime;
 
 
-            if (_velocity.sqrMagnitude > 0.001f)
+            if (_velocity.sqrMagnitude > 0.0000001f)
             {
                 //Vector3 perp = Vector3.Cross(_heading, _velocity);
                 //float def = 1;
@@ -239,11 +239,10 @@ namespace Proto_AI_2
                 
                 }
 
-                _rotatioin = Quaternion.AngleAxis(angle, Vector3.up);
-                _heading = _rotatioin * _heading;
+                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
                 _heading = VOp.Normalize(_heading);
                 _speed = _velocity.magnitude;
-
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
                 //DebugWide.AddDrawQ_Line(_pos, _pos + _heading, Color.grey);}
 
@@ -305,12 +304,12 @@ namespace Proto_AI_2
 
         public void Draw(Color color)
         {
-            _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
 
             Vector3 vb0, vb1, vb2;
-            vb0 = _rotatioin * _array_VB[0] * _size.z;
-            vb1 = _rotatioin * _array_VB[1] * _size.z;
-            vb2 = _rotatioin * _array_VB[2] * _size.z;
+            vb0 = _rotation * _array_VB[0] * _size.z;
+            vb1 = _rotation * _array_VB[1] * _size.z;
+            vb2 = _rotation * _array_VB[2] * _size.z;
 
             //에이젼트 출력 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
@@ -438,7 +437,7 @@ namespace Proto_AI_2
         public Vector3 OffsetPursuit(Vehicle leader, Vector3 offset)
         {
             //calculate the offset's position in world space
-            Vector3 WorldOffsetPos = (leader._rotatioin * offset) + leader._pos; //PointToWorldSpace
+            Vector3 WorldOffsetPos = (leader._rotation * offset) + leader._pos; //PointToWorldSpace
 
             Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
 
