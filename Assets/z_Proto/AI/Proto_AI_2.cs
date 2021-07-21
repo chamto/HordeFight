@@ -30,6 +30,7 @@ namespace Proto_AI_2
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
         public float _weight = 20;
+        public bool _isNonpenetration = true;
 
         void Awake()
         {
@@ -45,12 +46,14 @@ namespace Proto_AI_2
             _gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
 
+            //0
             Vehicle v = new Vehicle();
             v.Init();
             v._pos = new Vector3(17, 0, 12);
             EntityMgr.Add(v);
             v._mode = SteeringBehavior.eType.arrive;
 
+            //1
             v = new Vehicle();
             v.Init();
             v._pos = new Vector3(17, 0, 12);
@@ -59,6 +62,7 @@ namespace Proto_AI_2
             v._offset = new Vector3(1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
+            //2
             v = new Vehicle();
             v.Init();
             v._pos = new Vector3(17, 0, 12);
@@ -67,11 +71,38 @@ namespace Proto_AI_2
             v._offset = new Vector3(-1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
+            //-------------------
+
+            //3
+            //v = new Vehicle();
+            //v.Init();
+            //v._pos = new Vector3(17, 0, 12);
+            //EntityMgr.Add(v);
+            //v._leader = EntityMgr.list[0];
+            //v._offset = new Vector3(0, 0, 3f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            ////4
+            //v = new Vehicle();
+            //v.Init();
+            //v._pos = new Vector3(17, 0, 12);
+            //EntityMgr.Add(v);
+            //v._leader = EntityMgr.list[3];
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            ////5
+            //v = new Vehicle();
+            //v.Init();
+            //v._pos = new Vector3(17, 0, 12);
+            //EntityMgr.Add(v);
+            //v._leader = EntityMgr.list[3];
+            //v._offset = new Vector3(-1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
         }
 
 
-        //float _frame_count = 0;
-        //float _elapsedTime = 0;
         int ID = 0;
         void Update()
         {
@@ -94,6 +125,7 @@ namespace Proto_AI_2
                 v._Friction = _Friction;
                 v._anglePerSecond = _anglePerSecond;
                 v._weight = _weight;
+                v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
             }
 
@@ -146,6 +178,7 @@ namespace Proto_AI_2
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
         public float _weight = 20;
+        public bool _isNonpenetration = true; //비침투 
 
         public float _speed = 0;
 
@@ -215,10 +248,12 @@ namespace Proto_AI_2
 
 
             _pos += _velocity * deltaTime;
+            //_pos = WrapAroundXZ(_pos, 100, 100);
 
 
-            if (_velocity.sqrMagnitude > 0.0000001f)
+            if (_velocity.sqrMagnitude > 0.001f)
             {
+
                 //Vector3 perp = Vector3.Cross(_heading, _velocity);
                 //float def = 1;
                 //if (0 > Vector3.Dot(perp, Vector3.up)) def = -1f;
@@ -244,16 +279,26 @@ namespace Proto_AI_2
                 _speed = _velocity.magnitude;
                 _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
-                //DebugWide.AddDrawQ_Line(_pos, _pos + _heading, Color.grey);}
+                //if(0 == _id)
+                //{
+                //    //DebugWide.AddDrawQ_Line(_pos, _pos + _heading, Color.grey);
+                //    DebugWide.AddDrawQ_Line(_pos, _pos + VOp.Normalize(acceleration), Color.grey);
+                //    DebugWide.AddDrawQ_Line(_pos, _pos + VOp.Normalize(_velocity), Color.green);
+                //    DebugWide.LogBlue("  accel: " + VOp.ToString(acceleration) + "  " + acceleration.magnitude + "   vel: " + VOp.ToString(_velocity) + " " + _velocity.magnitude + " " + _velocity.sqrMagnitude);
+                //}
+
 
             }
+            //else
+            //{
+            //    _speed = 0;
+            //    _velocity = ConstV.v3_zero;
 
-            EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            //}
 
-            //if (0 == _id)
-                //DebugWide.LogBlue("F: " + F + " A: " + A.ToString("00.00") + " rot2: " + _rot2 + " vel: " + VOp.ToString(_velocity) + " " + _velocity.magnitude + "  he: " + _heading);
-            
-                //_pos = WrapAroundXZ(_pos, 100, 100);
+            if(_isNonpenetration)
+                EnforceNonPenetrationConstraint(this, EntityMgr.list);
+
         }
 
         public Vector3 WrapAroundXZ(Vector3 pos, int MaxX, int MaxY)
@@ -441,6 +486,14 @@ namespace Proto_AI_2
 
             Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
 
+            //최소거리 이하로 계산됐다면 처리하지 않는다 - 이상회전 문제 때문에 예외처리함 
+            const float MinLen = 0.1f;
+            const float SqrMinLen = MinLen * MinLen;
+            if (ToOffset.sqrMagnitude < SqrMinLen)
+                return ConstV.v3_zero;
+
+            //DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.red);
+
             //the lookahead time is propotional to the distance between the leader
             //and the pursuer; and is inversely proportional to the sum of both
             //agent's velocities
@@ -449,6 +502,7 @@ namespace Proto_AI_2
 
             //now Arrive at the predicted future position of the offset
             return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
+            //return Arrive(WorldOffsetPos, Deceleration.fast);
         }
     }
 
