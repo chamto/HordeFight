@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-
+using Proto_AI;
 
 namespace Proto_AI_2
 {
@@ -12,17 +12,20 @@ namespace Proto_AI_2
     {
 
         public static readonly List<Vehicle> list = new List<Vehicle>();
-        public static void Add(Vehicle v)
+        public static int Add(Vehicle v)
         {
             list.Add(v);
-            v._id = list.Count - 1;
+            return list.Count - 1;
+
         }
     }
 
     public class Proto_AI_2 : MonoBehaviour
     {
         public Transform _tr_target = null;
-        public Proto_AI.GridManager _gridMgr = new Proto_AI.GridManager();
+        public GridManager _gridMgr = new GridManager();
+        public SweepPrune _sweepPrune = new SweepPrune();
+
 
         public float _mass = 1f;
         public float _maxSpeed = 10f;
@@ -48,25 +51,22 @@ namespace Proto_AI_2
 
             //0
             Vehicle v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
+            int id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
             v._mode = SteeringBehavior.eType.arrive;
 
             //1
             v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
             v._leader = EntityMgr.list[0];
             v._offset = new Vector3(1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //2
             v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
             v._leader = EntityMgr.list[0];
             v._offset = new Vector3(-1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
@@ -75,30 +75,35 @@ namespace Proto_AI_2
 
             //3
             v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
             v._leader = EntityMgr.list[0];
             v._offset = new Vector3(1f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             ////4
             v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
-            v._leader = EntityMgr.list[3];
-            v._offset = new Vector3(1f, 0, 0);
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = EntityMgr.list[0];
+            v._offset = new Vector3(2f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //5
             v = new Vehicle();
-            v.Init();
-            v._pos = new Vector3(17, 0, 12);
-            EntityMgr.Add(v);
-            v._leader = EntityMgr.list[3];
-            v._offset = new Vector3(2f, 0, 0);
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = EntityMgr.list[0];
+            v._offset = new Vector3(3f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            //충돌검출기 초기화 
+            List<SweepPrune.CollisionObject> collObj = new List<SweepPrune.CollisionObject>();
+            for(int i=0;i<EntityMgr.list.Count;i++)
+            {
+                collObj.Add(EntityMgr.list[i]._collision); 
+            }
+            _sweepPrune.Initialize(collObj);
 
         }
 
@@ -119,6 +124,8 @@ namespace Proto_AI_2
 
             foreach (Vehicle v in EntityMgr.list)
             {
+                if (0 == v._id) v._withstand = 100; //임시 시험 
+
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
@@ -128,6 +135,28 @@ namespace Proto_AI_2
                 v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
             }
+
+            //==============================================
+            //sweepPrune 삽입정렬 및 충돌처리
+            //==============================================
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                _sweepPrune.SetEndPoint(i, EntityMgr.list[i]._collision); //경계상자 위치 갱신
+            }
+
+            _sweepPrune.UpdateXZ();
+
+            foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap()) 
+            {
+                Vehicle src = EntityMgr.list[key._V0];
+                Vehicle dst = EntityMgr.list[key._V1];
+
+                if (src == dst) continue;
+
+                if (_isNonpenetration)
+                    CollisionPush(src, dst);
+            }
+            //==============================================
 
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -142,12 +171,64 @@ namespace Proto_AI_2
                 //==========================================
 
             }
+        }
 
+        public void CollisionPush(Vehicle src, Vehicle dst)
+        {
+            if (null == src || null == dst) return;
+
+
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+            Vector3 dir_dstTOsrc = VOp.Minus(src._pos, dst._pos);
+            Vector3 n = ConstV.v3_zero;
+            float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+            float r_sum = (src._collision._radius + dst._collision._radius);
+            float sqr_r_sum = r_sum * r_sum;
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dstTOsrc < sqr_r_sum)
+            {
+
+                //==========================================
+                float rate_src, rate_dst;
+                float f_sum = src._withstand + dst._withstand;
+                if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                else
+                {
+                    rate_src = 1f - (src._withstand / f_sum);
+                    rate_dst = 1f - rate_src;
+                }
+
+
+                //n = Misc.GetDir8_Normal3D(dir_dstTOsrc); //8방향으로만 밀리게 한다 
+                n = VOp.Normalize(dir_dstTOsrc);
+
+                float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                float len_bitween = (r_sum - len_dstTOsrc);
+                float len_bt_src = len_bitween * rate_src;
+                float len_bt_dst = len_bitween * rate_dst;
+
+                //2.완전겹친상태 
+                if (float.Epsilon >= len_dstTOsrc)
+                {
+                    n = Misc.GetDir8_Random_AxisY();
+                    len_dstTOsrc = 1f;
+                    len_bt_src = r_sum * 0.5f;
+                    len_bt_dst = r_sum * 0.5f;
+                }
+
+                src.SetPos(src._pos + n * len_bt_src);
+                dst.SetPos(dst._pos - n * len_bt_dst);
+            }
         }
 
         public bool _Draw_BoundaryTile = false;
         private void OnDrawGizmos()
         {
+            if (null == _tr_target) return;
+            DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
+            DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
+
             Color color = Color.black;
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -183,11 +264,13 @@ namespace Proto_AI_2
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
         public float _weight = 20;
+        public float _withstand = 1f; //버티기
+
         public bool _isNonpenetration = true; //비침투 
 
         public float _speed = 0;
 
-        public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
+        //public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
 
         public bool _tag = false;
         public float _radius = 0.5f;
@@ -202,6 +285,8 @@ namespace Proto_AI_2
         Vector3[] _array_VB = new Vector3[3];
 
         public SteeringBehavior _steeringBehavior = new SteeringBehavior();
+
+        public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
 
         public void Reset()
         {
@@ -218,15 +303,33 @@ namespace Proto_AI_2
             _mode = SteeringBehavior.eType.none;
         }
 
-        public void Init()
+        public void Init(int id , float radius , Vector3 pos)
         {
+            _id = id;
+
             _array_VB[0] = new Vector3(0.0f, 0, 1f);
             _array_VB[1] = new Vector3(0.6f, 0, -1f);
             _array_VB[2] = new Vector3(-0.6f, 0, -1f);
 
             _steeringBehavior._vehicle = this;
+            _radius = radius;
+
+            _collision._id = _id;
+            _collision._radius = radius;
+            SetPos(pos);
         }
 
+        public void SetPos(Vector3 newPos)
+        {
+            _pos = newPos;
+
+            //!!!!! 경계상자 위치 갱신
+            _collision._bounds_min.x = newPos.x - _radius;
+            _collision._bounds_min.z = newPos.z - _radius;
+            _collision._bounds_max.x = newPos.x + _radius;
+            _collision._bounds_max.z = newPos.z + _radius;
+            //==============================================
+        }
 
         public void Update(float deltaTime)
         {
@@ -252,9 +355,9 @@ namespace Proto_AI_2
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
 
-            _pos += _velocity * deltaTime;
+            //_pos += _velocity * deltaTime;
             //_pos = WrapAroundXZ(_pos, 100, 100);
-
+            SetPos(_pos + _velocity * deltaTime);
 
             if (_velocity.sqrMagnitude > 0.001f)
             {
@@ -301,8 +404,8 @@ namespace Proto_AI_2
 
             //}
 
-            if(_isNonpenetration)
-                EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            //if(_isNonpenetration)
+                //EnforceNonPenetrationConstraint(this, EntityMgr.list);
 
         }
 
@@ -357,9 +460,9 @@ namespace Proto_AI_2
 
 
             Vector3 vb0, vb1, vb2;
-            vb0 = _rotation * _array_VB[0] * _size.z;
-            vb1 = _rotation * _array_VB[1] * _size.z;
-            vb2 = _rotation * _array_VB[2] * _size.z;
+            vb0 = _rotation * _array_VB[0] * _radius;
+            vb1 = _rotation * _array_VB[1] * _radius;
+            vb2 = _rotation * _array_VB[2] * _radius;
 
             //에이젼트 출력 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
