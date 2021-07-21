@@ -74,31 +74,31 @@ namespace Proto_AI_2
             //-------------------
 
             //3
-            //v = new Vehicle();
-            //v.Init();
-            //v._pos = new Vector3(17, 0, 12);
-            //EntityMgr.Add(v);
-            //v._leader = EntityMgr.list[0];
-            //v._offset = new Vector3(0, 0, 3f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            v.Init();
+            v._pos = new Vector3(17, 0, 12);
+            EntityMgr.Add(v);
+            v._leader = EntityMgr.list[0];
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
             ////4
-            //v = new Vehicle();
-            //v.Init();
-            //v._pos = new Vector3(17, 0, 12);
-            //EntityMgr.Add(v);
-            //v._leader = EntityMgr.list[3];
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            v.Init();
+            v._pos = new Vector3(17, 0, 12);
+            EntityMgr.Add(v);
+            v._leader = EntityMgr.list[3];
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
-            //v = new Vehicle();
-            //v.Init();
-            //v._pos = new Vector3(17, 0, 12);
-            //EntityMgr.Add(v);
-            //v._leader = EntityMgr.list[3];
-            //v._offset = new Vector3(-1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //5
+            v = new Vehicle();
+            v.Init();
+            v._pos = new Vector3(17, 0, 12);
+            EntityMgr.Add(v);
+            v._leader = EntityMgr.list[3];
+            v._offset = new Vector3(2f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
         }
 
@@ -148,9 +148,14 @@ namespace Proto_AI_2
         public bool _Draw_BoundaryTile = false;
         private void OnDrawGizmos()
         {
+            Color color = Color.black;
             foreach (Vehicle v in EntityMgr.list)
             {
-                v.Draw(Color.black);
+                color = Color.black;
+                if (0 == v._id)
+                    color = Color.red;
+
+                v.Draw(color);
             }
 
             if(true == _Draw_BoundaryTile)
