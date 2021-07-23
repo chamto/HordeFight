@@ -35,6 +35,8 @@ namespace Proto_AI_2
         public float _weight = 20;
         public bool _isNonpenetration = true;
 
+        public FormationPoint _formationPoint = new FormationPoint();
+
         void Awake()
         {
             //QualitySettings.vSyncCount = 0; //v싱크 끄기
@@ -49,17 +51,25 @@ namespace Proto_AI_2
             _gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
 
+            //_formationPoint._start = _tr_target.position;
+            _formationPoint._pos = _tr_target.position;
+
+            //------
+
             //0
             Vehicle v = new Vehicle();
             int id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._mode = SteeringBehavior.eType.arrive;
+            //v._mode = SteeringBehavior.eType.arrive;
+            v._leader = _formationPoint;
+            v._offset = new Vector3(0, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //1
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = EntityMgr.list[0];
+            v._leader = _formationPoint;
             v._offset = new Vector3(1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
@@ -67,7 +77,7 @@ namespace Proto_AI_2
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = EntityMgr.list[0];
+            v._leader = _formationPoint;
             v._offset = new Vector3(-1f, 0, -1f);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
@@ -77,7 +87,7 @@ namespace Proto_AI_2
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = EntityMgr.list[0];
+            v._leader = _formationPoint;
             v._offset = new Vector3(1f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
@@ -85,7 +95,7 @@ namespace Proto_AI_2
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = EntityMgr.list[0];
+            v._leader = _formationPoint;
             v._offset = new Vector3(2f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
@@ -93,9 +103,11 @@ namespace Proto_AI_2
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = EntityMgr.list[0];
+            v._leader = _formationPoint;
             v._offset = new Vector3(3f, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            //==============================
 
             //충돌검출기 초기화 
             List<SweepPrune.CollisionObject> collObj = new List<SweepPrune.CollisionObject>();
@@ -104,6 +116,9 @@ namespace Proto_AI_2
                 collObj.Add(EntityMgr.list[i]._collision); 
             }
             _sweepPrune.Initialize(collObj);
+
+
+            //----------
 
         }
 
@@ -118,13 +133,17 @@ namespace Proto_AI_2
 
             //========================
             Vehicle vh = EntityMgr.list[ID];
-            if (null != _tr_target)
-                vh._target = _tr_target.position;
-            vh.KeyInput();
+            //if (null != _tr_target)
+            //    vh._target = _tr_target.position;
+            //vh.KeyInput();
+
+            _formationPoint._end = _tr_target.position;
+            _formationPoint.Update(deltaTime);
+            vh._target = _formationPoint._pos;
 
             foreach (Vehicle v in EntityMgr.list)
             {
-                if (0 == v._id) v._withstand = 100; //임시 시험 
+                //if (0 == v._id) v._withstand = 100; //임시 시험 
 
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
@@ -226,8 +245,9 @@ namespace Proto_AI_2
         private void OnDrawGizmos()
         {
             if (null == _tr_target) return;
-            DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
-            DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
+            //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
+            //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
+            _formationPoint.Draw(Color.white);
 
             Color color = Color.black;
             foreach (Vehicle v in EntityMgr.list)
@@ -246,14 +266,59 @@ namespace Proto_AI_2
         }
     }
 
+    public class BaseEntity
+    {
+        public Vector3 _pos = Vector3.zero;
+        public Vector3 _velocity = Vector3.zero;
+        public float _speed = 10f;
+        public Quaternion _rotation = Quaternion.identity;
+    }
 
-    public class Vehicle
+    public class FormationPoint : BaseEntity
+    {
+        //public Vector3 _start = Vector3.zero;
+        public Vector3 _end = Vector3.zero;
+
+
+        //private Vector3 _n_dir = Vector3.zero;
+        //public void Init(Vector3 start, Vector3 end)
+        //{
+        //    _start = start;
+        //    _end = end;
+        //    _pos = _start;
+
+        //    _n_dir = VOp.Normalize(_end - _start);
+        //}
+
+        public void Update(float deltaTime)
+        {
+            //도착시 종료 
+            if ((_end - _pos).sqrMagnitude < 1) return;
+
+            //DebugWide.LogBlue("sfsdf: " + _pos );
+            Vector3 n = VOp.Normalize(_end - _pos);
+            _velocity = n * _speed;
+            _pos += _velocity * deltaTime;
+
+            _rotation = Quaternion.FromToRotation(Vector3.forward, _velocity);
+        }
+
+        public void Draw(Color color)
+        {
+            DebugWide.DrawCircle(_end, 0.1f, color);
+            DebugWide.DrawLine(_pos, _end, color);
+        }
+
+    }
+
+    public class Vehicle : BaseEntity
     {
         public int _id = -1;
 
-        public Vector3 _pos = Vector3.zero;
-
-        public Vector3 _velocity = new Vector3(0, 0, 0);
+        //public Vector3 _pos = Vector3.zero;
+        //public Vector3 _velocity = new Vector3(0, 0, 0);
+        //public float _speed = 0;
+        //public Quaternion _rotation = Quaternion.identity;
 
         public Vector3 _heading = Vector3.forward;
 
@@ -268,18 +333,15 @@ namespace Proto_AI_2
 
         public bool _isNonpenetration = true; //비침투 
 
-        public float _speed = 0;
-
         //public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
 
         public bool _tag = false;
         public float _radius = 0.5f;
 
-        public Quaternion _rotation = Quaternion.identity;
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
-        public Vehicle _leader = null;
+        public BaseEntity _leader = null;
         public SteeringBehavior.eType _mode = SteeringBehavior.eType.none;
 
         Vector3[] _array_VB = new Vector3[3];
@@ -354,10 +416,15 @@ namespace Proto_AI_2
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
-
             //_pos += _velocity * deltaTime;
             //_pos = WrapAroundXZ(_pos, 100, 100);
             SetPos(_pos + _velocity * deltaTime);
+
+            //SetPos(_pos + VOp.Normalize(_velocity) * _maxSpeed * deltaTime); //등속도 시험 
+
+            //Vector3 n = Misc.GetDir8_Normal3D(_velocity); //8방향으로만 밀리게 한다 
+            //SetPos(_pos + n * _velocity.magnitude * deltaTime);
+
 
             if (_velocity.sqrMagnitude > 0.001f)
             {
@@ -587,7 +654,7 @@ namespace Proto_AI_2
             return Vector3.zero;
         }
 
-        public Vector3 OffsetPursuit(Vehicle leader, Vector3 offset)
+        public Vector3 OffsetPursuit(BaseEntity leader, Vector3 offset)
         {
             //calculate the offset's position in world space
             Vector3 WorldOffsetPos = (leader._rotation * offset) + leader._pos; //PointToWorldSpace
