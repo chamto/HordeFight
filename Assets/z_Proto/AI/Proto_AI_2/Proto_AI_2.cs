@@ -51,7 +51,7 @@ namespace Proto_AI_2
             _gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
 
-            //_formationPoint._start = _tr_target.position;
+            _formationPoint._end = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
 
             //------
@@ -133,12 +133,10 @@ namespace Proto_AI_2
 
             //========================
             Vehicle vh = EntityMgr.list[ID];
-            //if (null != _tr_target)
-            //    vh._target = _tr_target.position;
-            //vh.KeyInput();
 
             _formationPoint._end = _tr_target.position;
             _formationPoint.Update(deltaTime);
+            KeyInput();
             vh._target = _formationPoint._pos;
 
             foreach (Vehicle v in EntityMgr.list)
@@ -190,6 +188,48 @@ namespace Proto_AI_2
                 //==========================================
 
             }
+        }
+
+        public void KeyInput()
+        {
+            const float MOVE_LENGTH = 1f;
+            if (Input.GetKey(KeyCode.W))
+            {
+                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                n = VOp.Normalize(n);
+                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._pos += n * MOVE_LENGTH;
+
+                _tr_target.position = _formationPoint._end;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                n = -VOp.Normalize(n);
+                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._pos += n * MOVE_LENGTH;
+
+                _tr_target.position = _formationPoint._end;
+            }
+            if (Input.GetKey(KeyCode.A))
+            {
+                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                n = -VOp.PerpN(n, Vector3.up);
+                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._pos += n * MOVE_LENGTH;
+
+                _tr_target.position = _formationPoint._end;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                n = VOp.PerpN(n, Vector3.up);
+                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._pos += n * MOVE_LENGTH;
+
+                _tr_target.position = _formationPoint._end;
+            }
+
         }
 
         public void CollisionPush(Vehicle src, Vehicle dst)
@@ -297,6 +337,7 @@ namespace Proto_AI_2
             {
                 //특정거리 안에서 이동없이 방향전환 
                 _rotation = Quaternion.FromToRotation(Vector3.forward, _end - _pos);
+                _velocity = Vector3.zero; //초기화를 안해주면 키이동시 경로가 이상해지는 문제가 발생함
                 return;
             }
 
@@ -607,32 +648,7 @@ namespace Proto_AI_2
             //}
         }
 
-        public void KeyInput()
-        {
 
-            //마찰력
-            if (Input.GetKey(KeyCode.R))
-            {
-                _Friction += 0.01f; //마찰감소
-                if (_Friction > 1)
-                    _Friction = 1;
-            }
-            if (Input.GetKey(KeyCode.F))
-            {
-                _Friction -= 0.01f; //마찰증가
-                if (_Friction < 0)
-                    _Friction = 0;
-            }
-            if (Input.GetKey(KeyCode.T))
-            {
-                _anglePerSecond += 15;
-            }
-            if (Input.GetKey(KeyCode.G))
-            {
-                _anglePerSecond -= 15;
-            }
-
-        }
     }//end class
 
 
@@ -726,10 +742,10 @@ namespace Proto_AI_2
             Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
 
             //최소거리 이하로 계산됐다면 처리하지 않는다 - 이상회전 문제 때문에 예외처리함 
-            const float MinLen = 0.1f;
-            const float SqrMinLen = MinLen * MinLen;
-            if (ToOffset.sqrMagnitude < SqrMinLen)
-                return ConstV.v3_zero;
+            //const float MinLen = 0.1f;
+            //const float SqrMinLen = MinLen * MinLen;
+            //if (ToOffset.sqrMagnitude < SqrMinLen)
+                //return ConstV.v3_zero;
 
             //DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.red);
 
