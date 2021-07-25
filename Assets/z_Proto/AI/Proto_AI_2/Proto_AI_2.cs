@@ -293,7 +293,12 @@ namespace Proto_AI_2
         public void Update(float deltaTime)
         {
             //도착시 종료 
-            if ((_end - _pos).sqrMagnitude < 1) return;
+            if ((_end - _pos).sqrMagnitude < 5)
+            {
+                //특정거리 안에서 이동없이 방향전환 
+                _rotation = Quaternion.FromToRotation(Vector3.forward, _end - _pos);
+                return;
+            }
 
             //DebugWide.LogBlue("sfsdf: " + _pos );
             Vector3 n = VOp.Normalize(_end - _pos);
@@ -393,7 +398,7 @@ namespace Proto_AI_2
             //==============================================
         }
 
-        public void Update(float deltaTime)
+        public void Update2(float deltaTime)
         {
 
             //_speed = 0;
@@ -462,7 +467,7 @@ namespace Proto_AI_2
                 //    DebugWide.LogBlue("  accel: " + VOp.ToString(acceleration) + "  " + acceleration.magnitude + "   vel: " + VOp.ToString(_velocity) + " " + _velocity.magnitude + " " + _velocity.sqrMagnitude);
                 //}
 
-
+                //SetPos(_pos + _heading * _speed * deltaTime);
             }
             //else
             //{
@@ -472,7 +477,66 @@ namespace Proto_AI_2
             //}
 
             //if(_isNonpenetration)
-                //EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            //EnforceNonPenetrationConstraint(this, EntityMgr.list);
+
+        }
+
+        public void Update(float deltaTime)
+        {
+
+            //_speed = 0;
+
+            Vector3 SteeringForce = ConstV.v3_zero;
+            if (SteeringBehavior.eType.arrive == _mode)
+                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
+                //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
+            else if (SteeringBehavior.eType.offset_pursuit == _mode)
+                SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
+
+            SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
+
+
+            Vector3 acceleration = SteeringForce / _mass;
+
+            _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
+
+            {
+
+                float def = VOp.Sign_ZX(_heading, _velocity + acceleration);
+                float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity + acceleration);
+                float angle = _anglePerSecond * def * deltaTime;
+
+                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+                if (Math.Abs(angle) > Math.Abs(max_angle))
+                {
+                    angle = max_angle;
+
+                }
+
+                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
+                _heading = VOp.Normalize(_heading);
+
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
+                _velocity += acceleration * deltaTime; //안미끄러짐 
+                //_velocity += _heading * acceleration.magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+
+
+                _velocity = VOp.Truncate(_velocity, _maxSpeed);
+                _speed = _velocity.magnitude;
+            }
+
+
+            //가속도 이동 
+            SetPos(_pos + _velocity * deltaTime);
+
+            //등속도 이동
+            //SetPos(_pos + _heading * _maxSpeed * deltaTime); 
+
+            //8방향으로만 이동 
+            //Vector3 n = Misc.GetDir8_Normal3D(_heading); 
+            //SetPos(_pos + n * _speed * deltaTime);
+
 
         }
 

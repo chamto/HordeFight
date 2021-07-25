@@ -198,7 +198,7 @@ namespace Proto_AI
                 mYLookup.Add(-1);
                 mZLookup.Add(-1);
             }
-            DebugWide.LogBlue("init  AABBCulling  endpoint size : " + endpSize);
+            DebugWide.LogBlue("init  SweepPrune  endpoint size : " + endpSize);
 
 
 
