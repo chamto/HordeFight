@@ -539,6 +539,16 @@ public class DebugWide
 
     }
 
+    public static void DrawQ_Dequeue()
+    {
+        if (0 < _drawQ.Count)
+        {
+            DrawInfo info = _drawQ.Dequeue();
+            info.Draw();
+        }
+
+    }
+
 
 }
 

@@ -617,9 +617,12 @@ namespace UtilGS9
         {
             //if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가 => 잘못작성된 알고리즘 
             //총합이 의도치 않게 0이 나오는 경우가 있음 , 예) (30, 0, -30) 
-            if (0 == vector3.x && 0 == vector3.y && 0 == vector3.z ) return vector3; //NaN 예외처리 추가
+            //if (0 == vector3.x && 0 == vector3.y && 0 == vector3.z ) return vector3; //NaN 예외처리 추가
 
-            float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
+            float sqrLen = (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
+            if (float.Epsilon >= sqrLen) return ConstV.v3_zero; //NaN 예외처리 추가
+            //DebugWide.LogRed(VOp.ToString(vector3));
+            float len = 1f / (float)Math.Sqrt(sqrLen); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
             vector3.x *= len;
             vector3.y *= len;
             vector3.z *= len;
@@ -631,10 +634,16 @@ namespace UtilGS9
         static public Vector2 Perp(Vector2 v)         {             return new Vector2(-v.y, v.x); //반시계 방향으로 90도 회전 
         }
 
+        //vㅗ(z, -x)
+        static public Vector3 PerpZX(Vector3 v)
+        {
+            return new Vector3(v.z, v.y, -v.x);
+        }
+
         //90도 회전한 벡터의 노멀을 반환 
         static public Vector3 PerpN(Vector3 v , Vector3 up)
         {
-            Vector3 perp = Vector3.Cross(v, up);
+            Vector3 perp = Vector3.Cross(up, v);
             return VOp.Normalize(perp); 
         }
 
@@ -1043,6 +1052,10 @@ namespace UtilGS9
             float proj = Vector3.Dot(v0, v1);
             Vector3 vxw = Vector3.Cross(v0, v1);
 
+            proj = Mathf.Clamp(proj, -1f, 1f); //proj 값이 -1 또는 1 임에도 불구하고 Acos 계산시 NaN이 나올 수 있다. 
+            //부동소수점 방식의 문제때문임 , 비트배열로 보면 완전히 같지 않다는 것을 알 수 있다 
+            
+            //DebugWide.LogRed(proj + "  " + VOp.ToString(v0) + "  " + VOp.ToString(v1) + "  " + Math.Acos(proj));
             //스칼라삼중적을 이용하여 최단회전방향을 구한다 
             //float sign = 1f;
             if (Vector3.Dot(axis, vxw) < 0)
