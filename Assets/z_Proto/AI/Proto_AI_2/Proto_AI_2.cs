@@ -74,46 +74,46 @@ namespace Proto_AI_2
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //1
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////2
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(-1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //2
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(-1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////-------------------
+            //-------------------
 
-            ////3
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //3
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //////4
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(2f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////4
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(2f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //5
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(3f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -459,7 +459,7 @@ namespace Proto_AI_2
             //==============================================
         }
 
-        public void Update(float deltaTime)
+        public void Update2(float deltaTime)
         {
 
             //_speed = 0;
@@ -545,12 +545,9 @@ namespace Proto_AI_2
 
             //}
 
-            //if(_isNonpenetration)
-            //EnforceNonPenetrationConstraint(this, EntityMgr.list);
-
         }
 
-        public void Update2(float deltaTime)
+        public void Update(float deltaTime)
         {
 
             //_speed = 0;
@@ -575,21 +572,12 @@ namespace Proto_AI_2
 
                 float def = VOp.Sign_ZX(_heading, _velocity + acceleration);
                 float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity + acceleration);
-                //float max_angle = Geo.AngleSigned(_heading, _velocity + acceleration , Vector3.up);
                 float angle = _anglePerSecond * def * deltaTime;
-
-                //Vector3 temp = _velocity + acceleration;
-                //DebugWide.LogBlue(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + temp + "   " + _pos);
 
                 //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
                 if (Math.Abs(angle) > Math.Abs(max_angle))
-                //if((max_angle <= angle && angle >= 0) ||
-                    //(max_angle >= angle && angle <= 0))
                 {
-                    //angle = max_angle;
                     _velocity += acceleration * deltaTime; //안미끄러짐 
-
-
                     _heading = VOp.Normalize(_velocity);
 
 
@@ -603,18 +591,12 @@ namespace Proto_AI_2
                     //값을 10000 이상으로 설정하면 max_angle 값을 넘어가 튀는 현상을 피할수 있다  
                     _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
                     _heading = VOp.Normalize(_heading);
-
-
-
-                    //_velocity += acceleration * deltaTime; //안미끄러짐 
-                    //_velocity += _heading * acceleration.magnitude * deltaTime; //실제 미끄러지게 하는 처리 
                     _velocity += _heading * (_velocity + acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리 
 
                     //DebugWide.LogBlue(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + _velocity + "  " + acceleration);
                 }
 
-                //_velocity += acceleration * deltaTime; //안미끄러짐 
-                //_heading = VOp.Normalize(_velocity);
+
                 _velocity = VOp.Truncate(_velocity, _maxSpeed);
                 _speed = _velocity.magnitude;
                 _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
@@ -657,38 +639,6 @@ namespace Proto_AI_2
             return pos;
         }
 
-        public void EnforceNonPenetrationConstraint(Vehicle entity, List<Vehicle> ContainerOfEntities)
-        {
-            Vehicle curEntity;
-            //iterate through all entities checking for any overlap of bounding radii
-            for (int i = 0; i < ContainerOfEntities.Count; i++)
-            {
-                curEntity = ContainerOfEntities[i];
-                //make sure we don't check against the individual
-                if (curEntity == entity) continue;
-
-                //calculate the distance between the positions of the entities
-                Vector3 ToEntity = entity._pos - (curEntity)._pos;
-
-                float DistFromEachOther = ToEntity.magnitude;
-
-                //if this distance is smaller than the sum of their radii then this
-                //entity must be moved away in the direction parallel to the
-                //ToEntity vector   
-                float AmountOfOverLap = (curEntity)._radius + entity._radius -
-                                         DistFromEachOther;
-
-                if (AmountOfOverLap >= 0)
-                {
-                    //ToEntity 가 0벡터일 경우  DistFromEachOther 로 나누어 노멀벡터를 구하려하면 nan에러가 발생한다 
-                    //move the entity a distance away equivalent to the amount of overlap.
-                    entity._pos = (entity._pos + VOp.Normalize(ToEntity) *
-                                   AmountOfOverLap);
-
-                    //DebugWide.LogRed(entity._id + "  " + AmountOfOverLap + "  " + entity._pos);
-                }
-            }//next entity
-        }
 
         public void Draw(Color color)
         {
@@ -829,8 +779,7 @@ namespace Proto_AI_2
 
             //now Arrive at the predicted future position of the offset
             return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
-            //return Arrive(WorldOffsetPos, Deceleration.fast);
-            //return Seek(WorldOffsetPos + leader._velocity * LookAheadTime);
+
         }
 
         public float TurnAroundTime(Vehicle agent, Vector3 targetPos, float turnSecond)
