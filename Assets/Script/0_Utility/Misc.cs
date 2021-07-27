@@ -1041,7 +1041,8 @@ namespace UtilGS9
         ///6ms AngleSigned_Normal_V0V1 (월드축제한 없음 : 인수벡터 2개 정규화)
         ///10ms AngleSigned_Normal_V0 (월드축제한 없음 : 인수벡터 1개 정규화)
         ///17ms AngleSigned (월드축제한 없음 : 인수벡터 0개 정규화)
-        /// 
+        ///
+        //-180 ~ 180 결과값을 반환  
         //Vector3.SignedAngle 와 내부 알고리즘 동일. 속도가 조금더 빠르다 
         public static float AngleSigned(Vector3 v0, Vector3 v1, Vector3 axis)
         {
@@ -1091,21 +1092,35 @@ namespace UtilGS9
             return (float)Math.Acos(proj) * Mathf.Rad2Deg;
         }
 
-
+        //https://spiralmoon.tistory.com/entry/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EC%9D%B4%EB%A1%A0-%EB%91%90-%EC%A0%90-%EC%82%AC%EC%9D%B4%EC%9D%98-%EC%A0%88%EB%8C%80%EA%B0%81%EB%8F%84%EB%A5%BC-%EC%9E%AC%EB%8A%94-atan2
         //속도가 가장 빠름. 월드축에서만 사용 할 수 있다 
         public static float AngleSigned_AxisY(Vector3 v0, Vector3 v1)
         {
             float at0 = (float)Math.Atan2(v0.z, v0.x);
             float at1 = (float)Math.Atan2(v1.z, v1.x);
 
-            return (at0 - at1) * Mathf.Rad2Deg;
+            //-180 ~ 180 범위를 넘어서는 값이 나올 경우의 예외처리 추가 
+            float rad = (at0 - at1);
+            if (rad > ConstV.Pi) rad = rad - ConstV.TwoPi;
+            else if (rad < -ConstV.Pi) rad = ConstV.TwoPi + rad;
+
+            //float a = at0 * Mathf.Rad2Deg;
+            //float b = at1 * Mathf.Rad2Deg;
+            //float c = rad * Mathf.Rad2Deg;
+            //DebugWide.LogBlue(a + "  " + b + "  " + c);
+
+            return rad * Mathf.Rad2Deg;
         }
 
         public static float Angle_AxisY(Vector3 v0, Vector3 v1)
         {
             float at0 = (float)Math.Atan2(v0.z, v0.x);
             float at1 = (float)Math.Atan2(v1.z, v1.x);
-            float rad = at0 - at1;
+
+            //-180 ~ 180 범위를 넘어서는 값이 나올 경우의 예외처리 추가 
+            float rad = (at0 - at1);
+            if (rad > ConstV.Pi) rad = rad - ConstV.TwoPi;
+            else if (rad < -ConstV.Pi) rad = ConstV.TwoPi + rad;
 
             if (rad < 0) rad *= -1; //부호를 없앤다 
 
