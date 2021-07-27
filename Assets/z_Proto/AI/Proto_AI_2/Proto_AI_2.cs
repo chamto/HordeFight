@@ -459,7 +459,7 @@ namespace Proto_AI_2
             //==============================================
         }
 
-        public void Update2(float deltaTime)
+        public void Update(float deltaTime)
         {
 
             //_speed = 0;
@@ -533,7 +533,7 @@ namespace Proto_AI_2
                 //-----------
 
                 //최대각차이가 지정값 보다 작을 때만 이동시킨다 
-                if (max_angle < 1f)
+                if (Math.Abs(max_angle) < 1f)
                 {
                     SetPos(_pos + _velocity * deltaTime);
                 }
@@ -550,7 +550,7 @@ namespace Proto_AI_2
 
         }
 
-        public void Update(float deltaTime)
+        public void Update2(float deltaTime)
         {
 
             //_speed = 0;
@@ -822,8 +822,8 @@ namespace Proto_AI_2
             //LookAheadTime += TurnAroundTime(_vehicle, WorldOffsetPos, 1); //이렇게 턴시간 늘리는 것은 아닌것 같음 
 
             //------------------------
-            Vector3 prPos = WorldOffsetPos + leader._velocity * LookAheadTime;
-            DebugWide.AddDrawQ_Circle(prPos, 0.1f, Color.green);
+            //Vector3 prPos = WorldOffsetPos + leader._velocity * LookAheadTime;
+            //DebugWide.AddDrawQ_Circle(prPos, 0.1f, Color.green);
             //DebugWide.LogBlue(LookAheadTime);
             //------------------------
 
