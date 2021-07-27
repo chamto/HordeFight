@@ -26,6 +26,9 @@ namespace Proto_AI_2
         public GridManager _gridMgr = new GridManager();
         public SweepPrune _sweepPrune = new SweepPrune();
 
+        public Transform _tr_test = null;
+        public Transform _tr_line_a = null;
+        public Transform _tr_line_b = null;
 
         public float _mass = 1f;
         public float _maxSpeed = 10f;
@@ -48,8 +51,13 @@ namespace Proto_AI_2
         // Use this for initialization
         void Start()
         {
-            _gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
+
+            _tr_test = GameObject.Find("Test").transform;
+            _tr_line_a = GameObject.Find("line_a").transform;
+            _tr_line_b = GameObject.Find("line_b").transform;
+
+            _gridMgr.Init();
 
             _formationPoint._end = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
@@ -66,46 +74,46 @@ namespace Proto_AI_2
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //1
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //2
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////2
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //-------------------
+            ////-------------------
 
-            //3
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////3
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////4
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(2f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //////4
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(2f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //5
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(3f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////5
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(3f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -126,6 +134,11 @@ namespace Proto_AI_2
         int ID = 0;
         void Update()
         {
+            //Vector3 line_a = _tr_line_a.position - _tr_test.position;
+            //Vector3 line_b = _tr_line_b.position - _tr_test.position;
+            //float max_angle = Geo.AngleSigned_AxisY(line_a, line_b);
+            //max_angle = Geo.AngleSigned(line_a, line_b, Vector3.up);
+            //DebugWide.LogBlue(max_angle);
 
             //프레임이 크게 떨어질시 Time.delta 값이 과하게 커지는 경우가 발생 , 이럴경우 벽통과등의 문제등이 생긴다. 
             //deltaTime 값을 작게 유지하여 프로그램 무결성을 유지시킨다. 속도가 느려지고 시간이 안맞는 것은 어쩔 수 없다 
@@ -137,7 +150,7 @@ namespace Proto_AI_2
             _formationPoint._end = _tr_target.position;
             _formationPoint.Update(deltaTime);
             KeyInput();
-            vh._target = _formationPoint._pos;
+            vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
 
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -285,6 +298,10 @@ namespace Proto_AI_2
         private void OnDrawGizmos()
         {
             if (null == _tr_target) return;
+
+            DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
+            DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
+
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
             _formationPoint.Draw(Color.white);
@@ -302,7 +319,8 @@ namespace Proto_AI_2
             if(true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
 
-            DebugWide.DrawQ_All_AfterTime(1);
+            //DebugWide.DrawQ_All_AfterTime(1);
+            DebugWide.DrawQ_Dequeue();
         }
     }
 
@@ -332,6 +350,8 @@ namespace Proto_AI_2
 
         public void Update(float deltaTime)
         {
+            _speed = 20f; //test
+
             //도착시 종료 
             if ((_end - _pos).sqrMagnitude < 5)
             {
@@ -464,7 +484,7 @@ namespace Proto_AI_2
 
             //_pos += _velocity * deltaTime;
             //_pos = WrapAroundXZ(_pos, 100, 100);
-            SetPos(_pos + _velocity * deltaTime);
+            //SetPos(_pos + _velocity * deltaTime);
 
             //SetPos(_pos + VOp.Normalize(_velocity) * _maxSpeed * deltaTime); //등속도 시험 
 
@@ -509,6 +529,14 @@ namespace Proto_AI_2
                 //}
 
                 //SetPos(_pos + _heading * _speed * deltaTime);
+
+                //-----------
+
+                //최대각차이가 지정값 보다 작을 때만 이동시킨다 
+                if (max_angle < 1f)
+                {
+                    SetPos(_pos + _velocity * deltaTime);
+                }
             }
             //else
             //{
@@ -541,42 +569,77 @@ namespace Proto_AI_2
 
             _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
 
+            Vector3 desiredVelocity = _velocity + acceleration;
+            if (desiredVelocity.sqrMagnitude > 0.001f)
             {
 
                 float def = VOp.Sign_ZX(_heading, _velocity + acceleration);
                 float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity + acceleration);
+                //float max_angle = Geo.AngleSigned(_heading, _velocity + acceleration , Vector3.up);
                 float angle = _anglePerSecond * def * deltaTime;
+
+                //Vector3 temp = _velocity + acceleration;
+                //DebugWide.LogBlue(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + temp + "   " + _pos);
 
                 //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
                 if (Math.Abs(angle) > Math.Abs(max_angle))
+                //if((max_angle <= angle && angle >= 0) ||
+                    //(max_angle >= angle && angle <= 0))
                 {
-                    angle = max_angle;
+                    //angle = max_angle;
+                    _velocity += acceleration * deltaTime; //안미끄러짐 
+
+
+                    _heading = VOp.Normalize(_velocity);
+
+
+                    //DebugWide.LogRed("---------------------------------------------");
+                    //DebugWide.LogRed(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + _velocity + "  " + acceleration);
 
                 }
-
-                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
-                _heading = VOp.Normalize(_heading);
-
-                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
-
-                _velocity += acceleration * deltaTime; //안미끄러짐 
-                //_velocity += _heading * acceleration.magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+                else
+                {
+                    //_anglePerSecond 값이 1000 이 넘어가면 빙빙도는것이 튀는것으로 보인다. 값이 적당히 커서 튀는 것으로 보이는것이다
+                    //값을 10000 이상으로 설정하면 max_angle 값을 넘어가 튀는 현상을 피할수 있다  
+                    _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
+                    _heading = VOp.Normalize(_heading);
 
 
+
+                    //_velocity += acceleration * deltaTime; //안미끄러짐 
+                    //_velocity += _heading * acceleration.magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+                    _velocity += _heading * (_velocity + acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+
+                    //DebugWide.LogBlue(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + _velocity + "  " + acceleration);
+                }
+
+                //_velocity += acceleration * deltaTime; //안미끄러짐 
+                //_heading = VOp.Normalize(_velocity);
                 _velocity = VOp.Truncate(_velocity, _maxSpeed);
                 _speed = _velocity.magnitude;
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
+                //----------
+
+                //Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                ////DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.green);
+                //Vector3 ToOffset = WorldOffsetPos - _pos;
+                //_velocity = ToOffset;
+                //SetPos(_pos + _velocity);
+
+                //-----------
+
+                //가속도 이동 
+                SetPos(_pos + _velocity * deltaTime);
+
+                //등속도 이동
+                //SetPos(_pos + _heading * _maxSpeed * deltaTime); 
+
+                //8방향으로만 이동 
+                //Vector3 n = Misc.GetDir8_Normal3D(_heading); 
+                //SetPos(_pos + n * _speed * deltaTime);
             }
 
-
-            //가속도 이동 
-            SetPos(_pos + _velocity * deltaTime);
-
-            //등속도 이동
-            //SetPos(_pos + _heading * _maxSpeed * deltaTime); 
-
-            //8방향으로만 이동 
-            //Vector3 n = Misc.GetDir8_Normal3D(_heading); 
-            //SetPos(_pos + n * _speed * deltaTime);
 
 
         }
@@ -710,7 +773,7 @@ namespace Proto_AI_2
             //calculate the distance to the target
             float dist = ToTarget.magnitude;
 
-            if (dist > 0)
+            if (dist > 0.1f) //최소거리값을 적용한다 
             {
                 //because Deceleration is enumerated as an int, this value is required
                 //to provide fine tweaking of the deceleration..
@@ -726,7 +789,7 @@ namespace Proto_AI_2
                 //from here proceed just like Seek except we don't need to normalize 
                 //the ToTarget vector because we have already gone to the trouble
                 //of calculating its length: dist. 
-                Vector3 DesiredVelocity = ToTarget * speed / dist;
+                Vector3 DesiredVelocity = ToTarget * speed / dist; //toTarget / dist = 정규화벡터 
 
                 return (DesiredVelocity - _vehicle._velocity);
             }
@@ -745,9 +808,10 @@ namespace Proto_AI_2
             //const float MinLen = 0.1f;
             //const float SqrMinLen = MinLen * MinLen;
             //if (ToOffset.sqrMagnitude < SqrMinLen)
-                //return ConstV.v3_zero;
+            //return ConstV.v3_zero;
 
             //DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.red);
+
 
             //the lookahead time is propotional to the distance between the leader
             //and the pursuer; and is inversely proportional to the sum of both
@@ -755,9 +819,30 @@ namespace Proto_AI_2
             float LookAheadTime = ToOffset.magnitude /
                                   (_vehicle._maxSpeed + leader._speed);
 
+            //LookAheadTime += TurnAroundTime(_vehicle, WorldOffsetPos, 1); //이렇게 턴시간 늘리는 것은 아닌것 같음 
+
+            //------------------------
+            Vector3 prPos = WorldOffsetPos + leader._velocity * LookAheadTime;
+            DebugWide.AddDrawQ_Circle(prPos, 0.1f, Color.green);
+            //DebugWide.LogBlue(LookAheadTime);
+            //------------------------
+
             //now Arrive at the predicted future position of the offset
             return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
             //return Arrive(WorldOffsetPos, Deceleration.fast);
+            //return Seek(WorldOffsetPos + leader._velocity * LookAheadTime);
+        }
+
+        public float TurnAroundTime(Vehicle agent, Vector3 targetPos, float turnSecond)
+        {
+            Vector3 toTarget = (targetPos - agent._pos).normalized;
+
+            float dot = Vector3.Dot(agent._heading, toTarget);
+
+            float coefficient = 0.5f * turnSecond; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 1초
+            //const float coefficient = 0.5f * 5; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 5초
+
+            return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
         }
     }
 
