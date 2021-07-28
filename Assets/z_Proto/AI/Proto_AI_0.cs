@@ -32,6 +32,8 @@ namespace Proto_AI_0
         int ID = 0;
         void Update()
         {
+
+            
             Vehicle vh = EntityMgr.list[ID];
             vh.KeyInput();
             vh.Update();
