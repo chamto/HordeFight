@@ -323,8 +323,8 @@ namespace UtilGS9
         public const float DELTA_FPS_60 = 1f / 60f; 
 
         //기본값을 30프레임으로 설정한다
-        static private float _deltaTime_mix = DELTA_FPS_30;
-        static private float _deltaTime_max = DELTA_FPS_30 * 2f;
+        static private float _deltaTime_min = DELTA_FPS_30;
+
 
         static public void SetFixedFrame_FPS_30()
         {
@@ -338,27 +338,27 @@ namespace UtilGS9
             QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = fps; 
 
-            _deltaTime_mix = 1f / (float)fps;
-            _deltaTime_max = _deltaTime_mix * 2f; //최소시간의 2배 한다. 
+            _deltaTime_min = 1f / (float)fps;
+
         }
 
-        static public float DeltaTime_Mix()
+        static public float DeltaTime_Min()
         {
-            return _deltaTime_mix;
+            return _deltaTime_min;
         }
 
-        static public float DeltaTime_Max()
-        {
-            return _deltaTime_max;
-        }
 
         static public float DeltaTime()
         {
-            //전프레임이 허용프레임 시간의 최대치를 넘었다면 최소시간을 반환한다.
-            if (Time.deltaTime > _deltaTime_max)
+            //DebugWide.LogBlue("FrameControl - DeltaTime : " + Time.deltaTime + "  " + _deltaTime_min);//chamto test
+
+            //프레임간격이 최소프레임 시간을 넘었다면 최소시간을 반환한다.
+            //프레임드랍이 발생할 경우 고정프레임 처럼 작동되게 할려는 것이 의도임 
+            //충돌 , 물리관련 처리를 하기 위해 사용함  
+            if (Time.deltaTime > _deltaTime_min)
             {
-                //DebugWide.LogBlue ("FrameControl - frameSkip detected !!! - DeltaTime : "+Time.deltaTime);//chamto test
-                return _deltaTime_mix;
+                //DebugWide.LogBlue ("FrameControl - frameSkip detected !!! - DeltaTime : "+Time.deltaTime + "  " + _deltaTime_min);//chamto test
+                return _deltaTime_min;
             }
 
 
