@@ -30,6 +30,7 @@ namespace Proto_AI_2
         public Transform _tr_line_a = null;
         public Transform _tr_line_b = null;
 
+        public float _formation_speed = 10;
         public float _mass = 1f;
         public float _maxSpeed = 10f;
         public float _maxForce = 40f;
@@ -147,10 +148,17 @@ namespace Proto_AI_2
             //========================
             Vehicle vh = EntityMgr.list[ID];
 
+            _formationPoint._speed = _formation_speed;
             _formationPoint._end = _tr_target.position;
             _formationPoint.Update(deltaTime);
             KeyInput();
             vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
+
+            float kmPerHour = (3600f / 1000f) * vh._maxSpeed;
+            DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + vh._maxSpeed + "  " + vh._maxSpeed * deltaTime);
+            //운반기의 반지름이 0.5 이며 타일한개의 길이가 1인 경우 : _maxSpeed * deltaTime 의 값이 1.5 를 넘으면 지형을 통과하게 된다 
+            //운반기의 반지름이 0과 가까운 아주 작은 값일 경우 : _maxSpeed * deltaTime 의 값이 1 을 넘으면 지형을 통과하게 된다 
+            //현재의 타일기반 지형충돌 알고리즘으로는 _maxSpeed 가 30 (시속108) 까지만 충돌처리가 가능하다 
 
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -319,8 +327,8 @@ namespace Proto_AI_2
             if(true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
 
-            //DebugWide.DrawQ_All_AfterTime(1);
-            DebugWide.DrawQ_Dequeue();
+            DebugWide.DrawQ_All_AfterTime(1);
+            //DebugWide.DrawQ_Dequeue();
         }
     }
 
@@ -350,7 +358,6 @@ namespace Proto_AI_2
 
         public void Update(float deltaTime)
         {
-            _speed = 20f; //test
 
             //도착시 종료 
             if ((_end - _pos).sqrMagnitude < 5)
@@ -459,7 +466,7 @@ namespace Proto_AI_2
             //==============================================
         }
 
-        public void Update2(float deltaTime)
+        public void Update(float deltaTime)
         {
 
             //_speed = 0;
@@ -533,10 +540,26 @@ namespace Proto_AI_2
                 //-----------
 
                 //최대각차이가 지정값 보다 작을 때만 이동시킨다 
-                if (Math.Abs(max_angle) < 1f)
-                {
-                    SetPos(_pos + _velocity * deltaTime);
-                }
+                //if (Math.Abs(max_angle) < 1f)
+                //{
+                //    SetPos(_pos + _velocity * deltaTime);
+                //}
+
+                //-----------
+
+                //최대속도가 높을수록 진형을 잘 유지한다 
+                //설정된 최대속도로 등속도 운동하게 한다.
+                Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                Vector3 ToOffset = WorldOffsetPos - _pos;
+                Vector3 pos_future = _pos + _velocity.normalized * _maxSpeed * deltaTime;
+                Vector3 ToFuture = pos_future - WorldOffsetPos;
+                if (ToOffset.sqrMagnitude > ToFuture.sqrMagnitude)
+                    SetPos(pos_future);
+                else
+                    SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
+
+                //-------------
+
             }
             //else
             //{
@@ -547,11 +570,9 @@ namespace Proto_AI_2
 
         }
 
-        public void Update(float deltaTime)
+        public void Update2(float deltaTime)
         {
-
-            //_speed = 0;
-
+        
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
@@ -659,6 +680,9 @@ namespace Proto_AI_2
             //{
             //    _steeringBehavior.DrawWander();
             //}
+
+            Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+            DebugWide.DrawCircle(WorldOffsetPos, 0.1f, Color.green);
         }
 
 
