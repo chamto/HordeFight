@@ -141,6 +141,7 @@ namespace Proto_AI_2
             //max_angle = Geo.AngleSigned(line_a, line_b, Vector3.up);
             //DebugWide.LogBlue(max_angle);
 
+
             //프레임이 크게 떨어질시 Time.delta 값이 과하게 커지는 경우가 발생 , 이럴경우 벽통과등의 문제등이 생긴다. 
             //deltaTime 값을 작게 유지하여 프로그램 무결성을 유지시킨다. 속도가 느려지고 시간이 안맞는 것은 어쩔 수 없다 
             float deltaTime = FrameTime.DeltaTime();
@@ -154,8 +155,8 @@ namespace Proto_AI_2
             KeyInput();
             vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
 
-            float kmPerHour = (3600f / 1000f) * vh._maxSpeed;
-            DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + vh._maxSpeed + "  " + vh._maxSpeed * deltaTime);
+            //float kmPerHour = (3600f / 1000f) * vh._maxSpeed;
+            //DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + vh._maxSpeed + "  " + vh._maxSpeed * deltaTime);
             //운반기의 반지름이 0.5 이며 타일한개의 길이가 1인 경우 : _maxSpeed * deltaTime 의 값이 1.5 를 넘으면 지형을 통과하게 된다 
             //운반기의 반지름이 0과 가까운 아주 작은 값일 경우 : _maxSpeed * deltaTime 의 값이 1 을 넘으면 지형을 통과하게 된다 
             //현재의 타일기반 지형충돌 알고리즘으로는 _maxSpeed 가 30 (시속108) 까지만 충돌처리가 가능하다 
@@ -309,6 +310,19 @@ namespace Proto_AI_2
 
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
+
+            //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position, 0.01f);
+
+            //_gridMgr.Find_FirstStructTile3(_tr_test.position, _tr_line_a.position);
+
+            _gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
+            //_gridMgr.Draw_line_equation((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
+            //_gridMgr.Draw_line_incremental((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
+            //_gridMgr.Draw_line_midpoint2(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
+
+            //Vector3 test = _tr_line_a.position - _tr_test.position;
+            //Vector3 dir4n = Misc.GetDir4_Normal3D_Y(test);
+            //DebugWide.DrawLine(_tr_test.position, _tr_test.position + dir4n, Color.red);
 
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);

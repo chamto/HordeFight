@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UtilGS9;
@@ -38,10 +39,12 @@ namespace Proto_AI
         public Index2 _pos2d = ConstV.id2_zero;
         public int _pos1d = -1; //타일의 1차원 위치값 
 
+        public LineSegment3 line;
+
         //==================================================
         //타일에 속해있는 객체의 링크
         //public Being _head = null;
-        public int _childCount = 0;
+        //public int _childCount = 0;
 
 
         //public Being MatchRelation(Camp.eRelation relation, Being target)
@@ -112,7 +115,6 @@ namespace Proto_AI
 
     public struct BoundaryTile
     {
-        public LineSegment3 line;
         public bool isBoundary;
         public CellSpace cell;
 
@@ -135,6 +137,8 @@ namespace Proto_AI
 
         public float _cellSize_x = 1f;
         public float _cellSize_z = 1f;
+
+        public int _tileBlock_width_size = 64;
 
         public void Init()
         {
@@ -169,6 +173,20 @@ namespace Proto_AI
             return pos3d;
         }
 
+        public Vector3 ToPosition3D_Center(Vector3 pos3d)
+        {
+
+            pos3d.x = Mathf.FloorToInt(pos3d.x / _cellSize_x);
+            pos3d.y = 0;
+            pos3d.z = Mathf.FloorToInt(pos3d.z / _cellSize_z);
+
+            //셀의 중간에 위치하도록 한다
+            pos3d.x += _cellSize_x * 0.5f;
+            pos3d.z += _cellSize_z * 0.5f;
+
+            return pos3d;
+        }
+
         //2d 좌표는 x,y만 사용한다. x,z좌표로의 변환은 허용 안한다 
         public Vector3Int ToPosition2D(Vector3 pos3d)
         {
@@ -193,6 +211,15 @@ namespace Proto_AI
 
         }
 
+        public CellSpace GetStructTile(Vector3 pos3d)
+        {
+            CellSpace cell = null;
+            Vector3Int pos = ToPosition2D(pos3d);
+            _structTileList.TryGetValue(pos, out cell);
+
+            return cell;
+        }
+
         public void LoadTilemap_Struct()
         {
             if (null == _tilemap_struct) return;
@@ -215,11 +242,16 @@ namespace Proto_AI
                 structTile._specifier = specifier;
                 structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 structTile._pos2d = new Index2(XY_2d.x, XY_2d.y);
-                structTile._pos1d = this.ToPosition1D(XY_2d, 64); //임시코드
+                structTile._pos1d = this.ToPosition1D(XY_2d, _tileBlock_width_size); 
                 structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
 
                 structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
                 structTile._isStructTile = true;
+
+                LineSegment3 line;
+                CalcBoundaryLine(structTile, out line);
+                structTile.line = line;
+
                 _structTileList.Add(XY_2d, structTile);
 
             }
@@ -242,10 +274,6 @@ namespace Proto_AI
                     BoundaryTile info = new BoundaryTile();
                     info.Init();
                     info.cell = t.Value;
-
-                    LineSegment3 line;
-                    CalcBoundaryLine(t.Value, out line);
-                    info.line = line;
 
 
                     Vector3Int dir1 = Misc.GetDir8_Normal2D(t.Value._eDir);
@@ -489,20 +517,18 @@ namespace Proto_AI
             foreach (KeyValuePair<Vector3Int, BoundaryTileList> info1 in _boundaryList)
             {
 
-                //Vector3 pos = ToPosition3D_Center(new Vector3Int(info1.Key.x, info1.Key.y,0));
+                Vector3 pos = ToPosition3D_Center(new Vector3Int(info1.Key.x, info1.Key.y,0));
                 //DebugWide.PrintText(pos, Color.black, "" + info1.Value.Count);
 
                 foreach (BoundaryTile info2 in info1.Value)
                 {
-                    //if (true == info2.isBoundary)
-                    //{
-                    //    DebugWide.DrawLine(info2.cell._pos3d_center, pos, Color.white);
-                    //}
-                    //else
+                    if (true == info2.isBoundary)
                     {
-                        LineSegment3 line;
-                        CalcBoundaryLine(info2.cell, out line);
-                        line.Draw(Color.white);
+                        DebugWide.DrawLine(info2.cell._pos3d_center, pos, Color.white);
+                    }
+                    else
+                    {
+                        info2.cell.line.Draw(Color.white);
                     }
 
                 }
@@ -692,10 +718,10 @@ namespace Proto_AI
                 if (true == info.isBoundary)
                 {
 
-                    if (true == Geo.IntersectLineSegment(srcPos, RADIUS, info.line.origin, info.line.last))
+                    if (true == Geo.IntersectLineSegment(srcPos, RADIUS, info.cell.line.origin, info.cell.line.last))
                     {
 
-                        Vector3 cp = info.line.ClosestPoint(srcPos);
+                        Vector3 cp = info.cell.line.ClosestPoint(srcPos);
                         Vector3 n = VOp.Normalize(srcPos - cp);
                         srcPos = cp + n * RADIUS;
 
@@ -714,7 +740,594 @@ namespace Proto_AI
 
 
         }
-    }
+
+        //public void Draw_line_equation4(float x1, float y1, float x2, float y2)
+        //{
+        //    float m;
+        //    float x, y;
+        //    float temp;
+
+        //    m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+        //    if (-1 < m && m < 1) //x축이 독립축 
+        //    {
+        //        int sign_x = 1;
+        //        float plus_y = 0.5f;
+        //        if (x1 > x2)
+        //        {
+        //            sign_x = -1;
+        //        }
+        //        if(y1 > y2)
+        //        {
+        //            plus_y = 0; 
+        //        }
+
+        //        x = (int)x1;
+        //        y = y1;
+
+
+        //        int count = 0;
+        //        //while (x <= x2)
+        //        while (true) 
+        //        {
+        //            count++;
+        //            if (count > 5) return;
+        //            //DebugWide.LogBlue(count);
+
+        //            y = (m * (x - x1) + y1);
+
+
+        //            DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
+        //            DebugWide.PrintText(new Vector3(x, 0, y), Color.green, "" + count);
+
+        //            Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+        //            DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.magenta);
+
+
+        //            float yy = (int)(y + plus_y); //정수 y축에 고정 
+        //            float xx = ((yy - y1) / m + x1);
+        //            if (x1 <= xx && xx <= x2) //범위를 벗어나는 값 계산 안함
+        //            {
+        //                DebugWide.DrawCircle(new Vector3(xx, 0, yy), 0.1f, Color.red);
+        //                DebugWide.LogBlue(count + "  " + xx + "  " + yy);
+
+        //                origin_center = ToPosition3D_Center(new Vector3(xx, 0, yy));
+        //                DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.red);
+
+        //            }
+
+        //            //x++;
+        //            x = x + 1 * sign_x;
+
+        //        }
+        //    }
+        //    else //y축이 독립축 
+        //    {
+        //        if (y1 > y2)
+        //        {
+        //            //swap
+        //            temp = x1;
+        //            x1 = x2;
+        //            x2 = temp;
+
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+
+        //        x = x1;
+        //        y = (int)y1;
+        //        Vector3 nextTile;
+        //        Vector3 prev_center = ToPosition3D_Center(new Vector3(x, 0, y));
+        //        y += 1;
+        //        int count = 0;
+        //        while (y <= y2)
+        //        {
+        //            count++;
+        //            if (count > 20) return;
+
+        //            x = ((y - y1) / m + x1);
+
+
+        //            Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+
+        //            Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+
+        //            Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+
+        //            nextTile = prev_center + dir4n;
+        //            DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
+
+        //            prev_center = nextTile;
+
+        //            //오른쪽 또는 왼쪽 방향인 경우만 z값 증가  
+        //            if (dir4n.z > 0 || dir4n.z < 0)
+        //                y++;
+
+        //        }
+        //    }
+        //}
+
+        public void Draw_line_equation3(float x1, float y1, float x2, float y2)
+        {
+            float m;
+            float x, y;
+            float temp;
+
+            //if (Misc.IsZero(x2 - x1)) return;
+
+            m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+            if (-1 < m && m < 1) //x축이 독립축 
+            {
+                x = (int)x1;
+                y = y1;
+                Vector3 nextTile;
+                Vector3 prev_center = ToPosition3D_Center(new Vector3(x, 0, y));
+
+                int sign_x = 1;
+                if (x1 > x2)
+                {
+                    sign_x = -1;
+
+                }else
+                {
+                    x += 1;
+                }
+
+
+                int count = 0;
+                //while (x <= x2)
+                while (x*sign_x <= x2*sign_x)
+                {
+                    count++;
+                    if (count > 20) return;
+                    //DebugWide.LogBlue(count);
+
+                    y = (m * (x - x1) + y1);
+
+
+                    Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+                    //DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.green);
+                    //DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
+                    DebugWide.DrawCircle(origin_center, 0.2f, Color.green);
+                    //DebugWide.DrawCircle(prev_center, 0.4f, Color.blue);
+                    DebugWide.PrintText(prev_center, Color.green, "" + count);
+
+                    //------------------
+                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+
+                    nextTile = prev_center + dir4n;
+                    DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
+                    DebugWide.DrawLine(prev_center, nextTile, Color.red);
+
+                    prev_center = nextTile;
+
+
+                    //오른쪽 또는 왼쪽 방향인 경우만 x값 증가  
+                    if (dir4n.x > 0 || dir4n.x < 0)
+                    {
+                        //x++;
+                        x = x + 1 * sign_x; 
+                    }
+
+
+
+                }
+            }
+            else //y축이 독립축 
+            {
+                x = x1;
+                y = (int)y1;
+                Vector3 nextTile;
+                Vector3 prev_center = ToPosition3D_Center(new Vector3(x, 0, y));
+
+                int sign_y = 1;
+                if (y1 > y2)
+                {
+                    sign_y = -1;
+                }
+                else
+                {
+                    y += 1;
+                }
+
+                int count = 0;
+                while (y* sign_y <= y2* sign_y)
+                {
+                    count++;
+                    if (count > 20) return;
+
+                    x = ((y - y1)/m + x1);
+
+
+                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+
+                    nextTile = prev_center + dir4n;
+                    DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
+
+                    prev_center = nextTile;
+
+                    //오른쪽 또는 왼쪽 방향인 경우만 z값 증가  
+                    if (dir4n.z > 0 || dir4n.z < 0)
+                    {
+                        //y++;
+                        y = y + 1 * sign_y;
+                    }
+
+
+                }
+            }
+        }
+
+        //public void Draw_line_equation2(float x1, float y1, float x2, float y2)
+        //{
+        //    float m;
+        //    float x, y;
+        //    float temp;
+
+        //    //int sign = VOp.Sign_ZX(Vector3.right, new Vector3((x2 - x1), 0, (y2 - y1)));
+
+        //    //if (x1 == x2) //수직선인 경우 
+        //    //{
+        //    //    if (y1 > y2)
+        //    //    {
+        //    //        //swap
+        //    //        temp = y1;
+        //    //        y1 = y2;
+        //    //        y2 = temp;
+        //    //    }
+        //    //    for (y = y1; y <= y2; y++)
+        //    //    {
+        //    //        DebugWide.DrawCircle(new Vector3(x1, 0, y), 0.1f, Color.green);
+        //    //    }
+        //    //    return;
+        //    //}
+        //    m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+        //    if (-1 < m && m < 1) //x축이 독립축 
+        //    {
+        //        if (x1 > x2)
+        //        {
+        //            //swap
+        //            temp = x1;
+        //            x1 = x2;
+        //            x2 = temp;
+
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+        //        //x = (int)x1;
+        //        //y = (int)y1;
+        //        x = (int)x1+1;
+        //        y = y1;
+        //        Vector3 nextTile;
+
+        //        for (; x <= x2; x++)
+        //        {
+        //            //y = (int)(m * (x - x1) + y1 + 0.5f);
+        //            y = (m * (x - x1) + y1 );
+        //            DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
+        //            //DebugWide.DrawCube(new Vector3(x + 0.5f, 0, y + 0.5f), new Vector3(1f, 0, 1f), Color.green);
+        //            Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+        //            //DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.green);
+        //            DebugWide.DrawCircle(origin_center, 0.2f, Color.green);
+
+        //            //------------------
+        //            Vector3 centerToTarget = new Vector3(x,0,y) - origin_center;
+        //            //Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+
+        //            Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+        //            nextTile = origin_center + dir4n;
+
+        //            DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
+
+        //        }
+        //    }
+        //    else //y축이 독립축 
+        //    { }
+        //}
+
+        //public void Draw_line_equation(int x1, int y1, int x2, int y2)
+        //{
+        //    float m;
+        //    int x, y;
+        //    int temp;
+        //    if (x1 == x2) //수직선인 경우 
+        //    {
+        //        if (y1 > y2)
+        //        {
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+        //        for (y = y1; y <= y2; y++)
+        //        {
+        //            DebugWide.DrawCircle(new Vector3(x1, 0, y), 0.1f, Color.green);
+        //        }
+        //        return;
+        //    }
+        //    m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+        //    if (-1 < m && m < 1) //x축이 독립축 
+        //    {
+        //        if (x1 > x2)
+        //        {
+        //            //swap
+        //            temp = x1;
+        //            x1 = x2;
+        //            x2 = temp;
+
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+        //        y = y1;
+        //        for (x = x1; x <= x2; x++)
+        //        {
+        //            y = (int)(m * (x - x1) + y1 + 0.5f);
+        //            DebugWide.DrawCircle(new Vector3(x, 0, y ), 0.1f, Color.green);
+        //            DebugWide.DrawCube(new Vector3(x+0.5f, 0, y+0.5f), new Vector3(1f, 0, 1f), Color.green);
+
+        //        }
+        //    }
+        //    else //y축이 독립축 
+        //    { }
+        //}
+
+        //public void Draw_line_incremental(int x1, int y1, int x2, int y2)
+        //{
+        //    float m, x, y;
+        //    int temp;
+        //    if(x1 == x2) //수직선인 경우 
+        //    {
+        //        if(y1 > y2)
+        //        {
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+        //        for(y = y1;y<=y2;y++)
+        //        {
+        //            DebugWide.DrawCircle(new Vector3(x1, 0, y), 0.1f, Color.green);
+        //        }
+        //        return;
+        //    }
+        //    m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+        //    if(-1 < m && m < 1) //x축이 독립축 
+        //    {
+        //        if(x1 > x2)
+        //        {
+        //            //swap
+        //            temp = x1;
+        //            x1 = x2;
+        //            x2 = temp;
+
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+        //        }
+        //        y = y1;
+        //        for(x = x1; x <= x2; x++)
+        //        {
+        //            DebugWide.DrawCircle(new Vector3(x, 0, (int)(y + 0.5f)), 0.1f, Color.green); //실수값인 y를 반올림
+        //            //DebugWide.DrawCircle(new Vector3(x, 0, y ), 0.1f, Color.green);
+        //            y += m;
+        //        }
+        //    }
+        //    else //y축이 독립축 
+        //    { }
+        //}
+
+        //public void Draw_line_midpoint2(float x1, float y1, float x2, float y2)
+        //{
+
+        //    float x=0, y=0;
+        //    float delta_x, delta_y, d;
+        //    int inc;
+        //    float Einc, NEinc;
+        //    float temp;
+
+        //    if (Math.Abs(x2-x1) > Math.Abs(y2-y1)) // |기울기| < 1
+        //    {
+        //        if(x > x2)
+        //        {
+        //            //swap
+        //            temp = x1;
+        //            x1 = x2;
+        //            x2 = temp;
+
+        //            //swap
+        //            temp = y1;
+        //            y1 = y2;
+        //            y2 = temp;
+
+        //        }
+        //        inc = (y2 > y1) ? 1 : -1;
+        //        delta_x = x2 - x1;
+        //        delta_y = Math.Abs(y2 - y1);
+        //        d = 2 * delta_y - delta_x;
+        //        Einc = 2 * delta_y;
+        //        NEinc = 2 * (delta_y - delta_x);
+        //        x = (int)x1; 
+        //        y = y1;
+
+        //        Vector3 origin_center;
+        //        Vector3 prev_pos = new Vector3(x,0,y);
+        //        while (x<x2)
+        //        {
+        //            x++;
+
+        //            origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+        //            DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.green);
+
+        //            if (d > 0)
+        //            {
+        //                y += inc;
+        //                d += NEinc;
+        //                origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+        //                DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.green);
+        //            }
+        //            else
+        //            {
+        //                d += Einc;
+        //            }
+        //            DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
+
+        //            DebugWide.DrawLine(prev_pos, new Vector3(x, 0, y), Color.black);
+        //            prev_pos = new Vector3(x, 0, y);
+        //        }
+        //    }
+        //    else
+        //    { }
+        //}
+
+        public CellSpace Find_FirstStructTile3(Vector3 origin_3d, Vector3 target_3d)
+        {
+
+            Vector3 nextTile = origin_3d;
+            int count = 0;
+            while ((nextTile - target_3d).sqrMagnitude > 1)
+            {
+                if (count > 10) break;
+                count++;
+
+                //구조타일을 발견하면 바로 반환 
+                CellSpace structTile = GetStructTile(nextTile);
+                if (null != structTile)
+                    return structTile;
+
+            }
+
+            return null;
+        }
+
+        public CellSpace Find_FirstStructTile2(Vector3 origin_3d, Vector3 target_3d)
+        {
+
+            Vector3 toTarget = target_3d - origin_3d;
+            Vector3 origin_center;
+            Vector3 centerToTarget;
+
+            Vector3 dir4n = Vector3.zero;
+            Vector3 nextTile = origin_3d;
+
+            Line3 line = new Line3(origin_3d, toTarget);
+
+            int count = 0;
+            while((nextTile- target_3d).sqrMagnitude > 1)
+            {
+                if (count > 10) break;
+
+                origin_center = ToPosition3D_Center(nextTile);
+                centerToTarget = target_3d - origin_center;
+
+                dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                nextTile = origin_center + dir4n;
+
+                //DebugWide.DrawLine(origin_center, target_3d, Color.green);
+                DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.green);
+
+                count++;
+            }
+
+            return null;
+        }
+
+        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d, float length_interval)
+        {
+
+            //interval 값이 너무 작으면 바로 종료 한다 
+            if (0.001f >= length_interval)
+            {
+                return null;
+            }
+
+            //Index2 origin_2d;
+            Vector3 origin_3d_center = origin_3d;
+            //origin_2d = ToPosition2D(origin_3d);
+            //origin_3d_center = origin._cur_cell._pos3d_center;
+
+            CellSpace structTile = null;
+
+            //origin 이 구조타일인 경우, 구조타일이 밀어내는 방향값의 타일로 origin_center 의 위치를 변경한다   
+            //CellSpace structTile = GetCellSpace(origin_3d);
+            //if (null != structTile && structTile._isStructTile)
+            //{
+            //    switch (structTile._eDir)
+            //    {
+            //        case eDirection8.leftUp:
+            //        case eDirection8.leftDown:
+            //        case eDirection8.rightUp:
+            //        case eDirection8.rightDown:
+            //            {
+            //                //모서리 값으로 설정 
+            //                Vector3Int dir = Misc.GetDir8_Normal2D(structTile._eDir);
+            //                origin_3d_center.x += dir.x * _cellSize_x * 0.5f;
+            //                origin_3d_center.z += dir.y * _cellSize_z * 0.5f;
+
+            //                //DebugWide.LogBlue(origin_2d + "  "+ origin_center.x + "   " + origin_center.z + "  |  " + dir);
+            //            }
+            //            break;
+            //        default:
+            //            {
+            //                Vector3Int vd = Misc.GetDir8_Normal2D(structTile._eDir);
+            //                origin_2d.x += vd.x;
+            //                origin_2d.y += vd.y;
+            //                origin_3d_center = ToPosition3D_Center(origin_2d);
+            //            }
+            //            break;
+            //    }
+
+            //}
+
+            Vector3 line = target_3d - origin_3d_center;
+            Vector3 n = VOp.Normalize(line);
+            //Vector3 n = Misc.GetDir360_Normal3D(line); //근사치 노멀값을 사용하면 목표에 도달이 안되는 무한루프에 
+            //Vector3 n = line.normalized;
+
+            //n *= length_interval; //미리 곱해 놓는다 
+
+
+            //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
+            int count = 0;
+            Vector3 next = n * count;
+            float lineSqr = line.sqrMagnitude;
+            while (lineSqr > next.sqrMagnitude)
+            {
+                //최대 50회까지만 탐색한다 
+                if (50 <= count)
+                {
+                    //DebugWide.LogBlue(n); //chamto test
+                    return null;
+                }
+                next = origin_3d_center + next;
+                DebugWide.DrawCircle(next, 0.1f, Color.green);
+                DebugWide.DrawCube(ToPosition3D_Center(next), new Vector3(1f, 0, 1f), Color.green);
+
+                structTile = GetStructTile(next);
+                if (null != structTile)
+                {
+                    structTile.line.Draw(Color.red);
+                    return structTile;
+                }
+
+                count++;
+                next = n * count;
+
+            }
+
+            return null;
+        }
+
+    }//end class
 }
 
 
