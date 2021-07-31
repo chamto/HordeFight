@@ -313,9 +313,9 @@ namespace Proto_AI_2
 
             //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position, 0.01f);
 
-            //_gridMgr.Find_FirstStructTile3(_tr_test.position, _tr_line_a.position);
+            _gridMgr.Find_FirstStructTile3(_tr_test.position, _tr_line_a.position);
 
-            _gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
+            //_gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
             //_gridMgr.Draw_line_equation((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
             //_gridMgr.Draw_line_incremental((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
             //_gridMgr.Draw_line_midpoint2(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
