@@ -741,6 +741,156 @@ namespace Proto_AI
 
         }
 
+        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d)
+        {
+
+            Vector3 nextPos = origin_3d;
+            Vector3 prev_center = ToPosition3D_Center(origin_3d);
+            int count = 0;
+            bool is_next = true;
+            while (is_next)
+            {
+
+                is_next = GetTilePosition_Segment(count, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+
+                //-------------------
+
+                //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.magenta);
+                //DebugWide.DrawLine(prev_center, nextPos, Color.red);
+                //DebugWide.PrintText(nextPos, Color.white, "" + count);
+
+                prev_center = nextPos;
+
+
+                //-------------------
+
+                //구조타일을 발견하면 바로 반환 
+                CellSpace structTile = GetStructTile(nextPos);
+                if (null != structTile)
+                {
+                    DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
+                    structTile.line.Draw(Color.white);
+                    return structTile;
+                }
+
+
+                count++;
+                if (count > 20) break; //최대루프 예외처리 
+
+            }
+
+            return null;
+        }
+
+        public bool GetTilePosition_Segment(int count, float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos)
+        {
+            next_pos = new Vector3(x2, 0, y2);
+
+            if (0 == count)
+            {
+                next_pos = prev_center;
+                return true;
+            }
+
+            //기울기를 계산 할 수 없는 수직선 처리 
+            if (Misc.IsZero(x2 - x1))
+            {
+                //DebugWide.LogBlue("zero  ");
+
+                int sign_y = 1;
+                if (y1 > y2)
+                {
+                    sign_y = -1;
+                }
+
+                prev_center.z += sign_y;
+                next_pos = prev_center;
+                //next_pos = prev_center + new Vector3(0, 0, sign_y);
+
+                if (next_pos.z * sign_y > y2 * sign_y)
+                {
+                    next_pos = new Vector3(x2, 0, y2);
+                    return false;
+                }
+
+                return true;
+            }
+
+            float x, y;
+            float m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
+            if (-1 < m && m < 1) //x축이 독립축 
+            {
+                x = (int)prev_center.x;
+                y = y1;
+
+                int sign_x = 1;
+                if (x1 > x2)
+                {
+                    sign_x = -1;
+                }
+                else
+                {
+                    x += 1;
+                }
+
+
+                if (x * sign_x <= x2 * sign_x)
+                {
+
+                    y = (m * (x - x1) + y1);
+
+                    //------------------
+                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    next_pos = prev_center + dir4n;
+
+
+                    return true;
+
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else //y축이 독립축 
+            {
+                x = x1;
+                y = (int)prev_center.z;
+
+                int sign_y = 1;
+                if (y1 > y2)
+                {
+                    sign_y = -1;
+                }
+                else
+                {
+                    y += 1;
+                }
+
+                if (y * sign_y <= y2 * sign_y)
+                {
+
+                    x = ((y - y1) / m + x1);
+
+                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+                    //DebugWide.LogBlue(VOp.ToString(centerToTarget));
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    next_pos = prev_center + dir4n;
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            //return false;
+        }
+
+
+
         //public void Draw_line_equation4(float x1, float y1, float x2, float y2)
         //{
         //    float m;
@@ -848,155 +998,6 @@ namespace Proto_AI
         //    }
         //}
 
-
-
-        public bool GetTilePosition_Segment(int count , float x1, float y1, float x2, float y2 , Vector3 prev_center, out Vector3 next_pos)
-        {
-            next_pos = new Vector3(x2, 0, y2);
-
-            if(0 == count)
-            {
-                next_pos = prev_center;
-                return true;
-            }
-
-            //기울기를 계산 할 수 없는 수직선 처리 
-            if (Misc.IsZero(x2 - x1) )
-            {
-                //DebugWide.LogBlue("zero  ");
-
-                int sign_y = 1;
-                if (y1 > y2)
-                {
-                    sign_y = -1;
-                }
-
-                prev_center.z += sign_y;
-                next_pos = prev_center;
-                //next_pos = prev_center + new Vector3(0, 0, sign_y);
-
-                if (next_pos.z * sign_y > y2 * sign_y)
-                {
-                    next_pos = new Vector3(x2, 0, y2);
-                    return false;
-                }
-
-                return true;
-            }
-
-            float x, y;
-            float m = (float)(y2 - y1) / (float)(x2 - x1); //기울기 계산
-            if (-1 < m && m < 1) //x축이 독립축 
-            {
-                x = (int)prev_center.x;
-                y = y1;
-
-                int sign_x = 1;
-                if (x1 > x2)
-                {
-                    sign_x = -1;
-                }
-                else
-                {
-                    x += 1; 
-                }
-
-
-                if (x * sign_x <= x2 * sign_x)
-                {
-
-                    y = (m * (x - x1) + y1);
-
-                    //------------------
-                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
-                    next_pos = prev_center + dir4n;
-
-
-                    return true;
-
-                }
-                else
-                {
-                    return false; 
-                }
-            }
-            else //y축이 독립축 
-            {
-                x = x1;
-                y = (int)prev_center.z;
-
-                int sign_y = 1;
-                if (y1 > y2)
-                {
-                    sign_y = -1;
-                }
-                else
-                {
-                    y += 1;
-                }
-
-                if (y * sign_y <= y2 * sign_y)
-                {
-
-                    x = ((y - y1) / m + x1);
-
-                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
-                    //DebugWide.LogBlue(VOp.ToString(centerToTarget));
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
-                    next_pos = prev_center + dir4n;
-
-                    return true;
-                }
-                else
-                {
-                    return false; 
-                }
-            }
-
-            //return false;
-        }
-
-        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d)
-        {
-
-            Vector3 nextPos = origin_3d;
-            Vector3 prev_center = ToPosition3D_Center(origin_3d);
-            int count = 0;
-            bool is_next = true;
-            while (is_next)
-            {
-
-                is_next = GetTilePosition_Segment(count , origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
-
-                //-------------------
-
-                //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.magenta);
-                //DebugWide.DrawLine(prev_center, nextPos, Color.red);
-                //DebugWide.PrintText(nextPos, Color.white, "" + count);
-
-                prev_center = nextPos;
-
-
-                //-------------------
-
-                //구조타일을 발견하면 바로 반환 
-                CellSpace structTile = GetStructTile(nextPos);
-                if (null != structTile)
-                {
-                    DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
-                    structTile.line.Draw(Color.white);
-                    return structTile;
-                }
-
-
-                count++;
-                if (count > 20) break; //최대루프 예외처리 
-
-            }
-
-            return null;
-        }
 
         //20210801 - c로 배우는 알고리즘 2권 1023p 2d선그리기 참고  
         public void Draw_line_equation3(float x1, float y1, float x2, float y2)
