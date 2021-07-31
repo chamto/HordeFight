@@ -1751,6 +1751,14 @@ namespace UtilGS9
         //==================      8방향 함수     ==================
         //========================================================
 
+        static private Vector3[] _dir4_normal3D_AxisY = new Vector3[]
+        {   new Vector3(0,0,0) ,                //    zero = 0, 
+                new Vector3(1,0,0).normalized ,     //    right = 1, 
+                new Vector3(0,0,1).normalized ,     //    up = 2,
+                new Vector3(-1,0,0).normalized ,    //    left = 3,
+                new Vector3(0,0,-1).normalized ,    //    down = 4,
+
+        };
 
         //미리구한 정규화된 8방향값 
         static private Vector3[] _dir8_normal3D_AxisY = new Vector3[]
@@ -1940,6 +1948,87 @@ namespace UtilGS9
                 return false;
 
             return true;
+        }
+
+        static public Vector3 GetDir4_Normal3D_Y(Vector3 dir)
+        {
+            if (dir.z * dir.z + dir.x * dir.x < float.Epsilon) return Vector3.zero;
+
+            float rad = (float)Math.Atan2(dir.z, dir.x);
+            float deg = Mathf.Rad2Deg * rad;
+
+            //각도가 음수라면 360을 더한다 
+            if (deg < 0) deg += 360f;
+
+            //360 / 45 = 8
+            int quad = (int)((deg / 90f) + 1.5f);
+            if (5 == quad) quad = 1;
+
+            //DebugWide.LogBlue(deg + "  " + (deg/45f) + "  "  + quad + "  " + _dir8_normal3D_AxisY[quad]);
+            return _dir4_normal3D_AxisY[quad];
+        }
+
+        //fixme - 미완성 
+        static public Vector3 __GetDir4_Normal3D_Y(Vector3 dir)
+        {
+            if (dir.z * dir.z + dir.x * dir.x < float.Epsilon) return Vector3.zero;
+
+            int quad = 0;
+
+            float tan = 0;
+            //if (float.Epsilon > Math.Abs(dir.x))
+            //    tan = dir.z;
+            //else if (float.Epsilon > Math.Abs(dir.z))
+            //tan = dir.x;
+            if (0 == dir.x)
+                tan = dir.z; //1보다 크게 만들기 위해 임의의 값을 곱해준다
+            else if (0 == dir.z)
+                tan = dir.x;
+            else
+                tan = dir.z / dir.x;
+
+            DebugWide.LogRed(tan + "  ");
+
+            //사분면의 위치 찾기 
+            //1사분면
+            if (dir.z > 0  && dir.x >= 0)
+            {
+                if (tan < 1)
+                    quad = 1;
+                else
+                    quad = 2;
+
+            }
+            //2사분면
+            else if (dir.z >= 0 && dir.x < 0)
+            {
+                if (tan < -1)
+                    quad = 2;
+                else
+                    quad = 3;
+
+            }
+            //3사분면
+            else if (dir.z < 0 && dir.x < 0)
+            {
+                if (tan < 1)
+                    quad = 3;
+                else
+                    quad = 4;
+
+            }
+            //4사분면
+            else if (dir.z < 0 && dir.x >= 0)
+            {
+                if (tan < -1)
+                    quad = 4;
+                else
+                    quad = 1;
+
+            }
+
+
+            return _dir4_normal3D_AxisY[quad]; 
         }
 
         static public Vector3 GetDir8_Normal3D_AxisY(eDirection8 eDirection)
