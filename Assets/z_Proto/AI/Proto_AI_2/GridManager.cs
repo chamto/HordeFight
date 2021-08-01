@@ -718,7 +718,7 @@ namespace Proto_AI
 
         }
 
-        public Vector3 Collision_StructLine_Test1(Vector3 srcPos, float RADIUS)
+        public Vector3 Collision_StructLine(Vector3 srcPos, float RADIUS)
         {
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
@@ -851,6 +851,46 @@ namespace Proto_AI
             }
 
             return srcPos;
+        }
+
+        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS)
+        {
+            srcPos = Collision_StructLine_Test2(oldPos, srcPos, RADIUS);
+
+            Vector3Int pos_2d = ToPosition2D(srcPos);
+
+            BoundaryTileList list = null;
+            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
+
+
+            //RADIUS = 1.0f;
+            foreach (BoundaryTile info in list)
+            {
+                //주변경계타일인 경우
+                if (true == info.isBoundary)
+                {
+
+                    if (true == Geo.IntersectLineSegment(srcPos, RADIUS, info.cell.line.origin, info.cell.line.last))
+                    {
+
+                        Vector3 cp = info.cell.line.ClosestPoint(srcPos);
+                        Vector3 n = VOp.Normalize(srcPos - cp);
+                        srcPos = cp + n * RADIUS;
+
+                    }
+                }
+                //경계타일인 경우 
+                else
+                {
+                    srcPos = GetBorder_StructTile(srcPos, RADIUS, info.cell);
+                }
+
+
+            }
+
+            return srcPos;
+
+
         }
 
         public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , int MAX_COUNT)
