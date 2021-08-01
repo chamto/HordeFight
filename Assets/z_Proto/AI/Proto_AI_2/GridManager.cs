@@ -718,7 +718,7 @@ namespace Proto_AI
 
         }
 
-        public Vector3 Collision_StructLine(Vector3 srcPos, float RADIUS)
+        public Vector3 Collision_StructLine_Test1(Vector3 srcPos, float RADIUS)
         {
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
@@ -809,7 +809,7 @@ namespace Proto_AI
 
         }
 
-        public Vector3 Collision_StructLine2(Vector3 oldPos, Vector3 srcPos, float RADIUS)
+        public Vector3 Collision_StructLine_Test2(Vector3 oldPos, Vector3 srcPos, float RADIUS)
         {
             const int MAX_COUNT = 5; //5개의 타일만 검사 
             Vector3 dir = srcPos - oldPos;
