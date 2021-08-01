@@ -31,6 +31,7 @@ namespace Proto_AI_2
         public Transform _tr_line_b = null;
 
         public float _formation_speed = 10;
+        public float _radius = 0.5f;
         public float _mass = 1f;
         public float _maxSpeed = 10f;
         public float _maxForce = 40f;
@@ -75,46 +76,46 @@ namespace Proto_AI_2
             v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //1
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //2
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////2
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //-------------------
+            ////-------------------
 
-            //3
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////3
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////4
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(2f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //////4
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(2f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //5
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(3f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////5
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(3f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -165,6 +166,7 @@ namespace Proto_AI_2
             {
                 //if (0 == v._id) v._withstand = 100; //임시 시험 
 
+                v._radius = _radius;
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
@@ -205,7 +207,8 @@ namespace Proto_AI_2
 
                 float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
                 //동굴벽과 캐릭터 경계원 충돌처리 
-                v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
+                //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
+                v._pos = _gridMgr.Collision_StructLine2(v._oldPos, v._pos, v._radius );
 
                 //==========================================
 
@@ -311,14 +314,14 @@ namespace Proto_AI_2
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
 
-            //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position, 0.01f);
 
-            _gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position);
+            //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 20);
+
+            //Vehicle vh = EntityMgr.list[ID];
+            //_gridMgr.Find_FirstStructTile(vh._oldPos, vh._oldPos + (vh._pos - vh._oldPos) * 100 , 5);
+
 
             //_gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
-            //_gridMgr.Draw_line_equation((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
-            //_gridMgr.Draw_line_incremental((int)_tr_test.position.x, (int)_tr_test.position.z, (int)_tr_line_a.position.x, (int)_tr_line_a.position.z);
-            //_gridMgr.Draw_line_midpoint2(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
 
             //Vector3 test = _tr_line_a.position - _tr_test.position;
             //Vector3 dir4n = Misc.GetDir4_Normal3D_Y(test);
@@ -348,6 +351,7 @@ namespace Proto_AI_2
 
     public class BaseEntity
     {
+        public Vector3 _oldPos = Vector3.zero;
         public Vector3 _pos = Vector3.zero;
         public Vector3 _velocity = Vector3.zero;
         public float _speed = 10f;
@@ -466,6 +470,7 @@ namespace Proto_AI_2
             _collision._id = _id;
             _collision._radius = radius;
             SetPos(pos);
+            _oldPos = pos;
         }
 
         public void SetPos(Vector3 newPos)
@@ -483,7 +488,8 @@ namespace Proto_AI_2
         public void Update(float deltaTime)
         {
 
-            //_speed = 0;
+            _oldPos = _pos;
+
 
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
@@ -586,7 +592,10 @@ namespace Proto_AI_2
 
         public void Update2(float deltaTime)
         {
-        
+
+            _oldPos = _pos;
+
+
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
@@ -658,7 +667,6 @@ namespace Proto_AI_2
             }
 
 
-
         }
 
         public Vector3 WrapAroundXZ(Vector3 pos, int MaxX, int MaxY)
@@ -688,7 +696,7 @@ namespace Proto_AI_2
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
             DebugWide.DrawLine(_pos + vb2, _pos + vb0, color);
-            //DebugWide.DrawCircle(_pos, _radius, color); 
+            DebugWide.DrawCircle(_pos, _radius, color); 
 
             //if (SteeringBehavior.eType.wander == _mode)
             //{

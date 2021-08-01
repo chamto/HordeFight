@@ -431,10 +431,14 @@ namespace Proto_AI
                     break;
                 case eDirection8.leftUp:
                     {
-                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
-                        {
-                            return false;
-                        }
+                        //if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        //{
+                        //    temp.x = cell._pos3d_center.x - size;
+                        //    temp.z = cell._pos3d_center.z + size;
+                        //    line.origin = temp;
+                        //    line.last = temp;
+                        //    return true;
+                        //}
 
                         temp = cell._pos3d_center;
                         temp.x -= size;
@@ -450,10 +454,14 @@ namespace Proto_AI
                     break;
                 case eDirection8.rightUp:
                     {
-                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
-                        {
-                            return false;
-                        }
+                        //if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        //{
+                        //    temp.x = cell._pos3d_center.x + size;
+                        //    temp.z = cell._pos3d_center.z + size;
+                        //    line.origin = temp;
+                        //    line.last = temp;
+                        //    return true;
+                        //}
 
                         temp = cell._pos3d_center;
                         temp.x -= size;
@@ -470,10 +478,14 @@ namespace Proto_AI
                     break;
                 case eDirection8.leftDown:
                     {
-                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
-                        {
-                            return false;
-                        }
+                        //if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        //{
+                        //    temp.x = cell._pos3d_center.x - size;
+                        //    temp.z = cell._pos3d_center.z - size;
+                        //    line.origin = temp;
+                        //    line.last = temp;
+                        //    return true;
+                        //}
 
                         temp = cell._pos3d_center;
                         temp.x -= size;
@@ -489,10 +501,14 @@ namespace Proto_AI
                     break;
                 case eDirection8.rightDown:
                     {
-                        if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
-                        {
-                            return false;
-                        }
+                        //if (CellSpace.Specifier_DiagonalFixing == cell._specifier)
+                        //{
+                        //    temp.x = cell._pos3d_center.x + size;
+                        //    temp.z = cell._pos3d_center.z - size;
+                        //    line.origin = temp;
+                        //    line.last = temp;
+                        //    return true;
+                        //}
 
                         temp = cell._pos3d_center;
                         temp.x -= size;
@@ -741,7 +757,103 @@ namespace Proto_AI
 
         }
 
-        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d)
+        public Vector3 GetBorder_StructFixingTile(Vector3 srcPos, float radius, CellSpace structTile)
+        {
+            if (null == structTile) return srcPos;
+            if (CellSpace.Specifier_DiagonalFixing != structTile._specifier) return srcPos;
+
+            Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
+            float size = _cellSize_x * 0.5f;
+
+            //8방향별 축값 고정  
+            switch (structTile._eDir)
+            {
+
+                //break;
+                case eDirection8.leftUp:
+                    {
+                        //down , right
+                        srcPos.x = structTile._pos3d_center.x - size;
+                        srcPos.z = structTile._pos3d_center.z + size;
+                        return srcPos + push_dir * radius;
+
+                    }
+                    break;
+                case eDirection8.rightUp:
+                    {
+                        //down , left
+                        srcPos.x = structTile._pos3d_center.x + size;
+                        srcPos.z = structTile._pos3d_center.z + size;
+                        return srcPos + push_dir * radius;
+                    }
+                    break;
+                case eDirection8.leftDown:
+                    {
+                        //up , right
+                        srcPos.x = structTile._pos3d_center.x - size;
+                        srcPos.z = structTile._pos3d_center.z - size;
+                        return srcPos + push_dir * radius;
+
+                    }
+                    break;
+                case eDirection8.rightDown:
+                    {
+                        //up , left
+                        srcPos.x = structTile._pos3d_center.x + size;
+                        srcPos.z = structTile._pos3d_center.z - size;
+                        return srcPos + push_dir * radius;
+                    }
+            }
+                  
+            return srcPos;
+
+        }
+
+        public Vector3 Collision_StructLine2(Vector3 oldPos, Vector3 srcPos, float RADIUS)
+        {
+            const int MAX_COUNT = 5; //5개의 타일만 검사 
+            Vector3 dir = srcPos - oldPos;
+            CellSpace structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, MAX_COUNT);
+            if(null != structTile)
+            {
+                //if (CellSpace.Specifier_DiagonalFixing == structTile._specifier)
+                //{
+                //    return GetBorder_StructFixingTile(srcPos, RADIUS, structTile);
+                //}
+
+                bool calc = false;
+                Vector3 cp = structTile.line.ClosestPoint(srcPos);
+                Vector3 cpToSrc = srcPos - cp;
+                Vector3 push_dir = Misc.GetDir8_Normal3D(srcPos - cp);
+                //Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
+                float sign = 1;
+
+                //지형타일을 넘어간 경우 
+                if (Vector3.Dot(dir, cpToSrc) > 0)
+                {
+                    calc = true;
+                    sign = -1;
+                }
+
+                //지형과 원이 겹친경우 
+                if(cpToSrc.sqrMagnitude < RADIUS*RADIUS)
+                {
+                    calc = true;
+                }
+
+                if(calc)
+                {
+                    //Vector3 n = VOp.Normalize(srcPos - cp) * sign;
+                    srcPos = cp + push_dir * sign * RADIUS;
+                }
+
+                //DebugWide.AddDrawQ_Line(structTile.line.origin, structTile.line.last, Color.white);
+            }
+
+            return srcPos;
+        }
+
+        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , int MAX_COUNT)
         {
 
             Vector3 nextPos = origin_3d;
@@ -768,14 +880,14 @@ namespace Proto_AI
                 CellSpace structTile = GetStructTile(nextPos);
                 if (null != structTile)
                 {
-                    DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
-                    structTile.line.Draw(Color.white);
+                    //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
+                    //structTile.line.Draw(Color.white);
                     return structTile;
                 }
 
 
                 count++;
-                if (count > 20) break; //최대루프 예외처리 
+                if (count > MAX_COUNT) break; //최대검사 횟수 검사 
 
             }
 
