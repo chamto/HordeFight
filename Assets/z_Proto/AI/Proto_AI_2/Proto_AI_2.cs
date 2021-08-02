@@ -208,6 +208,7 @@ namespace Proto_AI_2
                 float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
                 //동굴벽과 캐릭터 경계원 충돌처리 
                 //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
+                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
                 v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius );
 
                 //==========================================
@@ -311,13 +312,16 @@ namespace Proto_AI_2
         {
             if (null == _tr_target) return;
 
+            Vehicle vh = EntityMgr.list[ID];
+
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
 
+            //DebugWide.DrawLine(vh._oldPos, vh._pos, Color.cyan);
 
             //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 20);
 
-            //Vehicle vh = EntityMgr.list[ID];
+
             //_gridMgr.Find_FirstStructTile(vh._oldPos, vh._oldPos + (vh._pos - vh._oldPos) * 100 , 5);
 
 
