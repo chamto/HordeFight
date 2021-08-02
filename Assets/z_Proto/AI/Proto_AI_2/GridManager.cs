@@ -865,10 +865,12 @@ namespace Proto_AI
                 DebugWide.LogBlue("  Collision_FirstStructTile src " + srcPos);
 
                 //지형타일을 넘어간 경우 
-                if (Vector3.Dot(dir, cpToSrc) > 0)
+                //if (Vector3.Dot(dir, cpToSrc) > 0) //잘못된 계산 
+                if (Vector3.Dot((oldPos - cp), cpToSrc) < 0)
                 {
                     calc = true;
                     push_dir *= -1;
+                    //DebugWide.LogRed("==================================================");
                 }
 
                 //지형과 원이 겹친경우 
@@ -887,7 +889,7 @@ namespace Proto_AI
 
                 //DebugWide.AddDrawQ_Line(structTile.line.origin, structTile.line.last, Color.white);
                 //DebugWide.AddDrawQ_Circle(cp, 0.3f, Color.white);
-                DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.5f, Color.green);
+                //DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.5f, Color.green);
             }
 
             return srcPos;
