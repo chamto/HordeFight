@@ -254,6 +254,9 @@ namespace Proto_AI
                 structTile._pos1d = this.ToPosition1D(XY_2d, _tileBlock_width_size); 
                 structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
 
+                //방향이 없는 덮개타일은 걸러낸다 
+                if (eDirection8.none == structTile._eDir) continue;
+
                 structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
                 structTile._isStructTile = true;
 
@@ -539,6 +542,21 @@ namespace Proto_AI
 
         public void Draw_BoundaryTile()
         {
+
+            //foreach (KeyValuePair<Vector3Int, CellSpace> info1 in _structTileList)
+            //{
+            //    Vector3 pos = ToPosition3D_Center(info1.Key);
+
+            //    if(info1.Value._isUpTile)
+            //        DebugWide.DrawCircle(pos, 0.5f, Color.red);
+
+
+            //    DebugWide.PrintText(pos, Color.black, "" + info1.Value._eDir);
+
+            //    info1.Value.line.Draw(Color.white);
+            //}
+            //return;
+
             foreach (KeyValuePair<Vector3Int, BoundaryTileList> info1 in _boundaryList)
             {
 
@@ -869,7 +887,7 @@ namespace Proto_AI
 
                 //DebugWide.AddDrawQ_Line(structTile.line.origin, structTile.line.last, Color.white);
                 //DebugWide.AddDrawQ_Circle(cp, 0.3f, Color.white);
-                //DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.5f, Color.green);
+                DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.5f, Color.green);
             }
 
             return srcPos;
@@ -897,9 +915,9 @@ namespace Proto_AI
                     //bool inter = false;
                     //if (CellSpace.Specifier_DiagonalFixing == info.cell._specifier)
                     //{
-                    //    if((info.cell.line.origin - srcPos).sqrMagnitude <= RADIUS*RADIUS)
+                    //    //if((info.cell.line.origin - srcPos).sqrMagnitude <= RADIUS*RADIUS)
                     //    {
-                    //        inter = true;
+                    //        //inter = true;
                     //        DebugWide.LogRed("==================================================");
                     //    }
                     //}
