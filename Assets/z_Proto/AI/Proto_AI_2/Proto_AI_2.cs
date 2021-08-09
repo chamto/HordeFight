@@ -30,6 +30,9 @@ namespace Proto_AI_2
         public Transform _tr_line_a = null;
         public Transform _tr_line_b = null;
 
+        public Transform _tr_test2_s = null;
+        public Transform _tr_test2_e = null;
+
         public float _formation_speed = 10;
         public float _radius = 0.5f;
         public float _mass = 1f;
@@ -58,6 +61,8 @@ namespace Proto_AI_2
             _tr_test = GameObject.Find("Test").transform;
             _tr_line_a = GameObject.Find("line_a").transform;
             _tr_line_b = GameObject.Find("line_b").transform;
+            _tr_test2_s = GameObject.Find("Test2_s").transform;
+            _tr_test2_e = GameObject.Find("Test2_e").transform;
 
             _gridMgr.Init();
 
@@ -74,6 +79,7 @@ namespace Proto_AI_2
             v._leader = _formationPoint;
             v._offset = new Vector3(0, 0, 0);
             v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v._maxSpeed = 14;
 
             //1
             //v = new Vehicle();
@@ -156,8 +162,8 @@ namespace Proto_AI_2
             KeyInput();
             vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
 
-            //float kmPerHour = (3600f / 1000f) * vh._maxSpeed;
-            //DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + vh._maxSpeed + "  " + vh._maxSpeed * deltaTime);
+            //float kmPerHour = (3600f / 1000f) * _maxSpeed;
+            //DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + _maxSpeed + "  초당 거리: " + _maxSpeed * deltaTime);
             //운반기의 반지름이 0.5 이며 타일한개의 길이가 1인 경우 : _maxSpeed * deltaTime 의 값이 1.5 를 넘으면 지형을 통과하게 된다 
             //운반기의 반지름이 0과 가까운 아주 작은 값일 경우 : _maxSpeed * deltaTime 의 값이 1 을 넘으면 지형을 통과하게 된다 
             //현재의 타일기반 지형충돌 알고리즘으로는 _maxSpeed 가 30 (시속108) 까지만 충돌처리가 가능하다 
@@ -207,9 +213,17 @@ namespace Proto_AI_2
 
                 float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
                 //동굴벽과 캐릭터 경계원 충돌처리 
+
+                DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
+                DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
+
                 //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
-                v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
-                //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius );
+                CellSpace structTile;
+                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius , out structTile);
+
+
+                v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , v);
+                DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
 
                 //==========================================
 
@@ -321,11 +335,18 @@ namespace Proto_AI_2
 
             //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 20);
 
-
             //_gridMgr.Find_FirstStructTile(vh._oldPos, vh._oldPos + (vh._pos - vh._oldPos) * 100 , 5);
 
-
             //_gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
+
+            //CellSpace cell = _gridMgr.GetStructTile(_tr_test2_s.position);
+            //if(null != cell)
+            //{
+            //    cell.line.Draw(Color.green);
+            //    _gridMgr.LineInterPos(_tr_test.position, _tr_line_a.position, cell.line.origin , cell.line.last);
+            //}
+
+            //_gridMgr.CalcArcFullyPos( _tr_test.position, vh._radius);
 
             //Vector3 test = _tr_line_a.position - _tr_test.position;
             //Vector3 dir4n = Misc.GetDir4_Normal3D_Y(test);
@@ -348,8 +369,8 @@ namespace Proto_AI_2
             if(true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
 
-            DebugWide.DrawQ_All_AfterTime(1);
-            //DebugWide.DrawQ_Dequeue();
+            //DebugWide.DrawQ_All_AfterTime(1);
+            DebugWide.DrawQ_All_AfterClear();
         }
     }
 
@@ -427,6 +448,8 @@ namespace Proto_AI_2
         public float _withstand = 1f; //버티기
 
         public bool _isNonpenetration = true; //비침투 
+
+        public bool _stop = false;
 
         //public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
 
@@ -570,12 +593,14 @@ namespace Proto_AI_2
                 //}
 
                 //-----------
-
+                float curSpeed = _maxSpeed;
+                if (_stop) curSpeed = 1;
+                 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 Vector3 ToOffset = WorldOffsetPos - _pos;
-                Vector3 pos_future = _pos + _velocity.normalized * _maxSpeed * deltaTime;
+                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime;
                 Vector3 ToFuture = pos_future - WorldOffsetPos;
                 if (ToOffset.sqrMagnitude > ToFuture.sqrMagnitude)
                     SetPos(pos_future);
