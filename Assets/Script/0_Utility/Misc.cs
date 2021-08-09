@@ -2392,7 +2392,9 @@ namespace UtilGS9
         //==================       변  환       ==================
         //========================================================
 
-        //변환의 역순으로 적용하여 로컬위치를 구한다 
+        //2021-1-15 실험노트 참고하기 
+        //변환의 역순으로 적용하여 로컬위치를 구한다
+        //agent 의 좌표축을 기저벡터로 변환하였을때 point 의 로컬위치를 구한다. point => localPoint 
         public static Vector3 PointToLocalSpace(Vector3 point,
                              Vector3 AgentHeading,
                              Vector3 AgentSide,

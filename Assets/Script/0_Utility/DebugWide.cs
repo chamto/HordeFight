@@ -448,12 +448,14 @@ public class DebugWide
         {
             Circle,
             Line,
+            Text,
         }
 
         public eKind kind;
         public Vector3 origin;
         public Vector3 last;
         public float radius;
+        public string text;
         public Color color;
 
         public void Draw()
@@ -465,6 +467,9 @@ public class DebugWide
                     break;
                 case eKind.Line:
                     DebugWide.DrawLine(origin, last, color);
+                    break;
+                case eKind.Text:
+                    DebugWide.PrintText(origin, color, text);
                     break;
 
             }
@@ -497,6 +502,18 @@ public class DebugWide
         drawInfo.kind = DrawInfo.eKind.Line;
         drawInfo.origin = origin;
         drawInfo.last = last;
+        drawInfo.color = color;
+
+        AddDrawQ(drawInfo);
+    }
+
+    public static void AddDrawQ_Text(Vector3 origin, string text, Color color)
+    {
+
+        DrawInfo drawInfo = new DrawInfo();
+        drawInfo.kind = DrawInfo.eKind.Text;
+        drawInfo.origin = origin;
+        drawInfo.text = text;
         drawInfo.color = color;
 
         AddDrawQ(drawInfo);
@@ -539,13 +556,19 @@ public class DebugWide
 
     }
 
-    public static void DrawQ_Dequeue()
+    public static void DrawQ_All_AfterClear()
     {
-        if (0 < _drawQ.Count)
+        //if (0 < _drawQ.Count)
+        //{
+        //    DrawInfo info = _drawQ.Dequeue();
+        //    info.Draw();
+        //}
+
+        foreach (DrawInfo info in _drawQ)
         {
-            DrawInfo info = _drawQ.Dequeue();
             info.Draw();
         }
+        _drawQ.Clear();
 
     }
 
