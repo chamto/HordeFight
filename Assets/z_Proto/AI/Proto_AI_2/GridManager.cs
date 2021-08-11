@@ -1078,15 +1078,16 @@ namespace Proto_AI
                     srcPos = cp + push_dir * RADIUS;
 
                     Vector3 newPos , interPos;
-                    if(true == CalcArcFullyPos(srcPos, RADIUS, out newPos, out interPos))
+                    if(true == CalcArcFullyPos(srcPos, dir,RADIUS, out newPos, out interPos))
                     {
-
+                        //srcPos = newPos;
                         Vector3 cpp = structTile.line.ClosestPoint(newPos);
                         if((interPos - cp).sqrMagnitude < (interPos - cpp).sqrMagnitude)
                         {
-                            srcPos = newPos;      
+                            srcPos = newPos;
+                            DebugWide.LogRed((interPos - cp).magnitude + "   " + (interPos - cpp).magnitude + "  " + srcPos + "   " + newPos + "  " + interPos + "  " + cp + "  " + cpp);
                         }
-                        DebugWide.LogRed((interPos - cp).magnitude + "   " + (interPos - cpp).magnitude + "  " + srcPos + "   "+ newPos + "  " + interPos + "  " + cp + "  " + cpp);
+
                     }
                 }
 
@@ -1146,7 +1147,7 @@ namespace Proto_AI
             return new Vector3(x,0,z); 
         }
 
-        public bool CalcArcFullyPos(Vector3 srcPos, float RADIUS , out Vector3 newPos , out Vector3 interPos)
+        public bool CalcArcFullyPos(Vector3 srcPos, Vector3 dir,float RADIUS , out Vector3 newPos , out Vector3 interPos)
         {
             newPos = srcPos;
             interPos = Vector3.zero;
@@ -1211,17 +1212,30 @@ namespace Proto_AI
 
             //호에 완전포함 시키기 위한 factor 값을 구한다 
             float factor = RADIUS / (float)Math.Sin(Mathf.Deg2Rad * angle * 0.5f);
-            Vector3 dir = VOp.Normalize(line_0.direction.normalized + line_1.direction.normalized);
-            newPos = inter_pt0 + dir * factor ;
+            Vector3 ndir = VOp.Normalize(line_0.direction.normalized + line_1.direction.normalized);
+            newPos = inter_pt0 + ndir * factor ;
             //Vector3 newPos2 = inter_pt0 + dir * factor * 1.2f;
+
+            DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
+            DebugWide.AddDrawQ_Circle(inter_pt0, 0.1f, Color.yellow);
+            DebugWide.AddDrawQ_Line(inter_pt0, inter_pt0 + ndir * 3, Color.yellow);
 
             //-------------------------------
             //계산영역을 벗어나는지 검사 
-            Vector3 cp_0 = line_0.ClosestPoint(newPos);
-            Vector3 cpp_0 = line_0.ClosestPoint(srcPos);
+
+            //Vector3 cp_0 = line_0.ClosestPoint(newPos);
+            //Vector3 cpp_0 = line_0.ClosestPoint(srcPos);
+            //Vector3 perp_0 = inter_pt0 + c0._nDir * RADIUS;
+            //Vector3 cp_1 = line_1.ClosestPoint(newPos);
+            //Vector3 cpp_1 = line_1.ClosestPoint(srcPos);
+            //Vector3 perp_1 = inter_pt0 + c1._nDir * RADIUS;
+
+
+            Vector3 cp_0 = Line3.ClosestPoint(line_0.origin, line_0.direction, newPos);
+            Vector3 cpp_0 = Line3.ClosestPoint(line_0.origin, line_0.direction, srcPos);
             Vector3 perp_0 = inter_pt0 + c0._nDir * RADIUS;
-            Vector3 cp_1 = line_1.ClosestPoint(newPos);
-            Vector3 cpp_1 = line_1.ClosestPoint(srcPos);
+            Vector3 cp_1 = Line3.ClosestPoint(line_1.origin, line_1.direction, newPos);
+            Vector3 cpp_1 = Line3.ClosestPoint(line_1.origin, line_1.direction, srcPos);
             Vector3 perp_1 = inter_pt0 + c1._nDir * RADIUS;
 
             DebugWide.AddDrawQ_Line(cp_0, newPos, Color.black);
@@ -1232,12 +1246,10 @@ namespace Proto_AI
             DebugWide.AddDrawQ_Line(inter_pt0, perp_1, Color.black);
             DebugWide.AddDrawQ_Line(perp_1, newPos, Color.black);
 
-            DebugWide.AddDrawQ_Line(line_0.origin, line_1.origin, Color.blue);
+            DebugWide.AddDrawQ_Line(line_0.origin, line_1.origin, Color.green);
 
-            DebugWide.AddDrawQ_Circle(inter_pt0, 0.1f, Color.yellow);
-            DebugWide.AddDrawQ_Line(inter_pt0, inter_pt0 + dir * 3, Color.yellow);
 
-            DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
+
 
             //반지름을 벗어나는 위치에 있는 srcPos를 걸러낸다 
             //if((srcPos-cpp_0).sqrMagnitude > RADIUS * RADIUS ||
@@ -1247,10 +1259,31 @@ namespace Proto_AI
             //    return false; 
             //}
 
+            DebugWide.LogBlue("a - "+(inter_pt0 - cp_0).magnitude + "    " + (inter_pt0 - cpp_0).magnitude + "  " + c0._eDir);
+            DebugWide.LogBlue("b - " + (inter_pt0 - cp_1).magnitude + "    " + (inter_pt0 - cpp_1).magnitude + "  " + c1._eDir);
             //계산영역 검사 
+
+            //return false;
             //if ((inter_pt0 - cp_0).sqrMagnitude >= (inter_pt0 - cpp_0).sqrMagnitude ||
             //(inter_pt0 - cp_1).sqrMagnitude >= (inter_pt0 - cpp_1).sqrMagnitude)
             //{
+            //        DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
+            //        return true; 
+            //}
+
+
+            //if ((inter_pt0 - cp_0).sqrMagnitude >= (inter_pt0 - cpp_0).sqrMagnitude)
+            // //&& Vector3.Dot(dir , -c0._nDir) > 0)
+            //{
+            //    //DebugWide.AddDrawQ_Circle(srcPos, RADIUS, Color.gray);
+            //    DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
+            //    return true;
+            //}
+
+            //if ((inter_pt0 - cp_1).sqrMagnitude >= (inter_pt0 - cpp_1).sqrMagnitude)
+            ////&& Vector3.Dot(dir, -c1._nDir) > 0)
+            //{
+            //    //DebugWide.AddDrawQ_Circle(srcPos, RADIUS, Color.gray);
             //    DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
             //    return true;
             //}
@@ -1274,7 +1307,7 @@ namespace Proto_AI
             return true;
         }
 
-        public Vector3 Collision_FirstStructTile2(Vector3 oldPos, Vector3 srcPos, float RADIUS , out CellSpace structTile)
+        public Vector3 Collision_FirstStructTile2(Vector3 oldPos, Vector3 srcPos, float RADIUS ,  out CellSpace structTile)
         {
             const int MAX_COUNT = 5; //5개의 타일만 검사 
             Vector3 dir = srcPos - oldPos;
@@ -1335,26 +1368,19 @@ namespace Proto_AI
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
 
+            vh._stop = false;
 
             BoundaryTileList list = null;
             if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
 
             DebugWide.LogBlue(" === 2d : " + pos_2d + "  count : " + list.Count);
 
-            //if (2 <= list.Count )
-            //{
-            //    srcPos = oldPos + (srcPos - oldPos).normalized * 0.03f * 5f; 
-            //}
-            //vh._maxSpeed = 28;
-            //vh._maxSpeed = 14;
-            vh._stop = false;
 
             int count = 0;
             int interCount = 0;
-            Vector3 prevPos = srcPos;
             foreach (BoundaryTile info in list)
             {
-                //if (firstTile == info.cell) continue;
+                if (firstTile == info.cell) continue; //Collision_FirstStructTile 에서 이미 계산된 것은 처리하지 않는다 
 
                 DebugWide.AddDrawQ_Line(info.cell.line.origin, info.cell.line.last, Color.white);
                 Vector3Int cellpos = ToPosition2D(info.cell._pos3d_center);
@@ -1395,9 +1421,7 @@ namespace Proto_AI
 
                         DebugWide.LogBlue(count + "  boundary  " + cellpos + "  cp: " + cp + "  " + n + "  " + srcPos);
 
-                        //if(interCount > 1)
-                        //    srcPos = srcPos + (prevPos - srcPos) * 0.5f;
-                        //prevPos = srcPos;
+
                         DebugWide.AddDrawQ_Line(cp, srcPos, Color.black);
 
                     }
@@ -1416,8 +1440,8 @@ namespace Proto_AI
 
             if (2 <= count && 2 <= interCount)
             {
-                //vh._stop = true;
-                //vh._maxSpeed = 1;
+                //반지름이 0.99일때 터널통과 현상을 막기위해 최저속도로 설정한다 
+                vh._stop = true;
             }
 
 

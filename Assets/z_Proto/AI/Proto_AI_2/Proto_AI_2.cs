@@ -36,11 +36,12 @@ namespace Proto_AI_2
         public float _formation_speed = 10;
         public float _radius = 0.5f;
         public float _mass = 1f;
-        public float _maxSpeed = 10f;
+        public float _weight = 20;
         public float _maxForce = 40f;
+        public float _maxSpeed = 10f;
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
-        public float _weight = 20;
+
         public bool _isNonpenetration = true;
 
         public FormationPoint _formationPoint = new FormationPoint();
@@ -346,7 +347,8 @@ namespace Proto_AI_2
             //    _gridMgr.LineInterPos(_tr_test.position, _tr_line_a.position, cell.line.origin , cell.line.last);
             //}
 
-            //_gridMgr.CalcArcFullyPos( _tr_test.position, vh._radius);
+            //Vector3 ot0, ot1;
+            //_gridMgr.CalcArcFullyPos( _tr_test.position, _tr_line_a.position - _tr_test.position, vh._radius , out ot0, out ot1);
 
             //Vector3 test = _tr_line_a.position - _tr_test.position;
             //Vector3 dir4n = Misc.GetDir4_Normal3D_Y(test);
@@ -562,12 +564,15 @@ namespace Proto_AI_2
 
                 float angle = _anglePerSecond * def * deltaTime;
 
+                //DebugWide.LogRed(angle + "   " + max_angle);
+
                 //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
                 if (Math.Abs(angle) > Math.Abs(max_angle))
                 {
                     angle = max_angle;
                 
                 }
+
 
                 _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
                 _heading = VOp.Normalize(_heading);
@@ -592,12 +597,33 @@ namespace Proto_AI_2
                 //    SetPos(_pos + _velocity * deltaTime);
                 //}
 
+                //{
+                //    if (_stop)
+                //        _velocity = VOp.Truncate(_velocity, 1);
+
+                //    Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                //    Vector3 ToOffset = WorldOffsetPos - _pos;
+                //    Vector3 pos_future = _pos + _velocity * deltaTime;
+                //    Vector3 ToFuture = pos_future - WorldOffsetPos;
+
+                //    //fixme : 속도가 빠른 경우 떠는 문제 있음 
+                //    //if (ToOffset.sqrMagnitude <= ToFuture.sqrMagnitude )//&& Vector3.Dot(ToOffset, _velocity) >= 0)
+                //    if (ToOffset.sqrMagnitude < 0.001f)
+                //    {
+                //        SetPos(WorldOffsetPos);
+                //    }
+                //    else
+                //        SetPos(pos_future);
+
+                //}
+
                 //-----------
-                float curSpeed = _maxSpeed;
-                if (_stop) curSpeed = 1;
-                 
+
+
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
+                float curSpeed = _maxSpeed;
+                if (_stop) curSpeed = 1;
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 Vector3 ToOffset = WorldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime;
@@ -605,7 +631,7 @@ namespace Proto_AI_2
                 if (ToOffset.sqrMagnitude > ToFuture.sqrMagnitude)
                     SetPos(pos_future);
                 else
-                    SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
+                SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
 
                 //-------------
 
