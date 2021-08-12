@@ -1055,11 +1055,12 @@ namespace Proto_AI
 
                 //지형타일을 넘어간 경우 
                 //if (Vector3.Dot(dir, cpToSrc) > 0) //잘못된 계산 
-                if (Vector3.Dot((oldPos - cp), cpToSrc) < 0)
+                //if (Vector3.Dot((oldPos - cp), cpToSrc) < 0) //삐죽하게 튀어나온 부분에서 처리 못해줌
+                if (Vector3.Dot(structTile._nDir, cpToSrc) < 0)
                 {
                     calc = true;
                     push_dir *= -1;
-                    //DebugWide.LogRed("==================================================");
+                    DebugWide.LogRed("calc true ==================================================");
                 }
 
                 //if (Misc.IsZero( (oldPos - cp).sqrMagnitude - RADIUS * RADIUS, 0.01f))
