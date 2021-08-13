@@ -1027,14 +1027,16 @@ namespace Proto_AI
 
         }
 
-        public Vector3 Collision_FirstStructTile(Vector3 oldPos, Vector3 srcPos, float RADIUS , out CellSpace structTile)
+        public Vector3 Collision_FirstStructTile(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool isCalcArc)
         {
             const int MAX_COUNT = 2; //2개 이상의 타일을 검사시 순간이동 현상발생  
             //도달할 수 없는 위치인데도 경로상의 타일영역에 들어오는 첫 번째 구조타일을 무조건 가져오기 때문에 생기는 문제임 
 
+            isCalcArc = false;
+
             Vector3 dir = srcPos - oldPos;
             //structTile = Find_FirstStructTile(oldPos, srcPos, MAX_COUNT); //이렇게 사용하면 안됨 , 한개타일을 못 벗어나는 길이의 경우 경로상의 구조타일을 못 구한다 
-            structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, MAX_COUNT); 
+            CellSpace structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, MAX_COUNT); 
             if (null != structTile)
             {
 
@@ -1059,15 +1061,18 @@ namespace Proto_AI
                 //if (Vector3.Dot((oldPos - cp), cpToSrc) < 0) //삐죽하게 튀어나온 부분에서 처리 못해줌
                 if (Vector3.Dot(structTile._nDir, cpToSrc) < 0)
                 {
-                    calc = true;
-                    push_dir *= -1;
-                    DebugWide.LogRed("calc true ==================================================");
+                    //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
+                    //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
+                    if(Vector3.Cross(structTile.line.direction, dir).sqrMagnitude > 0.5f)
+                    {
+                        calc = true;
+                        push_dir *= -1;
+                        DebugWide.LogRed("calc true ================================================== " + Vector3.Cross(structTile.line.direction, dir).sqrMagnitude);
+                    }
+
+
                 }
 
-                //if (Misc.IsZero( (oldPos - cp).sqrMagnitude - RADIUS * RADIUS, 0.01f))
-                //{
-                //    return oldPos;
-                //}
 
                 //지형과 원이 겹친경우 
                 if (cpToSrc.sqrMagnitude <= RADIUS*RADIUS)
@@ -1082,6 +1087,7 @@ namespace Proto_AI
                     Vector3 newPos;
                     if(true == CalcArcFullyPos(structTile, srcPos, cp ,RADIUS, out newPos))
                     {
+                        isCalcArc = true;
                         srcPos = newPos;
                     }
                 }
@@ -1171,13 +1177,20 @@ namespace Proto_AI
             }
             else if (3 == list.Count)
             {
-                c0 = firstTile;
+
                 foreach(BoundaryTile cpa in list)
                 {
-                    if (cpa.cell == c0) continue;
+                    if (cpa.cell == firstTile)
+                    {
+                        c0 = firstTile;
+                        continue; 
+                    }
                     //float sqrlen = (cpa.cell._pos3d_center - c0._pos3d_center).sqrMagnitude;
-                    float sqrlen = (cpa.cell._pos3d_center - srcPos).sqrMagnitude;
+                    //float sqrlen = (cpa.cell._pos3d_center - srcPos).sqrMagnitude;
+                    Vector3 center = cpa.cell.line.origin + cpa.cell.line.direction * 0.5f;
+                    float sqrlen = (center - srcPos).sqrMagnitude;
                     DebugWide.LogRed(cpa.cell._eDir +"   "+ sqrlen);
+                    //DebugWide.AddDrawQ_Circle(center, 0.1f, Color.red);
                     if (MAX_SQRLEN > sqrlen)
                     {
                         c1 = cpa.cell;
@@ -1192,6 +1205,11 @@ namespace Proto_AI
                 return false;
             }
 
+            if(null == c0)
+            {
+                DebugWide.LogRed("2-----------");
+                return false;
+            }
 
             //if (c0._eDir == c1._eDir) return srcPos;
 
@@ -1216,14 +1234,14 @@ namespace Proto_AI
             //지형의 최소길이 보다 반지름이 작은 경우 처리안함 
             if ((line_0.origin - line_1.origin).sqrMagnitude >= (RADIUS * 2 * RADIUS * 2)) //지름의 제곱길이 비교 
             {
-                DebugWide.LogRed("2-----------");
-                //return false;
+                DebugWide.LogRed("3-----------");
+                return false;
             }
 
             //같은 방향 , 정반대 방향이면 처리하지 못한다 
             if (Vector3.Cross(line_0.direction, line_1.direction).sqrMagnitude <= float.Epsilon)
             {
-                DebugWide.LogRed("3-----------");
+                DebugWide.LogRed("4-----------");
                 return false; 
             }
 
@@ -1322,6 +1340,7 @@ namespace Proto_AI
             //    return false; 
             //}
 
+            DebugWide.LogRed("5-----------");
 
             return false;
         }
@@ -1470,8 +1489,8 @@ namespace Proto_AI
 
         public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , Proto_AI_2.Vehicle vh)
         {
-            CellSpace firstTile;
-            srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS , out firstTile); //벽통과 되는 경우 통과되기 전위치를 반환한다 
+            bool isCalcArc;
+            srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS , out isCalcArc); //벽통과 되는 경우 통과되기 전위치를 반환한다 
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
 
@@ -1481,6 +1500,12 @@ namespace Proto_AI
             if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
 
             DebugWide.LogBlue(" === 2d : " + pos_2d + "  count : " + list.Count);
+
+            //if (isCalcArc)
+            //{
+            //    vh._stop = true;
+            //    return srcPos;
+            //}
 
 
             int count = 0;
@@ -1559,74 +1584,6 @@ namespace Proto_AI
         }
 
 
-        public Vector3 Collision_StructLine_Test3_2(Vector3 oldPos, Vector3 srcPos, float RADIUS, Proto_AI_2.Vehicle vh)
-        {
-            CellSpace firstTile;
-            srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS, out firstTile); //벽통과 되는 경우 통과되기 전위치를 반환한다 
-
-            Vector3Int pos_2d = ToPosition2D(srcPos);
-
-            vh._stop = false;
-
-            BoundaryTileList list = null;
-            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
-
-            DebugWide.LogBlue(" === 2d : " + pos_2d + "  count : " + list.Count);
-
-            if (1 >= list.Count) return srcPos; //Collision_FirstStructTile 에서 처리했으므로 계산할 필요없다 
-
-            int count = 0;
-            int interCount = 0;
-            CellSpace interCell0 = null, interCell1 = null;
-            foreach (BoundaryTile info in list)
-            {
-
-                DebugWide.AddDrawQ_Line(info.cell.line.origin, info.cell.line.last, Color.white);
-                Vector3Int cellpos = ToPosition2D(info.cell._pos3d_center);
-                DebugWide.AddDrawQ_Text(new Vector3(cellpos.x, 0, cellpos.y), "" + new Vector2Int(cellpos.x, cellpos.y), Color.white);
-
-                if (Geo.IntersectLineSegment(srcPos, RADIUS, info.cell.line.origin, info.cell.line.last))
-                {
-                    if(null == interCell0)
-                    {
-                        interCell0 = info.cell;
-                    }
-                    else if (null == interCell1)
-                    {
-                        interCell1 = info.cell;
-                    }
-
-                    interCount++;
-
-                    Vector3 cp = info.cell.line.ClosestPoint(srcPos);
-                    Vector3 n = VOp.Normalize(srcPos - cp);
-                    srcPos = cp + n * RADIUS;
-
-                    DebugWide.LogBlue(count + "  boundary  " + cellpos + "  cp: " + cp + "  " + n + "  " + srcPos);
-
-                }
-
-                count++;
-            }
-
-            if (2 <= interCount)
-            {
-                Vector3 newPos;
-                if(CalcArcFullyPos2(interCell0, interCell1, srcPos, RADIUS, out newPos))
-                {
-                    srcPos = newPos; 
-                }
-
-                //반지름이 0.99일때 터널통과 현상을 막기위해 최저속도로 설정한다 
-                vh._stop = true;
-            }
-
-
-
-            return srcPos;
-
-
-        }
 
         public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS, Proto_AI_2.Vehicle vh)
         {
