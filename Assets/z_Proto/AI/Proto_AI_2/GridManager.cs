@@ -622,7 +622,7 @@ namespace Proto_AI
                         if (CellSpace.Specifier_DiagonalFixing == info2.cell._specifier)
                             DebugWide.DrawCircle(info2.cell.line.origin, 0.1f, Color.red);
 
-                        info2.cell.line.Draw(Color.white);
+                        info2.cell.line.Draw(Color.grey);
                     }
 
                 }
@@ -1063,11 +1063,12 @@ namespace Proto_AI
                 {
                     //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
                     //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
-                    if(Vector3.Cross(structTile.line.direction, dir).sqrMagnitude > 0.5f)
+                    DebugWide.LogRed("calc - ================================================== " + Vector3.Cross(structTile.line.direction, dir).sqrMagnitude);
+                    if (Vector3.Cross(structTile.line.direction, dir).sqrMagnitude > 0.1f)
                     {
                         calc = true;
                         push_dir *= -1;
-                        DebugWide.LogRed("calc true ================================================== " + Vector3.Cross(structTile.line.direction, dir).sqrMagnitude);
+                        DebugWide.LogRed("calc true ================================================== ");
                     }
 
 
@@ -1521,22 +1522,6 @@ namespace Proto_AI
                 //주변경계타일인 경우
                 if (true == info.isBoundary)
                 {
-                    //bool inter = false;
-                    //if (CellSpace.Specifier_DiagonalFixing == info.cell._specifier)
-                    //{
-                    //    DebugWide.AddDrawQ_Circle(info.cell.line.origin, 0.2f, Color.blue);
-
-                    //    if ((info.cell.line.origin - srcPos).sqrMagnitude <= RADIUS*RADIUS)
-                    //    {
-                    //        inter = true;
-                    //        DebugWide.LogRed("==================================================");
-                    //    }
-                    //}
-                    //else
-                    //{
-                    //    inter = Geo.IntersectLineSegment(srcPos, RADIUS, info.cell.line.origin, info.cell.line.last);
-                    //}
-
 
                     if (Geo.IntersectLineSegment(srcPos, RADIUS, info.cell.line.origin, info.cell.line.last))
                     {
@@ -1548,7 +1533,7 @@ namespace Proto_AI
                         //DebugWide.AddDrawQ_Circle(cp, 0.3f, Color.black);
 
                         Vector3 n = VOp.Normalize(srcPos - cp);
-                        //Vector3 n = Misc.GetDir8_Normal3D_AxisY(info.cell._eDir); //연구필요 
+                        //Vector3 n = Misc.GetDir8_Normal3D_AxisY(info.cell._eDir); //경계에서 튀는 버그 발생 
                         srcPos = cp + n * RADIUS;
 
                         DebugWide.LogBlue(count + "  boundary  " + cellpos + "  cp: " + cp + "  " + n + "  " + srcPos);
