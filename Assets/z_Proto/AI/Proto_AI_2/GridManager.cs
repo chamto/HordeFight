@@ -1162,13 +1162,6 @@ namespace Proto_AI
             }
 
 
-            //DebugWide.AddDrawQ_Circle(srcPos, RADIUS, Color.grey);
-
-            //if (2 != list.Count )
-            //{
-            //    DebugWide.LogRed("1-----------");
-            //    return false;
-            //}
             float MAX_SQRLEN = 5*5;
             CellSpace c0 = null, c1 = null;
             if (2 == list.Count)
@@ -1262,14 +1255,6 @@ namespace Proto_AI
             //-------------------------------
             //계산영역을 벗어나는지 검사 
 
-            //Vector3 cp_0 = line_0.ClosestPoint(newPos);
-            //Vector3 cpp_0 = line_0.ClosestPoint(srcPos);
-            //Vector3 perp_0 = inter_pt0 + c0._nDir * RADIUS;
-            //Vector3 cp_1 = line_1.ClosestPoint(newPos);
-            //Vector3 cpp_1 = line_1.ClosestPoint(srcPos);
-            //Vector3 perp_1 = inter_pt0 + c1._nDir * RADIUS;
-
-
             Vector3 cp_0 = Line3.ClosestPoint(line_0.origin, line_0.direction, newPos);
             Vector3 cpp_0 = Line3.ClosestPoint(line_0.origin, line_0.direction, srcPos);
             Vector3 perp_0 = inter_pt0 + c0._nDir * RADIUS;
@@ -1301,45 +1286,6 @@ namespace Proto_AI
                 return true;
             }
 
-            //return false;
-            //if ((inter_pt0 - cp_0).sqrMagnitude >= (inter_pt0 - cpp_0).sqrMagnitude ||
-            //(inter_pt0 - cp_1).sqrMagnitude >= (inter_pt0 - cpp_1).sqrMagnitude)
-            //{
-            //        DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
-            //        return true; 
-            //}
-
-
-            //if ((inter_pt0 - cp_0).sqrMagnitude >= (inter_pt0 - cpp_0).sqrMagnitude)
-            // //&& Vector3.Dot(dir , -c0._nDir) > 0)
-            //{
-            //    //DebugWide.AddDrawQ_Circle(srcPos, RADIUS, Color.gray);
-            //    DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
-            //    return true;
-            //}
-
-            //if ((inter_pt0 - cp_1).sqrMagnitude >= (inter_pt0 - cpp_1).sqrMagnitude)
-            ////&& Vector3.Dot(dir, -c1._nDir) > 0)
-            //{
-            //    //DebugWide.AddDrawQ_Circle(srcPos, RADIUS, Color.gray);
-            //    DebugWide.AddDrawQ_Circle(newPos, RADIUS, Color.yellow);
-            //    return true;
-            //}
-
-
-            //float angle2 = Geo.AngleSigned(cp_0 - newPos, cp_1 - newPos, Vector3.up);
-            //if (0 > angle2) angle2 *= -1;
-            ////float cos = (float)Math.Cos(angle2 * 0.5f * Mathf.Deg2Rad); //각도를 반으로 줄인다 
-
-            //float angle3 = Geo.AngleSigned((inter_pt0 - newPos), (srcPos - newPos), Vector3.up);
-            //if (0 > angle3) angle3 *= -1;
-            ////DebugWide.LogBlue(angle2 + "  " + cos);
-
-            ////if (Vector3.Dot((inter_pt0 - newPos).normalized, (srcPos - newPos).normalized) <= cos) 
-            //if(angle2*0.5f < angle3)
-            //{
-            //    return false; 
-            //}
 
             DebugWide.LogRed("5-----------");
 
