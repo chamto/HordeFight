@@ -615,14 +615,14 @@ namespace Proto_AI
                     if (true == info2.isBoundary)
                     {
                         //DebugWide.DrawLine(info2.cell._pos3d_center, pos, Color.white);
-                        DebugWide.DrawLine(info2.cell.line.origin + info2.cell.line.direction * 0.5f, pos, Color.white);
+                        DebugWide.DrawLine(info2.cell.line.origin + info2.cell.line.direction * 0.5f, pos, Color.gray);
                     }
                     //else
                     {
                         if (CellSpace.Specifier_DiagonalFixing == info2.cell._specifier)
                             DebugWide.DrawCircle(info2.cell.line.origin, 0.1f, Color.red);
 
-                        info2.cell.line.Draw(Color.grey);
+                        info2.cell.line.Draw(Color.white);
                     }
 
                 }
