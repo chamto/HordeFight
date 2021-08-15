@@ -1685,7 +1685,7 @@ namespace Proto_AI_1
 
 
 
-        public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS, Proto_AI_2.Vehicle vh)
+        public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS)
         {
             CellSpace firstTile;
             //srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS , out firstTile); //벽통과 되는 경우 통과되기 전위치를 반환한다 
