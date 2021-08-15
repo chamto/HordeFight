@@ -179,6 +179,10 @@ namespace Proto_AI
         public LineSegment3 line_0;
         public LineSegment3 line_1;
 
+        public LineSegment3 line_min;
+        public float line_min_length;
+        public Vector3 line_min_center;
+
         public void Init(CellSpace c0, CellSpace c1)
         {
 
@@ -218,6 +222,9 @@ namespace Proto_AI
             r_factor = 1 / (float)Math.Sin(Mathf.Deg2Rad * angle * 0.5f);
             dir = VOp.Normalize(line_0.direction.normalized + line_1.direction.normalized);
 
+            line_min = new LineSegment3(line_0.origin, line_1.origin);
+            line_min_length = (line_0.origin - line_1.origin).magnitude;
+            line_min_center = line_min.origin + line_min.direction * 0.5f;
 
             is_arc = true;
 
@@ -227,6 +234,18 @@ namespace Proto_AI
         {
             return inter_pt + dir * (radius * r_factor);
         }
+
+        public void AddDrawQ(Color color)
+        {
+            if (false == is_arc) return;
+
+
+            DebugWide.AddDrawQ_Circle(line_min_center, 0.1f, color);
+            DebugWide.AddDrawQ_Line(line_min.origin, line_min.last, color);
+            DebugWide.AddDrawQ_Line(line_0.origin, line_0.last, color);
+            DebugWide.AddDrawQ_Line(line_1.origin, line_1.last, color);
+        }
+
 
         public void AddDrawQ(float RADIUS, Color color)
         {
@@ -795,13 +814,6 @@ namespace Proto_AI
 
         public void Draw_BoundaryTile()
         {
-            //foreach(ArcTile arc in _arcTileList.Values)
-            //{
-            //    if(true == arc.is_arc)
-            //    {
-            //        arc.AddDrawQ(1, Color.yellow); 
-            //    }
-            //}
 
             //foreach (KeyValuePair<Vector3Int, CellSpace> info1 in _structTileList)
             //{
@@ -842,6 +854,15 @@ namespace Proto_AI
                 }
 
             }
+
+            //foreach (ArcTile arc in _arcTileList.Values)
+            //{
+            //    if (true == arc.is_arc)
+            //    {
+            //        arc.AddDrawQ(Color.yellow);
+            //        //arc.AddDrawQ(1, Color.yellow); 
+            //    }
+            //}
         }
 
 
@@ -1561,7 +1582,7 @@ namespace Proto_AI
 
             //-------------------------------
             //지형의 최소길이 보다 반지름이 작은 경우 처리안함 
-            if ((arcTile.line_0.origin - arcTile.line_1.origin).sqrMagnitude >= (RADIUS * 2 * RADIUS * 2)) //지름의 제곱길이 비교 
+            if (arcTile.line_min_length >= RADIUS * 2) //지름 비교 
             {
                 //DebugWide.LogRed("4-----------");
                 return false;
