@@ -575,7 +575,7 @@ namespace UtilGS9
     ///////////////////////////////////////////////////////////////////////
     public static class VOp
     {
-        //Vector3 사칙연산 함수보다 약간 더 빠르다 
+        //Vector3 사칙연산 함수보다 약간 더 빠르다 - 20210816 가독성이 안좋으니 사용하지 말기 
         static public Vector3 Plus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
         {
             result.x = va.x + vb.x;
@@ -612,7 +612,7 @@ namespace UtilGS9
         }
 
 
-        //Vector3.normalize 보다 빠르다
+        //Vector3.normalize 보다 빠르다 - 20210816 예외처리 추가로 더이상 속도 이점 없음 , 더이상 사용하지 말기 
         static public Vector3 Normalize(Vector3 vector3)
         {
             //if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가 => 잘못작성된 알고리즘 
@@ -1950,7 +1950,7 @@ namespace UtilGS9
             return true;
         }
 
-        static public Vector3 GetDir4_Normal3D_Y(Vector3 dir)
+        static public Vector3 GetDir4_Normal3D_AxisY_2(Vector3 dir)
         {
             if (dir.z * dir.z + dir.x * dir.x < float.Epsilon) return Vector3.zero;
 
@@ -1968,26 +1968,26 @@ namespace UtilGS9
             return _dir4_normal3D_AxisY[quad];
         }
 
-        //fixme - 미완성 
-        static public Vector3 __GetDir4_Normal3D_Y(Vector3 dir)
+        //GetDir4_Normal3D_AxisY_2 보다 조금더 빠르다 
+        static public Vector3 GetDir4_Normal3D_AxisY(Vector3 dir)
         {
-            if (dir.z * dir.z + dir.x * dir.x < float.Epsilon) return Vector3.zero;
+            if (dir.z * dir.z + dir.x * dir.x < float.Epsilon) return ConstV.v3_zero;
 
             int quad = 0;
 
             float tan = 0;
-            //if (float.Epsilon > Math.Abs(dir.x))
-            //    tan = dir.z;
-            //else if (float.Epsilon > Math.Abs(dir.z))
-            //tan = dir.x;
             if (0 == dir.x)
-                tan = dir.z; //1보다 크게 만들기 위해 임의의 값을 곱해준다
+            {
+                tan = dir.z > 0 ? 1 : -1;
+            }
             else if (0 == dir.z)
-                tan = dir.x;
+            {
+                tan = dir.x > 0 ? 1 : -1; 
+            }
             else
                 tan = dir.z / dir.x;
 
-            DebugWide.LogRed(tan + "  ");
+            //DebugWide.LogRed(tan + "  ");
 
             //사분면의 위치 찾기 
             //1사분면
@@ -2018,9 +2018,9 @@ namespace UtilGS9
 
             }
             //4사분면
-            else if (dir.z < 0 && dir.x >= 0)
+            else if (dir.z <= 0 && dir.x >= 0)
             {
-                if (tan < -1)
+                if (tan <= -1)
                     quad = 4;
                 else
                     quad = 1;
