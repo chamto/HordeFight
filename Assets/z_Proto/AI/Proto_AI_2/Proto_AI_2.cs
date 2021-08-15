@@ -182,6 +182,7 @@ namespace Proto_AI_2
                 v._weight = _weight;
                 v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
+
             }
 
             //==============================================
@@ -631,10 +632,10 @@ namespace Proto_AI_2
                 Vector3 ToOffset = WorldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime;
                 Vector3 ToFuture = pos_future - WorldOffsetPos;
-                if (ToOffset.sqrMagnitude > ToFuture.sqrMagnitude)
+                if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
                     SetPos(pos_future);
                 else
-                SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
+                    SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
 
                 //-------------
 
