@@ -258,6 +258,25 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  norm(3.4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+
+        //==========================================================================================
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = Misc.GetDir4_Normal3D_AxisY(vd);
+        }
+        _timeTemp += "  nDir4_Y(0)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = Misc.GetDir4_Normal3D_AxisY_2(vd);
+        }
+        _timeTemp += "  nDir4_Y(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        //==========================================================================================
+
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
@@ -294,6 +313,13 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 ve = My_Normalize_E(vd); //나눗셈을 1번으로 줄임 ,  NaN 예외처리가 추가된것 , 미리계산한 값 사용함수와 성능이 비슷 ,이것쓰기 !!!!
         }
         _timeTemp += "  norm(8)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = VOp.Normalize(vd);
+        }
+        _timeTemp += "  norm(9)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================
