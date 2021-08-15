@@ -139,8 +139,17 @@ namespace Proto_AI
 
         public Vector3Int_TwoKey(Vector3Int k0 , Vector3Int k1)
         {
-            a = k0;
-            b = k1; 
+            //(k0 , k1) 과 (k1 , k0) 의 데이터를 같게 한다 
+            if(k0.GetHashCode() < k1.GetHashCode())
+            {
+                a = k0;
+                b = k1;
+            }else
+            {
+                a = k1;
+                b = k0;
+            }
+
         }
 
         //ref : https://devlog-wjdrbs96.tistory.com/243
@@ -1578,7 +1587,7 @@ namespace Proto_AI
                 return true;
             }
 
-            return true;
+            return false;
         }
 
         public Vector3 Collision_FirstStructTile2(Vector3 oldPos, Vector3 srcPos, float RADIUS ,  out CellSpace structTile)
