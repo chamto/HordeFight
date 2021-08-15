@@ -278,6 +278,8 @@ namespace Proto_AI
 
     public class GridManager
     {
+        public static readonly GridManager Inst = new GridManager();
+
         public Grid _grid = null;
         public Tilemap _tilemap_struct = null;
         public Dictionary<Vector3Int, CellSpace> _structTileList = new Dictionary<Vector3Int, CellSpace>(new Vector3IntComparer());
@@ -289,7 +291,13 @@ namespace Proto_AI
 
         public int _tileBlock_width_size = 64;
 
-        public void Init()
+        //객체생성 못하게 막음
+        private GridManager()
+        {
+            Init(); 
+        }
+
+        private void Init()
         {
 
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();

@@ -23,7 +23,7 @@ namespace Proto_AI_2
     public class Proto_AI_2 : MonoBehaviour
     {
         public Transform _tr_target = null;
-        public GridManager _gridMgr = new GridManager();
+        public GridManager _gridMgr = null;
         public SweepPrune _sweepPrune = new SweepPrune();
 
         public Transform _tr_test = null;
@@ -65,7 +65,8 @@ namespace Proto_AI_2
             _tr_test2_s = GameObject.Find("Test2_s").transform;
             _tr_test2_e = GameObject.Find("Test2_e").transform;
 
-            _gridMgr.Init();
+            _gridMgr = GridManager.Inst;
+            //_gridMgr.Init();
 
             _formationPoint._end = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
@@ -474,6 +475,8 @@ namespace Proto_AI_2
 
         public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
 
+        public List<Vector3> _feelers = new List<Vector3>();
+
         public void Reset()
         {
             _velocity = new Vector3(0, 0, 0);
@@ -504,6 +507,8 @@ namespace Proto_AI_2
             _collision._radius = radius;
             SetPos(pos);
             _oldPos = pos;
+
+            CreateFeelers();
         }
 
         public void SetPos(Vector3 newPos)
@@ -516,6 +521,20 @@ namespace Proto_AI_2
             _collision._bounds_max.x = newPos.x + _radius;
             _collision._bounds_max.z = newPos.z + _radius;
             //==============================================
+        }
+
+
+        public void CreateFeelers()
+        {
+            const int Feeler_Length = 1;
+            Vector3 fpos = Vector3.forward * (_radius + Feeler_Length);
+            _feelers.Add(fpos);
+
+            fpos = Quaternion.AngleAxis(45, Vector3.up) * Vector3.forward  * (_radius + Feeler_Length);
+            _feelers.Add(fpos);
+
+            fpos = Quaternion.AngleAxis(-45, Vector3.up) * Vector3.forward * (_radius + Feeler_Length);
+            _feelers.Add(fpos);
         }
 
         public void Update(float deltaTime)
@@ -620,6 +639,10 @@ namespace Proto_AI_2
                 //        SetPos(pos_future);
 
                 //}
+
+                //-----------
+
+
 
                 //-----------
 
