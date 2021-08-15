@@ -1603,14 +1603,14 @@ namespace Proto_AI
         }
 
 
-        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , Proto_AI_2.Vehicle vh)
+        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool stop)
         {
-            bool isCalcArc;
+
             srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS); //벽통과 되는 경우 통과되기 전위치를 반환한다 
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
 
-            vh._stop = false;
+            stop = false;
 
             BoundaryTileList list = null;
             if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
@@ -1665,7 +1665,7 @@ namespace Proto_AI
             if (2 <= count && 2 <= interCount)
             {
                 //반지름이 0.99일때 터널통과 현상을 막기위해 최저속도로 설정한다 
-                vh._stop = true;
+                stop = true;
             }
 
 

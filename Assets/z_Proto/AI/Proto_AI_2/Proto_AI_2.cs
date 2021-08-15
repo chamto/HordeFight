@@ -212,19 +212,21 @@ namespace Proto_AI_2
                 //==========================================
                 //동굴벽과 캐릭터 충돌처리 
 
-                float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+                //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
+                //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
                 //동굴벽과 캐릭터 경계원 충돌처리 
 
-                DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
-                DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
+                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
+                //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
 
                 //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
-                CellSpace structTile;
-                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius , out structTile);
 
+                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
 
-                v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , v);
-                DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
+                bool stop;
+                v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
+                v._stop = stop;
+                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
 
                 //==========================================
 
