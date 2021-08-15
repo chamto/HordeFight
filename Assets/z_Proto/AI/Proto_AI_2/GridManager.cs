@@ -1822,7 +1822,7 @@ namespace Proto_AI
 
                     //------------------
                     Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
                     next_pos = prev_center + dir4n;
 
 
@@ -1856,7 +1856,7 @@ namespace Proto_AI
 
                     Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
                     //DebugWide.LogBlue(VOp.ToString(centerToTarget));
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
                     next_pos = prev_center + dir4n;
 
                     return true;
@@ -2028,7 +2028,7 @@ namespace Proto_AI
                     //------------------
                     Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
 
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
 
                     nextTile = prev_center + dir4n;
                     DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
@@ -2076,7 +2076,7 @@ namespace Proto_AI
 
                     Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
 
-                    Vector3 dir4n = Misc.GetDir4_Normal3D_Y(centerToTarget);
+                    Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
 
                     nextTile = prev_center + dir4n;
                     DebugWide.DrawCube(nextTile, new Vector3(1f, 0, 1f), Color.magenta);
