@@ -221,9 +221,23 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            float d = Dot_2(ref lpos0, ref lpos0);
+            float d = VOp.Dot(ref lpos0, ref lpos0);
         }
         _timeTemp += "  dot(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = Vector3.Cross(lpos0, lpos0);
+        }
+        _timeTemp += "  cross(1)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = VOp.Cross(ref lpos0, ref lpos0);
+        }
+        _timeTemp += "  cross(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================

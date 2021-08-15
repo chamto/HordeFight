@@ -631,6 +631,22 @@ namespace UtilGS9
 
         }
 
+        //값참조를 사용하여 속도를 올린다 , Vector3.Dot 보다 2배 빠르다 
+        static public float Dot(ref Vector3 a, ref Vector3 b)
+        {
+            return a.x * b.x + a.y * b.y + a.z * b.z;
+        }
+
+        //값참조를 사용해도 속도향상이 크지 않다
+        static public Vector3 Cross(ref Vector3 a, ref Vector3 b)
+        {
+            return new Vector3(a.y * b.z - a.z * b.y,
+                              a.z * b.x - a.x * b.z,
+                              a.x * b.y - a.y * b.x);
+
+        }
+
+
         static public Vector2 Perp(Vector2 v)         {             return new Vector2(-v.y, v.x); //반시계 방향으로 90도 회전 
         }
 
