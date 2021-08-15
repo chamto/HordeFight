@@ -22,7 +22,7 @@ namespace Proto_AI_1
     public class Proto_AI_1 : MonoBehaviour
     {
         public Transform _tr_target = null;
-        public Proto_AI.GridManager _gridMgr = null;
+        public GridManager _gridMgr = null;
 
         void Awake()
         {
@@ -35,7 +35,7 @@ namespace Proto_AI_1
         // Use this for initialization
         void Start()
         {
-            _gridMgr = Proto_AI.GridManager.Inst;
+            _gridMgr = GridManager.Inst;
             //_gridMgr.Init();
             _tr_target = GameObject.Find("tr_target").transform;
 
