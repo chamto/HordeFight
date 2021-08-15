@@ -208,6 +208,22 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  dot(2)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+        Vector3 lpos0 = _line_0.position;
+        Vector3 lpos1 = _line_1.position;
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = Dot(lpos0, lpos0);
+        }
+        _timeTemp += "  dot(3)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = Dot_2(ref lpos0, ref lpos0);
+        }
+        _timeTemp += "  dot(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _timeTemp += "\n";
         //==============================================================================
@@ -543,6 +559,14 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  v_angle(4)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = Geo.AngleSigned_AxisY(va, vb);
+
+        }
+        _timeTemp += "  v_angle(5)  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
         _timeTemp += "\n";
         //==============================================================================
         //go  1.838ms  go(2)  0.282ms  tr  1.689ms  tr(2)  0.282ms  tr.pos  3.674ms  tr.pos(2)  2.2ms  tr.pos(3)  0.332m
@@ -717,6 +741,14 @@ public class Test_FuncPerformance : MonoBehaviour
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
 
+    public float Dot_2(ref Vector3 a, ref Vector3 b)
+    {
+        //float xx = a.x * b.x;
+        //float yy = a.y * b.y;
+        //float zz = a.z * b.z;
+        //return xx + yy + zz;
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
 
     //ref : http://blog.naver.com/PostView.nhn?blogId=neverabandon&logNo=221106512600
     float FastAtan2(float y, float x)
