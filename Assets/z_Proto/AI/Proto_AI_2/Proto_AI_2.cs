@@ -352,10 +352,10 @@ namespace Proto_AI_2
             //Vector3 ot0, ot1;
             //_gridMgr.CalcArcFullyPos( _tr_test.position, _tr_line_a.position - _tr_test.position, vh._radius , out ot0, out ot1);
 
-            Vector3 test = _tr_line_a.position - _tr_test.position;
-            Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(test);
-            DebugWide.DrawLine(_tr_test.position, _tr_test.position + dir4n, Color.red);
-            DebugWide.DrawCircle(_tr_test.position + dir4n, 0.1f, Color.red);
+            //Vector3 test = _tr_line_a.position - _tr_test.position;
+            //Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(test);
+            //DebugWide.DrawLine(_tr_test.position, _tr_test.position + dir4n, Color.red);
+            //DebugWide.DrawCircle(_tr_test.position + dir4n, 0.1f, Color.red);
 
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
