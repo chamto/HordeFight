@@ -6,7 +6,7 @@ using UnityEngine.Tilemaps;
 using UtilGS9;
 
 
-namespace Proto_AI
+namespace Proto_AI_2
 {
     public class Vector3IntComparer : IEqualityComparer<Vector3Int>
     {
@@ -47,7 +47,7 @@ namespace Proto_AI
 
         //==================================================
         //타일에 속해있는 객체의 링크
-        //public Being _head = null;
+        //public BaseEntity _head = null;
         //public int _childCount = 0;
 
 
@@ -1685,7 +1685,7 @@ namespace Proto_AI
 
 
 
-        public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS, Proto_AI_2.Vehicle vh)
+        public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS)
         {
             CellSpace firstTile;
             //srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS , out firstTile); //벽통과 되는 경우 통과되기 전위치를 반환한다 

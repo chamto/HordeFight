@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
-using Proto_AI;
+
 
 namespace Proto_AI_2
 {
@@ -641,7 +641,7 @@ namespace Proto_AI_2
                 //}
 
                 //-----------
-
+                //GridManager.Inst.Find_FirstStructTile
 
 
                 //-----------

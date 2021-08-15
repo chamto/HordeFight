@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Proto_AI
+namespace Proto_AI_2
 {
 
     public class SweepPrune
