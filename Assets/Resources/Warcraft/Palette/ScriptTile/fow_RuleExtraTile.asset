@@ -34,7 +34,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 4a620e61614e348849d3fa61b7b0dfe9, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 4
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.64
@@ -85,7 +85,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 56d402dfaad6f4d74b1cca7904989b77, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 3
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.518
@@ -94,7 +94,7 @@ MonoBehaviour:
     _isTilemapCopy: 0
     m_ColliderType: 1
     m_RandomTransform: 0
-  - m_specifier: 00
+  - m_specifier: 7
     m_Neighbors: 0200000001000000000000000100000001000000000000000100000000000000
     m_Neighbors_Length: 0100000001000000010000000100000001000000010000000100000001000000
     m_Neighbors_Specifier:
@@ -110,7 +110,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 4ff808bc76baf44fd92cdb89b40390da, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 4
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5
@@ -136,7 +136,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: 9acd972d82cb74da0abd356b12a93bf9, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 5
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.688
@@ -161,7 +161,7 @@ MonoBehaviour:
     - {fileID: 21300000, guid: e01e78b76403b48639c63b85a8068fea, type: 3}
     m_MultiLength: 1
     _multi_copy: 01
-    _push_dir8: 0
+    _push_dir8: 5
     m_GameObject: {fileID: 0}
     m_AnimationSpeed: 1
     m_PerlinScale: 0.5

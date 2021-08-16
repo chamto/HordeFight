@@ -46,6 +46,10 @@ namespace Proto_AI_2
 
         public FormationPoint _formationPoint = new FormationPoint();
 
+        public bool _Draw_UpTile = false;
+        public bool _Draw_BoundaryTile = false;
+
+
         void Awake()
         {
             //QualitySettings.vSyncCount = 0; //v싱크 끄기
@@ -84,46 +88,46 @@ namespace Proto_AI_2
             //v._maxSpeed = 14;
 
             //1
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////2
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(-1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //2
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(-1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////-------------------
+            //-------------------
 
-            ////3
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //3
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //////4
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(2f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////4
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(2f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //5
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(3f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -326,7 +330,7 @@ namespace Proto_AI_2
             }
         }
 
-        public bool _Draw_BoundaryTile = false;
+
         private void OnDrawGizmos()
         {
             if (null == _tr_target) return;
@@ -373,7 +377,10 @@ namespace Proto_AI_2
                 v.Draw(color);
             }
 
-            if(true == _Draw_BoundaryTile)
+            if (true == _Draw_UpTile)
+                _gridMgr.Draw_UpTile();
+
+            if (true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
 
             //DebugWide.DrawQ_All_AfterTime(1);
@@ -388,6 +395,10 @@ namespace Proto_AI_2
         public Vector3 _velocity = Vector3.zero;
         public float _speed = 10f;
         public Quaternion _rotation = Quaternion.identity;
+
+        public CellSpace _cur_cell = null;
+        public BaseEntity _prev_sibling = null;
+        public BaseEntity _next_sibling = null;
     }
 
     public class FormationPoint : BaseEntity

@@ -42,13 +42,13 @@ namespace Proto_AI_2
         public Vector3Int _pos2d = Vector3Int.zero;
         public int _pos1d = -1; //타일의 1차원 위치값 
 
-        public LineSegment3 _line;
+        public LineSegment3 _line = new LineSegment3();
         public Vector3 _line_center = ConstV.v3_zero; //선분의 중앙 위치 
 
         //==================================================
         //타일에 속해있는 객체의 링크
-        //public BaseEntity _head = null;
-        //public int _childCount = 0;
+        public BaseEntity _head = null;
+        public int _childCount = 0;
 
 
         //public Being MatchRelation(Camp.eRelation relation, Being target)
@@ -75,46 +75,46 @@ namespace Proto_AI_2
 
 
         //새로운 객체가 머리가 된다 
-        //public void AttachChild(Being newHead)
-        //{
-        //    Being cur_child = _head;
-        //    _head = newHead; // new head of list
+        public void AttachChild(BaseEntity newHead)
+        {
+            BaseEntity cur_child = _head;
+            _head = newHead; // new head of list
 
-        //    newHead._prev_sibling = null;
-        //    newHead._next_sibling = cur_child;
-        //    newHead._cur_cell = this;
+            newHead._prev_sibling = null;
+            newHead._next_sibling = cur_child;
+            newHead._cur_cell = this;
 
-        //    if (null != cur_child) cur_child._prev_sibling = newHead; // previous now this..
+            if (null != cur_child) cur_child._prev_sibling = newHead; // previous now this..
 
-        //    _childCount++;
+            _childCount++;
 
-        //}
+        }
 
-        //public void DetachChild(Being dst)
-        //{
-        //    if (null == dst._cur_cell || null == dst._cur_cell._head || 0 == dst._cur_cell._childCount) return;
+        public void DetachChild(BaseEntity dst)
+        {
+            if (null == dst._cur_cell || null == dst._cur_cell._head || 0 == dst._cur_cell._childCount) return;
 
-        //    Being prev = dst._prev_sibling;
-        //    Being next = dst._next_sibling;
-        //    if (null != prev)
-        //    {
-        //        prev._next_sibling = next;
-        //        if (null != next) next._prev_sibling = prev;
-        //    }
-        //    else
-        //    {
-        //        //dst가 head 인 경우, 새로운 head 설정한다
-        //        //_children = next;
-        //        dst._cur_cell._head = next;
+            BaseEntity prev = dst._prev_sibling;
+            BaseEntity next = dst._next_sibling;
+            if (null != prev)
+            {
+                prev._next_sibling = next;
+                if (null != next) next._prev_sibling = prev;
+            }
+            else
+            {
+                //dst가 head 인 경우, 새로운 head 설정한다
+                //_children = next;
+                dst._cur_cell._head = next;
 
-        //        if (null != next) next._prev_sibling = null;
-        //    }
+                if (null != next) next._prev_sibling = null;
+            }
 
-        //    dst._cur_cell._childCount--;
-        //    dst._prev_sibling = null;
-        //    dst._next_sibling = null;
-        //    dst._cur_cell = null;
-        //}
+            dst._cur_cell._childCount--;
+            dst._prev_sibling = null;
+            dst._next_sibling = null;
+            dst._cur_cell = null;
+        }
     }
 
     public struct BoundaryTile
@@ -280,16 +280,23 @@ namespace Proto_AI_2
     {
         public static readonly GridManager Inst = new GridManager();
 
-        public Grid _grid = null;
-        public Tilemap _tilemap_struct = null;
-        public Dictionary<Vector3Int, CellSpace> _structTileList = new Dictionary<Vector3Int, CellSpace>(new Vector3IntComparer());
-        public Dictionary<Vector3Int, BoundaryTileList> _boundaryList = new Dictionary<Vector3Int, BoundaryTileList>(new Vector3IntComparer());
-        public Dictionary<Vector3Int_TwoKey, ArcTile> _arcTileList = new Dictionary<Vector3Int_TwoKey, ArcTile>();
-
         public float _cellSize_x = 1f;
         public float _cellSize_z = 1f;
 
-        public int _tileBlock_width_size = 64;
+        public const int MAP_WIDTH = 64;
+        public const int MAP_HEIGHT = 64;
+
+        public Grid _grid = null;
+        public Tilemap _tilemap_struct = null;
+        public Tilemap _tilemap_structUp = null;
+        public Dictionary<Vector3Int, CellSpace> _structTileList = new Dictionary<Vector3Int, CellSpace>(new Vector3IntComparer());
+        public Dictionary<Vector3Int, CellSpace> _structTileUpList = new Dictionary<Vector3Int, CellSpace>(new Vector3IntComparer());
+        public Dictionary<Vector3Int, BoundaryTileList> _boundaryList = new Dictionary<Vector3Int, BoundaryTileList>(new Vector3IntComparer());
+        public Dictionary<Vector3Int_TwoKey, ArcTile> _arcTileList = new Dictionary<Vector3Int_TwoKey, ArcTile>();
+
+        private CellSpace[] _cellMap = new CellSpace[MAP_WIDTH * MAP_HEIGHT];
+
+
 
         //객체생성 못하게 막음
         private GridManager()
@@ -306,8 +313,14 @@ namespace Proto_AI_2
             {
                 _tilemap_struct = o.GetComponent<Tilemap>();
             }
+            o = GameObject.Find("Tilemap_layer_1_up");
+            if (null != o)
+            {
+                _tilemap_structUp = o.GetComponent<Tilemap>();
+                _tilemap_structUp.gameObject.SetActive(false);
+            }
 
-            this.LoadTilemap_Struct();
+            this.LoadTileMap();
 
 
         }
@@ -359,12 +372,34 @@ namespace Proto_AI_2
             return posXY_2d;
         }
 
-        public int ToPosition1D(Vector3Int posXY_2d, int tileBlock_width_size)
+        public Vector3Int ToPosition2D(int pos1d)
         {
-            //Assert.IsFalse(0 > posXY_2d.x || 0 > posXY_2d.y, "음수좌표값은 1차원값으로 변환 할 수 없다");
+            //"음수좌표값은 1차원값으로 변환 할 수 없다"
+            if (0 > pos1d) return Vector3Int.zero;
+
+            Vector3Int result = new Vector3Int();
+            result.x = pos1d % MAP_WIDTH;
+            result.y = pos1d / MAP_WIDTH;
+            return result;
+        }
+
+        public Vector3 ToPosition3D(int pos1d)
+        {
+            //"음수좌표값은 1차원값으로 변환 할 수 없다"
+            if (0 > pos1d) return Vector3.zero;
+
+            Vector3 result = new Vector3();
+            result.x = pos1d % MAP_WIDTH;
+            result.z = pos1d / MAP_WIDTH;
+            return result;
+        }
+
+        public int ToPosition1D(Vector3Int posXY_2d)
+        {
+            //"음수좌표값은 1차원값으로 변환 할 수 없다"
             if (0 > posXY_2d.x || 0 > posXY_2d.y) return -1;
 
-            return (posXY_2d.x + posXY_2d.y * tileBlock_width_size); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+            return (posXY_2d.x + posXY_2d.y * MAP_WIDTH); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
 
         }
 
@@ -384,6 +419,123 @@ namespace Proto_AI_2
             _boundaryList.TryGetValue(pos, out list);
 
             return list;
+        }
+
+        public void LoadTileMap()
+        {
+            if (null == _tilemap_struct) return;
+
+            _tilemap_struct.RefreshAllTiles();
+
+            TileBase fow_tiles = Resources.Load<TileBase>("Warcraft/Palette/ScriptTile/fow_RuleExtraTile");
+
+            CellSpace tile = null;
+            RuleExtraTile.TilingRule ruleInfo = null;
+            int specifier = 0;
+            for(int i=0;i<MAP_WIDTH*MAP_HEIGHT;i++)
+            {
+                Vector3Int XY_2d = ToPosition2D(i);
+
+                //-------------
+
+                tile = new CellSpace();
+                tile._pos3d_center = this.ToPosition3D_Center(XY_2d);
+                tile._pos2d = XY_2d;
+                tile._pos1d = i;  //this.ToPosition1D(XY_2d);
+
+                //-------------
+
+                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+
+                if(null != ruleTile)
+                {
+                    ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                    if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                        specifier = 0;
+
+                    tile._specifier = specifier;
+                    tile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                    tile._nDir = Misc.GetDir8_Normal3D_AxisY(tile._eDir);
+
+                    //방향이 없는 덮개타일은 걸러낸다 
+                    //if (eDirection8.none == structTile._eDir) continue;
+
+                    tile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                    tile._isStructTile = true;
+
+                    LineSegment3 line;
+                    CalcBoundaryLine(tile, out line);
+                    tile._line = line;
+                    tile._line_center = line.origin + line.direction * 0.5f;
+
+                }
+
+                _cellMap[i] = tile;
+
+                //---------------------------
+                //덮개 타일 생성 
+                if (true == tile._isUpTile)
+                {
+                    _tilemap_structUp.SetTile(XY_2d, fow_tiles);
+                }
+                //---------------------------
+
+            }
+
+            //덮개타일정보 구축 
+            LoadTilemap_StructUp();
+
+            //구조타일정보 구축  
+            LoadTilemap_Struct();
+
+            //확장영역에 구조물 경계선 추가 
+            Load_StructLine();
+
+            //확장영역 정보중 각을 이루고 있는 쌍을 찾아 계산 
+            Load_ArcTileInfo();
+        }
+
+        public void LoadTilemap_StructUp()
+        {
+            if (null == _tilemap_structUp) return;
+
+            _tilemap_structUp.RefreshAllTiles();
+            CellSpace tile = null;
+            RuleExtraTile.TilingRule ruleInfo = null;
+            int specifier = 0;
+            foreach (Vector3Int XY_2d in _tilemap_structUp.cellBounds.allPositionsWithin)
+            {
+                RuleExtraTile ruleTile = _tilemap_structUp.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                if (null == ruleTile) continue;
+
+                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                    specifier = 0;
+
+
+                tile = new CellSpace();
+                tile._specifier = specifier;
+                tile._pos3d_center = this.ToPosition3D_Center(XY_2d);
+                tile._pos2d = new Vector3Int(XY_2d.x, XY_2d.y, 0);
+                tile._pos1d = this.ToPosition1D(XY_2d);
+                tile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                tile._nDir = Misc.GetDir8_Normal3D_AxisY(tile._eDir);
+
+
+                tile._isUpTile = true;
+                tile._isStructTile = true;
+
+                LineSegment3 line;
+                CalcBoundaryLine(tile, out line);
+                tile._line = line;
+                tile._line_center = line.origin + line.direction * 0.5f;
+
+                _structTileUpList.Add(XY_2d, tile);
+
+            }
+
+            DebugWide.LogBlue("LoadTile : " + _structTileUpList.Count + "  -  TileMap_StructUp RefreshAllTiles");
+
         }
 
         public void LoadTilemap_Struct()
@@ -408,7 +560,7 @@ namespace Proto_AI_2
                 structTile._specifier = specifier;
                 structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 structTile._pos2d = new Vector3Int(XY_2d.x, XY_2d.y , 0);
-                structTile._pos1d = this.ToPosition1D(XY_2d, _tileBlock_width_size); 
+                structTile._pos1d = this.ToPosition1D(XY_2d); 
                 structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
                 structTile._nDir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
@@ -429,12 +581,6 @@ namespace Proto_AI_2
 
             DebugWide.LogBlue("LoadTile : " + _structTileList.Count + "  -  TileMap_Struct RefreshAllTiles");
 
-
-            //확장영역에 구조물 경계선 추가 
-            Load_StructLine();
-
-            //확장영역 정보중 각을 이루고 있는 쌍을 찾아 계산 
-            Load_ArcTileInfo();
         }
 
 
@@ -820,9 +966,22 @@ namespace Proto_AI_2
             return true;
         }
 
+        public void Draw_UpTile()
+        {
+            //덮개타일 정보 출력 
+            foreach (KeyValuePair<Vector3Int, CellSpace> info1 in _structTileUpList)
+            {
+                if(true == info1.Value._isUpTile )
+                {
+                    info1.Value._line.Draw(Color.white); 
+                }
+            }
+            return;
+        }
+
         public void Draw_BoundaryTile()
         {
-
+            //구조타일목록에서의 방향정보 출력 
             //foreach (KeyValuePair<Vector3Int, CellSpace> info1 in _structTileList)
             //{
             //    Vector3 pos = ToPosition3D_Center(info1.Key);
@@ -833,9 +992,10 @@ namespace Proto_AI_2
 
             //    DebugWide.PrintText(pos, Color.black, "" + info1.Value._eDir);
 
-            //    info1.Value.line.Draw(Color.white);
+            //    info1.Value._line.Draw(Color.white);
             //}
             //return;
+
 
             foreach (KeyValuePair<Vector3Int, BoundaryTileList> info1 in _boundaryList)
             {
@@ -862,6 +1022,7 @@ namespace Proto_AI_2
                 }
 
             }
+
 
             //foreach (ArcTile arc in _arcTileList.Values)
             //{
