@@ -11,7 +11,7 @@ namespace Proto_AI_2
         public class CollisionObject
         {
             public int _id = -1;
-            public float _radius = 0;
+            //public float _radius = 0;
             public Vector3 _bounds_min = Vector3.zero;
             public Vector3 _bounds_max = Vector3.zero;
 

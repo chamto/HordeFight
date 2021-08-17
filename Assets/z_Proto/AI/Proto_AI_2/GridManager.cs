@@ -394,6 +394,15 @@ namespace Proto_AI_2
             return result;
         }
 
+        public int ToPosition1D(Vector3 posXY_3d)
+        {
+            //"음수좌표값은 1차원값으로 변환 할 수 없다"
+            if (0 > posXY_3d.x || 0 > posXY_3d.z) return -1;
+
+            return ((int)posXY_3d.x + (int)posXY_3d.z * MAP_WIDTH); //x축 타일맵 길이 기준으로 왼쪽에서 오른쪽 끝까지 증가후 위쪽방향으로 반복된다 
+
+        }
+
         public int ToPosition1D(Vector3Int posXY_2d)
         {
             //"음수좌표값은 1차원값으로 변환 할 수 없다"
@@ -419,6 +428,33 @@ namespace Proto_AI_2
             _boundaryList.TryGetValue(pos, out list);
 
             return list;
+        }
+
+        public CellSpace GetCellSpace(Vector3 pos3d)
+        {
+            int pos1d = ToPosition1D(pos3d);
+            if (0 > pos1d) return null; //타일맵을 벗어나는 범위 
+
+            return _cellMap[pos1d];
+
+        }
+
+        public void AttachCellSpace(Vector3 pos3d, BaseEntity dst)
+        {
+            CellSpace tile = GetCellSpace(pos3d);
+            {
+                //뗀후 새로운 곳에 붙인다 
+                tile.DetachChild(dst);
+                tile.AttachChild(dst);
+            }
+        }
+
+        public void DetachCellSpace(Vector3 pos3d, BaseEntity dst)
+        {
+            CellSpace tile = GetCellSpace(pos3d);
+            {
+                tile.DetachChild(dst);
+            }
         }
 
         public void LoadTileMap()
@@ -964,6 +1000,18 @@ namespace Proto_AI_2
             }//end switch
 
             return true;
+        }
+
+        public void Draw_EntityTile()
+        {
+            for(int i=0;i<MAP_WIDTH*MAP_HEIGHT;i++ )
+            {
+                if(0 != _cellMap[i]._childCount)
+                {
+                    DebugWide.PrintText(_cellMap[i]._pos3d_center, Color.white, "" + _cellMap[i]._childCount);
+                    DebugWide.DrawCube(_cellMap[i]._pos3d_center, new Vector3(1, 0, 1), Color.white);
+                }
+            }
         }
 
         public void Draw_UpTile()
@@ -1832,6 +1880,7 @@ namespace Proto_AI_2
             }
 
             if (2 <= count && 2 <= interCount)
+            //if (1 <= interCount)
             {
                 //반지름이 0.99일때 터널통과 현상을 막기위해 최저속도로 설정한다 
                 stop = true;
@@ -1890,6 +1939,54 @@ namespace Proto_AI_2
 
         }
 
+        public CellSpace Find_FirstEntityTile(BaseEntity entity, Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
+        {
+
+            Vector3 nextPos = origin_3d;
+            Vector3 prev_center = ToPosition3D_Center(origin_3d);
+            int count = 0;
+            bool is_next = true;
+            while (is_next)
+            {
+
+                is_next = GetTilePosition_Segment(count, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+
+                //-------------------
+
+
+                prev_center = nextPos;
+
+
+                //-------------------
+
+                //발견하면 바로 반환 
+                CellSpace tile = GetCellSpace(nextPos);
+                if (null != tile)
+                {
+                    BaseEntity next = tile._head;
+                    for (int i=0;i<tile._childCount;i++)
+                    {
+                        if(next != entity)
+                        {
+                            //DebugWide.AddDrawQ_Line(origin_3d, target_3d, Color.white);
+                            return tile;
+                        }
+
+
+                        next = next._next_sibling;
+                    }
+
+                }
+
+
+                count++;
+                if (count > MAX_COUNT) break; //최대검사 횟수 검사 
+
+            }
+
+            return null;
+        }
+
         public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , int MAX_COUNT)
         {
 
@@ -1920,6 +2017,7 @@ namespace Proto_AI_2
                 {
                     //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
                     //structTile.line.Draw(Color.white);
+                    //DebugWide.AddDrawQ_Line(origin_3d, target_3d, Color.black);
                     return structTile;
                 }
 

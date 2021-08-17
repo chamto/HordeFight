@@ -46,6 +46,7 @@ namespace Proto_AI_2
 
         public FormationPoint _formationPoint = new FormationPoint();
 
+        public bool _Draw_EntityTile = false;
         public bool _Draw_UpTile = false;
         public bool _Draw_BoundaryTile = false;
 
@@ -187,7 +188,7 @@ namespace Proto_AI_2
                 v._weight = _weight;
                 v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
-
+                //v._stop = false;
             }
 
             //==============================================
@@ -230,7 +231,8 @@ namespace Proto_AI_2
                 //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
 
                 bool stop;
-                v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
+                //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
                 v._stop = stop;
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
 
@@ -290,7 +292,8 @@ namespace Proto_AI_2
             Vector3 dir_dstTOsrc = VOp.Minus(src._pos, dst._pos);
             Vector3 n = ConstV.v3_zero;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
-            float r_sum = (src._collision._radius + dst._collision._radius);
+            //float r_sum = (src._collision._radius + dst._collision._radius);
+            float r_sum = (src._radius + dst._radius);
             float sqr_r_sum = r_sum * r_sum;
 
             //1.두 캐릭터가 겹친상태 
@@ -327,6 +330,9 @@ namespace Proto_AI_2
 
                 src.SetPos(src._pos + n * len_bt_src);
                 dst.SetPos(dst._pos - n * len_bt_dst);
+
+                //src._stop = true;
+                //dst._stop = true;
             }
         }
 
@@ -377,6 +383,9 @@ namespace Proto_AI_2
                 v.Draw(color);
             }
 
+            if (true == _Draw_EntityTile)
+                _gridMgr.Draw_EntityTile();
+
             if (true == _Draw_UpTile)
                 _gridMgr.Draw_UpTile();
 
@@ -390,6 +399,7 @@ namespace Proto_AI_2
 
     public class BaseEntity
     {
+        public float _radius = 0.5f;
         public Vector3 _oldPos = Vector3.zero;
         public Vector3 _pos = Vector3.zero;
         public Vector3 _velocity = Vector3.zero;
@@ -472,8 +482,6 @@ namespace Proto_AI_2
         //public Vector3 _size =  new Vector3(0.5f, 0, 0.5f);
 
         public bool _tag = false;
-        public float _radius = 0.5f;
-
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
@@ -515,7 +523,7 @@ namespace Proto_AI_2
             _radius = radius;
 
             _collision._id = _id;
-            _collision._radius = radius;
+            //_collision._radius = radius;
             SetPos(pos);
             _oldPos = pos;
 
@@ -532,12 +540,15 @@ namespace Proto_AI_2
             _collision._bounds_max.x = newPos.x + _radius;
             _collision._bounds_max.z = newPos.z + _radius;
             //==============================================
+
+            GridManager.Inst.AttachCellSpace(_pos, this);
+
         }
 
 
         public void CreateFeelers()
         {
-            const int Feeler_Length = 1;
+            const float Feeler_Length = 1;
             Vector3 fpos = Vector3.forward * (_radius + Feeler_Length);
             _feelers.Add(fpos);
 
@@ -548,6 +559,7 @@ namespace Proto_AI_2
             _feelers.Add(fpos);
         }
 
+        int __findNum = 0;
         public void Update(float deltaTime)
         {
 
@@ -652,24 +664,129 @@ namespace Proto_AI_2
                 //}
 
                 //-----------
-                //GridManager.Inst.Find_FirstStructTile
+                float curSpeed = _maxSpeed;
 
+                float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
+                float sum_r = _radius + _radius;
+                Vector3 pos_1 = _pos + _velocity.normalized * _radius;
+                Vector3 pos_2 = _pos + findDir * _radius;
+                //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _velocity.normalized * 5, 5);
+                CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
+                CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
+
+                bool interCell = false;
+                BoundaryTileList findBT_list = GridManager.Inst.GetBoundaryTileList(_pos);
+                if(null != findBT_list)
+                {
+                    foreach (BoundaryTile boundary in findBT_list)
+                    {
+                        if ((boundary.cell._line_center - pos_1).sqrMagnitude < _radius * _radius)
+                        {
+                            DebugWide.AddDrawQ_Line(boundary.cell._line.origin, boundary.cell._line.last, Color.red);
+                            interCell = true;
+                            break;
+                        }
+                    }
+                }
+
+
+                //if (null != findStr && (findStr._line_center - _pos).sqrMagnitude < sum_r * sum_r)
+                //{
+                //    DebugWide.AddDrawQ_Line(_pos, _pos+_velocity.normalized * 5, Color.red);
+                //    curSpeed = 0;
+                //}
+
+                if (interCell)
+                {
+                    curSpeed = 0;
+                }
+                else if (null == findCell_1 || 
+                (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
+                {
+                    curSpeed = _maxSpeed;
+                }
+                else if (null == findCell_2 || 
+                    (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
+                {
+                    curSpeed = _maxSpeed;
+                    _velocity = findDir;
+                    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                }
+                else 
+                {
+                    __findNum = Misc.RandInt(1, 4);
+                    curSpeed = 0;
+                }
+
+
+
+                //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
+                //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                //if (null != findCell)
+                //{
+                //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
+                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                //    float sum_r = findCell._head._radius + _radius;
+                //    //float sum_r = findCell._head._radius + 0.3f;
+                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                //    {
+                //        curSpeed = 0;
+                //    }
+                //}
+                //feeler_pos = _pos + _rotation * _feelers[1];
+                //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                //if (null != findCell)
+                //{
+                //    feeler_pos = _pos + (_rotation * _feelers[1]).normalized * _radius;
+                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                //    float sum_r = findCell._head._radius + _radius;
+                //    //float sum_r = findCell._head._radius + 0.3f;
+                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                //    {
+                //        curSpeed = 0;
+                //    }
+                //}
+                //feeler_pos = _pos + _rotation * _feelers[2];
+                //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                //if (null != findCell)
+                //{
+                //    feeler_pos = _pos + (_rotation * _feelers[2]).normalized * _radius;
+                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                //    float sum_r = findCell._head._radius + _radius;
+                //    //float sum_r = findCell._head._radius + 0.3f;
+                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                //    {
+                //        curSpeed = 0;
+                //    }
+                //}
 
                 //-----------
 
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
-                float curSpeed = _maxSpeed;
+                //float curSpeed = _maxSpeed;
                 if (_stop) curSpeed = 1;
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                float distSpeed = (WorldOffsetPos - _pos).magnitude;
                 Vector3 ToOffset = WorldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime;
-                Vector3 ToFuture = pos_future - WorldOffsetPos;
-                if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
-                    SetPos(pos_future);
-                else
-                    SetPos(WorldOffsetPos); //목표오프셋 위치로 설정 
+                Vector3 ToFuture = WorldOffsetPos - pos_future;
+
+                if (0 < curSpeed)
+                {
+                    if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
+                        SetPos(pos_future);
+                    else
+                    {
+                        //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                        SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+
+                    }
+                }
+
+
 
                 //-------------
 
