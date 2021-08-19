@@ -48,7 +48,9 @@ namespace Proto_AI_2
 
         public bool _Draw_EntityTile = false;
         public bool _Draw_UpTile = false;
+        public bool _Draw_StructTile = false;
         public bool _Draw_BoundaryTile = false;
+        public bool _Draw_ArcTile = false;
 
 
         void Awake()
@@ -89,46 +91,46 @@ namespace Proto_AI_2
             //v._maxSpeed = 14;
 
             //1
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //2
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////2
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //-------------------
+            ////-------------------
 
-            //3
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////3
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////4
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(2f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //////4
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(2f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //5
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(3f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////5
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(3f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -188,7 +190,7 @@ namespace Proto_AI_2
                 v._weight = _weight;
                 v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
-                //v._stop = false;
+                v._stop = false;
             }
 
             //==============================================
@@ -389,8 +391,14 @@ namespace Proto_AI_2
             if (true == _Draw_UpTile)
                 _gridMgr.Draw_UpTile();
 
+            if (true == _Draw_StructTile)
+                _gridMgr.Draw_StructTile();
+
             if (true == _Draw_BoundaryTile)
                 _gridMgr.Draw_BoundaryTile();
+
+            if (true == _Draw_ArcTile)
+                _gridMgr.Draw_ArcTile();
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
@@ -665,101 +673,106 @@ namespace Proto_AI_2
 
                 //-----------
                 float curSpeed = _maxSpeed;
-
-                float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
-                Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
-                float sum_r = _radius + _radius;
-                Vector3 pos_1 = _pos + _velocity.normalized * _radius;
-                Vector3 pos_2 = _pos + findDir * _radius;
-                //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _velocity.normalized * 5, 5);
-                CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
-                CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
-
-                bool interCell = false;
-                BoundaryTileList findBT_list = GridManager.Inst.GetBoundaryTileList(_pos);
-                if(null != findBT_list)
+                if(false)
                 {
-                    foreach (BoundaryTile boundary in findBT_list)
+                    float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
+                    float sum_r = _radius + _radius;
+                    Vector3 pos_1 = _pos + _velocity.normalized * _radius;
+                    Vector3 pos_2 = _pos + findDir * _radius;
+                    //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _velocity.normalized * 5, 5);
+                    CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
+                    CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
+
+                    bool interCell = false;
+                    BoundaryTileList findBT_list = GridManager.Inst.GetBoundaryTileList(_pos);
+                    if (null != findBT_list)
                     {
-                        if ((boundary.cell._line_center - pos_1).sqrMagnitude < _radius * _radius)
+                        foreach (BoundaryTile boundary in findBT_list)
                         {
-                            DebugWide.AddDrawQ_Line(boundary.cell._line.origin, boundary.cell._line.last, Color.red);
-                            interCell = true;
-                            break;
+                            if ((boundary.cell._line_center - pos_1).sqrMagnitude < _radius * _radius)
+                            {
+                                DebugWide.AddDrawQ_Line(boundary.cell._line.origin, boundary.cell._line.last, Color.red);
+                                interCell = true;
+                                break;
+                            }
                         }
+                    }
+
+
+                    //if (null != findStr && (findStr._line_center - _pos).sqrMagnitude < sum_r * sum_r)
+                    //{
+                    //    DebugWide.AddDrawQ_Line(_pos, _pos+_velocity.normalized * 5, Color.red);
+                    //    curSpeed = 0;
+                    //}
+
+                    if (interCell)
+                    {
+                        //curSpeed = 0;
+                    }
+                    else if (null == findCell_1 ||
+                    (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
+                    {
+                        curSpeed = _maxSpeed;
+                    }
+                    else if (null == findCell_2 ||
+                        (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = findDir;
+                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    }
+                    else
+                    {
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0;
                     }
                 }
 
-
-                //if (null != findStr && (findStr._line_center - _pos).sqrMagnitude < sum_r * sum_r)
-                //{
-                //    DebugWide.AddDrawQ_Line(_pos, _pos+_velocity.normalized * 5, Color.red);
-                //    curSpeed = 0;
-                //}
-
-                if (interCell)
+                if(false)
                 {
-                    curSpeed = 0;
-                }
-                else if (null == findCell_1 || 
-                (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
-                {
-                    curSpeed = _maxSpeed;
-                }
-                else if (null == findCell_2 || 
-                    (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
-                {
-                    curSpeed = _maxSpeed;
-                    _velocity = findDir;
-                    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                }
-                else 
-                {
-                    __findNum = Misc.RandInt(1, 4);
-                    curSpeed = 0;
+                    //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
+                    //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                    //if (null != findCell)
+                    //{
+                    //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
+                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                    //    float sum_r = findCell._head._radius + _radius;
+                    //    //float sum_r = findCell._head._radius + 0.3f;
+                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                    //    {
+                    //        curSpeed = 0;
+                    //    }
+                    //}
+                    //feeler_pos = _pos + _rotation * _feelers[1];
+                    //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                    //if (null != findCell)
+                    //{
+                    //    feeler_pos = _pos + (_rotation * _feelers[1]).normalized * _radius;
+                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                    //    float sum_r = findCell._head._radius + _radius;
+                    //    //float sum_r = findCell._head._radius + 0.3f;
+                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                    //    {
+                    //        curSpeed = 0;
+                    //    }
+                    //}
+                    //feeler_pos = _pos + _rotation * _feelers[2];
+                    //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                    //if (null != findCell)
+                    //{
+                    //    feeler_pos = _pos + (_rotation * _feelers[2]).normalized * _radius;
+                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                    //    float sum_r = findCell._head._radius + _radius;
+                    //    //float sum_r = findCell._head._radius + 0.3f;
+                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                    //    {
+                    //        curSpeed = 0;
+                    //    }
+                    //}
                 }
 
 
-
-                //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
-                //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                //if (null != findCell)
-                //{
-                //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
-                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                //    float sum_r = findCell._head._radius + _radius;
-                //    //float sum_r = findCell._head._radius + 0.3f;
-                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                //    {
-                //        curSpeed = 0;
-                //    }
-                //}
-                //feeler_pos = _pos + _rotation * _feelers[1];
-                //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                //if (null != findCell)
-                //{
-                //    feeler_pos = _pos + (_rotation * _feelers[1]).normalized * _radius;
-                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                //    float sum_r = findCell._head._radius + _radius;
-                //    //float sum_r = findCell._head._radius + 0.3f;
-                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                //    {
-                //        curSpeed = 0;
-                //    }
-                //}
-                //feeler_pos = _pos + _rotation * _feelers[2];
-                //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                //if (null != findCell)
-                //{
-                //    feeler_pos = _pos + (_rotation * _feelers[2]).normalized * _radius;
-                //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                //    float sum_r = findCell._head._radius + _radius;
-                //    //float sum_r = findCell._head._radius + 0.3f;
-                //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                //    {
-                //        curSpeed = 0;
-                //    }
-                //}
 
                 //-----------
 
@@ -767,7 +780,7 @@ namespace Proto_AI_2
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
                 //float curSpeed = _maxSpeed;
-                if (_stop) curSpeed = 1;
+                if (_stop) curSpeed = 0;
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 float distSpeed = (WorldOffsetPos - _pos).magnitude;
                 Vector3 ToOffset = WorldOffsetPos - _pos;
