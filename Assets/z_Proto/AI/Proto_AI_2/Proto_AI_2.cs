@@ -213,7 +213,7 @@ namespace Proto_AI_2
                 v._weight = _weight;
                 v._isNonpenetration = _isNonpenetration;
                 v.Update(deltaTime);
-                v._stop = false;
+                //v._stop = false;
             }
 
             //==============================================
@@ -795,16 +795,25 @@ namespace Proto_AI_2
                 //}
 
                 //-----------
+                //if (_stop) 
+                //{
+                //    curSpeed = 0; //속도변화에 따른 떨림의 원인이 된다 
+                //}
+
+                //최대속도가 높을수록 진형을 잘 유지한다 
+                //설정된 최대속도로 등속도 운동하게 한다.
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 Vector3 ToOffset = WorldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 
                 Vector3 ToFuture = WorldOffsetPos - pos_future;
 
+                DebugWide.AddDrawQ_Line(_oldPos, pos_future, Color.cyan);
+                DebugWide.AddDrawQ_Circle(pos_future, 0.1f,Color.cyan);
                 pos_future = GridManager.Inst.Collision_StructLine_Test3(_oldPos, pos_future, _radius, out _stop);
 
-                //최대속도가 높을수록 진형을 잘 유지한다 
-                //설정된 최대속도로 등속도 운동하게 한다.
-                //float curSpeed = _maxSpeed;
+                DebugWide.LogBlue(_stop);
+
+
                 if (_stop)
                 {
                     SetPos(pos_future);
@@ -813,13 +822,13 @@ namespace Proto_AI_2
                 {
                     if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
                         SetPos(pos_future);
-                    else
-                    {
-                        float distSpeed = (WorldOffsetPos - _pos).magnitude;
-                        //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
-                        SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+                    //else
+                    //{
+                    //    float distSpeed = (WorldOffsetPos - _pos).magnitude;
+                    //    //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                    //    SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
 
-                    }
+                    //}
                 }
 
 
