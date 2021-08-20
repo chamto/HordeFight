@@ -177,21 +177,6 @@ namespace Proto_AI_2
             //운반기의 반지름이 0과 가까운 아주 작은 값일 경우 : _maxSpeed * deltaTime 의 값이 1 을 넘으면 지형을 통과하게 된다 
             //현재의 타일기반 지형충돌 알고리즘으로는 _maxSpeed 가 30 (시속108) 까지만 충돌처리가 가능하다 
 
-            foreach (Vehicle v in EntityMgr.list)
-            {
-                //if (0 == v._id) v._withstand = 100; //임시 시험 
-
-                v._radius = _radius;
-                v._mass = _mass;
-                v._maxSpeed = _maxSpeed;
-                v._maxForce = _maxForce;
-                v._Friction = _Friction;
-                v._anglePerSecond = _anglePerSecond;
-                v._weight = _weight;
-                v._isNonpenetration = _isNonpenetration;
-                v.Update(deltaTime);
-                v._stop = false;
-            }
 
             //==============================================
             //sweepPrune 삽입정렬 및 충돌처리
@@ -217,30 +202,46 @@ namespace Proto_AI_2
 
             foreach (Vehicle v in EntityMgr.list)
             {
+                //if (0 == v._id) v._withstand = 100; //임시 시험 
 
-                //==========================================
-                //동굴벽과 캐릭터 충돌처리 
-
-                //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
-                //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
-                //동굴벽과 캐릭터 경계원 충돌처리 
-
-                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
-                //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
-
-                //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
-
-                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
-
-                bool stop;
-                //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
-                v._stop = stop;
-                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
-
-                //==========================================
-
+                v._radius = _radius;
+                v._mass = _mass;
+                v._maxSpeed = _maxSpeed;
+                v._maxForce = _maxForce;
+                v._Friction = _Friction;
+                v._anglePerSecond = _anglePerSecond;
+                v._weight = _weight;
+                v._isNonpenetration = _isNonpenetration;
+                v.Update(deltaTime);
+                v._stop = false;
             }
+
+            //==============================================
+
+            //foreach (Vehicle v in EntityMgr.list)
+            //{
+            //    //==========================================
+            //    //동굴벽과 캐릭터 충돌처리 
+
+            //    //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
+            //    //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+            //    //동굴벽과 캐릭터 경계원 충돌처리 
+
+            //    //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
+            //    //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
+
+            //    //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
+
+            //    //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
+
+            //    bool stop;
+            //    //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
+            //    v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
+            //    v._stop = stop;
+            //    //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
+
+            //    //==========================================
+            //}
         }
 
         public void KeyInput()
@@ -671,6 +672,7 @@ namespace Proto_AI_2
 
                 //}
 
+
                 //-----------
                 float curSpeed = _maxSpeed;
                 if(false)
@@ -793,30 +795,32 @@ namespace Proto_AI_2
                 //}
 
                 //-----------
+                Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                Vector3 ToOffset = WorldOffsetPos - _pos;
+                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 
+                Vector3 ToFuture = WorldOffsetPos - pos_future;
 
+                pos_future = GridManager.Inst.Collision_StructLine_Test3(_oldPos, pos_future, _radius, out _stop);
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
                 //float curSpeed = _maxSpeed;
-                if (_stop) curSpeed = 0;
-                Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
-                float distSpeed = (WorldOffsetPos - _pos).magnitude;
-                Vector3 ToOffset = WorldOffsetPos - _pos;
-                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime;
-                Vector3 ToFuture = WorldOffsetPos - pos_future;
-
-                if (0 < curSpeed)
+                if (_stop)
+                {
+                    SetPos(pos_future);
+                }
+                else
                 {
                     if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
                         SetPos(pos_future);
                     else
                     {
+                        float distSpeed = (WorldOffsetPos - _pos).magnitude;
                         //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
                         SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
 
                     }
                 }
-
 
 
                 //-------------
