@@ -507,7 +507,7 @@ public class DebugWide
         AddDrawQ(drawInfo);
     }
 
-    public static void AddDrawQ_Text(Vector3 origin, string text, Color color)
+    public static void AddDrawQ_Text(Vector3 origin, Color color, string text)
     {
 
         DrawInfo drawInfo = new DrawInfo();

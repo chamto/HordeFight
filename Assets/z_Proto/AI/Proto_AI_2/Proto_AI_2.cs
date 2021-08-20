@@ -772,7 +772,25 @@ namespace Proto_AI_2
                     //}
                 }
 
+                //DebugWide.LogBlue(_heading);
+                //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _heading * 5, 2);
+                //if(null != findStr)
+                //{
+                //    DebugWide.AddDrawQ_Circle(findStr._pos3d_center, 0.5f, Color.green);
 
+                //    if (findStr._isTunnel)
+                //    {
+                //        if (findStr._line_length < _radius * 2)
+                //        {
+                //            curSpeed = 0;
+                //        }
+                //    }
+                //    else
+                //    {
+                //        curSpeed = 0;
+                //    }
+
+                //}
 
                 //-----------
 

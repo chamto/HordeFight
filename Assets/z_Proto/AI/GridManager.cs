@@ -1707,7 +1707,7 @@ namespace Proto_AI_1
 
                 DebugWide.AddDrawQ_Line(info.cell._line.origin, info.cell._line.last, Color.white);
                 Vector3Int cellpos = ToPosition2D(info.cell._pos3d_center);
-                DebugWide.AddDrawQ_Text(new Vector3(cellpos.x, 0, cellpos.y), "" + new Vector2Int(cellpos.x, cellpos.y), Color.white);
+                DebugWide.AddDrawQ_Text(new Vector3(cellpos.x, 0, cellpos.y), Color.white, "" + new Vector2Int(cellpos.x, cellpos.y));
 
 
                 //if (true == info.isBoundary)
