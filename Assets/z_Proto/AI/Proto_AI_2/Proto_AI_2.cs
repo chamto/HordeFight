@@ -440,7 +440,7 @@ namespace Proto_AI_2
         {
 
             //도착시 종료 
-            if ((_end - _pos).sqrMagnitude < 5)
+            if ((_end - _pos).sqrMagnitude < 3)
             {
                 //특정거리 안에서 이동없이 방향전환 
                 _rotation = Quaternion.FromToRotation(Vector3.forward, _end - _pos);
@@ -571,8 +571,6 @@ namespace Proto_AI_2
         int __findNum = 0;
         public void Update(float deltaTime)
         {
-
-            _oldPos = _pos;
 
 
             Vector3 SteeringForce = ConstV.v3_zero;
@@ -797,7 +795,7 @@ namespace Proto_AI_2
                 //-----------
                 //if (_stop) 
                 //{
-                //    curSpeed = 0; //속도변화에 따른 떨림의 원인이 된다 
+                //    curSpeed = 0; //속도변화에 따른 떨림의 원인이 된다
                 //}
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
@@ -807,28 +805,33 @@ namespace Proto_AI_2
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 
                 Vector3 ToFuture = WorldOffsetPos - pos_future;
 
-                DebugWide.AddDrawQ_Line(_oldPos, pos_future, Color.cyan);
-                DebugWide.AddDrawQ_Circle(pos_future, 0.1f,Color.cyan);
-                pos_future = GridManager.Inst.Collision_StructLine_Test3(_oldPos, pos_future, _radius, out _stop);
+                DebugWide.AddDrawQ_Line(_pos, pos_future, Color.white);
+                DebugWide.AddDrawQ_Circle(pos_future, 0.1f,Color.white);
+                pos_future = GridManager.Inst.Collision_StructLine_Test3(_pos, pos_future, _radius, out _stop);
 
                 DebugWide.LogBlue(_stop);
 
 
                 if (_stop)
                 {
-                    SetPos(pos_future);
+                    //지형충돌 상태고, 진형위치가 원의 범위 밖에 있을 때만 정지시킨다 - 떨림방지처리 
+                    if((WorldOffsetPos - _pos).sqrMagnitude > _radius*_radius)
+                    {
+                        SetPos(pos_future);
+                    }
+
                 }
                 else
                 {
                     if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
                         SetPos(pos_future);
-                    //else
-                    //{
-                    //    float distSpeed = (WorldOffsetPos - _pos).magnitude;
-                    //    //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
-                    //    SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+                    else
+                    {
+                        float distSpeed = (WorldOffsetPos - _pos).magnitude;
+                        //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                        SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
 
-                    //}
+                    }
                 }
 
 
@@ -841,6 +844,9 @@ namespace Proto_AI_2
             //    _velocity = ConstV.v3_zero;
 
             //}
+
+            _oldPos = _pos;
+
 
         }
 
