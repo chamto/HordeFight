@@ -91,46 +91,46 @@ namespace Proto_AI_2
             //v._maxSpeed = 14;
 
             //1
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////2
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(-1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //2
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(-1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////-------------------
+            //-------------------
 
-            ////3
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //3
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //////4
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(2f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////4
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(2f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //5
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(3f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -177,6 +177,24 @@ namespace Proto_AI_2
             //운반기의 반지름이 0과 가까운 아주 작은 값일 경우 : _maxSpeed * deltaTime 의 값이 1 을 넘으면 지형을 통과하게 된다 
             //현재의 타일기반 지형충돌 알고리즘으로는 _maxSpeed 가 30 (시속108) 까지만 충돌처리가 가능하다 
 
+            //==============================================
+
+            foreach (Vehicle v in EntityMgr.list)
+            {
+                //if (0 == v._id) v._withstand = 100; //임시 시험 
+
+                v._radius = _radius;
+                v._mass = _mass;
+                v._maxSpeed = _maxSpeed;
+                v._maxForce = _maxForce;
+                v._Friction = _Friction;
+                v._anglePerSecond = _anglePerSecond;
+                v._weight = _weight;
+                v._isNonpenetration = _isNonpenetration;
+                //v._stop = false;
+                v.Update(deltaTime);
+
+            }
 
             //==============================================
             //sweepPrune 삽입정렬 및 충돌처리
@@ -198,50 +216,41 @@ namespace Proto_AI_2
                 if (_isNonpenetration)
                     CollisionPush(src, dst);
             }
+
             //==============================================
 
             foreach (Vehicle v in EntityMgr.list)
             {
-                //if (0 == v._id) v._withstand = 100; //임시 시험 
+                //==========================================
+                //동굴벽과 캐릭터 충돌처리 
 
-                v._radius = _radius;
-                v._mass = _mass;
-                v._maxSpeed = _maxSpeed;
-                v._maxForce = _maxForce;
-                v._Friction = _Friction;
-                v._anglePerSecond = _anglePerSecond;
-                v._weight = _weight;
-                v._isNonpenetration = _isNonpenetration;
-                v.Update(deltaTime);
-                //v._stop = false;
+                //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
+                //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+                //동굴벽과 캐릭터 경계원 충돌처리 
+
+                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
+                DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
+
+                //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
+
+                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
+
+                bool stop;
+                //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
+                //Vector3 newPos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop);
+                //v._stop = stop;
+
+                //지형충돌 상태고, 진형위치가 원의 범위 밖에 있을 때만 정지시킨다 - 떨림방지처리 
+                //if(stop && (v._worldOffsetPos - v._oldPos).sqrMagnitude > v._radius*v._radius)
+                //{
+                //    v.SetPos(newPos);
+                //}
+
+                //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
+
+                //==========================================
             }
-
-            //==============================================
-
-            //foreach (Vehicle v in EntityMgr.list)
-            //{
-            //    //==========================================
-            //    //동굴벽과 캐릭터 충돌처리 
-
-            //    //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
-            //    //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
-            //    //동굴벽과 캐릭터 경계원 충돌처리 
-
-            //    //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
-            //    //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.blue);
-
-            //    //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
-
-            //    //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
-
-            //    bool stop;
-            //    //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
-            //    v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
-            //    v._stop = stop;
-            //    //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
-
-            //    //==========================================
-            //}
         }
 
         public void KeyInput()
@@ -494,6 +503,7 @@ namespace Proto_AI_2
 
         public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
+        public Vector3 _worldOffsetPos = ConstV.v3_zero;
         public BaseEntity _leader = null;
         public SteeringBehavior.eType _mode = SteeringBehavior.eType.none;
 
@@ -571,7 +581,8 @@ namespace Proto_AI_2
         int __findNum = 0;
         public void Update(float deltaTime)
         {
-
+            _oldPos = _pos;
+            _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
 
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
@@ -800,40 +811,56 @@ namespace Proto_AI_2
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
-                Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
-                Vector3 ToOffset = WorldOffsetPos - _pos;
+                //_worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                Vector3 ToOffset = _worldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 
-                Vector3 ToFuture = WorldOffsetPos - pos_future;
+                Vector3 ToFuture = _worldOffsetPos - pos_future;
 
-                DebugWide.AddDrawQ_Line(_pos, pos_future, Color.white);
-                DebugWide.AddDrawQ_Circle(pos_future, 0.1f,Color.white);
-                pos_future = GridManager.Inst.Collision_StructLine_Test3(_pos, pos_future, _radius, out _stop);
+                //DebugWide.AddDrawQ_Line(_pos, pos_future, Color.white);
+                //DebugWide.AddDrawQ_Circle(pos_future, 0.1f,Color.white);
+                //pos_future = GridManager.Inst.Collision_StructLine_Test3(_pos, pos_future, _radius, out _stop);
+                ////DebugWide.LogBlue(_stop);
+                //if (_stop)
+                //{
+                //    //_withstand = 100f;
 
-                DebugWide.LogBlue(_stop);
+                //    //지형충돌 상태고, 진형위치가 원의 범위 밖에 있을 때만 정지시킨다 - 떨림방지처리 
+                //    if((_worldOffsetPos - _pos).sqrMagnitude > _radius*_radius)
+                //    {
+                //        SetPos(pos_future);
+                //    }
+                //}
+                //else
+                //{
+                //    //_withstand = 0f;
+
+                //    if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
+                //        SetPos(pos_future);
+                //    else
+                //    {
+                //        float distSpeed = (_worldOffsetPos - _pos).magnitude;
+                //        //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                //        SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+
+                //    }
+                //}
 
 
-                if (_stop)
+                //---------------------
+
+                if (curSpeed > 0)
                 {
-                    //지형충돌 상태고, 진형위치가 원의 범위 밖에 있을 때만 정지시킨다 - 떨림방지처리 
-                    if((WorldOffsetPos - _pos).sqrMagnitude > _radius*_radius)
-                    {
-                        SetPos(pos_future);
-                    }
 
-                }
-                else
-                {
                     if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
                         SetPos(pos_future);
                     else
                     {
-                        float distSpeed = (WorldOffsetPos - _pos).magnitude;
+                        float distSpeed = (_worldOffsetPos - _pos).magnitude;
                         //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
                         SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
 
                     }
                 }
-
 
                 //-------------
 
@@ -844,8 +871,6 @@ namespace Proto_AI_2
             //    _velocity = ConstV.v3_zero;
 
             //}
-
-            _oldPos = _pos;
 
 
         }

@@ -176,7 +176,8 @@ namespace Proto_AI_2
         public float angle = 0;
         public float r_factor = 0;
         public Vector3 inter_pt = Vector3.zero;
-        public Vector3 dir = Vector3.zero;
+        public Vector3 dir = Vector3.zero; //line_0 과 line_1 의 중간을 지나는 방향
+        public Vector3 perpDir = Vector3.zero; //line_min 과 직각인 방향
 
         public CellSpace cell_0 = null;
         public CellSpace cell_1 = null;
@@ -230,8 +231,12 @@ namespace Proto_AI_2
             line_min_length = (line_0.origin - line_1.origin).magnitude;
             line_min_center = line_min.origin + line_min.direction * 0.5f;
 
+            Vector3 up = Vector3.Cross(dir, line_min.direction);
+            perpDir = Vector3.Cross(line_min.direction, up);
+            perpDir = perpDir.normalized;
+
             //처리 할 수 없는 호정보는 걸러낸다 
-            if(angle == 90 && line_min_length > 1) //1은 타일의 가로길이임 
+            if (angle == 90 && line_min_length > 1) //1은 타일의 가로길이임 
             {
                 is_arc = false;
                 return; 
@@ -255,6 +260,9 @@ namespace Proto_AI_2
 
             DebugWide.AddDrawQ_Circle(line_min_center, 0.1f, Color.red);
             DebugWide.AddDrawQ_Line(line_min.origin, line_min.last, Color.red);
+
+            DebugWide.AddDrawQ_Line(line_min_center, line_min_center + perpDir.normalized * 0.5f, Color.red);
+            //DebugWide.AddDrawQ_Line(line_min_center, line_min_center + dir, Color.yellow);
         }
 
 
@@ -852,44 +860,61 @@ namespace Proto_AI_2
 
             //-----------
             //구조타일목록에 터널정보 넣음 
-            foreach(ArcTile at in _arcTileList.Values)
+            foreach (ArcTile at in _arcTileList.Values)
             {
-                if(float.Epsilon < at.line_min_length)
+                Vector3Int XY_2d = ToPosition2D(at.line_min_center);
+                CellSpace strTile = null;
+                _structTileList.TryGetValue(XY_2d, out strTile);
+                if (float.Epsilon < at.line_min_length)
                 {
-                    Vector3Int XY_2d = ToPosition2D(at.line_min_center);
-                    CellSpace arcTile;
-                    _structTileList.TryGetValue(XY_2d, out arcTile);
-                    if (null == arcTile)
+                    //--터널타일 처리 
+
+                    if (null == strTile)
                     {
-                        arcTile = new CellSpace();
-                        //arcTile._specifier = specifier;
-                        arcTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
-                        arcTile._pos2d = XY_2d;
-                        arcTile._pos1d = this.ToPosition1D(XY_2d);
-                        //arcTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
-                        //arcTile._nDir = Misc.GetDir8_Normal3D_AxisY(arcTile._eDir);
+                        strTile = new CellSpace();
+                        //strTile._specifier = specifier;
+                        strTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
+                        strTile._pos2d = XY_2d;
+                        strTile._pos1d = this.ToPosition1D(XY_2d);
+                        //strTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                        //strTile._nDir = Misc.GetDir8_Normal3D_AxisY(arcTile._eDir);
 
 
-                        arcTile._isUpTile = false;
-                        arcTile._isStructTile = false;
-                        arcTile._isTunnel = true; //터널타일 지정 
+                        strTile._isUpTile = false;
+                        strTile._isStructTile = false;
+                        strTile._isTunnel = true; //터널타일 지정 
 
-                        arcTile._line = at.line_min;
-                        arcTile._line_center = at.line_min_center;
-                        arcTile._line_length = at.line_min.Length();
+                        strTile._line = at.line_min;
+                        strTile._line_center = at.line_min_center;
+                        strTile._line_length = at.line_min.Length();
 
-                        //arcTile._nDir = Vector3.Cross(at.line_min.direction, Vector3.up).normalized;
-                        arcTile._nDir = Misc.GetDir8_Normal3D(at.dir);
+                        //strTile._nDir = Vector3.Cross(at.line_min.direction, Vector3.up).normalized;
+                        //strTile._nDir = Misc.GetDir8_Normal3D(at.dir); //직각방향을 구하는게 의도인데 , 잘못된 방향이 구해짐 
+                        strTile._nDir = at.perpDir;
 
-                        arcTile._tunnel_0 = at;
+                        strTile._tunnel_0 = at;
 
-                        _structTileList.Add(XY_2d, arcTile);
+                        _structTileList.Add(XY_2d, strTile);
                     }
-                    else if(null != arcTile._tunnel_0)
+                    else if (null != strTile._tunnel_0)
                     {
-                        arcTile._tunnel_1 = at;
+                        strTile._tunnel_1 = at;
                     }
 
+                }
+                else
+                {
+                    //--모서리타일 처리  
+                    if (null != strTile)
+                    {
+                        if(null == strTile._tunnel_0)
+                        {
+                            strTile._tunnel_0 = at;
+                        }else
+                        {
+                            strTile._tunnel_1 = at;
+                        }
+                    }
                 }
             }
 
@@ -1092,14 +1117,30 @@ namespace Proto_AI_2
                 Vector3 pos = ToPosition3D_Center(info1.Key);
 
                 //if(info1.Value._isUpTile)
-                    //DebugWide.DrawCircle(pos, 0.5f, Color.red);
+                //DebugWide.DrawCircle(pos, 0.5f, Color.red);
 
 
                 //DebugWide.PrintText(pos, Color.black, "" + info1.Value._eDir);
 
                 info1.Value._line.Draw(Color.white);
+
             }
 
+            //foreach (KeyValuePair<Vector3Int, CellSpace> info1 in _structTileList)
+            //{
+            //    ArcTile arcTile = info1.Value._tunnel_0;
+            //    if (null != arcTile)
+            //    {
+            //        arcTile.AddDrawQ(Color.yellow);
+            //        DebugWide.AddDrawQ_Circle(arcTile.line_min_center, 0.1f, Color.yellow);
+            //    }
+            //    arcTile = info1.Value._tunnel_1;
+            //    if (null != arcTile)
+            //    {
+            //        arcTile.AddDrawQ(Color.blue);
+            //        DebugWide.AddDrawQ_Circle(arcTile.line_min_center, 0.1f, Color.blue);
+            //    }
+            //}
         }
 
         public void Draw_BoundaryTile()
@@ -1579,6 +1620,7 @@ namespace Proto_AI_2
                     {
                         return srcPos; //터널통과 가능 
                     }
+                    //DebugWide.LogBlue("tunnel 1---------------------- ");
 
                     //터널의 노멀방향을 구함 
                     if (Vector3.Dot((oldPos - structTile._line_center), strNdir) < 0)
@@ -1590,7 +1632,7 @@ namespace Proto_AI_2
                     if (null == tunnel) return srcPos; //해당노멀방향에 터널정보가 없는 경우 
 
                     //tunnel.AddDrawQ(RADIUS, Color.blue);
-
+                    //DebugWide.LogBlue("tunnel 2---------------------- " + strNdir);
 
                     //-------------------------------
                     //계산영역 검사 
@@ -1601,10 +1643,22 @@ namespace Proto_AI_2
                     Vector3 cp_1 = Line3.ClosestPoint(tunnel.line_1.origin, tunnel.line_1.direction, newPos);
                     Vector3 cpp_1 = Line3.ClosestPoint(tunnel.line_1.origin, tunnel.line_1.direction, srcPos);
 
+                    //float l_cp_0 = (tunnel.inter_pt - cp_0).magnitude;
+                    //float l_cpp_0 = (tunnel.inter_pt - cpp_0).magnitude;
+                    //float l_cp_1 = (tunnel.inter_pt - cp_1).magnitude;
+                    //float l_cpp_1 = (tunnel.inter_pt - cpp_1).magnitude;
+                    //DebugWide.LogBlue("tunnel 3---- " + l_cp_0 + " ~ " + l_cpp_0 + " | " + l_cp_1 + " ~ " + l_cpp_1 + " / "  + srcPos + " / "+ cpp_0 + "  " + cpp_1);
+
                     //if (Vector3.Dot(strNdir, dir) < 0) //벽통과 버그 있음 
-                    if (Vector3.Dot(strNdir, (oldPos - structTile._line_center)) > 0)
+                    if (Vector3.Dot(strNdir, (srcPos - structTile._line_center)) < 0)
                     {
-                        if (((tunnel.inter_pt - cp_0).sqrMagnitude >= (tunnel.inter_pt - cpp_0).sqrMagnitude) &&
+                        //터널타일을 넘어간 경우
+                        calc = true;
+                        return newPos;
+                    }
+                    else
+                    {
+                        if (((tunnel.inter_pt - cp_0).sqrMagnitude >= (tunnel.inter_pt - cpp_0).sqrMagnitude) ||
                                 ((tunnel.inter_pt - cp_1).sqrMagnitude >= (tunnel.inter_pt - cpp_1).sqrMagnitude))
                         {
                             calc = true;
@@ -1612,6 +1666,7 @@ namespace Proto_AI_2
                         }
                     }
 
+                    //DebugWide.LogRed("tunnel 4------------------------------------ ");
                     return srcPos;
 
                     //-------------------------------
@@ -1661,6 +1716,7 @@ namespace Proto_AI_2
 
                     Vector3 newPos;
                     if(true == CalcArcFullyPos2(structTile, srcPos, cp ,RADIUS, out newPos))
+                    //if (true == CalcArcFullyPos3(structTile, dir, cp, RADIUS, out newPos))
                     {
                         srcPos = newPos;
                     }
@@ -1669,7 +1725,7 @@ namespace Proto_AI_2
                 //DebugWide.LogBlue("  Collision_FirstStructTile 2 : cent: " + structTile._pos3d_center + " cp: " + cp + " dir: " + push_dir + " calc: " + srcPos);
 
                 //DebugWide.AddDrawQ_Circle(srcPos, 0.1f, Color.green);
-                DebugWide.AddDrawQ_Line(cp, srcPos, Color.green);
+                //DebugWide.AddDrawQ_Line(cp, srcPos, Color.green);
                 ////DebugWide.AddDrawQ_Circle(cp, 0.3f, Color.white);
 
             }
@@ -1951,6 +2007,50 @@ namespace Proto_AI_2
             return false;
         }
 
+        public bool CalcArcFullyPos3(CellSpace firstTile, Vector3 dir, Vector3 closestPt, float RADIUS, out Vector3 newPos)
+        {
+            newPos = Vector3.zero;
+
+
+            if (null == firstTile._tunnel_0)
+            {
+                //모서리타일 정보가 없다 
+                return false; 
+            }
+
+            //방향을 향하는 모서리타일을 찾는다 
+            //-----------------------------
+            float max_dot_0 = Vector3.Dot(dir, -firstTile._tunnel_0.dir);
+            float max_dit_1 = -999999f;
+            if( null != firstTile._tunnel_1)
+            {
+                max_dit_1 = Vector3.Dot(dir, -firstTile._tunnel_1.dir);
+            }
+
+            ArcTile arcTile = firstTile._tunnel_0;
+            if (max_dot_0 < max_dit_1)
+            {
+                arcTile = firstTile._tunnel_1;
+            }
+            //-----------------------------
+
+
+            newPos = arcTile.Pos(RADIUS);
+
+            arcTile.AddDrawQ(RADIUS, Color.red);
+
+            //계산영역 검사 
+            Vector3 clpt_newpos = firstTile._line.ClosestPoint(newPos);
+            if ((arcTile.inter_pt - closestPt).sqrMagnitude < (arcTile.inter_pt - clpt_newpos).sqrMagnitude)
+            {
+
+                arcTile.AddDrawQ(RADIUS, Color.yellow);
+
+                return true;
+            }
+
+            return false;
+        }
 
         public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool stop)
         {
@@ -2013,7 +2113,8 @@ namespace Proto_AI_2
             }
 
             //if (2 <= count && 2 <= interCount)
-            if (calc || 1 <= interCount)
+            //if (calc || 1 <= interCount)
+            if (calc)
             {
                 //터널통과 폭보다 크거나, 지형과 접촉이 있다면 정지시킨다
                 stop = true;
@@ -2030,7 +2131,7 @@ namespace Proto_AI_2
 
         public Vector3 Collision_StructLine_Test4(Vector3 oldPos, Vector3 srcPos, float RADIUS)
         {
-            CellSpace firstTile;
+            //CellSpace firstTile;
             //srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS , out firstTile); //벽통과 되는 경우 통과되기 전위치를 반환한다 
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
@@ -2148,6 +2249,7 @@ namespace Proto_AI_2
                 CellSpace structTile = GetStructTile(nextPos);
                 if (null != structTile)
                 {
+                    //DebugWide.LogBlue("tunnel 0 "+ nextPos + "   ---------------------------------- " + origin_3d + "  " + target_3d + "  " + count + " " + structTile._isTunnel);
                     //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.black);
                     //structTile.line.Draw(Color.white);
                     //DebugWide.AddDrawQ_Line(origin_3d, target_3d, Color.black);
@@ -2163,6 +2265,7 @@ namespace Proto_AI_2
             return null;
         }
 
+        //타일의 길이가 1 이라고 가정된 처리임 
         public bool GetTilePosition_Segment(int count, float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos)
         {
             next_pos = new Vector3(x2, 0, y2);
