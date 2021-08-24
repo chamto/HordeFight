@@ -20,6 +20,7 @@ namespace Proto_AI_2
         }
     }
 
+
     public class Proto_AI_2 : MonoBehaviour
     {
         public Transform _tr_target = null;
@@ -52,6 +53,7 @@ namespace Proto_AI_2
         public bool _Draw_BoundaryTile = false;
         public bool _Draw_ArcTile = false;
 
+        private bool _init = false;
 
         void Awake()
         {
@@ -59,11 +61,18 @@ namespace Proto_AI_2
             //Application.targetFrameRate = 60; //60 프레임 제한
 
             FrameTime.SetFixedFrame_FPS_30(); //30프레임 제한 설정
+
         }
 
-        // Use this for initialization
         void Start()
         {
+            Init(); 
+        }
+
+        void Init()
+        {
+            _init = true;
+
             _tr_target = GameObject.Find("tr_target").transform;
 
             _tr_test = GameObject.Find("Test").transform;
@@ -73,12 +82,13 @@ namespace Proto_AI_2
             _tr_test2_e = GameObject.Find("Test2_e").transform;
 
             _gridMgr = GridManager.Inst;
-            //_gridMgr.Init();
 
             _formationPoint._end = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
 
             //------
+
+            EntityMgr.list.Clear();
 
             //0
             Vehicle v = new Vehicle();
@@ -91,46 +101,46 @@ namespace Proto_AI_2
             //v._maxSpeed = 14;
 
             //1
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //2
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////2
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //-------------------
+            ////-------------------
 
-            //3
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////3
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////4
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(2f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //////4
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(2f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //5
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(3f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////5
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(3f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //==============================
 
@@ -151,6 +161,8 @@ namespace Proto_AI_2
         int ID = 0;
         void Update()
         {
+
+
             //Vector3 line_a = _tr_line_a.position - _tr_test.position;
             //Vector3 line_b = _tr_line_b.position - _tr_test.position;
             //float max_angle = Geo.AngleSigned_AxisY(line_a, line_b);
@@ -351,9 +363,10 @@ namespace Proto_AI_2
 
         private void OnDrawGizmos()
         {
+            if (false == _init) return;
             if (null == _tr_target) return;
 
-            Vehicle vh = EntityMgr.list[ID];
+            //Vehicle vh = EntityMgr.list[ID];
 
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
@@ -409,6 +422,8 @@ namespace Proto_AI_2
 
             if (true == _Draw_ArcTile)
                 _gridMgr.Draw_ArcTile();
+
+            _gridMgr.Draw_StructTile_ArcInfo(_tr_test.position);
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
