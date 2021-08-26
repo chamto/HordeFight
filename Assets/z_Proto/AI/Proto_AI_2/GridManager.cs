@@ -909,6 +909,17 @@ namespace Proto_AI_2
 
                     if (null == strTile)
                     {
+
+                        //BoundaryTileList boundaryTiles = GetBoundaryTileList(at.line_min_center);
+                        //if(null != boundaryTiles && 3 == boundaryTiles.Count)
+                        //{
+                        //    if (_cellSize_x < at.line_min_length)
+                        //    {
+                        //        //모서리타일과 터널타일이 붙어 있는 경우 추가하지 않는다 
+                        //        continue;
+                        //    }
+                        //}
+
                         strTile = new CellSpace();
                         //strTile._specifier = specifier;
                         strTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
@@ -1651,7 +1662,8 @@ namespace Proto_AI_2
             //bool linePassing = false;
             Vector3 newPos = srcPos;
             Vector3 nDir = (srcPos - oldPos).normalized;
-            CellSpace structTile = Find_FirstStructTile(oldPos, srcPos, nDir ,RADIUS, MAX_COUNT); //한개의 타일을 못벗어나 떨림현상이 발생하기 때문에 목표위치를 반지름 방향만큼 더 이동시킴
+            Vector3 findPos;
+            CellSpace structTile = Find_FirstStructTile(oldPos, srcPos, nDir ,RADIUS, out findPos); //한개의 타일을 못벗어나 떨림현상이 발생하기 때문에 목표위치를 반지름 방향만큼 더 이동시킴
             //CellSpace structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, RADIUS, MAX_COUNT); //MAX_COUNT 값이 클경우 멀리서 지형에 붙는 문제 발생
             DebugWide.LogBlue("<<<<<<<<---------------------- oPt: " + oldPos + " sPt: " + srcPos + " stTile: " + structTile);
             if (null != structTile)
@@ -2116,11 +2128,128 @@ namespace Proto_AI_2
             return false;
         }
 
+        public bool CalcArcFullyPos_Tunnel(CellSpace firstTile, Vector3 oldPos, Vector3 srcPos, float RADIUS, out Vector3 newPos)
+        {
+            newPos = srcPos;
+
+            if (firstTile._isTunnel)
+            {
+                //--- 터널타일 ---
+
+                //터널타일은 1~2가지 방향이 있으므로 , 객체가 있는 노멀방향을 찾아야 한다 
+                ArcTile arcTile = firstTile._tunnel_0;
+                if (Vector3.Dot(firstTile._tunnel_0.perpDir, (oldPos - firstTile._tunnel_0.line_min_center)) < 0)
+                {
+                    arcTile = firstTile._tunnel_1;
+                }
+                //DebugWide.LogBlue("tunnel 2---------------------- " + strNdir);
+
+                if (null == arcTile) return false; //oldPos 쪽에 있는 터널타일을 못구하면 처리하지 않는다 
+
+                //-------------------------------
+                newPos = arcTile.Pos(RADIUS);
+
+                Vector3 cp_0 = Line3.ClosestPoint(arcTile.line_0.origin, arcTile.line_0.direction, newPos);
+                Vector3 cpp_0 = Line3.ClosestPoint(arcTile.line_0.origin, arcTile.line_0.direction, srcPos);
+                Vector3 cp_1 = Line3.ClosestPoint(arcTile.line_1.origin, arcTile.line_1.direction, newPos);
+                Vector3 cpp_1 = Line3.ClosestPoint(arcTile.line_1.origin, arcTile.line_1.direction, srcPos);
+
+                //float l_cp_0 = (tunnel.inter_pt - cp_0).magnitude;
+                //float l_cpp_0 = (tunnel.inter_pt - cpp_0).magnitude;
+                //float l_cp_1 = (tunnel.inter_pt - cp_1).magnitude;
+                //float l_cpp_1 = (tunnel.inter_pt - cpp_1).magnitude;
+                //DebugWide.LogBlue("tunnel 3---- " + l_cp_0 + " ~ " + l_cpp_0 + " | " + l_cp_1 + " ~ " + l_cpp_1 + " / "  + srcPos + " / "+ cpp_0 + "  " + cpp_1);
+
+                //if (Vector3.Dot(strNdir, dir) < 0) //벽통과 버그 있음 
+                //계산영역 검사 
+                DebugWide.LogBlue("터널----------------- " + arcTile.line_min_center + "  " + arcTile.perpDir + "  " + srcPos + "  " + newPos);
+                if (Vector3.Dot(arcTile.perpDir, (srcPos - arcTile.line_min_center)) < 0)
+                {
+                    //터널타일을 넘어간 경우
+                    DebugWide.LogBlue("1.1-------------------------- ");
+                    return true;
+                }
+                else
+                {
+
+                    if (((arcTile.inter_pt - cp_0).sqrMagnitude >= (arcTile.inter_pt - cpp_0).sqrMagnitude) ||
+                            ((arcTile.inter_pt - cp_1).sqrMagnitude >= (arcTile.inter_pt - cpp_1).sqrMagnitude))
+                    {
+                        DebugWide.LogBlue("1.2--------------------------");
+                        return true;
+                    }
+                }
+            }
+
+
+            //----------------------
+
+            return false;
+        }
+
+        public bool CalcArcFullyPos_AcuteEdge(CellSpace firstTile, Vector3 oldPos, Vector3 srcPos, Vector3 closestPt, float RADIUS, out Vector3 newPos)
+        {
+            newPos = srcPos;
+
+            if (false  == firstTile._isTunnel)
+            {   //--- 모서리타일 ---
+
+                Vector3 dir = srcPos - oldPos;
+
+                if (null == firstTile._tunnel_0)
+                {
+                    DebugWide.LogBlue("2.0-------------------------- " + firstTile._pos3d_center);
+                    //모서리타일 정보가 없다 
+                    return false;
+                }
+
+                //방향을 향하는 모서리타일을 찾는다 
+                //-----------------------------
+                float max_dot_0 = Vector3.Dot(dir, -firstTile._tunnel_0.dir);
+                float max_dit_1 = -999999f;
+                if (null != firstTile._tunnel_1)
+                {
+                    max_dit_1 = Vector3.Dot(dir, -firstTile._tunnel_1.dir);
+                }
+
+                ArcTile arcTile = firstTile._tunnel_0;
+                if (max_dot_0 < max_dit_1)
+                {
+                    arcTile = firstTile._tunnel_1;
+                }
+                //-----------------------------
+
+
+                newPos = arcTile.Pos(RADIUS);
+
+                DebugWide.LogBlue("모서리----------------- " + arcTile.line_min_center + "  " + arcTile.perpDir + "  " + srcPos + "  " + newPos);
+
+                //계산영역 검사 
+                Vector3 clpt_newpos = firstTile._line.ClosestPoint(newPos);
+                if ((arcTile.inter_pt - closestPt).sqrMagnitude < (arcTile.inter_pt - clpt_newpos).sqrMagnitude)
+                {
+
+                    //arcTile.AddDrawQ(RADIUS, Color.yellow);
+                    DebugWide.LogRed("2.1-------------------------- " + arcTile.inter_pt + "  " + newPos);
+                    return true;
+                }
+            }
+
+
+
+            //----------------------
+
+            return false;
+        }
 
         public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool stop)
         {
             bool calc = false;
             srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS, out calc); //벽통과 되는 경우 통과되기 전위치를 반환한다 
+            //Vector3 nDir = VOp.Normalize(srcPos-oldPos);
+            //Vector3 calcPos;
+            //Find_FirstStructTile(oldPos, srcPos, nDir, RADIUS, out calcPos);
+            //srcPos = calcPos;
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
 
@@ -2307,12 +2436,15 @@ namespace Proto_AI_2
             return null;
         }
 
-        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , Vector3 nDir ,float radius, int MAX_COUNT)
+        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , Vector3 nDir ,float radius , out Vector3 newPos)
         {
+            int MAX_COUNT = 10;
+            newPos = target_3d;
 
             Vector3 targetDir = target_3d + nDir * radius; //목표위치에 반지름 길이방향을 더한다 , 최소검사영역을 계산하기 위함 
             Vector3 nextPos = origin_3d;
             Vector3 prev_center = ToPosition3D_Center(origin_3d);
+            Vector3 calcPos;
             CellSpace structTile = null;
             int count = 0;
             bool is_next = true;
@@ -2363,7 +2495,14 @@ namespace Proto_AI_2
                         if (null != arcTile && structTile._line_length < radius*2)
                         {
                             if(Vector3.Dot(strNdir, nDir) < 0)
+                            {
+                                if(true == CalcArcFullyPos_Tunnel(structTile, origin_3d, target_3d, radius, out calcPos))
+                                {
+                                    newPos = calcPos; 
+                                }
                                 return structTile;
+                            }
+
 
                         }
                     }
@@ -2378,22 +2517,17 @@ namespace Proto_AI_2
                         //float dot = Vector3.Dot(structTile._nDir, (target_3d - structTile._line_center));
                         //if (dot < 0)
 
-                        //if (Vector3.Dot(strNdir, dir) < 0)
+                        //if (Vector3.Dot(strNdir, nDir) < 0)
                         //{
-                        //    //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
-                        //    //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
-                        //    //if (Vector3.Cross(structTile._line.direction, dir).sqrMagnitude > 0.1f)
-                        //    {
+                        //    if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
                         //        return structTile;
-                        //    }
-
                         //}
 
                         //--------------
-
+                        bool calc = false;
                         Vector3 cp = structTile._line.ClosestPoint(target_3d);
                         Vector3 cpToSrc = target_3d - cp;
-
+                        Vector3 push_dir = VOp.Normalize(cpToSrc);
 
                         //지형타일을 넘어간 경우 
                         if (Vector3.Dot(strNdir, cpToSrc) < 0)
@@ -2405,7 +2539,9 @@ namespace Proto_AI_2
                             //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > 0.1f)
                             if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
                             {
-                                return structTile;
+                                calc = true;
+                                push_dir *= -1;
+                                //return structTile;
                             }
 
 
@@ -2414,6 +2550,17 @@ namespace Proto_AI_2
                         //지형과 원이 겹친경우 
                         if (cpToSrc.sqrMagnitude <= radius * radius)
                         {
+                            calc = true;
+                            //return structTile;
+                        }
+
+                        if(calc)
+                        {
+                            newPos = cp + push_dir * radius;
+                            if(true == CalcArcFullyPos_AcuteEdge(structTile, origin_3d, target_3d, cp,radius, out calcPos))
+                            {
+                                newPos = calcPos;
+                            }
                             return structTile;
                         }
 
