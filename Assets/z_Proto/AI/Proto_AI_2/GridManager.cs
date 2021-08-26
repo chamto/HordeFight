@@ -2116,6 +2116,7 @@ namespace Proto_AI_2
             return false;
         }
 
+
         public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool stop)
         {
             bool calc = false;
@@ -2246,8 +2247,8 @@ namespace Proto_AI_2
             bool is_next = true;
             while (is_next)
             {
-
-                is_next = GetTilePosition_Segment(count, _cellSize_x ,origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+                Vector3 cell_pos;
+                is_next = GetTilePosition_Segment(count, _cellSize_x ,origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos , out cell_pos);
 
                 //-------------------
 
@@ -2285,7 +2286,26 @@ namespace Proto_AI_2
             return null;
         }
 
+        public CellSpace Intersect_BoundaryTile(Vector3 tilePos, Vector3 orginPos, float RADIUS , int TEST_COUNT)
+        {
+            Vector3Int pos_2d = ToPosition2D(tilePos);
 
+            BoundaryTileList list = null;
+            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return null;
+
+            if (TEST_COUNT < list.Count) return null; 
+
+            foreach (BoundaryTile info in list)
+            {
+                if (Geo.IntersectLineSegment(orginPos, RADIUS, info.cell._line.origin, info.cell._line.last))
+                {
+                    return info.cell;
+                }
+
+            }
+
+            return null;
+        }
 
         public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , Vector3 nDir ,float radius, int MAX_COUNT)
         {
@@ -2293,13 +2313,14 @@ namespace Proto_AI_2
             Vector3 targetDir = target_3d + nDir * radius; //목표위치에 반지름 길이방향을 더한다 , 최소검사영역을 계산하기 위함 
             Vector3 nextPos = origin_3d;
             Vector3 prev_center = ToPosition3D_Center(origin_3d);
+            CellSpace structTile = null;
             int count = 0;
             bool is_next = true;
             while (is_next )
             {
-
+                Vector3 cell_pos;
                 //is_next = GetTilePosition_Segment(count, _cellSize_x , origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
-                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, targetDir.x, targetDir.z, prev_center, out nextPos);
+                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, targetDir.x, targetDir.z, prev_center, out nextPos , out cell_pos);
 
                 //-------------------
 
@@ -2310,11 +2331,20 @@ namespace Proto_AI_2
 
                 prev_center = nextPos;
 
-
+                //삐죽튀어나온 지형에서의 왔다갔다하는 문제를 해결하기 위해 추가
+                //cell_pos를 기준으로 지형과 교차여부를 판단한다 
+                structTile = Intersect_BoundaryTile(nextPos, cell_pos, radius, 1); //경계타일이 1개짜리만 처리한다 
+                if (null != structTile)
+                {
+                    DebugWide.LogBlue(count + " boundary 1---- " + structTile._pos3d_center);
+                }
+                else
+                {
+                    structTile = GetStructTile(nextPos);
+                }
                 //-------------------
 
-                //구조타일을 발견하면 바로 반환 
-                CellSpace structTile = GetStructTile(nextPos);
+
                 if (null != structTile)
                 {
                     DebugWide.LogGreen("$$$$$$$-------- " + "  " + count + "  " + structTile._isTunnel + "  " + nDir + "  " + structTile._pos3d_center);
@@ -2409,12 +2439,13 @@ namespace Proto_AI_2
             bool is_next = true;
             while (is_next)
             {
-
-                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+                Vector3 cell_pos;
+                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos , out cell_pos);
 
                 //-------------------
                 DebugWide.AddDrawQ_Circle(ToPosition3D_Center(nextPos), 0.4f, Color.gray);
                 DebugWide.AddDrawQ_Circle(nextPos, 0.5f, Color.gray);
+                DebugWide.AddDrawQ_Circle(cell_pos, 0.1f, Color.red);
                 //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.magenta);
                 //DebugWide.DrawLine(prev_center, nextPos, Color.red);
                 //DebugWide.AddDrawQ_Text(nextPos, Color.white, "" + count);
@@ -2440,10 +2471,10 @@ namespace Proto_AI_2
         }
 
         //타일의 길이가 1 이라고 가정된 처리임 
-        public bool GetTilePosition_Segment(int count, float cellSize ,float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos)
+        public bool GetTilePosition_Segment(int count, float cellSize ,float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos , out Vector3 cell_pos)
         {
             next_pos = new Vector3(x2, 0, y2); //처리 실패시 마지막 위치를 반환 
-
+            cell_pos = next_pos;
             if (0 == count)
             {
                 next_pos = prev_center;
@@ -2463,11 +2494,12 @@ namespace Proto_AI_2
 
                 prev_center.z += sign_y;
                 next_pos = prev_center;
-                //next_pos = prev_center + new Vector3(0, 0, sign_y);
+                cell_pos = next_pos;
 
                 if (next_pos.z * sign_y > y2 * sign_y)
                 {
                     next_pos = new Vector3(x2, 0, y2);
+                    cell_pos = next_pos;
                     return false;
                 }
 
@@ -2499,7 +2531,8 @@ namespace Proto_AI_2
                     y = (m * (x - x1) + y1);
 
                     //------------------
-                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+                    cell_pos = new Vector3(x, 0, y);
+                    Vector3 centerToTarget = cell_pos - prev_center;
                     Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
                     next_pos = prev_center + dir4n;
 
@@ -2533,7 +2566,8 @@ namespace Proto_AI_2
 
                     x = ((y - y1) / m + x1);
 
-                    Vector3 centerToTarget = new Vector3(x, 0, y) - prev_center;
+                    cell_pos = new Vector3(x, 0, y);
+                    Vector3 centerToTarget = cell_pos - prev_center;
                     //DebugWide.LogBlue(VOp.ToString(centerToTarget));
                     Vector3 dir4n = Misc.GetDir4_Normal3D_AxisY(centerToTarget);
                     next_pos = prev_center + dir4n;
