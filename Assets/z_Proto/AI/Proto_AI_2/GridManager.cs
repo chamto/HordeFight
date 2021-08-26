@@ -1644,16 +1644,16 @@ namespace Proto_AI_2
 
         public Vector3 Collision_FirstStructTile(Vector3 oldPos, Vector3 srcPos, float RADIUS , out bool calc)
         {
-            const int MAX_COUNT = 5; //2개 이상의 타일을 검사시 순간이동 현상발생  
+            const int MAX_COUNT = 10; //2개 이상의 타일을 검사시 순간이동 현상발생  
             //도달할 수 없는 위치인데도 경로상의 타일영역에 들어오는 첫 번째 구조타일을 무조건 가져오기 때문에 생기는 문제임 
 
             calc = false;
             //bool linePassing = false;
             Vector3 newPos = srcPos;
-            Vector3 dir = srcPos - oldPos;
-            //structTile = Find_FirstStructTile(oldPos, srcPos, MAX_COUNT); //이렇게 사용하면 안됨 , 한개타일을 못 벗어나는 길이의 경우 경로상의 구조타일을 못 구한다 
-            CellSpace structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, RADIUS, MAX_COUNT);
-            DebugWide.LogBlue("---------------------- " + structTile);
+            Vector3 nDir = (srcPos - oldPos).normalized;
+            CellSpace structTile = Find_FirstStructTile(oldPos, srcPos, nDir ,RADIUS, MAX_COUNT); //한개의 타일을 못벗어나 떨림현상이 발생하기 때문에 목표위치를 반지름 방향만큼 더 이동시킴
+            //CellSpace structTile = Find_FirstStructTile(oldPos, oldPos + dir * 100, RADIUS, MAX_COUNT); //MAX_COUNT 값이 클경우 멀리서 지형에 붙는 문제 발생
+            DebugWide.LogBlue("<<<<<<<<---------------------- oPt: " + oldPos + " sPt: " + srcPos + " stTile: " + structTile);
             if (null != structTile)
             {
                 //DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.5f, Color.green);
@@ -1678,7 +1678,7 @@ namespace Proto_AI_2
 
 
 
-                DebugWide.LogBlue("  Collision_FirstStructTile 1 : " + "  old : " + oldPos + " src : " + srcPos + "  len : " + dir.magnitude);
+                DebugWide.LogBlue("  Collision_FirstStructTile 1 : " + "  old : " + oldPos + " src : " + srcPos + "  len : " + ((srcPos - oldPos)).magnitude);
 
                 //지형타일을 넘어간 경우 
                 //if (Vector3.Dot(dir, cpToSrc) > 0) //잘못된 계산 
@@ -1688,8 +1688,9 @@ namespace Proto_AI_2
                 {
                     //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
                     //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
-                    DebugWide.LogRed("calc - ================================================== " + Vector3.Cross(structTile._line.direction, dir).sqrMagnitude);
-                    if (Vector3.Cross(structTile._line.direction, dir).sqrMagnitude > 0.1f)
+                    DebugWide.LogRed("calc - ================================================== " + Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude);
+                    //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > 0.1f)
+                    if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon) //nDir 이 노멀값이기 때문에 epsilon과 비교한다 
                     {
                         //linePassing = true;
                         calc = true;
@@ -1708,8 +1709,9 @@ namespace Proto_AI_2
                     calc = true;
                 }
 
+
                 //터널정보가 있는 경우 
-                if(null != structTile._tunnel_0)
+                if (null != structTile._tunnel_0)
                 {
                     calc = true; 
                 }
@@ -2245,7 +2247,7 @@ namespace Proto_AI_2
             while (is_next)
             {
 
-                is_next = GetTilePosition_Segment(count, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+                is_next = GetTilePosition_Segment(count, _cellSize_x ,origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
 
                 //-------------------
 
@@ -2283,17 +2285,21 @@ namespace Proto_AI_2
             return null;
         }
 
-        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , float radius, int MAX_COUNT)
+
+
+        public CellSpace Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d , Vector3 nDir ,float radius, int MAX_COUNT)
         {
-            Vector3 dir = target_3d - origin_3d;
+
+            Vector3 targetDir = target_3d + nDir * radius; //목표위치에 반지름 길이방향을 더한다 , 최소검사영역을 계산하기 위함 
             Vector3 nextPos = origin_3d;
             Vector3 prev_center = ToPosition3D_Center(origin_3d);
             int count = 0;
             bool is_next = true;
-            while (is_next)
+            while (is_next )
             {
 
-                is_next = GetTilePosition_Segment(count, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+                //is_next = GetTilePosition_Segment(count, _cellSize_x , origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, targetDir.x, targetDir.z, prev_center, out nextPos);
 
                 //-------------------
 
@@ -2311,14 +2317,23 @@ namespace Proto_AI_2
                 CellSpace structTile = GetStructTile(nextPos);
                 if (null != structTile)
                 {
-
-                    if(structTile._isTunnel)
+                    DebugWide.LogGreen("$$$$$$$-------- " + "  " + count + "  " + structTile._isTunnel + "  " + nDir + "  " + structTile._pos3d_center);
+                    Vector3 strNdir = structTile._nDir;
+                    if (structTile._isTunnel)
                     {
-                        //터널타일인 경우 , 터널의 최소폭 길이로 통과가능한지 검사한다 
-                        if (structTile._line_length < radius*2)
-                        {
 
-                            return structTile;
+                        ArcTile arcTile = structTile._tunnel_0;
+                        if (Vector3.Dot(structTile._tunnel_0.perpDir, (origin_3d - structTile._tunnel_0.line_min_center)) < 0)
+                        {
+                            strNdir *= -1;
+                            arcTile = structTile._tunnel_1;
+                        }
+
+                        //터널타일인 경우 , 터널의 최소폭 길이로 통과가능한지 검사한다 
+                        if (null != arcTile && structTile._line_length < radius*2)
+                        {
+                            if(Vector3.Dot(strNdir, nDir) < 0)
+                                return structTile;
 
                         }
                     }
@@ -2331,18 +2346,48 @@ namespace Proto_AI_2
 
                         //선분을 통과하는 타일만 선택 
                         //float dot = Vector3.Dot(structTile._nDir, (target_3d - structTile._line_center));
-                        //DebugWide.LogGreen("$$$$$$$-------- " + dot + "  " + structTile._line_center);
                         //if (dot < 0)
+
+                        //if (Vector3.Dot(strNdir, dir) < 0)
+                        //{
+                        //    //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
+                        //    //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
+                        //    //if (Vector3.Cross(structTile._line.direction, dir).sqrMagnitude > 0.1f)
+                        //    {
+                        //        return structTile;
+                        //    }
+
+                        //}
+
+                        //--------------
+
+                        Vector3 cp = structTile._line.ClosestPoint(target_3d);
+                        Vector3 cpToSrc = target_3d - cp;
+
+
+                        //지형타일을 넘어간 경우 
+                        if (Vector3.Dot(strNdir, cpToSrc) < 0)
                         {
                             //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
                             //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
-                            //if (Vector3.Cross(structTile._line.direction, dir).sqrMagnitude > 0.1f)
+                            float sqrCr = Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude;
+                            DebugWide.LogBlue(" !! " + sqrCr);
+                            //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > 0.1f)
+                            if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
                             {
                                 return structTile;
                             }
 
 
                         }
+
+                        //지형과 원이 겹친경우 
+                        if (cpToSrc.sqrMagnitude <= radius * radius)
+                        {
+                            return structTile;
+                        }
+
+                        //--------------
 
                     }
 
@@ -2355,10 +2400,49 @@ namespace Proto_AI_2
             return null;
         }
 
-        //타일의 길이가 1 이라고 가정된 처리임 
-        public bool GetTilePosition_Segment(int count, float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos)
+        public CellSpace Draw_Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
         {
-            next_pos = new Vector3(x2, 0, y2);
+
+            Vector3 nextPos = origin_3d;
+            Vector3 prev_center = ToPosition3D_Center(origin_3d);
+            int count = 0;
+            bool is_next = true;
+            while (is_next)
+            {
+
+                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+
+                //-------------------
+                DebugWide.AddDrawQ_Circle(ToPosition3D_Center(nextPos), 0.4f, Color.gray);
+                DebugWide.AddDrawQ_Circle(nextPos, 0.5f, Color.gray);
+                //DebugWide.DrawCube(nextPos, new Vector3(1f, 0, 1f), Color.magenta);
+                //DebugWide.DrawLine(prev_center, nextPos, Color.red);
+                //DebugWide.AddDrawQ_Text(nextPos, Color.white, "" + count);
+
+                prev_center = nextPos;
+
+
+                //-------------------
+
+                //구조타일을 발견하면 바로 반환 
+                CellSpace structTile = GetStructTile(nextPos);
+                if (null != structTile)
+                {
+                    DebugWide.AddDrawQ_Circle(nextPos, 0.6f, Color.red);
+                    return structTile;
+                }
+
+                count++;
+                if (count > MAX_COUNT) break; //최대검사 횟수 검사
+            }
+
+            return null;
+        }
+
+        //타일의 길이가 1 이라고 가정된 처리임 
+        public bool GetTilePosition_Segment(int count, float cellSize ,float x1, float y1, float x2, float y2, Vector3 prev_center, out Vector3 next_pos)
+        {
+            next_pos = new Vector3(x2, 0, y2); //처리 실패시 마지막 위치를 반환 
 
             if (0 == count)
             {
@@ -2404,7 +2488,8 @@ namespace Proto_AI_2
                 }
                 else
                 {
-                    x += 1;
+                    //x += 1; //타일길이
+                    x += cellSize;
                 }
 
 
@@ -2439,7 +2524,8 @@ namespace Proto_AI_2
                 }
                 else
                 {
-                    y += 1;
+                    //y += 1; //타일길이
+                    y += cellSize;
                 }
 
                 if (y * sign_y <= y2 * sign_y)
@@ -2603,6 +2689,7 @@ namespace Proto_AI_2
                 int count = 0;
                 //while (x <= x2)
                 while (x*sign_x <= x2*sign_x)
+                //while(true)
                 {
                     count++;
                     if (count > 20) return;
@@ -2611,10 +2698,10 @@ namespace Proto_AI_2
                     y = (m * (x - x1) + y1);
 
 
-                    Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
+                    //Vector3 origin_center = ToPosition3D_Center(new Vector3(x, 0, y));
                     //DebugWide.DrawCube(origin_center, new Vector3(1f, 0, 1f), Color.green);
-                    //DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
-                    DebugWide.DrawCircle(origin_center, 0.2f, Color.green);
+                    DebugWide.DrawCircle(new Vector3(x, 0, y), 0.1f, Color.green);
+                    //DebugWide.DrawCircle(origin_center, 0.2f, Color.green);
                     //DebugWide.DrawCircle(prev_center, 0.4f, Color.blue);
                     DebugWide.PrintText(prev_center, Color.green, "" + count);
 
@@ -2629,6 +2716,8 @@ namespace Proto_AI_2
 
                     prev_center = nextTile;
 
+                    //if (x * sign_x > x2 * sign_x || y > y2)
+                        //return;
 
                     //오른쪽 또는 왼쪽 방향인 경우만 x값 증가  
                     if (dir4n.x > 0 || dir4n.x < 0)

@@ -249,7 +249,7 @@ namespace Proto_AI_2
 
                 bool stop;
                 //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop));
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos,v._radius, out stop));
                 //Vector3 newPos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop);
                 //v._stop = stop;
 
@@ -373,11 +373,12 @@ namespace Proto_AI_2
 
             //DebugWide.DrawLine(vh._oldPos, vh._pos, Color.cyan);
 
-            //_gridMgr.Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 20);
+            _gridMgr.Draw_Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 10);
 
             //_gridMgr.Find_FirstStructTile(vh._oldPos, vh._oldPos + (vh._pos - vh._oldPos) * 100 , 5);
 
             //_gridMgr.Draw_line_equation3(_tr_test.position.x, _tr_test.position.z, _tr_line_a.position.x, _tr_line_a.position.z);
+
 
             //CellSpace cell = _gridMgr.GetStructTile(_tr_test2_s.position);
             //if(null != cell)
