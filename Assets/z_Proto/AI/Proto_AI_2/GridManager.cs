@@ -2893,12 +2893,16 @@ namespace Proto_AI_2
                         Vector3 cpToSrc = target_3d - cp;
                         Vector3 push_dir = VOp.Normalize(cpToSrc);
 
+                        DebugWide.AddDrawQ_Line(cp, target_3d, Color.magenta);
 
-                        //속도가 15일때 push_dir 이 0이 된다. 
-                        if (Misc.IsZero(cpToSrc))
+                        DebugWide.LogBlue("!!! cpToSrc 1: " + cpToSrc + "  " + cpToSrc.sqrMagnitude + "  " + push_dir.sqrMagnitude);
+                        if (Misc.IsZero(cpToSrc, 0.1f)) //제곱의 최소값 보다 작으면 지형방향 지정한다. 삐죽하게 튀어나온 부분에서 떠는 문제 방지용 
                         {
+                            //속도가 15일때 cpToSrc 이 0 이 되는 경우가 있다. 지형의 방향지정  
                             push_dir = structTile._nDir;
-                            DebugWide.LogBlue("speed 15!!!");
+                            //push_dir = Misc.GetDir8_Normal3D(cpToSrc);
+                            //push_dir = Misc.GetDir4_Normal3D_AxisY(cpToSrc);
+                            DebugWide.LogBlue("!!! cpToSrc 2: " + push_dir);
                         }
 
                         //지형타일을 넘어간 경우 
@@ -2907,13 +2911,14 @@ namespace Proto_AI_2
                             //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
                             //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
                             float sqrCr = Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude;
-                            DebugWide.LogBlue(" !! " + sqrCr);
+                            DebugWide.LogBlue(" !! sqrCr 1: " + sqrCr);
                             //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > 0.1f)
-                            if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
+                            //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
                             {
                                 calc = true;
                                 push_dir *= -1;
                                 //return structTile;
+                                DebugWide.LogBlue(" !! sqrCr 2: " + push_dir);
                             }
                         }
 
