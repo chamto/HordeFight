@@ -311,6 +311,30 @@ namespace UtilGS9
             }
         }
 
+        public Vector3 ClosestPoint(Vector3 point , out bool inRange)
+        {
+            inRange = false;
+            Vector3 w = point - origin;
+            Vector3 dir = last - origin;
+            float proj = Vector3.Dot(w, dir);
+            // endpoint 0 is closest point
+            if (proj <= 0.0f)
+                return origin;
+            else
+            {
+                float vsq = Vector3.Dot(dir, dir);
+                // endpoint 1 is closest point
+                if (proj >= vsq)
+                    return last;
+                // else somewhere else in segment
+                else
+                {
+                    inRange = true;
+                    return origin + (proj / vsq) * dir;
+                }
+
+            }
+        }
 
         // ---------------------------------------------------------------------------
         // Returns the closest points between two line segments.
@@ -853,7 +877,7 @@ namespace UtilGS9
         public LineSegment3 mSegment;
         public float mRadius;
 
-        bool Intersect(ref Capsule other )
+        public bool Intersect(ref Capsule other )
         {
             //캡슐과 선분 충돌검사로 변형해 검사한다 , 소스캡슐의 반지름에 대상캡슐의 반지름을 더해서 대상캡슐의 선분값으로 비교가능하게 만든다. 
             float radiusSum = mRadius + other.mRadius;
@@ -865,7 +889,7 @@ namespace UtilGS9
             return (distancesq <= radiusSum* radiusSum );
         }
 
-        bool Intersect(ref LineSegment3 segment )
+        public bool Intersect(ref LineSegment3 segment )
         {
             //선분과 선분의 최소거리는 서로의 직각인 선분이다 , 직각이 되는 선분의 길이를 캡슐의 반지름과 비교한다 
             // test distance between segment and segment vs. radius
@@ -879,7 +903,7 @@ namespace UtilGS9
         // ---------------------------------------------------------------------------
         // Return signed distance between capsule and plane
         //-----------------------------------------------------------------------------
-        float Classify(ref Plane plane )
+        public float Classify(ref Plane plane )
         {
             float s0 = plane.Test(mSegment.GetEndpoint0());
             float s1 = plane.Test(mSegment.GetEndpoint1());
@@ -897,6 +921,18 @@ namespace UtilGS9
 
             // return signed distance
             return (Math.Abs(s0) < Mathf.Abs(s1) ? s0 : s1 ); //!! 캡슐뚜껑의 반지름 길이를 더하지 않고 반환하고 있다 
+        }
+
+        public void AddDrawQ(Color color)
+        {
+            Vector3 dirRight = Vector3.Cross(Vector3.up, mSegment.direction);
+            dirRight = VOp.Normalize(dirRight);
+
+            DebugWide.AddDrawQ_Circle(mSegment.origin, mRadius, color);
+            DebugWide.AddDrawQ_Circle(mSegment.last, mRadius, color);
+
+            DebugWide.AddDrawQ_Line(mSegment.origin + dirRight * mRadius, mSegment.last + dirRight * mRadius, color);
+            DebugWide.AddDrawQ_Line(mSegment.origin - dirRight * mRadius, mSegment.last - dirRight * mRadius, color);
         }
     }
 
