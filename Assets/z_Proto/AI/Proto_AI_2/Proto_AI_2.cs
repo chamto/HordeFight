@@ -465,7 +465,7 @@ namespace Proto_AI_2
         {
 
             //도착시 종료 
-            if ((_end - _pos).sqrMagnitude < 3)
+            if ((_end - _pos).sqrMagnitude < 1)
             {
                 //특정거리 안에서 이동없이 방향전환 
                 _rotation = Quaternion.FromToRotation(Vector3.forward, _end - _pos);
@@ -864,7 +864,8 @@ namespace Proto_AI_2
 
                 //---------------------
 
-                if (curSpeed > 0)
+                //if (curSpeed > 0)
+                //if ((_worldOffsetPos - ToFuture).sqrMagnitude > _radius * _radius)
                 {
 
                     if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)

@@ -2291,7 +2291,7 @@ namespace Proto_AI_2
                         srcPos = cp + n * RADIUS;
 
                         //DebugWide.LogBlue(count + "  boundary  " + cellpos + "  cp: " + cp + "  " + n + "  " + srcPos);
-                        DebugWide.AddDrawQ_Line(cp, srcPos, Color.black);
+                        //DebugWide.AddDrawQ_Line(cp, srcPos, Color.black);
 
                     }
 
@@ -2776,7 +2776,7 @@ namespace Proto_AI_2
             int count = 0;
             bool is_next = true;
 
-            DebugWide.LogGreen("Find ----------- " + origin_3d + "  " + target_3d + "  " + nDir + "   " + targetPlus);
+            DebugWide.LogGreen("Find ----------- " + origin_3d + "  " + target_3d + "  " + nDir + "   " + targetPlus + "  " + (origin_3d-target_3d).magnitude);
 
             while (is_next)
             {
@@ -2810,16 +2810,20 @@ namespace Proto_AI_2
                 }
 
                 //경로 교차 검사  
+                //bool is_intersect = false;
                 if (null != structTile )
                 {
-                    DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.4f, Color.blue);
-                    if (false == capsule.Intersect(ref structTile._line))
-                    {
-                        //structTile = null; //교차검사 필요하지 않음 , 아래에서 반지름 검사함 
+                    //DebugWide.AddDrawQ_Circle(structTile._pos3d_center, 0.4f, Color.blue);
+                    DebugWide.AddDrawQ_Line(structTile._line.origin, structTile._line.last, Color.blue);
+                    //if (false == capsule.Intersect(ref structTile._line))
+                    //{
+                    //    structTile = null; //교차검사 필요하지 않음 , 아래에서 반지름 검사함 
 
-                    }
-                    else
+                    //}
+                    //else
                     {
+                        //capsule.Intersect 를 검사를 통과한 타일을 사용할 경우 벽에 붙어서 벗어나지 못하는 문제가 발생한다. 쓰지말기 
+                        //is_intersect = true; //Intersect_BoundaryTile 로 찾아낸 타일은 100% 충돌하는 타일이다. 계산이 안되면 다른타일을 찾지 말고 종료해야함 
                         //capsule.AddDrawQ(Color.gray);
                         DebugWide.LogRed(count + " inter ---- " + "  st: " + structTile._pos3d_center + "  npt:" + nextPos + "  tPlus:" + targetPlus + "  " + is_next);
                     }
@@ -2889,24 +2893,39 @@ namespace Proto_AI_2
 
                         //--------------
                         bool calc = false;
-                        Vector3 cp = structTile._line.ClosestPoint(target_3d);
+                        bool inRange = false;
+                        //Vector3 cp = structTile._line.ClosestPoint(target_3d);
+                        Vector3 cp = structTile._line.ClosestPoint(target_3d, out inRange);
                         Vector3 cpToSrc = target_3d - cp;
                         Vector3 push_dir = VOp.Normalize(cpToSrc);
+                        //Vector3 push_dir = Misc.GetDir8_Normal3D(cpToSrc);
 
-                        DebugWide.AddDrawQ_Line(cp, target_3d, Color.magenta);
+                        DebugWide.AddDrawQ_Line(origin_3d, origin_3d + nDir * 5, Color.red);
+                        DebugWide.AddDrawQ_Line(cp, target_3d, Color.green);
 
-                        DebugWide.LogBlue("!!! cpToSrc 1: " + cpToSrc + "  " + cpToSrc.sqrMagnitude + "  " + push_dir.sqrMagnitude);
-                        if (Misc.IsZero(cpToSrc, 0.1f)) //제곱의 최소값 보다 작으면 지형방향 지정한다. 삐죽하게 튀어나온 부분에서 떠는 문제 방지용 
+
+                        DebugWide.LogBlue("!!! cpToSrc 1: " + VOp.ToString(cpToSrc) + "  " + cpToSrc.sqrMagnitude + "  " + push_dir);
+                        //if (Misc.IsZero(cpToSrc, 0.1f)) //제곱의 최소값 보다 작으면 지형방향 지정한다. 삐죽하게 튀어나온 부분에서 떠는 문제 방지용 
+                        if (Misc.IsZero(cpToSrc))
                         {
                             //속도가 15일때 cpToSrc 이 0 이 되는 경우가 있다. 지형의 방향지정  
                             push_dir = structTile._nDir;
+                            //push_dir = VOp.Normalize(structTile._nDir + push_dir);
                             //push_dir = Misc.GetDir8_Normal3D(cpToSrc);
                             //push_dir = Misc.GetDir4_Normal3D_AxisY(cpToSrc);
-                            DebugWide.LogBlue("!!! cpToSrc 2: " + push_dir);
+                            DebugWide.LogRed("!!! cpToSrc 2: " + push_dir + "  " + cpToSrc.magnitude);
+
+
+                            //Vector3 cp_a, cp_b;
+                            //LineSegment3.ClosestPoints(out cp_a, out cp_b, structTile._line, new LineSegment3(origin_3d, target_3d));
+                            //Line3.ClosestPoints(out cp_a, out cp_b, new Line3(structTile._line.origin, structTile._line.direction), new Line3(origin_3d, nDir));
+                            //newPos = cp_a + -nDir * radius;
+                            //return structTile;
                         }
 
                         //지형타일을 넘어간 경우 
-                        if (Vector3.Dot(strNdir, cpToSrc) < 0)
+                        //if (Vector3.Dot(strNdir, cpToSrc) < 0)
+                        if (Vector3.Dot(strNdir, push_dir) < 0) //바뀐방향으로 검사해야함 
                         {
                             //지형과 같은 방향일 때는 처리하지 않는다. 적당히 작은값과 비교하여 걸러낸다 
                             //지형과 같은 방향일 때 방향이 바뀌어 튀는 현상 발생함 
@@ -2916,11 +2935,27 @@ namespace Proto_AI_2
                             //if (Vector3.Cross(structTile._line.direction, nDir).sqrMagnitude > float.Epsilon)
                             {
                                 calc = true;
-                                push_dir *= -1;
+
                                 //return structTile;
-                                DebugWide.LogBlue(" !! sqrCr 2: " + push_dir);
+                                if (true == inRange)
+                                {
+                                    push_dir *= -1;
+
+                                    DebugWide.LogBlue(" !! sqrCr 2: " + push_dir);
+                                }
+                                else
+                                {
+                                    //목표위치가 선분의 범위를 벗어난 경우 
+                                    //삐죽튀어나온 부분에서 떠는 문제를 막기위해 push_dir 방향을 바꾸지 않고 사용한다 
+
+                                    //push_dir = Misc.GetDir8_Normal3D(push_dir); //이렇게까지 할 필요 없음 
+
+                                    DebugWide.LogBlue(" !! sqrCr 3: " + push_dir);
+                                }
+
                             }
                         }
+
 
                         //지형과 원이 겹친경우 
                         if (cpToSrc.sqrMagnitude <= radius * radius)
@@ -2938,7 +2973,7 @@ namespace Proto_AI_2
                                 newPos = calcPos;
                             }
 
-                            DebugWide.AddDrawQ_Line(cp, newPos, Color.blue);
+                            DebugWide.AddDrawQ_Circle(newPos, 0.08f, Color.red);
                             DebugWide.LogGreen("%%%%% -  " + strNdir + "  " + push_dir + "   " + newPos + "  " + cp);
                             return structTile;
                         }
