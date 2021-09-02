@@ -1937,7 +1937,7 @@ namespace UtilGS9
         static public bool IsZero(Vector2 v2)
         {
             float value = v2.x * v2.x + v2.y * v2.y; //내적의 값이 0에 가까운지 검사 
-            if (0 > value) value *= -1f;
+            //if (0 > value) value *= -1f;
             if (Vector3.kEpsilon < value)
                 return false;
 
@@ -1948,7 +1948,7 @@ namespace UtilGS9
         static public bool IsZero(Vector3 v3)
         {
             float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
-            if (0 > value) value *= -1f;
+            //if (0 > value) value *= -1f;
             if (Vector3.kEpsilon < value)
                 return false;
 
@@ -1959,7 +1959,7 @@ namespace UtilGS9
         static public bool IsZero(Vector3 v3, float epsilon)
         {
             float value = v3.x * v3.x + v3.y * v3.y + v3.z * v3.z; //내적의 값이 0에 가까운지 검사 
-            if (0 > value) value *= -1f;
+            //if (0 > value) value *= -1f; //제곱은 양수만 나오므로 이 검사가 필요하지 않음  
             if (epsilon < value)
                 return false;
 
