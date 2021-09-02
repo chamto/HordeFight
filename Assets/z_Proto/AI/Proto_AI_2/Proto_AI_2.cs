@@ -241,15 +241,15 @@ namespace Proto_AI_2
                 //동굴벽과 캐릭터 경계원 충돌처리 
 
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
-                DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
+                //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
 
                 //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
 
                 //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
 
-                bool stop;
+                //bool stop;
                 //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos,v._radius, out stop));
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos,v._radius));
                 //Vector3 newPos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop);
                 //v._stop = stop;
 
@@ -373,7 +373,7 @@ namespace Proto_AI_2
 
             //DebugWide.DrawLine(vh._oldPos, vh._pos, Color.cyan);
 
-            _gridMgr.Draw_Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 10);
+            //_gridMgr.Draw_Find_FirstStructTile(_tr_test.position, _tr_line_a.position , 10);
 
             //_gridMgr.Find_FirstStructTile(vh._oldPos, vh._oldPos + (vh._pos - vh._oldPos) * 100 , 5);
 
