@@ -2242,14 +2242,16 @@ namespace Proto_AI_2
             return false;
         }
 
-        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS)
+        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS, out bool stop)
         {
 
-            //bool calc = false;
-            //srcPos = Collision_FirstStructTile(oldPos, srcPos, RADIUS, out calc); //벽통과 되는 경우 통과되기 전위치를 반환한다 
+            stop = false;
 
             Vector3 calcPos;
-            Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
+            if(null != Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos))
+            {
+                stop = true; 
+            }
             srcPos = calcPos;
 
             Vector3Int pos_2d = ToPosition2D(srcPos);

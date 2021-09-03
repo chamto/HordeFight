@@ -101,46 +101,56 @@ namespace Proto_AI_2
             //v._maxSpeed = 14;
 
             //1
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////2
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(-1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //2
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(-1f, 0, -1f);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////-------------------
+            //-------------------
 
-            ////3
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //3
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(1f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            //////4
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(2f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            ////4
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(2f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
-            //v = new Vehicle();
-            //id = EntityMgr.Add(v);
-            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            //5
+            v = new Vehicle();
+            id = EntityMgr.Add(v);
+            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            v._leader = _formationPoint;
+            v._offset = new Vector3(3f, 0, 0);
+            v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            for(int i=0;i<30;i++)
+            {
+                v = new Vehicle();
+                id = EntityMgr.Add(v);
+                v.Init(id, 0.5f, new Vector3(17, 0, 12));
+                v._mode = SteeringBehavior.eType.arrive;
+                v._target = new Vector3(17, 0, 12);
+
+        }
 
             //==============================
 
@@ -203,8 +213,8 @@ namespace Proto_AI_2
                 v._anglePerSecond = _anglePerSecond;
                 v._weight = _weight;
                 v._isNonpenetration = _isNonpenetration;
-                //v._stop = false;
                 v.Update(deltaTime);
+                //v._stop = false;
 
             }
 
@@ -236,29 +246,16 @@ namespace Proto_AI_2
                 //==========================================
                 //동굴벽과 캐릭터 충돌처리 
 
-                //객체의 반지름이 <0.1~0.49 , 0.95> 범위에 있어야 한다.
-                //float maxR = Mathf.Clamp(v._radius, 0, 1); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
-                //동굴벽과 캐릭터 경계원 충돌처리 
+                //객체의 반지름이 <0.1 ~ 0.99> 범위에 있어야 한다.
+                //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
 
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
                 //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
 
-                //v._pos = _gridMgr.Collision_StructLine(v._pos, maxR);
 
-                //v._pos = _gridMgr.Collision_FirstStructTile(v._oldPos, v._pos, v._radius);
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
 
-                //bool stop;
-                //v._pos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius , out stop);
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos,v._radius));
-                //Vector3 newPos = _gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out stop);
-                //v._stop = stop;
-
-                //지형충돌 상태고, 진형위치가 원의 범위 밖에 있을 때만 정지시킨다 - 떨림방지처리 
-                //if(stop && (v._worldOffsetPos - v._oldPos).sqrMagnitude > v._radius*v._radius)
-                //{
-                //    v.SetPos(newPos);
-                //}
-
+                
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
 
                 //==========================================
@@ -598,7 +595,12 @@ namespace Proto_AI_2
         public void Update(float deltaTime)
         {
             _oldPos = _pos;
-            _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+            _worldOffsetPos = _target;
+            if (null != _leader)
+            {
+                _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace 
+            }
+
 
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
@@ -700,55 +702,29 @@ namespace Proto_AI_2
 
                 //-----------
                 float curSpeed = _maxSpeed;
-                if(false)
+                //if(false)
                 {
                     float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
                     Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
                     float sum_r = _radius + _radius;
                     Vector3 pos_1 = _pos + _velocity.normalized * _radius;
                     Vector3 pos_2 = _pos + findDir * _radius;
-                    //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _velocity.normalized * 5, 5);
+
                     CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
                     CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
 
-                    bool interCell = false;
-                    BoundaryTileList findBT_list = GridManager.Inst.GetBoundaryTileList(_pos);
-                    if (null != findBT_list)
-                    {
-                        foreach (BoundaryTile boundary in findBT_list)
-                        {
-                            if ((boundary.cell._line_center - pos_1).sqrMagnitude < _radius * _radius)
-                            {
-                                DebugWide.AddDrawQ_Line(boundary.cell._line.origin, boundary.cell._line.last, Color.red);
-                                interCell = true;
-                                break;
-                            }
-                        }
-                    }
-
-
-                    //if (null != findStr && (findStr._line_center - _pos).sqrMagnitude < sum_r * sum_r)
-                    //{
-                    //    DebugWide.AddDrawQ_Line(_pos, _pos+_velocity.normalized * 5, Color.red);
-                    //    curSpeed = 0;
-                    //}
-
-                    if (interCell)
-                    {
-                        //curSpeed = 0;
-                    }
-                    else if (null == findCell_1 ||
+                    if (null == findCell_1 ||
                     (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
                     {
                         curSpeed = _maxSpeed;
                     }
-                    else if (null == findCell_2 ||
-                        (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
-                    {
-                        curSpeed = _maxSpeed;
-                        _velocity = findDir;
-                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    }
+                    //else if (null == findCell_2 ||
+                    //    (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //    _velocity = findDir;
+                    //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    //}
                     else
                     {
                         __findNum = Misc.RandInt(1, 4);
@@ -758,19 +734,19 @@ namespace Proto_AI_2
 
                 if(false)
                 {
-                    //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
-                    //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                    //if (null != findCell)
-                    //{
-                    //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
-                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                    //    float sum_r = findCell._head._radius + _radius;
-                    //    //float sum_r = findCell._head._radius + 0.3f;
-                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                    //    {
-                    //        curSpeed = 0;
-                    //    }
-                    //}
+                    Vector3 feeler_pos = _pos + _rotation * _feelers[0];
+                    CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                    if (null != findCell)
+                    {
+                        feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
+                        DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                        float sum_r = findCell._head._radius + _radius;
+                        //float sum_r = findCell._head._radius + 0.3f;
+                        if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                        {
+                            curSpeed = 0;
+                        }
+                    }
                     //feeler_pos = _pos + _rotation * _feelers[1];
                     //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
                     //if (null != findCell)
@@ -799,31 +775,11 @@ namespace Proto_AI_2
                     //}
                 }
 
-                //DebugWide.LogBlue(_heading);
-                //CellSpace findStr = GridManager.Inst.Find_FirstStructTile(_pos, _pos + _heading * 5, 2);
-                //if(null != findStr)
-                //{
-                //    DebugWide.AddDrawQ_Circle(findStr._pos3d_center, 0.5f, Color.green);
-
-                //    if (findStr._isTunnel)
-                //    {
-                //        if (findStr._line_length < _radius * 2)
-                //        {
-                //            curSpeed = 0;
-                //        }
-                //    }
-                //    else
-                //    {
-                //        curSpeed = 0;
-                //    }
-
-                //}
-
                 //-----------
-                //if (_stop) 
-                //{
-                //    curSpeed = 0; //속도변화에 따른 떨림의 원인이 된다
-                //}
+                if (_stop) 
+                {
+                    curSpeed = 0.1f; //속도변화에 따른 떨림의 원인이 된다
+                }
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
@@ -864,7 +820,7 @@ namespace Proto_AI_2
 
                 //---------------------
 
-                //if (curSpeed > 0)
+                if (curSpeed > 0)
                 //if ((_worldOffsetPos - ToFuture).sqrMagnitude > _radius * _radius)
                 {
 
@@ -1005,8 +961,12 @@ namespace Proto_AI_2
             //    _steeringBehavior.DrawWander();
             //}
 
-            Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
-            DebugWide.DrawCircle(WorldOffsetPos, 0.1f, Color.green);
+            if(null != _leader)
+            {
+                Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
+                DebugWide.DrawCircle(WorldOffsetPos, 0.1f, Color.green);
+            }
+
         }
 
 
