@@ -3148,6 +3148,39 @@ namespace Proto_AI_2
             return null;
         }
 
+        public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
+        {
+
+
+            Vector3 nextPos = origin_3d;
+            Vector3 prev_center = ToPosition3D_Center(origin_3d);
+
+            CellSpace structTile = null;
+            int count = 0;
+            bool is_next = true;
+            while (is_next)
+            {
+
+                is_next = GetTilePosition_Segment(count, _cellSize_x, origin_3d.x, origin_3d.z, target_3d.x, target_3d.z, prev_center, out nextPos);
+
+                //-------------------
+
+                prev_center = nextPos;
+
+                structTile = GetStructTile(nextPos);
+                if(null != structTile && false == structTile._isTunnel) //터널타일이 아니어야 한다 
+                {
+                    return true;
+                }
+
+
+                count++;
+                if (count > MAX_COUNT) break; //최대검사 횟수 검사
+            }
+
+            return false;
+        }
+
         public CellSpace Draw_Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
         {
 

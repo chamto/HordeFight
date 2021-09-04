@@ -20,6 +20,103 @@ namespace Proto_AI_2
         }
     }
 
+    public class ObjectManager
+    {
+        public static readonly ObjectManager Inst = new ObjectManager();
+
+        public SphereTree _sphereTree_entity = new SphereTree(2000, new float[] { 16, 10, 5, 3 }, 0.5f);
+
+        private ObjectManager()
+        { }
+
+        public struct Param_RangeTest
+        {
+            //==============================================
+            public SphereModel find; //결과값 
+
+            public BaseEntity unit;
+            //public Camp.eRelation vsRelation;
+            //public Camp.eKind unit_campKind;
+
+            public Vector3 src_pos;
+            public float minRadius;
+            public float maxRadius;
+            //public float maxRadiusSqr;
+
+            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel);
+            public Proto_ConditionCheck callback;
+            //==============================================
+
+            //public Param_RangeTest(ChampUnit in_srcUnit, Camp.eRelation in_vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+            public Param_RangeTest(BaseEntity in_srcUnit, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+            {
+                find = null;
+
+                unit = in_srcUnit;
+                //vsRelation = in_vsRelation;
+                //unit_campKind = in_srcUnit._campKind;
+                src_pos = pos;
+                minRadius = meter_minRadius * GridManager.Inst._cellSize_x;
+                maxRadius = meter_maxRadius * GridManager.Inst._cellSize_x;
+                //maxRadiusSqr = maxRadius * maxRadius;
+
+                callback = Param_RangeTest.Func_ConditionCheck;
+            }
+
+            //==============================================
+
+            static public bool Func_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel)
+            {
+                //return true;
+
+                //기준객체는 검사대상에서 제외한다 
+                if (param.unit._sphereModel == dstModel) return false;
+
+                BaseEntity dstBeing = dstModel.GetLink_UserData() as BaseEntity;
+                BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
+
+                if (null != dstBeing)
+                {
+                    //가시거리 검사 
+                    return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
+                }
+
+                return false;
+            }
+        }
+
+        public BaseEntity RangeTest(BaseEntity src, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+        {
+
+
+            Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
+            _sphereTree_entity.RangeTest_MinDisReturn(ref param);
+
+
+            if (null != param.find)
+            {
+
+                return param.find.GetLink_UserData() as BaseEntity;
+            }
+
+            return null;
+        }
+
+        public void AddSphereTree(BaseEntity entity)
+        {
+            SphereModel model = _sphereTree_entity.AddSphere(entity._pos, entity._radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            _sphereTree_entity.AddIntegrateQ(model);
+            model.SetLink_UserData<BaseEntity>(entity);
+
+            entity._sphereModel = model;
+        }
+
+        public void Update(float deltaTime)
+        {
+            _sphereTree_entity.Process(); 
+        }
+    }
+
 
     public class Proto_AI_2 : MonoBehaviour
     {
@@ -52,6 +149,7 @@ namespace Proto_AI_2
         public bool _Draw_StructTile = false;
         public bool _Draw_BoundaryTile = false;
         public bool _Draw_ArcTile = false;
+        public bool _Draw_SphereTree = false;
 
         private bool _init = false;
 
@@ -260,6 +358,8 @@ namespace Proto_AI_2
 
                 //==========================================
             }
+
+            ObjectManager.Inst.Update(deltaTime);
         }
 
         public void KeyInput()
@@ -423,12 +523,15 @@ namespace Proto_AI_2
 
             _gridMgr.Draw_StructTile_ArcInfo(_tr_test.position);
 
+            if(true == _Draw_SphereTree)
+                ObjectManager.Inst._sphereTree_entity.Render_Debug(false);
+
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
         }
     }
 
-    public class BaseEntity
+    public class BaseEntity : SphereModel.IUserData
     {
         public float _radius = 0.5f;
         public Vector3 _oldPos = Vector3.zero;
@@ -440,6 +543,13 @@ namespace Proto_AI_2
         public CellSpace _cur_cell = null;
         public BaseEntity _prev_sibling = null;
         public BaseEntity _next_sibling = null;
+
+        //==================================================
+        // 충돌 모델 
+        //==================================================
+        public SphereModel _sphereModel = null; //구트리
+        public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject(); 
+
     }
 
     public class FormationPoint : BaseEntity
@@ -524,7 +634,6 @@ namespace Proto_AI_2
 
         public SteeringBehavior _steeringBehavior = new SteeringBehavior();
 
-        public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
 
         public List<Vector3> _feelers = new List<Vector3>();
 
@@ -554,9 +663,17 @@ namespace Proto_AI_2
             _steeringBehavior._vehicle = this;
             _radius = radius;
 
+            //==============================================
             _collision._id = _id;
             //_collision._radius = radius;
             SetPos(pos);
+
+            //==============================================
+            ////구트리 등록 
+            ObjectManager.Inst.AddSphereTree(this);
+
+            //==============================================
+
             _oldPos = pos;
 
             CreateFeelers();
@@ -565,6 +682,12 @@ namespace Proto_AI_2
         public void SetPos(Vector3 newPos)
         {
             _pos = newPos;
+
+            //==============================================
+            //!!!!! 구트리 위치 갱신 
+            if (null != _sphereModel)
+                _sphereModel.SetPos(_pos);
+            //==============================================
 
             //!!!!! 경계상자 위치 갱신
             _collision._bounds_min.x = newPos.x - _radius;
@@ -710,14 +833,14 @@ namespace Proto_AI_2
                     Vector3 pos_1 = _pos + _velocity.normalized * _radius;
                     Vector3 pos_2 = _pos + findDir * _radius;
 
-                    CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
-                    CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
+                    //CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
+                    //CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
 
-                    if (null == findCell_1 ||
-                    (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
-                    {
-                        curSpeed = _maxSpeed;
-                    }
+                    //if (null == findCell_1 ||
+                    //(null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //}
                     //else if (null == findCell_2 ||
                     //    (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
                     //{
@@ -725,14 +848,33 @@ namespace Proto_AI_2
                     //    _velocity = findDir;
                     //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
                     //}
+                    //else
+                    //{
+                    //    __findNum = Misc.RandInt(1, 4);
+                    //    curSpeed = 0;
+                    //}
+
+                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                    if (null == findEnty_1)
+                    {
+                        curSpeed = _maxSpeed;
+                    }
+                    else if (null == findEnty_2)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = findDir;
+                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    }
                     else
                     {
                         __findNum = Misc.RandInt(1, 4);
                         curSpeed = 0;
                     }
+
                 }
 
-                if(false)
+                if (false)
                 {
                     Vector3 feeler_pos = _pos + _rotation * _feelers[0];
                     CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
