@@ -514,9 +514,9 @@ namespace Proto_AI_2
                 //전체트리의 최하위 자식노드 
                 if (null == upLink && null == downLink)
                 {
-                    //최소반지름 밖에 있어야 한다
-                    float sqrSumRd = (_radius + param.minRadius) * (_radius + param.minRadius);
-                    if (between_sqr > sqrSumRd)
+                    //최소반지름의 완전포함을 걸러낸다 
+                    bool isFully = Geo.Include_Sphere_Fully(param.src_pos, param.minRadius, _center, _radius);
+                    if (false == isFully)
                     {
                         //등록된 검사용 콜백함수 호출
                         if (null != param.callback)

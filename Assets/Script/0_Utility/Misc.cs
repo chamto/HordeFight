@@ -951,6 +951,21 @@ namespace UtilGS9
             Focus,          //작은원이 중점까지 포함
             Fully           //작은원이 완전포함 
         }
+
+        //src 에 dst 가 완전포함하는지 검사
+        static public bool Include_Sphere_Fully(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
+        {
+            if (src_radius <= dst_radius) return false; //dst 반지름이 크면 src 에 완전포함 될 수가 없음 
+
+            float subtract_radius = src_radius - dst_radius;
+            float sqrDis = (src_pos - dst_pos).sqrMagnitude;
+            if (sqrDis < subtract_radius * subtract_radius)
+                return true;
+
+            return false; 
+        }
+
+        //포함을 구별하지 않는 문제를 가지고 있는 알고리즘임 - fixme : 포함구별하게 수정해야함 
         //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
         static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
         {

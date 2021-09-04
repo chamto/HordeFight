@@ -70,15 +70,16 @@ namespace Proto_AI_2
                 //return true;
 
                 //기준객체는 검사대상에서 제외한다 
-                if (param.unit._sphereModel == dstModel) return false;
+                if (null != param.unit && param.unit._sphereModel == dstModel) return false;
 
                 BaseEntity dstBeing = dstModel.GetLink_UserData() as BaseEntity;
-                BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
+                //BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
 
                 if (null != dstBeing)
                 {
                     //가시거리 검사 
-                    return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
+                    return true;
+                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10); //함수 테스트 필요 
                 }
 
                 return false;
@@ -141,6 +142,9 @@ namespace Proto_AI_2
         public float _anglePerSecond = 180;
 
         public bool _isNonpenetration = true;
+
+        public float _minRange = 0;
+        public float _maxRange = 0.5f;
 
         public FormationPoint _formationPoint = new FormationPoint();
 
@@ -494,6 +498,17 @@ namespace Proto_AI_2
 
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
+
+            BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
+            DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
+            DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
+            if (null != findEnty_1)
+            {
+                DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
+            }
+
+
+
             _formationPoint.Draw(Color.white);
 
             Color color = Color.black;
