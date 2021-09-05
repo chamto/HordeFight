@@ -2996,7 +2996,6 @@ namespace Proto_AI_2
             int MAX_COUNT = 10;
             newPos = target_3d;
 
-
             Vector3 nDir = VOp.Normalize(target_3d - origin_3d);
             Vector3 targetPlus = target_3d + nDir * radius; //목표위치에 반지름 길이방향을 더한다 , 최소검사영역을 계산하기 위함 
             Vector3 nextPos = origin_3d;
@@ -3170,7 +3169,7 @@ namespace Proto_AI_2
                 structTile = GetStructTile(nextPos);
                 if(null != structTile && false == structTile._isTunnel) //터널타일이 아니어야 한다 
                 {
-                    return true;
+                    return false;
                 }
 
 
@@ -3178,7 +3177,7 @@ namespace Proto_AI_2
                 if (count > MAX_COUNT) break; //최대검사 횟수 검사
             }
 
-            return false;
+            return true;
         }
 
         public CellSpace Draw_Find_FirstStructTile(Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
