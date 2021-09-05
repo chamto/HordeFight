@@ -25,6 +25,7 @@ namespace Proto_AI_2
         public static readonly ObjectManager Inst = new ObjectManager();
 
         public SphereTree _sphereTree_entity = new SphereTree(2000, new float[] { 16, 10, 5, 3 }, 0.5f);
+        //public SphereTree _sphereTree_entity = new SphereTree(1000, new float[] { 10, 5, 3}, 0.5f);
 
         private ObjectManager()
         { }
@@ -56,8 +57,8 @@ namespace Proto_AI_2
                 //vsRelation = in_vsRelation;
                 //unit_campKind = in_srcUnit._campKind;
                 src_pos = pos;
-                minRadius = meter_minRadius * GridManager.Inst._cellSize_x;
-                maxRadius = meter_maxRadius * GridManager.Inst._cellSize_x;
+                minRadius = meter_minRadius;
+                maxRadius = meter_maxRadius;
                 //maxRadiusSqr = maxRadius * maxRadius;
 
                 callback = Param_RangeTest.Func_ConditionCheck;
@@ -79,7 +80,7 @@ namespace Proto_AI_2
                 {
                     //가시거리 검사 
                     return true;
-                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10); //함수 테스트 필요 
+                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
                 }
 
                 return false;
@@ -306,6 +307,7 @@ namespace Proto_AI_2
             foreach (Vehicle v in EntityMgr.list)
             {
                 //if (0 == v._id) v._withstand = 100; //임시 시험 
+                v._target = _tr_test2_s.position;
 
                 v._radius = _radius;
                 v._mass = _mass;
@@ -355,7 +357,7 @@ namespace Proto_AI_2
                 //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
 
 
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
+                //v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
 
                 
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
@@ -499,14 +501,18 @@ namespace Proto_AI_2
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
 
-            BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
-            DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
-            DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
-            if (null != findEnty_1)
-            {
-                DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
-            }
+            //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
+            //DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
+            //DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
+            //if (null != findEnty_1)
+            //{
+            //    DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
+            //}
 
+            if(GridManager.Inst.IsVisibleTile(_tr_test.position, _tr_line_a.position, 10))
+            {
+                DebugWide.AddDrawQ_Line(_tr_test.position, _tr_line_a.position, Color.red); 
+            }
 
 
             _formationPoint.Draw(Color.white);
@@ -539,7 +545,7 @@ namespace Proto_AI_2
             _gridMgr.Draw_StructTile_ArcInfo(_tr_test.position);
 
             if(true == _Draw_SphereTree)
-                ObjectManager.Inst._sphereTree_entity.Render_Debug(false);
+                ObjectManager.Inst._sphereTree_entity.Render_Debug(true);
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
@@ -842,7 +848,8 @@ namespace Proto_AI_2
                 float curSpeed = _maxSpeed;
                 //if(false)
                 {
-                    float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                     Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
                     float sum_r = _radius + _radius;
                     Vector3 pos_1 = _pos + _velocity.normalized * _radius;
@@ -869,41 +876,46 @@ namespace Proto_AI_2
                     //    curSpeed = 0;
                     //}
 
-                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
-                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
-                    if (null == findEnty_1)
-                    {
-                        curSpeed = _maxSpeed;
-                    }
-                    else if (null == findEnty_2)
-                    {
-                        curSpeed = _maxSpeed;
-                        _velocity = findDir;
-                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    }
-                    else
-                    {
-                        __findNum = Misc.RandInt(1, 4);
-                        curSpeed = 0;
-                    }
+                    //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    //BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                    //if (null == findEnty_1)
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //}
+                    //else if (null == findEnty_2)
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //    _velocity = findDir;
+                    //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    //}
+                    //else
+                    //{
+                    //    __findNum = Misc.RandInt(1, 4);
+                    //    curSpeed = 0;
+                    //}
+
+                    //if(false == GridManager.Inst.IsVisibleTile(_pos, pos_1, 10))
+                    //{
+                    //    curSpeed = 0.1f; 
+                    //}
 
                 }
 
                 if (false)
                 {
-                    Vector3 feeler_pos = _pos + _rotation * _feelers[0];
-                    CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                    if (null != findCell)
-                    {
-                        feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
-                        DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                        float sum_r = findCell._head._radius + _radius;
-                        //float sum_r = findCell._head._radius + 0.3f;
-                        if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                        {
-                            curSpeed = 0;
-                        }
-                    }
+                    //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
+                    //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
+                    //if (null != findCell)
+                    //{
+                    //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
+                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
+                    //    float sum_r = findCell._head._radius + _radius;
+                    //    //float sum_r = findCell._head._radius + 0.3f;
+                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
+                    //    {
+                    //        curSpeed = 0;
+                    //    }
+                    //}
                     //feeler_pos = _pos + _rotation * _feelers[1];
                     //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
                     //if (null != findCell)
@@ -933,10 +945,10 @@ namespace Proto_AI_2
                 }
 
                 //-----------
-                if (_stop) 
-                {
-                    curSpeed = 0.1f; //속도변화에 따른 떨림의 원인이 된다
-                }
+                //if (_stop) 
+                //{
+                //    curSpeed = 0.1f; //속도변화에 따른 떨림의 원인이 된다
+                //}
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.

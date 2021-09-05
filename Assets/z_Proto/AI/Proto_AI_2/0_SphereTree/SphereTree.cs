@@ -252,15 +252,29 @@ namespace Proto_AI_2
 
             // 1 **** src 와 가장 가까운 슈퍼구 구하기 : src를 포함하는 슈퍼구를 먼저 구함. 없으면 src와 가장 가까운 슈퍼구를 구한다.
             //=====================================================================================
-            while (null != search)
+
+            //while (null != search)
+            for (int i = 0; i < supersphere.GetChildCount(); i++)
             {
+                if (null == search)
+                {
+                    DebugWide.LogRed("Integrate --a-- i: " + i + "  id: " + supersphere.GetID() + "  ct: " + supersphere.GetChildCount()); //test
+                    break;
+                }
+
+                if(search == search.GetNextSibling())
+                {
+                    DebugWide.LogRed("Integrate --b-- i: " + i + "  id: "+ supersphere.GetID() + "  ct: " + supersphere.GetChildCount()); //test
+                    break; 
+                }
+
                 if (search.HasFlag(SphereModel.Flag.SUPERSPHERE) &&
                     false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 != search.GetChildCount())
                 {
 
                     float sqrDist = src_pack.ToDistanceSquared(search);
 
-                    //조건1 - src구가 완저 포함 
+                    //조건1 - src구가 완전 포함 
                     if (null != containing_supersphere)
                     {
                         if (sqrDist < includedSqrDist)

@@ -108,7 +108,7 @@ namespace Proto_AI_2
 
         public float GetRadius() { return _radius; }
         public float GetRadiusSqr() { return _radius_sqr; }
-        public float ToDistanceSquared(SphereModel pack) { return VOp.Minus(_center, pack._center).sqrMagnitude; }
+        public float ToDistanceSquared(SphereModel pack) { return (_center - pack._center).sqrMagnitude; }
 
         //=====================================================
         //Flag 열거값 다루는 함수
@@ -291,7 +291,12 @@ namespace Proto_AI_2
         public void LostChild(SphereModel model)
         {
 
-            if (null == _head_children || 0 == _childCount) DebugWide.LogError("null == _children || 0 == _childCount"); //assert
+            if (null == _head_children || 0 == _childCount)
+            {
+                //DebugWide.LogError("null == _children || 0 == _childCount"); //assert
+                DebugWide.LogRed("lostChild -- id :"+_id+ "  lv: " + model.GetLevelIndex() + "  ct: "+ _childCount + "  head: " + _head_children + "  flag: " + HasFlag(Flag.SUPERSPHERE));
+            }
+
 
 
             // first patch old linked list.. his previous now points to his next
@@ -312,6 +317,7 @@ namespace Proto_AI_2
             }
 
             _childCount--;
+
 
             //자식없는 슈퍼구는 제거한다 
             if (0 == _childCount && HasFlag(Flag.SUPERSPHERE))
@@ -341,8 +347,20 @@ namespace Proto_AI_2
             Vector3 total = ConstV.v3_zero;
             int count = 0;
             SphereModel pack = _head_children;
-            while (null != pack)
+            //while (null != pack)
+            for (int i = 0; i < _childCount; i++)
             {
+                if (null == pack)
+                {
+                    DebugWide.LogRed("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
+                    return false;
+                }
+                if (pack == pack.GetNextSibling())
+                {
+                    DebugWide.LogRed("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
+                    return false;
+                }
+
                 total += pack._center;
                 count++;
                 pack = pack.GetNextSibling();
@@ -360,7 +378,8 @@ namespace Proto_AI_2
 
                 pack = _head_children;
 
-                while (null != pack)
+                //while (null != pack)
+                for (int i = 0; i < _childCount; i++)
                 {
                     float dist = ToDistanceSquared(pack);
                     float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
@@ -384,7 +403,8 @@ namespace Proto_AI_2
                 // now all children have to recompute binding distance!!
                 pack = _head_children;
 
-                while (null != pack)
+                //while (null != pack)
+                for (int i = 0; i < _childCount; i++)
                 {
                     pack.Compute_BindingDistanceSquared(this);
                     pack = pack.GetNextSibling();
@@ -473,11 +493,11 @@ namespace Proto_AI_2
         public void RangeTest_MinDisReturn(Frustum.ViewState state, ref ObjectManager.Param_RangeTest param)
         {
 
-            float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude;
+            //float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude; //stakoverflow ?? 스택오버플로우가 발생하기 때문에 사용하지 말기 
+            float between_sqr = (param.src_pos - _center).sqrMagnitude; //여기서도 스택오버플러우 발생 
             if (state == Frustum.ViewState.PARTIAL)
             {
-                //float between_sqr = (dstCenter - _center).sqrMagnitude;
-
+            
                 //완전비포함 검사
                 float sqrSumRd = (_radius + param.maxRadius) * (_radius + param.maxRadius);
                 if (between_sqr > sqrSumRd) return;
@@ -494,8 +514,22 @@ namespace Proto_AI_2
             if (HasFlag(Flag.SUPERSPHERE))
             {
                 SphereModel pack = _head_children;
-                while (null != pack)
+
+                //while (null != pack)
+                for (int i = 0; i < this.GetChildCount(); i++)
                 {
+                    if (null == pack)
+                    {
+                        DebugWide.LogRed("RangeTest_MinDisReturn --a--" + i + "  id:" + pack._id + "  " + this._childCount); //test
+                        break;
+                    }
+
+                    if (pack == pack.GetNextSibling())
+                    {
+                        DebugWide.LogRed("RangeTest_MinDisReturn --b--" + i + "  id:"+ this._id + "  " + this._childCount); //test
+                        break;
+                    }
+
                     pack.RangeTest_MinDisReturn(state, ref param);
                     pack = pack.GetNextSibling();
                 }
