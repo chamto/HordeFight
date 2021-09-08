@@ -184,6 +184,14 @@ namespace Proto_AI_2
         public void Release(Type t)
         {
 
+            if(false == t.IsUsed())
+            {
+                SphereModel mo = t as SphereModel;
+                //DebugWide.LogRed("Release !!!  - 이미 해제한 객체 " + t.GetID());
+                DebugWide.LogError("Release !!!  - 이미 해제한 객체 " + t.GetID() + "  " + mo.HasFlag(SphereModel.Flag.SUPERSPHERE));
+                return; 
+            }
+
             if (t == mCurrent) mCurrent = t.GetPoolNext();
 
             // first patch old linked list.. his previous now points to his next
@@ -211,6 +219,8 @@ namespace Proto_AI_2
 
             mUsedCount--;
             mFreeCount++;
+
+            //DebugWide.LogGreen("Release : " + ToStringFreeLink());
         }
 
         public Type GetFreeNoLink() // get free, but don't link it to the used list!!
@@ -229,8 +239,27 @@ namespace Proto_AI_2
             return ret;
         }
 
+        public string ToStringFreeLink()
+        {
+            string temp = "";
+            Type next = mFree;
+            int count = 0;
+            while(null != next)
+            {
+                temp += "  " + next.GetID() + "  ";
+                next = next.GetPoolNext();
+
+                count++;
+                if (count > 20) break;
+            }
+
+            return temp;
+        }
+
         public Type GetFreeLink()
         {
+            //DebugWide.LogGreen("GetFreeLink : " + ToStringFreeLink());
+
             // Free allocated items are always added to the head of the list
             if (null == mFree) return null;
             Type ret = mFree;

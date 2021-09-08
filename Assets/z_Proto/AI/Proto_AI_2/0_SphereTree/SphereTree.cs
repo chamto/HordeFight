@@ -144,24 +144,24 @@ namespace Proto_AI_2
 
         //!!자식이 있는 구, 즉 슈퍼구만 재계산의 대상이 된다. 
         //슈퍼구의 위치,반지름이 자식들의 정보에 따라 재계산 된다.
-        public void AddRecomputeQ(SphereModel pack)     // add to the recomputation (balancing) FIFO.
+        public void AddRecomputeQ(SphereModel superSphere)     // add to the recomputation (balancing) FIFO.
         {
-            if (false == pack.HasFlag(SphereModel.Flag.RECOMPUTE))
+            if (false == superSphere.HasFlag(SphereModel.Flag.RECOMPUTE))
             {
-                if (0 != pack.GetChildCount())
+                if (0 != superSphere.GetChildCount())
                 {
-                    pack.AddFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
-                    QFifo<SphereModel>.Out_Point fifo = _recomputeQ.Push(pack);
-                    pack.SetRecompute_FifoOut(fifo);
+                    superSphere.AddFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
+                    QFifo<SphereModel>.Out_Point fifo = _recomputeQ.Push(superSphere);
+                    superSphere.SetRecompute_FifoOut(fifo);
                 }
                 else
                 {
-                    Remove_SuperSphereAndLinkSphere(pack);
+                    Remove_SuperSphereAndLinkSphere(superSphere);
                 }
             }
         }
 
-        //LeafTree 의 슈퍼구와 연결된 레벨1 자식구를 지운다 
+        //슈퍼구와 연결된상위 자식구를 지운다 
         public void Remove_SuperSphereAndLinkSphere(SphereModel pack)
         {
             if (null == pack) return;
@@ -177,6 +177,7 @@ namespace Proto_AI_2
 
             pack.Unlink();
 
+            DebugWide.LogGreen("Remove_SuperSphereAndLinkSphere !!--  s_id: " + pack.GetID());
             _pool_sphere.Release(pack);
         }
 
@@ -191,6 +192,24 @@ namespace Proto_AI_2
             }
         }
 
+        public string ToStringQ(QFifo<SphereModel> Q)
+        {
+            string temp = "";
+            int head = Q._head;
+            while (Q._tail != head) //데이터가 있다면 
+            {
+
+                SphereModel ret = Q.mFifo[head];
+                head++;
+                if (head == Q.mFifoSize) head = 0;
+                if (null != ret)
+                {
+                    temp += " " + ret.GetID() + "(" + ret.IsUsed() + ")  ";
+                }
+            }
+            return temp;
+        }
+
         public void Process()
         {
             //슈퍼구 재계산
@@ -200,6 +219,7 @@ namespace Proto_AI_2
                 // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
                 // need to be removed.
                 // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
+                DebugWide.LogBlue("_recomputeQ : " + ToStringQ(_recomputeQ));
                 int maxrecompute = _recomputeQ.GetCount();
                 for (int i = 0; i < maxrecompute; i++)
                 {
@@ -207,7 +227,10 @@ namespace Proto_AI_2
                     if (null == pack) break;
 
                     pack.InitRecompute_FifoOut(); //큐 연결정보를 초기화 한다 
-
+                    if(false == pack.IsUsed())
+                    {
+                        DebugWide.LogRed("---------- "+pack.GetLevelIndex() +  "  " +pack.GetID() + "  " + pack.HasFlag(SphereModel.Flag.SUPERSPHERE)); 
+                    }
                     bool isRemove = pack.Recompute(_gravy_supersphere);
                     if (isRemove) Remove_SuperSphereAndLinkSphere(pack);
                 }
@@ -216,6 +239,7 @@ namespace Proto_AI_2
             //자식구 통합
             if (true)
             {
+                DebugWide.LogBlue("_integrateQ : " + ToStringQ(_integrateQ));
                 // Now, process the integration step.
                 int maxintegrate = _integrateQ.GetCount();
                 for (int i = 0; i < maxintegrate; i++)
@@ -238,10 +262,10 @@ namespace Proto_AI_2
         }
 
         //src_pack에는 자식구만 들어가야 한다 
-        public void Integrate(SphereModel src_pack, SphereModel supersphere, float maxRadius_supersphere)
+        public void Integrate(SphereModel src_pack, SphereModel rootsphere, float maxRadius_supersphere)
         {
 
-            SphereModel search = supersphere.GetChildren();
+            SphereModel search = rootsphere.GetChildren();
 
             SphereModel containing_supersphere = null;  //src_pack를 포함하는 슈퍼구 
             float includedSqrDist = 1e9f;     // enclosed within. 10의9승. 1000000000.0
@@ -252,19 +276,18 @@ namespace Proto_AI_2
 
             // 1 **** src 와 가장 가까운 슈퍼구 구하기 : src를 포함하는 슈퍼구를 먼저 구함. 없으면 src와 가장 가까운 슈퍼구를 구한다.
             //=====================================================================================
-
+            //DebugWide.LogBlue("root id: "+rootsphere.GetID() + "  src id: " + src_pack.GetID()+ "  ct: " +rootsphere.GetChildCount() + "  lv: " + rootsphere.GetLevelIndex());
             //while (null != search)
-            for (int i = 0; i < supersphere.GetChildCount(); i++)
+            for (int i = 0; i < rootsphere.GetChildCount(); i++)
             {
                 if (null == search)
                 {
-                    DebugWide.LogRed("Integrate --a-- i: " + i + "  id: " + supersphere.GetID() + "  ct: " + supersphere.GetChildCount()); //test
+                    DebugWide.LogRed("Integrate --a-- i: " + i + "  root id: " + rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount()); //test
                     break;
                 }
-
-                if(search == search.GetNextSibling())
+                else if(search == search.GetNextSibling())
                 {
-                    DebugWide.LogRed("Integrate --b-- i: " + i + "  id: "+ supersphere.GetID() + "  ct: " + supersphere.GetChildCount()); //test
+                    DebugWide.LogRed("Integrate --b-- i: " + i + "  root id: "+ rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount() + "  " + search.HasFlag(SphereModel.Flag.SUPERSPHERE)); //test
                     break; 
                 }
 
@@ -359,26 +382,30 @@ namespace Proto_AI_2
                 {
                     src_pack.Unlink();
 
-                    SphereModel parent = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, supersphere.GetFlag());
-                    parent.AddFlag(SphereModel.Flag.SUPERSPHERE);
-                    parent.AddChild(src_pack);
-                    supersphere.AddChild(parent);
+                    SphereModel superSphere = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, rootsphere.GetFlag());
+                    //superSphere.ClearFlag(SphereModel.Flag.ROOTNODE); //루트노드 설정이 있으면 지울수 없는 슈퍼구가 된다 , AddSphere 에서 ROOTNODE 플래그는 걸러진다 
+                    superSphere.AddFlag(SphereModel.Flag.SUPERSPHERE);
+                    superSphere.AddChild(src_pack);
 
-                    parent.Recompute(_gravy_supersphere);
-                    src_pack.Compute_BindingDistanceSquared(parent);
+                    //DebugWide.LogYellow(superSphere.GetID());
+                    rootsphere.AddChild(superSphere);
 
-                    if (false == parent.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
+                    superSphere.Recompute(_gravy_supersphere);
+                    src_pack.Compute_BindingDistanceSquared(superSphere);
+
+                    if (false == superSphere.HasFlag(SphereModel.Flag.TREE_LEVEL_1))
                     {
                         //parent 가 level2 이라면, 생성하는 구는 level1 이어야 한다
                         //level2 => level1 , level3 => level2 ... 
-                        int up_level_idx = parent.GetLevelIndex() - 1;
+                        int up_level_idx = superSphere.GetLevelIndex() - 1;
                         int up_flag = (int)(SphereModel.Flag.TREE_LEVEL_1) << up_level_idx;
 
                         // need to create parent association!
-                        SphereModel link = AddSphere(parent.GetPos(), parent.GetRadius(), (SphereModel.Flag)up_flag);
+                        SphereModel link = AddSphere(superSphere.GetPos(), superSphere.GetRadius(), (SphereModel.Flag)up_flag);
+                        //DebugWide.LogWhite(link.GetID());
                         AddIntegrateQ(link);
-                        link.SetLink_DownLevelTree(parent);
-                        parent.SetLink_UpLevelTree(link);
+                        link.SetLink_DownLevelTree(superSphere);
+                        superSphere.SetLink_UpLevelTree(link);
                     }
 
                 }
@@ -422,7 +449,9 @@ namespace Proto_AI_2
 
         public void Render_Debug(bool isText)
         {
-            
+            //Render_Debug(3, isText);
+            //return;
+
             for (int i = 0; i < _levels.Length; i++)
             {
                 Render_Debug(i, isText);

@@ -52,19 +52,28 @@ namespace Proto_AI_2
         private SphereModel _pool_prev = null;
 
         //------------------------------------------------------
-        //                    부모 노드 변수
+        //                    레벨 링크 변수
         //------------------------------------------------------
-        private SphereModel _head_children = null;  //형제노드의 첫번째 노드 
-        private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
-        private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 (전체 트리에서 보았을 때는 같은 level 의 노드링크임)
+        private SphereModel _link_upLevelTree = null; //윗 level 의 트리 링크
+        private SphereModel _link_downLevelTree = null; //아랫 level 의 트리 링크 
 
         //------------------------------------------------------
-        //                    자식 노드 변수
+        //                    형제 노드 변수
         //------------------------------------------------------
-        private SphereModel _parent = null; //트리 깊이 위로
         private SphereModel _sibling_next = null; //내기준 왼쪽 형제노드 (내가 머리라면 null값임)
         private SphereModel _sibling_prev = null; //내기준 오른쪽 형제노드 (내가 꼬리라면 null값임) 
 
+        //------------------------------------------------------
+        //                    슈퍼구 노드 변수
+        //------------------------------------------------------
+        private SphereModel _superSphere = null; //슈퍼구를 가리킨다 - _link_upLevelTree 과는 크기와 위치는 같지만 레벨이 다르다 , 현재레벨에서의 생성된 슈퍼구임  
+
+        //------------------------------------------------------
+        //                  슈퍼구에서의 자식 정보
+        //------------------------------------------------------
+        private SphereModel _head_children = null;  //형제노드의 첫번째 노드 
+        private int _childCount = 0;
+        //------------------------------------------------------
 
         private Flag _flags;
         private QFifo<SphereModel>.Out_Point _recompute_fifoOut;
@@ -75,7 +84,7 @@ namespace Proto_AI_2
 
         //------------------------------------------------------
 
-        private int _childCount = 0;
+        
         private float _binding_distance_sqr = 0f;
 
         private SphereTree _treeController = null;
@@ -134,8 +143,8 @@ namespace Proto_AI_2
         //=====================================================
         //트리 링크 다루는 함수
         //=====================================================
-        public void SetParent(SphereModel model) { _parent = model; }
-        public SphereModel GetParent() { return _parent; }
+        public void SetSuperSphere(SphereModel model) { _superSphere = model; }
+        public SphereModel GetParent() { return _superSphere; }
         public SphereModel GetChildren() { return _head_children; }
         public void SetNextSibling(SphereModel child) { _sibling_next = child; }
         public void SetPrevSibling(SphereModel child) { _sibling_prev = child; }
@@ -168,7 +177,7 @@ namespace Proto_AI_2
             _center = pos;
             SetRadius(radius);
 
-            _parent = null;
+            _superSphere = null;
             _head_children = null;
             _sibling_next = null;
             _sibling_prev = null;
@@ -189,17 +198,17 @@ namespace Proto_AI_2
         {
             _center = pos;
 
-            if (null != _parent && false == HasFlag(Flag.INTEGRATE))
+            if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
-                float sqrDist = ToDistanceSquared(_parent);
+                float sqrDist = ToDistanceSquared(_superSphere);
 
                 //자식구가 슈퍼구에서 벗어났음
                 if (sqrDist >= _binding_distance_sqr)
                 {
 
-                    if (false == _parent.HasFlag(Flag.RECOMPUTE))
+                    if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        _treeController.AddRecomputeQ(_parent); //슈퍼구 다시 계산  
+                        _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산  
                     }
 
                     Unlink();
@@ -217,32 +226,32 @@ namespace Proto_AI_2
 
             _center = pos;
 
-            if (null != _parent && false == HasFlag(Flag.INTEGRATE)) //첫번째 통합요청이 선점. 두번째 이상의 통합요청은 무시된다  
+            if (null != _superSphere && false == HasFlag(Flag.INTEGRATE)) //첫번째 통합요청이 선점. 두번째 이상의 통합요청은 무시된다  
             {
                 //DebugWide.LogBlue(GetID());
                 if (float.Epsilon < Math.Abs(radius - _radius))
                 {
                     SetRadius(radius);
-                    Compute_BindingDistanceSquared(_parent); //반지름 변경에 따른 슈퍼구와 묶인거리 다시 계산
+                    Compute_BindingDistanceSquared(_superSphere); //반지름 변경에 따른 슈퍼구와 묶인거리 다시 계산
                 }
 
-                float sqrDist = ToDistanceSquared(_parent);
+                float sqrDist = ToDistanceSquared(_superSphere);
 
                 //자식구가 슈퍼구에서 벗어났음
                 if (sqrDist >= _binding_distance_sqr)
                 {
-                    if (false == _parent.HasFlag(Flag.RECOMPUTE))
+                    if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        _treeController.AddRecomputeQ(_parent); //슈퍼구 다시 계산
+                        _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     }
                     Unlink();
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
                 else
                 {
-                    if (false == _parent.HasFlag(Flag.RECOMPUTE))
+                    if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        _treeController.AddRecomputeQ(_parent); //슈퍼구 다시 계산
+                        _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     }
                 }
 
@@ -254,17 +263,69 @@ namespace Proto_AI_2
 
         public void AddChild(SphereModel pack)
         {
+            if(null == pack)
+            {
+                DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ null pack !!!!");
+            }
+            if (false == HasFlag(Flag.SUPERSPHERE))
+            {
+                DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ not supersphere !!!!");
+            }
 
             SphereModel next_child = _head_children;
+            //test-------------------------------------
+            string temp = "";
+            int ct = 0;
+            while (null != next_child)
+            {
+                temp += " " + next_child._id + " "; 
+                ct++;
+                next_child = next_child.GetNextSibling();
+                if (15 < ct) break;
+            }
+            //DebugWide.LogBlue("add before: s_id: " +_id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount +" : "+ temp);
+            //test-------------------------------------
+
+            next_child = _head_children;
             _head_children = pack; // new head of list
 
             pack.SetNextSibling(next_child); // his next is my old next
             pack.SetPrevSibling(null); // at head of list, no previous
-            pack.SetParent(this);
+
+            pack.SetSuperSphere(this);
 
             if (null != next_child) next_child.SetPrevSibling(pack); //다음자식의 이전형제 정보를 넣어준다 
 
             _childCount++;
+
+            //test-------------------------------------
+            next_child = _head_children;
+            int count = 0;
+            while (null != next_child)
+            {
+                count++;
+                next_child = next_child.GetNextSibling();
+                if (100 < count) break;
+            }
+            if (_childCount != count)
+            {
+                //DebugWide.Log(_lostChildLog);
+                DebugWide.LogGreen("AddChild !!--  s_id: " + _id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount + "  wCt: " + count + "  isUsed: " + IsUsed() + "  isSuper: " + pack.HasFlag(Flag.SUPERSPHERE));
+                DebugWide.LogBlue(temp);
+                next_child = _head_children;
+                count = 0;
+                temp = "";
+                while (null != next_child)
+                {
+                    //DebugWide.LogGreen(count+ " child id: "+ next_child._id + "");
+                    temp += " " + next_child._id + " ";
+                    count++;
+                    next_child = next_child.GetNextSibling();
+                    if (15 < count) break;
+                }
+                DebugWide.LogGreen(temp);
+            }
+            //test-------------------------------------
 
         }
 
@@ -282,47 +343,99 @@ namespace Proto_AI_2
                 _intergrate_fifoOut.Init();
             }
 
-            if (null != _parent) _parent.LostChild(this);
+            if (null != _superSphere) _superSphere.LostChild(this);
 
 
-            _parent = null;
+            _superSphere = null;
         }
 
-        public void LostChild(SphereModel model)
+        string _lostChildLog = "";
+        public void LostChild(SphereModel child)
         {
 
             if (null == _head_children || 0 == _childCount)
             {
                 //DebugWide.LogError("null == _children || 0 == _childCount"); //assert
-                DebugWide.LogRed("lostChild -- id :"+_id+ "  lv: " + model.GetLevelIndex() + "  ct: "+ _childCount + "  head: " + _head_children + "  flag: " + HasFlag(Flag.SUPERSPHERE));
+                DebugWide.LogRed("lostChild --  mo id: " + child.GetID()  + " pa id :"+_id+ "  lv: " + child.GetLevelIndex() + "  ct: "+ _childCount + "  head: " + _head_children + "  flag: " + HasFlag(Flag.SUPERSPHERE));
+
             }
 
+            //test-------------------------------------
+            SphereModel next_child = _head_children;
+            int count = 0;
+            while (null != next_child)
+            {
+                count++;
+                next_child = next_child.GetNextSibling();
+                if (100 < count) break;
+            }
+            if (_childCount != count)
+            {
+                DebugWide.LogGreen("LostChild !!--  s_id: " + _id + "  p_id: " + child.GetID() + "  _cCt: " + _childCount + "  wCt: " + count);
+            }
+            //test-------------------------------------
 
+            //next_child = _head_children;
+            //string temp = "";
+            //int ct = 0;
+            //while (null != next_child)
+            //{
+            //    temp += " " + next_child._id + " ";
+            //    ct++;
+            //    next_child = next_child.GetNextSibling();
+            //    if (30 < ct) break;
+            //}
+            //temp = "A lost : s_id: " + _id + " p_id : " + child._id + "  ct: "+ _childCount +" > " + temp + "\n";
+            //DebugWide.LogBlue("A lost : s_id: " + _id + " p_id : " + child._id + " > " + temp);
+            //test-------------------------------------
 
             // first patch old linked list.. his previous now points to his next
-            SphereModel prev = model.GetPrevSibling();
+            SphereModel prev = child.GetPrevSibling();
 
             if (null != prev)
             {
-                SphereModel next = model.GetNextSibling();
+                SphereModel next = child.GetNextSibling();
                 prev.SetNextSibling(next); // my previous now points to my next
                 if (null != next) next.SetPrevSibling(prev);
                 // list is patched!
             }
             else
             {
-                SphereModel next = model.GetNextSibling();
+                SphereModel next = child.GetNextSibling();
                 _head_children = next;
                 if (null != _head_children) _head_children.SetPrevSibling(null);
             }
 
+            child.SetPrevSibling(null);
+            child.SetNextSibling(null);
+
             _childCount--;
 
+            //test-------------------------------------
+            //next_child = _head_children;
+            //string temp2 = "";
+            //ct = 0;
+            //while (null != next_child)
+            //{
+            //    temp2 += " " + next_child._id + " ";
+            //    ct++;
+            //    next_child = next_child.GetNextSibling();
+            //    if (30 < ct) break;
+            //}
+            //temp2 = "B lost : s_id: " + _id + " p_id : " + child._id + "  ct: "+ _childCount+ " > " + temp2 ;
+            //_lostChildLog = temp + temp2;
+            //DebugWide.LogBlue(temp2);
+            //test-------------------------------------
 
-            //자식없는 슈퍼구는 제거한다 
-            if (0 == _childCount && HasFlag(Flag.SUPERSPHERE))
+            if (null == _head_children || 0 == _childCount)
+            //if (null == _head_children || 0 >= _childCount)
             {
-                _treeController.Remove_SuperSphereAndLinkSphere(this);
+                //자식없는 슈퍼구는 제거한다 
+                if (HasFlag(Flag.SUPERSPHERE))
+                {
+                    _treeController.Remove_SuperSphereAndLinkSphere(this);
+                }
+
             }
         }
 
@@ -355,7 +468,7 @@ namespace Proto_AI_2
                     DebugWide.LogRed("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
                     return false;
                 }
-                if (pack == pack.GetNextSibling())
+                else if (pack == pack.GetNextSibling())
                 {
                     DebugWide.LogRed("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
                     return false;
@@ -381,7 +494,8 @@ namespace Proto_AI_2
                 //while (null != pack)
                 for (int i = 0; i < _childCount; i++)
                 {
-                    float dist = ToDistanceSquared(pack);
+                    //float dist = ToDistanceSquared(pack);
+                    float dist = (_center - pack._center).sqrMagnitude;
                     float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
                     if (radius > maxradius)
                     {
@@ -520,14 +634,13 @@ namespace Proto_AI_2
                 {
                     if (null == pack)
                     {
-                        DebugWide.LogRed("RangeTest_MinDisReturn --a--" + i + "  id:" + pack._id + "  " + this._childCount); //test
-                        break;
+                        DebugWide.LogRed("RangeTest_MinDisReturn --a--" + i + "  id:" + this._id + "  " + this._childCount); //test
+                        //break;
                     }
-
-                    if (pack == pack.GetNextSibling())
+                    else if (pack == pack.GetNextSibling())
                     {
                         DebugWide.LogRed("RangeTest_MinDisReturn --b--" + i + "  id:"+ this._id + "  " + this._childCount); //test
-                        break;
+                        //break;
                     }
 
                     pack.RangeTest_MinDisReturn(state, ref param);
@@ -770,12 +883,15 @@ namespace Proto_AI_2
             if (null != _head_children)
             {
                 SphereModel pack = _head_children;
-
+                int count = 0;
                 while (null != pack)
                 {
+                    count++;
+
                     pack.Debug_Render(color, isText);
                     pack = pack.GetNextSibling();
                 }
+                //DebugWide.LogBlue("  -----  " + count + "  " + _childCount + " "  + HasFlag(Flag.SUPERSPHERE));
             }
 
             if (false == HasFlag(Flag.ROOTNODE))

@@ -5,11 +5,11 @@ namespace Proto_AI_2
     public class QFifo<MODEL> where MODEL : class
     {
         private int mCount; //현재 들어있는 데이터갯수 (flush 한 데이터도 포함한다)
-        private int _tail; //Push queue index. 새로 넣을 위치점
-        private int _head; //Pop queue index. 꺼낼 위치점 
-        private int mFifoSize; //최대 fifo 사이즈 
+        public int _tail; //Push queue index. 새로 넣을 위치점
+        public int _head; //Pop queue index. 꺼낼 위치점 
+        public int mFifoSize; //최대 fifo 사이즈 
 
-        private MODEL[] mFifo = null;
+        public MODEL[] mFifo = null;
 
         public struct Out_Point
         {
@@ -101,6 +101,7 @@ namespace Proto_AI_2
             }
             return null;
         }
+
 
         //데이터의 개수는 변경하지 않고 데이터만 날린다
         //Out_Push 객체에서 사용하는 전용함수 
