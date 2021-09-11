@@ -75,9 +75,12 @@ namespace Proto_AI_2
         private int _childCount = 0;
         //------------------------------------------------------
 
+        public QFifo<SphereModel>.Out_Point _recompute_fifoOut;
+        public QFifo<SphereModel>.Out_Point _intergrate_fifoOut;
+
+        //------------------------------------------------------
+
         private Flag _flags;
-        private QFifo<SphereModel>.Out_Point _recompute_fifoOut;
-        private QFifo<SphereModel>.Out_Point _intergrate_fifoOut;
 
 
         private IUserData _link_userData = null;
@@ -229,7 +232,7 @@ namespace Proto_AI_2
 
                     if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        DebugWide.LogGreen("SetPos : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+                        //DebugWide.LogGreen("NewPos : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산  
                     }
 
@@ -260,7 +263,7 @@ namespace Proto_AI_2
                 {
                     if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        DebugWide.LogGreen("SetPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+                        //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     }
                     //Unlink();
@@ -270,7 +273,7 @@ namespace Proto_AI_2
                 {
                     if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        DebugWide.LogGreen("SetPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+                        //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     }
                 }
@@ -288,31 +291,31 @@ namespace Proto_AI_2
 
         public void AddChild(SphereModel pack)
         {
-            if(null == pack)
-            {
-                DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ null pack !!!!");
-            }
-            if (false == HasFlag(Flag.SUPERSPHERE))
-            {
-                DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ not supersphere !!!!");
-            }
+            //if(null == pack)
+            //{
+            //    DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ null pack !!!!");
+            //}
+            //if (false == HasFlag(Flag.SUPERSPHERE))
+            //{
+            //    DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ not supersphere !!!!");
+            //}
 
+            pack.Unlink(); //기존정보를 해제후 추가한다 
 
             SphereModel next_child = _head_children;
             //test-------------------------------------
-            string temp = "";
-            int ct = 0;
-            while (null != next_child)
-            {
-                temp += " " + next_child._id + " "; 
-                ct++;
-                next_child = next_child.GetNextSibling();
-                if (15 < ct) break;
-            }
-            DebugWide.LogBlue("add before: s_id: " +_id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount +" : "+ temp + "  s_used: " + _isUsed);
+            //string temp = "";
+            //int ct = 0;
+            //while (null != next_child)
+            //{
+            //    temp += " " + next_child._id + " "; 
+            //    ct++;
+            //    next_child = next_child.GetNextSibling();
+            //    if (15 < ct) break;
+            //}
+            //DebugWide.LogBlue("add before: s_id: " +_id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount +" : "+ temp + "  s_used: " + _isUsed);
             //test-------------------------------------
 
-            pack.Unlink(); //기존정보를 해제후 추가한다 
 
             next_child = _head_children;
             _head_children = pack; // new head of list
@@ -327,37 +330,37 @@ namespace Proto_AI_2
             _childCount++;
 
             //test-------------------------------------
-            next_child = _head_children;
-            int count = 0;
-            while (null != next_child)
-            {
-                count++;
-                next_child = next_child.GetNextSibling();
-                if (100 < count) break;
-            }
-            if (_childCount != count)
-            {
-                //DebugWide.Log(_lostChildLog);
-                DebugWide.LogGreen("AddChild !!--  s_id: " + _id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount + "  wCt: " + count + "  isUsed: " + IsUsed() + "  isSuper: " + pack.HasFlag(Flag.SUPERSPHERE));
-                DebugWide.LogBlue(temp);
-                next_child = _head_children;
-                count = 0;
-                temp = "";
-                while (null != next_child)
-                {
-                    //DebugWide.LogGreen(count+ " child id: "+ next_child._id + "");
-                    temp += " " + next_child._id + " ";
-                    count++;
-                    next_child = next_child.GetNextSibling();
-                    if (15 < count) break;
-                }
-                DebugWide.LogGreen(temp);
-            }
+            //next_child = _head_children;
+            //int count = 0;
+            //while (null != next_child)
+            //{
+            //    count++;
+            //    next_child = next_child.GetNextSibling();
+            //    if (100 < count) break;
+            //}
+            //if (_childCount != count)
+            //{
+            //    //DebugWide.Log(_lostChildLog);
+            //    DebugWide.LogGreen("AddChild !!--  s_id: " + _id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount + "  wCt: " + count + "  isUsed: " + IsUsed() + "  isSuper: " + pack.HasFlag(Flag.SUPERSPHERE));
+            //    DebugWide.LogBlue(temp);
+            //    next_child = _head_children;
+            //    count = 0;
+            //    temp = "";
+            //    while (null != next_child)
+            //    {
+            //        //DebugWide.LogGreen(count+ " child id: "+ next_child._id + "");
+            //        temp += " " + next_child._id + " ";
+            //        count++;
+            //        next_child = next_child.GetNextSibling();
+            //        if (15 < count) break;
+            //    }
+            //    DebugWide.LogGreen(temp);
+            //}
             //test-------------------------------------
 
         }
 
-        public void Unlink()
+        private void Unlink()
         {
             //Q에 등록되어 있다면 해제한다 
             //SphereModel qdata = null;
@@ -378,10 +381,10 @@ namespace Proto_AI_2
             //DebugWide.LogBlue("unlink recomputeQ : s_id : " + s_id +  " id : " + _id + "  flag: " + HasFlag(Flag.SUPERSPHERE) + "  qidx: " + _recompute_fifoOut.queueIndex + "  qpack_id: " + getid + "  qnull: " + _recompute_fifoOut.IsNull());
             if (false == _recompute_fifoOut.IsNull())
             {
+                //Q의 슈퍼구 연결정보를 날린다 
                 _recompute_fifoOut.Unlink();
                 _recompute_fifoOut.Init();
             }
-
             if (false == _intergrate_fifoOut.IsNull())
             {
                 _intergrate_fifoOut.Unlink();
@@ -395,7 +398,7 @@ namespace Proto_AI_2
         }
 
         //string _lostChildLog = "";
-        public void LostChild(SphereModel child)
+        private void LostChild(SphereModel child)
         {
             //슈퍼구에 자식정보가 없는 경우는 없다고 가정된다 , 슈퍼구 생성후 바로 LostChild 한 경우도 비정상이라 판단 
             if (null == _head_children || 0 == _childCount)
@@ -408,18 +411,18 @@ namespace Proto_AI_2
             //DebugWide.LogBlue("a - LostChild -- s_id : " + _id + "  s_ct :" + _childCount + "  p_id: " + child._id);
 
             //test-------------------------------------
-            SphereModel next_child = _head_children;
-            int count = 0;
-            while (null != next_child)
-            {
-                count++;
-                next_child = next_child.GetNextSibling();
-                if (100 < count) break;
-            }
-            if (_childCount != count)
-            {
-                DebugWide.LogGreen("LostChild !!--  s_id: " + _id + "  p_id: " + child.GetID() + "  _cCt: " + _childCount + "  wCt: " + count);
-            }
+            //SphereModel next_child = _head_children;
+            //int count = 0;
+            //while (null != next_child)
+            //{
+            //    count++;
+            //    next_child = next_child.GetNextSibling();
+            //    if (100 < count) break;
+            //}
+            //if (_childCount != count)
+            //{
+            //    DebugWide.LogGreen("LostChild !!--  s_id: " + _id + "  p_id: " + child.GetID() + "  _cCt: " + _childCount + "  wCt: " + count);
+            //}
             //test-------------------------------------
 
             //next_child = _head_children;
@@ -482,36 +485,44 @@ namespace Proto_AI_2
                 if (HasFlag(Flag.SUPERSPHERE))
                 {
                     //_treeController.Remove_SuperSphereAndLinkSphere(this);
-                    Remove_SuperSphereAndLinkSphere();
+                    Unlink_SuperSphereAndLinkSphere();
                 }
 
             }
         }
 
-        //슈퍼구와 그리고 슈퍼구와 연결된상위 자식구를 지운다 
-        public void Remove_SuperSphereAndLinkSphere()
+        //슈퍼구lv3 -> 자식구lv2 -> 슈퍼구lv2 -> 자식구lv1 ... 순서로 해제 
+        //슈퍼구와 그리고 슈퍼구와 연결된상위 자식구를 해제 
+        public void Unlink_SuperSphereAndLinkSphere()
         {
-            DebugWide.LogGreen(" a  Remove_SuperSphereAndLinkSphere !!--  s_id: " + GetID() + "  flag: " + GetFlag().ToString() + " ct: " + GetChildCount());
+            //string temp = "";
+            //if(null != _superSphere)
+            //{
+            //    temp = "  : super : " + _superSphere._id + "  " + _flags.ToString() + "  " + _childCount;
+            //}
+            //DebugWide.LogGreen(" a  Remove_SuperSphereAndLinkSphere !!--  _id: " + GetID() + "  flag: " + GetFlag().ToString() + " ct: " + GetChildCount() + temp);
 
             if (HasFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
 
+            //슈퍼구해제 
+            Unlink(); //_superSphere.LostChild(this); => Remove_SuperSphereAndLinkSphere
+            _treeController.ReleasePool(this);
 
-            string temp = "";
+
+            //자식구해제
+            //temp = "";
             //if (HasFlag(SphereModel.Flag.SUPERSPHERE))
             SphereModel link = GetLink_UpLevel_ChildSphere();
             if(null != link)
             {
-                link.Remove_SuperSphereAndLinkSphere();
+                link.Unlink_SuperSphereAndLinkSphere();
 
-                temp = "--> link_id : " + link.GetID();
+                //temp = "--> link_id : " + link.GetID();
             }
 
-            Unlink();
-
-            DebugWide.LogGreen(temp + " b  Remove_SuperSphereAndLinkSphere !!--  s_id: " + GetID() + "  flag: " + GetFlag().ToString() + " ct: " + GetChildCount());
+            //DebugWide.LogGreen(temp + " b  Remove_SuperSphereAndLinkSphere !!--  s_id: " + GetID() + "  flag: " + GetFlag().ToString() + " ct: " + GetChildCount());
             //DebugWide.LogGreen(temp+" Q list : " + ToStringQ(_recomputeQ));
-            //_pool_sphere.Release(pack);
-            _treeController.ReleasePool(this);
+
         }
 
 

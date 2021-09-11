@@ -151,13 +151,13 @@ namespace Proto_AI_2
                 if (0 != superSphere.GetChildCount())
                 {
                     //--------------------->
-                    bool contain = false;
-                    if (_recomputeQ.Contain(superSphere))
-                    {
-                        DebugWide.LogGreen("AddRecomputeQ add : " + superSphere.GetID() + "  lv: " + superSphere.GetLevelIndex() + "  ");
-                        DebugWide.LogGreen("1 Q list : " + ToStringQ(_recomputeQ));
-                        contain = true;
-                    }
+                    //bool contain = false;
+                    //if (_recomputeQ.Contain(superSphere))
+                    //{
+                    //    DebugWide.LogGreen("AddRecomputeQ add : " + superSphere.GetID() + "  lv: " + superSphere.GetLevelIndex() + "  ");
+                    //    DebugWide.LogGreen("1 Q list : " + ToStringQ(_recomputeQ));
+                    //    contain = true;
+                    //}
                     //--------------------->
 
                     superSphere.AddFlag(SphereModel.Flag.RECOMPUTE); // needs to be recalculated!
@@ -165,17 +165,17 @@ namespace Proto_AI_2
                     superSphere.SetRecompute_FifoOut(fifo);
 
                     //--------------------->
-                    if (contain)
-                    {
-                        DebugWide.LogGreen("2 Q list : " + ToStringQ(_recomputeQ));
-                    }
+                    //if (contain)
+                    //{
+                    //    DebugWide.LogGreen("2 Q list : " + ToStringQ(_recomputeQ));
+                    //}
                     //--------------------->
                 }
                 else
                 {
-                    DebugWide.LogWhite("AddRecomputeQ Remove : " + superSphere.GetID());
+                    //DebugWide.LogWhite("AddRecomputeQ Remove : " + superSphere.GetID());
                     //Remove_SuperSphereAndLinkSphere(superSphere);
-                    superSphere.Remove_SuperSphereAndLinkSphere();
+                    superSphere.Unlink_SuperSphereAndLinkSphere();
                 }
             }
         }
@@ -259,20 +259,20 @@ namespace Proto_AI_2
                     SphereModel superSphere = _recomputeQ.Pop();
                     if (null == superSphere) continue;
 
-                    DebugWide.LogBlue(" - - - - - - - -pop after Q list: " + ToStringQ(_recomputeQ));
+                    //DebugWide.LogBlue(" - - - - - - - -pop after Q list: " + ToStringQ(_recomputeQ));
 
                     superSphere.InitRecompute_FifoOut(); //큐 연결정보를 초기화 한다 
-                    if(false == superSphere.IsUsed())
-                    {
-                        DebugWide.LogRed("---------- "+superSphere.GetLevelIndex() +  "  " +superSphere.GetID() + "  " + superSphere.HasFlag(SphereModel.Flag.SUPERSPHERE));
-                        //DebugWide.LogRed("Q list : " + ToStringQ(_recomputeQ));
-                    }
+                    //if(false == superSphere.IsUsed())
+                    //{
+                    //    DebugWide.LogRed("---------- "+superSphere.GetLevelIndex() +  "  " +superSphere.GetID() + "  " + superSphere.HasFlag(SphereModel.Flag.SUPERSPHERE));
+                    //    //DebugWide.LogRed("Q list : " + ToStringQ(_recomputeQ));
+                    //}
                     bool isRemove = superSphere.RecomputeSuperSphere(_gravy_supersphere);
                     if (isRemove)
                     {
-                        DebugWide.LogWhite("Process recomputeQ Remove : " + superSphere.GetID());
+                        //DebugWide.LogWhite("Process recomputeQ Remove : " + superSphere.GetID());
                         //Remove_SuperSphereAndLinkSphere(superSphere);
-                        superSphere.Remove_SuperSphereAndLinkSphere();
+                        superSphere.Unlink_SuperSphereAndLinkSphere();
                     }
 
                 }
@@ -488,7 +488,7 @@ namespace Proto_AI_2
                         link.SetLink_DownLevel_SuperSphere(superSphere);
                         superSphere.SetLink_UpLevel_ChildSphere(link);
 
-                        DebugWide.LogWhite(" s_id : " + superSphere.GetID() + "  link_id : " + link.GetID() + "  " + link.GetLevelIndex() + "  " + link.GetFlag() + "  l_s_id: " + link.GetSuperSphere().GetID());
+                        //DebugWide.LogWhite(" s_id : " + superSphere.GetID() + "  link_id : " + link.GetID() + "  " + link.GetLevelIndex() + "  " + link.GetFlag() + "  l_s_id: " + link.GetSuperSphere().GetID());
 
                         //---------------------------
                         if (0 <= upLevel_idx)
