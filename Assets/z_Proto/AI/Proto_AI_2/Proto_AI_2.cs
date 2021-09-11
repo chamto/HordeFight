@@ -155,6 +155,10 @@ namespace Proto_AI_2
         public bool _Draw_BoundaryTile = false;
         public bool _Draw_ArcTile = false;
         public bool _Draw_SphereTree = false;
+        public bool _SphereTree_Level_0 = false;
+        public bool _SphereTree_Level_1 = false;
+        public bool _SphereTree_Level_2 = false;
+        public bool _SphereTree_Level_3 = false;
 
         private bool _init = false;
 
@@ -309,7 +313,8 @@ namespace Proto_AI_2
                 //if (0 == v._id) v._withstand = 100; //임시 시험 
                 v._target = _tr_test2_s.position;
 
-                v._radius = _radius;
+                //v._radius = _radius;
+                v.SetRadius(_radius);
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
@@ -545,7 +550,18 @@ namespace Proto_AI_2
             _gridMgr.Draw_StructTile_ArcInfo(_tr_test.position);
 
             if(true == _Draw_SphereTree)
-                ObjectManager.Inst._sphereTree_entity.Render_Debug(true);
+            {
+                if (_SphereTree_Level_3)
+                    ObjectManager.Inst._sphereTree_entity.Render_Debug(3, false);
+                if (_SphereTree_Level_2)
+                    ObjectManager.Inst._sphereTree_entity.Render_Debug(2, false);
+                if (_SphereTree_Level_1)
+                    ObjectManager.Inst._sphereTree_entity.Render_Debug(1, false);
+                if (_SphereTree_Level_0)
+                    ObjectManager.Inst._sphereTree_entity.Render_Debug(0, false);
+
+            }
+
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();

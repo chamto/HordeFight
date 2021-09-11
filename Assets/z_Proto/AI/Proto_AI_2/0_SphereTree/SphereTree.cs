@@ -252,7 +252,7 @@ namespace Proto_AI_2
                 // When leaf node spheres exit their parent sphere, then the parent sphere needs to be rebalanced.  In fact,it may now be empty and
                 // need to be removed.
                 // This is the location where (n) number of spheres in the recomputation FIFO are allowed to be rebalanced in the tree.
-                DebugWide.LogBlue("<<<<<< Process _recomputeQ : " + ToStringQ(_recomputeQ));
+                //DebugWide.LogBlue("<<<<<< Process _recomputeQ : " + ToStringQ(_recomputeQ));
                 int maxrecompute = _recomputeQ.GetCount();
                 for (int i = 0; i < maxrecompute; i++)
                 {
@@ -281,7 +281,7 @@ namespace Proto_AI_2
             //자식구 통합
             if (true)
             {
-                DebugWide.LogBlue("<<<<<< Process _integrateQ : " + ToStringQ(_integrateQ));
+                //DebugWide.LogBlue("<<<<<< Process _integrateQ : " + ToStringQ(_integrateQ));
                 // Now, process the integration step.
                 int maxintegrate = _integrateQ.GetCount();
                 for (int i = 0; i < maxintegrate; i++)
@@ -551,8 +551,11 @@ namespace Proto_AI_2
 
         }
 
+        //ref : https://doc.instantreality.org/tools/color_calculator/
         public void Render_Debug(int treeLevel, bool isText)
         {
+            //DebugWide.LogBlue(_levels.Length + "  " + treeLevel);
+
             //if(0 <= treeLevel && treeLevel < _levels.Length)
             //_levels[treeLevel].Debug_Render(color, isText);
 
@@ -560,19 +563,23 @@ namespace Proto_AI_2
             switch(treeLevel)
             {
                 case 0:
-                    color.r = color.r * 0.4f;
-                    color.g = color.g * 0.4f;
+                    //color.r = color.r * 0.4f;
+                    //color.g = color.g * 0.4f;
+                    color = new Color(0.435f, 0.862f, 0.180f);
                     break;
                 case 1:
-                    color.r = color.r * 0.6f;
-                    color.g = color.g * 0.6f;
+                    //color.r = color.r * 0.6f;
+                    //color.g = color.g * 0.6f;
+                    color = new Color(0.819f, 0.862f, 0.180f);
                     break;
                 case 2:
-                    color.r = color.r * 0.8f;
-                    color.g = color.g * 0.8f;
+                    //color.r = color.r * 0.8f;
+                    //color.g = color.g * 0.8f;
+                    color = new Color(0.862f, 0.6f, 0.180f);
                     break;
                 case 3:
-                    color = Color.white;
+                    //color = Color.white;
+                    color = new Color(0.862f, 0.180f, 0.188f);
                     break;
             }
             _levels[treeLevel].Debug_Render(color, isText);

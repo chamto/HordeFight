@@ -1026,7 +1026,7 @@ namespace Proto_AI_2
 
                         if (null != link && false == link.HasFlag(Flag.ROOTNODE))
                         {
-                            DebugWide.DrawLine(_center, link._center, Color.green);
+                            DebugWide.DrawLine(_center, link._center, Color.white);
                         }
                     }
 
