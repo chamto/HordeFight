@@ -24,7 +24,7 @@ namespace Proto_AI_2
     {
         public static readonly ObjectManager Inst = new ObjectManager();
 
-        public SphereTree _sphereTree_entity = new SphereTree(2000, new float[] { 16, 10, 5, 3 }, 0.5f);
+        public SphereTree _sphereTree_entity = new SphereTree(500, new float[] { 16, 10, 5, 3 }, 0.5f);
         //public SphereTree _sphereTree_entity = new SphereTree(1000, new float[] { 10, 5, 3}, 0.5f);
 
         private ObjectManager()
@@ -707,7 +707,10 @@ namespace Proto_AI_2
             //==============================================
             //!!!!! 구트리 위치 갱신 
             if (null != _sphereModel)
-                _sphereModel.SetPos(_pos);
+            {
+                _sphereModel.NewPos(_pos);
+            }
+
             //==============================================
 
             //!!!!! 경계상자 위치 갱신
@@ -719,6 +722,17 @@ namespace Proto_AI_2
 
             GridManager.Inst.AttachCellSpace(_pos, this);
 
+        }
+
+        public void SetRadius(float radius)
+        {
+            _radius = radius;
+            //==============================================
+            //!!!!! 구트리 갱신 
+            if (null != _sphereModel)
+            {
+                _sphereModel.NewPosRadius(_pos, _radius); //반지름도 함께 갱신되도록 한다 
+            }
         }
 
 

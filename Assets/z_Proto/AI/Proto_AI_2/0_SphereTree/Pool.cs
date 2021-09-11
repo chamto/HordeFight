@@ -187,7 +187,7 @@ namespace Proto_AI_2
             if(false == t.IsUsed())
             {
                 SphereModel mo = t as SphereModel;
-                //DebugWide.LogRed("Release !!!  - 이미 해제한 객체 " + t.GetID());
+                DebugWide.LogRed("freeList: " + ToStringFreeLink());
                 DebugWide.LogError("Release !!!  - 이미 해제한 객체 " + t.GetID() + "  " + mo.HasFlag(SphereModel.Flag.SUPERSPHERE));
                 return; 
             }
@@ -220,7 +220,6 @@ namespace Proto_AI_2
             mUsedCount--;
             mFreeCount++;
 
-            //DebugWide.LogGreen("Release : " + ToStringFreeLink());
         }
 
         public Type GetFreeNoLink() // get free, but don't link it to the used list!!

@@ -4,7 +4,7 @@ namespace Proto_AI_2
 {
     public class QFifo<MODEL> where MODEL : class
     {
-        private int mCount; //현재 들어있는 데이터갯수 (flush 한 데이터도 포함한다)
+        public int mCount; //현재 들어있는 데이터갯수 (flush 한 데이터도 포함한다)
         public int _tail; //Push queue index. 새로 넣을 위치점
         public int _head; //Pop queue index. 꺼낼 위치점 
         public int mFifoSize; //최대 fifo 사이즈 
@@ -88,20 +88,34 @@ namespace Proto_AI_2
 
 
         //Unlink함수에 의해 데이터가 null인 것들이 항목으로 포함되어 있다. 이런 항목을 _head 증가로 간단히 걸러낸다.
+        //public MODEL Pop()
+        //{
+        //    while (_tail != _head) //데이터가 있다면 
+        //    {
+        //        mCount--;
+        //        //SpherePack *ret = mFifo[mBottom];
+        //        MODEL ret = mFifo[_head];
+        //        _head++;
+        //        if (_head == mFifoSize) _head = 0;
+        //        if (null != ret) return ret; //큐에서 가져온 데이터가 null 일 경우, 다음 데이터를 가져온다. 
+        //    }
+        //    return null;
+        //}
+
+        //null 값이어도 반환하게 한다. mCount값에 의해 루프시 중간에 값이 삽입되는 비정상 상황에서도 정해진 루프의 데이터만 pop하게 보장한다 
         public MODEL Pop()
         {
-            while (_tail != _head) //데이터가 있다면 
+            if (_tail != _head) //데이터가 있다면 
             {
                 mCount--;
-                //SpherePack *ret = mFifo[mBottom];
+
                 MODEL ret = mFifo[_head];
                 _head++;
                 if (_head == mFifoSize) _head = 0;
-                if (null != ret) return ret; //큐에서 가져온 데이터가 null 일 경우, 다음 데이터를 가져온다. 
+                return ret; 
             }
             return null;
         }
-
 
         //데이터의 개수는 변경하지 않고 데이터만 날린다
         //Out_Push 객체에서 사용하는 전용함수 
@@ -112,6 +126,8 @@ namespace Proto_AI_2
 
         //    return pack;
         //}
+
+        //데이터의 개수는 변경하지 않고 데이터만 날린다
         private void Unlink(int queueIndex)
         {
             mFifo[queueIndex] = null;
@@ -129,6 +145,22 @@ namespace Proto_AI_2
                 if (mFifo[i] == pack)
                 {
                     mFifo[i] = null;
+                    return true;
+                }
+                i++;
+                if (i == mFifoSize) i = 0;
+            }
+            return false;
+        }
+
+        public bool Contain(MODEL pack)
+        {
+            if (_tail == _head) return false; //push 와 pop 이 값다면 데이터가 없는 상태이다. 한번도 넣고 빼기를 안했거나, 같은 횟수로 넣거나 뺀경우이다. 
+            int i = _head;
+            while (_tail != i)
+            {
+                if (mFifo[i] == pack)
+                {
                     return true;
                 }
                 i++;

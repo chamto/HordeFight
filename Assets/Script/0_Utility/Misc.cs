@@ -952,6 +952,7 @@ namespace UtilGS9
             Fully           //작은원이 완전포함 
         }
 
+        //dst 원이 src 보다 작고 , src의 둘레에 안쪽으로 접했을 때를 기준으로 판단한다 
         //src 에 dst 가 완전포함하는지 검사
         static public bool Include_Sphere_Fully(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
         {
