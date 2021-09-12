@@ -183,6 +183,12 @@ namespace UtilGS9
         //사용하지 않는 데이터를 메모리풀로 반환한다
         public void Release(Type t)
         {
+            if (false == t.IsUsed())
+            {
+                SphereModel mo = t as SphereModel;
+                DebugWide.LogError("Release !!!  - 이미 해제한 객체 " + t.GetID() + "  " + mo.GetFlag());
+                return;
+            }
 
             if (t == mCurrent) mCurrent = t.GetPoolNext();
 

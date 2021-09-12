@@ -188,7 +188,7 @@ namespace Proto_AI_2
             {
                 SphereModel mo = t as SphereModel;
                 DebugWide.LogRed("freeList: " + ToStringFreeLink());
-                DebugWide.LogError("Release !!!  - 이미 해제한 객체 " + t.GetID() + "  " + mo.HasFlag(SphereModel.Flag.SUPERSPHERE));
+                DebugWide.LogError("Release !!!  - 이미 해제한 객체 " + t.GetID() + "  " + mo.GetFlag());
                 return; 
             }
 

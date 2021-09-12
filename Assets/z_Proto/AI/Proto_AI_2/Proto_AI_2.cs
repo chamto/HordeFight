@@ -20,13 +20,122 @@ namespace Proto_AI_2
         }
     }
 
+    public class SphereTree_0
+    {
+        public static readonly SphereTree_0 Inst = new SphereTree_0();
+        Test_003.PT_SphereTree _sphereTree = new Test_003.PT_SphereTree(500, 16, 10, 0.5f);
+
+        private SphereTree_0()
+        { }
+
+        public void AddSphereTree(BaseEntity entity)
+        {
+            Test_003.PT_SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, Test_003.PT_SphereModel.Flag.TREE_LEVEL_2);
+            _sphereTree.AddIntegrateQ(model);
+
+            entity._sphereModel_0 = model;
+        }
+
+        public void Update(float deltaTime)
+        {
+            int a, b;
+            _sphereTree.ResetFlag();
+            _sphereTree.Process(out a, out b);
+        }
+
+        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
+        {
+
+            if (level_1)
+                _sphereTree.Render_Debug(2, true);
+            if (level_0)
+                _sphereTree.Render_Debug(1, true);
+
+        }
+    }
+
+    public class SphereTree_1
+    {
+        public static readonly SphereTree_1 Inst = new SphereTree_1();
+        public UtilGS9.SphereTree _sphereTree = new UtilGS9.SphereTree(500, new float[] { 16, 10}, 0.5f);
+
+        private SphereTree_1()
+        { }
+
+        public void AddSphereTree(BaseEntity entity)
+        {
+            UtilGS9.SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, UtilGS9.SphereModel.Flag.CREATE_LEVEL_LAST);
+            _sphereTree.AddIntegrateQ(model);
+            //model.SetLink_UserData<BaseEntity>(entity);
+
+            entity._sphereModel_1 = model;
+        }
+
+        public void Update(float deltaTime)
+        {
+            _sphereTree.Process();
+        }
+
+        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
+        {
+            if (level_3)
+                _sphereTree.Render_Debug(3, true);
+            if (level_2)
+                _sphereTree.Render_Debug(2, true);
+            if (level_1)
+                _sphereTree.Render_Debug(1, true);
+            if (level_0)
+                _sphereTree.Render_Debug(0, true);
+
+        }
+    }
+
+    public class SphereTree_2
+    {
+        public static readonly SphereTree_2 Inst = new SphereTree_2();
+        public SphereTree _sphereTree = new SphereTree(500, new float[] { 16, 10 }, 0.5f);
+
+        private SphereTree_2()
+        { }
+
+        public void AddSphereTree(BaseEntity entity)
+        {
+            SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            _sphereTree.AddIntegrateQ(model);
+            model.SetLink_UserData<BaseEntity>(entity);
+
+            entity._sphereModel_2 = model;
+        }
+
+        public void Update(float deltaTime)
+        {
+            _sphereTree.Process();
+        }
+
+        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
+        {
+            if (level_3)
+                _sphereTree.Render_Debug(3, true);
+            if (level_2)
+                _sphereTree.Render_Debug(2, true);
+            if (level_1)
+                _sphereTree.Render_Debug(1, true);
+            if (level_0)
+                _sphereTree.Render_Debug(0, true);
+        
+        }
+            
+    }
+
     public class ObjectManager
     {
         public static readonly ObjectManager Inst = new ObjectManager();
 
+
         public SphereTree _sphereTree_entity = new SphereTree(500, new float[] { 16, 10, 5, 3 }, 0.5f);
         //public SphereTree _sphereTree_entity = new SphereTree(1000, new float[] { 10, 5, 3}, 0.5f);
 
+        
         private ObjectManager()
         { }
 
@@ -92,7 +201,7 @@ namespace Proto_AI_2
 
 
             Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
-            _sphereTree_entity.RangeTest_MinDisReturn(ref param);
+            _sphereTree_entity.RangeTest_MinDisReturn(ref param); 
 
 
             if (null != param.find)
@@ -154,11 +263,18 @@ namespace Proto_AI_2
         public bool _Draw_StructTile = false;
         public bool _Draw_BoundaryTile = false;
         public bool _Draw_ArcTile = false;
-        public bool _Draw_SphereTree = false;
+
+        //public bool _Draw_SphereTree = false;
+        public bool _Draw_SphereTree_0 = false;
+        public bool _Draw_SphereTree_1 = false;
+        public bool _Draw_SphereTree_2 = false;
         public bool _SphereTree_Level_0 = false;
         public bool _SphereTree_Level_1 = false;
         public bool _SphereTree_Level_2 = false;
         public bool _SphereTree_Level_3 = false;
+        public float _SphereTree_Gravy = 0.5f;
+        public float[] _SphereTree_maxRadius = new float[] { 16, 10, 5, 3 }; 
+                
 
         private bool _init = false;
 
@@ -308,6 +424,9 @@ namespace Proto_AI_2
 
             //==============================================
 
+            //ObjectManager.Inst._sphereTree_entity._gravy_supersphere = _SphereTree_Gravy;
+            //ObjectManager.Inst._sphereTree_entity._maxRadius_supersphere = _SphereTree_maxRadius;
+
             foreach (Vehicle v in EntityMgr.list)
             {
                 //if (0 == v._id) v._withstand = 100; //임시 시험 
@@ -370,7 +489,10 @@ namespace Proto_AI_2
                 //==========================================
             }
 
-            ObjectManager.Inst.Update(deltaTime);
+            //ObjectManager.Inst.Update(deltaTime);
+            SphereTree_0.Inst.Update(deltaTime);
+            SphereTree_1.Inst.Update(deltaTime);
+            SphereTree_2.Inst.Update(deltaTime);
         }
 
         public void KeyInput()
@@ -549,17 +671,25 @@ namespace Proto_AI_2
 
             _gridMgr.Draw_StructTile_ArcInfo(_tr_test.position);
 
-            if(true == _Draw_SphereTree)
+            if(true == _Draw_SphereTree_0)
             {
-                if (_SphereTree_Level_3)
-                    ObjectManager.Inst._sphereTree_entity.Render_Debug(3, false);
-                if (_SphereTree_Level_2)
-                    ObjectManager.Inst._sphereTree_entity.Render_Debug(2, false);
-                if (_SphereTree_Level_1)
-                    ObjectManager.Inst._sphereTree_entity.Render_Debug(1, false);
-                if (_SphereTree_Level_0)
-                    ObjectManager.Inst._sphereTree_entity.Render_Debug(0, false);
-
+                //if (_SphereTree_Level_3)
+                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(3, false);
+                //if (_SphereTree_Level_2)
+                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(2, false);
+                //if (_SphereTree_Level_1)
+                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(1, false);
+                //if (_SphereTree_Level_0)
+                //ObjectManager.Inst._sphereTree_entity.Render_Debug(0, false);
+                SphereTree_0.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+            }
+            if (true == _Draw_SphereTree_1)
+            {
+                SphereTree_1.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+            }
+            if (true == _Draw_SphereTree_2)
+            {
+                SphereTree_2.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
 
 
@@ -584,9 +714,12 @@ namespace Proto_AI_2
         //==================================================
         // 충돌 모델 
         //==================================================
+        public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
         public SphereModel _sphereModel = null; //구트리
-        public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject(); 
 
+        public Test_003.PT_SphereModel _sphereModel_0 = null; //구트리
+        public UtilGS9.SphereModel _sphereModel_1 = null; //구트리
+        public SphereModel _sphereModel_2 = null; //구트리
     }
 
     public class FormationPoint : BaseEntity
@@ -703,14 +836,17 @@ namespace Proto_AI_2
             //==============================================
             _collision._id = _id;
             //_collision._radius = radius;
-            SetPos(pos);
 
             //==============================================
             ////구트리 등록 
             ObjectManager.Inst.AddSphereTree(this);
 
+            SphereTree_0.Inst.AddSphereTree(this);
+            SphereTree_1.Inst.AddSphereTree(this);
+            SphereTree_2.Inst.AddSphereTree(this);
             //==============================================
 
+            SetPos(pos);
             _oldPos = pos;
 
             CreateFeelers();
@@ -727,6 +863,9 @@ namespace Proto_AI_2
                 _sphereModel.NewPos(_pos);
             }
 
+            _sphereModel_0.SetPos(_pos);
+            _sphereModel_1.SetPos(_pos);
+            _sphereModel_2.NewPos(_pos);
             //==============================================
 
             //!!!!! 경계상자 위치 갱신

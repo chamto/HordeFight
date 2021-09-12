@@ -1051,7 +1051,8 @@ namespace Proto_AI_2
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
                     //DebugWide.PrintText(_center, color, temp + GetID());
-                    DebugWide.PrintText(_center, Color.black, temp + level);
+                    //DebugWide.PrintText(_center, Color.black, temp + level);
+                    DebugWide.PrintText(_center, Color.black, _radius.ToString("F2"));
                 }
 
             }

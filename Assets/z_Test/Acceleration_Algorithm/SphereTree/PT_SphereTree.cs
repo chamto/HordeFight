@@ -654,8 +654,11 @@ namespace Test_003
                     if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n        "; }
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
-                    DebugWide.PrintText(_center, color, temp + GetID());
-                    //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() );    
+                    //DebugWide.PrintText(_center, color, temp + GetID());
+                    //DefineI.PrintText(_center, Color.black, ((Flag)_flags).ToString() ); 
+
+                    //ref : https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings   
+                    DebugWide.PrintText(_center, color, _radius.ToString("F2"));
                 }
 
             }
