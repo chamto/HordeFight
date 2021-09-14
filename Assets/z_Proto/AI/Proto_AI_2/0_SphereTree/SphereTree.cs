@@ -167,7 +167,7 @@ namespace Proto_AI_2
                     //--------------------->
                     //if (contain)
                     //{
-                    //    DebugWide.LogGreen("2 Q list : " + ToStringQ(_recomputeQ));
+                        //DebugWide.LogGreen("2 Q list : " + ToStringQ(_recomputeQ));
                     //}
                     //--------------------->
                 }

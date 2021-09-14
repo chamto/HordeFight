@@ -232,11 +232,14 @@ namespace Proto_AI_2
 
                     if (false == _superSphere.HasFlag(Flag.RECOMPUTE))
                     {
-                        //DebugWide.LogGreen("NewPos : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+                        //DebugWide.LogGreen("NewPos recomp : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산  
                     }
 
                     //Unlink();
+
+                    //슈퍼구의 자식이 1일 경우 unlink를 통해 제거대상이 된다. 불필요한 처리로 추정 
+                    //DebugWide.LogGreen("NewPos interg : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
 
