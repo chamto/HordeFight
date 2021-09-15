@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Proto_AI_2
+namespace ST_Test_005
 { 
     public class Frustum
     {

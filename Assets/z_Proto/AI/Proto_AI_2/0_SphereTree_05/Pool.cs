@@ -5,7 +5,7 @@
 /**               Written by John W. Ratcliff jratcliff@att.net        */
 /***********************************************************************/
 
-namespace Proto_AI_2
+namespace ST_Test_005
 { 
     public interface IPoolConnector<Type> where Type : class, new()
     {

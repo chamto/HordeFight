@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-namespace Proto_AI_2
+namespace ST_Test_005
 {
     
     //=================================================================
@@ -513,10 +513,10 @@ namespace Proto_AI_2
             return _levels[0].RayTrace_FirstReturn(start, end, exceptModel);
         }
 
-        public void RangeTest_MinDisReturn(ref ObjectManager.Param_RangeTest param)
-        {
-            _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
-        }
+        //public void RangeTest_MinDisReturn(ref Param_RangeTest param)
+        //{
+        //    _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
+        //}
 
         //==================================================
         // debug 용 

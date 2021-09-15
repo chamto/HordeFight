@@ -2,7 +2,7 @@
 using UnityEngine;
 using UtilGS9;
 
-namespace Proto_AI_2
+namespace ST_Test_005
 {
     public class SphereModel : IPoolConnector<SphereModel>
     {
@@ -718,93 +718,150 @@ namespace Proto_AI_2
             return null;
         }
 
+        //fixme
+        //public void RangeTest_MinDisReturn(Frustum.ViewState state, ref Param_RangeTest param)
+        //{
 
-        public void RangeTest_MinDisReturn(Frustum.ViewState state, ref ObjectManager.Param_RangeTest param)
-        {
-
-            //float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude; //stakoverflow ?? 스택오버플로우가 발생하기 때문에 사용하지 말기 
-            float between_sqr = (param.src_pos - _center).sqrMagnitude; //여기서도 스택오버플러우 발생 
-            if (state == Frustum.ViewState.PARTIAL)
-            {
+        //    //float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude; //stakoverflow ?? 스택오버플로우가 발생하기 때문에 사용하지 말기 
+        //    float between_sqr = (param.src_pos - _center).sqrMagnitude; //여기서도 스택오버플러우 발생 
+        //    if (state == Frustum.ViewState.PARTIAL)
+        //    {
             
-                //완전비포함 검사
-                float sqrSumRd = (_radius + param.maxRadius) * (_radius + param.maxRadius);
-                if (between_sqr > sqrSumRd) return;
+        //        //완전비포함 검사
+        //        float sqrSumRd = (_radius + param.maxRadius) * (_radius + param.maxRadius);
+        //        if (between_sqr > sqrSumRd) return;
 
-                //완전포함 검사 
-                if (param.maxRadius >= _radius)
-                {
-                    float sqrSubRd = (param.maxRadius - _radius) * (param.maxRadius - _radius);
-                    if (between_sqr <= sqrSubRd) state = Frustum.ViewState.INSIDE; //슈퍼구가 포함되면 자식구까지 모두 포함되므로, 계산할 필요가 없어진다     
-                }
+        //        //완전포함 검사 
+        //        if (param.maxRadius >= _radius)
+        //        {
+        //            float sqrSubRd = (param.maxRadius - _radius) * (param.maxRadius - _radius);
+        //            if (between_sqr <= sqrSubRd) state = Frustum.ViewState.INSIDE; //슈퍼구가 포함되면 자식구까지 모두 포함되므로, 계산할 필요가 없어진다     
+        //        }
 
-            }
+        //    }
 
-            if (HasFlag(Flag.SUPERSPHERE))
-            {
-                SphereModel pack = _head_children;
+        //    if (HasFlag(Flag.SUPERSPHERE))
+        //    {
+        //        SphereModel pack = _head_children;
 
-                //while (null != pack)
-                for (int i = 0; i < this.GetChildCount(); i++)
-                {
-                    if (null == pack)
-                    {
-                        DebugWide.LogRed("RangeTest_MinDisReturn --a--" + i + "  id:" + this._id + "  " + this._childCount); //test
-                        //break;
-                    }
-                    else if (pack == pack.GetNextSibling())
-                    {
-                        DebugWide.LogRed("RangeTest_MinDisReturn --b--" + i + "  id:"+ this._id + "  " + this._childCount); //test
-                        //break;
-                    }
+        //        //while (null != pack)
+        //        for (int i = 0; i < this.GetChildCount(); i++)
+        //        {
+        //            if (null == pack)
+        //            {
+        //                DebugWide.LogRed("RangeTest_MinDisReturn --a--" + i + "  id:" + this._id + "  " + this._childCount); //test
+        //                //break;
+        //            }
+        //            else if (pack == pack.GetNextSibling())
+        //            {
+        //                DebugWide.LogRed("RangeTest_MinDisReturn --b--" + i + "  id:"+ this._id + "  " + this._childCount); //test
+        //                //break;
+        //            }
 
-                    pack.RangeTest_MinDisReturn(state, ref param);
-                    pack = pack.GetNextSibling();
-                }
+        //            pack.RangeTest_MinDisReturn(state, ref param);
+        //            pack = pack.GetNextSibling();
+        //        }
 
-                //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.gray);
-            }
-            else
-            {
-                SphereModel upLink = this.GetLink_UpLevel_ChildSphere();
-                SphereModel downLink = this.GetLink_DownLevel_SuperSphere();
+        //        //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.gray);
+        //    }
+        //    else
+        //    {
+        //        SphereModel upLink = this.GetLink_UpLevel_ChildSphere();
+        //        SphereModel downLink = this.GetLink_DownLevel_SuperSphere();
 
-                //자식노드에 연결된 하위레벨 슈퍼구 
-                if (null != downLink)
-                    downLink.RangeTest_MinDisReturn(state, ref param);
+        //        //자식노드에 연결된 하위레벨 슈퍼구 
+        //        if (null != downLink)
+        //            downLink.RangeTest_MinDisReturn(state, ref param);
                 
-                //전체트리의 최하위 자식노드 
-                if (null == upLink && null == downLink)
-                {
-                    //최소반지름의 완전포함을 걸러낸다 
-                    bool isFully = Geo.Include_Sphere_Fully(param.src_pos, param.minRadius, _center, _radius);
-                    if (false == isFully)
-                    {
-                        //등록된 검사용 콜백함수 호출
-                        if (null != param.callback)
-                        {
-                            //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.white);
-                            //검사용 콜백함수를 통과하면 최하위 노드인 자기자신을 반환한다.
-                            if (true == param.callback(ref param, this))
-                            {
-                                param.find = this;
+        //        //전체트리의 최하위 자식노드 
+        //        if (null == upLink && null == downLink)
+        //        {
+        //            //최소반지름의 완전포함을 걸러낸다 
+        //            bool isFully = Geo.Include_Sphere_Fully(param.src_pos, param.minRadius, _center, _radius);
+        //            if (false == isFully)
+        //            {
+        //                //등록된 검사용 콜백함수 호출
+        //                if (null != param.callback)
+        //                {
+        //                    //SingleO.debugViewer.AddDraw_Circle(_center, _radius, Color.white);
+        //                    //검사용 콜백함수를 통과하면 최하위 노드인 자기자신을 반환한다.
+        //                    if (true == param.callback(ref param, this))
+        //                    {
+        //                        param.find = this;
 
-                            }
+        //                    }
                                 
-                        }
-                        else
-                        {
-                            //검사함수가 없으면 자기자신을 반환한다 
-                            param.find = this;
-                        }
+        //                }
+        //                else
+        //                {
+        //                    //검사함수가 없으면 자기자신을 반환한다 
+        //                    param.find = this;
+        //                }
 
-                    }
-                }
+        //            }
+        //        }
 
+        //    }
+
+        //}
+
+
+        public struct Param_RangeTest<ENTITY> where ENTITY : class, new()
+        {
+            //==============================================
+            public SphereModel find; //결과값 
+
+            public ENTITY unit;
+            //public Camp.eRelation vsRelation;
+            //public Camp.eKind unit_campKind;
+
+            public Vector3 src_pos;
+            public float minRadius;
+            public float maxRadius;
+            //public float maxRadiusSqr;
+
+            public delegate bool Proto_ConditionCheck(ref Param_RangeTest<ENTITY> param, SphereModel dstModel);
+            public Proto_ConditionCheck callback;
+            //==============================================
+
+            
+            public Param_RangeTest(ENTITY in_srcUnit, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+            {
+                find = null;
+
+                unit = in_srcUnit;
+                //vsRelation = in_vsRelation;
+                //unit_campKind = in_srcUnit._campKind;
+                src_pos = pos;
+                minRadius = meter_minRadius;
+                maxRadius = meter_maxRadius;
+                //maxRadiusSqr = maxRadius * maxRadius;
+
+                callback = Param_RangeTest<ENTITY>.Func_ConditionCheck;
             }
 
-        }
+            //==============================================
 
+            static public bool Func_ConditionCheck(ref Param_RangeTest<ENTITY> param, SphereModel dstModel)
+            {
+                //return true;
+
+                //기준객체는 검사대상에서 제외한다 - fixme 
+                //if (null != param.unit && param.unit._sphereModel == dstModel) return false;
+
+                ENTITY dstBeing = dstModel.GetLink_UserData() as ENTITY;
+                //BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
+
+                if (null != dstBeing)
+                {
+                    //가시거리 검사 
+                    return true;
+                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
+                }
+
+                return false;
+            }
+        }
         //==================================================
         // debug용
         //==================================================
