@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Test_003
+namespace ST_Test_003
 {
     public interface IPoolConnector<Type> where Type : class, new()
     {

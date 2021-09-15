@@ -1,8 +1,8 @@
 ﻿using System;
 using UnityEngine;
+using UtilGS9;
 
-
-namespace UtilGS9
+namespace ST_Test_004
 {
     public class SphereModel : IPoolConnector<SphereModel>
     {

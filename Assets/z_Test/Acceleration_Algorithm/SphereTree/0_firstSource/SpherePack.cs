@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Test_003
+namespace ST_Test_003
 {
     //UserData 대상이 되는 객체는 이 인터페이스를 상속받아야 한다 
     public interface IUserData

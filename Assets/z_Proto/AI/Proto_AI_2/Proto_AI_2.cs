@@ -23,14 +23,14 @@ namespace Proto_AI_2
     public class SphereTree_0
     {
         public static readonly SphereTree_0 Inst = new SphereTree_0();
-        Test_003.PT_SphereTree _sphereTree = new Test_003.PT_SphereTree(500, 16, 10, 0.5f);
+        ST_Test_003.PT_SphereTree _sphereTree = new ST_Test_003.PT_SphereTree(500, 16, 10, 0.5f);
 
         private SphereTree_0()
         { }
 
         public void AddSphereTree(BaseEntity entity)
         {
-            Test_003.PT_SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, Test_003.PT_SphereModel.Flag.TREE_LEVEL_2);
+            ST_Test_003.PT_SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, ST_Test_003.PT_SphereModel.Flag.TREE_LEVEL_2);
             _sphereTree.AddIntegrateQ(model);
 
             entity._sphereModel_0 = model;
@@ -57,14 +57,14 @@ namespace Proto_AI_2
     public class SphereTree_1
     {
         public static readonly SphereTree_1 Inst = new SphereTree_1();
-        public UtilGS9.SphereTree _sphereTree = new UtilGS9.SphereTree(500, new float[] { 16, 10}, 0.5f);
+        public ST_Test_004.SphereTree _sphereTree = new ST_Test_004.SphereTree(500, new float[] { 16, 10}, 0.5f);
 
         private SphereTree_1()
         { }
 
         public void AddSphereTree(BaseEntity entity)
         {
-            UtilGS9.SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, UtilGS9.SphereModel.Flag.CREATE_LEVEL_LAST);
+            ST_Test_004.SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, ST_Test_004.SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
             //model.SetLink_UserData<BaseEntity>(entity);
 
@@ -93,16 +93,16 @@ namespace Proto_AI_2
     public class SphereTree_2
     {
         public static readonly SphereTree_2 Inst = new SphereTree_2();
-        public SphereTree _sphereTree = new SphereTree(500, new float[] { 16, 10 }, 0.5f);
+        public ST_Test_005.SphereTree _sphereTree = new ST_Test_005.SphereTree(500, new float[] { 16, 10 }, 0.5f);
 
         private SphereTree_2()
         { }
 
         public void AddSphereTree(BaseEntity entity)
         {
-            SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            ST_Test_005.SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, ST_Test_005.SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
-            model.SetLink_UserData<BaseEntity>(entity);
+            //model.SetLink_UserData<BaseEntity>(entity);
 
             entity._sphereModel_2 = model;
         }
@@ -131,101 +131,41 @@ namespace Proto_AI_2
     {
         public static readonly ObjectManager Inst = new ObjectManager();
 
+        //public SphereTree _sphereTree_entity = new SphereTree(500, new float[] { 16, 10, 5, 3 }, 0.5f);
 
-        public SphereTree _sphereTree_entity = new SphereTree(500, new float[] { 16, 10, 5, 3 }, 0.5f);
-        //public SphereTree _sphereTree_entity = new SphereTree(1000, new float[] { 10, 5, 3}, 0.5f);
-
-        
         private ObjectManager()
         { }
 
-        public struct Param_RangeTest
-        {
-            //==============================================
-            public SphereModel find; //결과값 
-
-            public BaseEntity unit;
-            //public Camp.eRelation vsRelation;
-            //public Camp.eKind unit_campKind;
-
-            public Vector3 src_pos;
-            public float minRadius;
-            public float maxRadius;
-            //public float maxRadiusSqr;
-
-            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel);
-            public Proto_ConditionCheck callback;
-            //==============================================
-
-            //public Param_RangeTest(ChampUnit in_srcUnit, Camp.eRelation in_vsRelation, Vector3 pos, float meter_minRadius, float meter_maxRadius)
-            public Param_RangeTest(BaseEntity in_srcUnit, Vector3 pos, float meter_minRadius, float meter_maxRadius)
-            {
-                find = null;
-
-                unit = in_srcUnit;
-                //vsRelation = in_vsRelation;
-                //unit_campKind = in_srcUnit._campKind;
-                src_pos = pos;
-                minRadius = meter_minRadius;
-                maxRadius = meter_maxRadius;
-                //maxRadiusSqr = maxRadius * maxRadius;
-
-                callback = Param_RangeTest.Func_ConditionCheck;
-            }
-
-            //==============================================
-
-            static public bool Func_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel)
-            {
-                //return true;
-
-                //기준객체는 검사대상에서 제외한다 
-                if (null != param.unit && param.unit._sphereModel == dstModel) return false;
-
-                BaseEntity dstBeing = dstModel.GetLink_UserData() as BaseEntity;
-                //BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
-
-                if (null != dstBeing)
-                {
-                    //가시거리 검사 
-                    return true;
-                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
-                }
-
-                return false;
-            }
-        }
-
-        public BaseEntity RangeTest(BaseEntity src, Vector3 pos, float meter_minRadius, float meter_maxRadius)
-        {
 
 
-            Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
-            _sphereTree_entity.RangeTest_MinDisReturn(ref param); 
+        //public BaseEntity RangeTest(BaseEntity src, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+        //{
+        //    Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
+        //    _sphereTree_entity.RangeTest_MinDisReturn(ref param); 
 
 
-            if (null != param.find)
-            {
+        //    if (null != param.find)
+        //    {
 
-                return param.find.GetLink_UserData() as BaseEntity;
-            }
+        //        return param.find.GetLink_UserData() as BaseEntity;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        public void AddSphereTree(BaseEntity entity)
-        {
-            SphereModel model = _sphereTree_entity.AddSphere(entity._pos, entity._radius, SphereModel.Flag.CREATE_LEVEL_LAST);
-            _sphereTree_entity.AddIntegrateQ(model);
-            model.SetLink_UserData<BaseEntity>(entity);
+        //public void AddSphereTree(BaseEntity entity)
+        //{
+        //    SphereModel model = _sphereTree_entity.AddSphere(entity._pos, entity._radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+        //    _sphereTree_entity.AddIntegrateQ(model);
+        //    model.SetLink_UserData<BaseEntity>(entity);
 
-            entity._sphereModel = model;
-        }
+        //    entity._sphereModel = model;
+        //}
 
-        public void Update(float deltaTime)
-        {
-            _sphereTree_entity.Process(); 
-        }
+        //public void Update(float deltaTime)
+        //{
+        //    _sphereTree_entity.Process(); 
+        //}
     }
 
 
@@ -698,7 +638,7 @@ namespace Proto_AI_2
         }
     }
 
-    public class BaseEntity : SphereModel.IUserData
+    public class BaseEntity //: SphereModel.IUserData
     {
         public float _radius = 0.5f;
         public Vector3 _oldPos = Vector3.zero;
@@ -715,11 +655,11 @@ namespace Proto_AI_2
         // 충돌 모델 
         //==================================================
         public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
-        public SphereModel _sphereModel = null; //구트리
+        //public SphereModel _sphereModel = null; //구트리
 
-        public Test_003.PT_SphereModel _sphereModel_0 = null; //구트리
-        public UtilGS9.SphereModel _sphereModel_1 = null; //구트리
-        public SphereModel _sphereModel_2 = null; //구트리
+        public ST_Test_003.PT_SphereModel _sphereModel_0 = null; //구트리
+        public ST_Test_004.SphereModel _sphereModel_1 = null; //구트리
+        public ST_Test_005.SphereModel _sphereModel_2 = null; //구트리
     }
 
     public class FormationPoint : BaseEntity
@@ -839,7 +779,7 @@ namespace Proto_AI_2
 
             //==============================================
             ////구트리 등록 
-            ObjectManager.Inst.AddSphereTree(this);
+            //ObjectManager.Inst.AddSphereTree(this);
 
             SphereTree_0.Inst.AddSphereTree(this);
             SphereTree_1.Inst.AddSphereTree(this);
@@ -858,10 +798,10 @@ namespace Proto_AI_2
 
             //==============================================
             //!!!!! 구트리 위치 갱신 
-            if (null != _sphereModel)
-            {
-                _sphereModel.NewPos(_pos);
-            }
+            //if (null != _sphereModel)
+            //{
+            //    _sphereModel.NewPos(_pos);
+            //}
 
             _sphereModel_0.SetPos(_pos);
             _sphereModel_1.SetPos(_pos);
@@ -884,10 +824,10 @@ namespace Proto_AI_2
             _radius = radius;
             //==============================================
             //!!!!! 구트리 갱신 
-            if (null != _sphereModel)
-            {
-                _sphereModel.NewPosRadius(_pos, _radius); //반지름도 함께 갱신되도록 한다 
-            }
+            //if (null != _sphereModel)
+            //{
+            //    _sphereModel.NewPosRadius(_pos, _radius); //반지름도 함께 갱신되도록 한다 
+            //}
         }
 
 

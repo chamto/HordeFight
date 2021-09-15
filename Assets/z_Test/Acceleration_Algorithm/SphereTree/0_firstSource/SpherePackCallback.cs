@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Test_003
+namespace ST_Test_003
 {
     // Virtual base class, used to implement callbacks for RayTracing,
     // range testing, and frustum culling.

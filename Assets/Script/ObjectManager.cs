@@ -25,8 +25,8 @@ namespace HordeFight
         public List<Shot> _shots = new List<Shot>();
 
         private AABBCulling _aabbCulling = new AABBCulling();
-        private SphereTree _sphereTree_being = new SphereTree(2000, new float[] { 16, 10, 5 , 3 }, 0.5f);
-        private SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
+        private ST_Test_004.SphereTree _sphereTree_being = new ST_Test_004.SphereTree(2000, new float[] { 16, 10, 5 , 3 }, 0.5f);
+        private ST_Test_004.SphereTree _sphereTree_struct = new ST_Test_004.SphereTree(2000, new float[] { 16, 10, 4 }, 1f);
 
 
         //private void Start()
@@ -66,7 +66,7 @@ namespace HordeFight
             {
                 //if (true == t.Value._isUpTile)
                 {
-                    SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, SphereModel.Flag.CREATE_LEVEL_LAST);
+                    ST_Test_004.SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, ST_Test_004.SphereModel.Flag.CREATE_LEVEL_LAST);
                     _sphereTree_struct.AddIntegrateQ(model);
                 }
             }
@@ -77,8 +77,8 @@ namespace HordeFight
 
         }
 
-        public SphereTree GetSphereTree_Being() { return _sphereTree_being; }
-        public SphereTree GetSphereTree_Struct() { return _sphereTree_struct; }
+        public ST_Test_004.SphereTree GetSphereTree_Being() { return _sphereTree_being; }
+        public ST_Test_004.SphereTree GetSphereTree_Struct() { return _sphereTree_struct; }
 
         public Bounds GetBounds_CameraView()
         {
@@ -897,7 +897,7 @@ namespace HordeFight
         public struct Param_RangeTest
         {
             //==============================================
-            public SphereModel find; //결과값 
+            public ST_Test_004.SphereModel find; //결과값 
 
             public Camp.eRelation vsRelation;
             public ChampUnit unit;
@@ -908,7 +908,7 @@ namespace HordeFight
             public float maxRadius;
             public float maxRadiusSqr;
 
-            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel);
+            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, ST_Test_004.SphereModel dstModel);
             public Proto_ConditionCheck callback;
             //==============================================
 
@@ -928,7 +928,7 @@ namespace HordeFight
 
             //==============================================
 
-            static public bool Func_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel)
+            static public bool Func_ConditionCheck(ref Param_RangeTest param, ST_Test_004.SphereModel dstModel)
             {
                 //return true;
 
@@ -1217,7 +1217,7 @@ namespace HordeFight
 
             //==============================================
             ////구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            ST_Test_004.SphereModel model = _sphereTree_being.AddSphere(pos, cha._collider_radius, ST_Test_004.SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<ChampUnit>(cha);
             //DebugWide.LogRed(cha._collider_radius + "  radius ");
@@ -1252,7 +1252,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            ST_Test_004.SphereModel model = _sphereTree_being.AddSphere(pos, shot._collider_radius, ST_Test_004.SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<Shot>(shot);
             //==============================================
@@ -1287,7 +1287,7 @@ namespace HordeFight
 
             //==============================================
             //구트리 등록 
-            SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, SphereModel.Flag.CREATE_LEVEL_LAST);
+            ST_Test_004.SphereModel model = _sphereTree_being.AddSphere(pos, obst._collider_radius, ST_Test_004.SphereModel.Flag.CREATE_LEVEL_LAST);
             _sphereTree_being.AddIntegrateQ(model);
             model.SetLink_UserData<Obstacle>(obst);
             //==============================================

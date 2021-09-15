@@ -51,7 +51,7 @@ namespace HordeFight
 
 
 
-    public class Being : MonoBehaviour, SphereModel.IUserData
+    public class Being : MonoBehaviour, ST_Test_004.SphereModel.IUserData
     {
         
         //객체이름에 '_' 가 들어가면 안된다. 전체 애니이름의 문자열을 분리할 때 '_' 기준으로 자르기 때문임 
@@ -228,7 +228,7 @@ namespace HordeFight
         //==================================================
         // 구트리 모델 
         //==================================================
-        public SphereModel _sphereModel = null;
+        public ST_Test_004.SphereModel _sphereModel = null;
 
 
         //==================================================

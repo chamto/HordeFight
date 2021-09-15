@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
-namespace Test_003
+namespace ST_Test_003
 {
     public class Test_003_SphereTree : MonoBehaviour
     {

@@ -5,7 +5,7 @@
 /**               Written by John W. Ratcliff jratcliff@att.net        */
 /***********************************************************************/
 
-namespace UtilGS9
+namespace ST_Test_004
 { 
     public interface IPoolConnector<Type> where Type : class, new()
     {

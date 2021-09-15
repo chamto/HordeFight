@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UtilGS9;
 
-namespace Test_003
+namespace ST_Test_003
 {
     //끌어당기는 것 
     public class Attractor

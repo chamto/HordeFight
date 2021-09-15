@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace Test_003
+namespace ST_Test_003
 {
     public interface ISphereInterface
     {
