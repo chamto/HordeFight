@@ -127,6 +127,43 @@ namespace Proto_AI_2
             
     }
 
+    public class SphereTree_3
+    {
+        public static readonly SphereTree_3 Inst = new SphereTree_3();
+        public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 }, 0.5f);
+
+        private SphereTree_3()
+        { }
+
+        public void AddSphereTree(BaseEntity entity)
+        {
+            ST_Test_006.SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, ST_Test_006.SphereTree.CREATE_LEVEL_LAST);
+            _sphereTree.AddIntegrateQ(model);
+            //model.SetLink_UserData<BaseEntity>(entity);
+
+            entity._sphereModel_3 = model;
+        }
+
+        public void Update(float deltaTime)
+        {
+            _sphereTree.Process();
+        }
+
+        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
+        {
+            if (level_3)
+                _sphereTree.Render_Debug(3, true);
+            if (level_2)
+                _sphereTree.Render_Debug(2, true);
+            if (level_1)
+                _sphereTree.Render_Debug(1, true);
+            if (level_0)
+                _sphereTree.Render_Debug(0, true);
+
+        }
+
+    }
+
     public class ObjectManager
     {
         public static readonly ObjectManager Inst = new ObjectManager();
@@ -208,6 +245,7 @@ namespace Proto_AI_2
         public bool _Draw_SphereTree_0 = false;
         public bool _Draw_SphereTree_1 = false;
         public bool _Draw_SphereTree_2 = false;
+        public bool _Draw_SphereTree_3 = false;
         public bool _SphereTree_Level_0 = false;
         public bool _SphereTree_Level_1 = false;
         public bool _SphereTree_Level_2 = false;
@@ -433,6 +471,7 @@ namespace Proto_AI_2
             SphereTree_0.Inst.Update(deltaTime);
             SphereTree_1.Inst.Update(deltaTime);
             SphereTree_2.Inst.Update(deltaTime);
+            SphereTree_3.Inst.Update(deltaTime);
         }
 
         public void KeyInput()
@@ -613,14 +652,6 @@ namespace Proto_AI_2
 
             if(true == _Draw_SphereTree_0)
             {
-                //if (_SphereTree_Level_3)
-                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(3, false);
-                //if (_SphereTree_Level_2)
-                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(2, false);
-                //if (_SphereTree_Level_1)
-                //    ObjectManager.Inst._sphereTree_entity.Render_Debug(1, false);
-                //if (_SphereTree_Level_0)
-                //ObjectManager.Inst._sphereTree_entity.Render_Debug(0, false);
                 SphereTree_0.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
             if (true == _Draw_SphereTree_1)
@@ -630,6 +661,10 @@ namespace Proto_AI_2
             if (true == _Draw_SphereTree_2)
             {
                 SphereTree_2.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+            }
+            if (true == _Draw_SphereTree_3)
+            {
+                SphereTree_3.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
 
 
@@ -660,6 +695,7 @@ namespace Proto_AI_2
         public ST_Test_003.PT_SphereModel _sphereModel_0 = null; //구트리
         public ST_Test_004.SphereModel _sphereModel_1 = null; //구트리
         public ST_Test_005.SphereModel _sphereModel_2 = null; //구트리
+        public ST_Test_006.SphereModel _sphereModel_3 = null; //구트리
     }
 
     public class FormationPoint : BaseEntity
@@ -784,6 +820,7 @@ namespace Proto_AI_2
             SphereTree_0.Inst.AddSphereTree(this);
             SphereTree_1.Inst.AddSphereTree(this);
             SphereTree_2.Inst.AddSphereTree(this);
+            SphereTree_3.Inst.AddSphereTree(this);
             //==============================================
 
             SetPos(pos);
@@ -806,6 +843,7 @@ namespace Proto_AI_2
             _sphereModel_0.SetPos(_pos);
             _sphereModel_1.SetPos(_pos);
             _sphereModel_2.NewPos(_pos);
+            _sphereModel_3.NewPos(_pos);
             //==============================================
 
             //!!!!! 경계상자 위치 갱신
