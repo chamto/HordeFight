@@ -127,7 +127,9 @@ namespace ST_Test_006
             int level = pack._level;
             if(false == pack.HasFlag(SphereModel.Flag.INTEGRATE))
             {
-                //_levels[level].AddChild(pack); //test need
+                //_levels[level].AddChild(pack); //자식구를 unlink 하고 AddIntegrateQ 가 호출되었을 경우 
+                //링크가 사라진 자식구를 루트레벨구에 붙이는 처리를 한다 
+                //통합계산시 루트레벨 목록에서 자식구 정보가 필요없다. 필요없는 정보를 루트레벨 목록에서 제외하기 위해 주석한다  
 
 
                 pack.AddFlag(SphereModel.Flag.INTEGRATE); // still needs to be integrated!
@@ -352,7 +354,7 @@ namespace ST_Test_006
                 }
 
                 if (search.HasFlag(SphereModel.Flag.SUPERSPHERE) &&
-                    false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 != search.GetChildCount())
+                    false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 < search.GetChildCount())
                 {
 
                     float sqrDist = src_pack.ToDistanceSquared(search);
@@ -398,6 +400,8 @@ namespace ST_Test_006
                 }
                 search = search.GetNextSibling();
             }//end for
+
+
             //=====================================================================================
 
             //조건1 - src구가 완전 포함 
@@ -474,6 +478,11 @@ namespace ST_Test_006
                             //{
                             //    Integrate(link, _levels[upLevel_idx], _maxRadius_supersphere[upLevel_idx]);
                             //}
+                            link.SetRadius(newRadius); //링크구 크기도 동일하게 갱신해야 한다. !!중요한 처리임. 
+                            //!!초기구트리 소스가 가지고 있는 버그 수정한 것임
+                            //하위레벨슈퍼구의 링크자식구를 갱신안하면 링크자식구의 슈퍼구(상위레벨슈퍼구)를 하위레벨자식구가 벗어나게 된다
+                            // 즉 하위레벨슈퍼구와 링크자식구의 크기는 항상 동일하게 설정해야 한다는 것임  
+
                             AddRecomputeQ(link.GetSuperSphere());
                             AddIntegrateQ(link);
                         }
@@ -488,6 +497,7 @@ namespace ST_Test_006
                 //조건3 - !포함될 슈퍼구가 하나도 없는 경우 , !!슈퍼구 최대크기 보다 큰 경우
                 if (newsphere)
                 {
+
                     src_pack.Unlink();
                     //DebugWide.LogBlue("Integrate : 새로운 슈퍼구 생성 : p_id: " + src_pack.GetID());
                     SphereModel superSphere = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, rootsphere._level);

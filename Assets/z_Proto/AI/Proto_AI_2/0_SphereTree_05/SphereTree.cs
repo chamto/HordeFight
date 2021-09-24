@@ -382,7 +382,7 @@ namespace ST_Test_005
             if (null != containing_supersphere)
             {
                 //DebugWide.LogBlue(" " + src_pack.GetSuperSphere().GetID());
-                //src_pack.Unlink(); //큐 연결정보를 Process 에서 해제 했기 때문에, 내부에서 LostChild만 수행된다 
+
                 //DebugWide.LogBlue("a Integrate : 완전포함 : s_id: " + containing_supersphere.GetID()+" p_id: " + src_pack.GetID() + " isUsed: " + containing_supersphere.IsUsed());
                 //containing_supersphere.AddChild(src_pack); //src_pack 의 트리정보를 설정
                 //DebugWide.LogBlue("b Integrate : 완전포함 : s_id: " + containing_supersphere.GetID() + " p_id: " + src_pack.GetID() + " isUsed: " + containing_supersphere.IsUsed());
@@ -390,6 +390,7 @@ namespace ST_Test_005
                 //자식구가 1개 일때 링크구까지 지우므로 슈퍼구가 다를때만 처리한다 
                 if (containing_supersphere != src_pack.GetSuperSphere())
                 {
+                    src_pack.Unlink(); //큐 연결정보를 Process 에서 해제 했기 때문에, 내부에서 LostChild만 수행된다 
                     containing_supersphere.AddChild(src_pack);
                 }
 
@@ -424,7 +425,7 @@ namespace ST_Test_005
                     if (newRadius <= maxRadius_supersphere)
                     {
                         //DebugWide.LogBlue(" " + src_pack.GetSuperSphere().GetID());
-                        //src_pack.Unlink();
+
                         //DebugWide.LogBlue("a Integrate : 크기변경 : s_id: " + nearest_supersphere.GetID() + " p_id: " + src_pack.GetID() + " isUsed: " + nearest_supersphere.IsUsed());
                         //nearest_supersphere.AddChild(src_pack);
                         //DebugWide.LogBlue("b Integrate : 크기변경 : s_id: " + nearest_supersphere.GetID() + " p_id: " + src_pack.GetID() + " isUsed: " + nearest_supersphere.IsUsed());
@@ -432,6 +433,7 @@ namespace ST_Test_005
                         //자식구가 1개 일때 링크구까지 지우므로 슈퍼구가 다를때만 처리한다 
                         if(nearest_supersphere != src_pack.GetSuperSphere())
                         {
+                            src_pack.Unlink();
                             nearest_supersphere.AddChild(src_pack);
                         }
 
@@ -460,7 +462,7 @@ namespace ST_Test_005
                 //조건3 - !포함될 슈퍼구가 하나도 없는 경우 , !!슈퍼구 최대크기 보다 큰 경우
                 if (newsphere)
                 {
-                    //src_pack.Unlink();
+                    src_pack.Unlink();
                     //DebugWide.LogBlue("Integrate : 새로운 슈퍼구 생성 : p_id: " + src_pack.GetID());
                     SphereModel superSphere = AddSphere(src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere, rootsphere.GetFlag());
                     //superSphere.ClearFlag(SphereModel.Flag.ROOTNODE); //루트노드 설정이 있으면 지울수 없는 슈퍼구가 된다 , AddSphere 에서 ROOTNODE 플래그는 걸러진다 

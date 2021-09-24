@@ -23,7 +23,7 @@ namespace Proto_AI_2
     public class SphereTree_0
     {
         public static readonly SphereTree_0 Inst = new SphereTree_0();
-        ST_Test_003.PT_SphereTree _sphereTree = new ST_Test_003.PT_SphereTree(500, 16, 10, 0.5f);
+        public ST_Test_003.PT_SphereTree _sphereTree = new ST_Test_003.PT_SphereTree(500, 16, 10, 0.5f);
 
         private SphereTree_0()
         { }
@@ -404,6 +404,10 @@ namespace Proto_AI_2
 
             //ObjectManager.Inst._sphereTree_entity._gravy_supersphere = _SphereTree_Gravy;
             //ObjectManager.Inst._sphereTree_entity._maxRadius_supersphere = _SphereTree_maxRadius;
+            SphereTree_0.Inst._sphereTree._gravy_supersphere = _SphereTree_Gravy;
+            SphereTree_1.Inst._sphereTree._gravy_supersphere = _SphereTree_Gravy;
+            SphereTree_2.Inst._sphereTree._gravy_supersphere = _SphereTree_Gravy;
+            SphereTree_3.Inst._sphereTree._gravy_supersphere = _SphereTree_Gravy;
 
             foreach (Vehicle v in EntityMgr.list)
             {

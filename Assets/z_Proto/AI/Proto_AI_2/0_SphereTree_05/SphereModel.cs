@@ -236,7 +236,7 @@ namespace ST_Test_005
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산  
                     }
 
-                    //Unlink();
+                    Unlink();
 
                     //슈퍼구의 자식이 1일 경우 unlink를 통해 제거대상이 된다. 불필요한 처리로 추정 
                     //DebugWide.LogGreen("NewPos interg : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
@@ -269,7 +269,7 @@ namespace ST_Test_005
                         //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                         _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     }
-                    //Unlink();
+                    Unlink();
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
                 else
@@ -303,7 +303,7 @@ namespace ST_Test_005
             //    DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ not supersphere !!!!");
             //}
 
-            pack.Unlink(); //기존정보를 해제후 추가한다 
+            //pack.Unlink(); //기존정보를 해제후 추가한다 
 
             SphereModel next_child = _head_children;
             //test-------------------------------------
@@ -363,7 +363,7 @@ namespace ST_Test_005
 
         }
 
-        private void Unlink()
+        public void Unlink()
         {
             //Q에 등록되어 있다면 해제한다 
             //SphereModel qdata = null;

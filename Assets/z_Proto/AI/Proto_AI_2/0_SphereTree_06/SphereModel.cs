@@ -234,9 +234,10 @@ namespace ST_Test_006
                     //DebugWide.LogGreen("NewPos recomp : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산 
 
-                    //Unlink();
+                    Unlink(); //슈퍼구의 자식이 1일 경우 unlink를 통해 제거대상이 된다. !!중요한 처리임. 
+                    //통합계산에서 자식구가 1개인 자신의 슈퍼구가 선택안되게 하며 소속될 슈퍼구가 없을 경우 다시 자신의 슈퍼구를 생성한다 
+                    //이 처리가 없으면 자신의 슈퍼구만 포함될 슈퍼구로 선택되어 설정거리안 임에도 하나의 슈퍼구로 뭉치지 않게된다 
 
-                    //슈퍼구의 자식이 1일 경우 unlink를 통해 제거대상이 된다. 불필요한 처리로 추정 
                     //DebugWide.LogGreen("NewPos interg : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
@@ -264,7 +265,7 @@ namespace ST_Test_006
                 {
                     //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
-                    //Unlink();
+                    Unlink();
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
                 else
