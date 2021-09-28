@@ -131,6 +131,18 @@ namespace ST_Test_006
             return null;
         }
 
+        public void Clear()
+        {
+            _head = _tail;
+            if (_head == mFifoSize)
+            {
+                _head = 0;
+                _tail = 0;
+            }
+
+            mCount = 0;
+        }
+
         //데이터의 개수는 변경하지 않고 데이터만 날린다
         //Out_Push 객체에서 사용하는 전용함수 
         //private MODEL Unlink(int queueIndex)

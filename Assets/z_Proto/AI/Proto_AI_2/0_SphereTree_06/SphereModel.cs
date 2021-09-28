@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
@@ -71,7 +73,8 @@ namespace ST_Test_006
         //------------------------------------------------------
         //                  슈퍼구에서의 자식 정보
         //------------------------------------------------------
-        private SphereModel _head_children = null;  //형제노드의 첫번째 노드 
+        private SphereModel _head = null;  //형제노드의 첫번째 노드
+        private SphereModel _tail = null;
         private int _childCount = 0;
         //------------------------------------------------------
 
@@ -166,7 +169,7 @@ namespace ST_Test_006
         //=====================================================
         public void SetSuperSphere(SphereModel model) { _superSphere = model; }
         public SphereModel GetSuperSphere() { return _superSphere; }
-        public SphereModel GetChildren() { return _head_children; }
+        public SphereModel GetHeadChild() { return _head; }
         public void SetNextSibling(SphereModel child) { _sibling_next = child; }
         public void SetPrevSibling(SphereModel child) { _sibling_prev = child; }
         public SphereModel GetNextSibling() { return _sibling_next; }
@@ -200,7 +203,7 @@ namespace ST_Test_006
             _radius = radius;
 
             _superSphere = null;
-            _head_children = null;
+            _head = null;
             _sibling_next = null;
             _sibling_prev = null;
 
@@ -223,7 +226,7 @@ namespace ST_Test_006
 
             SetPos(pos);
 
-            if (null != _superSphere)
+            if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
                 float sqrDist = ToDistanceSquared(_superSphere);
 
@@ -237,6 +240,7 @@ namespace ST_Test_006
                     Unlink(); //슈퍼구의 자식이 1일 경우 unlink를 통해 제거대상이 된다. !!중요한 처리임. 
                     //통합계산에서 자식구가 1개인 자신의 슈퍼구가 선택안되게 하며 소속될 슈퍼구가 없을 경우 다시 자신의 슈퍼구를 생성한다 
                     //이 처리가 없으면 자신의 슈퍼구만 포함될 슈퍼구로 선택되어 설정거리안 임에도 하나의 슈퍼구로 뭉치지 않게된다 
+                    //통합대상 자식구를 제외하고 재계산처리에서 슈퍼구의 크기와 위치를 갱신한다. unlink 통해 자식구가 반드시 슈퍼구에서 나와야 한다  
 
                     //DebugWide.LogGreen("NewPos interg : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
@@ -254,7 +258,7 @@ namespace ST_Test_006
             SetPos(pos);
             SetRadius(radius);
 
-            if (null != _superSphere )
+            if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
 
                 Compute_BindingDistanceSquared(_superSphere); //반지름 변경에 따른 슈퍼구와 묶인거리 다시 계산
@@ -285,8 +289,76 @@ namespace ST_Test_006
 
         }
 
-        public void AddChild(SphereModel pack)
+        //현재슈퍼구에 대상슈퍼구의 자식들을 합친다 
+        public void AddFirst_Super(SphereModel dst_super)
         {
+            if (this == dst_super) return; //자기자신과 합칠 수 없다 
+            if (false == HasFlag(Flag.SUPERSPHERE) || false == dst_super.HasFlag(Flag.SUPERSPHERE)) return; //슈퍼구 전용 함수 
+            if (true == HasFlag(Flag.ROOTNODE) || true == dst_super.HasFlag(Flag.ROOTNODE)) return; //루트구는 계산하면 안된다 
+            if (0 >= dst_super._childCount) return; //합칠 자식들이 없다 
+
+            //----------------------
+            //소속 슈퍼구 지정
+            SphereModel next = dst_super._head;
+            for(int i=0;i<dst_super._childCount;i++)
+            {
+                next._superSphere = this;
+                next = next.GetNextSibling();
+            }
+
+            //----------------------
+            //현재슈퍼구 머리에 옮겨 붙이기 
+            if(null == _head)
+            {
+                _head = dst_super._head;
+                _tail = dst_super._tail;
+                _childCount = dst_super._childCount; 
+            }
+            else
+            {
+                SphereModel src_head = _head;
+                _head = dst_super._head;
+
+                dst_super._tail.SetNextSibling(src_head);
+                src_head.SetPrevSibling(dst_super._tail);
+
+                _childCount += dst_super._childCount;
+            }
+            //----------------------
+
+            //대상슈퍼구 제거
+            SphereModel root = dst_super._superSphere;
+            SphereModel prev = dst_super.GetPrevSibling();
+            if (null != prev) // p - c
+            {
+                next = dst_super.GetNextSibling(); // p - c - n
+                prev.SetNextSibling(next); // p - c - n => p -> n
+                if (null != next) next.SetPrevSibling(prev); // p <-> n
+
+                if (root._tail == dst_super) root._tail = prev; //child 가 tail 이라면 next 는 null 일 것이다 
+            }
+            else // null - c
+            {
+                next = dst_super.GetNextSibling(); //null - c - n
+                root._head = next;
+                if (null != root._head) root._head.SetPrevSibling(null); // null <- n
+
+                //if (root._tail == dst_super) root._tail = null; //prev 가 null 이다 , 즉 전체노드 1개 일때 노드를 제거해 0개가 된것이다 
+            }
+            //----------------------
+
+            dst_super._childCount = 0;
+            dst_super._head = null;
+            dst_super._tail = null;
+            dst_super.Unlink_SuperSphereAndLinkSphere();
+            //----------------------
+
+        }
+
+        public void AddFirst_Child(SphereModel pack)
+        {
+            if (false == HasFlag(Flag.SUPERSPHERE)) return; //슈퍼구 전용 함수 
+
             //if(null == pack)
             //{
             //    DebugWide.LogGreen("AddChild !--  s_id: " + _id + "  p_id: " + pack.GetID() + "------ null pack !!!!");
@@ -298,7 +370,7 @@ namespace ST_Test_006
 
             //pack.Unlink(); //기존정보를 해제후 추가한다 - 해제하면 안되는 상황이 있음 
 
-            SphereModel next_child = _head_children;
+            SphereModel next_child = _head;
             //test-------------------------------------
             //string temp = "";
             //int ct = 0;
@@ -312,9 +384,8 @@ namespace ST_Test_006
             //DebugWide.LogBlue("add before: s_id: " +_id + "  p_id: " + pack.GetID() + "  _cCt: " + _childCount +" : "+ temp + "  s_used: " + _isUsed);
             //test-------------------------------------
 
-
-            next_child = _head_children;
-            _head_children = pack; // new head of list
+            next_child = _head;
+            _head = pack; // new head of list
 
             pack.SetNextSibling(next_child); // his next is my old next
             pack.SetPrevSibling(null); // at head of list, no previous
@@ -325,6 +396,10 @@ namespace ST_Test_006
 
             _childCount++;
 
+            if(1 == _childCount)
+            {
+                _tail = pack; //자식이 한개일때 꼬리를 설정한다   
+            }
             //test-------------------------------------
             //next_child = _head_children;
             //int count = 0;
@@ -393,15 +468,16 @@ namespace ST_Test_006
             _superSphere = null;
         }
 
-        //string _lostChildLog = "";
+        //슈퍼구에서만 호출 해야하는 함수임 
         private void LostChild(SphereModel child)
         {
+            if (false == HasFlag(Flag.SUPERSPHERE)) return; //슈퍼구 전용 함수
+
             //슈퍼구에 자식정보가 없는 경우는 없다고 가정된다 , 슈퍼구 생성후 바로 LostChild 한 경우도 비정상이라 판단 
-            if (null == _head_children || 0 == _childCount)
+            if (null == _head || 0 == _childCount)
             {
                 //DebugWide.LogError("null == _children || 0 == _childCount"); //assert
-                DebugWide.LogError("lostChild --  p_id: " + child.GetID()  + " s_id :"+_id+ "  p_lv: " + child._level + "  s_ct: "+ _childCount + "  s_head: " + _head_children + "  s_flag: " + _flags.ToString());
-
+                DebugWide.LogError("lostChild --  p_id: " + child.GetID()  + " s_id :"+_id+ "  p_lv: " + child._level + "  s_ct: "+ _childCount + "  s_head: " + _head + "  s_flag: " + _flags.ToString());
             }
 
             //DebugWide.LogBlue("a - LostChild -- s_id : " + _id + "  s_ct :" + _childCount + "  p_id: " + child._id);
@@ -436,20 +512,22 @@ namespace ST_Test_006
             //test-------------------------------------
 
             // first patch old linked list.. his previous now points to his next
-            SphereModel prev = child.GetPrevSibling();
-
-            if (null != prev)
+            SphereModel prev = child.GetPrevSibling(); 
+            if (null != prev) // p - c
             {
-                SphereModel next = child.GetNextSibling();
-                prev.SetNextSibling(next); // my previous now points to my next
-                if (null != next) next.SetPrevSibling(prev);
+                SphereModel next = child.GetNextSibling(); // p - c - n
+                prev.SetNextSibling(next); // p - c - n => p -> n
+                if (null != next) next.SetPrevSibling(prev); // p <-> n
                 // list is patched!
+                if (_tail == child) _tail = prev; //child 가 tail 이라면 next 는 null 일 것이다 
             }
-            else
+            else // null - c
             {
-                SphereModel next = child.GetNextSibling();
-                _head_children = next;
-                if (null != _head_children) _head_children.SetPrevSibling(null);
+                SphereModel next = child.GetNextSibling(); //null - c - n
+                _head = next;
+                if (null != _head) _head.SetPrevSibling(null); // null <- n
+
+                if (_tail == child) _tail = null; //prev 가 null 이다 , 즉 전체노드 1개 일때 노드를 제거해 0개가 된것이다 
             }
 
             child.SetPrevSibling(null);
@@ -475,7 +553,7 @@ namespace ST_Test_006
             //DebugWide.LogBlue(temp2);
             //test-------------------------------------
 
-            if (null == _head_children || 0 == _childCount)
+            if (null == _head || 0 == _childCount)
             {
                 //자식없는 슈퍼구는 제거한다 
                 if (HasFlag(Flag.SUPERSPHERE))
@@ -545,18 +623,18 @@ namespace ST_Test_006
             // recompute bounding sphere!
             Vector3 total = ConstV.v3_zero;
             int count = 0;
-            SphereModel pack = _head_children;
+            SphereModel pack = _head;
             //while (null != pack)
             for (int i = 0; i < _childCount; i++)
             {
                 if (null == pack)
                 {
-                    DebugWide.LogRed("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
+                    DebugWide.LogError("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
                     return false;
                 }
                 else if (pack == pack.GetNextSibling())
                 {
-                    DebugWide.LogRed("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount() + "  " + pack.IsUsed()); //test
+                    DebugWide.LogError("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount() + "  " + pack.IsUsed()); //test
                     return false;
                 }
 
@@ -573,10 +651,10 @@ namespace ST_Test_006
                 Vector3 oldpos = _center;
 
                 _center = total; // new origin!
+
+
                 float maxradius = 0;
-
-                pack = _head_children;
-
+                pack = _head;
                 //while (null != pack)
                 for (int i = 0; i < _childCount; i++)
                 {
@@ -596,15 +674,41 @@ namespace ST_Test_006
                     }
                     pack = pack.GetNextSibling();
                 }
+                _radius = maxradius + gravy;
 
-                maxradius += gravy;
+                //---------
+                //dist만으로 가장 바깥원을 찾을수 없다. 기존 계산방식을 사용 할 수 밖에 없다  
+                //float max_distSqr = -1f; //0보다 작은 음수값이 초기값으로 설정되어야 한다 
+                //SphereModel max_pack = null;
+                ////DebugWide.LogBlue(" - Recompute s_id: " + _id + " flag: " + _flags.ToString() +" lv: " + _level + " ct: " + _childCount);
+                //pack = _head;
+                //for (int i = 0; i < _childCount; i++)
+                //{
+                //    //float dist = ToDistanceSquared(pack);
+                //    float distSqr = (_center - pack._center).sqrMagnitude; //자식이 1개인 슈퍼구는 0이 나올 수 있다 
 
-                _radius = maxradius;
-                //SetRadius(maxradius); //최종 반지름 갱신
+                //    if (max_distSqr < distSqr)
+                //    {
+                //        max_distSqr = distSqr;
+                //        max_pack = pack;
+
+                //        if(false == Geo.Include_Sphere_Fully(_center, _radius, pack._center, pack._radius + gravy))
+                //        {
+                //            _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
+                //            ClearFlag(Flag.RECOMPUTE);
+                //            //DebugWide.LogBlue("false -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString());
+                //            return false;
+                //        }
+
+                //    }
+                //    pack = pack.GetNextSibling();
+                //    //DebugWide.LogBlue(i + " " + distSqr + "  " + max_pack + " - " );
+                //}
+                //_radius = (float)Math.Sqrt(max_distSqr) + max_pack.GetRadius() + gravy;
+                //---------
 
                 // now all children have to recompute binding distance!!
-                pack = _head_children;
-
+                pack = _head;
                 //while (null != pack)
                 for (int i = 0; i < _childCount; i++)
                 {
@@ -629,18 +733,16 @@ namespace ST_Test_006
                 SphereModel link = GetLink_UpLevel_ChildSphere();
                 if (null != link)
                 {
+                    //DebugWide.LogBlue("true -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString() + " lv: " + link._level + "  " + link.GetSuperSphere() + "  l_used: " + link.IsUsed());
+
                     //uplevel 자식구의 크기와 위치를 동일하게 맞춰준다
                     link._center = _center;
                     link._radius = _radius;
-
-                    //DebugWide.LogBlue("true -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString() + "  " + link.GetLevelIndex() + "  " + link.GetSuperSphere() + "  l_used: " + link.IsUsed());
-                    //if(null != link._superSphere)
-                    //{
-                    //    link._superSphere.RecomputeSuperSphere(gravy);
-                    //}
-
                     _treeController.AddRecomputeQ(link._superSphere);
                     _treeController.AddIntegrateQ(link);
+
+                    //자식이 1개 일때 unlink에서 슈퍼구를 제거하므로 이처리로 큐에 등록시키면 안된다 
+                    //link.NewPosRadius(_center, _radius);
 
                 }
                 //==============================================
@@ -650,14 +752,86 @@ namespace ST_Test_006
 
             ClearFlag(Flag.RECOMPUTE);
 
-            return false;
+            return true;
         }
+
+        //public void RecomputeSuperSphere2(float gravy)
+        //{
+        //    if (HasFlag(Flag.ROOTNODE)) return; 
+        //    if (false == HasFlag(Flag.SUPERSPHERE)) return;
+
+
+        //    Vector3 total = ConstV.v3_zero;
+        //    int count = 0;
+        //    SphereModel pack = _head;
+        //    for (int i = 0; i < _childCount; i++)
+        //    {
+
+        //        total += pack._center;
+        //        count++;
+        //        pack = pack.GetNextSibling();
+        //    }
+
+        //    if (0 != count)
+        //    {
+        //        float recip = 1.0f / (float)(count);
+        //        total *= recip;
+
+        //        Vector3 oldpos = _center;
+
+        //        _center = total; // new origin!
+        //        float max_distSqr = 0;
+        //        SphereModel max_pack = null;
+
+        //        pack = _head;
+        //        for (int i = 0; i < _childCount; i++)
+        //        {
+        //            //float dist = ToDistanceSquared(pack);
+        //            float distSqr = (_center - pack._center).sqrMagnitude;
+
+        //            if(max_distSqr < distSqr)
+        //            {
+        //                max_distSqr = distSqr;
+        //                max_pack = pack;
+                    
+        //            }
+        //            pack = pack.GetNextSibling();
+        //        }
+
+        //        _radius = (float)Math.Sqrt(max_distSqr) + max_pack.GetRadius() + gravy;
+
+        //        pack = _head;
+        //        for (int i = 0; i < _childCount; i++)
+        //        {
+        //            pack.Compute_BindingDistanceSquared(this);
+        //            pack = pack.GetNextSibling();
+        //        }
+
+
+        //        SphereModel link = GetLink_UpLevel_ChildSphere();
+        //        if (null != link)
+        //        {
+        //            //uplevel 자식구의 크기와 위치를 동일하게 맞춰준다
+        //            link._center = _center;
+        //            link._radius = _radius;
+
+
+        //            _treeController.AddRecomputeQ(link._superSphere);
+        //            _treeController.AddIntegrateQ(link);
+
+        //        }
+        //        //==============================================
+        //    }
+
+        //    ClearFlag(Flag.RECOMPUTE);
+
+        //}
 
         public void ResetFlag()
         {
             ClearFlag(Flag.HIDDEN | Flag.PARTIAL | Flag.INSIDE);
 
-            SphereModel pack = _head_children;
+            SphereModel pack = _head;
             while (null != pack)
             {
                 pack.ResetFlag();
@@ -678,7 +852,7 @@ namespace ST_Test_006
                 if (hit)
                 {
 
-                    SphereModel pack = _head_children;
+                    SphereModel pack = _head;
                     while (null != pack)
                     {
                         sm = pack.RayTrace_FirstReturn(line_origin, line_last, exceptModel);
@@ -875,7 +1049,7 @@ namespace ST_Test_006
 
                     DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
 
-                    SphereModel pack = _head_children;
+                    SphereModel pack = _head;
                     while (null != pack)
                     {
                         //pack.RayTrace(p1, dir, distance);
@@ -936,7 +1110,7 @@ namespace ST_Test_006
                     DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
                 }
                 //#endif
-                SphereModel pack = _head_children;
+                SphereModel pack = _head;
                 while (null != pack)
                 {
                     pack.Debug_RangeTest(dstCenter, dstRadius, state);
@@ -993,7 +1167,7 @@ namespace ST_Test_006
                     }
                 }
 
-                SphereModel pack = _head_children;
+                SphereModel pack = _head;
 
                 while (null != pack)
                 {
@@ -1048,9 +1222,9 @@ namespace ST_Test_006
         public void Debug_Render(Color color, bool isText)
         {
 
-            if (null != _head_children)
+            if (null != _head)
             {
-                SphereModel pack = _head_children;
+                SphereModel pack = _head;
                 int count = 0;
                 while (null != pack)
                 {
@@ -1108,7 +1282,7 @@ namespace ST_Test_006
 
                     //DebugWide.PrintText(_center, color, temp + GetID());
                     //DebugWide.PrintText(_center, Color.black, temp + level);
-                    DebugWide.PrintText(_center + Vector3.left * _radius, Color.black, "  "+temp+ _radius.ToString("F2"));
+                    DebugWide.PrintText(_center + Vector3.left * _radius, Color.black, "  "+temp+ _radius.ToString("F2") + " ("+_id+") ");
                 }
 
             }

@@ -956,11 +956,27 @@ namespace UtilGS9
         //src 에 dst 가 완전포함하는지 검사
         static public bool Include_Sphere_Fully(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
         {
-            if (src_radius <= dst_radius) return false; //dst 반지름이 크면 src 에 완전포함 될 수가 없음 
+            if (src_radius < dst_radius) return false; //dst 반지름이 크면 src 에 완전포함 될 수가 없음 
 
             float subtract_radius = src_radius - dst_radius;
             float sqrDis = (src_pos - dst_pos).sqrMagnitude;
-            if (sqrDis < subtract_radius * subtract_radius)
+            if (sqrDis <= subtract_radius * subtract_radius)
+                return true;
+
+            return false; 
+        }
+
+
+
+        //대상원의 반지름에 a원과 b원을 포함 할 수 있는지 검사 
+        static public bool Include_Sphere2_Fully(float dst_radius, Vector3 a_pos, float a_radius, Vector3 b_pos, float b_radius)
+        {
+            float subtract_radius = dst_radius - (a_radius + b_radius);
+
+            if (subtract_radius < 0) return false; //dst_radius 보다 (a_radius + b_radius) 이 크다
+
+            float sqrDis = (a_pos - b_pos).sqrMagnitude;
+            if (sqrDis <= subtract_radius * subtract_radius)
                 return true;
 
             return false; 

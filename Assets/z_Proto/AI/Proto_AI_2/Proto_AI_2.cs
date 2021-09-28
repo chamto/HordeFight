@@ -339,11 +339,13 @@ namespace Proto_AI_2
             v = new Vehicle();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(3f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(3f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+            v._mode = SteeringBehavior.eType.arrive;
 
-            for(int i=0;i<30;i++)
+
+            for (int i=0;i<30;i++)
             {
                 v = new Vehicle();
                 id = EntityMgr.Add(v);
@@ -351,7 +353,7 @@ namespace Proto_AI_2
                 v._mode = SteeringBehavior.eType.arrive;
                 v._target = new Vector3(17, 0, 12);
 
-        }
+            }
 
             //==============================
 
@@ -392,8 +394,10 @@ namespace Proto_AI_2
             _formationPoint._end = _tr_target.position;
             _formationPoint.Update(deltaTime);
             KeyInput();
-            vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
+            //vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
 
+            vh = EntityMgr.list[5];
+            vh._target = _tr_test.position;
             //float kmPerHour = (3600f / 1000f) * _maxSpeed;
             //DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + _maxSpeed + "  초당 거리: " + _maxSpeed * deltaTime);
             //운반기의 반지름이 0.5 이며 타일한개의 길이가 1인 경우 : _maxSpeed * deltaTime 의 값이 1.5 를 넘으면 지형을 통과하게 된다 
@@ -411,8 +415,11 @@ namespace Proto_AI_2
 
             foreach (Vehicle v in EntityMgr.list)
             {
-                //if (0 == v._id) v._withstand = 100; //임시 시험 
-                v._target = _tr_test2_s.position;
+                if (6 <= v._id) 
+                {
+                    // v._withstand = 100; //임시 시험 
+                    v._target = _tr_test2_s.position;
+                }
 
                 //v._radius = _radius;
                 v.SetRadius(_radius);
