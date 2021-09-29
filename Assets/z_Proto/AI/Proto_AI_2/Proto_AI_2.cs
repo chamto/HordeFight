@@ -131,6 +131,7 @@ namespace Proto_AI_2
     {
         public static readonly SphereTree_3 Inst = new SphereTree_3();
         public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 }, 0.5f);
+        //public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 , 5 , 3}, 0.5f);
 
         private SphereTree_3()
         { }
@@ -251,7 +252,7 @@ namespace Proto_AI_2
         public bool _SphereTree_Level_2 = false;
         public bool _SphereTree_Level_3 = false;
         public float _SphereTree_Gravy = 0.5f;
-        public float[] _SphereTree_maxRadius = new float[] { 16, 10, 5, 3 }; 
+        //public float[] _SphereTree_maxRadius = new float[] { 16, 10, 5, 3 }; 
                 
 
         private bool _init = false;

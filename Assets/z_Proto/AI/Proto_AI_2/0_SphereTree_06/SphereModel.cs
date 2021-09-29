@@ -263,17 +263,18 @@ namespace ST_Test_006
 
                 Compute_BindingDistanceSquared(_superSphere); //반지름 변경에 따른 슈퍼구와 묶인거리 다시 계산
                 float sqrDist = ToDistanceSquared(_superSphere);
-
+                //DebugWide.LogBlue(_id + "  " + sqrDist + "  " + _binding_distance_sqr);
                 //자식구가 슈퍼구에서 벗어났음
                 if (sqrDist >= _binding_distance_sqr)
                 {
-                    //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+                    //DebugWide.LogGreen("a - NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags);
                     _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                     Unlink();
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
                 }
                 else
                 {
+                    //DebugWide.LogGreen("b - NewPosRadius");
                     //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                 }
@@ -736,13 +737,13 @@ namespace ST_Test_006
                     //DebugWide.LogBlue("true -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString() + " lv: " + link._level + "  " + link.GetSuperSphere() + "  l_used: " + link.IsUsed());
 
                     //uplevel 자식구의 크기와 위치를 동일하게 맞춰준다
-                    link._center = _center;
-                    link._radius = _radius;
-                    _treeController.AddRecomputeQ(link._superSphere);
-                    _treeController.AddIntegrateQ(link);
+                    //link._center = _center;
+                    //link._radius = _radius;
+                    //_treeController.AddRecomputeQ(link._superSphere);
+                    //_treeController.AddIntegrateQ(link);
 
-                    //자식이 1개 일때 unlink에서 슈퍼구를 제거하므로 이처리로 큐에 등록시키면 안된다 
-                    //link.NewPosRadius(_center, _radius);
+
+                    link.NewPosRadius(_center, _radius);
 
                 }
                 //==============================================

@@ -430,10 +430,10 @@ namespace ST_Test_006
             SphereModel nearest_supersphere = null; //src_pack와 가까이에 있는 슈퍼구
             float nearDist = 1e9f;    // add ourselves to.
 
-            SphereModel prev_pack_super = src_pack.GetSuperSphere();
+            SphereModel prev_pack_super = src_pack.GetSuperSphere(); //src_pack 은 초기상태인 경우에만 슈퍼구가 있다. 슈퍼구가 있다면 루트슈퍼구임 
             //if(null != prev_pack_super)
             //{
-            //    DebugWide.LogBlue(" p_id : " + src_pack.GetID() + " s_id: "+ prev_pack_super.GetID() + " s_lv: " + prev_pack_super._level + " s_ct: " + prev_pack_super.GetChildCount());
+            //    DebugWide.LogBlue(" p_id : " + src_pack.GetID() +" root_lv: "+ rootsphere._level + " s_id: "+ prev_pack_super.GetID() + " s_lv: " + prev_pack_super._level + " s_ct: " + prev_pack_super.GetChildCount());
             //}
 
             SphereModel search = rootsphere.GetHeadChild();
@@ -511,17 +511,13 @@ namespace ST_Test_006
             if (null != containing_supersphere)
             {
                 //DebugWide.LogBlue(" " + src_pack.GetSuperSphere().GetID());
-                 
+
                 //DebugWide.LogBlue("a Integrate : 완전포함 : s_id: " + containing_supersphere.GetID()+" p_id: " + src_pack.GetID() + " isUsed: " + containing_supersphere.IsUsed());
                 //containing_supersphere.AddChild(src_pack); //src_pack 의 트리정보를 설정
                 //DebugWide.LogBlue("b Integrate : 완전포함 : s_id: " + containing_supersphere.GetID() + " p_id: " + src_pack.GetID() + " isUsed: " + containing_supersphere.IsUsed());
 
-                //자식구가 1개 일때 링크구까지 지우므로 슈퍼구가 다를때만 처리한다 
-                if (containing_supersphere != src_pack.GetSuperSphere())
-                {
-                    src_pack.Unlink();
-                    containing_supersphere.AddFirst_Child(src_pack);
-                }
+                src_pack.Unlink(); //루트슈퍼구에 붙어 있는 경우를 위해 있는 처리임 
+                containing_supersphere.AddFirst_Child(src_pack);
 
                 //pack 에 연결되어있던 이전 슈퍼구의 크기를 재계산 해준다 
                 //if (null != prev_pack_super && 0 < prev_pack_super.GetChildCount())
@@ -540,10 +536,10 @@ namespace ST_Test_006
                     if (null != link)
                     {
 
-                        AddRecomputeQ(link.GetSuperSphere());
-                        AddIntegrateQ(link);
+                        //AddRecomputeQ(link.GetSuperSphere());
+                        //AddIntegrateQ(link);
 
-                        //link.NewPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
+                        link.NewPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
                     }
                 }
 
@@ -570,12 +566,8 @@ namespace ST_Test_006
                         //nearest_supersphere.AddChild(src_pack);
                         //DebugWide.LogBlue("b Integrate : 크기변경 : s_id: " + nearest_supersphere.GetID() + " p_id: " + src_pack.GetID() + " isUsed: " + nearest_supersphere.IsUsed());
 
-                        //자식구가 1개 일때 링크구까지 지우므로 슈퍼구가 다를때만 처리한다 
-                        if (nearest_supersphere != src_pack.GetSuperSphere())
-                        {
-                            src_pack.Unlink();
-                            nearest_supersphere.AddFirst_Child(src_pack);
-                        }
+                        src_pack.Unlink();
+                        nearest_supersphere.AddFirst_Child(src_pack);
 
                         //pack 에 연결되어있던 이전 슈퍼구의 크기를 재계산 해준다 
                         //if(null != prev_pack_super && 0 < prev_pack_super.GetChildCount())
@@ -593,16 +585,16 @@ namespace ST_Test_006
                             if (null != link)
                             {
                                 //link.SetPos(nearest_supersphere.GetPos()); //계산이 실패 하였기 때문에 위치는 그대로임 
-                                link.SetRadius(newRadius); //링크구 크기도 동일하게 갱신해야 한다. !!중요한 처리임. 
+                                //link.SetRadius(newRadius); //링크구 크기도 동일하게 갱신해야 한다. !!중요한 처리임. 
                                 //!!초기구트리 소스가 가지고 있는 버그 수정한 것임
                                 //하위레벨슈퍼구의 링크자식구를 갱신안하면 링크자식구의 슈퍼구(상위레벨슈퍼구)를 하위레벨자식구가 벗어나게 된다
                                 // 즉 하위레벨슈퍼구와 링크자식구의 크기는 항상 동일하게 설정해야 한다는 것임  
 
-                                AddRecomputeQ(link.GetSuperSphere());
-                                AddIntegrateQ(link);
+                                //AddRecomputeQ(link.GetSuperSphere());
+                                //AddIntegrateQ(link);
 
-                                //자식이 1개 일때 unlink에서 슈퍼구를 제거하므로 이처리로 큐에 등록시키면 안된다 
-                                //link.NewPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
+
+                                link.NewPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
                             }
                         }
 
@@ -651,9 +643,15 @@ namespace ST_Test_006
 
                         //---------------------------
 
-                        AddRecomputeQ(link.GetSuperSphere());
+
+                        //AddRecomputeQ(link.GetSuperSphere()); //초기 생성시에 루트슈퍼구에 포함되므로 Recompute 계산에 실패하게 된다
+                        link.Unlink(); //통합계산에서 unlink 할것이지만 디버그 편하게 미리 떼어낸다 
                         AddIntegrateQ(link);
 
+
+                        //DebugWide.LogBlue("new link " + link.GetID() + "  " + link.GetFlag() + "  " + link.GetSuperSphere() + " - " + link._level);
+                        //내부조건에서 초기에 지정된 루트슈퍼구에 포함되어 있기에 AddIntegrateQ 가 수행될 수 없다
+                        //NewPosRadius 를 호출하면 안되고  AddIntegrateQ 를 직접 호출해주어야 한다 
                         //link.NewPosRadius(superSphere.GetPos(), superSphere.GetRadius());
                         //---------------------------
                     }
