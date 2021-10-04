@@ -968,15 +968,17 @@ namespace UtilGS9
 
 
 
-        //대상원의 반지름에 a원과 b원을 포함 할 수 있는지 검사 
-        static public bool Include_Sphere2_Fully(float dst_radius, Vector3 a_pos, float a_radius, Vector3 b_pos, float b_radius)
+        //대상원의 지름에 a원과 b원을 포함 할 수 있는지 검사 
+        static public bool Include_Sphere2_Fully(float diameter, Vector3 a_pos, float a_radius, Vector3 b_pos, float b_radius)
         {
-            float subtract_radius = dst_radius - (a_radius + b_radius);
+            float subtract_diameter = diameter - (a_radius + b_radius);
 
-            if (subtract_radius < 0) return false; //dst_radius 보다 (a_radius + b_radius) 이 크다
+            if (subtract_diameter < 0) return false; //dst_radius 보다 (a_radius + b_radius) 이 크다
 
             float sqrDis = (a_pos - b_pos).sqrMagnitude;
-            if (sqrDis <= subtract_radius * subtract_radius)
+            //float len_radius = ((float)Math.Sqrt(sqrDis) + a_radius + b_radius) * 0.5f;
+            //DebugWide.LogBlue("Include_Sphere2_Fully : " + len_radius);
+            if (sqrDis <= subtract_diameter * subtract_diameter)
                 return true;
 
             return false; 
