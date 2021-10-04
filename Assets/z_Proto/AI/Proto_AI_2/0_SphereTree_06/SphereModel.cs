@@ -1237,16 +1237,16 @@ namespace ST_Test_006
 
                 if (true == isText)
                 {
-                    int level = 0;
-                    //if (HasFlag(Flag.TREE_LEVEL_0)) { temp += "\n"; level = 0; }
-                    //if (HasFlag(Flag.TREE_LEVEL_1)) { temp += "\n        "; level = 1; }
-                    //if (HasFlag(Flag.TREE_LEVEL_2)) { temp += "\n                "; level = 2; }
-                    //if (HasFlag(Flag.TREE_LEVEL_3)) { temp += "\n                        "; level = 3; }
+
                     if (HasFlag(Flag.SUPERSPHERE)) { temp += "s"; }
 
-                    //DebugWide.PrintText(_center, color, temp + GetID());
-                    //DebugWide.PrintText(_center, Color.black, temp + level);
-                    DebugWide.PrintText(_center + Vector3.left * _radius, Color.black, "  "+temp+ _radius.ToString("F2") + " ("+_id+") ");
+                    int level = _treeController._max_level - 1;
+                    if (level > _level || HasFlag(Flag.SUPERSPHERE))
+                    {
+                    
+                        temp += _radius.ToString("F2") + " (" + _id + ") ";
+                    }                    
+                    DebugWide.PrintText(_center + Vector3.left * _radius, Color.black, "  "+temp);
                 }
 
             }
