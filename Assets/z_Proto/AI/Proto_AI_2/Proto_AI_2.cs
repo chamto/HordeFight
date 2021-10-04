@@ -130,11 +130,26 @@ namespace Proto_AI_2
     public class SphereTree_3
     {
         public static readonly SphereTree_3 Inst = new SphereTree_3();
-        public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 }, 0.5f);
-        //public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 , 5 , 3}, 0.5f);
+        //public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 16, 10 }, 0.5f);
+        public ST_Test_006.SphereTree _sphereTree = new ST_Test_006.SphereTree(500, new float[] { 32, 16 , 8 , 3}, 0.5f);
+        public ST_Test_006.SphereTree _sphereTree_struct = new ST_Test_006.SphereTree(2000, new float[] { 32, 16, 8 , 2 }, 0.5f);
 
         private SphereTree_3()
         { }
+
+        public void Init()
+        {
+            foreach (KeyValuePair<Vector3Int, CellSpace> t in GridManager.Inst._structTileList)
+            {
+                //if (true == t.Value._isUpTile)
+                {
+                    ST_Test_006.SphereModel model = _sphereTree_struct.AddSphere(t.Value._pos3d_center, 0.6f, ST_Test_006.SphereTree.CREATE_LEVEL_LAST);
+                    _sphereTree_struct.AddIntegrateQ(model);
+                }
+            }
+
+            _sphereTree_struct.Process();
+        }
 
         public void AddSphereTree(BaseEntity entity)
         {
@@ -148,19 +163,51 @@ namespace Proto_AI_2
         public void Update(float deltaTime)
         {
             _sphereTree.Process();
+
         }
 
         public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
         {
             if (level_3)
+            { 
                 _sphereTree.Render_Debug(3, true);
+            }
             if (level_2)
+            { 
                 _sphereTree.Render_Debug(2, true);
-            if (level_1)
-                _sphereTree.Render_Debug(1, true);
-            if (level_0)
-                _sphereTree.Render_Debug(0, true);
+            }
 
+            if (level_1)
+            { 
+                _sphereTree.Render_Debug(1, true);
+            }
+
+            if (level_0)
+            { 
+                _sphereTree.Render_Debug(0, true);
+            }
+        }
+
+        public void Draw_Struct(bool level_0, bool level_1, bool level_2, bool level_3)
+        {
+            if (level_3)
+            {
+                _sphereTree_struct.Render_Debug(3, true);
+            }
+            if (level_2)
+            {
+                _sphereTree_struct.Render_Debug(2, true);
+            }
+
+            if (level_1)
+            {
+                _sphereTree_struct.Render_Debug(1, true);
+            }
+
+            if (level_0)
+            {
+                _sphereTree_struct.Render_Debug(0, true);
+            }
         }
 
     }
@@ -242,7 +289,7 @@ namespace Proto_AI_2
         public bool _Draw_BoundaryTile = false;
         public bool _Draw_ArcTile = false;
 
-        //public bool _Draw_SphereTree = false;
+        public bool _Draw_SphereTree_Struct = false;
         public bool _Draw_SphereTree_0 = false;
         public bool _Draw_SphereTree_1 = false;
         public bool _Draw_SphereTree_2 = false;
@@ -252,7 +299,6 @@ namespace Proto_AI_2
         public bool _SphereTree_Level_2 = false;
         public bool _SphereTree_Level_3 = false;
         public float _SphereTree_Gravy = 0.5f;
-        //public float[] _SphereTree_maxRadius = new float[] { 16, 10, 5, 3 }; 
                 
 
         private bool _init = false;
@@ -284,6 +330,8 @@ namespace Proto_AI_2
             _tr_test2_e = GameObject.Find("Test2_e").transform;
 
             _gridMgr = GridManager.Inst;
+
+            SphereTree_3.Inst.Init();
 
             _formationPoint._end = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
@@ -677,6 +725,11 @@ namespace Proto_AI_2
             if (true == _Draw_SphereTree_3)
             {
                 SphereTree_3.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+
+                if(true == _Draw_SphereTree_Struct)
+                {
+                    SphereTree_3.Inst.Draw_Struct(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+                }
             }
 
 

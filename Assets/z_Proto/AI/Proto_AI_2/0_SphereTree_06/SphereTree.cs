@@ -587,6 +587,10 @@ namespace ST_Test_006
                     color = new Color(0.862f, 0.180f, 0.188f);
                     break;
             }
+
+
+            if (_max_level <= treeLevel) return;
+
             _levels[treeLevel].Debug_Render(color, isText);
 
         }
