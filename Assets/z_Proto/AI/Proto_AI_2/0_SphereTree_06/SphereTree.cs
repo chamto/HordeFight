@@ -20,7 +20,7 @@ namespace ST_Test_006
 
         public QFifo<SphereModel>[] _q_recompute_super = null; //재계산 해야하는 슈퍼구
         public QFifo<SphereModel>[] _q_integrate_child = null; //재계산 해야하는 자식구 
-        public QFifo<SphereModel> _q_integrate_super = null;
+        //public QFifo<SphereModel> _q_integrate_super = null;
 
         public const int MAX_LEVEL = 4;
         public const int CREATE_LEVEL_LAST = -1;
@@ -68,7 +68,7 @@ namespace ST_Test_006
                 _q_recompute_super[i] = new QFifo<SphereModel>(max_levelQ);
                 _q_integrate_child[i] = new QFifo<SphereModel>(max_levelQ);
             }
-            _q_integrate_super = new QFifo<SphereModel>(max_levelQ);
+            //_q_integrate_super = new QFifo<SphereModel>(max_levelQ);
 
             for (int i = 0; i < _max_level;i++)
             {
@@ -188,31 +188,6 @@ namespace ST_Test_006
             }
         }
 
-        //슈퍼구와 그리고 슈퍼구와 연결된상위 자식구를 지운다 
-        //public void Remove_SuperSphereAndLinkSphere(SphereModel pack)
-        //{
-        //    if (null == pack) return;
-        //    if (pack.HasFlag(SphereModel.Flag.ROOTNODE)) return; // CAN NEVER REMOVE THE ROOT NODE EVER!!!
-
-        //    string temp = "";
-        //    if (pack.HasFlag(SphereModel.Flag.SUPERSPHERE))
-        //    {
-        //        SphereModel link = pack.GetLink_UpLevel_ChildSphere();
-
-        //        Remove_SuperSphereAndLinkSphere(link);
-
-        //        if (null != link)
-        //            temp = "--> link_id : " + link.GetID();
-        //        else
-        //            temp = "--> link_id : null ";
-        //    }
-
-        //    pack.Unlink();
-
-        //    DebugWide.LogGreen(temp+"  Remove_SuperSphereAndLinkSphere !!--  s_id: " + pack.GetID() + "  flag: " + pack.GetFlag().ToString() + " ct: " +pack.GetChildCount());
-        //    //DebugWide.LogGreen(temp+" Q list : " + ToStringQ(_recomputeQ));
-        //    _pool_sphere.Release(pack);
-        //}
 
         public void ReleasePool(SphereModel pack)
         {
@@ -327,107 +302,8 @@ namespace ST_Test_006
                 ProcessLevel(level_leaf_idx - i); //하단레벨에서 상위레벨 순서로 계산한다  
             }
 
-            //Q 초기화 
-            //for(int i=0;i<_max_level;i++)
-            //{
-            //    _q_recompute_super[i].Clear();
-            //    _q_integrate_child[i].Clear();
-            //}
-
         }
 
-        //대상원의 반지름에 a원과 b원을 포함 할 수 있는지 검사 
-        //public bool Include_Sphere2_Fully(float dst_radius, Vector3 a_pos, float a_radius, Vector3 b_pos, float b_radius)
-        //{
-        //    float subtract_radius = dst_radius - (a_radius + b_radius);
-
-        //    if (subtract_radius < 0) return false; //dst_radius 보다 (a_radius + b_radius) 이 크다
-
-        //    float sqrDis = (a_pos - b_pos).sqrMagnitude;
-        //    if (sqrDis <= subtract_radius * subtract_radius)
-        //        return true;
-
-        //    return false;
-        //}
-
-        //fixme - 슈퍼구 합치는 알고리즘을 잘못생각하고 작성하였다 , 제거대상 
-        //public void IntegrateSuperSphere(SphereModel src_pack, SphereModel rootsphere, float maxRadius_supersphere)
-        //{
-
-        //    SphereModel farthest_supersphere = null; //maxRadius_supersphere의 길이에 포함되면서 prev_pack_super 와 가장먼 슈퍼구
-        //    float farthestSqrDist = 0;    
-
-
-        //    SphereModel prev_pack_super = src_pack.GetSuperSphere();
-
-        //    _q_integrate_super.Clear(); //큐 초기화 
-        //    SphereModel search = rootsphere.GetHeadChild();
-        //    for (int i = 0; i < rootsphere.GetChildCount(); i++)
-        //    {
-        //        //if (prev_pack_super == search) continue; //자기자신의 슈퍼구가 최적일 수 있다 
-
-        //        if (search.HasFlag(SphereModel.Flag.SUPERSPHERE) &&
-        //            false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 < search.GetChildCount())
-        //        {
-
-        //            if(true == Include_Sphere2_Fully(maxRadius_supersphere, prev_pack_super.GetPos(), prev_pack_super.GetRadius(), search.GetPos(), search.GetRadius()))
-        //            {
-        //                float sqrDist = src_pack.ToDistanceSquared(search);
-
-        //                _q_integrate_super.Push(search); //통합할 슈퍼구 수집 
-
-        //                if(farthestSqrDist < sqrDist)
-        //                {
-        //                    farthestSqrDist = sqrDist;
-        //                    farthest_supersphere = search;
-        //                }
-        //            }
-
-        //        }
-        //        search = search.GetNextSibling();
-        //    }
-
-        //    if(null != farthest_supersphere)
-        //    {
-        //        float newRadius = (float)Math.Sqrt(farthestSqrDist) + farthest_supersphere.GetRadius() + prev_pack_super.GetRadius();
-        //        newRadius *= 0.5f;
-
-        //        farthest_supersphere.SetRadius(newRadius);
-        //        //--------------
-        //        int countQ = _q_integrate_super.GetCount();
-        //        for(int i=0;i<countQ;i++)
-        //        {
-        //            SphereModel super = _q_integrate_super.Pop();
-        //            //옮기는 처리
-        //            //슈퍼구 제거처리  
-        //            farthest_supersphere.AddFirst_Super(super);
-        //        }
-
-        //        //pack 에 연결되어있던 이전 슈퍼구의 크기를 재계산 해준다 
-        //        //if (null != prev_pack_super && 0 < prev_pack_super.GetChildCount())
-        //        //{
-        //        //    prev_pack_super.RecomputeSuperSphere2(_gravy_supersphere);
-        //        //}
-
-        //        //--------------
-        //        farthest_supersphere.RecomputeSuperSphere2(_gravy_supersphere); 
-
-        //        //---------------------------
-        //        SphereModel link = farthest_supersphere.GetLink_UpLevel_ChildSphere();
-        //        if (null != link)
-        //        {
-        //            link.SetPos(farthest_supersphere.GetPos());
-        //            link.SetRadius(farthest_supersphere.GetRadius()); //링크구 크기도 동일하게 갱신해야 한다. !!중요한 처리임. 
-        //                                                              //!!초기구트리 소스가 가지고 있는 버그 수정한 것임
-        //                                                              //하위레벨슈퍼구의 링크자식구를 갱신안하면 링크자식구의 슈퍼구(상위레벨슈퍼구)를 하위레벨자식구가 벗어나게 된다
-        //                                                              // 즉 하위레벨슈퍼구와 링크자식구의 크기는 항상 동일하게 설정해야 한다는 것임  
-        //            //link.Unlink();
-        //            AddRecomputeQ(link.GetSuperSphere());
-        //            AddIntegrateQ(link);
-        //        }
-        //    }
-
-        //}
 
         //src_pack에는 자식구만 들어가야 한다 
         public void Integrate(SphereModel src_pack, SphereModel rootsphere, float maxRadius_supersphere)
@@ -453,16 +329,16 @@ namespace ST_Test_006
             //while (null != search)
             for (int i = 0; i < rootsphere.GetChildCount(); i++)
             {
-                if (null == search)
-                {
-                    DebugWide.LogError("Integrate --a-- i: " + i + "  root id: " + rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount()); //test
-                    break;
-                }
-                else if(search == search.GetNextSibling())
-                {
-                    DebugWide.LogError("Integrate --b-- i: " + i + "  root id: "+ rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount() + "  " + search.GetFlag() + "  " + search.IsUsed()); //test
-                    break; 
-                }
+                //if (null == search)
+                //{
+                //    DebugWide.LogError("Integrate --a-- i: " + i + "  root id: " + rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount()); //test
+                //    break;
+                //}
+                //else if(search == search.GetNextSibling())
+                //{
+                //    DebugWide.LogError("Integrate --b-- i: " + i + "  root id: "+ rootsphere.GetID() + "  ct: " + rootsphere.GetChildCount() + "  " + search.GetFlag() + "  " + search.IsUsed()); //test
+                //    break; 
+                //}
 
                 if (search.HasFlag(SphereModel.Flag.SUPERSPHERE) &&
                     false == search.HasFlag(SphereModel.Flag.ROOTNODE) && 0 < search.GetChildCount())
@@ -531,22 +407,7 @@ namespace ST_Test_006
                 bool isCals = false;
                 //bool isCals = containing_supersphere.RecomputeSuperSphere(_gravy_supersphere);
                 isCals = containing_supersphere.RecomputeSuperSphere_Center(_gravy_supersphere, maxRadius_supersphere);
-                //RecomputeSuperSphere 계산실패 할 경우
-                //if (false == isCals)
-                //{
-                //    src_pack.Compute_BindingDistanceSquared(containing_supersphere);
 
-                //    //---------------------------
-                //    SphereModel link = containing_supersphere.GetLink_UpLevel_ChildSphere();
-                //    if (null != link)
-                //    {
-
-                //        //AddRecomputeQ(link.GetSuperSphere());
-                //        //AddIntegrateQ(link);
-
-                //        link.NewPosRadius(containing_supersphere.GetPos(), containing_supersphere.GetRadius());
-                //    }
-                //}
 
                 //---------------------------
 
@@ -560,21 +421,17 @@ namespace ST_Test_006
                 //가까운 거리에 슈퍼구가 있다
                 if (null != nearest_supersphere)
                 {
-                    //float newRadius = nearDist + nearest_supersphere.GetRadius() * 2 + _gravy_supersphere * 2; //반지름이 아닌 지름을 구하는 처리이다 
-                    float newRadius = nearDist + nearest_supersphere.GetRadius() + _gravy_supersphere ;
+
+                    //float newRadius = nearDist + nearest_supersphere.GetRadius() + _gravy_supersphere ;
 
                     bool isInclude = Geo.Include_Sphere2_Fully(maxRadius_supersphere * 2 ,
                         nearest_supersphere.GetPos(), nearest_supersphere.GetRadius(), src_pack.GetPos(), src_pack.GetRadius() + _gravy_supersphere);
-                    if (0 == rootsphere._level)
-                    {
-                        DebugWide.LogGreen("Include_Sphere2_Fully: " + isInclude);
-                        DebugWide.LogGreen(" ch_id: "+ src_pack.GetID() + " s_id: "+ nearest_supersphere.GetID() + " new_r: " + newRadius + "  nearDist: " + nearDist + "  s_r: " + nearest_supersphere.GetRadius() + " max_s_r: " + maxRadius_supersphere);
-                    }
+                    //if (0 == rootsphere._level)
+                    //{
+                    //    DebugWide.LogGreen("Include_Sphere2_Fully: " + isInclude);
+                    //    DebugWide.LogGreen(" ch_id: "+ src_pack.GetID() + " s_id: "+ nearest_supersphere.GetID() + " new_r: " + newRadius + "  nearDist: " + nearDist + "  s_r: " + nearest_supersphere.GetRadius() + " max_s_r: " + maxRadius_supersphere);
+                    //}
 
-
-                    //!!슈퍼구 최대크기 보다 작을 경우, 포함할 수 있는 크기로 변경한다 
-                    //if (newRadius <= maxRadius_supersphere * 2)
-                    //if (newRadius <= maxRadius_supersphere)
                     if(isInclude) //기존 newRadius 검사는 슈퍼구의 반지름 만큼 늘어나 있어서 검사가 제대로 안되었다 
                     {
                         //DebugWide.LogBlue(" " + src_pack.GetSuperSphere().GetID());
@@ -586,34 +443,11 @@ namespace ST_Test_006
                         src_pack.Unlink();
                         nearest_supersphere.AddFirst_Child(src_pack);
 
-                        //Vector3 newCenter = (src_pack.GetPos() + nearest_supersphere.GetPos()) * 0.5f;
-                        //nearest_supersphere.SetPos(newCenter);
-                        //nearest_supersphere.SetRadius(newRadius * 0.5f);
-                        //nearest_supersphere.SetRadius(newRadius);
+
                         bool isCals = false;
-                        //isCals = nearest_supersphere.RecomputeSuperSphere(_gravy_supersphere);
                         isCals = nearest_supersphere.RecomputeSuperSphere_Center(_gravy_supersphere, maxRadius_supersphere);
-                        DebugWide.LogBlue("nearest_supersphere  - s_id: " + nearest_supersphere.GetID() + " ch_id: "+src_pack.GetID()+ " isCals " + isCals + "  s_r: " + nearest_supersphere.GetRadius() + "  r_lv: " + rootsphere._level);
-                        //RecomputeSuperSphere 계산실패 할 경우
-                        //if (false == isCals)
-                        //{
-                        //    src_pack.Compute_BindingDistanceSquared(nearest_supersphere);
-                        //    SphereModel link = nearest_supersphere.GetLink_UpLevel_ChildSphere();
-                        //    if (null != link)
-                        //    {
-                        //        //link.SetPos(nearest_supersphere.GetPos()); //계산이 실패 하였기 때문에 위치는 그대로임 
-                        //        //link.SetRadius(newRadius); //링크구 크기도 동일하게 갱신해야 한다. !!중요한 처리임. 
-                        //        //!!초기구트리 소스가 가지고 있는 버그 수정한 것임
-                        //        //하위레벨슈퍼구의 링크자식구를 갱신안하면 링크자식구의 슈퍼구(상위레벨슈퍼구)를 하위레벨자식구가 벗어나게 된다
-                        //        // 즉 하위레벨슈퍼구와 링크자식구의 크기는 항상 동일하게 설정해야 한다는 것임  
+                        //DebugWide.LogBlue("nearest_supersphere  - s_id: " + nearest_supersphere.GetID() + " ch_id: "+src_pack.GetID()+ " isCals " + isCals + "  s_r: " + nearest_supersphere.GetRadius() + "  r_lv: " + rootsphere._level);
 
-                        //        //AddRecomputeQ(link.GetSuperSphere());
-                        //        //AddIntegrateQ(link);
-
-
-                        //        link.NewPosRadius(nearest_supersphere.GetPos(), nearest_supersphere.GetRadius());
-                        //    }
-                        //}
 
                         //재계산에 성공하면 새로운 구를 추가할 필요가 없다 
                         if (true == isCals)

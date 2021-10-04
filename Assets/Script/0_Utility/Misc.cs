@@ -966,7 +966,16 @@ namespace UtilGS9
             return false; 
         }
 
+        //dst_radius 가 동일할때만 결과값이 의미가 있다 
+        //static public float SqrLength_Sphere_Fully(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
+        //{
+        //    if (src_radius < dst_radius) return -1; //dst 반지름이 크면 src 에 완전포함 될 수가 없음 
 
+        //    float subtract_radius = src_radius - dst_radius;
+        //    float sqrDis = (src_pos - dst_pos).sqrMagnitude;
+
+        //    return (subtract_radius * subtract_radius) - sqrDis;
+        //}
 
         //대상원의 지름에 a원과 b원을 포함 할 수 있는지 검사 
         static public bool Include_Sphere2_Fully(float diameter, Vector3 a_pos, float a_radius, Vector3 b_pos, float b_radius)

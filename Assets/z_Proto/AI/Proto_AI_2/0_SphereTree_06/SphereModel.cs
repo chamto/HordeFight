@@ -119,24 +119,11 @@ namespace ST_Test_006
         public void SetPos(Vector3 pos)
         {
             _center = pos;
-            //SphereModel link = GetLink_UpLevel_ChildSphere(); //슈퍼구일 경우만 해당 
-            //if (null != link)
-            //{
-            //    //uplevel 자식구도 동일하게 맞춰준다
-            //    link._center = _center;
-            //}
         }
 
         public void SetRadius(float radius)
         {
             _radius = radius;
-            //_radius_sqr = radius * radius;
-            //SphereModel link = GetLink_UpLevel_ChildSphere(); //슈퍼구일 경우만 해당 
-            //if (null != link)
-            //{
-            //    //uplevel 자식구의 크기를 동일하게 맞춰준다
-            //    link._radius = _radius;
-            //}
         }
 
         public float GetRadius() { return _radius; }
@@ -154,15 +141,7 @@ namespace ST_Test_006
             if (0 != (_flags & flag)) return true;
             return false;
         }
-        //public int GetLevelIndex()
-        //{
-        //    if (0 != (_flags & Flag.TREE_LEVEL_0)) return 0;
-        //    if (0 != (_flags & Flag.TREE_LEVEL_1)) return 1;
-        //    if (0 != (_flags & Flag.TREE_LEVEL_2)) return 2;
-        //    if (0 != (_flags & Flag.TREE_LEVEL_3)) return 3;
 
-        //    return -1;
-        //}
 
         //=====================================================
         //트리 링크 다루는 함수
@@ -615,158 +594,127 @@ namespace ST_Test_006
         }
 
         //슈퍼구만 계산의 대상이 된다
-        public bool RecomputeSuperSphere(float gravy)
-        {
-            //if (null == _head_children) return true; // kill it!
-            if (HasFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
-            if (false == HasFlag(Flag.SUPERSPHERE)) return false; 
+        //public bool RecomputeSuperSphere(float gravy)
+        //{
+        //    //if (null == _head_children) return true; // kill it!
+        //    if (HasFlag(Flag.ROOTNODE)) return false; // don't recompute root nodes!
+        //    if (false == HasFlag(Flag.SUPERSPHERE)) return false; 
 
-            //DebugWide.LogGreen(_id + "  " + _flags.ToString());
+        //    //DebugWide.LogGreen(_id + "  " + _flags.ToString());
 
-            //#if 1
-            // recompute bounding sphere!
-            Vector3 total = ConstV.v3_zero;
-            int count = 0;
-            SphereModel pack = _head;
-            //while (null != pack)
-            for (int i = 0; i < _childCount; i++)
-            {
-                if (null == pack)
-                {
-                    DebugWide.LogError("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
-                    return false;
-                }
-                else if (pack == pack.GetNextSibling())
-                {
-                    DebugWide.LogError("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount() + "  " + pack.IsUsed()); //test
-                    return false;
-                }
+        //    //#if 1
+        //    // recompute bounding sphere!
+        //    Vector3 total = ConstV.v3_zero;
+        //    int count = 0;
+        //    SphereModel pack = _head;
+        //    //while (null != pack)
+        //    for (int i = 0; i < _childCount; i++)
+        //    {
+        //        if (null == pack)
+        //        {
+        //            DebugWide.LogError("Recompute --a-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount()); //test
+        //            return false;
+        //        }
+        //        else if (pack == pack.GetNextSibling())
+        //        {
+        //            DebugWide.LogError("Recompute --b-- i: " + i + "  !!!!!!!! id: " + GetID() + "  ct: " + GetChildCount() + "  " + pack.IsUsed()); //test
+        //            return false;
+        //        }
 
-                total += pack._center;
-                count++;
-                pack = pack.GetNextSibling();
-            }
+        //        total += pack._center;
+        //        count++;
+        //        pack = pack.GetNextSibling();
+        //    }
 
-            if (0 != count)
-            {
-                float recip = 1.0f / (float)(count);
-                total *= recip;
+        //    if (0 != count)
+        //    {
+        //        float recip = 1.0f / (float)(count);
+        //        total *= recip;
 
-                Vector3 oldpos = _center;
+        //        Vector3 oldpos = _center;
 
-                _center = total; // new origin!
-
-
-                float maxradius = 0;
-                pack = _head;
-                //while (null != pack)
-                for (int i = 0; i < _childCount; i++)
-                {
-                    //float dist = ToDistanceSquared(pack);
-                    float dist = (_center - pack._center).sqrMagnitude;
-                    float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
-                    if (radius > maxradius)
-                    {
-                        maxradius = radius;
-
-                        if ((maxradius + gravy) >= GetRadius())
-                        {
-                            float max_r_g_ = maxradius + gravy;
-                            DebugWide.LogBlue("false - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g_ + " >= " + _radius);
-                            _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
-                            ClearFlag(Flag.RECOMPUTE);
-                            //DebugWide.LogBlue("false -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString());
-                            return false;
-                        }
-                    }
-                    pack = pack.GetNextSibling();
-                }
-
-                float max_r_g = maxradius + gravy;
-                DebugWide.LogBlue("true - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g + " >= " + _radius);
-
-                _radius = maxradius + gravy;
+        //        _center = total; // new origin!
 
 
-                //---------
-                //dist만으로 가장 바깥원을 찾을수 없다. 기존 계산방식을 사용 할 수 밖에 없다  
-                //float max_distSqr = -1f; //0보다 작은 음수값이 초기값으로 설정되어야 한다 
-                //SphereModel max_pack = null;
-                ////DebugWide.LogBlue(" - Recompute s_id: " + _id + " flag: " + _flags.ToString() +" lv: " + _level + " ct: " + _childCount);
-                //pack = _head;
-                //for (int i = 0; i < _childCount; i++)
-                //{
-                //    //float dist = ToDistanceSquared(pack);
-                //    float distSqr = (_center - pack._center).sqrMagnitude; //자식이 1개인 슈퍼구는 0이 나올 수 있다 
+        //        float maxradius = 0;
+        //        pack = _head;
+        //        //while (null != pack)
+        //        for (int i = 0; i < _childCount; i++)
+        //        {
+        //            //float dist = ToDistanceSquared(pack);
+        //            float dist = (_center - pack._center).sqrMagnitude;
+        //            float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
+        //            if (radius > maxradius)
+        //            {
+        //                maxradius = radius;
 
-                //    if (max_distSqr < distSqr)
-                //    {
-                //        max_distSqr = distSqr;
-                //        max_pack = pack;
+        //                if ((maxradius + gravy) >= GetRadius())
+        //                {
+        //                    float max_r_g_ = maxradius + gravy;
+        //                    DebugWide.LogBlue("false - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g_ + " >= " + _radius);
+        //                    _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
+        //                    ClearFlag(Flag.RECOMPUTE);
+        //                    //DebugWide.LogBlue("false -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString());
+        //                    return false;
+        //                }
+        //            }
+        //            pack = pack.GetNextSibling();
+        //        }
 
-                //        if(false == Geo.Include_Sphere_Fully(_center, _radius, pack._center, pack._radius + gravy))
-                //        {
-                //            _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
-                //            ClearFlag(Flag.RECOMPUTE);
-                //            //DebugWide.LogBlue("false -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString());
-                //            return false;
-                //        }
+        //        float max_r_g = maxradius + gravy;
+        //        DebugWide.LogBlue("true - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g + " >= " + _radius);
 
-                //    }
-                //    pack = pack.GetNextSibling();
-                //    //DebugWide.LogBlue(i + " " + distSqr + "  " + max_pack + " - " );
-                //}
-                //_radius = (float)Math.Sqrt(max_distSqr) + max_pack.GetRadius() + gravy;
-                //---------
-
-                // now all children have to recompute binding distance!!
-                pack = _head;
-                //while (null != pack)
-                for (int i = 0; i < _childCount; i++)
-                {
-                    pack.Compute_BindingDistanceSquared(this);
-                    pack = pack.GetNextSibling();
-                }
-
-                //==============================================
-                //이렇게 사용하면 안됨 , 큐에서 데이터를 꺼내는 루프중에 큐에 추가하는 잘못된 처리이다  
-                //!!!! 슈퍼구에 연결된 상위레벨 자식구도 갱신한다 
-                //SphereModel link = GetLink_UpLevelTree();
-                //if (null != link)
-                //{
-                //    DebugWide.LogGreen("before Q list  --- " +_treeController.ToStringQ(_treeController._recomputeQ));
-                //    //DebugWide.LogBlue("a -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString());
-                //    link.SetPosRadius(_center, maxradius);
-                //    link.SetRadius(maxradius); //반지름이 갱신 안되는 경우가 있다 (통합상태)
-                //    DebugWide.LogGreen(" after Q list  --- " + _treeController.ToStringQ(_treeController._recomputeQ));
-
-                //}
-
-                SphereModel link = GetLink_UpLevel_ChildSphere();
-                if (null != link)
-                {
-                    //DebugWide.LogBlue("true -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString() + " lv: " + link._level + "  " + link.GetSuperSphere() + "  l_used: " + link.IsUsed());
-
-                    //uplevel 자식구의 크기와 위치를 동일하게 맞춰준다
-                    //link._center = _center;
-                    //link._radius = _radius;
-                    //_treeController.AddRecomputeQ(link._superSphere);
-                    //link.Unlink();
-                    //_treeController.AddIntegrateQ(link);
+        //        _radius = maxradius + gravy;
 
 
-                    link.NewPosRadius(_center, _radius);
+        //        // now all children have to recompute binding distance!!
+        //        pack = _head;
+        //        //while (null != pack)
+        //        for (int i = 0; i < _childCount; i++)
+        //        {
+        //            pack.Compute_BindingDistanceSquared(this);
+        //            pack = pack.GetNextSibling();
+        //        }
 
-                }
-                //==============================================
-            }
+        //        //==============================================
+        //        //이렇게 사용하면 안됨 , 큐에서 데이터를 꺼내는 루프중에 큐에 추가하는 잘못된 처리이다  
+        //        //!!!! 슈퍼구에 연결된 상위레벨 자식구도 갱신한다 
+        //        //SphereModel link = GetLink_UpLevelTree();
+        //        //if (null != link)
+        //        //{
+        //        //    DebugWide.LogGreen("before Q list  --- " +_treeController.ToStringQ(_treeController._recomputeQ));
+        //        //    //DebugWide.LogBlue("a -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString());
+        //        //    link.SetPosRadius(_center, maxradius);
+        //        //    link.SetRadius(maxradius); //반지름이 갱신 안되는 경우가 있다 (통합상태)
+        //        //    DebugWide.LogGreen(" after Q list  --- " + _treeController.ToStringQ(_treeController._recomputeQ));
 
-            //#endif
+        //        //}
 
-            ClearFlag(Flag.RECOMPUTE);
+        //        SphereModel link = GetLink_UpLevel_ChildSphere();
+        //        if (null != link)
+        //        {
+        //            //DebugWide.LogBlue("true -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString() + "  link_id: " + link._id + "  link_flag: " + link._flags.ToString() + " lv: " + link._level + "  " + link.GetSuperSphere() + "  l_used: " + link.IsUsed());
 
-            return true;
-        }
+        //            //uplevel 자식구의 크기와 위치를 동일하게 맞춰준다
+        //            //link._center = _center;
+        //            //link._radius = _radius;
+        //            //_treeController.AddRecomputeQ(link._superSphere);
+        //            //link.Unlink();
+        //            //_treeController.AddIntegrateQ(link);
+
+
+        //            link.NewPosRadius(_center, _radius);
+
+        //        }
+        //        //==============================================
+        //    }
+
+        //    //#endif
+
+        //    ClearFlag(Flag.RECOMPUTE);
+
+        //    return true;
+        //}
 
         public bool RecomputeSuperSphere_Center(float gravy , float maxRadius_supersphere)
         {
@@ -793,11 +741,10 @@ namespace ST_Test_006
 
                 Vector3 oldpos = _center;
 
-                _center = total; // new origin!
+                _center = total; 
 
                 float maxradius = 0;
                 pack = _head;
-                //while (null != pack)
                 for (int i = 0; i < _childCount; i++)
                 {
                     //float dist = ToDistanceSquared(pack);
@@ -806,28 +753,25 @@ namespace ST_Test_006
                     if (radius > maxradius)
                     {
                         maxradius = radius;
-                        //if ((maxradius + gravy) >= GetRadius())
                         if ((maxradius + gravy) >= maxRadius_supersphere)
                         {
                             float max_r_g_ = maxradius + gravy;
-                            DebugWide.LogBlue("false - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g_ + " >= " + maxRadius_supersphere);
+                            //DebugWide.LogBlue("false - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g_ + " >= " + maxRadius_supersphere);
                             _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
                             ClearFlag(Flag.RECOMPUTE);
-                            //DebugWide.LogBlue("false -- - - Recompute s_id: " + _id + " flag: " + _flags.ToString());
                             return false;
                         }
                     }
                     pack = pack.GetNextSibling();
                 }
 
-                float max_r_g = maxradius + gravy;
-                DebugWide.LogBlue("true - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g + " >= " + maxRadius_supersphere);
+                //float max_r_g = maxradius + gravy;
+                //DebugWide.LogBlue("true - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g + " >= " + maxRadius_supersphere);
 
                 _radius = maxradius + gravy;
 
-                // now all children have to recompute binding distance!!
+
                 pack = _head;
-                //while (null != pack)
                 for (int i = 0; i < _childCount; i++)
                 {
                     pack.Compute_BindingDistanceSquared(this);
@@ -837,19 +781,10 @@ namespace ST_Test_006
                 SphereModel link = GetLink_UpLevel_ChildSphere();
                 if (null != link)
                 {
-                    //link._center = _center;
-                    //link._radius = _radius;
-                    //_treeController.AddRecomputeQ(link._superSphere);
-                    //link.Unlink();
-                    //_treeController.AddIntegrateQ(link);
-
                     link.NewPosRadius(_center, _radius);
-
                 }
                 //==============================================
             }
-
-            //#endif
 
             ClearFlag(Flag.RECOMPUTE);
 
