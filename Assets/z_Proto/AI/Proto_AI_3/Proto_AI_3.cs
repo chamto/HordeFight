@@ -25,7 +25,7 @@ namespace Proto_AI_3
     {
         public static readonly ObjectManager Inst = new ObjectManager();
         //public SphereTree _sphereTree = new SphereTree(500, new float[] { 16, 10 }, 0.5f);
-        public SphereTree _sphereTree = new SphereTree(500, new float[] { 32, 16 , 8 , 3}, 0.5f);
+        public SphereTree _sphereTree = new SphereTree(500, new float[] { 32, 16 , 8, 5, 2}, 0.5f);
         public SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 32, 16, 8 , 2 }, 0.5f);
 
         private ObjectManager()
@@ -49,7 +49,7 @@ namespace Proto_AI_3
         {
             SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, SphereTree.CREATE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
-            //model.SetLink_UserData<BaseEntity>(entity);
+            model.SetLink_UserData<BaseEntity>(entity);
 
             entity._sphereModel = model;
         }
@@ -104,20 +104,79 @@ namespace Proto_AI_3
             }
         }
 
-            //public BaseEntity RangeTest(BaseEntity src, Vector3 pos, float meter_minRadius, float meter_maxRadius)
-            //{
-            //    Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
-            //    _sphereTree_entity.RangeTest_MinDisReturn(ref param); 
+        //public struct Param_RangeTest<ENTITY> where ENTITY : class, new()
+        public struct Param_RangeTest
+        {
+            //==============================================
+            public SphereModel find; //결과값 
+
+            //public ENTITY unit;
+            public BaseEntity unit;
+            //public Camp.eRelation vsRelation;
+            //public Camp.eKind unit_campKind;
+
+            public Vector3 src_pos;
+            public float minRadius;
+            public float maxRadius;
+            //public float maxRadiusSqr;
+
+            public delegate bool Proto_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel);
+            public Proto_ConditionCheck callback;
+            //==============================================
 
 
-            //    if (null != param.find)
-            //    {
+            public Param_RangeTest(BaseEntity in_srcUnit, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+            {
+                find = null;
 
-            //        return param.find.GetLink_UserData() as BaseEntity;
-            //    }
+                unit = in_srcUnit;
+                //vsRelation = in_vsRelation;
+                //unit_campKind = in_srcUnit._campKind;
+                src_pos = pos;
+                minRadius = meter_minRadius;
+                maxRadius = meter_maxRadius;
+                //maxRadiusSqr = maxRadius * maxRadius;
 
-            //    return null;
-            //}
+                callback = Param_RangeTest.Func_ConditionCheck;
+            }
+
+            //==============================================
+
+            static public bool Func_ConditionCheck(ref Param_RangeTest param, SphereModel dstModel)
+            {
+                //return true;
+
+                //기준객체는 검사대상에서 제외한다
+                if (null != param.unit && param.unit._sphereModel == dstModel) return false;
+
+                BaseEntity dstBeing = dstModel.GetLink_UserData() as BaseEntity;
+                //BaseEntity dstUnit = dstModel.GetLink_UserData() as BaseEntity;
+
+                if (null != dstBeing)
+                {
+                    //가시거리 검사 
+                    return true;
+                    //return GridManager.Inst.IsVisibleTile(param.src_pos, dstModel.GetPos(), 10);
+                }
+
+                return false;
+            }
+        }
+
+        public BaseEntity RangeTest(BaseEntity src, Vector3 pos, float meter_minRadius, float meter_maxRadius)
+        {
+            Param_RangeTest param = new Param_RangeTest(src, pos, meter_minRadius, meter_maxRadius);
+            _sphereTree.RangeTest_MinDisReturn(ref param); 
+
+
+            if (null != param.find)
+            {
+
+                return param.find.GetLink_UserData() as BaseEntity;
+            }
+
+            return null;
+        }
     }
 
 
@@ -378,15 +437,13 @@ namespace Proto_AI_3
                 //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
 
 
-                //v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
+                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
 
                 
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
 
                 //==========================================
             }
-
-            //ObjectManager.Inst.Update(deltaTime);
 
             ObjectManager.Inst.Update(deltaTime);
         }
@@ -524,18 +581,22 @@ namespace Proto_AI_3
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
 
-            //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
-            //DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
-            //DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
-            //if (null != findEnty_1)
-            //{
-            //    DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
-            //}
-
-            if(GridManager.Inst.IsVisibleTile(_tr_test.position, _tr_line_a.position, 10))
+            BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
+            DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
+            DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
+            if (null != findEnty_1)
             {
-                DebugWide.AddDrawQ_Line(_tr_test.position, _tr_line_a.position, Color.red); 
+                DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
             }
+
+            //ObjectManager.Inst._sphereTree_struct.Debug_RayTrace(_tr_test.position, _tr_line_a.position);
+            //ObjectManager.Inst._sphereTree_struct.Debug_RangeTest(_tr_test.position, _maxRange);
+            //ObjectManager.Inst._sphereTree.Debug_RangeTest(_tr_test.position, _maxRange);
+
+            //if(GridManager.Inst.IsVisibleTile(_tr_test.position, _tr_line_a.position, 10))
+            //{
+            //    DebugWide.AddDrawQ_Line(_tr_test.position, _tr_line_a.position, Color.red); 
+            //}
 
 
             _formationPoint.Draw(Color.white);
@@ -583,7 +644,7 @@ namespace Proto_AI_3
         }
     }
 
-    public class BaseEntity //: SphereModel.IUserData
+    public class BaseEntity : SphereModel.IUserData
     {
         public float _radius = 0.5f;
         public Vector3 _oldPos = Vector3.zero;
@@ -892,8 +953,8 @@ namespace Proto_AI_3
                 float curSpeed = _maxSpeed;
                 //if(false)
                 {
-                    //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
-                    float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
+                    float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    //float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                     Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
                     float sum_r = _radius + _radius;
                     Vector3 pos_1 = _pos + _velocity.normalized * _radius;
@@ -920,23 +981,25 @@ namespace Proto_AI_3
                     //    curSpeed = 0;
                     //}
 
-                    //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
-                    //BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
-                    //if (null == findEnty_1)
-                    //{
-                    //    curSpeed = _maxSpeed;
-                    //}
-                    //else if (null == findEnty_2)
-                    //{
-                    //    curSpeed = _maxSpeed;
-                    //    _velocity = findDir;
-                    //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    //}
-                    //else
-                    //{
-                    //    __findNum = Misc.RandInt(1, 4);
-                    //    curSpeed = 0;
-                    //}
+                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                    //DebugWide.AddDrawQ_Circle(pos_1, _radius, Color.cyan);
+                    if (null == findEnty_1)
+                    {
+                        curSpeed = _maxSpeed;
+                    }
+                    else if (null == findEnty_2)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = findDir;
+                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    }
+                    else
+                    {
+                        //DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.cyan);
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0;
+                    }
 
                     //if(false == GridManager.Inst.IsVisibleTile(_pos, pos_1, 10))
                     //{

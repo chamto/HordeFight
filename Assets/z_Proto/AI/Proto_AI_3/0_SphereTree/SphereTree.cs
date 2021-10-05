@@ -22,7 +22,7 @@ namespace Proto_AI_3
         public QFifo<SphereModel>[] _q_integrate_child = null; //재계산 해야하는 자식구 
         //public QFifo<SphereModel> _q_integrate_super = null;
 
-        public const int MAX_LEVEL = 4;
+        public const int MAX_LEVEL = 10;
         public const int CREATE_LEVEL_LAST = -1;
 
         public int _max_level = MAX_LEVEL;
@@ -518,27 +518,27 @@ namespace Proto_AI_3
             return _levels[0].RayTrace_FirstReturn(start, end, exceptModel);
         }
 
-        //public void RangeTest_MinDisReturn(ref Param_RangeTest param)
-        //{
-        //    _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
-        //}
+        public void RangeTest_MinDisReturn(ref ObjectManager.Param_RangeTest param)
+        {
+            _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
+        }
 
         //==================================================
         // debug 용 
         //==================================================
 
-        public void Render_RayTrace(Vector3 start, Vector3 end)
+        public void Debug_RayTrace(Vector3 start, Vector3 end)
         {
             _levels[0].Debug_RayTrace(start, end);
         }
 
-        public void Render_RangeTest(Vector3 pos, float range)
+        public void Debug_RangeTest(Vector3 pos, float range)
         {
 
             _levels[0].Debug_RangeTest(pos, range, Frustum.ViewState.PARTIAL);
         }
 
-        public void Render_FrustumTest(Frustum f, Frustum.ViewState state)
+        public void Debug_FrustumTest(Frustum f, Frustum.ViewState state)
         {
 
             _levels[0].Debug_VisibilityTest(f, state);
