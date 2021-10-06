@@ -953,12 +953,12 @@ namespace Proto_AI_3
                 float curSpeed = _maxSpeed;
                 //if(false)
                 {
-                    float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
-                    //float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
+                    //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                     Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
                     float sum_r = _radius + _radius;
-                    Vector3 pos_1 = _pos + _velocity.normalized * _radius;
-                    Vector3 pos_2 = _pos + findDir * _radius;
+                    Vector3 pos_1 = _pos + _velocity.normalized * (_radius );
+                    Vector3 pos_2 = _pos + findDir * (_radius );
 
                     //CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
                     //CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
@@ -981,30 +981,40 @@ namespace Proto_AI_3
                     //    curSpeed = 0;
                     //}
 
+                    Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
                     BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
                     BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
-                    //DebugWide.AddDrawQ_Circle(pos_1, _radius, Color.cyan);
+                    Vector3 ori_velo = _velocity;
+
+                    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
                     if (null == findEnty_1)
                     {
                         curSpeed = _maxSpeed;
+
                     }
                     else if (null == findEnty_2)
                     {
                         curSpeed = _maxSpeed;
                         _velocity = findDir;
                         //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        find_pos = _pos + findDir * (_radius+0.3f);
                     }
                     else
                     {
-                        //DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.cyan);
+                        DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
                         __findNum = Misc.RandInt(1, 4);
                         curSpeed = 0;
                     }
 
-                    //if(false == GridManager.Inst.IsVisibleTile(_pos, pos_1, 10))
-                    //{
-                    //    curSpeed = 0.1f; 
-                    //}
+                    if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                    {
+                        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0f;
+                        _velocity = ori_velo;
+                    }
+
 
                 }
 
