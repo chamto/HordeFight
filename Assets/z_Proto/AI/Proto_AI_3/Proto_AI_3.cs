@@ -368,8 +368,6 @@ namespace Proto_AI_3
             KeyInput();
             //vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
 
-            vh = EntityMgr.list[5];
-            vh._target = _tr_test.position;
             //float kmPerHour = (3600f / 1000f) * _maxSpeed;
             //DebugWide.LogBlue(ID + "  시간당 속도: " + kmPerHour + "  초당 속도: " + _maxSpeed + "  초당 거리: " + _maxSpeed * deltaTime);
             //운반기의 반지름이 0.5 이며 타일한개의 길이가 1인 경우 : _maxSpeed * deltaTime 의 값이 1.5 를 넘으면 지형을 통과하게 된다 
@@ -382,14 +380,19 @@ namespace Proto_AI_3
 
             foreach (Vehicle v in EntityMgr.list)
             {
+                if(5 == v._id)
+                {
+                    //v._withstand = 100; //임시 시험 
+                    v._target = _tr_test.position;
+                    v.SetRadius(_radius);
+                }
                 if (6 <= v._id) 
                 {
-                    // v._withstand = 100; //임시 시험 
                     v._target = _tr_test2_s.position;
                 }
 
                 //v._radius = _radius;
-                v.SetRadius(_radius);
+                //v.SetRadius(_radius);
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
@@ -508,6 +511,28 @@ namespace Proto_AI_3
             {
 
                 //==========================================
+                //* 목표위치에 가까울수록 버티기값을 높게설정하여 중심에서 멀어질수록 더 밀리게 조정 
+                //float len_toTarget_src = (src._pos - src._target).sqrMagnitude;
+                //float len_toTarget_dst = (dst._pos - dst._target).sqrMagnitude;
+
+                //src._withstand = 1;
+                //dst._withstand = 0;
+                //if(len_toTarget_src > len_toTarget_dst)
+                //{
+                //    src._withstand = 0;
+                //    dst._withstand = 1;
+                //}
+
+                //if(src._id == 5)
+                //{
+                //    src._withstand = 100; 
+                //}
+                //if (dst._id == 5)
+                //{
+                //    dst._withstand = 100;
+                //}
+
+                //==========================================
                 float rate_src, rate_dst;
                 float f_sum = src._withstand + dst._withstand;
                 if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
@@ -581,13 +606,13 @@ namespace Proto_AI_3
             //DebugWide.DrawCircle(_tr_target.position, 0.1f, Color.white);
             //DebugWide.DrawLine(EntityMgr.list[0]._pos, _tr_target.position, Color.white);
 
-            BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
-            DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
-            DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
-            if (null != findEnty_1)
-            {
-                DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
-            }
+            //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(null, _tr_test.position, _minRange, _maxRange);
+            //DebugWide.AddDrawQ_Circle(_tr_test.position, _minRange, Color.blue);
+            //DebugWide.AddDrawQ_Circle(_tr_test.position, _maxRange, Color.blue);
+            //if (null != findEnty_1)
+            //{
+            //    DebugWide.AddDrawQ_Circle(findEnty_1._pos, 0.1f, Color.red);
+            //}
 
             //ObjectManager.Inst._sphereTree_struct.Debug_RayTrace(_tr_test.position, _tr_line_a.position);
             //ObjectManager.Inst._sphereTree_struct.Debug_RangeTest(_tr_test.position, _maxRange);
@@ -960,49 +985,27 @@ namespace Proto_AI_3
                     Vector3 pos_1 = _pos + _velocity.normalized * (_radius );
                     Vector3 pos_2 = _pos + findDir * (_radius );
 
-                    //CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
-                    //CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
-
-                    //if (null == findCell_1 ||
-                    //(null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
-                    //{
-                    //    curSpeed = _maxSpeed;
-                    //}
-                    //else if (null == findCell_2 ||
-                    //    (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
-                    //{
-                    //    curSpeed = _maxSpeed;
-                    //    _velocity = findDir;
-                    //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    //}
-                    //else
-                    //{
-                    //    __findNum = Misc.RandInt(1, 4);
-                    //    curSpeed = 0;
-                    //}
-
+                    //-----------------
+                    //* 셀공간으로 객체이동 조절
+                    CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
+                    CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
                     Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
-                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
-                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
                     Vector3 ori_velo = _velocity;
-
-                    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
-                    if (null == findEnty_1)
+                    if (null == findCell_1 )
+                    //|| (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
                     {
                         curSpeed = _maxSpeed;
-
                     }
-                    else if (null == findEnty_2)
+                    else if (null == findCell_2 )
+                    //|| (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
                     {
                         curSpeed = _maxSpeed;
                         _velocity = findDir;
                         //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
-                        find_pos = _pos + findDir * (_radius+0.3f);
+                        find_pos = _pos + findDir * (_radius + 0.3f);
                     }
                     else
                     {
-                        DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
                         __findNum = Misc.RandInt(1, 4);
                         curSpeed = 0;
                     }
@@ -1014,6 +1017,49 @@ namespace Proto_AI_3
                         curSpeed = 0f;
                         _velocity = ori_velo;
                     }
+
+                    //--------------------
+                    //* 구트리로 객체이동 조절
+                    //Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
+                    //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    //BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                    //Vector3 ori_velo = _velocity;
+
+                    //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
+                    //if (null == findEnty_1)
+                    //{
+                    //    curSpeed = _maxSpeed;
+
+                    //}
+                    //else if (null == findEnty_2)
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //    _velocity = findDir;
+                    //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                    //    DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                    //    find_pos = _pos + findDir * (_radius+0.3f);
+                    //}
+                    //else
+                    //{
+                    //    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
+                    //    __findNum = Misc.RandInt(1, 4);
+                    //    curSpeed = 0;
+                    //}
+
+                    //if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                    //{
+                    //    DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                    //    __findNum = Misc.RandInt(1, 4);
+                    //    curSpeed = 0f;
+                    //    _velocity = ori_velo;
+                    //}
+
+                    //if(5>=_id)
+
+                    //{
+                    //    curSpeed = _maxSpeed;
+                    //    _velocity = ori_velo;
+                    //}
 
 
                 }
