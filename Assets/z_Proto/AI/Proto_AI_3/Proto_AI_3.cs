@@ -499,7 +499,8 @@ namespace Proto_AI_3
 
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 dir_dstTOsrc = VOp.Minus(src._pos, dst._pos);
+            //Vector3 dir_dstTOsrc = VOp.Minus(src._pos, dst._pos);
+            Vector3 dir_dstTOsrc = src._pos - dst._pos;
             Vector3 n = ConstV.v3_zero;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
             //float r_sum = (src._collision._radius + dst._collision._radius);
@@ -511,6 +512,7 @@ namespace Proto_AI_3
             {
 
                 //==========================================
+
                 //* 목표위치에 가까울수록 버티기값을 높게설정하여 중심에서 멀어질수록 더 밀리게 조정 
                 //float len_toTarget_src = (src._pos - src._target).sqrMagnitude;
                 //float len_toTarget_dst = (dst._pos - dst._target).sqrMagnitude;
@@ -522,6 +524,24 @@ namespace Proto_AI_3
                 //    src._withstand = 0;
                 //    dst._withstand = 1;
                 //}
+
+                //---------------
+                //if(src._stop)
+                //{
+                //    src._withstand = 1;
+                //    dst._withstand = 0;
+                //}
+                //if (dst._stop)
+                //{
+                //    src._withstand = 0;
+                //    dst._withstand = 1;
+                //}
+                //if(true == src._stop && true == dst._stop)
+                //{
+                //    src._withstand = 1;
+                //    dst._withstand = 1;
+                //}
+                //---------------
 
                 //if(src._id == 5)
                 //{
@@ -987,61 +1007,33 @@ namespace Proto_AI_3
 
                     //-----------------
                     //* 셀공간으로 객체이동 조절
-                    CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
-                    CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
-                    Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
-                    Vector3 ori_velo = _velocity;
-                    if (null == findCell_1 )
-                    //|| (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
-                    {
-                        curSpeed = _maxSpeed;
-                    }
-                    else if (null == findCell_2 )
-                    //|| (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
-                    {
-                        curSpeed = _maxSpeed;
-                        _velocity = findDir;
-                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                        find_pos = _pos + findDir * (_radius + 0.3f);
-                    }
-                    else
-                    {
-                        __findNum = Misc.RandInt(1, 4);
-                        curSpeed = 0;
-                    }
-
-                    if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
-                    {
-                        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
-                        __findNum = Misc.RandInt(1, 4);
-                        curSpeed = 0f;
-                        _velocity = ori_velo;
-                    }
-
-                    //--------------------
-                    //* 구트리로 객체이동 조절
+                    //CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
+                    //CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
                     //Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
-                    //BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
-                    //BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
                     //Vector3 ori_velo = _velocity;
-
-                    //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
-                    //if (null == findEnty_1)
+                    //if (null == findCell_1 )
+                    ////|| (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
                     //{
                     //    curSpeed = _maxSpeed;
-
                     //}
-                    //else if (null == findEnty_2)
+                    //else if (null == findCell_2 )
+                    ////|| (null != findCell_2 && (findCell_2._head._pos - pos_2).sqrMagnitude > sum_r * sum_r))
                     //{
                     //    curSpeed = _maxSpeed;
                     //    _velocity = findDir;
                     //    //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    //    DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
-                    //    find_pos = _pos + findDir * (_radius+0.3f);
+                    //    find_pos = _pos + findDir * (_radius + 0.3f);
+
+                    //    if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                    //    {
+                    //        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                    //        __findNum = Misc.RandInt(1, 4);
+                    //        curSpeed = 0f;
+                    //        _velocity = ori_velo;
+                    //    }
                     //}
                     //else
                     //{
-                    //    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
                     //    __findNum = Misc.RandInt(1, 4);
                     //    curSpeed = 0;
                     //}
@@ -1053,6 +1045,59 @@ namespace Proto_AI_3
                     //    curSpeed = 0f;
                     //    _velocity = ori_velo;
                     //}
+
+                    //--------------------
+                    //* 구트리로 객체이동 조절
+                    Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
+                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                    Vector3 ori_velo = _velocity;
+
+                    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
+                    if (null == findEnty_1)
+                    {
+                        curSpeed = _maxSpeed;
+
+                    }
+                    else if (null == findEnty_2)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = findDir;
+                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        find_pos = _pos + findDir * (_radius+0.3f);
+
+                        //if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                        //{
+                        //    DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                        //    __findNum = Misc.RandInt(1, 4);
+                        //    curSpeed = 0f;
+                        //    _velocity = ori_velo;
+                        //}
+                    }
+                    else
+                    {
+                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0;
+                    }
+
+                    Vector3 calcPos;
+                    //if (null != GridManager.Inst.Find_FirstStructTile4(_pos, find_pos, 0.1f, out calcPos))
+                    //{
+                    //        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                    //        __findNum = Misc.RandInt(1, 4);
+                    //        curSpeed = 0f;
+                    //        _velocity = ori_velo;
+                    //}
+                    if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                    {
+                        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0f;
+                        _velocity = ori_velo;
+                    }
 
                     //if(5>=_id)
 

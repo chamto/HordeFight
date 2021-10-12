@@ -3147,6 +3147,8 @@ namespace Proto_AI_3
             return null;
         }
 
+
+
         public bool IsVisibleTile(Vector3 origin_3d, Vector3 target_3d, int MAX_COUNT)
         {
 
@@ -3169,7 +3171,22 @@ namespace Proto_AI_3
                 structTile = GetStructTile(nextPos);
                 if(null != structTile && false == structTile._isTunnel) //터널타일이 아니어야 한다 
                 {
-                    return false;
+                    Vector3 cp = structTile._line.ClosestPoint(target_3d);
+                    Vector3 cpToSrc = target_3d - cp;
+                    if (Misc.IsZero(cpToSrc))
+                    {
+                        //반지름 0.5이며 속도가 15일때 cpToSrc 이 0 이 되는 경우가 있다. 지형의 노멀으로 방향을 지정  
+                        cpToSrc = structTile._nDir;
+
+                    }
+
+                    //지형타일을 넘어간 경우 
+                    if (Vector3.Dot(structTile._nDir, cpToSrc) < 0) //바뀐방향으로 검사해야함 
+                    {
+
+                        return false;
+                    }
+
                 }
 
 
