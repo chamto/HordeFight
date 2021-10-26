@@ -12,6 +12,13 @@ namespace David_Conger
     {
         public const int COUNT = 2;
         public Point_mass[] allParticles = new Point_mass[COUNT];
+        public float mass_0 = 1;
+        public float mass_1 = 1;
+        public float elasticity_0 = 1;
+        public float elasticity_1 = 1;
+
+        bool _oneHit = false;
+
         // Use this for initialization
         void Start()
         {
@@ -21,29 +28,48 @@ namespace David_Conger
                 allParticles[i] = new Point_mass();    
             }
 
+            Init();
 
-            allParticles[0].mass = 1;
-            allParticles[0].elasticity = 1f;
+
+        }
+
+        public void Init()
+        {
+            allParticles[0].mass = mass_0;
+            allParticles[0].elasticity = elasticity_0;
             allParticles[0].radius = 1;
+            allParticles[0].linearVelocity = Vector3.zero;
+            allParticles[0].linearAcceleration = Vector3.zero;
             allParticles[0].location = new Vector3(-5.0f, 0.0f, 0.0f);
             allParticles[0].forces = new Vector3(50.0f, 0.0f, 0.0f);
 
-            allParticles[1].mass = 1;
-            allParticles[1].elasticity = 1f;
+            allParticles[1].mass = mass_1;
+            allParticles[1].elasticity = elasticity_1;
             allParticles[1].radius = 1f;
-            allParticles[1].location = new Vector3(0.0f, 0, 0.5f);
+            allParticles[1].linearVelocity = Vector3.zero;
+            allParticles[1].linearAcceleration = Vector3.zero;
+            allParticles[1].location = new Vector3(0.0f, 0, 0f);
+            allParticles[1].forces = Vector3.zero;
             //allParticles[1].forces = new Vector3(-10.0f, 0, 5.0f);
             //allParticles[1].forces = new Vector3(-50.0f, 0.0f, 0.0f);
 
+            _oneHit = false;
         }
 
         //private bool forceApplied = false;
         void Update()
         {
-            float m0_v = allParticles[0].linearVelocity.magnitude;
-            float m1_v = allParticles[1].linearVelocity.magnitude;
-            float m01_v = m0_v + m1_v; //일차원 운동량값만 보존되어서 나옴 , 정상임 
-            DebugWide.LogBlue(m0_v + "  " + m1_v + "  = " + m01_v);
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                Init();
+            }
+
+
+            //float m0_v = allParticles[0].linearVelocity.magnitude;
+            //float m1_v = allParticles[1].linearVelocity.magnitude;
+            //float m01_v = m0_v + m1_v; //일차원 운동량값만 보존되어서 나옴 , 정상임 
+            //DebugWide.LogBlue(m0_v + "  " + m1_v + "  = " + m01_v);
 
             // If the force has not yet been applied...
             //if (false == forceApplied)
@@ -84,23 +110,31 @@ namespace David_Conger
             {
                 //DebugWide.LogBlue("sfsdf");
                 // Handle the collision.
-                HandleCollision(ref allParticles[0], ref allParticles[1], distance, timeInterval);
+                if(false == _oneHit)
+                {
+                    _oneHit = true;
+                    HandleCollision(ref allParticles[0], ref allParticles[1], timeInterval);
+                }
+
             }
 
         }
 
+
 		public void OnDrawGizmos()
 		{
             DebugWide.DrawQ_All();
+            //DebugWide.DrawQ_All_AfterClear();
 
             allParticles[0].Draw(Color.white);
             allParticles[1].Draw(Color.black);
 		}
 
-		public void HandleCollision(ref Point_mass pm0, ref Point_mass pm1, 
-                                    Vector3 separationDistance, float changeInTime)
+		public void HandleCollision(ref Point_mass pm0, ref Point_mass pm1, float changeInTime)
         {
-            //
+
+            Vector3 separationDistance = pm0.location - pm1.location;
+
             // Find the outgoing velicities.
             //
             /* First, normalize the displacement vector because it's 
@@ -138,8 +172,8 @@ namespace David_Conger
                 (finalVelocity1 - velocity1) * unitNormal +
                 pm1.linearVelocity);
 
-            DebugWide.LogBlue(velocity0 + "  --  " + velocity1 + "  " + averageE + "  " + pm0.elasticity + "  " + pm1.elasticity);
-            DebugWide.LogBlue(finalVelocity0 + " == " + finalVelocity1);
+            DebugWide.LogRed(velocity0 + "  --  " + velocity1 + "   - averE: " + averageE + "  elastic0: " + pm0.elasticity + "  elastic1: " + pm1.elasticity);
+            DebugWide.LogRed(finalVelocity0 + " == " + finalVelocity1);
             Vector3 tp = pm1.location + unitNormal * pm1.radius; //접점 
             Vector3 cr = Vector3.Cross(unitNormal,Vector3.up);
             DebugWide.AddDrawQ_Circle(pm0.location, pm0.radius, Color.gray);
