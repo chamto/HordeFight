@@ -231,7 +231,7 @@ namespace Test_Steering_Pursuit
             //for the evader's current position.
             Vector3 ToEvader = evader._pos - _vehicle._pos;
 
-            float RelativeHeading = Vector2.Dot(_vehicle._heading, evader._heading);
+            float RelativeHeading = Vector3.Dot(_vehicle._heading, evader._heading);
 
 
             if ((Vector3.Dot(ToEvader, _vehicle._heading) > 0f) &&
@@ -245,16 +245,22 @@ namespace Test_Steering_Pursuit
 
             //Not considered ahead so we predict where the evader will be.
 
-            //the lookahead time is propotional to the distance between the evader
-            //and the pursuer; and is inversely proportional to the sum of the
-            //agent's velocities
+
+            //속도공식 : v = s / t
+            //A------> <------B 두 점이 직선상 한점에서 만나는 시간구하기 : t = s / v
+            //1차원 직선상에 A와 B 두 점이 있다고 할시, A와 B의 두 사이거리는 S 가 된다 
+            //A의 속도 1 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (1+1) = 4.5 
+            //A의 속도 2 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (2+1) = 3
+            // * 검산 : s = v * t
+            //(1 * 4.5) + (1 * 4.5) = 4.5 + 4.5 = 9 : A가 4.5거리 만큼 이동후 B와 만나게 된다 
+            //(2 * 3) + (1 * 3) = 6 + 3 = 9 : A가 6거리 만큼 이동후 B와 만나게 된다 
             float LookAheadTime = ToEvader.magnitude /
                                   (_vehicle._maxSpeed + evader._speed);
 
             //LookAheadTime += TurnaroundTime(_vehicle, evader._pos , 1); //이렇게 턴시간 늘리는 것은 아닌것 같음 
 
             //------------------------
-            Vector3 prPos = evader._pos + evader._velocity * LookAheadTime;
+            Vector3 prPos = evader._pos + evader._velocity * LookAheadTime; //s = v * t 
             DebugWide.DrawCircle(prPos, 2, Color.red);
             //DebugWide.LogBlue(LookAheadTime);
             //------------------------
