@@ -195,10 +195,12 @@ namespace Proto_AI_3
 
         public float _formation_speed = 10;
         public float _radius = 0.5f;
+        public float _radius_damage = 0.5f;
         public float _mass = 1f;
         public float _weight = 20;
         public float _maxForce = 40f;
         public float _maxSpeed = 10f;
+        public float _withstand = 1f;
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
 
@@ -256,7 +258,7 @@ namespace Proto_AI_3
 
             ObjectManager.Inst.Init();
 
-            _formationPoint._end = _tr_target.position;
+            _formationPoint._target = _tr_target.position;
             _formationPoint._pos = _tr_target.position;
 
             //------
@@ -274,58 +276,58 @@ namespace Proto_AI_3
             //v._maxSpeed = 14;
 
             //1
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            //2
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(-1f, 0, -1f);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            //-------------------
-
-            //3
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(1f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            ////4
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            v._leader = _formationPoint;
-            v._offset = new Vector3(2f, 0, 0);
-            v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            //5
-            v = new Vehicle();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
+            //v._offset = new Vector3(1f, 0, -1f);
             //v._mode = SteeringBehavior.eType.offset_pursuit;
-            v._mode = SteeringBehavior.eType.arrive;
+
+            ////2
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(-1f, 0, -1f);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            ////-------------------
+
+            ////3
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(1f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            //////4
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //v._leader = _formationPoint;
+            //v._offset = new Vector3(2f, 0, 0);
+            //v._mode = SteeringBehavior.eType.offset_pursuit;
+
+            ////5
+            //v = new Vehicle();
+            //id = EntityMgr.Add(v);
+            //v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            ////v._leader = _formationPoint;
+            ////v._offset = new Vector3(3f, 0, 0);
+            ////v._mode = SteeringBehavior.eType.offset_pursuit;
+            //v._mode = SteeringBehavior.eType.arrive;
 
 
-            for (int i=0;i<30;i++)
-            {
-                v = new Vehicle();
-                id = EntityMgr.Add(v);
-                v.Init(id, 0.5f, new Vector3(17, 0, 12));
-                v._mode = SteeringBehavior.eType.arrive;
-                v._target = new Vector3(17, 0, 12);
+            //for (int i=0;i<30;i++)
+            //{
+            //    v = new Vehicle();
+            //    id = EntityMgr.Add(v);
+            //    v.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //    v._mode = SteeringBehavior.eType.arrive;
+            //    v._target = new Vector3(17, 0, 12);
 
-            }
+            //}
 
             //==============================
 
@@ -343,7 +345,7 @@ namespace Proto_AI_3
         }
 
 
-        int ID = 0;
+        int ID_0 = 0;
         void Update()
         {
 
@@ -360,10 +362,10 @@ namespace Proto_AI_3
             float deltaTime = FrameTime.DeltaTime();
 
             //========================
-            Vehicle vh = EntityMgr.list[ID];
+            Vehicle vh = EntityMgr.list[ID_0];
 
             _formationPoint._speed = _formation_speed;
-            _formationPoint._end = _tr_target.position;
+            _formationPoint._target = _tr_target.position;
             _formationPoint.Update(deltaTime);
             KeyInput();
             //vh._target = _formationPoint._pos; //0번째 객체에만 특별히 부여 , 도착시험하기 위함 
@@ -382,9 +384,10 @@ namespace Proto_AI_3
             {
                 if(5 == v._id)
                 {
-                    //v._withstand = 100; //임시 시험 
+                    v._withstand = _withstand;
                     v._target = _tr_test.position;
                     v.SetRadius(_radius);
+                    v._radius_damage = _radius_damage;
                 }
                 if (6 <= v._id) 
                 {
@@ -456,39 +459,39 @@ namespace Proto_AI_3
             const float MOVE_LENGTH = 1f;
             if (Input.GetKey(KeyCode.W))
             {
-                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                Vector3 n = _formationPoint._target - _formationPoint._pos;
                 n = VOp.Normalize(n);
-                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._target += n * MOVE_LENGTH;
                 _formationPoint._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._end;
+                _tr_target.position = _formationPoint._target;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                Vector3 n = _formationPoint._target - _formationPoint._pos;
                 n = -VOp.Normalize(n);
-                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._target += n * MOVE_LENGTH;
                 _formationPoint._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._end;
+                _tr_target.position = _formationPoint._target;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                Vector3 n = _formationPoint._target - _formationPoint._pos;
                 n = -VOp.PerpN(n, Vector3.up);
-                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._target += n * MOVE_LENGTH;
                 _formationPoint._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._end;
+                _tr_target.position = _formationPoint._target;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                Vector3 n = _formationPoint._end - _formationPoint._pos;
+                Vector3 n = _formationPoint._target - _formationPoint._pos;
                 n = VOp.PerpN(n, Vector3.up);
-                _formationPoint._end += n * MOVE_LENGTH;
+                _formationPoint._target += n * MOVE_LENGTH;
                 _formationPoint._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._end;
+                _tr_target.position = _formationPoint._target;
             }
 
         }
@@ -551,6 +554,9 @@ namespace Proto_AI_3
                 //{
                 //    dst._withstand = 100;
                 //}
+
+                //src._velocity *= 0.9f;
+                //dst._velocity *= 0.9f;
 
                 //==========================================
                 float rate_src, rate_dst;
@@ -652,6 +658,8 @@ namespace Proto_AI_3
                 color = Color.black;
                 if (0 == v._id)
                     color = Color.red;
+                if (5 == v._id)
+                    color = Color.yellow;
 
                 v.Draw(color);
             }
@@ -692,16 +700,20 @@ namespace Proto_AI_3
     public class BaseEntity : SphereModel.IUserData
     {
         public float _radius = 0.5f;
+        public float _radius_damage = 0.5f; //타격크기 
         public Vector3 _oldPos = Vector3.zero;
         public Vector3 _pos = Vector3.zero;
         public Vector3 _velocity = Vector3.zero;
         public float _speed = 10f;
+        public float _withstand = 1f; //버티기
         public Quaternion _rotation = Quaternion.identity;
 
         public CellSpace _cur_cell = null;
         public BaseEntity _prev_sibling = null;
         public BaseEntity _next_sibling = null;
 
+        public Vector3 _target = ConstV.v3_zero;
+        public bool _changeTarget = false;
         //==================================================
         // 충돌 모델 
         //==================================================
@@ -713,7 +725,7 @@ namespace Proto_AI_3
     public class FormationPoint : BaseEntity
     {
         //public Vector3 _start = Vector3.zero;
-        public Vector3 _end = Vector3.zero;
+        //public Vector3 _end = Vector3.zero;
 
 
         //private Vector3 _n_dir = Vector3.zero;
@@ -726,20 +738,30 @@ namespace Proto_AI_3
         //    _n_dir = VOp.Normalize(_end - _start);
         //}
 
+        public Vector3 _before_target = Vector3.zero;
+
+
         public void Update(float deltaTime)
         {
+            _changeTarget = false;
+            if(false == Misc.IsZero(_before_target - _target))
+            {
+                _changeTarget = true;
+            }
+            _before_target = _target;
+
 
             //도착시 종료 
-            if ((_end - _pos).sqrMagnitude < 1)
+            if ((_target - _pos).sqrMagnitude < 1)
             {
                 //특정거리 안에서 이동없이 방향전환 
-                _rotation = Quaternion.FromToRotation(Vector3.forward, _end - _pos);
+                _rotation = Quaternion.FromToRotation(Vector3.forward, _target - _pos);
                 _velocity = Vector3.zero; //초기화를 안해주면 키이동시 경로가 이상해지는 문제가 발생함
                 return;
             }
 
             //DebugWide.LogBlue("sfsdf: " + _pos );
-            Vector3 n = VOp.Normalize(_end - _pos);
+            Vector3 n = VOp.Normalize(_target - _pos);
             _velocity = n * _speed;
             _pos += _velocity * deltaTime;
 
@@ -748,8 +770,8 @@ namespace Proto_AI_3
 
         public void Draw(Color color)
         {
-            DebugWide.DrawCircle(_end, 0.1f, color);
-            DebugWide.DrawLine(_pos, _end, color);
+            DebugWide.DrawCircle(_target, 0.1f, color);
+            DebugWide.DrawLine(_pos, _target, color);
         }
 
     }
@@ -772,7 +794,6 @@ namespace Proto_AI_3
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
         public float _weight = 20;
-        public float _withstand = 1f; //버티기
 
         public bool _isNonpenetration = true; //비침투 
 
@@ -782,7 +803,7 @@ namespace Proto_AI_3
 
         public bool _tag = false;
 
-        public Vector3 _target = ConstV.v3_zero;
+        //public Vector3 _target = ConstV.v3_zero;
         public Vector3 _offset = ConstV.v3_zero;
         public Vector3 _worldOffsetPos = ConstV.v3_zero;
         public BaseEntity _leader = null;
@@ -885,15 +906,216 @@ namespace Proto_AI_3
             _feelers.Add(fpos);
         }
 
-        int __findNum = 0;
+        Vector3 _before_worldOffsetPos = Vector3.zero;
         public void Update(float deltaTime)
         {
+
             _oldPos = _pos;
             _worldOffsetPos = _target;
             if (null != _leader)
             {
                 _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace 
             }
+
+            //---------
+            if (_leader._changeTarget)
+            {
+                _before_worldOffsetPos = _pos;
+            }
+            DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
+            //---------
+
+            Update2(deltaTime);
+        }
+
+        int __findNum = 0;
+        public void Update0(float deltaTime)
+        {
+
+            Vector3 SteeringForce = ConstV.v3_zero;
+            if (SteeringBehavior.eType.arrive == _mode)
+                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
+            //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
+            else if (SteeringBehavior.eType.offset_pursuit == _mode)
+                SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
+
+            //-----------
+            //_weight 값을 작은값(1) 으로 설정하면 회전효과가 생긴다 
+            //_velocity = _velocity.normalized * _maxSpeed;
+            Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
+            SteeringForce = (DesiredVelocity - _velocity) * _weight;
+            //-----------
+
+            SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
+
+
+            Vector3 acceleration = SteeringForce / _mass;
+
+            //-----------
+            //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.yellow); //가속이 적용되기전의 속도 출력 
+            //DebugWide.AddDrawQ_Line(_pos, _pos + SteeringForce, Color.black);
+            DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude*deltaTime);
+            //-----------
+
+            //_velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
+
+
+            _velocity += acceleration * deltaTime;
+
+            //-----------
+            //_velocity *= 1.5f; //최대속도로 빨리 올라가게 한다 
+            //_velocity = _velocity.normalized * _maxSpeed;
+            //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.red);
+            //DebugWide.AddDrawQ_Circle(_pos + _velocity, 0.1f, Color.white);
+            //if (Misc.IsZero(_velocity.magnitude - _maxSpeed, 0.1f))
+            //{
+            //    DebugWide.AddDrawQ_Circle(_pos + _velocity, 0.1f, Color.red);
+            //}
+            //-----------
+
+            _velocity = VOp.Truncate(_velocity, _maxSpeed);
+
+
+            if (_velocity.sqrMagnitude > 0.001f)
+            {
+            
+                float def = VOp.Sign_ZX(_heading, _velocity);
+
+                float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
+
+                float angle = _anglePerSecond * def * deltaTime;
+
+                //DebugWide.LogRed(angle + "   " + max_angle);
+
+                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+                if (Math.Abs(angle) > Math.Abs(max_angle))
+                {
+                    angle = max_angle;
+
+                }
+
+
+                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
+                _heading = VOp.Normalize(_heading);
+                _speed = _velocity.magnitude;
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
+
+                //-----------
+
+                //최대각차이가 지정값 보다 작을 때만 이동시킨다 
+                //if (Math.Abs(max_angle) < 1f)
+                //{
+                //    SetPos(_pos + _velocity * deltaTime);
+                //}
+
+
+                //-----------
+                float curSpeed = _maxSpeed;
+                if(false)
+                {
+                    //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
+                    float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
+                    Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
+                    //float sum_r = _radius + _radius;
+                    Vector3 pos_1 = _pos + _velocity.normalized * (_radius);
+                    Vector3 pos_2 = _pos + findDir * (_radius);
+
+
+                    //--------------------
+                    //* 구트리로 객체이동 조절
+                    Vector3 find_pos = _pos + _velocity.normalized * (_radius + 0.3f);
+                    Vector3 ori_velo = _velocity;
+                    BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
+                    BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+
+                    //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
+                    if (null == findEnty_1)
+                    {
+                        curSpeed = _maxSpeed;
+
+                    }
+                    else if (null == findEnty_2)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = findDir;
+                        //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
+                        //DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        find_pos = _pos + findDir * (_radius + 0.3f);
+
+                    }
+                    else
+                    {
+                        //DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
+                        __findNum = Misc.RandInt(1, 4);
+                        //if(_withstand <= findEnty_2._withstand)
+                        curSpeed = 0;
+                    }
+
+
+                    if (5 == _id)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = ori_velo;
+                        //_withstand = 1.2f;
+                    }
+
+
+                    if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
+                    {
+                        //DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                        __findNum = Misc.RandInt(1, 4);
+                        curSpeed = 0f;
+                        _velocity = ori_velo;
+                    }
+
+                }
+                //_velocity = _velocity.normalized * curSpeed;
+
+                //-----------
+
+                //최대속도가 높을수록 진형을 잘 유지한다 
+                //설정된 최대속도로 등속도 운동하게 한다.
+                Vector3 ToOffset = _worldOffsetPos - _pos;
+                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                //Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
+                Vector3 ToFuture = _worldOffsetPos - pos_future;
+
+
+                //---------------------
+                SetPos(pos_future);
+
+                //if (curSpeed > 0)
+                ////if ((_worldOffsetPos - ToFuture).sqrMagnitude > _radius * _radius)
+                //{
+
+                //    if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
+                //        SetPos(pos_future);
+                //    else
+                //    {
+                //        float distSpeed = (_worldOffsetPos - _pos).magnitude;
+                //        //SetPos(WorldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                //        SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+
+                //    }
+                //}
+
+                //-------------
+
+            }
+
+
+        }
+
+        public void Update1(float deltaTime)
+        {
+            //_oldPos = _pos;
+            //_worldOffsetPos = _target;
+            //if (null != _leader)
+            //{
+            //    _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace 
+            //}
 
 
             Vector3 SteeringForce = ConstV.v3_zero;
@@ -1001,9 +1223,9 @@ namespace Proto_AI_3
                     //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
                     float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                     Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
-                    float sum_r = _radius + _radius;
-                    Vector3 pos_1 = _pos + _velocity.normalized * (_radius );
-                    Vector3 pos_2 = _pos + findDir * (_radius );
+                    //float sum_r = _radius + _radius;
+                    Vector3 pos_1 = _pos + _velocity.normalized * (_radius);
+                    Vector3 pos_2 = _pos + findDir * (_radius);
 
                     //-----------------
                     //* 셀공간으로 객체이동 조절
@@ -1049,11 +1271,11 @@ namespace Proto_AI_3
                     //--------------------
                     //* 구트리로 객체이동 조절
                     Vector3 find_pos = _pos + _velocity.normalized * (_radius+0.3f);
+                    Vector3 ori_velo = _velocity;
                     BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
                     BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
-                    Vector3 ori_velo = _velocity;
 
-                    DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
+                    //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
                     if (null == findEnty_1)
                     {
                         curSpeed = _maxSpeed;
@@ -1064,28 +1286,31 @@ namespace Proto_AI_3
                         curSpeed = _maxSpeed;
                         _velocity = findDir;
                         //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        //DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
                         find_pos = _pos + findDir * (_radius+0.3f);
 
-                        //if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
-                        //{
-                        //    DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
-                        //    __findNum = Misc.RandInt(1, 4);
-                        //    curSpeed = 0f;
-                        //    _velocity = ori_velo;
-                        //}
                     }
                     else
                     {
-                        DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
-                        DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
+                        //DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
+                        //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.cyan);
                         __findNum = Misc.RandInt(1, 4);
-                        curSpeed = 0;
+                        //if(_withstand <= findEnty_2._withstand)
+                            curSpeed = 0;
                     }
 
-                    Vector3 calcPos;
+
+                    if (5 == _id)
+                    {
+                        curSpeed = _maxSpeed;
+                        _velocity = ori_velo;
+                        //_withstand = 1.2f;
+                    }
+
+
+                    //Vector3 calcPos;
                     //if (null != GridManager.Inst.Find_FirstStructTile4(_pos, find_pos, 0.1f, out calcPos))
-                    //{
+                    //
                     //        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
                     //        __findNum = Misc.RandInt(1, 4);
                     //        curSpeed = 0f;
@@ -1093,63 +1318,12 @@ namespace Proto_AI_3
                     //}
                     if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
                     {
-                        DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
+                        //DebugWide.AddDrawQ_Circle(find_pos, 0.2f, Color.gray);
                         __findNum = Misc.RandInt(1, 4);
                         curSpeed = 0f;
                         _velocity = ori_velo;
                     }
 
-                    //if(5>=_id)
-
-                    //{
-                    //    curSpeed = _maxSpeed;
-                    //    _velocity = ori_velo;
-                    //}
-
-
-                }
-
-                if (false)
-                {
-                    //Vector3 feeler_pos = _pos + _rotation * _feelers[0];
-                    //CellSpace findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                    //if (null != findCell)
-                    //{
-                    //    feeler_pos = _pos + (_rotation * _feelers[0]).normalized * _radius;
-                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                    //    float sum_r = findCell._head._radius + _radius;
-                    //    //float sum_r = findCell._head._radius + 0.3f;
-                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                    //    {
-                    //        curSpeed = 0;
-                    //    }
-                    //}
-                    //feeler_pos = _pos + _rotation * _feelers[1];
-                    //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                    //if (null != findCell)
-                    //{
-                    //    feeler_pos = _pos + (_rotation * _feelers[1]).normalized * _radius;
-                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                    //    float sum_r = findCell._head._radius + _radius;
-                    //    //float sum_r = findCell._head._radius + 0.3f;
-                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                    //    {
-                    //        curSpeed = 0;
-                    //    }
-                    //}
-                    //feeler_pos = _pos + _rotation * _feelers[2];
-                    //findCell = GridManager.Inst.Find_FirstEntityTile(this, _pos, feeler_pos, 5);
-                    //if (null != findCell)
-                    //{
-                    //    feeler_pos = _pos + (_rotation * _feelers[2]).normalized * _radius;
-                    //    DebugWide.AddDrawQ_Circle(feeler_pos, 0.1f, Color.red);
-                    //    float sum_r = findCell._head._radius + _radius;
-                    //    //float sum_r = findCell._head._radius + 0.3f;
-                    //    if ((findCell._head._pos - feeler_pos).sqrMagnitude <= sum_r * sum_r)
-                    //    {
-                    //        curSpeed = 0;
-                    //    }
-                    //}
                 }
 
                 //-----------
@@ -1163,6 +1337,7 @@ namespace Proto_AI_3
                 //_worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 Vector3 ToOffset = _worldOffsetPos - _pos;
                 Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 
+                //Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 
                 Vector3 ToFuture = _worldOffsetPos - pos_future;
 
                 //DebugWide.AddDrawQ_Line(_pos, pos_future, Color.white);
@@ -1238,6 +1413,14 @@ namespace Proto_AI_3
             else if (SteeringBehavior.eType.offset_pursuit == _mode)
                 SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
 
+            //-----------
+            //_weight 값을 작은값(1) 으로 설정하면 회전효과가 생긴다 
+            //_velocity = _velocity.normalized * _maxSpeed;
+            //Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
+            //SteeringForce = (DesiredVelocity - _velocity) * _weight;
+            //-----------
+
+
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
 
 
@@ -1245,32 +1428,67 @@ namespace Proto_AI_3
 
             _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
 
-            Vector3 desiredVelocity = _velocity + acceleration;
-            if (desiredVelocity.sqrMagnitude > 0.001f)
+
+            //-----------
+            //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.yellow); //가속이 적용되기전의 속도 출력 
+            //DebugWide.AddDrawQ_Line(_pos, _pos + SteeringForce, Color.black);
+            //DebugWide.AddDrawQ_Line(_pos, _pos + (_velocity + acceleration), Color.blue);
+            DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude * deltaTime);
+            //-----------
+
+            //Vector3 desiredVelocity = _velocity + acceleration;
+            //if (desiredVelocity.sqrMagnitude > 0.001f)
             {
 
-                float def = VOp.Sign_ZX(_heading, _velocity + acceleration);
-                float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity + acceleration);
+                //SteeringForce는 조종힘의 의도로 사용되어야 한다. Arrive 는 Seek 과 달리 거리(최대속도)에 따라 힘의 길이가 보다 짧게 반환된다
+                //_velocity + acceleration(SteeringForce) 는 조종힘이 정확히 목표방향을 가리키지 않는데 오해하고 가리킨다고 착각하고 사용하고 있었음
+                //_worldOffsetPos - _pos 를 사용하여 정확하게 각도를 구해야 떠는 문제가 해결된다 
+                //float def = VOp.Sign_ZX(_heading, _velocity + acceleration);
+                //float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity + acceleration);
+                float def = VOp.Sign_ZX(_heading, _worldOffsetPos - _pos);
+                float max_angle = Geo.AngleSigned_AxisY(_heading, _worldOffsetPos - _pos);
                 float angle = _anglePerSecond * def * deltaTime;
 
-                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+
+
+                //떠는 문제 수정
+                //_anglePerSecond 값이 너무 크면 빙빙돌면서 튀는것 처럼 보인다. 최대 회전각을 벗어나지 않도록 예외처리 한다 
                 if (Math.Abs(angle) > Math.Abs(max_angle))
+                //if (3 > Math.Abs(max_angle))
+                {
+                    //DebugWide.LogRed(max_angle + "  " + angle);
+                    angle = max_angle;
+                    //DebugWide.LogRed("1---------------------------------------------");
+                }
+
+                //끊어지는듯 떨리는 문제가 있음
+                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+                //if (Math.Abs(angle) > Math.Abs(max_angle))
+                //if (1 > Math.Abs(max_angle))
+                //if((_worldOffsetPos - _pos).sqrMagnitude < 1)
+                //float rangle = Geo.AngleSigned_AxisY(_before_worldOffsetPos - _worldOffsetPos, _pos - _worldOffsetPos);
+                //DebugWide.LogBlue(rangle);
+                //if ( Math.Abs(rangle) > 90+30)
+                if (Vector3.Dot(_before_worldOffsetPos- _worldOffsetPos, _pos - _worldOffsetPos) < 0)
                 {
                     _velocity += acceleration * deltaTime; //안미끄러짐 
-                    _heading = VOp.Normalize(_velocity);
+                    //_heading = VOp.Normalize(_velocity); //떠는 문제 발생
+                    _heading = VOp.Normalize(_worldOffsetPos - _pos); 
+                    //_heading = Quaternion.AngleAxis(max_angle, ConstV.v3_up) * _heading;
+                    //_heading = VOp.Normalize(_heading);
 
-
-                    //DebugWide.LogRed("---------------------------------------------");
+                    DebugWide.LogRed("2---------------------------------------------");
                     //DebugWide.LogRed(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + _velocity + "  " + acceleration);
 
                 }
                 else
                 {
-                    //_anglePerSecond 값이 1000 이 넘어가면 빙빙도는것이 튀는것으로 보인다. 값이 적당히 커서 튀는 것으로 보이는것이다
-                    //값을 10000 이상으로 설정하면 max_angle 값을 넘어가 튀는 현상을 피할수 있다  
+
                     _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
                     _heading = VOp.Normalize(_heading);
-                    _velocity += _heading * (_velocity + acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+                    //_velocity += _heading * (_velocity + acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리 
+                    _velocity += _heading * (acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리 , _velocity 를 잘못더한것 같음 
+
 
                     //DebugWide.LogBlue(max_angle + "   " + angle + "   " + def + "  " + _heading + "   " + _velocity + "  " + acceleration);
                 }
@@ -1280,25 +1498,38 @@ namespace Proto_AI_3
                 _speed = _velocity.magnitude;
                 _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
-                //----------
+                //----------------
+                Vector3 ToOffset = _worldOffsetPos - _pos;
+                //Vector3 pos_future = _pos + _heading * _maxSpeed * deltaTime; //미래위치 계산 
+                Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 
+                Vector3 ToFuture = _worldOffsetPos - pos_future;
 
-                //Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
-                ////DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.green);
-                //Vector3 ToOffset = WorldOffsetPos - _pos;
-                //_velocity = ToOffset;
-                //SetPos(_pos + _velocity);
-
-                //-----------
+                //if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
+                    SetPos(pos_future);
+                //else
+                //{
+                //    DebugWide.LogRed("---------------------------------------------");
+                //    float distSpeed = (_worldOffsetPos - _pos).magnitude;
+                //    //SetPos(_worldOffsetPos); //목표오프셋 위치로 설정  - 순간이동 버그가 있어 제거 
+                //    SetPos(_pos + _velocity.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+                //    //SetPos(_pos + ToOffset.normalized * distSpeed * deltaTime); //거리를 속도로 사용  
+                //    //_velocity = Vector3.zero;
+                //    //DebugWide.AddDrawQ_Line(_pos, _pos + ToOffset, Color.blue);
+                //}
+                //----------------
 
                 //가속도 이동 
-                SetPos(_pos + _velocity * deltaTime);
+                //SetPos(_pos + _velocity * deltaTime);
 
-                //등속도 이동
-                //SetPos(_pos + _heading * _maxSpeed * deltaTime); 
 
                 //8방향으로만 이동 
                 //Vector3 n = Misc.GetDir8_Normal3D(_heading); 
                 //SetPos(_pos + n * _speed * deltaTime);
+
+                //----------
+                //_velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
+                //-----------
+
             }
 
 
@@ -1331,14 +1562,16 @@ namespace Proto_AI_3
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
             DebugWide.DrawLine(_pos + vb2, _pos + vb0, color);
-            DebugWide.DrawCircle(_pos, _radius, color); 
+            DebugWide.DrawCircle(_pos, _radius, color);
 
             //if (SteeringBehavior.eType.wander == _mode)
             //{
             //    _steeringBehavior.DrawWander();
             //}
 
-            if(null != _leader)
+            DebugWide.DrawLine(_pos, _pos + _heading, Color.white);
+
+            if (null != _leader)
             {
                 Vector3 WorldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace
                 DebugWide.DrawCircle(WorldOffsetPos, 0.1f, Color.green);
@@ -1464,6 +1697,7 @@ namespace Proto_AI_3
 
             //now Arrive at the predicted future position of the offset
             return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
+            //return Seek(WorldOffsetPos);
 
         }
 
