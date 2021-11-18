@@ -925,7 +925,7 @@ namespace Proto_AI_3
             DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
             //---------
 
-            Update2(deltaTime);
+            Update0(deltaTime);
         }
 
         int __findNum = 0;
@@ -941,9 +941,9 @@ namespace Proto_AI_3
 
             //-----------
             //_weight 값을 작은값(1) 으로 설정하면 회전효과가 생긴다 
-            //_velocity = _velocity.normalized * _maxSpeed;
-            Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
-            SteeringForce = (DesiredVelocity - _velocity) * _weight;
+            //_velocity = _velocity.normalized * _maxSpeed; //최대값 설정 
+            //Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
+            //SteeringForce = (DesiredVelocity - _velocity) * _weight;
             //-----------
 
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
@@ -951,16 +951,45 @@ namespace Proto_AI_3
 
             Vector3 acceleration = SteeringForce / _mass;
 
+
+            _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
+
+            //_velocity += acceleration * deltaTime; //*기본계산
+
+            //----------
+            //f = m * a , a = v / t , f = m * (v / t) , f = (m * v) / t , f * t = (m * v)
+            //t = (m * v) / f
+            //a * t = v , t = v / a
+
+            //v = s / t , a * t = s / t , a * t2 = s , t2 = s / a 
+            //s = v * t
+
+            //float t1_a = (_mass * _maxSpeed) / SteeringForce.magnitude;
+            //float t2_a = _maxSpeed / acceleration.magnitude;
+            //float t_v = t1_a * t1_a;
+            //DebugWide.LogBlue("time : "+t1_a + "  " + t2_a + "  " + t_v);
+            //----------
+
+
+            //DebugWide.LogBlue(SteeringForce.magnitude);
+            //if (SteeringForce.sqrMagnitude > 5 )
+            {
+                //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
+                //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
+                //관성으로 미끄러지는 효과가 생긴다 
+                //일정하게 가속하도록 한다. 질량이 1일때 1초당 f = a = v = s 가 된다. f 를 s 로 보고 초당 가속하는 거리를 예측할 수 있다 
+                acceleration = SteeringForce.normalized * (_maxForce / _mass); 
+                //DebugWide.LogBlue("--------------------- ");
+            }
+
             //-----------
             //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.yellow); //가속이 적용되기전의 속도 출력 
             //DebugWide.AddDrawQ_Line(_pos, _pos + SteeringForce, Color.black);
-            DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude*deltaTime);
+            DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude * deltaTime);
             //-----------
 
-            //_velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
-
-
             _velocity += acceleration * deltaTime;
+
 
             //-----------
             //_velocity *= 1.5f; //최대속도로 빨리 올라가게 한다 
@@ -978,10 +1007,11 @@ namespace Proto_AI_3
 
             if (_velocity.sqrMagnitude > 0.001f)
             {
-            
-                float def = VOp.Sign_ZX(_heading, _velocity);
 
-                float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
+                //float def = VOp.Sign_ZX(_heading, _velocity); //weight 값에 의해 방향이 부정확하여 떠는 문제 발생
+                //float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
+                float def = VOp.Sign_ZX(_heading, _worldOffsetPos - _pos);
+                float max_angle = Geo.AngleSigned_AxisY(_heading, _worldOffsetPos - _pos);
 
                 float angle = _anglePerSecond * def * deltaTime;
 
@@ -1071,23 +1101,31 @@ namespace Proto_AI_3
                     }
 
                 }
-                //_velocity = _velocity.normalized * curSpeed;
+                //_velocity = _velocity.normalized * curSpeed; //속도를 직접 조작하면 비정상 결과가 나온다 
 
                 //-----------
+
+                Vector3 nDir = VOp.Normalize(_worldOffsetPos - _pos);
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
                 Vector3 ToOffset = _worldOffsetPos - _pos;
-                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
-                //Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
+                //Vector3 pos_future = _pos + nDir * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
                 Vector3 ToFuture = _worldOffsetPos - pos_future;
 
 
                 //---------------------
-                SetPos(pos_future);
+
+                //최대각차이가 지정값 보다 작을 때만 이동시킨다 
+                //if (Math.Abs(max_angle) < 1f)
+                {
+                    SetPos(pos_future);
+                }
 
                 //if (curSpeed > 0)
-                ////if ((_worldOffsetPos - ToFuture).sqrMagnitude > _radius * _radius)
+                //if ((_worldOffsetPos - ToFuture).sqrMagnitude > _radius * _radius)
                 //{
 
                 //    if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
@@ -1415,19 +1453,31 @@ namespace Proto_AI_3
 
             //-----------
             //_weight 값을 작은값(1) 으로 설정하면 회전효과가 생긴다 
-            //_velocity = _velocity.normalized * _maxSpeed;
+            //_velocity = _velocity.normalized * _maxSpeed; //최대값 설정 
             //Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
             //SteeringForce = (DesiredVelocity - _velocity) * _weight;
             //-----------
 
-
             SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
-
 
             Vector3 acceleration = SteeringForce / _mass;
 
-            _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
 
+            //----------
+            //f = m * a , a = v / t , f = m * (v / t) , f = (m * v) / t , f * t = (m * v)
+            //t = (m * v) / f
+            //a * t = v , t = v / a
+
+            //v = s / t , a * t = s / t , a * t2 = s , t2 = s / a 
+
+            //float t1_a = (_mass * _maxSpeed) / SteeringForce.magnitude;
+            //float t2_a = _maxSpeed / acceleration.magnitude;
+            //float t_v = t1_a * t1_a;
+            //DebugWide.LogBlue("time : "+t1_a + "  " + t2_a + "  " + t_v);
+            //----------
+
+
+            _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
 
             //-----------
             //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.yellow); //가속이 적용되기전의 속도 출력 
@@ -1435,6 +1485,7 @@ namespace Proto_AI_3
             //DebugWide.AddDrawQ_Line(_pos, _pos + (_velocity + acceleration), Color.blue);
             DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude * deltaTime);
             //-----------
+
 
             //Vector3 desiredVelocity = _velocity + acceleration;
             //if (desiredVelocity.sqrMagnitude > 0.001f)
@@ -1464,12 +1515,13 @@ namespace Proto_AI_3
                 //끊어지는듯 떨리는 문제가 있음
                 //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
                 //if (Math.Abs(angle) > Math.Abs(max_angle))
-                //if (1 > Math.Abs(max_angle))
+                if (2 > Math.Abs(max_angle))
+                //if(true)
                 //if((_worldOffsetPos - _pos).sqrMagnitude < 1)
                 //float rangle = Geo.AngleSigned_AxisY(_before_worldOffsetPos - _worldOffsetPos, _pos - _worldOffsetPos);
                 //DebugWide.LogBlue(rangle);
                 //if ( Math.Abs(rangle) > 90+30)
-                if (Vector3.Dot(_before_worldOffsetPos- _worldOffsetPos, _pos - _worldOffsetPos) < 0)
+                //if (Vector3.Dot(_before_worldOffsetPos- _worldOffsetPos, _pos - _worldOffsetPos) < 0)
                 {
                     _velocity += acceleration * deltaTime; //안미끄러짐 
                     //_heading = VOp.Normalize(_velocity); //떠는 문제 발생
@@ -1504,8 +1556,10 @@ namespace Proto_AI_3
                 Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 
                 Vector3 ToFuture = _worldOffsetPos - pos_future;
 
+                //_velocity = _velocity.normalized * _maxSpeed; //속도를 직접 조작하면 비정상 결과가 나온다 
+
                 //if (ToOffset.sqrMagnitude >= ToFuture.sqrMagnitude)
-                    SetPos(pos_future);
+                SetPos(pos_future);
                 //else
                 //{
                 //    DebugWide.LogRed("---------------------------------------------");
@@ -1649,15 +1703,18 @@ namespace Proto_AI_3
 
                 //calculate the speed required to reach the target given the desired
                 //deceleration
-                float speed = dist / ((float)deceleration * DecelerationTweaker);
+                float speed = dist / ((float)deceleration * DecelerationTweaker); //v = s / t
 
                 //make sure the velocity does not exceed the max
                 speed = Math.Min(speed, _vehicle._maxSpeed);
 
+                //speed = dist / 1 일떄 , speed = dist 가 된다 
+                //dist >= maxSpeed 일때 speed 가 최대값이 된다 
+
                 //from here proceed just like Seek except we don't need to normalize 
                 //the ToTarget vector because we have already gone to the trouble
                 //of calculating its length: dist. 
-                Vector3 DesiredVelocity = ToTarget * speed / dist; //toTarget / dist = 정규화벡터 
+                Vector3 DesiredVelocity = (ToTarget * speed) / dist; //toTarget / dist = 정규화벡터 , == speed * (toTarget / dist)
 
                 return (DesiredVelocity - _vehicle._velocity);
             }
@@ -1681,9 +1738,14 @@ namespace Proto_AI_3
             //DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.red);
 
 
-            //the lookahead time is propotional to the distance between the leader
-            //and the pursuer; and is inversely proportional to the sum of both
-            //agent's velocities
+            //속도공식 : v = s / t
+            //A------> <------B 두 점이 직선상 한점에서 만나는 시간구하기 : t = s / v
+            //1차원 직선상에 A와 B 두 점이 있다고 할시, A와 B의 두 사이거리는 S 가 된다 
+            //A의 속도 1 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (1+1) = 4.5 
+            //A의 속도 2 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (2+1) = 3
+            // * 검산 : s = v * t
+            //(1 * 4.5) + (1 * 4.5) = 4.5 + 4.5 = 9 : A가 4.5거리 만큼 이동후 B와 만나게 된다 
+            //(2 * 3) + (1 * 3) = 6 + 3 = 9 : A가 6거리 만큼 이동후 B와 만나게 된다 
             float LookAheadTime = ToOffset.magnitude /
                                   (_vehicle._maxSpeed + leader._speed);
 
@@ -1696,7 +1758,7 @@ namespace Proto_AI_3
             //------------------------
 
             //now Arrive at the predicted future position of the offset
-            return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast);
+            return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast); //s = v * t 
             //return Seek(WorldOffsetPos);
 
         }
