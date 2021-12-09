@@ -19,8 +19,12 @@ namespace David_Conger
         public float elasticity_1 = 1;
         public float force_0 = 100;
         public float force_1 = 100;
+        //public float withstand_0 = 0; //충돌대상에게 버티는 힘, 실제는 속력값 , 대상에 반대되게 작용 - 이 변수를 사용하지 않고도 버티기를 표현할 수 있음  
+        //public float withstand_1 = 0;
+
         public float Friction = 1;
         public bool OneHit = true;
+        public bool Impluse = true; //순간힘 
 
         bool _forceApplied = false;
 
@@ -83,7 +87,12 @@ namespace David_Conger
                 allParticles[i].linearVelocity *= Friction; //마찰력 간단적용 1
                 //allParticles[i].linearVelocity += -allParticles[i].linearVelocity.normalized * Friction; //마찰력 간단적용 2
                 allParticles[i].Update(timeInterval);
-                allParticles[i].forces = ConstV.v3_zero; //힘 적용후 바로 초기화 
+
+                if(Impluse)
+                {
+                    allParticles[i].forces = ConstV.v3_zero; //힘 적용후 바로 초기화 - impluse
+                }
+
             }
 
             float m0_v = allParticles[0].linearVelocity.magnitude;
@@ -115,7 +124,7 @@ namespace David_Conger
                 {
                     if(OneHit) _forceApplied = true;
                     //HandleCollision(ref allParticles[0], ref allParticles[1], timeInterval);
-                    CollisionPush(ref allParticles[0], ref allParticles[1]);
+                    CollisionPush(ref allParticles[0], ref allParticles[1], timeInterval);
                 }
 
             }
@@ -133,7 +142,7 @@ namespace David_Conger
 		}
 
 
-        public void CollisionPush(ref Point_mass src, ref Point_mass dst)
+        public void CollisionPush(ref Point_mass src, ref Point_mass dst, float timeInterval)
         {
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
@@ -153,7 +162,7 @@ namespace David_Conger
                 float len_bitween = (r_sum - len_dstTOsrc);
                 contactNormal = (dir_dstTOsrc) / len_dstTOsrc;
 
-                CalcCollisionVelocity(ref src, ref dst, contactNormal);
+                CalcCollisionVelocity(ref src, ref dst, contactNormal, timeInterval);
 
                 //==========================================
                 float rate_src, rate_dst;
@@ -185,10 +194,38 @@ namespace David_Conger
             }
         }
 
-        public void CalcCollisionVelocity(ref Point_mass pm0, ref Point_mass pm1 , Vector3 contactNormal)
+        public void CalcCollisionVelocity(ref Point_mass pm0, ref Point_mass pm1 , Vector3 contactNormal, float timeInterval)
         {
-            float velocity0 = Vector3.Dot(pm0.linearVelocity, contactNormal);
-            float velocity1 = Vector3.Dot(pm1.linearVelocity, contactNormal);
+            //!!버티기는 연속힘과 마찰력으로 표현이 가능함을 알아냄 , 아래 알고리즘은 필요없음
+            //버티기는 벽과의 충돌처럼 동작해야 한다
+            //float w_vel0 = (withstand_0) * timeInterval; //질량과는 무관한 속도로 계산한다 
+            //float w_vel1 = (withstand_1) * timeInterval;
+            //Vector3 initVelocity0 = pm0.linearVelocity - pm0.linearVelocity.normalized * w_vel1;
+            //Vector3 initVelocity1 = pm1.linearVelocity - pm1.linearVelocity.normalized * w_vel0;
+            ////if (Vector3.Dot(initVelocity0, pm0.linearVelocity) < 0)
+            ////{
+            ////    DebugWide.LogBlue("* - "+initVelocity0 + "  " + initVelocity1);
+            ////    initVelocity1 += initVelocity0;
+            ////    DebugWide.LogBlue(initVelocity1);
+            ////    initVelocity0 = Vector3.zero; //버터기힘에 의해 방향이 반대가되면 속도를 0으로 만든다 
+            ////}
+            ////if (Vector3.Dot(initVelocity1, pm1.linearVelocity) < 0)
+            ////{
+            ////    DebugWide.LogBlue("# - "+initVelocity1 + "  " + initVelocity0);
+            ////    initVelocity0 += initVelocity1;
+            ////    DebugWide.LogBlue(initVelocity0);
+            ////    initVelocity1 = Vector3.zero; //버터기힘에 의해 방향이 반대가되면 속도를 0으로 만든다 
+            ////}
+            //DebugWide.LogBlue("#  first_vel0: " + pm0.linearVelocity + " - w_vel1: " + w_vel1 + " = init_vel0: " + initVelocity0 );
+            //DebugWide.LogBlue("#  first_vel1: " + pm1.linearVelocity + " - w_vel0: " + w_vel0 + " = init_vel1: " + initVelocity1);
+
+
+            //---------------------------------------------
+            Vector3 initVelocity0 = pm0.linearVelocity;
+            Vector3 initVelocity1 = pm1.linearVelocity;
+
+            float dotVelocity0 = Vector3.Dot(initVelocity0, contactNormal);
+            float dotVelocity1 = Vector3.Dot(initVelocity1, contactNormal);
 
 
             // Find the average coefficent of restitution.
@@ -200,16 +237,16 @@ namespace David_Conger
             // Calculate the final velocities.
             float finalVelocity0 =
                 (((pm0.mass -
-                   (averageE * pm1.mass)) * velocity0) +
-                 ((1 + averageE) * pm1.mass * velocity1)) /
+                   (averageE * pm1.mass)) * dotVelocity0) +
+                 ((1 + averageE) * pm1.mass * dotVelocity1)) /
                 (pm0.mass + pm1.mass);
             float finalVelocity1 =
                 (((pm1.mass -
-                   (averageE * pm0.mass)) * velocity1) +
-                 ((1 + averageE) * pm0.mass * velocity0)) /
+                   (averageE * pm0.mass)) * dotVelocity1) +
+                 ((1 + averageE) * pm0.mass * dotVelocity0)) /
                 (pm0.mass + pm1.mass);
 
-            Vector3 prev_pm0_Vel = pm0.linearVelocity;
+            Vector3 prev_pm0_Vel = initVelocity0;
 
             //탄성력이 1 , 질량이 1 , 서로 정면으로 부딪친다고 가정할시, 
             //대상의 속도 + 튕겨지는 내 속도 + 현재 속도 = 최종 속도 
@@ -217,18 +254,19 @@ namespace David_Conger
             //[->A의 속도 --- B의 속도<-] => [<-B의 속도 --- A의 속도->] 로 속도와 방향이 바뀐다 
             //쉽게 보면 대상의 속도(힘) 만이 적용된다고 볼 수 있다   
             pm0.linearVelocity = (
-                (finalVelocity0 - velocity0) * contactNormal +
-                pm0.linearVelocity);
+                (finalVelocity0 - dotVelocity0) * contactNormal +
+                initVelocity0);
             pm1.linearVelocity = (
-                (finalVelocity1 - velocity1) * contactNormal +
-                pm1.linearVelocity);
+                (finalVelocity1 - dotVelocity1) * contactNormal +
+                initVelocity1);
 
 
             //---------------------------------------------------------------
             //d1 : 1차원 , 디멘션1 
-            DebugWide.LogRed("v0_d1 : " + velocity0 + "  --  v1_d1 : " + velocity1 + "   - averE: " + averageE + "  elastic0: " + pm0.elasticity + "  elastic1: " + pm1.elasticity);
+            DebugWide.LogBlue("#  init_vel0: " + pm0.linearVelocity + "  init_vel1: " + pm1.linearVelocity );
+            DebugWide.LogBlue("v0_d1 : " + dotVelocity0 + "  --  v1_d1 : " + dotVelocity1 + "   - averE: " + averageE );
             DebugWide.LogRed("fv0_d1 : " + finalVelocity0 + " -- fv1_d1 : " + finalVelocity1);
-            DebugWide.LogBlue("fv0_d1 - v0_d1 = " + (finalVelocity0 - velocity0) + " -- fv1_d1 - v1_d1 = " + (finalVelocity1 - velocity1));
+            DebugWide.LogRed("fv0_d1 - v0_d1 = " + (finalVelocity0 - dotVelocity0) + " -- fv1_d1 - v1_d1 = " + (finalVelocity1 - dotVelocity1));
             DebugWide.LogRed("(fv0_d1 - v0_d1) + v0_d1 = " + pm0.linearVelocity.magnitude + "  --  (fv1_d1 - v1_d1) + v1_d1 = " + pm1.linearVelocity.magnitude);
             Vector3 tp = pm1.location + contactNormal * pm1.radius; //접점 
             Vector3 cr = Vector3.Cross(contactNormal, Vector3.up);
@@ -240,9 +278,9 @@ namespace David_Conger
             DebugWide.AddDrawQ_Line(pm0.location, pm0.location + pm0.linearVelocity, Color.green);
             DebugWide.AddDrawQ_Line(pm0.location, pm0.location + prev_pm0_Vel, Color.green);
             Vector3 pm0_velpos = pm0.location + prev_pm0_Vel;
-            DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + velocity0 * contactNormal, Color.red);
+            DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + dotVelocity0 * contactNormal, Color.red);
             DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + finalVelocity0 * contactNormal, Color.blue);
-            DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + (finalVelocity0 - velocity0) * contactNormal, Color.white);
+            DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + (finalVelocity0 - dotVelocity0) * contactNormal, Color.white);
             //---------------------------------------------------------------
         }
 
