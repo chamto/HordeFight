@@ -21,7 +21,8 @@ namespace David_Conger
         public float force_1 = 100;
         //public float withstand_0 = 0; //충돌대상에게 버티는 힘, 실제는 속력값 , 대상에 반대되게 작용 - 이 변수를 사용하지 않고도 버티기를 표현할 수 있음  
         //public float withstand_1 = 0;
-
+        public bool static_0 = false; //충돌에 반응하지 않게 설정
+        public bool static_1 = false;
         public float Friction = 1;
         public bool OneHit = true;
         public bool Impluse = true; //순간힘 
@@ -166,18 +167,36 @@ namespace David_Conger
 
                 //==========================================
                 float rate_src, rate_dst;
-                float f_sum = src.linearVelocity.sqrMagnitude + dst.linearVelocity.sqrMagnitude;
-                if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                float sqrVel_src = src.linearVelocity.sqrMagnitude;
+                float sqrVel_dst = dst.linearVelocity.sqrMagnitude;
+                float sqr_sum = sqrVel_src + sqrVel_dst;
+                if (Misc.IsZero(sqr_sum)) rate_src = rate_dst = 0.5f;
                 else
                 {
-                    rate_src = 1f - (dst.linearVelocity.sqrMagnitude / f_sum);
+                    rate_src = 1f - (sqrVel_src / sqr_sum);
                     rate_dst = 1f - rate_src;
                 }
+
+                //------------------------------
+                //정적이며 속도0 일때 안밀리게 하는 예외처리 
+                if (Misc.IsZero(sqrVel_src) && true == static_0 && false == static_1)
+                {
+                    rate_src = 0;
+                    rate_dst = 1f;
+                }
+                if (Misc.IsZero(sqrVel_dst) && false == static_0 && true == static_1)
+                {
+                    rate_src = 1f;
+                    rate_dst = 0;
+                }
+                //------------------------------
+
+                //DebugWide.LogBlue(rate_src + "  +  " + rate_dst + "  = " + (rate_src+ rate_dst));
 
                 float len_bt_src = len_bitween * rate_src;
                 float len_bt_dst = len_bitween * rate_dst;
 
-
+                //DebugWide.LogBlue(len_bitween + "  " + len_bt_src + "  " + len_bt_dst + "  " + (len_bt_src+ len_bt_dst));
 
                 //2.완전겹친상태 
                 if (float.Epsilon >= len_dstTOsrc)
@@ -252,18 +271,22 @@ namespace David_Conger
             //대상의 속도 + 튕겨지는 내 속도 + 현재 속도 = 최종 속도 
             //--> 정면 충돌시 대상의 속도만 남는다 
             //[->A의 속도 --- B의 속도<-] => [<-B의 속도 --- A의 속도->] 로 속도와 방향이 바뀐다 
-            //쉽게 보면 대상의 속도(힘) 만이 적용된다고 볼 수 있다   
-            pm0.linearVelocity = (
-                (finalVelocity0 - dotVelocity0) * contactNormal +
-                initVelocity0);
-            pm1.linearVelocity = (
-                (finalVelocity1 - dotVelocity1) * contactNormal +
-                initVelocity1);
+            //쉽게 보면 대상의 속도(힘) 만이 적용된다고 볼 수 있다 
+            if(false == static_0)
+            {
+                pm0.linearVelocity = ((finalVelocity0 - dotVelocity0) * contactNormal + initVelocity0);
+            }
+            if(false == static_1)
+            {
+                pm1.linearVelocity = ((finalVelocity1 - dotVelocity1) * contactNormal + initVelocity1);
+            }
+
+
 
 
             //---------------------------------------------------------------
             //d1 : 1차원 , 디멘션1 
-            DebugWide.LogBlue("#  init_vel0: " + pm0.linearVelocity + "  init_vel1: " + pm1.linearVelocity );
+            DebugWide.LogBlue("#  init_vel0: " + initVelocity0 + "  init_vel1: " + initVelocity1);
             DebugWide.LogBlue("v0_d1 : " + dotVelocity0 + "  --  v1_d1 : " + dotVelocity1 + "   - averE: " + averageE );
             DebugWide.LogRed("fv0_d1 : " + finalVelocity0 + " -- fv1_d1 : " + finalVelocity1);
             DebugWide.LogRed("fv0_d1 - v0_d1 = " + (finalVelocity0 - dotVelocity0) + " -- fv1_d1 - v1_d1 = " + (finalVelocity1 - dotVelocity1));
