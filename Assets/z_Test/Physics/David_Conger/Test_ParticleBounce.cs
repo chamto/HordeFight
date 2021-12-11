@@ -178,13 +178,13 @@ namespace David_Conger
                 }
 
                 //------------------------------
-                //정적이며 속도0 일때 안밀리게 하는 예외처리 
-                if (Misc.IsZero(sqrVel_src) && true == static_0 && false == static_1)
+                //한쪽만 정적일때 안밀리게 하는 예외처리 
+                if (true == static_0 && false == static_1)
                 {
                     rate_src = 0;
                     rate_dst = 1f;
                 }
-                if (Misc.IsZero(sqrVel_dst) && false == static_0 && true == static_1)
+                if (false == static_0 && true == static_1)
                 {
                     rate_src = 1f;
                     rate_dst = 0;
