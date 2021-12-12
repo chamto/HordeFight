@@ -24,12 +24,13 @@ namespace Test_ParticleBounce2
         //public float Friction_0 = 1;
         public float damping_0 = 1;
         public bool Impluse_0 = true; //순간힘 
+        [Space]
         //-----------------------
         public string line = "********************";
         //-----------------------
         public float mass_all = 1;
         public float elasticity_all = 1;
-        public float force_all = 100;
+        public float force_all = 10;
         public bool static_all = false;
         //public float Friction_all = 1;
         public float damping_all = 1;
@@ -52,7 +53,8 @@ namespace Test_ParticleBounce2
 
         }
 
-        //public float Time = 0.05f;
+
+        public float PowBottom = 0.8f;
         public void Init()
         {
             DebugWide.LogRed("init ***********************************************************");
@@ -60,25 +62,25 @@ namespace Test_ParticleBounce2
             //pow 함수 지수부의 소수값 넣었을때 값의 변환 관찰
 
             //DebugWide.LogBlue(Math.Pow(damping_0,Time));
-            //for(int i=1;i<=10;i++)
-            //{
-            //    DebugWide.LogBlue(Math.Pow(i*0.1f, Time));
-            //}
+            float val0 = 100;
+            for (int i=1;i<=30;i++)
+            {
+                val0 *= (float)Math.Pow(PowBottom, 1f / 30f);
+            }
+            float val1 = 100;
+            for (int i = 1; i <= 60; i++)
+            {
+                val1 *= (float)Math.Pow(PowBottom, 1f / 60f);
+            }
+            DebugWide.LogBlue(val0 + "  " + val1);
 
             //1^x = 항상 1 , 0^x = 항상 0
-            //밑값이 0.1 ~ 1 이고 지수부는 0.05 고정값 일때 값의 변화
-            //0.1^0.05 = 0.89
-            //0.2^0.05 = 0.92
-            //0.3^0.05 = 0.94
-            //0.4^0.05 = 0.95
-            //0.5^0.05 = 0.96
-            //0.6^0.05 = 0.97
-            //0.7^0.05 = 0.982
-            //0.8^0.05 = 0.988
-            //0.9^0.05 = 0.99
-            //1.0^0.05 = 1
+            //밑값이 0.8 이고 지수부는 1/30 고정값을 100에 30회 곱한 결과 
+            //100 => 80 
+            //밑값이 0.8 이고 지수부는 1/60 고정값을 100에 60회 곱한 결과 
+            //100 => 80
+            //**** 결론 : 초당 밑값 비율만큼 감소시키는 효과 , 시간에 따라 일정하게 값을 유지시키는 목적으로 사용됨 
 
-            //결론 : 약 0.9~1 사이의 구간값을 미세하게 조정할 수 있게한다 
             //--------------------------------------
             DebugWide.ClearDrawQ();
 
@@ -159,8 +161,21 @@ namespace Test_ParticleBounce2
             //if (false == __oneTime) return;
             //__oneTime = false;
 
+            //----------------------------------------------------
+
+            for (int i = 1; i < COUNT; i++)
+            {
+                Vector3 dir = particles[0].location - particles[i].location;
+                if(dir.sqrMagnitude < 3*3) //3거리안에 들어올때 
+                {
+                    particles[i].ApplyImpluse(dir.normalized * force_all);
+                }
+            }
+
+            //----------------------------------------------------
+
             //1초 / 30프레임 = 0.033
-            float timeInterval = 0.05f; //물리시뮬시 Time.delta 넣으면 안됨 , 디버그 코드에 의한 프레임드롭시 결과가 이상해짐 
+            float timeInterval = 0.033f; //물리시뮬시 Time.delta 넣으면 안됨 , 디버그 코드에 의한 프레임드롭시 결과가 이상해짐 
             for (int i = 0; i < COUNT; i++)
             {
                 particles[i].Intergrate(timeInterval);
@@ -566,25 +581,43 @@ namespace Test_ParticleBounce2
         //public float friction; //마찰력
         public float damping; //제동
 
+        public float endurance_max; //최대 지구력
+        public float endurance; //현재 지구력 
+        public float endurance_recovery; //지구력 회복량
+
         public bool isImpluse = true; //단발성 충격힘 적용
         public bool isStatic = false; //충돌에 반응하지 않게 설정
 
         public void Intergrate(float changeInTime)
         {
-        
+
+            endurance += endurance_recovery * changeInTime;
+            endurance = (endurance_max > endurance) ? endurance : endurance_max;
+
             //-------------------------------------
 
-            // a = F/m
-            linearAcceleration = forces / mass;
 
-            // Find the linear velocity.
-            linearVelocity += linearAcceleration * changeInTime;
+            //if (endurance <= 0)
+            //{
+            //    linearVelocity *= (float)Math.Pow(damping, changeInTime); //초당 damping 비율 만큼 감소시킨다.
 
-            //linearVelocity *= (float)Math.Pow(damping, changeInTime); //약 0.9~1 구간을 미세하게 조절하기 위해 사용 
-            linearVelocity *= damping; //마찰력 간단적용 1
+            //    location += linearVelocity * changeInTime;
+            //}
+            //else
+            {
+                // a = F/m
+                linearAcceleration = forces / mass;
 
-            // Find the new location of the center of mass.
-            location += linearVelocity * changeInTime;
+                linearVelocity += linearAcceleration * changeInTime;
+
+                linearVelocity *= (float)Math.Pow(damping, changeInTime); //초당 damping 비율 만큼 감소시킨다.
+                //linearVelocity *= damping; //!! 이렇게 사용하면 프레임에 따라 값의 변화가 일정하지 않게됨 
+
+                location += linearVelocity * changeInTime;
+
+            }
+
+
 
             //-------------------------------------
 
