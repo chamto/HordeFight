@@ -177,13 +177,13 @@
         /**
          * Holds the number of iterations allowed.
          */
-        protected uint iterations;
+        protected uint iterations; //설정된 이터레이션 만큼 반복해서 계산 , 충돌처리 1회 만으로 충돌상태가 해결이 안되므로 여러번 계산하려는 의도  
 
         /**
          * This is a performance tracking value - we keep a record
          * of the actual number of iterations used.
          */
-        protected uint iterationsUsed;
+        protected uint iterationsUsed; //반복 계산된 횟수 ,  iterations 에 도달할때까지 증가함 
 
 
         /**
