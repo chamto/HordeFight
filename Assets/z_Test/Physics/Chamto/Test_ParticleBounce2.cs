@@ -20,13 +20,16 @@ namespace Test_ParticleBounce2
         public float mass_0 = 1;
         public float elasticity_0 = 1;
         public float force_0 = 100;
-        public float damping_0 = 1;
-        public bool static_0 = false; //충돌에 반응하지 않게 설정
-        public bool Impluse_0 = true; //순간힘
         public float endurance_0 = 100;
         public float endurance_max_0 = 100;
         public float endurance_recovery_0 = 1;
-         
+        public float rest_start_0 = 0;
+        public float rest_end_0 = 0;
+        public float damping_0 = 1;
+        public bool static_0 = false; //충돌에 반응하지 않게 설정
+        public bool Impluse_0 = true; //순간힘
+        public bool collision_0 = true; //충돌계산 활성 
+
         [Space]
         //-----------------------
         public string line = "********************";
@@ -34,12 +37,15 @@ namespace Test_ParticleBounce2
         public float mass_all = 1;
         public float elasticity_all = 1;
         public float force_all = 10;
-        public float damping_all = 1;
-        public bool static_all = false;
-        public bool Impluse_all = true; //순간힘 
         public float endurance_all = 100;
         public float endurance_max_all = 100;
         public float endurance_recovery_all = 1;
+        public float rest_start_all = 0;
+        public float rest_end_all = 0;
+        public float damping_all = 1;
+        public bool static_all = false;
+        public bool Impluse_all = true; //순간힘 
+        public bool collision_all = true;
 
         //-----------------------
 
@@ -90,6 +96,7 @@ namespace Test_ParticleBounce2
             //--------------------------------------
             DebugWide.ClearDrawQ();
 
+            particles[0].id = 0;
             particles[0].mass = mass_0;
             particles[0].elasticity = elasticity_0;
             particles[0].radius = 1;
@@ -97,15 +104,19 @@ namespace Test_ParticleBounce2
             particles[0].linearAcceleration = Vector3.zero;
             particles[0].location = new Vector3(-15, 0, 0);
             particles[0].forces = new Vector3(force_0, 0.0f, 0.0f);
-            particles[0].damping = damping_0;
             particles[0].endurance = endurance_0;
             particles[0].endurance_max = endurance_max_0;
             particles[0].endurance_recovery = endurance_recovery_0;
+            particles[0].rest_start = rest_start_0;
+            particles[0].rest_end = rest_end_0;
+            particles[0].damping = damping_0;
             particles[0].isStatic = static_0;
             particles[0].isImpluse = Impluse_0;
+            particles[0].isCollision = collision_0;
 
             for (int i = 1; i < COUNT; i++)
             {
+                particles[i].id = i;
                 particles[i].mass = mass_all;
                 particles[i].elasticity = elasticity_all;
                 particles[i].radius = 1;
@@ -114,12 +125,15 @@ namespace Test_ParticleBounce2
                 //particles[i].location = Misc.GetDir8_Random_AxisY() * 0.5f;
                 particles[i].location = Vector3.zero;
                 particles[i].forces = new Vector3(0, 0.0f, 0.0f);
-                particles[i].damping = damping_all;
                 particles[i].endurance = endurance_all;
                 particles[i].endurance_max = endurance_max_all;
                 particles[i].endurance_recovery = endurance_recovery_all;
+                particles[i].rest_start = rest_start_all;
+                particles[i].rest_end = rest_end_all;
+                particles[i].damping = damping_all;
                 particles[i].isStatic = static_all;
                 particles[i].isImpluse = Impluse_all;
+                particles[i].isCollision = collision_all;
             }
 
         }
@@ -247,7 +261,7 @@ namespace Test_ParticleBounce2
             for (int i = 0; i < COUNT; i++)
             {
                 particles[i].Draw(Color.white);
-                DebugWide.PrintText(particles[i].location, Color.white, particles[i].endurance + ""); //지구력 출력 
+                DebugWide.PrintText(particles[i].location, Color.black, particles[i].endurance.ToString(".0")); //지구력 출력 
             }
 
             particles[0].Draw(Color.red);
@@ -401,6 +415,9 @@ namespace Test_ParticleBounce2
         {
             contact = new Contact();
 
+            //충돌비활성일때 처리하지 않는다 
+            if (false == pm_0.isCollision || false == pm_1.isCollision)
+                return false;
 
             Vector3 dir_dstTOsrc = pm_0.location - pm_1.location;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
@@ -590,6 +607,8 @@ namespace Test_ParticleBounce2
     [System.Serializable]
     public class Point_mass
     {
+        public int id;
+
         public float mass;
         public Vector3 location; //centerOfMassLocation;
         public Vector3 linearVelocity;
@@ -598,33 +617,54 @@ namespace Test_ParticleBounce2
 
         public float radius;
         public float elasticity; //coefficientOfRestitution
-        //public float friction; //마찰력
         public float damping; //제동
 
         public float endurance_max; //최대 지구력
         public float endurance; //현재 지구력 
         public float endurance_recovery; //지구력 회복량
-        public float rest_time; //휴식시간 , 지구력이 0이 되었을 경우 휴식시간 만큼 지구력감소를 안한다 
+        public float rest_start; //휴식시작 지구력 , 휴식상태가 활성
+        public float rest_end; //휴식끝 지구력 , 범위를 넘으면 휴식상태 비활성 
 
+        public bool isRest = false; //휴식상태 , 지구력이 감소하지 않고 힘이 적용 안된다  
         public bool isImpluse = true; //단발성 충격힘 적용
-        public bool isStatic = false; //충돌에 반응하지 않게 설정
+        public bool isStatic = false; //충돌에 반응하지 않게 설정(상대 객체는 충돌반응함) 
+        public bool isCollision = true; //충돌처리를 안하게 설정(상대 객체도 충돌반응 안함) 
 
-        private float __elapsedTime = 0;
+        //private float __elapsedTime = 0;
         public void Intergrate(float changeInTime)
         {
 
             endurance += endurance_recovery * changeInTime; //지구력 초당 회복
             endurance = (endurance_max > endurance) ? endurance : endurance_max;
 
+            //if(0 == id)
+            //{
+            //    DebugWide.LogBlue("1 >> "+endurance + " recps: " + (endurance_recovery * changeInTime)); 
+            //}
+
             //-------------------------------------
             float force_scala = forces.magnitude;
+            float force_perSecond = force_scala * changeInTime;
+            //-------------------------------------
 
-            //if(0 < endurance && rest_time < __elapsedTime)
-            //{ }
-            endurance -= force_scala * changeInTime; //질량과 상관없는 힘만 감소시킨다  , 지구력 초당 감소 
-            endurance = (0 < endurance) ? endurance : 0;
 
-            if (endurance <= 0)
+            if(endurance <= rest_start || endurance < force_perSecond)
+            {
+                isRest = true; //휴식활성 
+            }
+            else if (rest_end <= endurance)
+            {
+                isRest = false; //휴식해제 
+            }
+
+
+            //if (0 == id)
+            //{
+            //    DebugWide.LogBlue("2 >> " + endurance + " fcps: " + force_perSecond);
+            //}
+            //-------------------------------------
+
+            if (true == isRest)
             {
                 linearVelocity *= (float)Math.Pow(damping, changeInTime); //초당 damping 비율 만큼 감소시킨다.
 
@@ -632,6 +672,8 @@ namespace Test_ParticleBounce2
             }
             else
             {
+                endurance -= force_perSecond; //질량과 상관없는 힘만 감소시킨다  , 지구력 초당 감소 
+                endurance = (0 < endurance) ? endurance : 0;
 
                 // a = F/m
                 linearAcceleration = forces / mass;
@@ -654,7 +696,7 @@ namespace Test_ParticleBounce2
                 forces = ConstV.v3_zero; //힘 적용후 바로 초기화 - impluse
             }
 
-            __elapsedTime += changeInTime;
+            //__elapsedTime += changeInTime;
         }
 
         public void ApplyForce(Vector3 force)
