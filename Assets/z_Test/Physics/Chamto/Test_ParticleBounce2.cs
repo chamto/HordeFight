@@ -11,7 +11,7 @@ namespace Test_ParticleBounce2
     [System.Serializable]
     public class Test_ParticleBounce2 : MonoBehaviour
     {
-        public const int COUNT = 2;
+        public const int COUNT = 50;
         public Point_mass[] particles = null;
         private List<Contact> _contacts = new List<Contact>();
 
@@ -20,14 +20,14 @@ namespace Test_ParticleBounce2
         public float mass_0 = 1;
         public float elasticity_0 = 1;
         public float force_0 = 100;
-        public float endurance_0 = 100;
+        public float endurance_0 = 30;
         public float endurance_max_0 = 100;
         public float endurance_recovery_0 = 1;
         public float rest_start_0 = 0;
         public float rest_end_0 = 0;
         public float damping_0 = 1;
-        public bool static_0 = false; //충돌에 반응하지 않게 설정
         public bool Impluse_0 = true; //순간힘
+        public bool static_0 = false; //충돌에 반응하지 않게 설정
         public bool collision_0 = true; //충돌계산 활성 
 
         [Space]
@@ -37,14 +37,14 @@ namespace Test_ParticleBounce2
         public float mass_all = 1;
         public float elasticity_all = 1;
         public float force_all = 10;
-        public float endurance_all = 100;
+        public float endurance_all = 30;
         public float endurance_max_all = 100;
         public float endurance_recovery_all = 1;
         public float rest_start_all = 0;
         public float rest_end_all = 0;
         public float damping_all = 1;
-        public bool static_all = false;
         public bool Impluse_all = true; //순간힘 
+        public bool static_all = false;
         public bool collision_all = true;
 
         //-----------------------
@@ -148,7 +148,7 @@ namespace Test_ParticleBounce2
             }
 
             //1초 / 30프레임 = 0.033
-            float timeInterval = 0.05f; //물리시뮬시 Time.delta 넣으면 안됨 , 디버그 코드에 의한 프레임드롭시 결과가 이상해짐 
+            float timeInterval = 0.033f; //물리시뮬시 Time.delta 넣으면 안됨 , 디버그 코드에 의한 프레임드롭시 결과가 이상해짐 
             for (int i = 0; i < COUNT; i++)
             {
                 particles[i].Intergrate(timeInterval);
@@ -196,14 +196,14 @@ namespace Test_ParticleBounce2
             //}
 
             //방어측 버티기
-            for (int i = 1; i < COUNT; i++)
-            {
-                Vector3 dir = particles[0].location - particles[i].location;
-                if(dir.sqrMagnitude < 3*3) //3거리안에 들어올때 
-                {
-                    particles[i].ApplyImpluse(dir.normalized * force_all);
-                }
-            }
+            //for (int i = 1; i < COUNT; i++)
+            //{
+            //    Vector3 dir = particles[0].location - particles[i].location;
+            //    if(dir.sqrMagnitude < 3*3) //3거리안에 들어올때 
+            //    {
+            //        particles[i].ApplyImpluse(dir.normalized * force_all);
+            //    }
+            //}
 
             //----------------------------------------------------
 
