@@ -291,9 +291,9 @@ namespace Proto_AI_3
             //v._offset = new Vector3(-1f, 0, -1f);
             //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////-------------------
+            //-------------------
 
-            ////3
+            //3
             //v = new Vehicle();
             //id = EntityMgr.Add(v);
             //v.Init(id, 0.5f, new Vector3(17, 0, 12));
@@ -309,7 +309,7 @@ namespace Proto_AI_3
             //v._offset = new Vector3(2f, 0, 0);
             //v._mode = SteeringBehavior.eType.offset_pursuit;
 
-            ////5
+            //////5
             //v = new Vehicle();
             //id = EntityMgr.Add(v);
             //v.Init(id, 0.5f, new Vector3(17, 0, 12));
@@ -515,50 +515,6 @@ namespace Proto_AI_3
             {
 
                 //==========================================
-
-                //* 목표위치에 가까울수록 버티기값을 높게설정하여 중심에서 멀어질수록 더 밀리게 조정 
-                //float len_toTarget_src = (src._pos - src._target).sqrMagnitude;
-                //float len_toTarget_dst = (dst._pos - dst._target).sqrMagnitude;
-
-                //src._withstand = 1;
-                //dst._withstand = 0;
-                //if(len_toTarget_src > len_toTarget_dst)
-                //{
-                //    src._withstand = 0;
-                //    dst._withstand = 1;
-                //}
-
-                //---------------
-                //if(src._stop)
-                //{
-                //    src._withstand = 1;
-                //    dst._withstand = 0;
-                //}
-                //if (dst._stop)
-                //{
-                //    src._withstand = 0;
-                //    dst._withstand = 1;
-                //}
-                //if(true == src._stop && true == dst._stop)
-                //{
-                //    src._withstand = 1;
-                //    dst._withstand = 1;
-                //}
-                //---------------
-
-                //if(src._id == 5)
-                //{
-                //    src._withstand = 100; 
-                //}
-                //if (dst._id == 5)
-                //{
-                //    dst._withstand = 100;
-                //}
-
-                //src._velocity *= 0.9f;
-                //dst._velocity *= 0.9f;
-
-                //==========================================
                 float rate_src, rate_dst;
                 float f_sum = src._withstand + dst._withstand;
                 if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
@@ -592,6 +548,106 @@ namespace Proto_AI_3
                 //src._stop = true;
                 //dst._stop = true;
             }
+        }
+
+        public void CollisionPush2(Vehicle src, Vehicle dst)
+        {
+
+            //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
+
+            Vector3 dir_dstTOsrc = src._pos - dst._pos;
+            Vector3 contactNormal = ConstV.v3_zero;
+            float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+
+            float r_sum = (src._radius + dst._radius);
+            float sqr_r_sum = r_sum * r_sum;
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dstTOsrc < sqr_r_sum)
+            {
+
+                float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                float len_bitween = (r_sum - len_dstTOsrc);
+                contactNormal = (dir_dstTOsrc) / len_dstTOsrc;
+
+                CalcCollisionVelocity(src, dst, contactNormal); //충돌속도 구하기 
+
+                //==========================================
+                float rate_src, rate_dst;
+                float f_sum = src._velocity.sqrMagnitude + dst._velocity.sqrMagnitude;
+                if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                else
+                {
+                    rate_src = 1f - (dst._velocity.sqrMagnitude / f_sum);
+                    rate_dst = 1f - rate_src;
+                }
+
+                float len_bt_src = len_bitween * rate_src;
+                float len_bt_dst = len_bitween * rate_dst;
+
+
+
+                //2.완전겹친상태 
+                if (float.Epsilon >= len_dstTOsrc)
+                {
+                    contactNormal = Misc.GetDir8_Random_AxisY();
+                    len_dstTOsrc = 1f;
+                    len_bt_src = r_sum * 0.5f;
+                    len_bt_dst = r_sum * 0.5f;
+                }
+
+                src.SetPos(src._pos + contactNormal * len_bt_src);
+                dst.SetPos(dst._pos - contactNormal * len_bt_dst);
+
+            }
+        }
+
+        public void CalcCollisionVelocity(Vehicle src, Vehicle dst, Vector3 contactNormal)
+        {
+            float velocity0 = Vector3.Dot(src._velocity, contactNormal);
+            float velocity1 = Vector3.Dot(dst._velocity, contactNormal);
+
+
+            // Find the average coefficent of restitution.
+            float averageE = (src._elasticity + dst._elasticity) / 2f;
+
+            //탄성력이 1 , 질량이 1 이라고 가정할시,
+            //((1 - (1 * 1)) * v0 + ((1 + 1) * 1 * v1) / 1 + 1
+            //(2 * v1) / 2 = v1
+            // Calculate the final velocities.
+            float finalVelocity0 =
+                (((src._mass -
+                   (averageE * dst._mass)) * velocity0) +
+                 ((1 + averageE) * dst._mass * velocity1)) /
+                (src._mass + dst._mass);
+            float finalVelocity1 =
+                (((dst._mass -
+                   (averageE * src._mass)) * velocity1) +
+                 ((1 + averageE) * src._mass * velocity0)) /
+                (src._mass + dst._mass);
+
+
+            //탄성력이 1 , 질량이 1 , 서로 정면으로 부딪친다고 가정할시, 
+            //대상의 속도 + 튕겨지는 내 속도 + 현재 속도 = 최종 속도 
+            //--> 정면 충돌시 대상의 속도만 남는다 
+            //[->A의 속도 --- B의 속도<-] => [<-B의 속도 --- A의 속도->] 로 속도와 방향이 바뀐다 
+            //쉽게 보면 대상의 속도(힘) 만이 적용된다고 볼 수 있다   
+            src._velocity = (
+                (finalVelocity0 - velocity0) * contactNormal +
+                src._velocity);
+            dst._velocity = (
+                (finalVelocity1 - velocity1) * contactNormal +
+                dst._velocity);
+
+
+            //---------------------------------------------------------------
+            //d1 : 1차원 , 디멘션1 
+            //DebugWide.LogRed("v0_d1 : " + velocity0 + "  --  v1_d1 : " + velocity1 + "   - averE: " + averageE + "  elastic0: " + src._elasticity + "  elastic1: " + dst._elasticity);
+            //DebugWide.LogRed("fv0_d1 : " + finalVelocity0 + " -- fv1_d1 : " + finalVelocity1);
+            //DebugWide.LogBlue("fv0_d1 - v0_d1 = " + (finalVelocity0 - velocity0) + " -- fv1_d1 - v1_d1 = " + (finalVelocity1 - velocity1));
+            //DebugWide.LogRed("(fv0_d1 - v0_d1) + v0_d1 = " + src._velocity.magnitude + "  --  (fv1_d1 - v1_d1) + v1_d1 = " + dst._velocity.magnitude);
+
+            //---------------------------------------------------------------
         }
 
 
@@ -791,7 +847,8 @@ namespace Proto_AI_3
         public float _mass = 1f;
         public float _maxSpeed = 10f;
         public float _maxForce = 40f;
-        public float _Friction = 0.85f; //마찰력 
+        public float _Friction = 0.85f; //마찰력
+        public float _elasticity = 1; //탄성력 
         public float _anglePerSecond = 180;
         public float _weight = 20;
 
@@ -915,15 +972,15 @@ namespace Proto_AI_3
             if (null != _leader)
             {
                 _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace 
-            }
 
-            //---------
-            if (_leader._changeTarget)
-            {
-                _before_worldOffsetPos = _pos;
+                //---------
+                if (_leader._changeTarget)
+                {
+                    _before_worldOffsetPos = _pos;
+                }
+                //DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
+                //---------
             }
-            DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
-            //---------
 
             Update0(deltaTime);
         }
@@ -938,6 +995,7 @@ namespace Proto_AI_3
             //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
             else if (SteeringBehavior.eType.offset_pursuit == _mode)
                 SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
+                //SteeringForce = _steeringBehavior.Arrive2(_worldOffsetPos, 3) * _weight;
 
             //-----------
             //_weight 값을 작은값(1) 으로 설정하면 회전효과가 생긴다 
@@ -954,7 +1012,7 @@ namespace Proto_AI_3
 
             _velocity *= _Friction; //마찰계수가 1에 가깝거나 클수록 미끄러지는 효과가 커진다 
 
-            //_velocity += acceleration * deltaTime; //*기본계산
+            _velocity += acceleration * deltaTime; //*기본계산
 
             //----------
             //f = m * a , a = v / t , f = m * (v / t) , f = (m * v) / t , f * t = (m * v)
@@ -972,23 +1030,28 @@ namespace Proto_AI_3
 
 
             //DebugWide.LogBlue(SteeringForce.magnitude);
-            //if (SteeringForce.sqrMagnitude > 5 )
+            //if ((_worldOffsetPos - _pos).magnitude > 0.3f )
             {
                 //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
                 //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
                 //관성으로 미끄러지는 효과가 생긴다 
                 //일정하게 가속하도록 한다. 질량이 1일때 1초당 f = a = v = s 가 된다. f 를 s 로 보고 초당 가속하는 거리를 예측할 수 있다 
-                acceleration = SteeringForce.normalized * (_maxForce / _mass); 
+                //acceleration = SteeringForce.normalized * (_maxForce / _mass);
+                //_velocity += acceleration * deltaTime;
                 //DebugWide.LogBlue("--------------------- ");
+            }
+            //else
+            {
+                //_velocity = Vector3.zero; 
             }
 
             //-----------
             //DebugWide.AddDrawQ_Line(_pos, _pos + _velocity, Color.yellow); //가속이 적용되기전의 속도 출력 
             //DebugWide.AddDrawQ_Line(_pos, _pos + SteeringForce, Color.black);
-            DebugWide.LogBlue(_velocity.magnitude + "  " + acceleration.magnitude + "  " + acceleration.magnitude * deltaTime);
+            //DebugWide.LogBlue("f: "+SteeringForce.magnitude + "  v: " + _velocity.magnitude + "  a: " + acceleration.magnitude + "  " + acceleration.magnitude * deltaTime);
             //-----------
 
-            _velocity += acceleration * deltaTime;
+            //_velocity += acceleration * deltaTime;
 
 
             //-----------
@@ -1042,7 +1105,7 @@ namespace Proto_AI_3
 
                 //-----------
                 float curSpeed = _maxSpeed;
-                if(false)
+                //if(false)
                 {
                     //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
                     float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
@@ -1101,18 +1164,25 @@ namespace Proto_AI_3
                     }
 
                 }
-                //_velocity = _velocity.normalized * curSpeed; //속도를 직접 조작하면 비정상 결과가 나온다 
 
-                //-----------
+                //Vector3 find_pos2 = _pos + _heading * (_radius + 0.3f);
+                //if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos2, 10))
+                //{
+                //    _velocity *= 0.3f;
+                //}
 
-                Vector3 nDir = VOp.Normalize(_worldOffsetPos - _pos);
+                    //_velocity = _velocity.normalized * curSpeed; //속도를 직접 조작하면 비정상 결과가 나온다 
+
+                    //-----------
+
+                    Vector3 nDir = VOp.Normalize(_worldOffsetPos - _pos);
 
                 //최대속도가 높을수록 진형을 잘 유지한다 
                 //설정된 최대속도로 등속도 운동하게 한다.
                 Vector3 ToOffset = _worldOffsetPos - _pos;
                 //Vector3 pos_future = _pos + nDir * curSpeed * deltaTime; //미래위치 계산 - 등속도
-                //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
-                Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
+                Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                //Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
                 Vector3 ToFuture = _worldOffsetPos - pos_future;
 
 
@@ -1447,7 +1517,7 @@ namespace Proto_AI_3
             Vector3 SteeringForce = ConstV.v3_zero;
             if (SteeringBehavior.eType.arrive == _mode)
                 SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
-                //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
+            //SteeringForce = _steeringBehavior.Seek(_target) * _weight;
             else if (SteeringBehavior.eType.offset_pursuit == _mode)
                 SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
 
@@ -1715,6 +1785,46 @@ namespace Proto_AI_3
                 //the ToTarget vector because we have already gone to the trouble
                 //of calculating its length: dist. 
                 Vector3 DesiredVelocity = (ToTarget * speed) / dist; //toTarget / dist = 정규화벡터 , == speed * (toTarget / dist)
+
+                return (DesiredVelocity - _vehicle._velocity);
+            }
+
+            return Vector3.zero;
+        }
+
+        public Vector3 Arrive2(Vector3 TargetPos, float deceleration_dist)
+        {
+            Vector3 toTarget = TargetPos - _vehicle._pos;
+
+            //calculate the distance to the target
+            float dist = toTarget.magnitude;
+
+            if (dist > 0.1f) //최소거리값을 적용한다 
+            {
+                //because Deceleration is enumerated as an int, this value is required
+                //to provide fine tweaking of the deceleration..
+                const float DecelerationTweaker = 0.3f;
+
+                //calculate the speed required to reach the target given the desired
+                //deceleration
+                float speed = dist / (DecelerationTweaker); //v = s / t
+                //float speed = dist;
+
+                //make sure the velocity does not exceed the max
+                speed = Math.Min(speed, _vehicle._maxSpeed);
+
+                //speed = dist / 1 일떄 , speed = dist 가 된다 
+                //dist >= maxSpeed 일때 speed 가 최대값이 된다 
+
+
+                Vector3 DesiredVelocity = speed * (toTarget / dist);
+
+                //DebugWide.LogGreen("dist : "+dist);
+                if (dist >= deceleration_dist)
+                {
+                    DesiredVelocity = _vehicle._maxSpeed * (toTarget / dist);
+                    //DebugWide.LogGreen(DesiredVelocity.magnitude);
+                }
 
                 return (DesiredVelocity - _vehicle._velocity);
             }
