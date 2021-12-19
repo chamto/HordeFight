@@ -881,7 +881,89 @@ namespace Proto_AI_3
                 //---------
             }
 
-            Update0(deltaTime);
+            Update_a(deltaTime);
+        }
+
+        public void Update_a(float deltaTime)
+        {
+
+            Vector3 SteeringForce = ConstV.v3_zero;
+            if (SteeringBehavior.eType.arrive == _mode)
+                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
+            else if (SteeringBehavior.eType.offset_pursuit == _mode)
+                SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
+                //SteeringForce = _steeringBehavior.Arrive2(_worldOffsetPos, 3) * _weight;
+                //SteeringForce = _steeringBehavior.Seek(_worldOffsetPos) * _weight;
+
+            //-----------
+            //Vector3 DesiredVelocity = (_worldOffsetPos - _pos).normalized * _maxSpeed;
+            //SteeringForce = (DesiredVelocity - _velocity) * _weight;
+            //-----------
+
+            SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
+
+            //*기본계산
+            Vector3 acceleration = SteeringForce / _mass;
+            _velocity += acceleration * deltaTime; 
+
+            //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
+            //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
+            //관성으로 미끄러지는 효과가 생긴다 
+            //일정하게 가속하도록 한다. 질량이 1일때 1초당 f = a = v = s 가 된다. f 를 s 로 보고 초당 가속하는 거리를 예측할 수 있다 
+            //Vector3 acceleration = SteeringForce.normalized * (_maxForce / _mass);
+            _velocity += acceleration * deltaTime;
+            _velocity *= (float)Math.Pow(_Friction, deltaTime); 
+
+
+            _velocity = VOp.Truncate(_velocity, _maxSpeed);
+
+            DebugWide.LogBlue("stf: "+SteeringForce.magnitude + "  v: " + _velocity.magnitude + "  a: " + acceleration.magnitude + "  a/s: " + acceleration.magnitude * deltaTime);
+
+            if (_velocity.sqrMagnitude > 0.001f)
+            {
+                Vector3 ToOffset = _worldOffsetPos - _pos;
+                //float def = VOp.Sign_ZX(_heading, _velocity); //weight 값에 의해 방향이 부정확하여 떠는 문제 발생
+                //float max_angle = Geo.AngleSigned_AxisY(_heading, _velocity);
+                float def = VOp.Sign_ZX(_heading, ToOffset);
+                float max_angle = Geo.AngleSigned_AxisY(_heading, ToOffset);
+
+                float angle = _anglePerSecond * def * deltaTime;
+
+                //DebugWide.LogRed(angle + "   " + max_angle);
+
+                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+                if (Math.Abs(angle) > Math.Abs(max_angle))
+                {
+                    angle = max_angle;
+
+                }
+
+
+                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
+                _heading = VOp.Normalize(_heading);
+                _speed = _velocity.magnitude;
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
+
+                //-----------
+
+                //최대각차이가 지정값 보다 작을 때만 이동시킨다 
+                //if (Math.Abs(max_angle) < 1f)
+                //{
+                //    SetPos(_pos + _velocity * deltaTime);
+                //}
+
+
+                //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
+
+                SetPos(pos_future);
+
+                //-------------
+
+            }
+
+
         }
 
         int __findNum = 0;
@@ -1664,15 +1746,15 @@ namespace Proto_AI_3
             //calculate the distance to the target
             float dist = ToTarget.magnitude;
 
-            if (dist > 0.1f) //최소거리값을 적용한다 
+            if (dist > 0) //0으로 나누는 것에 대한 예외처리 , 기존 최소값 지정으로 인해 떠는 문제 있었음 
             {
                 //because Deceleration is enumerated as an int, this value is required
                 //to provide fine tweaking of the deceleration..
                 const float DecelerationTweaker = 0.3f;
 
-                //calculate the speed required to reach the target given the desired
-                //deceleration
+                //deceleration 가 작을수록 속도가 크게 계산된다 
                 float speed = dist / ((float)deceleration * DecelerationTweaker); //v = s / t
+                //speed = dist * 10; //decelerationTime = 10
 
                 //make sure the velocity does not exceed the max
                 speed = Math.Min(speed, _vehicle._maxSpeed);
@@ -1684,7 +1766,22 @@ namespace Proto_AI_3
                 //the ToTarget vector because we have already gone to the trouble
                 //of calculating its length: dist. 
                 Vector3 DesiredVelocity = (ToTarget * speed) / dist; //toTarget / dist = 정규화벡터 , == speed * (toTarget / dist)
+                //DebugWide.LogBlue(dist + "  " + speed + "  " + DesiredVelocity.magnitude);
 
+                //DesiredVelocity.magnitude == speed 
+                //_vehicle._velocity 가 DesiredVelocity 에 근접해지는 알고리즘이다 
+                //DesiredVelocity > _vehicle._velocity 일때는 가속
+                //------------> : DesiredVelocity
+                //<-----        : _velocity
+                //      ------> : 가속
+                //DesiredVelocity < _vehicle._velocity 일때는 감속 
+                //------------>      : DesiredVelocity
+                //<----------------- : _velocity
+                //            <----- : 감속
+                //DesiredVelocity == _vehicle._velocity 일때는 등속도 
+                //------------> : DesiredVelocity
+                //<------------ : _velocity
+                //            0 : 등속도
                 return (DesiredVelocity - _vehicle._velocity);
             }
 
