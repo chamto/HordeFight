@@ -1752,6 +1752,19 @@ namespace Proto_AI_3
                 //to provide fine tweaking of the deceleration..
                 const float DecelerationTweaker = 0.3f;
 
+                //speed = dist / 1 
+                //1초에 움직인 거리의 속도라고 볼때 speed = dist 이다. 즉 속도가 거리이다
+                // _maxSpeed 가 거리라고 생각하면 _velocity 도 거리로 볼 수 있게 된다
+                //전체거리 : ----------> 10  
+                //이동거리 : -----> 5
+                //*-* _velocity 최대속도 5에 도달하는 경우
+                //전체거리가 10 , 최대속도 5 , t=1   감속시작되는 거리 : 5
+                //전체거리가 10 , 최대속도 5 , t=0.5 감속시작되는 거리 : 2.5
+                //전체거리가 10 , 최대속도 5 , t=0.2 감속시작되는 거리 : 1
+                //*-* _velocity 최대속도 5에 도달하지 못하는 경우
+                //_velocity < 이동거리 : 가속
+                //_velocity > 이동거리 : 감속 
+
                 //deceleration 가 작을수록 속도가 크게 계산된다 
                 float speed = dist / ((float)deceleration * DecelerationTweaker); //v = s / t
                 //speed = dist * 10; //decelerationTime = 10
