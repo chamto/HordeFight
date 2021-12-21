@@ -881,11 +881,85 @@ namespace Proto_AI_3
                 //---------
             }
 
-            //Update_Arrive(deltaTime);
-            Update_RotateMove(deltaTime);
+            Update_ConstantSpeedMovement(deltaTime);
+            //Update_AcceleratedMovement(deltaTime);
+            //Update_RotateMove(deltaTime);
         }
 
-        public void Update_Arrive(float deltaTime)
+        public void Update_ConstantSpeedMovement(float deltaTime)
+        {
+            _oldPos = _pos;
+
+
+            Vector3 SteeringForce = ConstV.v3_zero;
+            if (SteeringBehavior.eType.arrive == _mode)
+                SteeringForce = _steeringBehavior.Arrive(_target, SteeringBehavior.Deceleration.fast) * _weight;
+            else if (SteeringBehavior.eType.offset_pursuit == _mode)
+                //SteeringForce = _steeringBehavior.OffsetPursuit(_leader, _offset) * _weight;
+                //SteeringForce = _steeringBehavior.Seek(_worldOffsetPos) * _weight;
+                SteeringForce = _steeringBehavior.Arrive2(_worldOffsetPos) * _weight;
+            _decelerationTime = 0.09f; //0.09초동안 감속 - 감속되는 것을 보여주지 않기 위해 짧게 설정 
+            //weight = 50
+            //maxforce = 100
+            //위와같이 설정하면 등속도이동처럼 된다  
+
+            SteeringForce = VOp.Truncate(SteeringForce, _maxForce);
+
+            //*기본계산
+            Vector3 acceleration = SteeringForce / _mass;
+            _velocity += acceleration * deltaTime;
+
+            _velocity *= (float)Math.Pow(_Friction, deltaTime);
+
+            _velocity = VOp.Truncate(_velocity, _maxSpeed);
+
+            DebugWide.LogBlue("stf: " + SteeringForce.magnitude + "  v: " + _velocity.magnitude + "  a: " + acceleration.magnitude + "  a/s: " + acceleration.magnitude * deltaTime);
+
+            Vector3 ToOffset = _worldOffsetPos - _pos;
+            if (ToOffset.sqrMagnitude > 0.001f)
+            {
+                float def = VOp.Sign_ZX(_heading, ToOffset);
+                float max_angle = Geo.AngleSigned_AxisY(_heading, ToOffset);
+                float angle = _anglePerSecond * def * deltaTime;
+
+
+                //최대회전량을 벗어나는 양이 계산되는 것을 막는다 
+                if (Math.Abs(angle) > Math.Abs(max_angle))
+                {
+                    angle = max_angle;
+
+                }
+
+
+                _heading = Quaternion.AngleAxis(angle, ConstV.v3_up) * _heading;
+                _heading = VOp.Normalize(_heading);
+                _speed = _velocity.magnitude;
+                _rotation = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+
+
+                //-----------
+
+                //최대각차이가 지정값 보다 작을 때만 이동시킨다 
+                //if (Math.Abs(max_angle) < 1f)
+                //{
+                //    SetPos(_pos + _velocity * deltaTime);
+                //}
+
+                float curSpeed = _maxSpeed;
+                //Vector3 pos_future = _pos + ToOffset.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
+                Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
+
+                SetPos(pos_future);
+
+                //-------------
+
+            }
+
+
+        }
+
+        public void Update_AcceleratedMovement(float deltaTime)
         {
             _oldPos = _pos;
 
@@ -956,7 +1030,6 @@ namespace Proto_AI_3
                 //-------------
 
             }
-
 
         }
 
