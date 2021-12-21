@@ -244,7 +244,7 @@ namespace SteeringBehavior
             //calculate the distance to the target
             float dist = ToTarget.magnitude;
 
-            if (dist > 0)
+            if (dist > 0) //0으로 나누는 것을 막는 처리 
             {
                 //because Deceleration is enumerated as an int, this value is required
                 //to provide fine tweaking of the deceleration..
