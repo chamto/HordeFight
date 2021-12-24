@@ -37,12 +37,16 @@ namespace Test_Steering_Flocking
                     v._steeringBehavior._WeightSeparation = 0;
                     v._steeringBehavior._WeightAlignment = 0;
                     v._steeringBehavior._WeightCohesion = 0;
-                    v._steeringBehavior._WanderWeight = 0;
+                    v._steeringBehavior._WeightWander = 0;
                     v._pos = new Vector3(j*6 + 30, 0, i * 6 + 30);
                     EntityMgr.Add(v);
                 }
 
             }
+
+            Vehicle vh = EntityMgr.list[ID_0];
+            vh._v_target = vh;
+            vh._steeringBehavior._WeightWander = 200; //arrive 가 됨 
 
             //for (int i = 0; i < Num_Agents; i++)
             //{
@@ -60,7 +64,7 @@ namespace Test_Steering_Flocking
 
         }
 
-        public void Reset(float sep , float ali , float coh, float wander)
+        public void ResetAll(float sep , float ali , float coh, float wander)
         {
             for (int i = 0; i < Num_Agents_Y; i++)
             {
@@ -74,7 +78,7 @@ namespace Test_Steering_Flocking
                     v._steeringBehavior._WeightSeparation = sep;
                     v._steeringBehavior._WeightAlignment = ali;
                     v._steeringBehavior._WeightCohesion = coh;
-                    v._steeringBehavior._WanderWeight = wander;
+                    v._steeringBehavior._WeightWander = wander;
                     v._pos = new Vector3(j * 6 + 30, 0, i * 6 + 30);
 
                 }
@@ -82,34 +86,57 @@ namespace Test_Steering_Flocking
             }
         }
 
+        public void TargetOnAll()
+        {
+            for (int i = 0; i < Num_Agents_Y; i++)
+            {
+                for (int j = 0; j < Num_Agents_X; j++)
+                {
+                    //00 01 02 03 04 
+                    //10 11 12 13 14
+                    int idx = i * Num_Agents_X + j;
+                    Vehicle v = EntityMgr.list[idx];
+                    v._v_target = v;
+                    v._target = _tr_target.position; //id_0 목표위치 갱신 
+                }
+            }
+        }
 
-        int ID = 0;
+
+        int ID_0 = 0;
         bool _one_ctr = true;
         void Update()
         {
 
-            Vehicle vh = EntityMgr.list[ID];
-            SteeringBehavior sb = EntityMgr.list[ID]._steeringBehavior;
+            Vehicle vh = EntityMgr.list[ID_0];
+            SteeringBehavior sb = EntityMgr.list[ID_0]._steeringBehavior;
             float sep = sb._WeightSeparation;
             float ali = sb._WeightAlignment;
             float coh = sb._WeightCohesion;
-            float wan = sb._WanderWeight;
+            float wan = sb._WeightWander;
             string mode = sb._calcMode.ToString() + "  isNp[Z]: " + vh._isNonpenetration;
-            DebugWide.LogBlue(ID+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode + "  one_ctr[XC]: " + _one_ctr);
+            DebugWide.LogBlue(ID_0+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode + "  one_ctr[XC]: " + _one_ctr);
 
+            vh._target = _tr_target.position; //id_0 목표위치 갱신 
 
-            if(Input.GetKeyDown(KeyCode.X))
+            if (Input.GetKeyDown(KeyCode.X))
             {
                 _one_ctr = true;
-                Reset(0, 0, 0, 0);
+                ResetAll(0, 0, 0, 0);
+                vh._v_target = vh;
+                vh._steeringBehavior._WeightWander = 200; //arrive 가 됨 
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
                 _one_ctr = false;
-                Reset(200, 200, 400, 200);
+                ResetAll(200, 200, 400, 200);
+                vh._v_target = vh;
+
             }
 
-            if(_one_ctr)
+            //TargetOnAll(); //test
+
+            if (_one_ctr)
             {
                 vh.KeyInput();
             }else
@@ -127,12 +154,8 @@ namespace Test_Steering_Flocking
         {
             if (null == _tr_target) return;
 
-            Vehicle vh = EntityMgr.list[ID];
-            SteeringBehavior sb = EntityMgr.list[ID]._steeringBehavior;
-
-            vh._mode = SteeringBehavior.eType.seek;
-            vh._v_target = vh;
-            vh._target = _tr_target.position;
+            Vehicle vh = EntityMgr.list[ID_0];
+            SteeringBehavior sb = EntityMgr.list[ID_0]._steeringBehavior;
 
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -160,7 +183,7 @@ namespace Test_Steering_Flocking
 
         public float _speed;
 
-        public float _maxSpeed = 50f;
+        public float _maxSpeed = 20f;
 
         //public float _maxForce = 400f;
 
@@ -222,20 +245,21 @@ namespace Test_Steering_Flocking
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
-            //update the position
-            _pos += _velocity * Time.deltaTime;
-
-            //update the heading if the vehicle has a non zero velocity
-            if (_velocity.sqrMagnitude > 0.00000001f)
+            //Vector3 ToOffset = _target - _pos;
+            if (_velocity.sqrMagnitude > 0.001f)
+            //if (ToOffset.sqrMagnitude > 0.001f)
             {
                 _heading = VOp.Normalize(_velocity);
+                //_heading = VOp.Normalize(ToOffset);
                 _speed = _velocity.magnitude;
                 //DebugWide.LogBlue(_speed); 
                 _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
+                _pos += _velocity * Time.deltaTime;
+
             }
 
-            if(_isNonpenetration)
+            if (_isNonpenetration)
                 EnforceNonPenetrationConstraint(this, EntityMgr.list);
 
             _pos = WrapAroundXZ(_pos, 100, 100);
@@ -355,20 +379,20 @@ namespace Test_Steering_Flocking
                     if (0 > _steeringBehavior._WeightCohesion) _steeringBehavior._WeightCohesion = 0;
                 }
             }
-            //방황
+            //방황 , 찾기
             if (Input.GetKey(KeyCode.R))
             {
                 //foreach (Vehicle v in EntityMgr.list)
                 {
-                    _steeringBehavior._WanderWeight += 10f;
+                    _steeringBehavior._WeightWander += 10f;
                 }
             }
             if (Input.GetKey(KeyCode.F))
             {
                 //foreach (Vehicle v in EntityMgr.list)
                 {
-                    _steeringBehavior._WanderWeight -= 10f;
-                    if (0 > _steeringBehavior._WanderWeight) _steeringBehavior._WanderWeight = 0;
+                    _steeringBehavior._WeightWander -= 10f;
+                    if (0 > _steeringBehavior._WeightWander) _steeringBehavior._WeightWander = 0;
                 }
             }
             //계산모드 
@@ -455,6 +479,68 @@ namespace Test_Steering_Flocking
             return (DesiredVelocity - _vehicle._velocity);
         }
 
+        public Vector3 Arrive(Vector3 TargetPos,
+                        Deceleration deceleration)
+        {
+            Vector3 ToTarget = TargetPos - _vehicle._pos;
+
+            //calculate the distance to the target
+            float dist = ToTarget.magnitude;
+
+            if (dist > 0) //0으로 나누는 것에 대한 예외처리 , 기존 최소값 지정으로 인해 떠는 문제 있었음 
+            {
+                //because Deceleration is enumerated as an int, this value is required
+                //to provide fine tweaking of the deceleration..
+                const float DecelerationTweaker = 0.3f;
+
+                //speed = dist / 1 
+                //1초에 움직인 거리의 속도라고 볼때 speed = dist 이다. 즉 속도가 거리이다
+                // _maxSpeed 가 거리라고 생각하면 _velocity 도 거리로 볼 수 있게 된다
+                //전체거리 : ----------> 10  
+                //이동거리 : -----> 5
+                //*-* _velocity 최대속도 5에 도달하는 경우
+                //전체거리가 10 , 최대속도 5 , t=1   감속시작되는 거리 : 5
+                //전체거리가 10 , 최대속도 5 , t=0.5 감속시작되는 거리 : 2.5
+                //전체거리가 10 , 최대속도 5 , t=0.2 감속시작되는 거리 : 1
+                //*-* _velocity 최대속도 5에 도달하지 못하는 경우
+                //_velocity < 이동거리 : 가속
+                //_velocity > 이동거리 : 감속 
+
+                //deceleration 가 작을수록 속도가 크게 계산된다 
+                float speed = dist / ((float)deceleration * DecelerationTweaker); //v = s / t
+                //speed = dist * 10; //decelerationTime = 10
+
+                //make sure the velocity does not exceed the max
+                speed = Math.Min(speed, _vehicle._maxSpeed);
+
+                //speed = dist / 1 일떄 , speed = dist 가 된다 
+                //dist >= maxSpeed 일때 speed 가 최대값이 된다 
+
+                //from here proceed just like Seek except we don't need to normalize 
+                //the ToTarget vector because we have already gone to the trouble
+                //of calculating its length: dist. 
+                Vector3 DesiredVelocity = (ToTarget * speed) / dist; //toTarget / dist = 정규화벡터 , == speed * (toTarget / dist)
+                //DebugWide.LogBlue(dist + "  " + speed + "  " + DesiredVelocity.magnitude);
+
+                //DesiredVelocity.magnitude == speed 
+                //_vehicle._velocity 가 DesiredVelocity 에 근접해지는 알고리즘이다 
+                //DesiredVelocity > _vehicle._velocity 일때는 가속
+                //------------> : DesiredVelocity
+                //<-----        : _velocity
+                //      ------> : 가속
+                //DesiredVelocity < _vehicle._velocity 일때는 감속 
+                //------------>      : DesiredVelocity
+                //<----------------- : _velocity
+                //            <----- : 감속
+                //DesiredVelocity == _vehicle._velocity 일때는 등속도 
+                //------------> : DesiredVelocity
+                //<------------ : _velocity
+                //            0 : 등속도
+                return (DesiredVelocity - _vehicle._velocity);
+            }
+
+            return Vector3.zero;
+        }
 
         public Vector3 Pursuit(Vehicle evader)
         {
@@ -600,16 +686,17 @@ namespace Test_Steering_Flocking
 
         public float _SteeringForceTweaker = 200;
 
-        public float _maxForce = 2 * 200;
+        public float _maxForce = 200;
         public float _ViewDistance = 30;
 
         public float _WeightSeparation = 1 * 200;
         public float _WeightAlignment = 1 * 200;
         public float _WeightCohesion = 2 * 200;
 
-        public float _WanderWeight = 1 * 200f;
-        public float _PursuitWeight = 1 * 200f;
+        public float _WeightWander = 1 * 200;
+        public float _WeightPursuit = 1 * 200f;
         public float _WeightEvade = 1 * 200f;
+
 
         public enum eCalcMode
         {
@@ -644,10 +731,18 @@ namespace Test_Steering_Flocking
             //DebugWide.LogBlue(_vehicle._id + " Separation : " + force);
             _steeringForce += Alignment(EntityMgr.list) * _WeightAlignment;
             _steeringForce += Cohesion(EntityMgr.list) * _WeightCohesion;
-            _steeringForce += Wander() * _WanderWeight;
-            //DebugWide.LogBlue(_vehicle._id+ " wander : " +force);
+
             if (null != _vehicle._v_target)
-                _steeringForce += Seek(_vehicle._target);
+            {
+                //_steeringForce += Seek(_vehicle._target) * _WeightWander;
+                _steeringForce += Arrive(_vehicle._target , Deceleration.fast) * _WeightWander;
+            }
+            else
+            {
+                _steeringForce += Wander() * _WeightWander;
+                //DebugWide.LogBlue(_vehicle._id+ " wander : " +force); 
+            }
+
 
             _steeringForce = VOp.Truncate(_steeringForce, _maxForce);
 
@@ -669,14 +764,18 @@ namespace Test_Steering_Flocking
             force = Cohesion(EntityMgr.list) * _WeightCohesion;
             if (!AccumulateForce(ref _steeringForce, force)) return _steeringForce;
 
-            force = Wander() * _WanderWeight;
-            if (!AccumulateForce(ref _steeringForce, force)) return _steeringForce;
-            //DebugWide.LogBlue(_vehicle._id+ " wander : " +force);
-
             if (null != _vehicle._v_target)
             {
-                force = Seek(_vehicle._target);
+                //force = Seek(_vehicle._target) * _WeightWander;
+                force = Arrive(_vehicle._target, Deceleration.fast) * _WeightWander;
+
                 if (!AccumulateForce(ref _steeringForce, force)) return _steeringForce;
+            }
+            else
+            {
+                force = Wander() * _WeightWander;
+                if (!AccumulateForce(ref _steeringForce, force)) return _steeringForce;
+                //DebugWide.LogBlue(_vehicle._id+ " wander : " +force); 
             }
 
 
@@ -726,9 +825,11 @@ namespace Test_Steering_Flocking
                     return _steeringForce;
                 }
             }
-            if (Misc.RandFloat() < prWander)
+
+            if (null != _vehicle._v_target)
             {
-                _steeringForce += Wander() * _WanderWeight / prWander;
+                //_steeringForce += Seek(_vehicle._target) * _WeightWander;
+                _steeringForce += Arrive(_vehicle._target, Deceleration.fast) * _WeightWander;
 
                 if (!Misc.IsZero(_steeringForce))
                 {
@@ -736,15 +837,18 @@ namespace Test_Steering_Flocking
 
                     return _steeringForce;
                 }
-            }
-            if (null != _vehicle._v_target)
+            }else
             {
-                _steeringForce += Seek(_vehicle._target);
-                if (!Misc.IsZero(_steeringForce))
+                if (Misc.RandFloat() < prWander)
                 {
-                    _steeringForce = VOp.Truncate(_steeringForce, _maxForce);
+                    _steeringForce += Wander() * _WeightWander / prWander;
 
-                    return _steeringForce;
+                    if (!Misc.IsZero(_steeringForce))
+                    {
+                        _steeringForce = VOp.Truncate(_steeringForce, _maxForce);
+
+                        return _steeringForce;
+                    }
                 }
             }
 
