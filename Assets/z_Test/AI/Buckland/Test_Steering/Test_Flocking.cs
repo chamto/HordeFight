@@ -22,6 +22,9 @@ namespace Test_Steering_Flocking
         public const int Num_Agents_X = 5;
         public const int Num_Agents_Y = 5;
 
+        public float _maxForce = 200;
+        public float _maxSpeed = 20;
+
         // Use this for initialization
         void Start()
         {
@@ -44,7 +47,7 @@ namespace Test_Steering_Flocking
 
             }
 
-            Vehicle vh = EntityMgr.list[ID_0];
+            Vehicle vh = EntityMgr.list[ID_X];
             vh._v_target = vh;
             vh._steeringBehavior._WeightWander = 200; //arrive 가 됨 
 
@@ -96,45 +99,51 @@ namespace Test_Steering_Flocking
                     //10 11 12 13 14
                     int idx = i * Num_Agents_X + j;
                     Vehicle v = EntityMgr.list[idx];
-                    v._v_target = v;
-                    v._target = _tr_target.position; //id_0 목표위치 갱신 
+                    v._v_target = v; //임시로 자기자신을 설정 
+                    v._target = _tr_target.position; 
                 }
             }
         }
 
 
-        int ID_0 = 0;
+        public int ID_X = 0;
         bool _one_ctr = true;
         void Update()
         {
 
-            Vehicle vh = EntityMgr.list[ID_0];
-            SteeringBehavior sb = EntityMgr.list[ID_0]._steeringBehavior;
+            Vehicle vh = EntityMgr.list[ID_X];
+            SteeringBehavior sb = EntityMgr.list[ID_X]._steeringBehavior;
             float sep = sb._WeightSeparation;
             float ali = sb._WeightAlignment;
             float coh = sb._WeightCohesion;
             float wan = sb._WeightWander;
             string mode = sb._calcMode.ToString() + "  isNp[Z]: " + vh._isNonpenetration;
-            DebugWide.LogBlue(ID_0+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode + "  one_ctr[XC]: " + _one_ctr);
+            DebugWide.LogBlue(ID_X+"_ sep[QA]:  "+sep + " ali[WS]: " + ali + "  coh[ED]: " + coh + "  wan[RF]: " + wan + "  [TGB] " + mode + "  one_ctr[XC]: " + _one_ctr);
 
+            vh._v_target = vh;
             vh._target = _tr_target.position; //id_0 목표위치 갱신 
+
+            //-------------------------
+            foreach (Vehicle v in EntityMgr.list)
+            {
+                v._maxSpeed = _maxSpeed;
+                v._steeringBehavior._maxForce = _maxForce;
+            }
+            //-------------------------
 
             if (Input.GetKeyDown(KeyCode.X))
             {
                 _one_ctr = true;
                 ResetAll(0, 0, 0, 0);
-                vh._v_target = vh;
                 vh._steeringBehavior._WeightWander = 200; //arrive 가 됨 
             }
             if (Input.GetKeyDown(KeyCode.C))
             {
                 _one_ctr = false;
                 ResetAll(200, 200, 400, 200);
-                vh._v_target = vh;
-
             }
 
-            //TargetOnAll(); //test
+            TargetOnAll(); //test
 
             if (_one_ctr)
             {
@@ -147,15 +156,143 @@ namespace Test_Steering_Flocking
                 }
             }
 
+            //-----------------
+            //ResolveContacts_0();
+        }
 
+        //객체하나에 대한 전체객체 접촉정보를 처리하는 방식 , 중복된 접촉정보 있음 , 계산후 약간 겹침
+        public void ResolveContacts_0()
+        {
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                for (int j = 0; j < EntityMgr.list.Count; j++)
+                {
+                    Vehicle src = EntityMgr.list[i];
+                    Vehicle dst = EntityMgr.list[j];
+
+                    if (src == dst) continue;
+
+                    CollisionPush(src, dst, 0, 1);
+                }
+            }
+        }
+
+        //접촉정보를 바로바로 처리하는 방식 , 중복된 접촉정보를 제외시킨다 , 계산후 겹쳐짐
+        public void ResolveContacts_1()
+        {
+            //중복되지 않는 한쌍을 찾는 알고리즘
+            for (int i = 0; i < EntityMgr.list.Count - 1; i++)
+            {
+                for (int j = i + 1; j < EntityMgr.list.Count; j++)
+                {
+                    //DebugWide.LogRed(i + "  " + j);
+                    Vehicle src = EntityMgr.list[i];
+                    Vehicle dst = EntityMgr.list[j];
+
+                    CollisionPush(src, dst, 1, 1);
+                }
+            }
+        }
+
+        //접촉정보를 모아서 처리하는 방식 , 계산후 겹쳐짐 
+        public void ResolveContacts_2()
+        {
+            contactInfos.Clear();
+            for (int i = 0; i < EntityMgr.list.Count - 1; i++)
+            {
+                for (int j = i + 1; j < EntityMgr.list.Count; j++)
+                {
+                    Vehicle src = EntityMgr.list[i];
+                    Vehicle dst = EntityMgr.list[j];
+
+                    Vector3 dir_dstTOsrc = src._pos - dst._pos;
+                    float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+                    float r_sum = (src._radius + dst._radius);
+                    float sqr_r_sum = r_sum * r_sum;
+                    if (sqr_dstTOsrc < sqr_r_sum)
+                    {
+                        contactInfos.Add(new ContactInfo(src, dst));
+                    }
+
+                }
+            }
+
+            for(int i=0;i<contactInfos.Count;i++)
+            {
+                Vehicle src = contactInfos[i].src;
+                Vehicle dst = contactInfos[i].dst;
+
+                CollisionPush(src, dst, 1, 1);
+            }
+        }
+
+        List<ContactInfo> contactInfos = new List<ContactInfo>();
+        public class ContactInfo
+        {
+            public Vehicle src = null;
+            public Vehicle dst = null;
+
+            public ContactInfo(Vehicle s, Vehicle d)
+            {
+                src = s; dst = d;
+            }
+        }
+
+
+        public void CollisionPush(Vehicle src, Vehicle dst , float src_withstand , float dst_withstand)
+        {
+            if (null == src || null == dst) return;
+
+
+
+            Vector3 dir_dstTOsrc = src._pos - dst._pos;
+            Vector3 n = ConstV.v3_zero;
+            float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+            float r_sum = (src._radius + dst._radius);
+            float sqr_r_sum = r_sum * r_sum;
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dstTOsrc < sqr_r_sum)
+            {
+
+                //==========================================
+                float rate_src, rate_dst;
+                float f_sum = src_withstand + dst_withstand;
+                if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                else
+                {
+                    rate_src = 1f - (src_withstand / f_sum);
+                    rate_dst = 1f - rate_src;
+                }
+
+                n = VOp.Normalize(dir_dstTOsrc);
+
+                float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                float len_bitween = (r_sum - len_dstTOsrc);
+                float len_bt_src = len_bitween * rate_src;
+                float len_bt_dst = len_bitween * rate_dst;
+
+                //2.완전겹친상태 
+                if (float.Epsilon >= len_dstTOsrc)
+                {
+                    n = Misc.GetDir8_Random_AxisY();
+                    len_dstTOsrc = 1f;
+                    len_bt_src = r_sum * 0.5f;
+                    len_bt_dst = r_sum * 0.5f;
+                }
+
+                src._pos += n * len_bt_src;
+                dst._pos += -n * len_bt_dst;
+
+            }
         }
 
         private void OnDrawGizmos()
         {
             if (null == _tr_target) return;
 
-            Vehicle vh = EntityMgr.list[ID_0];
-            SteeringBehavior sb = EntityMgr.list[ID_0]._steeringBehavior;
+            Vehicle vh = EntityMgr.list[ID_X];
+            SteeringBehavior sb = EntityMgr.list[ID_X]._steeringBehavior;
 
             foreach (Vehicle v in EntityMgr.list)
             {
@@ -260,7 +397,11 @@ namespace Test_Steering_Flocking
             }
 
             if (_isNonpenetration)
-                EnforceNonPenetrationConstraint(this, EntityMgr.list);
+            {
+                //EnforceNonPenetrationConstraint(this, EntityMgr.list);
+                EnforceNonPenetrationConstraint_2(this, EntityMgr.list, 0 , 1);
+            }
+
 
             _pos = WrapAroundXZ(_pos, 100, 100);
 
@@ -308,6 +449,59 @@ namespace Test_Steering_Flocking
                                    AmountOfOverLap);
                 }
             }//next entity
+        }
+
+        //객체하나에 대한 전체객체 접촉정보를 처리하는 방식, 중복된 접촉정보 있음, 계산후 겹치지 않음 
+        public void EnforceNonPenetrationConstraint_2(Vehicle src, List<Vehicle> ContainerOfEntities, float src_withstand, float dst_withstand)
+        {
+            Vehicle dst = null;
+            for (int i = 0; i < ContainerOfEntities.Count; i++)
+            {
+                dst = ContainerOfEntities[i];
+                if (src == dst) continue;
+
+                Vector3 dir_dstTOsrc = src._pos - dst._pos;
+                Vector3 n = ConstV.v3_zero;
+                float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+                float r_sum = (src._radius + dst._radius);
+                float sqr_r_sum = r_sum * r_sum;
+
+                //1.두 캐릭터가 겹친상태 
+                if (sqr_dstTOsrc < sqr_r_sum)
+                {
+
+                    //==========================================
+                    float rate_src, rate_dst;
+                    float f_sum = src_withstand + dst_withstand;
+                    if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                    else
+                    {
+                        rate_src = 1f - (src_withstand / f_sum);
+                        rate_dst = 1f - rate_src;
+                    }
+
+                    n = VOp.Normalize(dir_dstTOsrc);
+
+                    float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                    float len_bitween = (r_sum - len_dstTOsrc);
+                    float len_bt_src = len_bitween * rate_src;
+                    float len_bt_dst = len_bitween * rate_dst;
+
+                    //2.완전겹친상태 
+                    if (float.Epsilon >= len_dstTOsrc)
+                    {
+                        n = Misc.GetDir8_Random_AxisY();
+                        len_dstTOsrc = 1f;
+                        len_bt_src = r_sum * 0.5f;
+                        len_bt_dst = r_sum * 0.5f;
+                    }
+
+                    src._pos += n * len_bt_src;
+                    dst._pos += -n * len_bt_dst;
+
+                }
+            }
+
         }
 
         public void Draw(Color color)
@@ -903,7 +1097,7 @@ namespace Test_Steering_Flocking
 
                 if ((curEntity != entity) && (to.sqrMagnitude < range * range))
                 {
-                    DebugWide.DrawLine(entity._pos, curEntity._pos, Color.green);
+                    DebugWide.DrawLine(entity._pos, curEntity._pos, Color.gray);
                 }
             }
         }
