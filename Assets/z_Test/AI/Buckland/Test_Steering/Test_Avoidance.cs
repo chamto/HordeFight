@@ -303,9 +303,9 @@ namespace Test_Steering_Avoidance
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
-            //Vector3 ToOffset = _target - _pos;
-            if (_velocity.sqrMagnitude > 0.001f)
-            //if (ToOffset.sqrMagnitude > 0.001f)
+            Vector3 ToOffset = _target - _pos;
+            //if (_velocity.sqrMagnitude > 0.001f)
+            if (ToOffset.sqrMagnitude > 0.001f && _velocity.sqrMagnitude > 0.001f)
             {
                 _heading = VOp.Normalize(_velocity);
                 //_heading = VOp.Normalize(ToOffset);
@@ -1188,7 +1188,7 @@ namespace Test_Steering_Avoidance
         }
 
         float _DBoxLength;
-        float _MinDetectionBoxLength = 20f;
+        float _MinDetectionBoxLength = 5f;
         Vector3 ObstacleAvoidance(List<Vehicle> obstacles)
         {
             //the detection box length is proportional to the agent's velocity
