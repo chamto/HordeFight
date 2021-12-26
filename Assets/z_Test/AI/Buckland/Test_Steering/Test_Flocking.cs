@@ -1157,8 +1157,12 @@ namespace Test_Steering_Flocking
 
                 }
             }
-            //if(0 == _vehicle._id)
-                //DebugWide.LogBlue(SteeringForce);
+
+            //if (0 == _vehicle._id)
+            {
+                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
+                DebugWide.DrawCircle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
+            }
 
             return SteeringForce;
         }
@@ -1201,7 +1205,11 @@ namespace Test_Steering_Flocking
             }
 
             //if (0 == _vehicle._id)
-                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading * 10, Color.red);
+            {
+                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
+                DebugWide.DrawCircle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
+            }
+
 
             return AverageHeading;
         }
@@ -1237,8 +1245,13 @@ namespace Test_Steering_Flocking
                 SteeringForce = Seek(CenterOfMass);
             }
 
-            if (0 == _vehicle._id)
+            //if (0 == _vehicle._id)
+            {
+                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
+                DebugWide.DrawCircle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
                 DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
+            }
+
             //the magnitude of cohesion is usually much larger than separation or
             //allignment so it usually helps to normalize it.
             return SteeringForce.normalized;
