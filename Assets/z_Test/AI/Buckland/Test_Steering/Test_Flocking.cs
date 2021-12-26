@@ -143,7 +143,7 @@ namespace Test_Steering_Flocking
                 ResetAll(200, 200, 400, 200);
             }
 
-            TargetOnAll(); //test
+            //TargetOnAll(); //test
 
             if (_one_ctr)
             {
@@ -1201,7 +1201,8 @@ namespace Test_Steering_Flocking
             {
                 AverageHeading /= (float)NeighborCount;
 
-                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식 추정 
+                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식과 동일 
+                //return (DesiredVelocity - _vehicle._velocity);
             }
 
             //if (0 == _vehicle._id)
