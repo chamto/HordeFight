@@ -168,6 +168,58 @@ namespace Test_Steering_Avoidance
         }
     }
 
+    public class Smoother_Vector3
+    {
+
+        //this holds the history
+        List<Vector3> m_History;
+
+        int m_iNextUpdateSlot;
+
+
+        public Smoother_Vector3(int SampleSize)
+        {
+
+            m_History = new List<Vector3>(SampleSize);
+            for (int i = 0; i < SampleSize; i++)
+            {
+                m_History.Add(Vector3.zero);
+            }
+
+        
+            m_iNextUpdateSlot = 0;
+        }
+
+        //each time you want to get a new average, feed it the most recent value
+        //and this method will return an average over the last SampleSize updates
+        public Vector3 Update(Vector3 MostRecentValue)
+        {
+            if (0 == m_History.Count) return Vector3.zero;
+
+            m_iNextUpdateSlot++;
+            m_iNextUpdateSlot %= m_History.Count;
+
+            //overwrite the oldest value with the newest
+            m_History[m_iNextUpdateSlot] = MostRecentValue;
+
+            //make sure m_iNextUpdateSlot wraps around. 
+            if (m_iNextUpdateSlot >= m_History.Count) m_iNextUpdateSlot = 0;
+
+            Vector3 sum = Vector3.zero;
+            for (int i = 0; i < m_History.Count; i++)
+            {
+            
+                sum = sum + m_History[i];
+
+
+            }
+
+            return sum / (float)m_History.Count;
+
+        }
+    }
+
+
     public class Vehicle
     {
         public int _id = -1;
@@ -177,6 +229,9 @@ namespace Test_Steering_Avoidance
         public Vector3 _velocity = new Vector3(0, 0, 0);
 
         public Vector3 _heading = Vector3.forward;
+
+        public Smoother_Vector3 _headingSmoother;
+        public Vector3 _smoothedHeading;
 
         //public Vector3 _side;
 
@@ -229,6 +284,8 @@ namespace Test_Steering_Avoidance
             _array_VB[2] = new Vector3(-0.6f, 0, -1f);
 
             _steeringBehavior._vehicle = this;
+
+            _headingSmoother = new Smoother_Vector3(10);
         }
 
         public bool _isNonpenetration = false;
@@ -256,8 +313,8 @@ namespace Test_Steering_Avoidance
                 //DebugWide.LogBlue(_speed); 
                 _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
-                _pos += _velocity * Time.deltaTime;
 
+                _pos += _velocity * Time.deltaTime;
             }
 
             if (_isNonpenetration)
@@ -268,6 +325,14 @@ namespace Test_Steering_Avoidance
 
             _pos = WrapAroundXZ(_pos, 100, 100);
 
+
+            //튀는 움직임 최소화 - 출력에만 사용한다 
+            if (true)
+            {
+                _smoothedHeading = _headingSmoother.Update(_heading);
+                _smoothedHeading.Normalize();
+                _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _smoothedHeading);
+            }
         }
 
 
