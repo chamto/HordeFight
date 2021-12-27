@@ -2503,6 +2503,37 @@ namespace UtilGS9
             return t;
         }
 
+        static public Vector3 PointToWorldSpace(Vector3 point,
+                                    Vector3 AgentHeading,
+                                    Vector3 AgentSide,
+                                    Vector3 AgentPosition)
+        {
+            Vector3 AgentUp = Vector3.Cross(AgentHeading, AgentSide);
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide); //열값 삽입
+            m.SetColumn(1, AgentUp);
+            m.SetColumn(2, AgentHeading);
+
+            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, AgentHeading);
+
+            return m.MultiplyPoint(point) + AgentPosition;
+        }
+
+        static public Vector3 PointToWorldSpaceZX(Vector3 point,
+                                    Vector3 AgentHeading,
+                                    Vector3 AgentSide)
+        {
+
+            Matrix4x4 m = Matrix4x4.identity;
+            m.SetColumn(0, AgentSide); //열값 삽입
+            m.SetColumn(1, Vector3.up);
+            m.SetColumn(2, AgentHeading);
+
+            //Quaternion rotQ = Quaternion.FromToRotation(ConstV.v3_forward, AgentHeading);
+
+            return m.MultiplyPoint(point);
+        }
+
     }//end misc
 
 }
