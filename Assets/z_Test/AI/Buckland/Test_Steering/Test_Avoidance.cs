@@ -311,8 +311,15 @@ namespace Test_Steering_Avoidance
                 //_heading = VOp.Normalize(ToOffset);
                 _speed = _velocity.magnitude;
                 //DebugWide.LogBlue(_speed); 
-                _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
+                //_rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _heading);
 
+                //튀는 움직임 최소화 - 출력에만 사용한다 
+                if (true)
+                {
+                    _smoothedHeading = _headingSmoother.Update(_heading);
+                    _smoothedHeading.Normalize();
+                    _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _smoothedHeading);
+                }
 
                 _pos += _velocity * Time.deltaTime;
             }
@@ -325,14 +332,6 @@ namespace Test_Steering_Avoidance
 
             _pos = WrapAroundXZ(_pos, 100, 100);
 
-
-            //튀는 움직임 최소화 - 출력에만 사용한다 
-            if (true)
-            {
-                _smoothedHeading = _headingSmoother.Update(_heading);
-                _smoothedHeading.Normalize();
-                _rotatioin = Quaternion.FromToRotation(ConstV.v3_forward, _smoothedHeading);
-            }
         }
 
 
