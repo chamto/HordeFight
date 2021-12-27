@@ -204,7 +204,8 @@ namespace Proto_AI_3
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
 
-        public bool _isNonpenetration = true;
+        public bool _isObjNonpenetration = true;
+        public bool _isStrNonpenetration = true;
 
         public float _minRange = 0;
         public float _maxRange = 0.5f;
@@ -401,7 +402,7 @@ namespace Proto_AI_3
                 v._Friction = _Friction;
                 v._anglePerSecond = _anglePerSecond;
                 v._weight = _weight;
-                v._isNonpenetration = _isNonpenetration;
+                v._isNonpenetration = _isObjNonpenetration;
                 v.Update(deltaTime);
                 //v._stop = false;
 
@@ -424,20 +425,9 @@ namespace Proto_AI_3
 
                 if (src == dst) continue;
 
-                if (_isNonpenetration)
+                if (_isObjNonpenetration)
                     CollisionPush(src, dst);
             }
-
-            //for (int i = 0; i < EntityMgr.list.Count - 1; i++)
-            //{
-            //    for (int j = i + 1; j < EntityMgr.list.Count; j++)
-            //    {
-            //        Vehicle src = EntityMgr.list[i];
-            //        Vehicle dst = EntityMgr.list[j];
-
-            //        CollisionPush(src, dst);
-            //    }
-            //}
 
             //==============================================
 
@@ -452,8 +442,8 @@ namespace Proto_AI_3
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.magenta);
                 //DebugWide.AddDrawQ_Line(v._pos, v._oldPos, Color.red);
 
-
-                v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
+                if (_isStrNonpenetration)
+                    v.SetPos(_gridMgr.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius, out v._stop));
 
                 
                 //DebugWide.AddDrawQ_Line(v._pos, _formationPoint._pos, Color.gray);
@@ -872,6 +862,67 @@ namespace Proto_AI_3
             _feelers.Add(fpos);
         }
 
+
+        //객체하나에 대한 전체객체 접촉정보를 처리하는 방식, 중복된 접촉정보 있음, 계산후 겹치지 않음 
+        public void EnforceNonPenetrationConstraint(Vehicle src, List<Vehicle> ContainerOfEntities, float src_withstand, float dst_withstand)
+        {
+            Vehicle dst = null;
+            for (int i = 0; i < ContainerOfEntities.Count; i++)
+            {
+                dst = ContainerOfEntities[i];
+                if (src == dst) continue;
+
+                Vector3 dir_dstTOsrc = src._pos - dst._pos;
+                Vector3 n = ConstV.v3_zero;
+                float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+                float r_sum = (src._radius + dst._radius);
+                float sqr_r_sum = r_sum * r_sum;
+
+                //1.두 캐릭터가 겹친상태 
+                if (sqr_dstTOsrc < sqr_r_sum)
+                {
+
+                    //==========================================
+                    float rate_src, rate_dst;
+                    float f_sum = src_withstand + dst_withstand;
+                    if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+                    else
+                    {
+                        rate_src = 1f - (src_withstand / f_sum);
+                        rate_dst = 1f - rate_src;
+                    }
+
+                    n = VOp.Normalize(dir_dstTOsrc);
+
+                    float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                    float len_bitween = (r_sum - len_dstTOsrc);
+                    float len_bt_src = len_bitween * rate_src;
+                    float len_bt_dst = len_bitween * rate_dst;
+
+                    //2.완전겹친상태 
+                    if (float.Epsilon >= len_dstTOsrc)
+                    {
+                        n = Misc.GetDir8_Random_AxisY();
+                        len_dstTOsrc = 1f;
+                        len_bt_src = r_sum * 0.5f;
+                        len_bt_dst = r_sum * 0.5f;
+                    }
+
+                    //src._oldPos = src._pos;
+                    //dst._oldPos = dst._pos;
+
+                    src._pos += n * len_bt_src;
+                    dst._pos += -n * len_bt_dst;
+
+                    //test
+                    //bool a;
+                    //src.SetPos(GridManager.Inst.Collision_StructLine_Test3(src._oldPos, src._pos, src._radius, out a));
+                    //dst.SetPos(GridManager.Inst.Collision_StructLine_Test3(dst._oldPos, dst._pos, dst._radius, out a));
+                }
+            }
+
+        }
+
         Vector3 _before_worldOffsetPos = Vector3.zero;
         public void Update(float deltaTime)
         {
@@ -894,6 +945,11 @@ namespace Proto_AI_3
 
             Update_NormalMovement(deltaTime);
             //Update_RotateMovement(deltaTime);
+
+            EnforceNonPenetrationConstraint(this, EntityMgr.list, 1, 1); //겹침이 적게 일어나는 방식 
+
+            //bool a;
+            //SetPos(GridManager.Inst.Collision_StructLine_Test3(_oldPos, _pos, _radius, out a));
         }
 
         public Vector3 CalcSteeringForce()
@@ -918,7 +974,7 @@ namespace Proto_AI_3
 
         //멈추기 및 돌아가기 
         int __findNum = 0;
-        public void AAA()
+        public float AAA()
         {
             float curSpeed = _maxSpeed;
             //if(false)
@@ -929,7 +985,6 @@ namespace Proto_AI_3
                 //float sum_r = _radius + _radius;
                 Vector3 pos_1 = _pos + _velocity.normalized * (_radius);
                 Vector3 pos_2 = _pos + findDir * (_radius);
-
 
                 //--------------------
                 //* 구트리로 객체이동 조절
@@ -980,6 +1035,8 @@ namespace Proto_AI_3
                 }
 
             }
+
+            return curSpeed;
         }
 
         public void BBB()
@@ -1052,7 +1109,6 @@ namespace Proto_AI_3
 
         public void Update_NormalMovement(float deltaTime)
         {
-            _oldPos = _pos;
 
             Vector3 SteeringForce = CalcSteeringForce();
 
@@ -1096,6 +1152,7 @@ namespace Proto_AI_3
 
 
                 //-----------
+                //if (0 == AAA()) return;
 
                 //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
                 Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
@@ -1115,9 +1172,6 @@ namespace Proto_AI_3
 
         public void Update_RotateMovement(float deltaTime)
         {
-
-            _oldPos = _pos;
-
 
             Vector3 SteeringForce = CalcSteeringForce();
 
@@ -1155,6 +1209,7 @@ namespace Proto_AI_3
                 //DebugWide.LogBlue("stf: " + SteeringForce.magnitude + "  v: " + _velocity.magnitude + "  a: " + acceleration.magnitude + "  a/s: " + acceleration.magnitude * deltaTime);
                 //-----------
 
+                //if (0 == AAA()) return;
 
                 Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 
 
