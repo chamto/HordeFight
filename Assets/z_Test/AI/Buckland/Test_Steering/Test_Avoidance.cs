@@ -164,7 +164,7 @@ namespace Test_Steering_Avoidance
                 v.Draw(Color.black);
             }
 
-            sb.DrawTagNeighbors(vh);
+            //sb.DrawTagNeighbors(vh);
         }
     }
 
@@ -919,6 +919,7 @@ namespace Test_Steering_Avoidance
             {
                 //_steeringForce += Seek(_vehicle._target) * _WeightWander;
                 _steeringForce += Arrive(_vehicle._target , Deceleration.fast) * _WeightWander;
+                //_steeringForce += ArriveObstacleStop(_vehicle._target, EntityMgr.list) * _WeightWander;
             }
             else
             {
@@ -1089,8 +1090,8 @@ namespace Test_Steering_Avoidance
 
             //if (0 == _vehicle._id)
             {
-                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
-                DebugWide.DrawCircle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
+                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
             }
 
             return SteeringForce;
@@ -1135,8 +1136,8 @@ namespace Test_Steering_Avoidance
 
             //if (0 == _vehicle._id)
             {
-                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
-                DebugWide.DrawCircle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
+                //DebugWide.DrawCircle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
             }
 
 
@@ -1176,9 +1177,9 @@ namespace Test_Steering_Avoidance
 
             //if (0 == _vehicle._id)
             {
-                DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
-                DebugWide.DrawCircle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
-                DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
+                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
+                //DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
             }
 
             //the magnitude of cohesion is usually much larger than separation or
@@ -1187,7 +1188,7 @@ namespace Test_Steering_Avoidance
         }
 
         float _DBoxLength;
-        float _MinDetectionBoxLength = 5f;
+        float _MinDetectionBoxLength = 15f;
         Vector3 ObstacleAvoidance(List<Vehicle> obstacles)
         {
             //the detection box length is proportional to the agent's velocity
@@ -1313,6 +1314,137 @@ namespace Test_Steering_Avoidance
 
 
             return worldPos;
+        }
+
+        Vector3 ArriveObstacleStop(Vector3 targetPos, List<Vehicle> obstacles)
+        {
+            //the detection box length is proportional to the agent's velocity
+            _DBoxLength = _MinDetectionBoxLength +
+                            (_vehicle._speed / _vehicle._maxSpeed) * _MinDetectionBoxLength;
+
+            //tag all obstacles within range of the box for processing
+            TagNeighbors(_vehicle, obstacles, _DBoxLength);
+
+            //this will keep track of the closest intersecting obstacle (CIB)
+            Vehicle ClosestIntersectingObstacle = null;
+
+            //this will be used to track the distance to the CIB
+            float DistToClosestIP = float.MaxValue;
+
+            //this will record the transformed local coordinates of the CIB
+            Vector3 LocalPosOfClosestObstacle = Vector3.zero;
+
+            //Vector3 dirNormal = targetPos - _vehicle._pos;
+            Vector3 dirNormal = _vehicle._smoothedHeading;
+            Vector3 perp = Vector3.Cross(Vector3.up, dirNormal);
+            foreach (Vehicle curOb in obstacles)
+            {
+                //if the obstacle has been tagged within range proceed
+                if (true == curOb._tag)
+                {
+                    //calculate this obstacle's position in local space
+                    Vector3 LocalPos = Misc.PointToLocalSpace_3(curOb._pos,
+                                                           dirNormal,
+                                                           perp,
+                                                           _vehicle._pos);
+
+                    //if the local position has a negative x value then it must lay
+                    //behind the agent. (in which case it can be ignored)
+                    if (LocalPos.z >= 0)
+                    {
+                        //if the distance from the x axis to the object's position is less
+                        //than its radius + half the width of the detection box then there
+                        //is a potential intersection.
+                        float ExpandedRadius = curOb._radius + _vehicle._radius;
+
+                        if (Math.Abs(LocalPos.x) < ExpandedRadius)
+                        {
+                            //now to do a line/circle intersection test. The center of the 
+                            //circle is represented by (cX, cY). The intersection points are 
+                            //given by the formula x = cX +/-sqrt(r^2-cY^2) for y=0. 
+                            //We only need to look at the smallest positive value of x because
+                            //that will be the closest point of intersection.
+                            float cZ = LocalPos.z;
+                            float cX = LocalPos.x;
+
+                            //we only need to calculate the sqrt part of the above equation once
+                            float SqrtPart = (float)Math.Sqrt(ExpandedRadius * ExpandedRadius - cX * cX);
+
+                            float ip = cZ - SqrtPart;
+
+                            if (ip <= 0.0)
+                            {
+                                ip = cZ + SqrtPart;
+                            }
+
+                            //-----------------
+                            //if(0 == _vehicle._id)
+                            //{
+                            //    DebugWide.DrawCircle(_vehicle._pos + dirNormal * ip, 1f, Color.white);
+                            //    DebugWide.DrawCircle(curOb._pos, ExpandedRadius, Color.white);
+                            //}
+
+                            //-----------------
+
+                            //test to see if this is the closest so far. If it is keep a
+                            //record of the obstacle and its local coordinates
+                            if (ip < DistToClosestIP)
+                            {
+                                DistToClosestIP = ip;
+
+                                ClosestIntersectingObstacle = curOb;
+
+                                LocalPosOfClosestObstacle = LocalPos;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            //if we have found an intersecting obstacle, calculate a steering 
+            //force away from it
+            Vector3 SteeringForce = Vector3.zero;
+            Vector3 worldPos = Vector3.zero;
+            if (null != ClosestIntersectingObstacle)
+            {
+                //worldPos = _vehicle._pos + dirNormal * DistToClosestIP;
+                worldPos = ClosestIntersectingObstacle._pos + (_vehicle._pos - ClosestIntersectingObstacle._pos).normalized * (_vehicle._radius+ ClosestIntersectingObstacle._radius);
+                SteeringForce = Arrive(worldPos, Deceleration.fast);
+
+                if (0 == _vehicle._id)
+                {
+                    DebugWide.DrawCircle(worldPos, 0.5f, Color.red);
+                    DebugWide.DrawCircle(ClosestIntersectingObstacle._pos, ClosestIntersectingObstacle._radius, Color.white);
+                    DebugWide.DrawCircle(_vehicle._pos, _vehicle._radius, Color.white);
+                }
+
+            }
+            else
+            {
+                SteeringForce = Arrive(targetPos, Deceleration.fast);
+            }
+
+
+            //-------------------------------------------------
+            if (0 == _vehicle._id)
+            {
+                Quaternion rot_box = Quaternion.FromToRotation(Vector3.forward, _vehicle._heading);
+                Vector3 box_0 = _vehicle._pos + rot_box * new Vector3(_vehicle._radius, 0, 0);
+                Vector3 box_1 = _vehicle._pos + rot_box * new Vector3(_vehicle._radius, 0, _DBoxLength);
+                Vector3 box_2 = _vehicle._pos + rot_box * new Vector3(-_vehicle._radius, 0, _DBoxLength);
+                Vector3 box_3 = _vehicle._pos + rot_box * new Vector3(-_vehicle._radius, 0, 0);
+                DebugWide.DrawLine(box_0, box_1, Color.gray);
+                DebugWide.DrawLine(box_1, box_2, Color.gray);
+                DebugWide.DrawLine(box_2, box_3, Color.gray);
+                DebugWide.DrawLine(box_3, box_0, Color.gray);
+
+            }
+
+            //-------------------------------------------------
+
+
+            return SteeringForce;
         }
 
     }
