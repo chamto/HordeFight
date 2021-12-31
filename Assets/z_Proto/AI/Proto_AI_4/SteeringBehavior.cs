@@ -382,6 +382,52 @@ namespace Proto_AI_4
             return _steeringForce;
         }
 
+        public Vector3 Calculate()
+        {
+            //reset the steering force
+            _steeringForce = Vector3.zero;
+
+            if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
+            {
+                //m_pVehicle.World().TagVehiclesWithinViewRange(m_pVehicle, m_dViewDistance);
+            }
+
+            //DebugWide.LogBlue(m_SummingMethod + "  " + m_pVehicle.Speed());
+            switch (_summingMethod)
+            {
+                case SummingMethod.weighted_average:
+
+                    _steeringForce = CalculateWeightedSum(); break;
+
+                case SummingMethod.prioritized:
+
+                    _steeringForce = CalculatePrioritized(); break;
+
+                case SummingMethod.dithered:
+
+                    //_steeringForce = CalculateDithered(); break;
+
+                default: _steeringForce = Vector3.zero; break;
+
+            }//end switch
+
+            return _steeringForce;
+        }
+
+        //calculates the component of the steering force that is parallel
+        //with the vehicle heading
+        //public float ForwardComponent()
+        //{
+        //    return Vector3.Dot(_vehicle._heading, _steeringForce);
+        //}
+
+        //calculates the component of the steering force that is perpendicuar
+        //with the vehicle heading
+        //public float SideComponent()
+        //{
+        //    return Vector3.Dot(_vehicle.Side(), m_vSteeringForce);
+        //}
+
         //==================================================
 
         public Vector3 Seek(Vector3 TargetPos)
