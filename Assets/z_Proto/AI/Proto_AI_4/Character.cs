@@ -90,13 +90,9 @@ namespace Proto_AI_4
     {
         public int _id = -1;
 
-        //public Vector3 _pos = Vector3.zero;
-        //public Vector3 _velocity = new Vector3(0, 0, 0);
-        //public float _speed = 0;
-        //public Quaternion _rotation = Quaternion.identity;
-
-        public Vector3 _heading = Vector3.forward;
-
+        //public Vector3 _velocity = new Vector3(0, 0, 0); //실제 향하고 있는 방향
+        public Vector3 _heading = Vector3.forward; //객체의 방향
+        public Vector3 _facing = Vector3.forward; //얼굴의 방향
 
         public float _mass = 1f;
         public float _maxSpeed = 10f;

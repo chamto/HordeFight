@@ -1,17 +1,19 @@
 ﻿using System;
 using UnityEngine;
-
+using System.Collections;
+using System.Collections.Generic;
+using UtilGS9;
 
 namespace Proto_AI_4
 {
     public class SteeringBehavior
     {
-        //public enum SummingMethod
-        //{
-        //    weighted_average,
-        //    prioritized,
-        //    dithered
-        //}
+        public enum SummingMethod
+        {
+            weighted_average,
+            prioritized,
+            dithered
+        }
 
 
         public enum eType
@@ -36,12 +38,349 @@ namespace Proto_AI_4
         }
 
         public enum Deceleration { slow = 3, normal = 2, fast = 1 };
+        //Deceleration m_Deceleration;
 
         public Character _vehicle;
 
-        //public Vector3 _steeringForce;
+        public Vector3 _steeringForce;
 
-        //public Vector3 _target;
+        //these can be used to keep track of friends, pursuers, or prey
+        public Character _pTargetAgent1;
+        public Character _pTargetAgent2; //인터포즈(둘 사이에 끼기)에서 사용 
+
+        //the current target
+        public Vector3 _target;
+
+        //length of the 'detection box' utilized in obstacle avoidance
+        public float _detectBoxLength;
+
+
+        //a vertex buffer to contain the feelers rqd for wall avoidance  
+        //List<Vector3> m_Feelers;
+
+        //the length of the 'feeler/s' used in wall detection
+        //float _wallDetectionFeelerLength;
+
+
+
+        //the current position on the wander circle the agent is
+        //attempting to steer towards
+        Vector3 _wanderTarget;
+
+        //explained above
+        float _wanderJitter;
+        float _wanderRadius;
+        float _wanderDistance;
+
+
+        //multipliers. These can be adjusted to effect strength of the  
+        //appropriate behavior. Useful to get flocking the way you require
+        //for example.
+        float _weightSeparation;
+        float _weightCohesion;
+        float _weightAlignment;
+        float _weightWander;
+        float _weightObstacleAvoidance;
+        float _weightWallAvoidance;
+        float _weightSeek;
+        float _weightFlee;
+        float _weightArrive;
+        float _weightPursuit;
+        float _weightOffsetPursuit;
+        float _weightInterpose;
+        float _weightHide;
+        float _weightEvade;
+        float _weightFollowPath;
+
+        //how far the agent can 'see'
+        float m_dViewDistance;
+
+        //pointer to any current path
+        //Path m_pPath;
+
+        //the distance (squared) a vehicle has to be from a path waypoint before
+        //it starts seeking to the next waypoint
+        float _waypointSeekDistSq;
+
+
+        //any offset used for formations or offset pursuit
+        Vector3 _offset;
+
+        //binary flags to indicate whether or not a behavior should be active
+        int _flags;
+
+        public SummingMethod _summingMethod;
+
+        //==================================================
+
+        public void SetSummingMethod(SummingMethod sm) { _summingMethod = sm; }
+
+
+        public void FleeOn() { _flags |= (int)eType.flee; }
+        public void SeekOn() { _flags |= (int)eType.seek; }
+        public void ArriveOn() { _flags |= (int)eType.arrive; }
+        public void WanderOn() { _flags |= (int)eType.wander; }
+        public void PursuitOn(Character v) { _flags |= (int)eType.pursuit; _pTargetAgent1 = v; }
+        public void EvadeOn(Character v) { _flags |= (int)eType.evade; _pTargetAgent1 = v; }
+        public void CohesionOn() { _flags |= (int)eType.cohesion; }
+        public void SeparationOn() { _flags |= (int)eType.separation; }
+        public void AlignmentOn() { _flags |= (int)eType.allignment; }
+        public void ObstacleAvoidanceOn() { _flags |= (int)eType.obstacle_avoidance; }
+        public void WallAvoidanceOn() { _flags |= (int)eType.wall_avoidance; }
+        public void FollowPathOn() { _flags |= (int)eType.follow_path; }
+        public void InterposeOn(Character v1, Character v2) { _flags |= (int)eType.interpose; _pTargetAgent1 = v1; _pTargetAgent2 = v2; }
+        public void HideOn(Character v) { _flags |= (int)eType.hide; _pTargetAgent1 = v; }
+        public void OffsetPursuitOn(Character v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent1 = v1; }
+        public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
+
+        public void FleeOff() { if (On(eType.flee)) _flags ^= (int)eType.flee; }
+        public void SeekOff() { if (On(eType.seek)) _flags ^= (int)eType.seek; }
+        public void ArriveOff() { if (On(eType.arrive)) _flags ^= (int)eType.arrive; }
+        public void WanderOff() { if (On(eType.wander)) _flags ^= (int)eType.wander; }
+        public void PursuitOff() { if (On(eType.pursuit)) _flags ^= (int)eType.pursuit; }
+        public void EvadeOff() { if (On(eType.evade)) _flags ^= (int)eType.evade; }
+        public void CohesionOff() { if (On(eType.cohesion)) _flags ^= (int)eType.cohesion; }
+        public void SeparationOff() { if (On(eType.separation)) _flags ^= (int)eType.separation; }
+        public void AlignmentOff() { if (On(eType.allignment)) _flags ^= (int)eType.allignment; }
+        public void ObstacleAvoidanceOff() { if (On(eType.obstacle_avoidance)) _flags ^= (int)eType.obstacle_avoidance; }
+        public void WallAvoidanceOff() { if (On(eType.wall_avoidance)) _flags ^= (int)eType.wall_avoidance; }
+        public void FollowPathOff() { if (On(eType.follow_path)) _flags ^= (int)eType.follow_path; }
+        public void InterposeOff() { if (On(eType.interpose)) _flags ^= (int)eType.interpose; }
+        public void HideOff() { if (On(eType.hide)) _flags ^= (int)eType.hide; }
+        public void OffsetPursuitOff() { if (On(eType.offset_pursuit)) _flags ^= (int)eType.offset_pursuit; }
+        public void FlockingOff() { CohesionOff(); AlignmentOff(); SeparationOff(); WanderOff(); }
+
+        bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
+
+        bool AccumulateForce(ref Vector3 RunningTot, Vector3 ForceToAdd)
+        {
+            //calculate how much steering force the vehicle has used so far
+            float MagnitudeSoFar = RunningTot.magnitude;
+
+            //calculate how much steering force remains to be used by this vehicle
+            float MagnitudeRemaining = _vehicle._maxForce - MagnitudeSoFar;
+
+            //return false if there is no more force left to use
+            if (MagnitudeRemaining <= 0.0) return false;
+
+            //calculate the magnitude of the force we want to add
+            float MagnitudeToAdd = ForceToAdd.magnitude;
+
+            //if the magnitude of the sum of ForceToAdd and the running total
+            //does not exceed the maximum force available to this vehicle, just
+            //add together. Otherwise add as much of the ForceToAdd vector is
+            //possible without going over the max.
+            if (MagnitudeToAdd < MagnitudeRemaining)
+            {
+                RunningTot += ForceToAdd;
+            }
+
+            else
+            {
+                //add it to the steering force
+                RunningTot += (ForceToAdd.normalized * MagnitudeRemaining);
+            }
+
+            return true;
+
+        }
+
+        //==================================================
+
+        Vector3 CalculateWeightedSum()
+        {
+            if (On(eType.wall_avoidance))
+            {
+                //m_vSteeringForce += WallAvoidance(m_pVehicle.World().Walls()) * m_dWeightWallAvoidance;
+            }
+
+            if (On(eType.obstacle_avoidance))
+            {
+                //m_vSteeringForce += ObstacleAvoidance(m_pVehicle.World().Obstacles()) * m_dWeightObstacleAvoidance;
+            }
+
+            if (On(eType.evade))
+            {
+                //m_vSteeringForce += Evade(m_pTargetAgent1) * m_dWeightEvade;
+            }
+
+
+            if (On(eType.separation))
+            {
+                //_steeringForce += Separation(m_pVehicle.World().Agents()) * m_dWeightSeparation;
+            }
+
+            if (On(eType.allignment))
+            {
+                //_steeringForce += Alignment(m_pVehicle.World().Agents()) * m_dWeightAlignment;
+            }
+
+            if (On(eType.cohesion))
+            {
+                //_steeringForce += Cohesion(m_pVehicle.World().Agents()) * m_dWeightCohesion;
+            }
+
+
+
+            if (On(eType.wander))
+            {
+                //_steeringForce += Wander() * m_dWeightWander;
+            }
+
+            if (On(eType.seek))
+            {
+                //_steeringForce += Seek(m_pVehicle.World().Crosshair()) * m_dWeightSeek;
+            }
+
+            if (On(eType.flee))
+            {
+                //_steeringForce += Flee(m_pVehicle.World().Crosshair()) * m_dWeightFlee;
+            }
+
+            if (On(eType.arrive))
+            {
+                //_steeringForce += Arrive(m_pVehicle.World().Crosshair(), m_Deceleration) * m_dWeightArrive;
+            }
+
+            if (On(eType.pursuit))
+            {
+                //_steeringForce += Pursuit(m_pTargetAgent1) * m_dWeightPursuit;
+            }
+
+            if (On(eType.offset_pursuit))
+            {
+                _steeringForce += OffsetPursuit(_pTargetAgent1, _offset) * _weightOffsetPursuit;
+            }
+
+            if (On(eType.interpose))
+            {
+                //_steeringForce += Interpose(m_pTargetAgent1, m_pTargetAgent2) * m_dWeightInterpose;
+            }
+
+            if (On(eType.hide))
+            {
+                //_steeringForce += Hide(m_pTargetAgent1, m_pVehicle.World().Obstacles()) * m_dWeightHide;
+            }
+
+            if (On(eType.follow_path))
+            {
+                //_steeringForce += FollowPath() * m_dWeightFollowPath;
+            }
+
+            _steeringForce = VOp.Truncate(_steeringForce, _vehicle._maxForce);
+
+            return _steeringForce;
+        }
+
+        //---------------------- CalculatePrioritized ----------------------------
+        //
+        //  this method calls each active steering behavior in order of priority
+        //  and acumulates their forces until the max steering force magnitude
+        //  is reached, at which time the function returns the steering force 
+        //  accumulated to that  point
+        //------------------------------------------------------------------------
+        Vector2 CalculatePrioritized()
+        {
+            Vector2 force;
+
+            if (On(eType.wall_avoidance))
+            {
+                //force = WallAvoidance(m_pVehicle.World().Walls()) * m_dWeightWallAvoidance;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.obstacle_avoidance))
+            {
+                //force = ObstacleAvoidance(m_pVehicle.World().Obstacles()) * m_dWeightObstacleAvoidance;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.evade))
+            {
+                //force = Evade(m_pTargetAgent1) * m_dWeightEvade;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+
+            if (On(eType.flee))
+            {
+                //force = Flee(m_pVehicle.World().Crosshair()) * m_dWeightFlee;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+
+
+            if (On(eType.separation))
+            {
+                //force = Separation(m_pVehicle.World().Agents()) * m_dWeightSeparation;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.allignment))
+            {
+                //force = Alignment(m_pVehicle.World().Agents()) * m_dWeightAlignment;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.cohesion))
+            {
+                //force = Cohesion(m_pVehicle.World().Agents()) * m_dWeightCohesion;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.seek))
+            {
+                //force = Seek(m_pVehicle.World().Crosshair()) * m_dWeightSeek;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+
+            if (On(eType.arrive))
+            {
+                //force = Arrive(m_pVehicle.World().Crosshair(), m_Deceleration) * m_dWeightArrive;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.wander))
+            {
+                //force = Wander() * m_dWeightWander;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.pursuit))
+            {
+                //force = Pursuit(m_pTargetAgent1) * m_dWeightPursuit;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.offset_pursuit))
+            {
+                //force = OffsetPursuit(m_pTargetAgent1, m_vOffset);
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.interpose))
+            {
+                //force = Interpose(m_pTargetAgent1, m_pTargetAgent2) * m_dWeightInterpose;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+            if (On(eType.hide))
+            {
+                //force = Hide(m_pTargetAgent1, m_pVehicle.World().Obstacles()) * m_dWeightHide;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+
+            if (On(eType.follow_path))
+            {
+                //force = FollowPath() * m_dWeightFollowPath;
+                //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
+            }
+
+
+            return _steeringForce;
+        }
 
         //==================================================
 
@@ -226,6 +565,134 @@ namespace Proto_AI_4
             //const float coefficient = 0.5f * 5; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 5초
 
             return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
+        }
+
+        //---------------------------- Separation --------------------------------
+        //
+        // this calculates a force repelling from the other neighbors
+        //------------------------------------------------------------------------
+        Vector3 Separation(List<Character> neighbors)
+        {
+            Vector3 SteeringForce = Vector3.zero;
+
+            for (int a = 0; a < neighbors.Count; ++a)
+            {
+                //make sure this agent isn't included in the calculations and that
+                //the agent being examined is close enough. ***also make sure it doesn't
+                //include the evade target ***
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
+                  (neighbors[a] != _pTargetAgent1))
+                {
+                    Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos;
+
+                    //scale the force inversely proportional to the agents distance  
+                    //from its neighbor.
+                    //toAgent 가 0이 되면 Nan 값이 되어 , Nan과 연산한 다른 변수도 Nan이 되어버리는 문제가 있다 
+                    if (false == Misc.IsZero(ToAgent))
+                    {
+                        SteeringForce += ToAgent.normalized / ToAgent.magnitude;
+                    }
+
+                }
+            }
+
+            //if (0 == _vehicle._id)
+            {
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
+                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
+            }
+
+            return SteeringForce;
+        }
+
+        //---------------------------- Alignment ---------------------------------
+        //
+        //  returns a force that attempts to align this agents heading with that
+        //  of its neighbors
+        //------------------------------------------------------------------------
+        Vector3 Alignment(List<Character> neighbors)
+        {
+            //used to record the average heading of the neighbors
+            Vector3 AverageHeading = Vector3.zero;
+
+            //used to count the number of vehicles in the neighborhood
+            int NeighborCount = 0;
+
+            //iterate through all the tagged vehicles and sum their heading vectors  
+            for (int a = 0; a < neighbors.Count; ++a)
+            {
+                //make sure *this* agent isn't included in the calculations and that
+                //the agent being examined  is close enough ***also make sure it doesn't
+                //include any evade target ***
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
+                  (neighbors[a] != _pTargetAgent1))
+                {
+                    AverageHeading += neighbors[a]._heading;
+
+                    ++NeighborCount;
+                }
+            }
+
+            //if the neighborhood contained one or more vehicles, average their
+            //heading vectors.
+            if (NeighborCount > 0)
+            {
+                AverageHeading /= (float)NeighborCount;
+
+                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식 추정 
+            }
+
+            //if (0 == _vehicle._id)
+            {
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
+                //DebugWide.DrawCircle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
+            }
+
+
+            return AverageHeading;
+        }
+
+        Vector3 Cohesion(List<Character> neighbors)
+        {
+            //first find the center of mass of all the agents
+            Vector3 CenterOfMass = Vector3.zero, SteeringForce = Vector3.zero;
+
+            int NeighborCount = 0;
+
+            //iterate through the neighbors and sum up all the position vectors
+            for (int a = 0; a < neighbors.Count; ++a)
+            {
+                //make sure *this* agent isn't included in the calculations and that
+                //the agent being examined is close enough ***also make sure it doesn't
+                //include the evade target ***
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
+                  (neighbors[a] != _pTargetAgent1))
+                {
+                    CenterOfMass += neighbors[a]._pos;
+
+                    ++NeighborCount;
+                }
+            }
+
+            if (NeighborCount > 0)
+            {
+                //the center of mass is the average of the sum of positions
+                CenterOfMass /= (float)NeighborCount;
+
+                //now seek towards that position
+                SteeringForce = Seek(CenterOfMass);
+            }
+
+            //if (0 == _vehicle._id)
+            {
+                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
+                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
+                //DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
+            }
+
+            //the magnitude of cohesion is usually much larger than separation or
+            //allignment so it usually helps to normalize it.
+            return SteeringForce.normalized;
         }
     }
 
