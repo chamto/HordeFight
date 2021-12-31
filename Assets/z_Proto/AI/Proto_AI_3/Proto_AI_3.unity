@@ -205,7 +205,7 @@ MonoBehaviour:
   _Draw_BoundaryTile: 0
   _Draw_ArcTile: 0
   _Draw_SphereTree_Struct: 0
-  _Draw_SphereTree: 0
+  _Draw_SphereTree: 1
   _SphereTree_Level_0: 0
   _SphereTree_Level_1: 0
   _SphereTree_Level_2: 0
