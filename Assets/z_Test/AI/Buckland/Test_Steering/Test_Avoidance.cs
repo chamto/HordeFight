@@ -1335,7 +1335,7 @@ namespace Test_Steering_Avoidance
             Vector3 LocalPosOfClosestObstacle = Vector3.zero;
 
             //Vector3 dirNormal = targetPos - _vehicle._pos;
-            Vector3 dirNormal = _vehicle._smoothedHeading;
+            Vector3 dirNormal = _vehicle._heading;
             Vector3 perp = Vector3.Cross(Vector3.up, dirNormal);
             foreach (Vehicle curOb in obstacles)
             {
