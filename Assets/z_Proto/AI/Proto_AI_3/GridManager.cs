@@ -647,6 +647,10 @@ namespace Proto_AI_3
                 tile._line_center = line.origin + line.direction * 0.5f;
                 tile._line_length = line.Length();
 
+                //*** 나중에 작업할 것 
+                //같은종류의 통합된 선분구하기
+                //추가된 선분의 양쪽 끝단의 타일이 같은종류라면 선분을 통합시킨다 
+
                 _structTileList.Add(XY_2d, tile);
 
             }
