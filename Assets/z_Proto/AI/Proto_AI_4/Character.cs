@@ -32,7 +32,7 @@ namespace Proto_AI_4
         public SphereModel _sphereModel = null; //구트리
     }
 
-    public class FormationPoint : BaseEntity
+    public class OrderPoint : BaseEntity
     {
         //public Vector3 _start = Vector3.zero;
         //public Vector3 _end = Vector3.zero;
@@ -88,6 +88,16 @@ namespace Proto_AI_4
 
     public class Character : BaseEntity
     {
+        //명령형식 , 숫자가 클수록 명령우선순위가 높다  
+        public enum eOrder
+        {
+            None = 0,
+            Solo = 1, //혼자 
+            Squard = 2, //분대
+            Platoon = 3, //소대
+        };
+
+
         public int _id = -1;
 
         //public Vector3 _velocity = new Vector3(0, 0, 0); //실제 향하고 있는 방향
@@ -124,6 +134,8 @@ namespace Proto_AI_4
         public List<Vector3> _feelers = new List<Vector3>();
 
         //--------------------------------------------------
+        public eOrder _eOrder = eOrder.None;
+
         public StateMachine<Character> _stateMachine = null;
 
         //--------------------------------------------------

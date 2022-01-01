@@ -37,7 +37,7 @@ namespace Proto_AI_4
         public float _minRange = 0;
         public float _maxRange = 0.5f;
 
-        public FormationPoint _formationPoint = new FormationPoint();
+        public OrderPoint _formationPoint = new OrderPoint();
 
         public bool _init = false;
 
@@ -134,8 +134,6 @@ namespace Proto_AI_4
 
         public void Update(float deltaTime)
         {
-
-
 
             _formationPoint._speed = _formation_speed;
             _formationPoint._target = _tr_target.position;
@@ -288,7 +286,6 @@ namespace Proto_AI_4
         public void OnDrawGizmos()
         {
             if (false == _init) return;
-            if (null == _tr_target) return;
 
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
