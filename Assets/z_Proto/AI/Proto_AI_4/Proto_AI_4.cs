@@ -7,6 +7,14 @@ using UtilGS9;
 
 namespace Proto_AI_4
 {
+    public enum MessageType
+    {
+        Msg_ReceiveBall,
+        Msg_PassToMe,
+        Msg_SupportAttacker,
+        Msg_GoHome,
+        Msg_Wait
+    }
 
     public class EntityMgr
     {
@@ -19,7 +27,6 @@ namespace Proto_AI_4
 
         }
     }
-
 
     public class Proto_AI_4 : MonoBehaviour
     {
