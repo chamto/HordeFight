@@ -331,16 +331,16 @@ namespace Proto_AI_4
         {
 
             _grid = GameObject.Find("0_grid").GetComponent<Grid>();
-            GameObject o = GameObject.Find("Tilemap_layer_1");
-            if (null != o)
+            GameObject layer_1 = GameObject.Find("Tilemap_layer_1");
+            if (null != layer_1)
             {
-                _tilemap_struct = o.GetComponent<Tilemap>();
+                _tilemap_struct = layer_1.GetComponent<Tilemap>();
             }
-            o = GameObject.Find("Tilemap_layer_1_up");
-            if (null != o)
+            GameObject layer_1_up = GameObject.Find("Tilemap_layer_1_up");
+            if (null != layer_1_up)
             {
-                _tilemap_structUp = o.GetComponent<Tilemap>();
-                _tilemap_structUp.gameObject.SetActive(false);
+                _tilemap_structUp = layer_1_up.GetComponent<Tilemap>();
+                //_tilemap_structUp.gameObject.SetActive(false);
             }
 
             this.LoadTileMap();
@@ -2246,16 +2246,11 @@ namespace Proto_AI_4
             return false;
         }
 
-        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS, out bool stop)
+        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS)
         {
 
-            stop = false;
-
             Vector3 calcPos;
-            if(null != Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos))
-            {
-                stop = true; 
-            }
+            Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
             srcPos = calcPos;
 
             Vector3Int pos_2d = ToPosition2D(srcPos);
