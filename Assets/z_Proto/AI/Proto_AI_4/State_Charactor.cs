@@ -1,8 +1,5 @@
 ﻿namespace Proto_AI_4
 {
-    public class State_Charactor : State<Character>
-    { }
-
 
     public class StateGlobal_Charactor : State<Character>
     {
