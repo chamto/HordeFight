@@ -123,6 +123,11 @@ namespace Proto_AI_4
 
         public List<Vector3> _feelers = new List<Vector3>();
 
+        //--------------------------------------------------
+        public StateMachine<Character> _stateMachine = null;
+
+        //--------------------------------------------------
+
         public void Reset()
         {
             _velocity = new Vector3(0, 0, 0);
@@ -162,6 +167,12 @@ namespace Proto_AI_4
             _oldPos = pos;
 
             CreateFeelers();
+
+            //==============================================
+
+            _stateMachine = new StateMachine<Character>(this);
+            _stateMachine.Init(State_Move_Character.inst, StateGlobal_Charactor.inst);
+
         }
 
         public void SetPos(Vector3 newPos)

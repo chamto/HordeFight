@@ -4,13 +4,13 @@
     { }
 
 
-    public class GlobalState_Charactor : State<Character>
+    public class StateGlobal_Charactor : State<Character>
     {
-        private GlobalState_Charactor() { }
+        private StateGlobal_Charactor() { }
 
 
         //this is a singleton
-        public static readonly GlobalState_Charactor inst = new GlobalState_Charactor();
+        public static readonly StateGlobal_Charactor inst = new StateGlobal_Charactor();
 
         //public override void Enter(FieldPlayer* player) { }
 
@@ -133,54 +133,33 @@
     }
 
     //------------------------------------------------------------------------
-    //public class ChaseBall : State<FieldPlayer>
-    //{
 
-    //    private ChaseBall() { }
+    public class State_Move_Character : State<Character>
+    {
+            private State_Move_Character() { }
 
-    //    //this is a singleton
-    //    public static readonly ChaseBall instance = new ChaseBall();
+            //this is a singleton
+            public static readonly State_Move_Character inst = new State_Move_Character();
 
-    //    public override void Enter(FieldPlayer player)
-    //    {
-    //        player.Steering().SeekOn();
+            public override void Enter(Character player)
+            {
+                
+            }
 
-    //        //# ifdef PLAYER_STATE_INFO_ON
-    //        //            debug_con << "Player " << player->ID() << " enters chase state" << "";
-    //        //#endif
-    //    }
+            public override void Execute(Character player)
+            {
+                
+            }
 
-    //    public override void Execute(FieldPlayer player)
-    //    {
-    //        //if the ball is within kicking range the player changes state to KickBall.
-    //        if (player.BallWithinKickingRange())
-    //        {
-    //            player.GetFSM().ChangeState(KickBall.instance);
+            public override void Exit(Character player)
+            {
+                
+            }
 
-    //            return;
-    //        }
+            public override bool OnMessage(Character f, Telegram t) { return false; }
+    }
 
-    //        //if the player is the closest player to the ball then he should keep
-    //        //chasing it
-    //        if (player.isClosestTeamMemberToBall())
-    //        {
-    //            player.Steering().SetTarget(player.Ball().Pos());
-
-    //            return;
-    //        }
-
-    //        //if the player is not closest to the ball anymore, he should return back
-    //        //to his home region and wait for another opportunity
-    //        player.GetFSM().ChangeState(ReturnToHomeRegion.instance);
-    //    }
-
-    //    public override void Exit(FieldPlayer player)
-    //    {
-    //        player.Steering().SeekOff();
-    //    }
-
-    //    public override bool OnMessage(FieldPlayer f, Telegram t) { return false; }
-    //}
+   
 }//end namespace
 
 

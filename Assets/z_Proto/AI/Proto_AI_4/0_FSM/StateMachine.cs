@@ -27,6 +27,15 @@
 
         //virtual ~StateMachine() { }
 
+        public void Init(State<entity_type> start, State<entity_type> global)
+        {
+            SetCurrentState(start);
+            SetPreviousState(start);
+            SetGlobalState(global);
+
+            CurrentState().Enter(m_pOwner);
+        }
+
         //use these methods to initialize the FSM
         public void SetCurrentState(State<entity_type> s) { m_pCurrentState = s; }
         public void SetGlobalState(State<entity_type> s) { m_pGlobalState = s; }
