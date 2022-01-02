@@ -54,6 +54,7 @@ namespace Proto_AI_4
         //length of the 'detection box' utilized in obstacle avoidance
         public float _detectBoxLength;
 
+        public float _decelerationTime = 0.3f; //Arrive2 알고리즘에서 사용 , 남은거리를 몇초로 이동할지 설정 
 
         //a vertex buffer to contain the feelers rqd for wall avoidance  
         //List<Vector3> m_Feelers;
@@ -65,49 +66,49 @@ namespace Proto_AI_4
 
         //the current position on the wander circle the agent is
         //attempting to steer towards
-        Vector3 _wanderTarget;
+        public Vector3 _wanderTarget;
 
         //explained above
-        float _wanderJitter;
-        float _wanderRadius;
-        float _wanderDistance;
+        public float _wanderJitter;
+        public float _wanderRadius;
+        public float _wanderDistance;
 
 
         //multipliers. These can be adjusted to effect strength of the  
         //appropriate behavior. Useful to get flocking the way you require
         //for example.
-        float _weightSeparation;
-        float _weightCohesion;
-        float _weightAlignment;
-        float _weightWander;
-        float _weightObstacleAvoidance;
-        float _weightWallAvoidance;
-        float _weightSeek;
-        float _weightFlee;
-        float _weightArrive;
-        float _weightPursuit;
-        float _weightOffsetPursuit;
-        float _weightInterpose;
-        float _weightHide;
-        float _weightEvade;
-        float _weightFollowPath;
+        public float _weightSeparation;
+        public float _weightCohesion;
+        public float _weightAlignment;
+        public float _weightWander;
+        public float _weightObstacleAvoidance;
+        public float _weightWallAvoidance;
+        public float _weightSeek;
+        public float _weightFlee;
+        public float _weightArrive;
+        public float _weightPursuit;
+        public float _weightOffsetPursuit;
+        public float _weightInterpose;
+        public float _weightHide;
+        public float _weightEvade;
+        public float _weightFollowPath;
 
         //how far the agent can 'see'
-        float m_dViewDistance;
+        public float _viewDistance;
 
         //pointer to any current path
         //Path m_pPath;
 
         //the distance (squared) a vehicle has to be from a path waypoint before
         //it starts seeking to the next waypoint
-        float _waypointSeekDistSq;
+        public float _waypointSeekDistSq;
 
 
         //any offset used for formations or offset pursuit
-        Vector3 _offset;
+        public Vector3 _offset;
 
         //binary flags to indicate whether or not a behavior should be active
-        int _flags;
+        private int _flags;
 
         public SummingMethod _summingMethod;
 
@@ -133,6 +134,7 @@ namespace Proto_AI_4
         public void OffsetPursuitOn(Character v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent1 = v1; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
 
+        public void AllOff() { _flags = (int)eType.none; }
         public void FleeOff() { if (On(eType.flee)) _flags ^= (int)eType.flee; }
         public void SeekOff() { if (On(eType.seek)) _flags ^= (int)eType.seek; }
         public void ArriveOff() { if (On(eType.arrive)) _flags ^= (int)eType.arrive; }
@@ -239,6 +241,10 @@ namespace Proto_AI_4
 
             if (On(eType.arrive))
             {
+                //** 등속도이동 설정
+                //_decelerationTime = 0.09f; //0.09초동안 감속 - 감속되는 것을 보여주지 않기 위해 짧게 설정 
+                //_weight = 50;
+                //_maxForce = 100;
                 //_steeringForce += Arrive(m_pVehicle.World().Crosshair(), m_Deceleration) * m_dWeightArrive;
             }
 
@@ -526,7 +532,7 @@ namespace Proto_AI_4
                 //_velocity > 이동거리 : 감속 
 
                 //deceleration 가 작을수록 속도가 크게 계산된다 
-                float speed = dist / _vehicle._decelerationTime; //v = s / t
+                float speed = dist / _decelerationTime; //v = s / t
 
                 //make sure the velocity does not exceed the max
                 speed = Math.Min(speed, _vehicle._maxSpeed);
