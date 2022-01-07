@@ -39,6 +39,8 @@ namespace Proto_AI_4
 
         public OrderPoint _formationPoint = new OrderPoint();
 
+        public Platoon _Platoon_0 = null;
+
         public bool _init = false;
 
         public void Init()
@@ -63,69 +65,57 @@ namespace Proto_AI_4
 
             EntityMgr.list.Clear();
 
-            //0
-            Unit v = new Unit();
-            int id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._mode = SteeringBehavior.eType.arrive;
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(0, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-            //v._maxSpeed = 14;
-
-            //1
-            v = new Unit();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            //2
-            v = new Unit();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(-1f, 0, -1f);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            //-------------------
-
-            //3
-            v = new Unit();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(1f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            ////4
-            v = new Unit();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(2f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-
-            ////5
-            v = new Unit();
-            id = EntityMgr.Add(v);
-            v.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //v._leader = _formationPoint;
-            //v._offset = new Vector3(3f, 0, 0);
-            //v._mode = SteeringBehavior.eType.offset_pursuit;
-            //v._mode = SteeringBehavior.eType.arrive;
-
-
-            for (int i = 0; i < 30; i++)
+            Unit unit = null;
+            for (int i = 0; i < 8; i++)
             {
-                v = new Unit();
-                id = EntityMgr.Add(v);
-                v.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 0;
+                unit._disposition._squard_pos = i;
                 //v._mode = SteeringBehavior.eType.arrive;
                 //v._target = new Vector3(17, 0, 12);
             }
 
+            for (int i = 0; i < 8; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 1;
+                unit._disposition._squard_pos = i;
+                //v._mode = SteeringBehavior.eType.arrive;
+                //v._target = new Vector3(17, 0, 12);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 2;
+                unit._disposition._squard_pos = i;
+                //v._mode = SteeringBehavior.eType.arrive;
+                //v._target = new Vector3(17, 0, 12);
+            }
+
+            for (int i = 0; i < 8; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 3;
+                unit._disposition._squard_pos = i;
+                //v._mode = SteeringBehavior.eType.arrive;
+                //v._target = new Vector3(17, 0, 12);
+            }
+
+            _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
+            _Platoon_0.ApplyFormationOffset_0();
             //==============================
 
 

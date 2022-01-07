@@ -14,25 +14,25 @@ namespace Proto_AI_4
         public int _squard_num;
         public int _squard_pos;  //분대 개별위치 - 분대 유닛리스트와 일치되어야 함
 
-        //변경가능정보
-        public Vector3 _initPos; //초기위치 
-        public Vector3 _offset;
-
         public void Init()
         {
             _platoon_num = -1;
             _squard_num = -1;
             _squard_pos = -1;
-
-            _initPos = Vector3.zero;
-            _offset = Vector3.zero;
         }
     }
 
     //진형
-    public class FormationInfo
+    public struct Formation
     {
+        public Vector3 _initPos; //초기위치 
+        public Vector3 _offset;
 
+        public void Init()
+        {
+            _initPos = Vector3.zero;
+            _offset = Vector3.zero;
+        }
     }
 
     //전달모임 , Transmission , 최소한의 배치 , 역할의 단위 
@@ -44,6 +44,7 @@ namespace Proto_AI_4
             Width = 1,
             Height = 2,
             Circle = 3,
+            Data = 4,
         }
 
         public eFormKind _eFormKind = eFormKind.None;
@@ -51,16 +52,15 @@ namespace Proto_AI_4
         public int _squard_num = -1;
         public int _unit_count = 0; //전체분대원수 
 
-
+        //public Vector3 _dir = Vector3.forward; //방향 
+        public Vector3 _form_standard = Vector3.zero; //기준점
         public int _form_row; //행
         public int _form_column; //열
         public float _form_horn; //width 진형의 뿔 , 양수면 앞으로 나오고 음수면 뒤로 나온다 
         public float _form_dis_between; //사이거리 
         public float _form_radius; //원형진형 반지름
+        public Formation _formation;
 
-
-        //public Vector3 _dir = Vector3.forward; //방향 
-        public Vector3 _standard = Vector3.zero; //기준점
         public List<Unit> _units = new List<Unit>(); //전체배치정보
 
         //==================================================
@@ -88,8 +88,6 @@ namespace Proto_AI_4
                 unit = platoon._units[i];
                 if (squard._squard_num != unit._disposition._squard_num) continue;
 
-                //dpos._initPos = new Vector3(i * 1, 0, 0);
-                //dpos._offset = dpos._initPos - squard._standard;
                 squard._units[unit._disposition._squard_pos] = unit;
                 unit._platoon = platoon;
                 unit._squard = squard;
@@ -99,6 +97,20 @@ namespace Proto_AI_4
             //---------------------------
 
             return squard;
+        }
+
+        public void ApplyFormationOffset()
+        {
+            //임시작성
+            if(_eFormKind == eFormKind.Width)
+            {
+                _form_standard = new Vector3(_unit_count * 0.5f,0,0); 
+                for (int i=0;i<_units.Count;i++)
+                {
+                    _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
+                    _units[i]._formation._offset = _units[i]._formation._initPos - _form_standard;
+                }
+            }
         }
 
         //유닛을 분대에서 뺀다 
@@ -146,6 +158,7 @@ namespace Proto_AI_4
     {
         public int _platoon_num = -1;
         public int _squard_count = 0;
+        public Vector3 _form_standard = Vector3.zero; //기준점
         public List<Unit> _units = new List<Unit>();
         public List<Squard> _squards = new List<Squard>();
 
@@ -167,16 +180,36 @@ namespace Proto_AI_4
             platoon._squard_count = max_squard + 1;
 
             Squard squard = null;
-            for (int i = 0; i < max_squard; i++)
+            for (int i = 0; i < platoon._squard_count; i++)
             {
                 squard = Squard.Create_Squard(platoon, i);
                 platoon._squards.Add(squard);
             }
 
-
+            //DebugWide.LogBlue(platoon._squards.Count);
             return platoon;
         }
 
+        public void ApplyFormationOffset_0()
+        {
+            if (_squard_count > 4) return;
+
+            _squards[0]._formation._initPos = new Vector3(0, 0, 3);
+            _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
+            _squards[0].ApplyFormationOffset();
+
+            _squards[1]._formation._initPos = new Vector3(-3, 0, 0);
+            _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
+            _squards[1].ApplyFormationOffset();
+
+            _squards[2]._formation._initPos = new Vector3(3, 0, 0);
+            _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
+            _squards[2].ApplyFormationOffset();
+
+            _squards[3]._formation._initPos = new Vector3(0, 0, -3);
+            _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
+            _squards[3].ApplyFormationOffset();
+        }
 
     }
 

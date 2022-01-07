@@ -125,7 +125,7 @@ namespace Proto_AI_4
 
         //--------------------------------------------------
         //public eOrder _eOrder = eOrder.None;
-
+        public Formation _formation = new Formation();
         public Disposition _disposition = new Disposition();
         public Platoon _platoon = null; //소속소대정보 
         public Squard _squard = null; //소속분대정보  
