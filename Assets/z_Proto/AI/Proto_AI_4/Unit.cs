@@ -110,7 +110,6 @@ namespace Proto_AI_4
         public float _Friction = 0.85f; //마찰력
         public float _elasticity = 1; //탄성력 
         public float _anglePerSecond = 180;
-        public float _weight = 20;
 
         public bool _isNonpenetration = true; //비침투 
 
@@ -453,7 +452,7 @@ namespace Proto_AI_4
         public void Update_NormalMovement(float deltaTime)
         {
 
-            Vector3 SteeringForce = _steeringBehavior._steeringForce;
+            Vector3 SteeringForce = _steeringBehavior.Calculate();
 
             //*기본계산
             Vector3 acceleration = SteeringForce / _mass;
@@ -516,7 +515,7 @@ namespace Proto_AI_4
         public void Update_RotateMovement(float deltaTime)
         {
 
-            Vector3 SteeringForce = _steeringBehavior._steeringForce;
+            Vector3 SteeringForce = _steeringBehavior.Calculate();
 
             Vector3 acceleration = SteeringForce / _mass;
 

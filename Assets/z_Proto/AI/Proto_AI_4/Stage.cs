@@ -24,12 +24,13 @@ namespace Proto_AI_4
         public float _radius = 0.5f;
         public float _radius_damage = 0.5f;
         public float _mass = 1f;
-        public float _weight = 20;
         public float _maxForce = 40f;
         public float _maxSpeed = 10f;
         public float _withstand = 1f;
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
+
+        public float _weightArrive = 20;
 
         public bool _isObjNonpenetration = true;
         public bool _isStrNonpenetration = true;
@@ -63,7 +64,7 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             Unit unit = null;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 1; i++)
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
@@ -71,48 +72,40 @@ namespace Proto_AI_4
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 0;
                 unit._disposition._squard_pos = i;
-                //v._mode = SteeringBehavior.eType.arrive;
-                //v._target = new Vector3(17, 0, 12);
+                unit._steeringBehavior.ArriveOn();
+
             }
 
-            for (int i = 0; i < 8; i++)
-            {
-                unit = new Unit();
-                int id = EntityMgr.Add(unit);
-                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-                unit._disposition._platoon_num = 0;
-                unit._disposition._squard_num = 1;
-                unit._disposition._squard_pos = i;
-                //v._mode = SteeringBehavior.eType.arrive;
-                //v._target = new Vector3(17, 0, 12);
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                unit = new Unit();
-                int id = EntityMgr.Add(unit);
-                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-                unit._disposition._platoon_num = 0;
-                unit._disposition._squard_num = 2;
-                unit._disposition._squard_pos = i;
-                //v._mode = SteeringBehavior.eType.arrive;
-                //v._target = new Vector3(17, 0, 12);
-            }
-
-            for (int i = 0; i < 8; i++)
-            {
-                unit = new Unit();
-                int id = EntityMgr.Add(unit);
-                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-                unit._disposition._platoon_num = 0;
-                unit._disposition._squard_num = 3;
-                unit._disposition._squard_pos = i;
-                //v._mode = SteeringBehavior.eType.arrive;
-                //v._target = new Vector3(17, 0, 12);
-            }
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    unit = new Unit();
+            //    int id = EntityMgr.Add(unit);
+            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //    unit._disposition._platoon_num = 0;
+            //    unit._disposition._squard_num = 1;
+            //    unit._disposition._squard_pos = i;
+            //}
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    unit = new Unit();
+            //    int id = EntityMgr.Add(unit);
+            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //    unit._disposition._platoon_num = 0;
+            //    unit._disposition._squard_num = 2;
+            //    unit._disposition._squard_pos = i;
+            //}
+            //for (int i = 0; i < 8; i++)
+            //{
+            //    unit = new Unit();
+            //    int id = EntityMgr.Add(unit);
+            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+            //    unit._disposition._platoon_num = 0;
+            //    unit._disposition._squard_num = 3;
+            //    unit._disposition._squard_pos = i;
+            //}
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
-            _Platoon_0.ApplyFormationOffset_0();
+            //_Platoon_0.ApplyFormationOffset_0();
 
             _Platoon_0._target = _tr_target.position;
             _Platoon_0._pos = _tr_target.position;
@@ -135,17 +128,7 @@ namespace Proto_AI_4
 
             foreach (Unit v in EntityMgr.list)
             {
-                if (5 == v._id)
-                {
-                    v._withstand = _withstand;
-                    //v._target = _tr_test.position;
-                    v.SetRadius(_radius);
-                    v._radius_damage = _radius_damage;
-                }
-                if (6 <= v._id)
-                {
-                    //v._target = _tr_test2_s.position;
-                }
+                v._steeringBehavior._targetPos = _Platoon_0._pos;
 
                 //v._radius = _radius;
                 //v.SetRadius(_radius);
@@ -154,7 +137,7 @@ namespace Proto_AI_4
                 v._maxForce = _maxForce;
                 v._Friction = _Friction;
                 v._anglePerSecond = _anglePerSecond;
-                v._weight = _weight;
+                v._steeringBehavior._weightArrive = _weightArrive;
                 v._isNonpenetration = _isObjNonpenetration;
                 v.Update(deltaTime);
 

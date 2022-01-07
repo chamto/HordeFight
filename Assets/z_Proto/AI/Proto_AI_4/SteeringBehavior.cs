@@ -45,11 +45,14 @@ namespace Proto_AI_4
         public Vector3 _steeringForce;
 
         //these can be used to keep track of friends, pursuers, or prey
-        public Unit _pTargetAgent1;
-        public Unit _pTargetAgent2; //인터포즈(둘 사이에 끼기)에서 사용 
+        public Unit _pTargetAgent;
+
+        //인터포즈(둘 사이에 끼기)에서 사용 
+        public Unit _pTargetInterpose1;
+        public Unit _pTargetInterpose2;
 
         //the current target
-        public Vector3 _target;
+        public Vector3 _targetPos;
 
         //length of the 'detection box' utilized in obstacle avoidance
         public float _detectBoxLength;
@@ -73,6 +76,8 @@ namespace Proto_AI_4
         public float _wanderRadius;
         public float _wanderDistance;
 
+
+        public float _steeringForceTweaker = 1;
 
         //multipliers. These can be adjusted to effect strength of the  
         //appropriate behavior. Useful to get flocking the way you require
@@ -121,17 +126,17 @@ namespace Proto_AI_4
         public void SeekOn() { _flags |= (int)eType.seek; }
         public void ArriveOn() { _flags |= (int)eType.arrive; }
         public void WanderOn() { _flags |= (int)eType.wander; }
-        public void PursuitOn(Unit v) { _flags |= (int)eType.pursuit; _pTargetAgent1 = v; }
-        public void EvadeOn(Unit v) { _flags |= (int)eType.evade; _pTargetAgent1 = v; }
+        public void PursuitOn(Unit v) { _flags |= (int)eType.pursuit; _pTargetAgent = v; }
+        public void EvadeOn(Unit v) { _flags |= (int)eType.evade; _pTargetAgent = v; }
         public void CohesionOn() { _flags |= (int)eType.cohesion; }
         public void SeparationOn() { _flags |= (int)eType.separation; }
         public void AlignmentOn() { _flags |= (int)eType.allignment; }
         public void ObstacleAvoidanceOn() { _flags |= (int)eType.obstacle_avoidance; }
         public void WallAvoidanceOn() { _flags |= (int)eType.wall_avoidance; }
         public void FollowPathOn() { _flags |= (int)eType.follow_path; }
-        public void InterposeOn(Unit v1, Unit v2) { _flags |= (int)eType.interpose; _pTargetAgent1 = v1; _pTargetAgent2 = v2; }
-        public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent1 = v; }
-        public void OffsetPursuitOn(Unit v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent1 = v1; }
+        public void InterposeOn(Unit v1, Unit v2) { _flags |= (int)eType.interpose; _pTargetInterpose1 = v1; _pTargetInterpose2 = v2; }
+        public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent = v; }
+        public void OffsetPursuitOn(Unit v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent = v1; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
 
         public void AllOff() { _flags = (int)eType.none; }
@@ -245,7 +250,7 @@ namespace Proto_AI_4
                 //_decelerationTime = 0.09f; //0.09초동안 감속 - 감속되는 것을 보여주지 않기 위해 짧게 설정 
                 //_weight = 50;
                 //_maxForce = 100;
-                //_steeringForce += Arrive(m_pVehicle.World().Crosshair(), m_Deceleration) * m_dWeightArrive;
+                _steeringForce += Arrive2(_targetPos) * _weightArrive * _steeringForceTweaker;
             }
 
             if (On(eType.pursuit))
@@ -255,12 +260,12 @@ namespace Proto_AI_4
 
             if (On(eType.offset_pursuit))
             {
-                _steeringForce += OffsetPursuit(_pTargetAgent1, _offset) * _weightOffsetPursuit;
+                _steeringForce += OffsetPursuit(_pTargetAgent, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
             }
 
             if (On(eType.interpose))
             {
-                //_steeringForce += Interpose(m_pTargetAgent1, m_pTargetAgent2) * m_dWeightInterpose;
+                //_steeringForce += Interpose(_pTargetInterpose1, _pTargetInterpose1) * _weightInterpose;
             }
 
             if (On(eType.hide))
@@ -273,7 +278,7 @@ namespace Proto_AI_4
                 //_steeringForce += FollowPath() * m_dWeightFollowPath;
             }
 
-            _steeringForce = VOp.Truncate(_steeringForce, _vehicle._maxForce);
+            _steeringForce = VOp.Truncate(_steeringForce, _vehicle._maxForce * _steeringForceTweaker);
 
             return _steeringForce;
         }
@@ -367,7 +372,7 @@ namespace Proto_AI_4
 
             if (On(eType.interpose))
             {
-                //force = Interpose(m_pTargetAgent1, m_pTargetAgent2) * m_dWeightInterpose;
+                //force = Interpose(_pTargetInterpose1, _pTargetInterpose1) * m_dWeightInterpose;
                 //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
@@ -633,7 +638,7 @@ namespace Proto_AI_4
                 //the agent being examined is close enough. ***also make sure it doesn't
                 //include the evade target ***
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent1))
+                  (neighbors[a] != _pTargetAgent))
                 {
                     Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos;
 
@@ -677,7 +682,7 @@ namespace Proto_AI_4
                 //the agent being examined  is close enough ***also make sure it doesn't
                 //include any evade target ***
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent1))
+                  (neighbors[a] != _pTargetAgent))
                 {
                     AverageHeading += neighbors[a]._heading;
 
@@ -718,7 +723,7 @@ namespace Proto_AI_4
                 //the agent being examined is close enough ***also make sure it doesn't
                 //include the evade target ***
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent1))
+                  (neighbors[a] != _pTargetAgent))
                 {
                     CenterOfMass += neighbors[a]._pos;
 
