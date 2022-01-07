@@ -9,6 +9,8 @@ namespace Proto_AI_4
 
     public class BaseEntity : SphereModel.IUserData
     {
+        public int _id = -1;
+
         public float _radius = 0.5f;
         public float _radius_damage = 0.5f; //타격크기 
         public Vector3 _oldPos = Vector3.zero;
@@ -90,16 +92,13 @@ namespace Proto_AI_4
     public class Character : BaseEntity
     {
         //명령형식 , 숫자가 클수록 명령우선순위가 높다  
-        public enum eOrder
-        {
-            None = 0,
-            Solo = 1, //혼자 
-            Squard = 2, //분대
-            Platoon = 3, //소대
-        };
-
-
-        public int _id = -1;
+        //public enum eOrder
+        //{
+        //    None = 0,
+        //    Solo = 1, //혼자 
+        //    Squard = 2, //분대
+        //    Platoon = 3, //소대
+        //};
 
         //public Vector3 _velocity = new Vector3(0, 0, 0); //실제 향하고 있는 방향
         public Vector3 _heading = Vector3.forward; //객체의 방향
@@ -125,7 +124,11 @@ namespace Proto_AI_4
 
 
         //--------------------------------------------------
-        public eOrder _eOrder = eOrder.None;
+        //public eOrder _eOrder = eOrder.None;
+
+        public Disposition _disposition = new Disposition();
+        public Platoon _platoon = null; //소속소대정보 
+        public Squard _squard = null; //소속분대정보  
 
         public StateMachine<Character> _stateMachine = null;
 

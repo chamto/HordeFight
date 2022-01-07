@@ -1,6 +1,12 @@
-﻿namespace Proto_AI_4
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UtilGS9;
+
+namespace Proto_AI_4
 {
-    public class Squard { }
+
 
 }//end namespace
 
