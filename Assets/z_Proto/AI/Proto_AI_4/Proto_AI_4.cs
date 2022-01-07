@@ -19,8 +19,8 @@ namespace Proto_AI_4
     public class EntityMgr
     {
 
-        public static readonly List<Character> list = new List<Character>();
-        public static int Add(Character v)
+        public static readonly List<Unit> list = new List<Unit>();
+        public static int Add(Unit v)
         {
             list.Add(v);
             return list.Count - 1;

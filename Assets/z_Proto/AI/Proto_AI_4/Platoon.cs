@@ -61,7 +61,7 @@ namespace Proto_AI_4
 
         //public Vector3 _dir = Vector3.forward; //방향 
         public Vector3 _standard = Vector3.zero; //기준점
-        public List<Character> _units = new List<Character>(); //전체배치정보
+        public List<Unit> _units = new List<Unit>(); //전체배치정보
 
         //==================================================
 
@@ -73,7 +73,7 @@ namespace Proto_AI_4
             squard._eFormKind = eFormKind.None;
 
             //list 순서와 squard_pos를 일치시키기 위해 미리 만들어 놓는다 
-            Character unit = null;
+            Unit unit = null;
             for (int i = 0; i < platoon._units.Count; i++)
             {
                 unit = platoon._units[i];
@@ -102,7 +102,7 @@ namespace Proto_AI_4
         }
 
         //유닛을 분대에서 뺀다 
-        public bool UnitDismiss(Character unit)
+        public bool UnitDismiss(Unit unit)
         {
             if (_platoon._platoon_num != unit._disposition._platoon_num) return false;
             if (_squard_num != unit._disposition._squard_num) return false;
@@ -117,7 +117,7 @@ namespace Proto_AI_4
         }
 
         //유닛을 분대에 추가한다 
-        public bool UnitInclude(Character unit)
+        public bool UnitInclude(Unit unit)
         {
             if (_platoon._platoon_num != unit._disposition._platoon_num) return false;
             if (_squard_num != unit._disposition._squard_num) return false;
@@ -146,10 +146,10 @@ namespace Proto_AI_4
     {
         public int _platoon_num = -1;
         public int _squard_count = 0;
-        public List<Character> _units = new List<Character>();
+        public List<Unit> _units = new List<Unit>();
         public List<Squard> _squards = new List<Squard>();
 
-        static public Platoon Create_Platoon (List<Character> units)
+        static public Platoon Create_Platoon (List<Unit> units)
         {
             if (0 == units.Count) return null;
 

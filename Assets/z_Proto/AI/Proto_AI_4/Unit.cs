@@ -89,7 +89,7 @@ namespace Proto_AI_4
 
     }
 
-    public class Character : BaseEntity
+    public class Unit : BaseEntity
     {
         //명령형식 , 숫자가 클수록 명령우선순위가 높다  
         //public enum eOrder
@@ -130,7 +130,7 @@ namespace Proto_AI_4
         public Platoon _platoon = null; //소속소대정보 
         public Squard _squard = null; //소속분대정보  
 
-        public StateMachine<Character> _stateMachine = null;
+        public StateMachine<Unit> _stateMachine = null;
 
         //--------------------------------------------------
 
@@ -169,7 +169,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            _stateMachine = new StateMachine<Character>(this);
+            _stateMachine = new StateMachine<Unit>(this);
             _stateMachine.Init(State_Move_Character.inst, StateGlobal_Charactor.inst);
 
         }
@@ -226,9 +226,9 @@ namespace Proto_AI_4
 
 
         //객체하나에 대한 전체객체 접촉정보를 처리하는 방식, 중복된 접촉정보 있음, 계산후 겹치지 않음 
-        public void EnforceNonPenetrationConstraint(Character src, List<Character> ContainerOfEntities, float src_withstand, float dst_withstand)
+        public void EnforceNonPenetrationConstraint(Unit src, List<Unit> ContainerOfEntities, float src_withstand, float dst_withstand)
         {
-            Character dst = null;
+            Unit dst = null;
             for (int i = 0; i < ContainerOfEntities.Count; i++)
             {
                 dst = ContainerOfEntities[i];

@@ -40,13 +40,13 @@ namespace Proto_AI_4
         public enum Deceleration { slow = 3, normal = 2, fast = 1 };
         //Deceleration m_Deceleration;
 
-        public Character _vehicle;
+        public Unit _vehicle;
 
         public Vector3 _steeringForce;
 
         //these can be used to keep track of friends, pursuers, or prey
-        public Character _pTargetAgent1;
-        public Character _pTargetAgent2; //인터포즈(둘 사이에 끼기)에서 사용 
+        public Unit _pTargetAgent1;
+        public Unit _pTargetAgent2; //인터포즈(둘 사이에 끼기)에서 사용 
 
         //the current target
         public Vector3 _target;
@@ -121,17 +121,17 @@ namespace Proto_AI_4
         public void SeekOn() { _flags |= (int)eType.seek; }
         public void ArriveOn() { _flags |= (int)eType.arrive; }
         public void WanderOn() { _flags |= (int)eType.wander; }
-        public void PursuitOn(Character v) { _flags |= (int)eType.pursuit; _pTargetAgent1 = v; }
-        public void EvadeOn(Character v) { _flags |= (int)eType.evade; _pTargetAgent1 = v; }
+        public void PursuitOn(Unit v) { _flags |= (int)eType.pursuit; _pTargetAgent1 = v; }
+        public void EvadeOn(Unit v) { _flags |= (int)eType.evade; _pTargetAgent1 = v; }
         public void CohesionOn() { _flags |= (int)eType.cohesion; }
         public void SeparationOn() { _flags |= (int)eType.separation; }
         public void AlignmentOn() { _flags |= (int)eType.allignment; }
         public void ObstacleAvoidanceOn() { _flags |= (int)eType.obstacle_avoidance; }
         public void WallAvoidanceOn() { _flags |= (int)eType.wall_avoidance; }
         public void FollowPathOn() { _flags |= (int)eType.follow_path; }
-        public void InterposeOn(Character v1, Character v2) { _flags |= (int)eType.interpose; _pTargetAgent1 = v1; _pTargetAgent2 = v2; }
-        public void HideOn(Character v) { _flags |= (int)eType.hide; _pTargetAgent1 = v; }
-        public void OffsetPursuitOn(Character v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent1 = v1; }
+        public void InterposeOn(Unit v1, Unit v2) { _flags |= (int)eType.interpose; _pTargetAgent1 = v1; _pTargetAgent2 = v2; }
+        public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent1 = v; }
+        public void OffsetPursuitOn(Unit v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent1 = v1; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
 
         public void AllOff() { _flags = (int)eType.none; }
@@ -607,7 +607,7 @@ namespace Proto_AI_4
 
         }
 
-        public float TurnAroundTime(Character agent, Vector3 targetPos, float turnSecond)
+        public float TurnAroundTime(Unit agent, Vector3 targetPos, float turnSecond)
         {
             Vector3 toTarget = (targetPos - agent._pos).normalized;
 
@@ -623,7 +623,7 @@ namespace Proto_AI_4
         //
         // this calculates a force repelling from the other neighbors
         //------------------------------------------------------------------------
-        Vector3 Separation(List<Character> neighbors)
+        Vector3 Separation(List<Unit> neighbors)
         {
             Vector3 SteeringForce = Vector3.zero;
 
@@ -662,7 +662,7 @@ namespace Proto_AI_4
         //  returns a force that attempts to align this agents heading with that
         //  of its neighbors
         //------------------------------------------------------------------------
-        Vector3 Alignment(List<Character> neighbors)
+        Vector3 Alignment(List<Unit> neighbors)
         {
             //used to record the average heading of the neighbors
             Vector3 AverageHeading = Vector3.zero;
@@ -704,7 +704,7 @@ namespace Proto_AI_4
             return AverageHeading;
         }
 
-        Vector3 Cohesion(List<Character> neighbors)
+        Vector3 Cohesion(List<Unit> neighbors)
         {
             //first find the center of mass of all the agents
             Vector3 CenterOfMass = Vector3.zero, SteeringForce = Vector3.zero;

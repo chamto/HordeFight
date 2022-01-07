@@ -64,7 +64,7 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             //0
-            Character v = new Character();
+            Unit v = new Unit();
             int id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._mode = SteeringBehavior.eType.arrive;
@@ -74,7 +74,7 @@ namespace Proto_AI_4
             //v._maxSpeed = 14;
 
             //1
-            v = new Character();
+            v = new Unit();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
@@ -82,7 +82,7 @@ namespace Proto_AI_4
             //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             //2
-            v = new Character();
+            v = new Unit();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
@@ -92,7 +92,7 @@ namespace Proto_AI_4
             //-------------------
 
             //3
-            v = new Character();
+            v = new Unit();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
@@ -100,7 +100,7 @@ namespace Proto_AI_4
             //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             ////4
-            v = new Character();
+            v = new Unit();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
@@ -108,7 +108,7 @@ namespace Proto_AI_4
             //v._mode = SteeringBehavior.eType.offset_pursuit;
 
             ////5
-            v = new Character();
+            v = new Unit();
             id = EntityMgr.Add(v);
             v.Init(id, 0.5f, new Vector3(17, 0, 12));
             //v._leader = _formationPoint;
@@ -119,7 +119,7 @@ namespace Proto_AI_4
 
             for (int i = 0; i < 30; i++)
             {
-                v = new Character();
+                v = new Unit();
                 id = EntityMgr.Add(v);
                 v.Init(id, 0.5f, new Vector3(17, 0, 12));
                 //v._mode = SteeringBehavior.eType.arrive;
@@ -142,7 +142,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            foreach (Character v in EntityMgr.list)
+            foreach (Unit v in EntityMgr.list)
             {
                 if (5 == v._id)
                 {
@@ -173,7 +173,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            foreach (Character v in EntityMgr.list)
+            foreach (Unit v in EntityMgr.list)
             {
                 //==========================================
                 //동굴벽과 캐릭터 충돌처리 
@@ -233,7 +233,7 @@ namespace Proto_AI_4
 
         }
 
-        public void CollisionPush(Character src, Character dst)
+        public void CollisionPush(Unit src, Unit dst)
         {
             if (null == src || null == dst) return;
 
@@ -294,7 +294,7 @@ namespace Proto_AI_4
             _formationPoint.Draw(Color.white);
 
             Color color = Color.black;
-            foreach (Character v in EntityMgr.list)
+            foreach (Unit v in EntityMgr.list)
             {
                 color = Color.black;
                 if (0 == v._id)

@@ -1,7 +1,7 @@
 ﻿namespace Proto_AI_4
 {
 
-    public class StateGlobal_Charactor : State<Character>
+    public class StateGlobal_Charactor : State<Unit>
     {
         private StateGlobal_Charactor() { }
 
@@ -11,7 +11,7 @@
 
         //public override void Enter(FieldPlayer* player) { }
 
-        public override void Execute(Character player)
+        public override void Execute(Unit player)
         {
             //if a player is in possession and close to the ball reduce his max speed
             //if ((player.BallWithinReceivingRange()) && (player.isControllingPlayer()))
@@ -28,7 +28,7 @@
 
         //public override void Exit(Character player) { }
 
-        public override bool OnMessage(Character player, Telegram telegram)
+        public override bool OnMessage(Unit player, Telegram telegram)
         {
             //switch ((MessageType)telegram.Msg)
             //{
@@ -131,29 +131,29 @@
 
     //------------------------------------------------------------------------
 
-    public class State_Move_Character : State<Character>
+    public class State_Move_Character : State<Unit>
     {
             private State_Move_Character() { }
 
             //this is a singleton
             public static readonly State_Move_Character inst = new State_Move_Character();
 
-            public override void Enter(Character player)
+            public override void Enter(Unit player)
             {
                 
             }
 
-            public override void Execute(Character player)
+            public override void Execute(Unit player)
             {
                 
             }
 
-            public override void Exit(Character player)
+            public override void Exit(Unit player)
             {
                 
             }
 
-            public override bool OnMessage(Character f, Telegram t) { return false; }
+            public override bool OnMessage(Unit f, Telegram t) { return false; }
     }
 
    
