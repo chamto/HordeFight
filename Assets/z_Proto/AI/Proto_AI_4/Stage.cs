@@ -37,7 +37,7 @@ namespace Proto_AI_4
         public float _minRange = 0;
         public float _maxRange = 0.5f;
 
-        public OrderPoint _formationPoint = new OrderPoint();
+        //public OrderPoint _formationPoint = new OrderPoint();
 
         public Platoon _Platoon_0 = null;
 
@@ -57,9 +57,6 @@ namespace Proto_AI_4
 
 
             ObjectManager.Inst.Init();
-
-            _formationPoint._target = _tr_target.position;
-            _formationPoint._pos = _tr_target.position;
 
             //------
 
@@ -116,6 +113,10 @@ namespace Proto_AI_4
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0.ApplyFormationOffset_0();
+
+            _Platoon_0._target = _tr_target.position;
+            _Platoon_0._pos = _tr_target.position;
+
             //==============================
 
 
@@ -125,9 +126,9 @@ namespace Proto_AI_4
         public void Update(float deltaTime)
         {
 
-            _formationPoint._speed = _formation_speed;
-            _formationPoint._target = _tr_target.position;
-            _formationPoint.Update(deltaTime);
+            _Platoon_0._speed = _formation_speed;
+            _Platoon_0._target = _tr_target.position;
+            _Platoon_0.Update(deltaTime);
             KeyInput();
 
             //==============================================
@@ -186,39 +187,39 @@ namespace Proto_AI_4
             const float MOVE_LENGTH = 1f;
             if (Input.GetKey(KeyCode.W))
             {
-                Vector3 n = _formationPoint._target - _formationPoint._pos;
+                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
                 n = VOp.Normalize(n);
-                _formationPoint._target += n * MOVE_LENGTH;
-                _formationPoint._pos += n * MOVE_LENGTH;
+                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._target;
+                _tr_target.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                Vector3 n = _formationPoint._target - _formationPoint._pos;
+                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
                 n = -VOp.Normalize(n);
-                _formationPoint._target += n * MOVE_LENGTH;
-                _formationPoint._pos += n * MOVE_LENGTH;
+                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._target;
+                _tr_target.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                Vector3 n = _formationPoint._target - _formationPoint._pos;
+                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
                 n = -VOp.PerpN(n, Vector3.up);
-                _formationPoint._target += n * MOVE_LENGTH;
-                _formationPoint._pos += n * MOVE_LENGTH;
+                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._target;
+                _tr_target.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                Vector3 n = _formationPoint._target - _formationPoint._pos;
+                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
                 n = VOp.PerpN(n, Vector3.up);
-                _formationPoint._target += n * MOVE_LENGTH;
-                _formationPoint._pos += n * MOVE_LENGTH;
+                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _formationPoint._target;
+                _tr_target.position = _Platoon_0._target;
             }
 
         }
@@ -281,7 +282,7 @@ namespace Proto_AI_4
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
 
 
-            _formationPoint.Draw(Color.white);
+            _Platoon_0.Draw(Color.white);
 
             Color color = Color.black;
             foreach (Unit v in EntityMgr.list)
