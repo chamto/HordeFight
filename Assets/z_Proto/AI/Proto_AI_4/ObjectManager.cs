@@ -30,7 +30,7 @@ namespace Proto_AI_4
 
         public void AddSphereTree(BaseEntity entity)
         {
-            SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius, SphereTree.CREATE_LEVEL_LAST);
+            SphereModel model = _sphereTree.AddSphere(entity._pos, entity._radius_body, SphereTree.CREATE_LEVEL_LAST);
             _sphereTree.AddIntegrateQ(model);
             model.SetLink_UserData<BaseEntity>(entity);
 

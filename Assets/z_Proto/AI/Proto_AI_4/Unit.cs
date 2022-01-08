@@ -11,8 +11,8 @@ namespace Proto_AI_4
     {
         public int _id = -1;
 
-        public float _radius = 0.5f;
-        public float _radius_damage = 0.5f; //타격크기 
+        public float _radius_geo = 0.5f;
+        public float _radius_body = 1f; //몸체크기 
         public Vector3 _oldPos = Vector3.zero;
         public Vector3 _pos = Vector3.zero;
         public Vector3 _velocity = Vector3.zero;
@@ -143,7 +143,7 @@ namespace Proto_AI_4
             _steeringBehavior.AllOff();
         }
 
-        public void Init(int id, float radius, Vector3 pos)
+        public void Init(int id, float radius_body, Vector3 pos)
         {
             _id = id;
 
@@ -152,7 +152,7 @@ namespace Proto_AI_4
             _array_VB[2] = new Vector3(-0.6f, 0, -1f);
 
             _steeringBehavior._vehicle = this;
-            _radius = radius;
+            _radius_body = radius_body;
 
             //==============================================
             _collision._id = _id;
@@ -187,24 +187,24 @@ namespace Proto_AI_4
             //==============================================
 
             //!!!!! 경계상자 위치 갱신
-            _collision._bounds_min.x = newPos.x - _radius;
-            _collision._bounds_min.z = newPos.z - _radius;
-            _collision._bounds_max.x = newPos.x + _radius;
-            _collision._bounds_max.z = newPos.z + _radius;
+            _collision._bounds_min.x = newPos.x - _radius_body;
+            _collision._bounds_min.z = newPos.z - _radius_body;
+            _collision._bounds_max.x = newPos.x + _radius_body;
+            _collision._bounds_max.z = newPos.z + _radius_body;
             //==============================================
 
             GridManager.Inst.AttachCellSpace(_pos, this);
 
         }
 
-        public void SetRadius(float radius)
+        public void SetRadius(float radius_body)
         {
-            _radius = radius;
+            _radius_body = radius_body;
             //==============================================
             //!!!!! 구트리 갱신 
             if (null != _sphereModel)
             {
-                _sphereModel.NewPosRadius(_pos, _radius); //반지름도 함께 갱신되도록 한다 
+                _sphereModel.NewPosRadius(_pos, _radius_body); //반지름도 함께 갱신되도록 한다 
             }
         }
 
@@ -236,7 +236,7 @@ namespace Proto_AI_4
                 Vector3 dir_dstTOsrc = src._pos - dst._pos;
                 Vector3 n = ConstV.v3_zero;
                 float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
-                float r_sum = (src._radius + dst._radius);
+                float r_sum = (src._radius_body + dst._radius_body);
                 float sqr_r_sum = r_sum * r_sum;
 
                 //1.두 캐릭터가 겹친상태 
@@ -326,15 +326,15 @@ namespace Proto_AI_4
                 float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                 Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
                 //float sum_r = _radius + _radius;
-                Vector3 pos_1 = _pos + _velocity.normalized * (_radius);
-                Vector3 pos_2 = _pos + findDir * (_radius);
+                Vector3 pos_1 = _pos + _velocity.normalized * (_radius_body);
+                Vector3 pos_2 = _pos + findDir * (_radius_body);
 
                 //--------------------
                 //* 구트리로 객체이동 조절
-                Vector3 find_pos = _pos + _velocity.normalized * (_radius + 0.3f);
+                Vector3 find_pos = _pos + _velocity.normalized * (_radius_body + 0.3f);
                 Vector3 ori_velo = _velocity;
-                BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius);
-                BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius);
+                BaseEntity findEnty_1 = ObjectManager.Inst.RangeTest(this, pos_1, 0, _radius_body);
+                BaseEntity findEnty_2 = ObjectManager.Inst.RangeTest(this, pos_2, 0, _radius_body);
 
                 //DebugWide.AddDrawQ_Circle(pos_1, 0.1f, Color.white);
                 if (null == findEnty_1)
@@ -348,7 +348,7 @@ namespace Proto_AI_4
                     _velocity = findDir;
                     //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
                     //DebugWide.AddDrawQ_Circle(pos_2, 0.1f, Color.red);
-                    find_pos = _pos + findDir * (_radius + 0.3f);
+                    find_pos = _pos + findDir * (_radius_body + 0.3f);
 
                 }
                 else
@@ -390,15 +390,15 @@ namespace Proto_AI_4
                 //float[] ay_angle = new float[] { 0, 45f, -45f, 90f, -90, 135f, -135, 180f };
                 float[] ay_angle = new float[] { 0, 45f, -45f, 60f, -60, 135f, -135, 180f };
                 Vector3 findDir = Quaternion.AngleAxis(ay_angle[__findNum], ConstV.v3_up) * _velocity.normalized;
-                float sum_r = _radius + _radius;
-                Vector3 pos_1 = _pos + _velocity.normalized * (_radius);
-                Vector3 pos_2 = _pos + findDir * (_radius);
+                float sum_r = _radius_body + _radius_body;
+                Vector3 pos_1 = _pos + _velocity.normalized * (_radius_body);
+                Vector3 pos_2 = _pos + findDir * (_radius_body);
 
                 //-----------------
                 //* 셀공간으로 객체이동 조절
                 CellSpace findCell_1 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + _velocity.normalized * sum_r, 5);
                 CellSpace findCell_2 = GridManager.Inst.Find_FirstEntityTile(this, _pos, _pos + findDir * sum_r, 5);
-                Vector3 find_pos = _pos + _velocity.normalized * (_radius + 0.3f);
+                Vector3 find_pos = _pos + _velocity.normalized * (_radius_body + 0.3f);
                 Vector3 ori_velo = _velocity;
                 if (null == findCell_1)
                 //|| (null != findCell_1 && (findCell_1._head._pos - pos_1).sqrMagnitude > sum_r * sum_r))
@@ -411,7 +411,7 @@ namespace Proto_AI_4
                     curSpeed = _maxSpeed;
                     _velocity = findDir;
                     //_rotation = Quaternion.FromToRotation(ConstV.v3_forward, _velocity);
-                    find_pos = _pos + findDir * (_radius + 0.3f);
+                    find_pos = _pos + findDir * (_radius_body + 0.3f);
 
                     if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
                     {
@@ -582,15 +582,15 @@ namespace Proto_AI_4
 
 
             Vector3 vb0, vb1, vb2;
-            vb0 = _rotation * _array_VB[0] * _radius;
-            vb1 = _rotation * _array_VB[1] * _radius;
-            vb2 = _rotation * _array_VB[2] * _radius;
+            vb0 = _rotation * _array_VB[0] * _radius_body;
+            vb1 = _rotation * _array_VB[1] * _radius_body;
+            vb2 = _rotation * _array_VB[2] * _radius_body;
 
             //에이젼트 출력 
             DebugWide.DrawLine(_pos + vb0, _pos + vb1, color);
             DebugWide.DrawLine(_pos + vb1, _pos + vb2, color);
             DebugWide.DrawLine(_pos + vb2, _pos + vb0, color);
-            DebugWide.DrawCircle(_pos, _radius, color);
+            DebugWide.DrawCircle(_pos, _radius_body, color);
             DebugWide.DrawLine(_pos, _pos + _heading, Color.white);
 
             //if (SteeringBehavior.eType.wander == _mode)

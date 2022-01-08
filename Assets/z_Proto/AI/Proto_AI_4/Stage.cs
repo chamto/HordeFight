@@ -10,19 +10,19 @@ namespace Proto_AI_4
     [System.Serializable]
     public class Stage
     {
-
-        public Transform _tr_target = null;
-
         public Transform _tr_test = null;
         public Transform _tr_line_a = null;
         public Transform _tr_line_b = null;
 
-        public Transform _tr_test2_s = null;
-        public Transform _tr_test2_e = null;
+        public Transform _tr_platoon_0 = null;
+        public Transform _tr_squard_0 = null;
+        public Transform _tr_squard_1 = null;
+        public Transform _tr_squard_2 = null;
+        public Transform _tr_squard_3 = null;
 
         public float _formation_speed = 10;
-        public float _radius = 0.5f;
-        public float _radius_damage = 0.5f;
+        public float _radius_geo = 0.5f;
+        public float _radius_body = 0.5f;
         public float _mass = 1f;
         public float _maxForce = 40f;
         public float _maxSpeed = 10f;
@@ -48,13 +48,15 @@ namespace Proto_AI_4
         {
             _init = true;
 
-            _tr_target = GameObject.Find("tr_target").transform;
-
             _tr_test = GameObject.Find("Test").transform;
             _tr_line_a = GameObject.Find("line_a").transform;
             _tr_line_b = GameObject.Find("line_b").transform;
-            _tr_test2_s = GameObject.Find("Test2_s").transform;
-            _tr_test2_e = GameObject.Find("Test2_e").transform;
+
+            _tr_platoon_0 = GameObject.Find("tr_platoon_0").transform;
+            _tr_squard_0 = GameObject.Find("tr_squard_0").transform;
+            _tr_squard_1 = GameObject.Find("tr_squard_1").transform;
+            _tr_squard_2 = GameObject.Find("tr_squard_2").transform;
+            _tr_squard_3 = GameObject.Find("tr_squard_3").transform;
 
 
             ObjectManager.Inst.Init();
@@ -108,8 +110,8 @@ namespace Proto_AI_4
             }
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
-            _Platoon_0._target = _tr_target.position;
-            _Platoon_0._pos = _tr_target.position;
+            _Platoon_0._target = _tr_platoon_0.position;
+            _Platoon_0._pos = _tr_platoon_0.position;
             _Platoon_0.ApplyFormationOffset_0();
 
 
@@ -123,7 +125,7 @@ namespace Proto_AI_4
         {
 
             _Platoon_0._speed = _formation_speed;
-            _Platoon_0._target = _tr_target.position;
+            _Platoon_0._target = _tr_platoon_0.position;
             _Platoon_0.Update(deltaTime);
             KeyInput();
 
@@ -133,8 +135,8 @@ namespace Proto_AI_4
             {
                 v._steeringBehavior._targetPos = v._squard._pos;
 
-                //v._radius = _radius;
-                //v.SetRadius(_radius);
+                v._radius_geo = _radius_geo;
+                v.SetRadius(_radius_body);
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
@@ -159,7 +161,7 @@ namespace Proto_AI_4
                 //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
 
                 if (_isStrNonpenetration)
-                    v.SetPos(GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius));
+                    v.SetPos(GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo));
 
 
                 //==========================================
@@ -178,7 +180,7 @@ namespace Proto_AI_4
                 _Platoon_0._target += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.S))
             {
@@ -187,7 +189,7 @@ namespace Proto_AI_4
                 _Platoon_0._target += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.A))
             {
@@ -196,7 +198,7 @@ namespace Proto_AI_4
                 _Platoon_0._target += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._target;
             }
             if (Input.GetKey(KeyCode.D))
             {
@@ -205,7 +207,7 @@ namespace Proto_AI_4
                 _Platoon_0._target += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_target.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._target;
             }
 
         }
@@ -219,7 +221,7 @@ namespace Proto_AI_4
             Vector3 n = ConstV.v3_zero;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
 
-            float r_sum = (src._radius + dst._radius);
+            float r_sum = (src._radius_body + dst._radius_body);
             float sqr_r_sum = r_sum * r_sum;
 
             //1.두 캐릭터가 겹친상태 
