@@ -192,25 +192,50 @@ namespace Proto_AI_4
 
         public void ApplyFormationOffset_0()
         {
-            if (_squard_count > 4) return;
+            if (_squard_count != 4) return;
 
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
+            _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[0].ApplyFormationOffset();
 
+            //return;
             _squards[1]._formation._initPos = new Vector3(-3, 0, 0);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
+            _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[1].ApplyFormationOffset();
 
             _squards[2]._formation._initPos = new Vector3(3, 0, 0);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
+            _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[2].ApplyFormationOffset();
 
             _squards[3]._formation._initPos = new Vector3(0, 0, -3);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
+            _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[3].ApplyFormationOffset();
         }
 
+        public void Update(float deltaTime)
+        {
+            base.Update(deltaTime);
+
+            for(int i=0;i< _squards.Count;i++)
+            {
+                _squards[i]._target = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace 
+                _squards[i].Update(deltaTime);
+            }
+        }
+
+        public void Draw(Color color)
+        {
+            base.Draw(Color.red);
+
+            for (int i = 0; i < _squards.Count; i++)
+            {
+                _squards[i].Draw(color);
+            }
+        }
     }
 
 }//end namespace

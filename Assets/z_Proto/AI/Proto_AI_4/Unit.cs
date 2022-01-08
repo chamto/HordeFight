@@ -289,20 +289,21 @@ namespace Proto_AI_4
         {
 
             _oldPos = _pos;
-            //_worldOffsetPos = _target;
-            //if (null != _leader)
-            //{
-            //    _worldOffsetPos = (_leader._rotation * _offset) + _leader._pos; //PointToWorldSpace 
+            _worldOffsetPos = _steeringBehavior._targetPos;
+            if (null != _squard)
+            {
+                _worldOffsetPos = (_squard._rotation * _formation._offset) + _squard._pos; //PointToWorldSpace 
 
-            //    //---------
-            //    if (_leader._changeTarget)
-            //    {
-            //        _before_worldOffsetPos = _pos;
-            //    }
-            //    //DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
-            //    //---------
-            //}
+                //---------
+                if (_squard._changeTarget)
+                {
+                    _before_worldOffsetPos = _pos;
+                }
+                //DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
+                //---------
+            }
 
+            //DebugWide.LogGreen(_worldOffsetPos + "  " + _squard._pos + "  " + _steeringBehavior._targetPos);
 
             Update_NormalMovement(deltaTime);
             //Update_RotateMovement(deltaTime);

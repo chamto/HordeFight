@@ -64,7 +64,7 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             Unit unit = null;
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 4; i++)
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
@@ -76,39 +76,42 @@ namespace Proto_AI_4
 
             }
 
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    unit = new Unit();
-            //    int id = EntityMgr.Add(unit);
-            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //    unit._disposition._platoon_num = 0;
-            //    unit._disposition._squard_num = 1;
-            //    unit._disposition._squard_pos = i;
-            //}
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    unit = new Unit();
-            //    int id = EntityMgr.Add(unit);
-            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //    unit._disposition._platoon_num = 0;
-            //    unit._disposition._squard_num = 2;
-            //    unit._disposition._squard_pos = i;
-            //}
-            //for (int i = 0; i < 8; i++)
-            //{
-            //    unit = new Unit();
-            //    int id = EntityMgr.Add(unit);
-            //    unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-            //    unit._disposition._platoon_num = 0;
-            //    unit._disposition._squard_num = 3;
-            //    unit._disposition._squard_pos = i;
-            //}
+            for (int i = 0; i < 4; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 1;
+                unit._disposition._squard_pos = i;
+                unit._steeringBehavior.ArriveOn();
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 2;
+                unit._disposition._squard_pos = i;
+                unit._steeringBehavior.ArriveOn();
+            }
+            for (int i = 0; i < 4; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 3;
+                unit._disposition._squard_pos = i;
+                unit._steeringBehavior.ArriveOn();
+            }
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
-            //_Platoon_0.ApplyFormationOffset_0();
-
             _Platoon_0._target = _tr_target.position;
             _Platoon_0._pos = _tr_target.position;
+            _Platoon_0.ApplyFormationOffset_0();
+
 
             //==============================
 
@@ -128,7 +131,7 @@ namespace Proto_AI_4
 
             foreach (Unit v in EntityMgr.list)
             {
-                v._steeringBehavior._targetPos = _Platoon_0._pos;
+                v._steeringBehavior._targetPos = v._squard._pos;
 
                 //v._radius = _radius;
                 //v.SetRadius(_radius);
