@@ -49,32 +49,32 @@ namespace Proto_AI_4
         //    _n_dir = VOp.Normalize(_end - _start);
         //}
 
-        public Vector3 _target = ConstV.v3_zero;
+        public Vector3 _targetPos = ConstV.v3_zero;
 
-        public Vector3 _before_target = Vector3.zero;
+        public Vector3 _before_targetPos = Vector3.zero;
         public bool _changeTarget = false;
 
         public void Update(float deltaTime)
         {
             _changeTarget = false;
-            if (false == Misc.IsZero(_before_target - _target))
+            if (false == Misc.IsZero(_before_targetPos - _targetPos))
             {
                 _changeTarget = true;
             }
-            _before_target = _target;
+            _before_targetPos = _targetPos;
 
 
             //도착시 종료 
-            if ((_target - _pos).sqrMagnitude < 1)
+            if ((_targetPos - _pos).sqrMagnitude < 1)
             {
                 //특정거리 안에서 이동없이 방향전환 
-                _rotation = Quaternion.FromToRotation(Vector3.forward, _target - _pos);
+                _rotation = Quaternion.FromToRotation(Vector3.forward, _targetPos - _pos);
                 _velocity = Vector3.zero; //초기화를 안해주면 키이동시 경로가 이상해지는 문제가 발생함
                 return;
             }
 
             //DebugWide.LogBlue("sfsdf: " + _pos );
-            Vector3 n = VOp.Normalize(_target - _pos);
+            Vector3 n = VOp.Normalize(_targetPos - _pos);
             _velocity = n * _speed;
             _pos += _velocity * deltaTime;
 
@@ -83,8 +83,8 @@ namespace Proto_AI_4
 
         public void Draw(Color color)
         {
-            DebugWide.DrawCircle(_target, 0.1f, color);
-            DebugWide.DrawLine(_pos, _target, color);
+            DebugWide.DrawCircle(_targetPos, 0.1f, color);
+            DebugWide.DrawLine(_pos, _targetPos, color);
         }
 
     }

@@ -110,7 +110,7 @@ namespace Proto_AI_4
             }
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
-            _Platoon_0._target = _tr_platoon_0.position;
+            _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
             _Platoon_0.ApplyFormationOffset_0();
 
@@ -125,7 +125,7 @@ namespace Proto_AI_4
         {
 
             _Platoon_0._speed = _formation_speed;
-            _Platoon_0._target = _tr_platoon_0.position;
+            _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0.Update(deltaTime);
             KeyInput();
 
@@ -175,39 +175,39 @@ namespace Proto_AI_4
             const float MOVE_LENGTH = 1f;
             if (Input.GetKey(KeyCode.W))
             {
-                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
+                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
                 n = VOp.Normalize(n);
-                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._targetPos;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
+                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
                 n = -VOp.Normalize(n);
-                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._targetPos;
             }
             if (Input.GetKey(KeyCode.A))
             {
-                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
+                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
                 n = -VOp.PerpN(n, Vector3.up);
-                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._targetPos;
             }
             if (Input.GetKey(KeyCode.D))
             {
-                Vector3 n = _Platoon_0._target - _Platoon_0._pos;
+                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
                 n = VOp.PerpN(n, Vector3.up);
-                _Platoon_0._target += n * MOVE_LENGTH;
+                _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._target;
+                _tr_platoon_0.position = _Platoon_0._targetPos;
             }
 
         }

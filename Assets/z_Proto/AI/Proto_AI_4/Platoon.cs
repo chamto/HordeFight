@@ -222,7 +222,7 @@ namespace Proto_AI_4
 
             for(int i=0;i< _squards.Count;i++)
             {
-                _squards[i]._target = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace 
+                _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace 
                 _squards[i].Update(deltaTime);
             }
         }
