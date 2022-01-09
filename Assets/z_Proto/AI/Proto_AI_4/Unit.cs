@@ -91,14 +91,6 @@ namespace Proto_AI_4
 
     public class Unit : BaseEntity
     {
-        //명령형식 , 숫자가 클수록 명령우선순위가 높다  
-        //public enum eOrder
-        //{
-        //    None = 0,
-        //    Solo = 1, //혼자 
-        //    Squard = 2, //분대
-        //    Platoon = 3, //소대
-        //};
 
         //public Vector3 _velocity = new Vector3(0, 0, 0); //실제 향하고 있는 방향
         public Vector3 _heading = Vector3.forward; //객체의 방향
@@ -123,7 +115,7 @@ namespace Proto_AI_4
 
 
         //--------------------------------------------------
-        //public eOrder _eOrder = eOrder.None;
+
         public Formation _formation = new Formation();
         public Disposition _disposition = new Disposition();
         public Platoon _platoon = null; //소속소대정보 

@@ -51,6 +51,7 @@ namespace Proto_AI_4
         public Platoon _platoon = null; //속한 소대 
         public int _squard_num = -1;
         public int _unit_count = 0; //전체분대원수 
+        public bool _Solo_Activity = false; //단독활동 
 
         //public Vector3 _dir = Vector3.forward; //방향 
         public Vector3 _form_standard = Vector3.zero; //기준점
@@ -222,7 +223,10 @@ namespace Proto_AI_4
 
             for(int i=0;i< _squards.Count;i++)
             {
-                _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace 
+                if(false == _squards[i]._Solo_Activity)
+                {
+                    _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+                }
                 _squards[i].Update(deltaTime);
             }
         }

@@ -38,9 +38,16 @@ namespace Proto_AI_4
         public float _minRange = 0;
         public float _maxRange = 0.5f;
 
-        //public OrderPoint _formationPoint = new OrderPoint();
+        public bool _Squard_0_Solo_Activity = false;
+        public bool _Squard_1_Solo_Activity = false;
+        public bool _Squard_2_Solo_Activity = false;
+        public bool _Squard_3_Solo_Activity = false;
 
         public Platoon _Platoon_0 = null;
+        public Squard _Squard_0 = null;
+        public Squard _Squard_1 = null;
+        public Squard _Squard_2 = null;
+        public Squard _Squard_3 = null;
 
         public bool _init = false;
 
@@ -114,6 +121,11 @@ namespace Proto_AI_4
             _Platoon_0._pos = _tr_platoon_0.position;
             _Platoon_0.ApplyFormationOffset_0();
 
+            _Squard_0 = _Platoon_0._squards[0];
+            _Squard_1 = _Platoon_0._squards[1];
+            _Squard_2 = _Platoon_0._squards[2];
+            _Squard_3 = _Platoon_0._squards[3];
+
 
             //==============================
 
@@ -127,6 +139,47 @@ namespace Proto_AI_4
             _Platoon_0._speed = _formation_speed;
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0.Update(deltaTime);
+
+            _Squard_0._Solo_Activity = _Squard_0_Solo_Activity;
+            _Squard_1._Solo_Activity = _Squard_1_Solo_Activity;
+            _Squard_2._Solo_Activity = _Squard_2_Solo_Activity;
+            _Squard_3._Solo_Activity = _Squard_3_Solo_Activity;
+
+
+            if (true == _Squard_0._Solo_Activity)
+            {
+                _Squard_0._targetPos = _tr_squard_0.position;
+            }
+            else
+            {
+                _tr_squard_0.position = _Squard_0._targetPos;
+            }
+            if (true == _Squard_1._Solo_Activity)
+            {
+                _Squard_1._targetPos = _tr_squard_1.position;
+            }
+            else
+            {
+                _tr_squard_1.position = _Squard_1._targetPos;
+            }
+            if (true == _Squard_2._Solo_Activity)
+            {
+                _Squard_2._targetPos = _tr_squard_2.position;
+            }
+            else
+            {
+                _tr_squard_2.position = _Squard_2._targetPos;
+            }
+            if (true == _Squard_3._Solo_Activity)
+            {
+                _Squard_3._targetPos = _tr_squard_3.position;
+            }
+            else
+            {
+                _tr_squard_3.position = _Squard_3._targetPos;
+            }
+
+
             KeyInput();
 
             //==============================================
