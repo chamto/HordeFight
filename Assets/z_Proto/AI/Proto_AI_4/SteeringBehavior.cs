@@ -47,6 +47,8 @@ namespace Proto_AI_4
         //these can be used to keep track of friends, pursuers, or prey
         public Unit _pTargetAgent;
 
+        public BaseEntity _pOrderPoint;
+
         //인터포즈(둘 사이에 끼기)에서 사용 
         public Unit _pTargetInterpose1;
         public Unit _pTargetInterpose2;
@@ -136,7 +138,7 @@ namespace Proto_AI_4
         public void FollowPathOn() { _flags |= (int)eType.follow_path; }
         public void InterposeOn(Unit v1, Unit v2) { _flags |= (int)eType.interpose; _pTargetInterpose1 = v1; _pTargetInterpose2 = v2; }
         public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent = v; }
-        public void OffsetPursuitOn(Unit v1, Vector2 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pTargetAgent = v1; }
+        public void OffsetPursuitOn(BaseEntity orderPoint, Vector3 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pOrderPoint = orderPoint; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
 
         public void AllOff() { _flags = (int)eType.none; }
@@ -260,7 +262,7 @@ namespace Proto_AI_4
 
             if (On(eType.offset_pursuit))
             {
-                _steeringForce += OffsetPursuit(_pTargetAgent, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
+                _steeringForce += OffsetPursuit(_pOrderPoint, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
             }
 
             if (On(eType.interpose))
@@ -366,7 +368,7 @@ namespace Proto_AI_4
 
             if (On(eType.offset_pursuit))
             {
-                //force = OffsetPursuit(m_pTargetAgent1, m_vOffset);
+                //force = OffsetPursuit(_pOrderPoint, m_vOffset);
                 //if (!AccumulateForce(ref m_vSteeringForce, force)) return m_vSteeringForce;
             }
 
@@ -571,7 +573,7 @@ namespace Proto_AI_4
             return Vector3.zero;
         }
 
-        public Vector3 OffsetPursuit(BaseEntity leader, Vector3 offset)
+        private Vector3 OffsetPursuit(BaseEntity leader, Vector3 offset)
         {
             //calculate the offset's position in world space
             Vector3 WorldOffsetPos = (leader._rotation * offset) + leader._pos; //PointToWorldSpace

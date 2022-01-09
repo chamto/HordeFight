@@ -65,7 +65,7 @@ namespace Proto_AI_4
 
 
             //도착시 종료 
-            if ((_targetPos - _pos).sqrMagnitude < 1)
+            if ((_targetPos - _pos).sqrMagnitude < 5)
             {
                 //특정거리 안에서 이동없이 방향전환 
                 _rotation = Quaternion.FromToRotation(Vector3.forward, _targetPos - _pos);

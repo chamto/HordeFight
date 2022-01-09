@@ -31,6 +31,7 @@ namespace Proto_AI_4
         public float _anglePerSecond = 180;
 
         public float _weightArrive = 20;
+        public float _weightOffsetPursuit = 20;
 
         public bool _isObjNonpenetration = true;
         public bool _isStrNonpenetration = true;
@@ -81,8 +82,7 @@ namespace Proto_AI_4
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 0;
                 unit._disposition._squard_pos = i;
-                unit._steeringBehavior.ArriveOn();
-
+                //unit._steeringBehavior.ArriveOn();
             }
 
             for (int i = 0; i < 4; i++)
@@ -93,7 +93,7 @@ namespace Proto_AI_4
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 1;
                 unit._disposition._squard_pos = i;
-                unit._steeringBehavior.ArriveOn();
+                //unit._steeringBehavior.ArriveOn();
             }
             for (int i = 0; i < 4; i++)
             {
@@ -103,7 +103,7 @@ namespace Proto_AI_4
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 2;
                 unit._disposition._squard_pos = i;
-                unit._steeringBehavior.ArriveOn();
+                //unit._steeringBehavior.ArriveOn();
             }
             for (int i = 0; i < 4; i++)
             {
@@ -113,7 +113,7 @@ namespace Proto_AI_4
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 3;
                 unit._disposition._squard_pos = i;
-                unit._steeringBehavior.ArriveOn();
+                //unit._steeringBehavior.ArriveOn();
             }
 
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
@@ -126,6 +126,11 @@ namespace Proto_AI_4
             _Squard_2 = _Platoon_0._squards[2];
             _Squard_3 = _Platoon_0._squards[3];
 
+            for(int i=0;i< EntityMgr.list.Count;i++)
+            {
+                Unit u = EntityMgr.list[i];
+                u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+            }
 
             //==============================
 
@@ -195,7 +200,10 @@ namespace Proto_AI_4
                 v._maxForce = _maxForce;
                 v._Friction = _Friction;
                 v._anglePerSecond = _anglePerSecond;
+
                 v._steeringBehavior._weightArrive = _weightArrive;
+                v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
+
                 v._isNonpenetration = _isObjNonpenetration;
                 v.Update(deltaTime);
 

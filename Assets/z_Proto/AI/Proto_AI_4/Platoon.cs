@@ -195,17 +195,19 @@ namespace Proto_AI_4
         {
             if (_squard_count != 4) return;
 
+            _squards[0]._eFormKind = Squard.eFormKind.Width;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
             _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[0].ApplyFormationOffset();
 
-            //return;
+            _squards[1]._eFormKind = Squard.eFormKind.Width;
             _squards[1]._formation._initPos = new Vector3(-3, 0, 0);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
             _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[1].ApplyFormationOffset();
 
+            _squards[2]._eFormKind = Squard.eFormKind.Width;
             _squards[2]._formation._initPos = new Vector3(3, 0, 0);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
@@ -221,7 +223,7 @@ namespace Proto_AI_4
         {
             base.Update(deltaTime);
 
-            for(int i=0;i< _squards.Count;i++)
+            for (int i=0;i< _squards.Count;i++)
             {
                 if(false == _squards[i]._Solo_Activity)
                 {
