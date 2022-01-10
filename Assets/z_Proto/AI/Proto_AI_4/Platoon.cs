@@ -255,11 +255,17 @@ namespace Proto_AI_4
         {
             base.Update(deltaTime);
 
+            Vector3 beforePos = _pos;
             for (int i=0;i< _squards.Count;i++)
             {
                 if(false == _squards[i]._Solo_Activity)
                 {
-                    _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+                    //1* 오프셋위치르 고정위치를 계산함 
+                    //_squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+
+                    //1* 일정거리를 두며 앞에 분대를 따라가게 계산함 
+                    _squards[i]._targetPos = beforePos + (_squards[i]._pos - beforePos).normalized * 3;
+                    beforePos = _squards[i]._pos;
                 }
                 _squards[i].Update(deltaTime);
             }
