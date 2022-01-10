@@ -339,7 +339,11 @@ namespace Proto_AI_4
                 color = Color.black;
                 if (0 == v._id)
                     color = Color.red;
-                if (5 == v._id)
+                if (4 == v._id)
+                    color = Color.yellow;
+                if (8 == v._id)
+                    color = Color.yellow;
+                if (12 == v._id)
                     color = Color.yellow;
 
                 v.Draw(color);

@@ -105,7 +105,7 @@ namespace Proto_AI_4
             //임시작성
             if(_eFormKind == eFormKind.Width)
             {
-                _form_standard = new Vector3(_unit_count * 0.5f,0,0); 
+                _form_standard = new Vector3((_unit_count-1) * 0.5f,0,0); //중앙을 기준점으로 삼는다 
                 for (int i=0;i<_units.Count;i++)
                 {
                     _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
@@ -213,6 +213,7 @@ namespace Proto_AI_4
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[2].ApplyFormationOffset();
 
+            _squards[3]._eFormKind = Squard.eFormKind.Width;
             _squards[3]._formation._initPos = new Vector3(0, 0, -3);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
             _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
