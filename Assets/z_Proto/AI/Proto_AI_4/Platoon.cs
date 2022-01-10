@@ -191,6 +191,7 @@ namespace Proto_AI_4
             return platoon;
         }
 
+        //십자가형 배치
         public void ApplyFormationOffset_0()
         {
             if (_squard_count != 4) return;
@@ -215,6 +216,36 @@ namespace Proto_AI_4
 
             _squards[3]._eFormKind = Squard.eFormKind.Width;
             _squards[3]._formation._initPos = new Vector3(0, 0, -3);
+            _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
+            _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[3].ApplyFormationOffset();
+        }
+
+        //길게 배치
+        public void ApplyFormationOffset_1()
+        {
+            if (_squard_count != 4) return;
+
+            _squards[0]._eFormKind = Squard.eFormKind.Width;
+            _squards[0]._formation._initPos = new Vector3(0, 0, 0);
+            _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
+            _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[0].ApplyFormationOffset();
+
+            _squards[1]._eFormKind = Squard.eFormKind.Width;
+            _squards[1]._formation._initPos = new Vector3(0, 0, -3);
+            _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
+            _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[1].ApplyFormationOffset();
+
+            _squards[2]._eFormKind = Squard.eFormKind.Width;
+            _squards[2]._formation._initPos = new Vector3(0, 0, -6);
+            _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
+            _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[2].ApplyFormationOffset();
+
+            _squards[3]._eFormKind = Squard.eFormKind.Width;
+            _squards[3]._formation._initPos = new Vector3(0, 0, -9);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
             _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[3].ApplyFormationOffset();

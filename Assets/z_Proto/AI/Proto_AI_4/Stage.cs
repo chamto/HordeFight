@@ -20,7 +20,8 @@ namespace Proto_AI_4
         public Transform _tr_squard_2 = null;
         public Transform _tr_squard_3 = null;
 
-        public float _formation_speed = 10;
+        public float _formation_platoon_speed = 10;
+        public float _formation_squard_speed = 10;
         public float _radius_geo = 0.5f;
         public float _radius_body = 0.5f;
         public float _mass = 1f;
@@ -119,7 +120,8 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            _Platoon_0.ApplyFormationOffset_0();
+            //_Platoon_0.ApplyFormationOffset_0();
+            _Platoon_0.ApplyFormationOffset_1();
 
             _Squard_0 = _Platoon_0._squards[0];
             _Squard_1 = _Platoon_0._squards[1];
@@ -141,9 +143,14 @@ namespace Proto_AI_4
         public void Update(float deltaTime)
         {
 
-            _Platoon_0._speed = _formation_speed;
+            _Platoon_0._speed = _formation_platoon_speed;
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0.Update(deltaTime);
+
+            _Squard_0._speed = _formation_squard_speed;
+            _Squard_1._speed = _formation_squard_speed;
+            _Squard_2._speed = _formation_squard_speed;
+            _Squard_3._speed = _formation_squard_speed;
 
             _Squard_0._Solo_Activity = _Squard_0_Solo_Activity;
             _Squard_1._Solo_Activity = _Squard_1_Solo_Activity;
