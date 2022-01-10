@@ -103,14 +103,29 @@ namespace Proto_AI_4
         public void ApplyFormationOffset()
         {
             //임시작성
-            if(_eFormKind == eFormKind.Width)
+            if (_eFormKind == eFormKind.Width)
             {
-                _form_standard = new Vector3((_unit_count-1) * 0.5f,0,0); //중앙을 기준점으로 삼는다 
-                for (int i=0;i<_units.Count;i++)
+                _form_standard = new Vector3((_unit_count - 1) * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
+                for (int i = 0; i < _units.Count; i++)
                 {
                     _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
                     _units[i]._formation._offset = _units[i]._formation._initPos - _form_standard;
                 }
+            }
+            //임시작성
+            if (_eFormKind == eFormKind.Circle)
+            {
+                _form_radius = 2;
+                _form_standard = new Vector3(0, 0, _form_radius);
+                float angle = 360 / _unit_count;
+                for (int i = 0; i < _units.Count; i++)
+                {
+                    Quaternion rot = Quaternion.AngleAxis(angle*i, Vector3.up);
+                    _units[i]._formation._initPos = rot * new Vector3(0, 0, _form_radius);
+                    _units[i]._formation._offset = _units[i]._formation._initPos - _form_standard;
+                }
+
+
             }
         }
 
@@ -196,26 +211,26 @@ namespace Proto_AI_4
         {
             if (_squard_count != 4) return;
 
-            _squards[0]._eFormKind = Squard.eFormKind.Width;
+            _squards[0]._eFormKind = Squard.eFormKind.Circle;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
             _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[0].ApplyFormationOffset();
 
             _squards[1]._eFormKind = Squard.eFormKind.Width;
-            _squards[1]._formation._initPos = new Vector3(-3, 0, 0);
+            _squards[1]._formation._initPos = new Vector3(-3, 0, -3);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
             _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[1].ApplyFormationOffset();
 
             _squards[2]._eFormKind = Squard.eFormKind.Width;
-            _squards[2]._formation._initPos = new Vector3(3, 0, 0);
+            _squards[2]._formation._initPos = new Vector3(3, 0, -3);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[2].ApplyFormationOffset();
 
             _squards[3]._eFormKind = Squard.eFormKind.Width;
-            _squards[3]._formation._initPos = new Vector3(0, 0, -3);
+            _squards[3]._formation._initPos = new Vector3(0, 0, -6);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
             _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[3].ApplyFormationOffset();
@@ -261,11 +276,11 @@ namespace Proto_AI_4
                 if(false == _squards[i]._Solo_Activity)
                 {
                     //1* 오프셋위치르 고정위치를 계산함 
-                    //_squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+                    _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
 
                     //1* 일정거리를 두며 앞에 분대를 따라가게 계산함 
-                    _squards[i]._targetPos = beforePos + (_squards[i]._pos - beforePos).normalized * 3;
-                    beforePos = _squards[i]._pos;
+                    //_squards[i]._targetPos = beforePos + (_squards[i]._pos - beforePos).normalized * 3;
+                    //beforePos = _squards[i]._pos;
                 }
                 _squards[i].Update(deltaTime);
             }

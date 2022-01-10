@@ -75,7 +75,7 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             Unit unit = null;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 10; i++)
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
@@ -344,14 +344,11 @@ namespace Proto_AI_4
             foreach (Unit v in EntityMgr.list)
             {
                 color = Color.black;
+
+                if (null != v._squard && v == v._squard._units[0])
+                    color = Color.yellow;
                 if (0 == v._id)
                     color = Color.red;
-                if (4 == v._id)
-                    color = Color.yellow;
-                if (8 == v._id)
-                    color = Color.yellow;
-                if (12 == v._id)
-                    color = Color.yellow;
 
                 v.Draw(color);
             }
