@@ -106,7 +106,7 @@ namespace Proto_AI_4
                 unit._disposition._squard_pos = i;
                 //unit._steeringBehavior.ArriveOn();
             }
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 15; i++)
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);

@@ -100,17 +100,39 @@ namespace Proto_AI_4
             return squard;
         }
 
+        private void CalcOffset_Width()
+        {
+            for (int row = 0; row < _form_row; row++)
+            {
+                for (int col = 0; col < _form_column; col++)
+                {
+                    int idx = col +( row * _form_column);
+                    if (idx >= _units.Count) return;
+
+                    _units[idx]._formation._initPos = new Vector3(col * _form_dis_between, 0, -row * _form_dis_between);
+                    _units[idx]._formation._offset = _units[idx]._formation._initPos - _form_standard;
+
+                }
+
+            }
+        }
+
         public void ApplyFormationOffset()
         {
             //임시작성
             if (_eFormKind == eFormKind.Width)
             {
-                _form_standard = new Vector3((_unit_count - 1) * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
-                for (int i = 0; i < _units.Count; i++)
-                {
-                    _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
-                    _units[i]._formation._offset = _units[i]._formation._initPos - _form_standard;
-                }
+                _form_row = 3;
+                _form_column = 5;
+                _form_dis_between = 1.2f;
+                int center = _unit_count < _form_column ?  _unit_count : _form_column;
+                _form_standard = new Vector3((center - 1) * _form_dis_between * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
+                //for (int i = 0; i < _units.Count; i++)
+                //{
+                //    _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
+                //    _units[i]._formation._offset = _units[i]._formation._initPos - _form_standard;
+                //}
+                CalcOffset_Width();
             }
             //임시작성
             if (_eFormKind == eFormKind.Circle)
