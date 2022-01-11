@@ -211,6 +211,10 @@ namespace Proto_AI_4
         public int _platoon_num = -1;
         public int _squard_count = 0;
         public Vector3 _form_standard = Vector3.zero; //기준점
+
+        public bool _isFollow = false;
+        public float _follow_gap = 3;
+
         public List<Unit> _units = new List<Unit>();
         public List<Squard> _squards = new List<Squard>();
 
@@ -247,6 +251,8 @@ namespace Proto_AI_4
         {
             if (_squard_count != 4) return;
 
+            _isFollow = false;
+
             _squards[0]._eFormKind = Squard.eFormKind.Circle;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
@@ -276,6 +282,8 @@ namespace Proto_AI_4
         public void ApplyFormationOffset_1()
         {
             if (_squard_count != 4) return;
+
+            _isFollow = true;
 
             _squards[0]._eFormKind = Squard.eFormKind.Width;
             _squards[0]._formation._initPos = new Vector3(0, 0, 0);
@@ -311,12 +319,19 @@ namespace Proto_AI_4
             {
                 if(false == _squards[i]._Solo_Activity)
                 {
-                    //1* 오프셋위치르 고정위치를 계산함 
-                    _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+                    if(false == _isFollow)
+                    {
+                        //1* 오프셋위치르 고정위치를 계산함 
+                        _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
+                    }
+                    else
+                    {
+                        //1* 일정거리를 두며 앞에 분대를 따라가게 계산함 
+                        _squards[i]._targetPos = beforePos + (_squards[i]._pos - beforePos).normalized * _follow_gap;
+                        beforePos = _squards[i]._pos; 
+                    }
 
-                    //1* 일정거리를 두며 앞에 분대를 따라가게 계산함 
-                    //_squards[i]._targetPos = beforePos + (_squards[i]._pos - beforePos).normalized * 3;
-                    //beforePos = _squards[i]._pos;
+
                 }
                 _squards[i].Update(deltaTime);
             }
