@@ -102,6 +102,11 @@ namespace Proto_AI_4
 
         private void CalcOffset_Width()
         {
+
+            int len = _unit_count < _form_column ? _unit_count : _form_column;
+            float center = (len - 1) * _form_dis_between * 0.5f; //중앙을 기준점으로 삼는다 
+
+            float tan =  0 != center ? (_form_horn / center) : 0;
             for (int row = 0; row < _form_row; row++)
             {
                 for (int col = 0; col < _form_column; col++)
@@ -109,7 +114,15 @@ namespace Proto_AI_4
                     int idx = col +( row * _form_column);
                     if (idx >= _units.Count) return;
 
-                    _units[idx]._formation._initPos = new Vector3(col * _form_dis_between, 0, -row * _form_dis_between);
+                    float x = col * _form_dis_between;
+                    float z = -row * _form_dis_between;
+                    float height = x * tan;
+                    if(x > center)
+                    {
+                        height = (center * 2 - x) * tan; 
+                    }
+
+                    _units[idx]._formation._initPos = new Vector3(x, 0, z + height);
                     _units[idx]._formation._offset = _units[idx]._formation._initPos - _form_standard;
 
                 }
@@ -125,8 +138,9 @@ namespace Proto_AI_4
                 _form_row = 3;
                 _form_column = 5;
                 _form_dis_between = 1.2f;
-                int center = _unit_count < _form_column ?  _unit_count : _form_column;
-                _form_standard = new Vector3((center - 1) * _form_dis_between * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
+                _form_horn = 3; 
+                int len = _unit_count < _form_column ?  _unit_count : _form_column;
+                _form_standard = new Vector3((len - 1) * _form_dis_between * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
                 //for (int i = 0; i < _units.Count; i++)
                 //{
                 //    _units[i]._formation._initPos = new Vector3(i * 1, 0, 0);
@@ -240,13 +254,13 @@ namespace Proto_AI_4
             _squards[0].ApplyFormationOffset();
 
             _squards[1]._eFormKind = Squard.eFormKind.Width;
-            _squards[1]._formation._initPos = new Vector3(-3, 0, -3);
+            _squards[1]._formation._initPos = new Vector3(-5, 0, -3);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
             _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[1].ApplyFormationOffset();
 
             _squards[2]._eFormKind = Squard.eFormKind.Width;
-            _squards[2]._formation._initPos = new Vector3(3, 0, -3);
+            _squards[2]._formation._initPos = new Vector3(5, 0, -3);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
             _squards[2].ApplyFormationOffset();
