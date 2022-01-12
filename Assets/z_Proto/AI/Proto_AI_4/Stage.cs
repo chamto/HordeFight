@@ -20,6 +20,8 @@ namespace Proto_AI_4
         public Transform _tr_squard_2 = null;
         public Transform _tr_squard_3 = null;
 
+        public SweepPrune _sweepPrune = new SweepPrune();
+
         public float _formation_platoon_speed = 10;
         public float _formation_squard_speed = 10;
         public float _radius_geo = 0.5f;
@@ -40,6 +42,7 @@ namespace Proto_AI_4
         public float _viewDistance = 10; //시야거리 
 
         public bool _isObjNonpenetration = true;
+        public bool _isObjNonpenetration2 = true;
         public bool _isStrNonpenetration = true;
 
         public float _minRange = 0;
@@ -143,6 +146,15 @@ namespace Proto_AI_4
 
             //==============================
 
+            //충돌검출기 초기화 
+            List<SweepPrune.CollisionObject> collObj = new List<SweepPrune.CollisionObject>();
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                collObj.Add(EntityMgr.list[i]._collision);
+            }
+            _sweepPrune.Initialize(collObj);
+
+            //==============================
 
         }
 
@@ -228,6 +240,26 @@ namespace Proto_AI_4
 
             }
 
+            //==============================================
+            //sweepPrune 삽입정렬 및 충돌처리
+            //==============================================
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                _sweepPrune.SetEndPoint(i, EntityMgr.list[i]._collision); //경계상자 위치 갱신
+            }
+
+            _sweepPrune.UpdateXZ();
+
+            foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap())
+            {
+                Unit src = EntityMgr.list[key._V0];
+                Unit dst = EntityMgr.list[key._V1];
+
+                if (src == dst) continue;
+
+                if (_isObjNonpenetration2)
+                    CollisionPush(src, dst);
+            }
 
             //==============================================
 
