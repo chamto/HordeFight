@@ -300,7 +300,8 @@ namespace Proto_AI_4
             Update_NormalMovement(deltaTime);
             //Update_RotateMovement(deltaTime);
 
-            EnforceNonPenetrationConstraint(this, EntityMgr.list, 0, 1); //겹침이 적게 일어나는 방식 
+            if(_isNonpenetration)
+                EnforceNonPenetrationConstraint(this, EntityMgr.list, 1, 0); //겹침이 적게 일어나는 방식 
 
             //bool a;
             //SetPos(GridManager.Inst.Collision_StructLine_Test3(_oldPos, _pos, _radius, out a));

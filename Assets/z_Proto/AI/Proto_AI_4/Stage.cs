@@ -120,8 +120,8 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            //_Platoon_0.ApplyFormationOffset_0();
-            _Platoon_0.ApplyFormationOffset_1();
+            _Platoon_0.ApplyFormationOffset_0();
+            //_Platoon_0.ApplyFormationOffset_1();
 
             _Squard_0 = _Platoon_0._squards[0];
             _Squard_1 = _Platoon_0._squards[1];

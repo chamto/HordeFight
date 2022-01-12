@@ -138,7 +138,7 @@ namespace Proto_AI_4
                 _form_row = 3;
                 _form_column = 5;
                 _form_dis_between = 1.2f;
-                _form_horn = 3; 
+                _form_horn = 0; 
                 int len = _unit_count < _form_column ?  _unit_count : _form_column;
                 _form_standard = new Vector3((len - 1) * _form_dis_between * 0.5f, 0, 0); //중앙을 기준점으로 삼는다 
                 //for (int i = 0; i < _units.Count; i++)
