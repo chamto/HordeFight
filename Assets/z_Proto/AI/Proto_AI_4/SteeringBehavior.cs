@@ -216,17 +216,17 @@ namespace Proto_AI_4
 
             if (On(eType.separation))
             {
-                //_steeringForce += Separation(m_pVehicle.World().Agents()) * m_dWeightSeparation;
+                _steeringForce += Separation(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
             }
 
             if (On(eType.allignment))
             {
-                //_steeringForce += Alignment(m_pVehicle.World().Agents()) * m_dWeightAlignment;
+                _steeringForce += Alignment(EntityMgr.list) * _weightAlignment * _steeringForceTweaker;
             }
 
             if (On(eType.cohesion))
             {
-                //_steeringForce += Cohesion(m_pVehicle.World().Agents()) * m_dWeightCohesion;
+                _steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
             }
 
 
@@ -402,7 +402,7 @@ namespace Proto_AI_4
 
             if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
             {
-                //m_pVehicle.World().TagVehiclesWithinViewRange(m_pVehicle, m_dViewDistance);
+                TagNeighbors(_vehicle,EntityMgr.list , _viewDistance);
             }
 
             //DebugWide.LogBlue(m_SummingMethod + "  " + m_pVehicle.Speed());

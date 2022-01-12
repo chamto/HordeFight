@@ -34,6 +34,10 @@ namespace Proto_AI_4
         public float _weightArrive = 20;
         public float _weightOffsetPursuit = 20;
         public float _weightObstacleAvoidance = 20;
+        public float _weightSeparation = 20;
+        public float _weightAlignment = 20;
+        public float _weightCohesion = 20;
+        public float _viewDistance = 10; //시야거리 
 
         public bool _isObjNonpenetration = true;
         public bool _isStrNonpenetration = true;
@@ -133,7 +137,8 @@ namespace Proto_AI_4
             {
                 Unit u = EntityMgr.list[i];
                 u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
-                u._steeringBehavior.ObstacleAvoidanceOn();
+                //u._steeringBehavior.ObstacleAvoidanceOn();
+                u._steeringBehavior.FlockingOn();
             }
 
             //==============================
@@ -213,10 +218,13 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightArrive = _weightArrive;
                 v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
                 v._steeringBehavior._weightObstacleAvoidance = _weightObstacleAvoidance;
+                v._steeringBehavior._weightSeparation = _weightSeparation;
+                v._steeringBehavior._weightAlignment = _weightAlignment;
+                v._steeringBehavior._weightCohesion = _weightCohesion;
+                v._steeringBehavior._viewDistance = _viewDistance;
 
                 v._isNonpenetration = _isObjNonpenetration;
                 v.Update(deltaTime);
-
 
             }
 
