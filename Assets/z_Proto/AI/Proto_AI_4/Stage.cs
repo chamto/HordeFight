@@ -33,6 +33,7 @@ namespace Proto_AI_4
 
         public float _weightArrive = 20;
         public float _weightOffsetPursuit = 20;
+        public float _weightObstacleAvoidance = 20;
 
         public bool _isObjNonpenetration = true;
         public bool _isStrNonpenetration = true;
@@ -132,6 +133,7 @@ namespace Proto_AI_4
             {
                 Unit u = EntityMgr.list[i];
                 u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                u._steeringBehavior.ObstacleAvoidanceOn();
             }
 
             //==============================
@@ -210,6 +212,7 @@ namespace Proto_AI_4
 
                 v._steeringBehavior._weightArrive = _weightArrive;
                 v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
+                v._steeringBehavior._weightObstacleAvoidance = _weightObstacleAvoidance;
 
                 v._isNonpenetration = _isObjNonpenetration;
                 v.Update(deltaTime);

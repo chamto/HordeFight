@@ -205,7 +205,7 @@ namespace Proto_AI_4
 
             if (On(eType.obstacle_avoidance))
             {
-                //m_vSteeringForce += ObstacleAvoidance(m_pVehicle.World().Obstacles()) * m_dWeightObstacleAvoidance;
+                _steeringForce += ObstacleAvoidance(EntityMgr.list) * _weightObstacleAvoidance * _steeringForceTweaker;
             }
 
             if (On(eType.evade))
@@ -752,6 +752,162 @@ namespace Proto_AI_4
             //the magnitude of cohesion is usually much larger than separation or
             //allignment so it usually helps to normalize it.
             return SteeringForce.normalized;
+        }
+
+
+        public void TagNeighbors(Unit entity, List<Unit> ContainerOfEntities, float radius)
+        {
+            //iterate through all entities checking for range
+            Unit curEntity;
+            for (int i = 0; i < ContainerOfEntities.Count; i++)
+            {
+                curEntity = ContainerOfEntities[i];
+                //first clear any current tag
+                curEntity._tag = false;
+
+                Vector3 to = curEntity._pos - entity._pos;
+
+                //the bounding radius of the other is taken into account by adding it 
+                //to the range
+                float range = radius + curEntity._radius_body;
+
+                //if entity within range, tag for further consideration. (working in
+                //distance-squared space to avoid sqrts)
+                if ((curEntity != entity) && (to.sqrMagnitude < range * range))
+                {
+                    curEntity._tag = true;
+                }
+
+            }//next entity
+        }
+
+        float _DBoxLength;
+        float _MinDetectionBoxLength = 5f;
+        Vector3 ObstacleAvoidance(List<Unit> obstacles)
+        {
+            //the detection box length is proportional to the agent's velocity
+            _DBoxLength = _MinDetectionBoxLength +
+                            (_vehicle._speed / _vehicle._maxSpeed) * _MinDetectionBoxLength;
+
+            //tag all obstacles within range of the box for processing
+            TagNeighbors(_vehicle, obstacles, _DBoxLength);
+
+            //this will keep track of the closest intersecting obstacle (CIB)
+            Unit ClosestIntersectingObstacle = null;
+
+            //this will be used to track the distance to the CIB
+            float DistToClosestIP = float.MaxValue;
+
+            //this will record the transformed local coordinates of the CIB
+            Vector3 LocalPosOfClosestObstacle = Vector3.zero;
+
+            Vector3 perp = Vector3.Cross(Vector3.up, _vehicle._heading);
+            foreach (Unit curOb in obstacles)
+            {
+                //if the obstacle has been tagged within range proceed
+                if (true == curOb._tag)
+                {
+                    //calculate this obstacle's position in local space
+                    Vector3 LocalPos = Misc.PointToLocalSpace_3(curOb._pos,
+                                                           _vehicle._heading,
+                                                           perp,
+                                                           _vehicle._pos);
+
+                    //if the local position has a negative x value then it must lay
+                    //behind the agent. (in which case it can be ignored)
+                    if (LocalPos.z >= 0)
+                    {
+                        //if the distance from the x axis to the object's position is less
+                        //than its radius + half the width of the detection box then there
+                        //is a potential intersection.
+                        float ExpandedRadius = curOb._radius_body + _vehicle._radius_body;
+
+                        if (Math.Abs(LocalPos.x) < ExpandedRadius)
+                        {
+                            //now to do a line/circle intersection test. The center of the 
+                            //circle is represented by (cX, cY). The intersection points are 
+                            //given by the formula x = cX +/-sqrt(r^2-cY^2) for y=0. 
+                            //We only need to look at the smallest positive value of x because
+                            //that will be the closest point of intersection.
+                            float cZ = LocalPos.z;
+                            float cX = LocalPos.x;
+
+                            //we only need to calculate the sqrt part of the above equation once
+                            float SqrtPart = (float)Math.Sqrt(ExpandedRadius * ExpandedRadius - cX * cX);
+
+                            float ip = cZ - SqrtPart;
+
+                            if (ip <= 0.0)
+                            {
+                                ip = cZ + SqrtPart;
+                            }
+
+                            //-----------------
+                            //DebugWide.DrawCircle(_vehicle._pos + _vehicle._heading * ip, 1f, Color.white);
+                            //DebugWide.DrawCircle(curOb._pos, ExpandedRadius, Color.white);
+                            //-----------------
+
+                            //test to see if this is the closest so far. If it is keep a
+                            //record of the obstacle and its local coordinates
+                            if (ip < DistToClosestIP)
+                            {
+                                DistToClosestIP = ip;
+
+                                ClosestIntersectingObstacle = curOb;
+
+                                LocalPosOfClosestObstacle = LocalPos;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            //if we have found an intersecting obstacle, calculate a steering 
+            //force away from it
+            Vector3 SteeringForce = Vector3.zero;
+
+            if (null != ClosestIntersectingObstacle)
+            {
+                //the closer the agent is to an object, the stronger the 
+                //steering force should be
+                float multiplier = 1.0f + (_DBoxLength - LocalPosOfClosestObstacle.z) /
+                                    _DBoxLength;
+
+                //calculate the lateral force
+                SteeringForce.x = (ClosestIntersectingObstacle._radius_body -
+                                   LocalPosOfClosestObstacle.x) * multiplier;
+
+                //apply a braking force proportional to the obstacles distance from
+                //the vehicle. 
+                const float BrakingWeight = 0.2f;
+
+                SteeringForce.z = (ClosestIntersectingObstacle._radius_body -
+                                   LocalPosOfClosestObstacle.z) *
+                                   BrakingWeight;
+            }
+
+            //finally, convert the steering vector from local to world space
+            Vector3 worldPos = Misc.PointToWorldSpaceZX(SteeringForce,
+                                      _vehicle._heading,
+                                      perp);
+
+            //-------------------------------------------------
+            Quaternion rot_box = Quaternion.FromToRotation(Vector3.forward, _vehicle._heading);
+            Vector3 box_0 = _vehicle._pos + rot_box * new Vector3(_vehicle._radius_body, 0, 0);
+            Vector3 box_1 = _vehicle._pos + rot_box * new Vector3(_vehicle._radius_body, 0, _DBoxLength);
+            Vector3 box_2 = _vehicle._pos + rot_box * new Vector3(-_vehicle._radius_body, 0, _DBoxLength);
+            Vector3 box_3 = _vehicle._pos + rot_box * new Vector3(-_vehicle._radius_body, 0, 0);
+            //DebugWide.AddDrawQ_Line(box_0, box_1, Color.gray);
+            //DebugWide.AddDrawQ_Line(box_1, box_2, Color.gray);
+            //DebugWide.AddDrawQ_Line(box_2, box_3, Color.gray);
+            //DebugWide.AddDrawQ_Line(box_3, box_0, Color.gray);
+            //DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + worldPos, Color.black);
+            //DebugWide.AddDrawQ_Circle(_vehicle._pos + worldPos, 0.5f, Color.black);
+            //-------------------------------------------------
+
+
+            return worldPos;
         }
     }
 
