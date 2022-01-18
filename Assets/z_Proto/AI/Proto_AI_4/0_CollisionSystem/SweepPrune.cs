@@ -255,12 +255,17 @@ namespace Proto_AI_4
             //    DebugWide.LogGreen("  y_lookUp: " + lk);
             //}
 
+
+            //==============================================
+            // - sweep 알고리즘을 이용하여 xEndpoints 만 이용하여 겹침목록을 구하고 있다 
+            // - 스윕알고리즘 대신 삽입정렬 알고리즘인 InsertionSort 를 사용해도 된다 
+            // - 스윕알고리즘 보다 삽입정렬알고리즘이 더 빠르다 함 [eberly 381p]
+            //==============================================
             // Active set of rectangles (stored by index in array).
             HashSet<int> active = new HashSet<int>();
 
             // Set of overlapping rectangles (stored by pairs of indices in array).
             mOverlap = new HashSet<UnOrderedEdgeKey>(new EdgeKeyComparer());
-
 
             // Sweep through the endpoints to determine overlapping x-intervals.
             for (int i = 0; i < endpSize; ++i)
@@ -319,7 +324,7 @@ namespace Proto_AI_4
 
         //}
 
-
+        // i : 원본자료 리스트의 인덱스 , 객체고유id와 상관없는 값임 
         public void SetEndPoint(int i, CollisionObject box)
         {
 
@@ -381,7 +386,8 @@ namespace Proto_AI_4
             return mOverlap;
         }
 
-
+        //삽입정렬을 한다. eberly 가 시간일관성을 이용하여 작성한 알고리즘이다 [eberly 371p]
+        //시간일관성 : 시간변화량이 작을 경우 시스템의 새 상태가 이전 상태에서 많이 달라지지 않는다는 사실 
         private void InsertionSort(List<Endpoint> endpoint, List<int> lookup)
         {
 
@@ -390,9 +396,8 @@ namespace Proto_AI_4
             {
                 Endpoint key = endpoint[j];
                 int i = j - 1;
-                //while (i >= 0 && key < endpoint[i])
-                //while (i >= 0 && key.CompareTo(endpoint[i]) < 0)
-                while (i >= 0 && key.value < endpoint[i].value)
+
+                while (i >= 0 && endpoint[i].value > key.value )
                 {
                     Endpoint e0 = endpoint[i];
                     Endpoint e1 = endpoint[i + 1];
@@ -419,8 +424,8 @@ namespace Proto_AI_4
                     }
 
                     // Reorder the items to maintain the sorted list.
-                    endpoint[i] = e1;
-                    endpoint[i + 1] = e0;
+                    endpoint[i] = e1;     //--- swap 부분
+                    endpoint[i + 1] = e0; //--- e0 과 e1 값을 참조하기 때문에 swap 을 해야 한다  
                     lookup[2 * e1.index + e1.type] = i;
                     lookup[2 * e0.index + e0.type] = i + 1;
                     --i;
