@@ -41,7 +41,7 @@ namespace Proto_AI_4
         public float _weightCohesion = 20;
         public float _viewDistance = 10; //시야거리 
 
-        public bool _Nonpenetration = true;
+        //public bool _Nonpenetration = true;
         public bool _Nonpenetration2 = true;
         public bool _isStrNonpenetration = true;
 
@@ -132,8 +132,8 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            //_Platoon_0.ApplyFormationOffset_0();
-            //_Platoon_0.ApplyFormationOffset_1();
+            //_Platoon_0.ApplyFormationOffset_Fixed();
+            //_Platoon_0.ApplyFormationOffset_Follow();
 
             _Squard_0 = _Platoon_0._squards[0];
             _Squard_1 = _Platoon_0._squards[1];
@@ -146,6 +146,7 @@ namespace Proto_AI_4
                 u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
+                u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
             }
 
             //==============================
@@ -239,7 +240,7 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightCohesion = _weightCohesion;
                 v._steeringBehavior._viewDistance = _viewDistance;
 
-                v._isNonpenetration = _Nonpenetration;
+                //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
 
             }
@@ -261,8 +262,8 @@ namespace Proto_AI_4
 
                 if (src == dst) continue;
 
-                //if (_Nonpenetration2)
-                    //CollisionPush(src, dst);
+                if (_Nonpenetration2)
+                    CollisionPush(src, dst);
             }
 
             //==============================================

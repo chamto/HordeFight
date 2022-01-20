@@ -247,7 +247,7 @@ namespace Proto_AI_4
         }
 
         //십자가형 배치
-        public void ApplyFormationOffset_0()
+        public void ApplyFormationOffset_Fixed()
         {
             if (_squard_count != 4) return;
 
@@ -279,7 +279,7 @@ namespace Proto_AI_4
         }
 
         //길게 배치
-        public void ApplyFormationOffset_1()
+        public void ApplyFormationOffset_Follow()
         {
             if (_squard_count != 4) return;
 

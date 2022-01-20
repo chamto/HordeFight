@@ -253,7 +253,7 @@ namespace Proto_AI_4
                     float len_bt_src = len_bitween * rate_src;
                     float len_bt_dst = len_bitween * rate_dst;
 
-                    DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
+                    //DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
                     
 
                     //2.완전겹친상태 
@@ -306,17 +306,19 @@ namespace Proto_AI_4
 
             //초기 이동 갱신이후 [src 1 , dst 0] 일때 선형적으로 밀려 배치되는 문제 발생 
             //접촉정보를 한꺼번에 모아 처리하지 않으면 생기는 문제이다. 해당 알고리즘으로는 해결이 안된다  
-            if(_isNonpenetration)
-                EnforceNonPenetrationConstraint(this, EntityMgr.list, 1, 0); //겹침이 적게 일어나는 방식 
+            //if(_isNonpenetration)
+            //EnforceNonPenetrationConstraint(this, EntityMgr.list, 0, 1); //겹침이 적게 일어나는 방식 
 
             //bool a;
             //SetPos(GridManager.Inst.Collision_StructLine_Test3(_oldPos, _pos, _radius, out a));
+
+
         }
 
 
-        //멈추기 및 돌아가기 
+        //구트리를 이용한 멈추기 및 돌아가기
         int __findNum = 0;
-        public float AAA()
+        public float Action_SphereTree()
         {
             float curSpeed = _maxSpeed;
             //if(false)
@@ -381,7 +383,8 @@ namespace Proto_AI_4
             return curSpeed;
         }
 
-        public void BBB()
+        //공간분할을 이용한 멈추기 및 돌아가기 
+        public void Action_CellSpace()
         {
             float curSpeed = _maxSpeed;
             //if(false)
@@ -494,7 +497,7 @@ namespace Proto_AI_4
 
 
                 //-----------
-                //if (0 == AAA()) return;
+                //if (0 == Action_SphereTree()) return;
 
                 //Vector3 pos_future = _pos + _velocity.normalized * curSpeed * deltaTime; //미래위치 계산 - 등속도
                 Vector3 pos_future = _pos + _velocity * deltaTime; //미래위치 계산 - 가속도 
