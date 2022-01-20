@@ -10,7 +10,7 @@ namespace Proto_AI_4
     {
         public class CollisionObject
         {
-            public int _id = -1;
+            public int _list_idx = -1; //원본 객체리스트 참조인덱스값임 , 객체고유id 아님 
             //public float _radius = 0;
             public Vector3 _bounds_min = Vector3.zero;
             public Vector3 _bounds_max = Vector3.zero;
@@ -340,20 +340,20 @@ namespace Proto_AI_4
             //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
         }
 
-        //public void SetEndPoint(int i, Bounds box)
-        //{
+        public void SetEndPoint(CollisionObject box)
+        {
 
-        //    //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
+            //DebugWide.LogBlue("a: " + mXEndpoints[mXLookup[2 * i]] + "  =>min: " + rectangle.min.x);
 
-        //    mXEndpoints[mXLookup[2 * i]].value = box.min.x;
-        //    mXEndpoints[mXLookup[2 * i + 1]].value = box.max.x;
-        //    mYEndpoints[mYLookup[2 * i]].value = box.min.y;
-        //    mYEndpoints[mYLookup[2 * i + 1]].value = box.max.y;
-        //    mZEndpoints[mZLookup[2 * i]].value = box.min.z;
-        //    mZEndpoints[mZLookup[2 * i + 1]].value = box.max.z;
+            mXEndpoints[mXLookup[2 * box._list_idx]].value = box._bounds_min.x;
+            mXEndpoints[mXLookup[2 * box._list_idx + 1]].value = box._bounds_max.x;
+            mYEndpoints[mYLookup[2 * box._list_idx]].value = box._bounds_min.y;
+            mYEndpoints[mYLookup[2 * box._list_idx + 1]].value = box._bounds_max.y;
+            mZEndpoints[mZLookup[2 * box._list_idx]].value = box._bounds_min.z;
+            mZEndpoints[mZLookup[2 * box._list_idx + 1]].value = box._bounds_max.z;
 
-        //    //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
-        //}
+            //DebugWide.LogGreen("b: "+mXEndpoints[mXLookup[2 * i]]);
+        }
 
         //public Bounds GetRectangle(int i)
         //{

@@ -41,8 +41,8 @@ namespace Proto_AI_4
         public float _weightCohesion = 20;
         public float _viewDistance = 10; //시야거리 
 
-        public bool _isObjNonpenetration = true;
-        public bool _isObjNonpenetration2 = true;
+        public bool _Nonpenetration = true;
+        public bool _Nonpenetration2 = true;
         public bool _isStrNonpenetration = true;
 
         public float _minRange = 0;
@@ -87,6 +87,7 @@ namespace Proto_AI_4
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리 
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 0;
@@ -98,6 +99,7 @@ namespace Proto_AI_4
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 1;
@@ -108,6 +110,7 @@ namespace Proto_AI_4
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 2;
@@ -118,6 +121,7 @@ namespace Proto_AI_4
             {
                 unit = new Unit();
                 int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
                 unit._disposition._platoon_num = 0;
                 unit._disposition._squard_num = 3;
@@ -128,7 +132,7 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            _Platoon_0.ApplyFormationOffset_0();
+            //_Platoon_0.ApplyFormationOffset_0();
             //_Platoon_0.ApplyFormationOffset_1();
 
             _Squard_0 = _Platoon_0._squards[0];
@@ -141,7 +145,7 @@ namespace Proto_AI_4
                 Unit u = EntityMgr.list[i];
                 u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
-                u._steeringBehavior.FlockingOn();
+                //u._steeringBehavior.FlockingOn();
             }
 
             //==============================
@@ -235,7 +239,7 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightCohesion = _weightCohesion;
                 v._steeringBehavior._viewDistance = _viewDistance;
 
-                v._isNonpenetration = _isObjNonpenetration;
+                v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
 
             }
@@ -245,7 +249,7 @@ namespace Proto_AI_4
             //==============================================
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
-                _sweepPrune.SetEndPoint(i, EntityMgr.list[i]._collision); //경계상자 위치 갱신
+                _sweepPrune.SetEndPoint(EntityMgr.list[i]._collision); //경계상자 위치 갱신
             }
 
             _sweepPrune.UpdateXZ();
@@ -257,8 +261,8 @@ namespace Proto_AI_4
 
                 if (src == dst) continue;
 
-                if (_isObjNonpenetration2)
-                    CollisionPush(src, dst);
+                //if (_Nonpenetration2)
+                    //CollisionPush(src, dst);
             }
 
             //==============================================
