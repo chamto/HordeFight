@@ -147,7 +147,7 @@ namespace Proto_AI_4
             _radius_body = radius_body;
 
             //==============================================
-            _collision._id = _id;
+            //_collision._list_idx = _id;
             //_collision._radius = radius;
 
             //==============================================
@@ -219,6 +219,7 @@ namespace Proto_AI_4
         //객체하나에 대한 전체객체 접촉정보를 처리하는 방식, 중복된 접촉정보 있음, 계산후 겹치지 않음 
         public void EnforceNonPenetrationConstraint(Unit src, List<Unit> ContainerOfEntities, float src_withstand, float dst_withstand)
         {
+
             Unit dst = null;
             for (int i = 0; i < ContainerOfEntities.Count; i++)
             {
@@ -251,6 +252,9 @@ namespace Proto_AI_4
                     float len_bitween = (r_sum - len_dstTOsrc);
                     float len_bt_src = len_bitween * rate_src;
                     float len_bt_dst = len_bitween * rate_dst;
+
+                    DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
+                    
 
                     //2.완전겹친상태 
                     if (float.Epsilon >= len_dstTOsrc)
@@ -300,6 +304,8 @@ namespace Proto_AI_4
             Update_NormalMovement(deltaTime);
             //Update_RotateMovement(deltaTime);
 
+            //초기 이동 갱신이후 [src 1 , dst 0] 일때 선형적으로 밀려 배치되는 문제 발생 
+            //접촉정보를 한꺼번에 모아 처리하지 않으면 생기는 문제이다. 해당 알고리즘으로는 해결이 안된다  
             if(_isNonpenetration)
                 EnforceNonPenetrationConstraint(this, EntityMgr.list, 1, 0); //겹침이 적게 일어나는 방식 
 
