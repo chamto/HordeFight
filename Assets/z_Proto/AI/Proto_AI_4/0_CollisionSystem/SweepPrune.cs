@@ -386,7 +386,8 @@ namespace Proto_AI_4
             return mOverlap;
         }
 
-        //삽입정렬을 한다. eberly 가 시간일관성을 이용하여 작성한 알고리즘이다 [eberly 371p]
+        //삽입정렬을 한다. 삽입정렬의 전형적인 형태외적인 부분이 핵심알고리즘이다 
+        //eberly 가 시간일관성을 이용하여 작성한 알고리즘이다 [eberly 371p]
         //시간일관성 : 시간변화량이 작을 경우 시스템의 새 상태가 이전 상태에서 많이 달라지지 않는다는 사실 
         private void InsertionSort(List<Endpoint> endpoint, List<int> lookup)
         {
@@ -402,6 +403,9 @@ namespace Proto_AI_4
                     Endpoint e0 = endpoint[i];
                     Endpoint e1 = endpoint[i + 1];
 
+                    //--------------------------------------
+                    // 삽입정렬외 핵심알고리즘 
+                    //--------------------------------------
                     // Update the overlap status.
                     if (e0.type == Endpoint.BEGIN)
                     {
@@ -422,6 +426,7 @@ namespace Proto_AI_4
                             }
                         }
                     }
+                    //--------------------------------------
 
                     // Reorder the items to maintain the sorted list.
                     endpoint[i] = e1;     //--- swap 부분
@@ -435,6 +440,59 @@ namespace Proto_AI_4
             }
         }
 
+        //끝점 정렬 알고리즘을 명확히 보기 위해 변경한 형태 
+        private void InsertionSort2(List<Endpoint> endpoint, List<int> lookup)
+        {
+
+            int endpSize = endpoint.Count;
+            for (int j = 1; j < endpSize; ++j)
+            {
+                Endpoint key = endpoint[j];
+                int i = j - 1;
+
+                while (i >= 0 && endpoint[i].value > key.value)
+                {
+                    Endpoint e0 = endpoint[i];
+                    Endpoint e1 = endpoint[i + 1];
+
+                    // Reorder the items to maintain the sorted list.
+                    endpoint[i] = e1;     //--- swap 부분
+                    endpoint[i + 1] = e0; //--- e0 과 e1 값을 참조하기 때문에 swap 을 해야 한다  
+                    lookup[2 * e1.index + e1.type] = i;
+                    lookup[2 * e0.index + e0.type] = i + 1;
+
+
+                    //--------------------------------------
+                    // 삽입정렬외 핵심알고리즘 
+                    //--------------------------------------
+                    e0 = endpoint[i];
+                    e1 = endpoint[i + 1];
+                    if (e0.type == Endpoint.END)
+                    {
+                        if (e1.type == Endpoint.BEGIN)
+                        {
+                            mOverlap.Remove(new UnOrderedEdgeKey(e0.index, e1.index));
+                        }
+                    }
+                    else //e0.type == Endpoint.BEGIN
+                    {
+                        if (e1.type == Endpoint.END)
+                        {
+                        
+                            if (mRectangles[e0.index].Intersects(mRectangles[e1.index]))
+                            {
+                                mOverlap.Add(new UnOrderedEdgeKey(e0.index, e1.index));
+                            }
+                        }
+                    }
+                    //--------------------------------------
+
+                    --i;
+                }
+                endpoint[i + 1] = key;
+                lookup[2 * key.index + key.type] = i + 1;
+            }
+        }
     }
 }
 
