@@ -2246,20 +2246,19 @@ namespace Proto_AI_4
             return false;
         }
 
-        public Vector3 Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS)
+        public bool Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out Vector3 calcPos)
         {
+            //Vector3 calcPos;
+            CellSpace cell = Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
+            //srcPos = calcPos;
 
-            Vector3 calcPos;
-            Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
-            srcPos = calcPos;
-
-            Vector3Int pos_2d = ToPosition2D(srcPos);
+            Vector3Int pos_2d = ToPosition2D(calcPos);
 
 
             //return srcPos; //test
 
             BoundaryTileList list = null;
-            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return srcPos;
+            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return false;
 
             //DebugWide.LogBlue(" === 2d : " + pos_2d + "  count : " + list.Count + "  stop : " + calc);
 
@@ -2278,18 +2277,18 @@ namespace Proto_AI_4
                 if (true == info.isBoundary)
                 {
 
-                    if (Geo.IntersectLineSegment(srcPos, RADIUS, info.cell._line.origin, info.cell._line.last))
+                    if (Geo.IntersectLineSegment(calcPos, RADIUS, info.cell._line.origin, info.cell._line.last))
                     {
                         //interCount++;
 
 
-                        Vector3 cp = info.cell._line.ClosestPoint(srcPos);
+                        Vector3 cp = info.cell._line.ClosestPoint(calcPos);
 
                         //DebugWide.AddDrawQ_Circle(cp, 0.3f, Color.black);
 
-                        Vector3 n = VOp.Normalize(srcPos - cp);
+                        Vector3 n = VOp.Normalize(calcPos - cp);
                         //Vector3 n = Misc.GetDir8_Normal3D_AxisY(info.cell._eDir); //경계에서 튀는 버그 발생 
-                        srcPos = cp + n * RADIUS;
+                        calcPos = cp + n * RADIUS;
 
                         //DebugWide.LogBlue(count + "  boundary  " + cellpos + "  cp: " + cp + "  " + n + "  " + srcPos);
                         //DebugWide.AddDrawQ_Line(cp, srcPos, Color.black);
@@ -2300,7 +2299,7 @@ namespace Proto_AI_4
                 //경계타일인 경우 
                 else
                 {
-                    srcPos = GetBorder_StructTile(srcPos, RADIUS, info.cell);
+                    calcPos = GetBorder_StructTile(calcPos, RADIUS, info.cell);
 
                     //DebugWide.LogBlue(count);
                 }
@@ -2308,18 +2307,7 @@ namespace Proto_AI_4
                 //count++;
             }
 
-            //if (2 <= count && 2 <= interCount)
-            //if (calc || 1 <= interCount)
-            //if (calc)
-            //{
-            //    //터널통과 폭보다 크거나, 지형과 접촉이 있다면 정지시킨다
-            //    stop = true;
-            //}
-
-
-
-            return srcPos;
-
+            return true;
 
         }
 

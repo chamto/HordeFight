@@ -21,6 +21,7 @@ namespace Proto_AI_4
         public Transform _tr_squard_3 = null;
 
         public SweepPrune _sweepPrune = new SweepPrune();
+        private List<Contact> _contacts = new List<Contact>();
 
         public float _formation_platoon_speed = 10;
         public float _formation_squard_speed = 10;
@@ -48,6 +49,7 @@ namespace Proto_AI_4
         public float _minRange = 0;
         public float _maxRange = 0.5f;
 
+        public int _Iterations = 20;
         public bool _Squard_0_Solo_Activity = false;
         public bool _Squard_1_Solo_Activity = false;
         public bool _Squard_2_Solo_Activity = false;
@@ -146,7 +148,7 @@ namespace Proto_AI_4
                 u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
-                u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
+                //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
             }
 
             //==============================
@@ -229,7 +231,7 @@ namespace Proto_AI_4
                 v._mass = _mass;
                 v._maxSpeed = _maxSpeed;
                 v._maxForce = _maxForce;
-                v._Friction = _Friction;
+                v._damping = _Friction;
                 v._anglePerSecond = _anglePerSecond;
 
                 v._steeringBehavior._weightArrive = _weightArrive;
@@ -245,8 +247,20 @@ namespace Proto_AI_4
 
             }
 
+            ResolveContacts(deltaTime);
+
+            ObjectManager.Inst.Update(deltaTime);
+        }
+
+        public void GenerateContacts()
+        {
+            _contacts.Clear(); //접촉정보를 모두 비운다 
+
+
+            Contact contact = null;
+
             //==============================================
-            //sweepPrune 삽입정렬 및 충돌처리
+            //sweepPrune 삽입정렬 및 접촉정보 수집
             //==============================================
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
@@ -263,27 +277,91 @@ namespace Proto_AI_4
                 if (src == dst) continue;
 
                 if (_Nonpenetration2)
-                    CollisionPush(src, dst);
+                {
+                    //CollisionPush(src, dst);
+                    CollisionDetector.SphereAndSphere(src, dst, out contact);
+                    _contacts.Add(contact);
+                }
+
             }
+        }
 
-            //==============================================
+        public void ResolveContacts(float timeInterval)
+        {
 
-            foreach (Unit v in EntityMgr.list)
+            int Iterations = _Iterations;
+            int iterationsUsed = 0;
+            while(iterationsUsed < Iterations )
             {
-                //==========================================
-                //동굴벽과 캐릭터 충돌처리 
+                int collCount = 0;
 
-                //객체의 반지름이 <0.1 ~ 0.99> 범위에 있어야 한다.
-                //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+                //접촉정보를 따로 모아서 계산하는 방식은 떠는 현상때문에 사용안함 
+                //GenerateContacts();
+                //DebugWide.LogGreen(calcCount + "  ------ " +_contacts.Count);
+                //if (0 == _contacts.Count) break;
+                //for (int i = 0; i < _contacts.Count; i++)
+                //{
+                //    _contacts[i].Resolve(timeInterval);
+                //}
 
-                if (_isStrNonpenetration)
-                    v.SetPos(GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo));
+                //==============================================
+                //sweepPrune 삽입정렬 및 충돌처리 
+                //==============================================
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    _sweepPrune.SetEndPoint(EntityMgr.list[i]._collision); //경계상자 위치 갱신
+                }
 
+                _sweepPrune.UpdateXZ();
 
-                //==========================================
+                foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap())
+                {
+                    Unit src = EntityMgr.list[key._V0];
+                    Unit dst = EntityMgr.list[key._V1];
+
+                    if (src == dst) continue;
+
+                    if (_Nonpenetration2)
+                    {
+                        if (true == CollisionPush(src, dst))
+                            collCount++;
+                    }
+
+                }
+
+                //==============================================
+
+                foreach (Unit v in EntityMgr.list)
+                {
+                    //==========================================
+                    //동굴벽과 캐릭터 충돌처리 
+
+                    //객체의 반지름이 <0.1 ~ 0.99> 범위에 있어야 한다.
+                    //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
+
+                    if (_isStrNonpenetration)
+                    {
+                        Vector3 calcPos;
+                        bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos);
+                        if(isColl)
+                        {
+                            v.SetPos(calcPos);
+                            collCount++;
+                        }
+                    }
+
+                    //==========================================
+                }
+
+                //DebugWide.LogBlue(" spCC : " + _sweepPrune._calcCount);
+
+                iterationsUsed++;
+
+                //DebugWide.LogGreen(calcCount + "  ------ " + collCount);
+                if (0 == collCount) break; //충돌횟수가 0이라면 더이상 계산 할 것이 없음 
             }
+            //DebugWide.LogBlue(calcCount  + "  " );
 
-            ObjectManager.Inst.Update(deltaTime);
         }
 
         public void KeyInput()
@@ -328,9 +406,9 @@ namespace Proto_AI_4
 
         }
 
-        public void CollisionPush(Unit src, Unit dst)
+        public bool CollisionPush(Unit src, Unit dst)
         {
-            if (null == src || null == dst) return;
+            if (null == src || null == dst) return false;
 
 
             Vector3 dir_dstTOsrc = src._pos - dst._pos;
@@ -375,7 +453,10 @@ namespace Proto_AI_4
                 src.SetPos(src._pos + n * len_bt_src);
                 dst.SetPos(dst._pos - n * len_bt_dst);
 
+                return true;
             }
+
+            return false;
         }
 
         public void OnDrawGizmos()
@@ -405,7 +486,203 @@ namespace Proto_AI_4
         }
     }
 
+    //======================================================
 
+    public class CollisionDetector
+    {
+
+        public static bool SphereAndSphere(BaseEntity pm_0, BaseEntity pm_1, out Contact contact)
+        {
+            contact = new Contact();
+
+            //충돌비활성일때 처리하지 않는다 
+            if (false == pm_0._isCollision || false == pm_1._isCollision)
+                return false;
+
+            Vector3 dir_dstTOsrc = pm_0._pos - pm_1._pos;
+            float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+            float r_sum = (pm_0._radius_body + pm_1._radius_body);
+            float sqr_r_sum = r_sum * r_sum;
+
+
+            //1.두 캐릭터가 겹친상태 
+            if (sqr_dstTOsrc < sqr_r_sum)
+            {
+                Vector3 contactNormal = ConstV.v3_zero;
+                float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+                float penetration = (r_sum - len_dstTOsrc);
+
+                if (float.Epsilon >= len_dstTOsrc)
+                {
+                    //완전겹친상태
+                    contactNormal = Misc.GetDir8_Random_AxisY();
+                    penetration = r_sum * 0.5f; //반지름합의 평균을 침투길이로 사용한다. 이 처리를 안하면 비정상적으로 퍼지게 된다 
+                }
+                else
+                {
+                    contactNormal = (dir_dstTOsrc) / len_dstTOsrc;
+                }
+
+                contact.pm_0 = pm_0;
+                contact.pm_1 = pm_1;
+                contact.restitution = (pm_0._elasticity + pm_1._elasticity) * 0.5f; //평균값
+
+                contact.contactNormal = contactNormal;
+                contact.penetration = penetration;
+
+                return true;
+            }
+
+            //2.안겹침 
+            return false;
+        }
+    }
+
+    public class Contact
+    {
+        public BaseEntity pm_0 = new BaseEntity();
+        public BaseEntity pm_1 = new BaseEntity();
+
+        //public Vector3 contactPoint;
+
+        public Vector3 contactNormal;
+
+
+        public float penetration;
+
+        public float restitution; //반발계수
+
+        //public Vector3[] particleMovement = new Vector3[2];
+
+        public bool used; //사용됨을 나타냄 
+
+        public void Init()
+        {
+            pm_0 = null;
+            pm_1 = null;
+            contactNormal = Vector3.zero;
+            penetration = 0;
+            restitution = 1; //완전탄성으로 설정  
+
+            used = false;
+        }
+
+        public void Resolve(float duration)
+        {
+            ResolveVelocity(duration);
+            ResolveInterpenetration(duration);
+        }
+
+
+        public void ResolveVelocity(float timeInterval)
+        {
+
+            Vector3 initVelocity0 = pm_0._velocity;
+            Vector3 initVelocity1 = pm_1._velocity;
+
+            float dotVelocity0 = Vector3.Dot(initVelocity0, contactNormal);
+            float dotVelocity1 = Vector3.Dot(initVelocity1, contactNormal);
+
+
+            // Find the average coefficent of restitution.
+            //float averageE = (pm_0.elasticity + pm_1.elasticity) / 2f;
+            float averageE = restitution;
+
+            //탄성력이 1 , 질량이 1 이라고 가정할시,
+            //((1 - (1 * 1)) * v0 + ((1 + 1) * 1 * v1) / 1 + 1
+            //(2 * v1) / 2 = v1
+            // Calculate the final velocities.
+            float finalVelocity0 =
+                (((pm_0._mass -
+                   (averageE * pm_1._mass)) * dotVelocity0) +
+                 ((1 + averageE) * pm_1._mass * dotVelocity1)) /
+                (pm_0._mass + pm_1._mass);
+            float finalVelocity1 =
+                (((pm_1._mass -
+                   (averageE * pm_0._mass)) * dotVelocity1) +
+                 ((1 + averageE) * pm_0._mass * dotVelocity0)) /
+                (pm_0._mass + pm_1._mass);
+
+            //Vector3 prev_pm0_Vel = initVelocity0;
+
+            //탄성력이 1 , 질량이 1 , 서로 정면으로 부딪친다고 가정할시, 
+            //대상의 속도 + 튕겨지는 내 속도 + 현재 속도 = 최종 속도 
+            //--> 정면 충돌시 대상의 속도만 남는다 
+            //[->A의 속도 --- B의 속도<-] => [<-B의 속도 --- A의 속도->] 로 속도와 방향이 바뀐다 
+            //쉽게 보면 대상의 속도(힘) 만이 적용된다고 볼 수 있다 
+            if (false == pm_0._isStatic)
+            {
+                pm_0._velocity = ((finalVelocity0 - dotVelocity0) * contactNormal + initVelocity0);
+            }
+            if (false == pm_1._isStatic)
+            {
+                pm_1._velocity = ((finalVelocity1 - dotVelocity1) * contactNormal + initVelocity1);
+            }
+
+
+
+
+            //---------------------------------------------------------------
+            //d1 : 1차원 , 디멘션1 
+            //DebugWide.LogBlue("#  init_vel0: " + initVelocity0 + "  init_vel1: " + initVelocity1);
+            //DebugWide.LogBlue("v0_d1 : " + dotVelocity0 + "  --  v1_d1 : " + dotVelocity1 + "   - averE: " + averageE );
+            //DebugWide.LogRed("fv0_d1 : " + finalVelocity0 + " -- fv1_d1 : " + finalVelocity1);
+            //DebugWide.LogRed("fv0_d1 - v0_d1 = " + (finalVelocity0 - dotVelocity0) + " -- fv1_d1 - v1_d1 = " + (finalVelocity1 - dotVelocity1));
+            //DebugWide.LogRed("(fv0_d1 - v0_d1) + v0_d1 = " + src.linearVelocity.magnitude + "  --  (fv1_d1 - v1_d1) + v1_d1 = " + dst.linearVelocity.magnitude);
+            //Vector3 tp = dst.location + contactNormal * dst.radius; //접점 
+            //Vector3 cr = Vector3.Cross(contactNormal, Vector3.up);
+            //DebugWide.AddDrawQ_Circle(src.location, src.radius, Color.gray);
+            //DebugWide.AddDrawQ_Circle(dst.location, dst.radius, Color.gray);
+            //DebugWide.AddDrawQ_Line(tp, tp + cr * 10, Color.gray);
+            //DebugWide.AddDrawQ_Line(tp, tp - cr * 10, Color.gray);
+            //DebugWide.AddDrawQ_Line(src.location, dst.location, Color.blue);
+            //DebugWide.AddDrawQ_Line(src.location, src.location + src.linearVelocity, Color.green);
+            //DebugWide.AddDrawQ_Line(src.location, src.location + prev_pm0_Vel, Color.green);
+            //Vector3 pm0_velpos = src.location + prev_pm0_Vel;
+            //DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + dotVelocity0 * contactNormal, Color.red);
+            //DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + finalVelocity0 * contactNormal, Color.blue);
+            //DebugWide.AddDrawQ_Line(pm0_velpos, pm0_velpos + (finalVelocity0 - dotVelocity0) * contactNormal, Color.white);
+            //---------------------------------------------------------------
+        }
+
+        public void ResolveInterpenetration(float timeInterval)
+        {
+
+            float rate_src, rate_dst;
+            float sqrVel_src = pm_0._velocity.sqrMagnitude;
+            float sqrVel_dst = pm_1._velocity.sqrMagnitude;
+            float sqr_sum = sqrVel_src + sqrVel_dst;
+            if (Misc.IsZero(sqr_sum)) rate_src = rate_dst = 0.5f;
+            else
+            {
+                rate_src = 1f - (sqrVel_src / sqr_sum);
+                rate_dst = 1f - rate_src;
+            }
+
+            //------------------------------
+            //한쪽만 정적일때 안밀리게 하는 예외처리 
+            if (true == pm_0._isStatic && false == pm_1._isStatic)
+            {
+                rate_src = 0;
+                rate_dst = 1f;
+            }
+            if (false == pm_0._isStatic && true == pm_1._isStatic)
+            {
+                rate_src = 1f;
+                rate_dst = 0;
+            }
+            //------------------------------
+
+
+            float len_bt_src = penetration * rate_src;
+            float len_bt_dst = penetration * rate_dst;
+
+            pm_0._pos += contactNormal * len_bt_src;
+            pm_1._pos += -contactNormal * len_bt_dst;
+
+        }
+
+    }
 
 }//end namespace
 

@@ -11,13 +11,33 @@ namespace Proto_AI_4
     {
         public int _id = -1;
 
-        public float _radius_geo = 0.5f;
-        public float _radius_body = 1f; //몸체크기 
+        public float _mass;
         public Vector3 _oldPos = Vector3.zero;
-        public Vector3 _pos = Vector3.zero;
-        public Vector3 _velocity = Vector3.zero;
+        public Vector3 _pos; 
+        public Vector3 _velocity;
+        public Vector3 _linearAcceleration;
+        public Vector3 _forces;
+
+        public float _elasticity = 1; //탄성력  
+        public float _damping = 1; //제동
+
+        public float _endurance_max; //최대 지구력
+        public float _endurance; //현재 지구력 
+        public float _endurance_recovery; //지구력 회복량
+        public float _rest_start; //휴식시작 지구력 , 휴식상태가 활성
+        public float _rest_end; //휴식끝 지구력 , 범위를 넘으면 휴식상태 비활성 
+
+        public bool _isRest = false; //휴식상태 , 지구력이 감소하지 않고 힘이 적용 안된다  
+        public bool _isImpluse = true; //단발성 충격힘 적용
+        public bool _isStatic = false; //충돌에 반응하지 않게 설정(상대 객체는 충돌반응함) 
+        public bool _isCollision = true; //충돌처리를 안하게 설정(상대 객체도 충돌반응 안함) 
+
+
+        public float _radius_geo = 0.5f; //지형과의 충돌원크기
+        public float _radius_body = 1f; //다른객체와의 충돌원크기  
+
         public float _speed = 10f;
-        public float _withstand = 1f; //버티기
+        public float _withstand = 1f; //버티기 - 
         public Quaternion _rotation = Quaternion.identity;
 
         //==================================================
@@ -96,11 +116,10 @@ namespace Proto_AI_4
         public Vector3 _heading = Vector3.forward; //객체의 방향
         public Vector3 _facing = Vector3.forward; //얼굴의 방향
 
-        public float _mass = 1f;
+
         public float _maxSpeed = 10f;
         public float _maxForce = 40f;
-        public float _Friction = 0.85f; //마찰력
-        public float _elasticity = 1; //탄성력 
+
         public float _anglePerSecond = 180;
 
         public bool _isNonpenetration = true; //비침투 
@@ -362,12 +381,12 @@ namespace Proto_AI_4
                 }
 
 
-                if (5 == _id)
-                {
-                    curSpeed = _maxSpeed;
-                    _velocity = ori_velo;
-                    //_withstand = 1.2f;
-                }
+                //if (5 == _id)
+                //{
+                //    curSpeed = _maxSpeed;
+                //    _velocity = ori_velo;
+                //    //_withstand = 1.2f;
+                //}
 
 
                 if (false == GridManager.Inst.IsVisibleTile(_pos, find_pos, 10))
@@ -468,7 +487,7 @@ namespace Proto_AI_4
             //Vector3 acceleration = SteeringForce.normalized * (_maxForce / _mass);
             _velocity += acceleration * deltaTime;
 
-            _velocity *= (float)Math.Pow(_Friction, deltaTime);
+            _velocity *= (float)Math.Pow(_damping, deltaTime);
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
@@ -543,7 +562,7 @@ namespace Proto_AI_4
                 _heading = VOp.Normalize(_heading);
                 _velocity += _heading * (acceleration).magnitude * deltaTime; //실제 미끄러지게 하는 처리
 
-                _velocity *= (float)Math.Pow(_Friction, deltaTime); //마찰력 적용 
+                _velocity *= (float)Math.Pow(_damping, deltaTime); //마찰력 적용 
 
                 _velocity = VOp.Truncate(_velocity, _maxSpeed);
                 _speed = _velocity.magnitude;
