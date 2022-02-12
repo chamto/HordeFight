@@ -51,6 +51,30 @@ namespace Proto_AI_4
         public SweepPrune.CollisionObject _collision = new SweepPrune.CollisionObject();
 
         public SphereModel _sphereModel = null; //구트리
+
+        public void SetPos(Vector3 newPos)
+        {
+            _pos = newPos;
+
+            //==============================================
+            //!!!!! 구트리 위치 갱신 
+            if (null != _sphereModel)
+            {
+                _sphereModel.NewPos(_pos);
+            }
+
+            //==============================================
+
+            //!!!!! 경계상자 위치 갱신
+            _collision._bounds_min.x = newPos.x - _radius_body;
+            _collision._bounds_min.z = newPos.z - _radius_body;
+            _collision._bounds_max.x = newPos.x + _radius_body;
+            _collision._bounds_max.z = newPos.z + _radius_body;
+            //==============================================
+
+            GridManager.Inst.AttachCellSpace(_pos, this);
+
+        }
     }
 
     public class OrderPoint : BaseEntity
@@ -184,29 +208,29 @@ namespace Proto_AI_4
 
         }
 
-        public void SetPos(Vector3 newPos)
-        {
-            _pos = newPos;
+        //public void SetPos(Vector3 newPos)
+        //{
+        //    _pos = newPos;
 
-            //==============================================
-            //!!!!! 구트리 위치 갱신 
-            if (null != _sphereModel)
-            {
-                _sphereModel.NewPos(_pos);
-            }
+        //    //==============================================
+        //    //!!!!! 구트리 위치 갱신 
+        //    if (null != _sphereModel)
+        //    {
+        //        _sphereModel.NewPos(_pos);
+        //    }
 
-            //==============================================
+        //    //==============================================
 
-            //!!!!! 경계상자 위치 갱신
-            _collision._bounds_min.x = newPos.x - _radius_body;
-            _collision._bounds_min.z = newPos.z - _radius_body;
-            _collision._bounds_max.x = newPos.x + _radius_body;
-            _collision._bounds_max.z = newPos.z + _radius_body;
-            //==============================================
+        //    //!!!!! 경계상자 위치 갱신
+        //    _collision._bounds_min.x = newPos.x - _radius_body;
+        //    _collision._bounds_min.z = newPos.z - _radius_body;
+        //    _collision._bounds_max.x = newPos.x + _radius_body;
+        //    _collision._bounds_max.z = newPos.z + _radius_body;
+        //    //==============================================
 
-            GridManager.Inst.AttachCellSpace(_pos, this);
+        //    GridManager.Inst.AttachCellSpace(_pos, this);
 
-        }
+        //}
 
         public void SetRadius(float radius_body)
         {

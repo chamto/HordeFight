@@ -21,7 +21,7 @@ namespace Proto_AI_4
         public Transform _tr_squard_3 = null;
 
         public SweepPrune _sweepPrune = new SweepPrune();
-        private List<Contact> _contacts = new List<Contact>();
+        //private List<Contact> _contacts = new List<Contact>();
 
         public float _formation_platoon_speed = 10;
         public float _formation_squard_speed = 10;
@@ -43,8 +43,8 @@ namespace Proto_AI_4
         public float _viewDistance = 10; //시야거리 
 
         //public bool _Nonpenetration = true;
-        public bool _Nonpenetration2 = true;
-        public bool _isStrNonpenetration = true;
+        public bool _ObjNonpenetration = true;
+        public bool _StrNonpenetration = true;
 
         public float _minRange = 0;
         public float _maxRange = 0.5f;
@@ -252,39 +252,36 @@ namespace Proto_AI_4
             ObjectManager.Inst.Update(deltaTime);
         }
 
-        public void GenerateContacts()
-        {
-            _contacts.Clear(); //접촉정보를 모두 비운다 
+        //public void GenerateContacts()
+        //{
+        //    _contacts.Clear(); //접촉정보를 모두 비운다 
 
+        //    //==============================================
+        //    //sweepPrune 삽입정렬 및 접촉정보 수집
+        //    //==============================================
+        //    for (int i = 0; i < EntityMgr.list.Count; i++)
+        //    {
+        //        _sweepPrune.SetEndPoint(EntityMgr.list[i]._collision); //경계상자 위치 갱신
+        //    }
 
-            Contact contact = null;
+        //    _sweepPrune.UpdateXZ();
 
-            //==============================================
-            //sweepPrune 삽입정렬 및 접촉정보 수집
-            //==============================================
-            for (int i = 0; i < EntityMgr.list.Count; i++)
-            {
-                _sweepPrune.SetEndPoint(EntityMgr.list[i]._collision); //경계상자 위치 갱신
-            }
+        //    foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap())
+        //    {
+        //        Unit src = EntityMgr.list[key._V0];
+        //        Unit dst = EntityMgr.list[key._V1];
 
-            _sweepPrune.UpdateXZ();
+        //        if (src == dst) continue;
 
-            foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap())
-            {
-                Unit src = EntityMgr.list[key._V0];
-                Unit dst = EntityMgr.list[key._V1];
-
-                if (src == dst) continue;
-
-                if (_Nonpenetration2)
-                {
-                    //CollisionPush(src, dst);
-                    CollisionDetector.SphereAndSphere(src, dst, out contact);
-                    _contacts.Add(contact);
-                }
-
-            }
-        }
+        //        if (_ObjNonpenetration)
+        //        {
+        //            //CollisionPush(src, dst);
+        //            Contact contact;
+        //            if(true == CollisionDetector.SphereAndSphere(src, dst, out contact))
+        //                _contacts.Add(contact);
+        //        }
+        //    }
+        //}
 
         public void ResolveContacts(float timeInterval)
         {
@@ -295,14 +292,16 @@ namespace Proto_AI_4
             {
                 int collCount = 0;
 
+                //---------------------------------------------------
                 //접촉정보를 따로 모아서 계산하는 방식은 떠는 현상때문에 사용안함 
                 //GenerateContacts();
-                //DebugWide.LogGreen(calcCount + "  ------ " +_contacts.Count);
+                ////DebugWide.LogGreen(calcCount + "  ------ " +_contacts.Count);
                 //if (0 == _contacts.Count) break;
                 //for (int i = 0; i < _contacts.Count; i++)
                 //{
                 //    _contacts[i].Resolve(timeInterval);
                 //}
+                //---------------------------------------------------
 
                 //==============================================
                 //sweepPrune 삽입정렬 및 충돌처리 
@@ -321,10 +320,17 @@ namespace Proto_AI_4
 
                     if (src == dst) continue;
 
-                    if (_Nonpenetration2)
+                    if (_ObjNonpenetration)
                     {
-                        if (true == CollisionPush(src, dst))
+                        Contact contact;
+                        if(true == CollisionDetector.SphereAndSphere(src, dst, out contact)) //객체가 원이므로 원과원 검사를 해야함 
+                        {
+                            contact.Resolve(timeInterval);
                             collCount++;
+                        }
+
+                        //if (true == CollisionPush(src, dst))
+                            //collCount++;
                     }
 
                 }
@@ -339,7 +345,7 @@ namespace Proto_AI_4
                     //객체의 반지름이 <0.1 ~ 0.99> 범위에 있어야 한다.
                     //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
 
-                    if (_isStrNonpenetration)
+                    if (_StrNonpenetration)
                     {
                         Vector3 calcPos;
                         bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos);
@@ -467,7 +473,7 @@ namespace Proto_AI_4
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
 
 
-            _Platoon_0.Draw(Color.white);
+            _Platoon_0.Draw(Color.green); //소대 출력
 
             Color color = Color.black;
             foreach (Unit v in EntityMgr.list)
@@ -538,23 +544,19 @@ namespace Proto_AI_4
         }
     }
 
-    public class Contact
+    public struct Contact
     {
-        public BaseEntity pm_0 = new BaseEntity();
-        public BaseEntity pm_1 = new BaseEntity();
+        public BaseEntity pm_0;
+        public BaseEntity pm_1;
 
         //public Vector3 contactPoint;
 
         public Vector3 contactNormal;
 
-
         public float penetration;
 
         public float restitution; //반발계수
 
-        //public Vector3[] particleMovement = new Vector3[2];
-
-        public bool used; //사용됨을 나타냄 
 
         public void Init()
         {
@@ -564,7 +566,6 @@ namespace Proto_AI_4
             penetration = 0;
             restitution = 1; //완전탄성으로 설정  
 
-            used = false;
         }
 
         public void Resolve(float duration)
@@ -672,13 +673,18 @@ namespace Proto_AI_4
                 rate_dst = 0;
             }
             //------------------------------
-
+            //rate_src = rate_dst = 0.5f; //test
+            //rate_src = 0;
+            //rate_dst = 1;
 
             float len_bt_src = penetration * rate_src;
             float len_bt_dst = penetration * rate_dst;
 
-            pm_0._pos += contactNormal * len_bt_src;
-            pm_1._pos += -contactNormal * len_bt_dst;
+            //pm_0._pos += contactNormal * len_bt_src;
+            //pm_1._pos += -contactNormal * len_bt_dst;
+
+            pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
+            pm_1.SetPos(pm_1._pos - contactNormal * len_bt_dst);
 
         }
 
