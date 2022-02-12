@@ -538,7 +538,7 @@ namespace Proto_AI_4
                 //_velocity < 이동거리 : 가속
                 //_velocity > 이동거리 : 감속 
 
-                //deceleration 가 작을수록 속도가 크게 계산된다 
+                //_decelerationTime 이 작을수록 속도가 크게 계산된다 
                 float speed = dist / _decelerationTime; //v = s / t
 
                 //make sure the velocity does not exceed the max
@@ -642,7 +642,7 @@ namespace Proto_AI_4
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
                   (neighbors[a] != _pTargetAgent))
                 {
-                    Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos;
+                    Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
 
                     //scale the force inversely proportional to the agents distance  
                     //from its neighbor.
@@ -686,9 +686,9 @@ namespace Proto_AI_4
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
                   (neighbors[a] != _pTargetAgent))
                 {
-                    AverageHeading += neighbors[a]._heading;
+                    AverageHeading += neighbors[a]._heading; //heading 은 길이가 1인 벡터
 
-                    ++NeighborCount;
+                    ++NeighborCount; //1인 몇번 더해졌는지 센다
                 }
             }
 
@@ -696,9 +696,10 @@ namespace Proto_AI_4
             //heading vectors.
             if (NeighborCount > 0)
             {
-                AverageHeading /= (float)NeighborCount;
+                AverageHeading /= (float)NeighborCount; //길이가 1인 노멀벡터로 변환 
 
-                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식 추정 
+                AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식
+                //DesiredVelocity - _vehicle._heading 
             }
 
             //if (0 == _vehicle._id)
