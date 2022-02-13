@@ -306,7 +306,7 @@ namespace Cyclone
      */
     public class CollisionDetector
     {
-
+        //평면의 위쪽만 검사한다. 반평면
         public static uint sphereAndHalfSpace(CollisionSphere sphere, CollisionPlane plane, CollisionData data)
         {
             // Make sure we have contacts
@@ -334,6 +334,7 @@ namespace Cyclone
             return 1;
         }
 
+        //평면의 위아래 모두 검사한다. 
         public static uint sphereAndTruePlane(CollisionSphere sphere, CollisionPlane plane, CollisionData data)
         {
             // Make sure we have contacts
