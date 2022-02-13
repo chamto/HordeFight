@@ -325,7 +325,7 @@ namespace Proto_AI_4
                         Contact contact;
                         if(true == CollisionDetector.SphereAndSphere(src, dst, out contact)) //객체가 원이므로 원과원 검사를 해야함 
                         {
-                            contact.Resolve(timeInterval);
+                            contact.Resolve_SphereAndSphere(timeInterval);
                             collCount++;
                         }
 
@@ -494,6 +494,7 @@ namespace Proto_AI_4
 
     //======================================================
 
+    
     public class CollisionDetector
     {
 
@@ -542,14 +543,62 @@ namespace Proto_AI_4
             //2.안겹침 
             return false;
         }
+
+        public static bool SphereAndHalfSpace(BaseEntity sphere, CollisionPlane plane, out Contact contact)
+        {
+            contact = new Contact();
+
+            //충돌비활성일때 처리하지 않는다 
+            if (false == sphere._isCollision)
+                return false;
+
+            // Cache the sphere position
+            Vector3 position = sphere._pos;
+
+            // Find the distance from the plane
+            float ballDistance =
+                Vector3.Dot(plane.direction, position) - sphere._radius_geo - plane.offset;
+
+            if (ballDistance >= 0) return false;
+
+            contact.pm_0 = sphere;
+            contact.pm_1 = null;
+            contact.plane_1 = plane;
+            contact.restitution = (sphere._elasticity + plane.elasticity) * 0.5f; //평균값
+
+            contact.contactNormal = plane.direction;
+            contact.penetration = -ballDistance;
+            contact.contactPoint = position - plane.direction * (ballDistance + sphere._radius_geo);
+
+            return true;
+        }
+    }
+
+    public struct CollisionPlane
+    {
+        //public BaseEntity body;
+
+        public float mass;
+        public float elasticity;
+
+        /**
+         * The plane normal
+         */
+        public Vector3 direction;
+
+        /**
+         * The distance of the plane from the origin.
+         */
+        public float offset;
     }
 
     public struct Contact
     {
-        public BaseEntity pm_0;
+        public BaseEntity pm_0; //Sphere vs Sphere
         public BaseEntity pm_1;
+        public CollisionPlane plane_1; //Sphere vs Plane
 
-        //public Vector3 contactPoint;
+        public Vector3 contactPoint;
 
         public Vector3 contactNormal;
 
@@ -568,12 +617,45 @@ namespace Proto_AI_4
 
         }
 
-        public void Resolve(float duration)
+        public void Resolve_SphereAndSphere(float duration)
         {
             ResolveVelocity(duration);
             ResolveInterpenetration(duration);
         }
 
+
+        public void Resolve_SphereAndHalfSpace(float duration)
+        {
+            //----------------------------------------------
+            //ResolveVelocity
+            //----------------------------------------------
+
+            float dotVelocity0 = Vector3.Dot(pm_0._velocity, contactNormal);
+            float dotVelocity1 = -dotVelocity0; //반작용 속도 설정 
+
+
+            // Find the average coefficent of restitution.
+            float averageE = restitution;
+
+
+            float finalVelocity0 =
+            (((pm_0._mass -
+               (averageE * plane_1.mass)) * dotVelocity0) +
+             ((1 + averageE) * plane_1.mass * dotVelocity1)) /
+            (pm_0._mass + plane_1.mass);
+
+
+            pm_0._velocity = ((finalVelocity0 - dotVelocity0) * contactNormal + pm_0._velocity);
+
+            //----------------------------------------------
+            //ResolveInterpenetration
+            //----------------------------------------------
+
+            float len_bt_src = penetration * 1;
+
+            pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
+
+        }
 
         public void ResolveVelocity(float timeInterval)
         {
