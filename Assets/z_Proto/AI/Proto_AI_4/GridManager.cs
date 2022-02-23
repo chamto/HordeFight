@@ -2246,11 +2246,10 @@ namespace Proto_AI_4
             return false;
         }
 
-        public bool Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out Vector3 calcPos)
+        public bool Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out Vector3 calcPos , out CellSpace findCell)
         {
-            //Vector3 calcPos;
-            CellSpace cell = Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
-            //srcPos = calcPos;
+
+            findCell = Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
 
             Vector3Int pos_2d = ToPosition2D(calcPos);
 

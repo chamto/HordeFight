@@ -145,7 +145,7 @@ namespace Proto_AI_4
             for(int i=0;i< EntityMgr.list.Count;i++)
             {
                 Unit u = EntityMgr.list[i];
-                u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
@@ -348,11 +348,27 @@ namespace Proto_AI_4
                     if (_StrNonpenetration)
                     {
                         Vector3 calcPos;
-                        bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos);
+                        CellSpace findCell;
+                        bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos, out findCell);
                         if(isColl)
                         {
                             v.SetPos(calcPos);
                             collCount++;
+
+                            if(null != findCell)
+                            {
+                                //충돌후 속도계산 
+                                Contact contact = new Contact();
+                                contact.pm_0 = v;
+                                contact.pm_1 = null;
+                                contact.plane_1 = new CollisionPlane();
+                                contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
+                                contact.plane_1.mass = 100;
+                                contact.plane_1.direction = findCell._nDir;
+
+                                contact.ResolveVelocity_SphereAndHalfSpace(timeInterval);
+                            }
+
                         }
                     }
 
@@ -624,7 +640,7 @@ namespace Proto_AI_4
         }
 
 
-        public void Resolve_SphereAndHalfSpace(float duration)
+        public void ResolveVelocity_SphereAndHalfSpace(float duration)
         {
             //----------------------------------------------
             //ResolveVelocity
@@ -651,13 +667,12 @@ namespace Proto_AI_4
             //ResolveInterpenetration
             //----------------------------------------------
 
-            float len_bt_src = penetration * 1;
-
-            pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
+            //float len_bt_src = penetration * 1;
+            //pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
 
         }
 
-        public void ResolveVelocity(float timeInterval)
+        private void ResolveVelocity(float timeInterval)
         {
 
             Vector3 initVelocity0 = pm_0._velocity;
@@ -728,7 +743,7 @@ namespace Proto_AI_4
             //---------------------------------------------------------------
         }
 
-        public void ResolveInterpenetration(float timeInterval)
+        private void ResolveInterpenetration(float timeInterval)
         {
 
             float rate_src, rate_dst;
