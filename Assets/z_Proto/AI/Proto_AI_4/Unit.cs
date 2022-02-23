@@ -260,68 +260,68 @@ namespace Proto_AI_4
 
 
         //객체하나에 대한 전체객체 접촉정보를 처리하는 방식, 중복된 접촉정보 있음, 계산후 겹치지 않음 
-        public void EnforceNonPenetrationConstraint(Unit src, List<Unit> ContainerOfEntities, float src_withstand, float dst_withstand)
-        {
+        //public void EnforceNonPenetrationConstraint(Unit src, List<Unit> ContainerOfEntities, float src_withstand, float dst_withstand)
+        //{
 
-            Unit dst = null;
-            for (int i = 0; i < ContainerOfEntities.Count; i++)
-            {
-                dst = ContainerOfEntities[i];
-                if (src == dst) continue;
+        //    Unit dst = null;
+        //    for (int i = 0; i < ContainerOfEntities.Count; i++)
+        //    {
+        //        dst = ContainerOfEntities[i];
+        //        if (src == dst) continue;
 
-                Vector3 dir_dstTOsrc = src._pos - dst._pos;
-                Vector3 n = ConstV.v3_zero;
-                float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
-                float r_sum = (src._radius_body + dst._radius_body);
-                float sqr_r_sum = r_sum * r_sum;
+        //        Vector3 dir_dstTOsrc = src._pos - dst._pos;
+        //        Vector3 n = ConstV.v3_zero;
+        //        float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
+        //        float r_sum = (src._radius_body + dst._radius_body);
+        //        float sqr_r_sum = r_sum * r_sum;
 
-                //1.두 캐릭터가 겹친상태 
-                if (sqr_dstTOsrc < sqr_r_sum)
-                {
+        //        //1.두 캐릭터가 겹친상태 
+        //        if (sqr_dstTOsrc < sqr_r_sum)
+        //        {
 
-                    //==========================================
-                    float rate_src, rate_dst;
-                    float f_sum = src_withstand + dst_withstand;
-                    if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
-                    else
-                    {
-                        rate_src = 1f - (src_withstand / f_sum);
-                        rate_dst = 1f - rate_src;
-                    }
+        //            //==========================================
+        //            float rate_src, rate_dst;
+        //            float f_sum = src_withstand + dst_withstand;
+        //            if (Misc.IsZero(f_sum)) rate_src = rate_dst = 0.5f;
+        //            else
+        //            {
+        //                rate_src = 1f - (src_withstand / f_sum);
+        //                rate_dst = 1f - rate_src;
+        //            }
 
-                    n = VOp.Normalize(dir_dstTOsrc);
+        //            n = VOp.Normalize(dir_dstTOsrc);
 
-                    float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
-                    float len_bitween = (r_sum - len_dstTOsrc);
-                    float len_bt_src = len_bitween * rate_src;
-                    float len_bt_dst = len_bitween * rate_dst;
+        //            float len_dstTOsrc = (float)Math.Sqrt(sqr_dstTOsrc);
+        //            float len_bitween = (r_sum - len_dstTOsrc);
+        //            float len_bt_src = len_bitween * rate_src;
+        //            float len_bt_dst = len_bitween * rate_dst;
 
-                    //DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
+        //            //DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
                     
 
-                    //2.완전겹친상태 
-                    if (float.Epsilon >= len_dstTOsrc)
-                    {
-                        n = Misc.GetDir8_Random_AxisY();
-                        len_dstTOsrc = 1f;
-                        len_bt_src = r_sum * 0.5f;
-                        len_bt_dst = r_sum * 0.5f;
-                    }
+        //            //2.완전겹친상태 
+        //            if (float.Epsilon >= len_dstTOsrc)
+        //            {
+        //                n = Misc.GetDir8_Random_AxisY();
+        //                len_dstTOsrc = 1f;
+        //                len_bt_src = r_sum * 0.5f;
+        //                len_bt_dst = r_sum * 0.5f;
+        //            }
 
-                    //src._oldPos = src._pos;
-                    //dst._oldPos = dst._pos;
+        //            //src._oldPos = src._pos;
+        //            //dst._oldPos = dst._pos;
 
-                    src._pos += n * len_bt_src;
-                    dst._pos += -n * len_bt_dst;
+        //            src._pos += n * len_bt_src;
+        //            dst._pos += -n * len_bt_dst;
 
-                    //test
-                    //bool a;
-                    //src.SetPos(GridManager.Inst.Collision_StructLine_Test3(src._oldPos, src._pos, src._radius, out a));
-                    //dst.SetPos(GridManager.Inst.Collision_StructLine_Test3(dst._oldPos, dst._pos, dst._radius, out a));
-                }
-            }
+        //            //test
+        //            //bool a;
+        //            //src.SetPos(GridManager.Inst.Collision_StructLine_Test3(src._oldPos, src._pos, src._radius, out a));
+        //            //dst.SetPos(GridManager.Inst.Collision_StructLine_Test3(dst._oldPos, dst._pos, dst._radius, out a));
+        //        }
+        //    }
 
-        }
+        //}
 
         Vector3 _before_worldOffsetPos = Vector3.zero;
         public void Update(float deltaTime)
@@ -495,27 +495,82 @@ namespace Proto_AI_4
             }
         }
 
-        public void Update_NormalMovement(float deltaTime)
+        public void Intergrate(float deltaTime, Vector3 addForce)
         {
+            _endurance += _endurance_recovery * deltaTime; //지구력 초당 회복
+            _endurance = (_endurance_max > _endurance) ? _endurance : _endurance_max;
 
-            Vector3 SteeringForce = _steeringBehavior.Calculate();
+            //if(0 == id)
+            //{
+            //    DebugWide.LogBlue("1 >> "+endurance + " recps: " + (endurance_recovery * changeInTime)); 
+            //}
 
-            //*기본계산
-            Vector3 acceleration = SteeringForce / _mass;
+            //-------------------------------------
+            float force_scala = _forces.magnitude;
+            float force_perSecond = force_scala * deltaTime;
+            //-------------------------------------
 
 
-            //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
-            //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
-            //관성으로 미끄러지는 효과가 생긴다 
-            //일정하게 가속하도록 한다. 질량이 1일때 1초당 f = a = v = s 가 된다. f 를 s 로 보고 초당 가속하는 거리를 예측할 수 있다 
-            //Vector3 acceleration = SteeringForce.normalized * (_maxForce / _mass);
-            _velocity += acceleration * deltaTime;
+            if (_endurance <= _rest_start || _endurance < force_perSecond)
+            {
+                _isRest = true; //휴식활성 
+            }
+            else if (_rest_end <= _endurance)
+            {
+                _isRest = false; //휴식해제 
+            }
 
-            _velocity *= (float)Math.Pow(_damping, deltaTime);
+
+            //if (0 == id)
+            //{
+            //    DebugWide.LogBlue("2 >> " + endurance + " fcps: " + force_perSecond);
+            //}
+            //-------------------------------------
+
+            if (true == _isRest)
+            {
+                _velocity *= (float)Math.Pow(_damping, deltaTime); //초당 damping 비율 만큼 감소시킨다.
+
+            }
+            else
+            {
+                _endurance -= force_perSecond; //질량과 상관없는 힘만 감소시킨다  , 지구력 초당 감소 
+                _endurance = (0 < _endurance) ? _endurance : 0;
+
+                // a = F/m
+                Vector3 linearAcceleration = (_forces + addForce) / _mass;
+
+                //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
+                //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
+                //관성으로 미끄러지는 효과가 생긴다 
+                //일정하게 가속하도록 한다. 질량이 1일때 1초당 f = a = v = s 가 된다. f 를 s 로 보고 초당 가속하는 거리를 예측할 수 있다 
+                _velocity += _linearAcceleration * deltaTime;
+
+                _velocity *= (float)Math.Pow(_damping, deltaTime); //초당 damping 비율 만큼 감소시킨다.
+                //linearVelocity *= damping; //!! 이렇게 사용하면 프레임에 따라 값의 변화가 일정하지 않게됨 
+
+            }
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
 
-            //DebugWide.LogBlue("stf: "+SteeringForce.magnitude + "  v: " + _velocity.magnitude + "  a: " + acceleration.magnitude + "  a/s: " + acceleration.magnitude * deltaTime);
+            //-------------------------------------
+
+            if (_isImpluse)
+            {
+                _forces = ConstV.v3_zero; //힘 적용후 바로 초기화 - impluse
+            }
+        }
+
+        public void Update_NormalMovement(float deltaTime)
+        {
+
+            Vector3 steeringForce = _steeringBehavior.Calculate(); //조종힘 계산 
+
+            Intergrate(deltaTime, steeringForce);
+
+            //=============================================================
+
+
 
             Vector3 ToOffset = _worldOffsetPos - _pos;
             if (ToOffset.sqrMagnitude > 0.001f)
