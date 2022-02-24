@@ -1429,10 +1429,12 @@ namespace UtilGS9
         static public bool IntersectLineSegment(Vector3 sphere_center, float sphere_radius, Vector3 segment_origin, Vector3 segment_last)
         {
 
-            Vector3 v = VOp.Minus(segment_last , segment_origin);
+            //Vector3 v = VOp.Minus(segment_last , segment_origin);
+            Vector3 v = segment_last - segment_origin;
             float vsq = v.sqrMagnitude;
 
-            Vector3 w = VOp.Minus(sphere_center , segment_origin);
+            //Vector3 w = VOp.Minus(sphere_center , segment_origin);
+            Vector3 w = sphere_center - segment_origin;
             float proj = Vector3.Dot(w, v);
 
             //ipt : 원의 중심점과 선분이 가장 가까운 선분위의 점. 원의 중점과 선분이 직각으로 만나는 점.
@@ -1450,10 +1452,11 @@ namespace UtilGS9
                 percAlongLine = 1.0f;
             }
 
-            //Vector3 ipt = (segment_origin + (percAlongLine * v)); //선분에 비율값을 곱한다 
-            Vector3 ipt = VOp.Plus(segment_origin , VOp.Multiply(v , percAlongLine)); //선분에 비율값을 곱한다 
+            //Vector3 ipt = VOp.Plus(segment_origin , VOp.Multiply(v , percAlongLine)); //선분에 비율값을 곱한다 
+            Vector3 ipt = (segment_origin + (percAlongLine * v)); //선분에 비율값을 곱한다 
 
-            Vector3 s = VOp.Minus(ipt , sphere_center);
+            //Vector3 s = VOp.Minus(ipt , sphere_center);
+            Vector3 s = ipt - sphere_center;
             float ssq = s.sqrMagnitude;
             float rsq = sphere_radius * sphere_radius;
             return (ssq <= rsq);
