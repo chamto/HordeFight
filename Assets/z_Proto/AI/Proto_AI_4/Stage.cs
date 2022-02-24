@@ -134,7 +134,7 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            //_Platoon_0.ApplyFormationOffset_Fixed();
+            _Platoon_0.ApplyFormationOffset_Fixed();
             //_Platoon_0.ApplyFormationOffset_Follow();
 
             _Squard_0 = _Platoon_0._squards[0];
@@ -145,7 +145,7 @@ namespace Proto_AI_4
             for(int i=0;i< EntityMgr.list.Count;i++)
             {
                 Unit u = EntityMgr.list[i];
-                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 

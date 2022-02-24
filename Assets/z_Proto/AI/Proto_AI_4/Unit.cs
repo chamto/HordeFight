@@ -21,9 +21,9 @@ namespace Proto_AI_4
         public float _elasticity = 1; //탄성력  
         public float _damping = 1; //제동
 
-        public float _endurance_max; //최대 지구력
-        public float _endurance; //현재 지구력 
-        public float _endurance_recovery; //지구력 회복량
+        public float _endurance_max = 100; //최대 지구력
+        public float _endurance = 30; //현재 지구력 
+        public float _endurance_recovery = 1; //지구력 회복량
         public float _rest_start; //휴식시작 지구력 , 휴식상태가 활성
         public float _rest_end; //휴식끝 지구력 , 범위를 넘으면 휴식상태 비활성 
 
@@ -520,7 +520,7 @@ namespace Proto_AI_4
                 _isRest = false; //휴식해제 
             }
 
-
+            //_isRest = false; //test
             //if (0 == id)
             //{
             //    DebugWide.LogBlue("2 >> " + endurance + " fcps: " + force_perSecond);
@@ -538,7 +538,7 @@ namespace Proto_AI_4
                 _endurance = (0 < _endurance) ? _endurance : 0;
 
                 // a = F/m
-                Vector3 linearAcceleration = (_forces + addForce) / _mass;
+                _linearAcceleration = (_forces + addForce) / _mass;
 
                 //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
                 //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
@@ -547,7 +547,12 @@ namespace Proto_AI_4
                 _velocity += _linearAcceleration * deltaTime;
 
                 _velocity *= (float)Math.Pow(_damping, deltaTime); //초당 damping 비율 만큼 감소시킨다.
-                //linearVelocity *= damping; //!! 이렇게 사용하면 프레임에 따라 값의 변화가 일정하지 않게됨 
+                                                                   //linearVelocity *= damping; //!! 이렇게 사용하면 프레임에 따라 값의 변화가 일정하지 않게됨 
+
+                //if (0 == _id)
+                //{
+                //    DebugWide.LogBlue(_velocity.magnitude + "  " + addForce + "  " + _linearAcceleration + "  " + deltaTime);
+                //}
 
             }
 
@@ -569,7 +574,6 @@ namespace Proto_AI_4
             Intergrate(deltaTime, steeringForce);
 
             //=============================================================
-
 
 
             Vector3 ToOffset = _worldOffsetPos - _pos;
@@ -620,6 +624,7 @@ namespace Proto_AI_4
 
             Vector3 acceleration = SteeringForce / _mass;
 
+            //Intergrate(deltaTime, steeringForce); //todo - 완성하기 
             //----------------------------------------------------
 
             Vector3 ToOffset = _worldOffsetPos - _pos;
