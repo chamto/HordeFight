@@ -684,12 +684,15 @@ namespace UtilGS9
 
             Set(p0, p1, p2);
         }
-    
+
+        //원점에서 평면까지의 최소거리에 있는 점  
         public Vector3 GetPos()
         {
             return _normal * -_offset;
         }
 
+        // !! 정상동작하는지 확인필요
+        // translate : 추가되는 이동량 , 기존 오프셋에 더해지는 값임 
         public void Transform(ref Quaternion rotate, ref Vector3 translate )
         {
             // transform to get normal
@@ -702,9 +705,13 @@ namespace UtilGS9
         }
 
         // manipulators
-        //평면의 법선백터 : n(a,b,c)
-        //평면의 방정식 : ax + by + cz + d  = 0  , (d = -(ax0 + by0 + cz0))
+        //스튜어트 미분적분학 685p 참고 
+        //평면의 법선백터 : n(a,b,c) , 벡터가 정규화 안되어 있다고 생각해야 함 
+        //평면의 방정식 : ax + by + cz + d  = 0  , ax + by + cz  -(ax0 + by0 + cz0) = 0 ,  d = -(ax0 + by0 + cz0)
         //내적으로 표현 : n.dot(x,y,z) + d , d = -n.dot(x0,y0,z0)
+        // d 의 의미 : d = -(ax0 + by0 + cz0) , 식의 변형이며 다른 의미는 없다 
+        //_offset : 원점에서 평면까지의 최소거리 , n이 정규화 되어 있다면 : offset = d = -n.dot(x0,y0,z0)
+        //          n이 정규화 되어 있지 않다면 : offset = -n.dot(x0,y0,z0) / |n|
         public void Set(float a, float b, float c, float d)
         {
             // normalize for cheap distance checks
@@ -723,8 +730,10 @@ namespace UtilGS9
             {
                 float recip = 1f / (float)Math.Sqrt(lensq); //  [ 1f / sqrt(lensq) ] , 나눗셈 연산을 줄이기 위한 장치
                 _normal.Set(a * recip, b * recip, c * recip); //정규화되지 않은 법선벡터를 길이로 나누어 정규화함
+
+                // -n.dot(x0,y0,z0) / |n|  , n이 정규화 안되어 있다 가정하므로 나누는 처리 필요
                 _offset = d * recip; //원점에서 얼마나 떨어져있는지 나타내는 값을 계산 : 
-                                     // d값 안의 법선벡터가 정규화 되어있지 않기에 recip를 곱해 정규화 해준다. d = 평면법선.dot(평면위의 임의점) 
+                                     // !! d값 안의 법선벡터가 정규화 되어있지 않기에 recip를 곱해 정규화 해준다. d = 평면법선.dot(평면위의 임의점) 
             }
         }
 
