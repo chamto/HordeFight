@@ -145,10 +145,15 @@ namespace Proto_AI_4
             for(int i=0;i< EntityMgr.list.Count;i++)
             {
                 Unit u = EntityMgr.list[i];
-                u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
+
+                if(0 == u._id)
+                {
+                    u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                }
             }
 
             //==============================
@@ -217,6 +222,9 @@ namespace Proto_AI_4
                 _tr_squard_3.position = _Squard_3._targetPos;
             }
 
+            //==============================================
+
+
 
             KeyInput();
 
@@ -224,6 +232,13 @@ namespace Proto_AI_4
 
             foreach (Unit v in EntityMgr.list)
             {
+
+                //if(0 == v._id)
+                //{
+                //    v._mass = 10;
+                //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
+                //}
+
                 v._steeringBehavior._targetPos = v._squard._pos;
 
                 v._radius_geo = _radius_geo;
@@ -313,7 +328,8 @@ namespace Proto_AI_4
 
                 _sweepPrune.UpdateXZ();
 
-                foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap())
+                //사각형 겹침 목록
+                foreach (SweepPrune.UnOrderedEdgeKey key in _sweepPrune.GetOverlap()) 
                 {
                     Unit src = EntityMgr.list[key._V0];
                     Unit dst = EntityMgr.list[key._V1];
@@ -345,6 +361,8 @@ namespace Proto_AI_4
                     //객체의 반지름이 <0.1 ~ 0.99> 범위에 있어야 한다.
                     //float maxR = Mathf.Clamp(v._radius, 0.1, 0.99); //최대값이 타일한개의 길이를 벗어나지 못하게 한다 
 
+                    //if (0 != v._id) continue;
+
                     if (_StrNonpenetration)
                     {
                         Vector3 calcPos;
@@ -358,15 +376,26 @@ namespace Proto_AI_4
                             if(null != findCell)
                             {
                                 //충돌후 속도계산 
-                                Contact contact = new Contact();
-                                contact.pm_0 = v;
-                                contact.pm_1 = null;
-                                contact.plane_1 = new CollisionPlane();
-                                contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
-                                contact.plane_1.mass = 100;
-                                contact.plane_1.direction = findCell._nDir;
+                                //Contact contact = new Contact();
+                                //contact.pm_0 = v;
+                                //contact.pm_1 = null;
+                                //contact.plane_1 = new CollisionPlane();
+                                //contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
+                                //contact.plane_1.mass = 10;
+                                //contact.plane_1.direction = findCell._nDir;
+                                //contact.contactNormal = findCell._nDir;
 
-                                contact.ResolveVelocity_SphereAndHalfSpace(timeInterval);
+                                CollisionPlane plane = new CollisionPlane();
+                                plane.mass = 10;
+                                plane.direction = findCell._nDir;
+                                plane.offset = -1f * Vector3.Dot(findCell._nDir, findCell._line_center); //원점과 평면사이의 최소거리 , fixme: 미리계산 방식으로 변경하기 
+                                Contact contact;
+                                if (true == CollisionDetector.SphereAndHalfSpace(v, plane, out contact))
+                                {
+                                    contact.ResolveVelocity_SphereAndHalfSpace(timeInterval);
+                                }
+
+
                             }
 
                         }
@@ -379,7 +408,7 @@ namespace Proto_AI_4
 
                 iterationsUsed++;
 
-                //DebugWide.LogGreen(calcCount + "  ------ " + collCount);
+                //DebugWide.LogGreen(" loop ------ collCount : " + collCount + " iterationsUsed : " + iterationsUsed);
                 if (0 == collCount) break; //충돌횟수가 0이라면 더이상 계산 할 것이 없음 
             }
             //DebugWide.LogBlue(calcCount  + "  " );
@@ -573,7 +602,7 @@ namespace Proto_AI_4
 
             // Find the distance from the plane
             float ballDistance =
-                Vector3.Dot(plane.direction, position) - sphere._radius_geo - plane.offset;
+                Vector3.Dot(plane.direction, position) - sphere._radius_geo + plane.offset; //offset이 기본 음수로 설정되어 있으므로 더한다 
 
             if (ballDistance >= 0) return false;
 
@@ -645,6 +674,11 @@ namespace Proto_AI_4
             //----------------------------------------------
             //ResolveVelocity
             //----------------------------------------------
+            //contactNormal = contactNormal.normalized;
+            if (0 == pm_0._id)
+            {
+                DebugWide.LogBlue(" ---------- " + pm_0._velocity);
+            }
 
             float dotVelocity0 = Vector3.Dot(pm_0._velocity, contactNormal);
             float dotVelocity1 = -dotVelocity0; //반작용 속도 설정 
@@ -669,6 +703,13 @@ namespace Proto_AI_4
 
             //float len_bt_src = penetration * 1;
             //pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
+
+            if(0 == pm_0._id)
+            {
+                DebugWide.LogBlue(contactNormal + "  " + pm_0._velocity); 
+            }
+            //DebugWide.AddDrawQ_Line(pm_0._pos, pm_0._pos + contactNormal, Color.blue); //test
+            DebugWide.AddDrawQ_Line(pm_0._pos, pm_0._pos + pm_0._velocity, Color.red); //test
 
         }
 

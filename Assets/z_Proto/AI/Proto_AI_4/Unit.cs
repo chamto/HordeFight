@@ -698,6 +698,9 @@ namespace Proto_AI_4
             DebugWide.DrawCircle(_pos, _radius_body, color);
             DebugWide.DrawLine(_pos, _pos + _heading, Color.white);
 
+            //지구력 출력 
+            DebugWide.PrintText(_pos, Color.white, _endurance.ToString(".0")); 
+
             //if (SteeringBehavior.eType.wander == _mode)
             //{
             //    _steeringBehavior.DrawWander();
