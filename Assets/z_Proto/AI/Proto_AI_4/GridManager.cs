@@ -559,7 +559,7 @@ namespace Proto_AI_4
             LoadTilemap_Struct();
 
             //확장영역에 구조물 경계선 추가 
-            Load_StructLine();
+            Load_BoundaryTile();
 
             //확장영역 정보중 각을 이루고 있는 쌍을 찾아 계산 
             Load_ArcTileInfo();
@@ -660,7 +660,7 @@ namespace Proto_AI_4
         }
 
 
-        private void Load_StructLine()
+        private void Load_BoundaryTile()
         {
             foreach (KeyValuePair<Vector3Int, CellSpace> t in _structTileList)
             {
@@ -2248,8 +2248,13 @@ namespace Proto_AI_4
 
         public bool Collision_StructLine_Test3(Vector3 oldPos, Vector3 srcPos, float RADIUS , out Vector3 calcPos , out CellSpace findCell)
         {
+            findCell = null;
+            calcPos = srcPos;
+            if (Misc.IsZero(oldPos - srcPos)) return false; //이동 변화량이 없는 경우는 처리 할 수 없다 
 
             findCell = Find_FirstStructTile4(oldPos, srcPos, RADIUS, out calcPos);
+
+            if (null == findCell) return false; //findCell 이 null 이면 확실히 충돌히 발생하지 않은것임 
 
             Vector3Int pos_2d = ToPosition2D(calcPos);
 
@@ -2257,7 +2262,9 @@ namespace Proto_AI_4
             //return srcPos; //test
 
             BoundaryTileList list = null;
-            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return false;
+            //반지름이 1을 넘으면 경계타일이 없는 경우가 생김 , 경계타일 유무로 충돌을 판단할 수 없음 
+            if (false == _boundaryList.TryGetValue(pos_2d, out list)) return true; 
+
 
             //DebugWide.LogBlue(" === 2d : " + pos_2d + "  count : " + list.Count + "  stop : " + calc);
 
@@ -3011,7 +3018,7 @@ namespace Proto_AI_4
                 BoundaryTileList boundaries = GetBoundaryTileList(nextPos);
                 if (null != boundaries && 1 == boundaries.Count)
                 {
-                    structTile = boundaries[0].cell;
+                    structTile = boundaries[0].cell; //경계타일이 1개 있을 경우 , 반드시 구조타일이다 
 
                 }
                 else
