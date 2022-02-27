@@ -298,9 +298,51 @@ namespace Proto_AI_4
         //    }
         //}
 
+        public void ResolveContacts_test(float timeInterval)
+        {
+            Unit v = EntityMgr.list[0];
+            Vector3 calcPos;
+            CellSpace findCell;
+            for(int i=0;i<3;i++)
+            {
+
+                bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos, out findCell);
+                if (isColl)
+                {
+                    DebugWide.AddDrawQ_Circle(v._pos, v._radius_geo, Color.green);
+                    v._oldPos = calcPos;
+                    v.SetPos(calcPos);
+
+
+                    DebugWide.LogBlue("  " + i);
+
+                    Contact contact = new Contact();
+                    contact.pm_0 = v;
+                    contact.pm_1 = null;
+                    contact.plane_1 = new CollisionPlane();
+                    contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
+                    contact.plane_1.mass = 10;
+                    //contact.plane_1.direction = findCell._nDir;
+                    contact.contactNormal = findCell._nDir;
+
+                    //CollisionPlane plane = new CollisionPlane();
+                    //plane.mass = 10;
+                    //plane.direction = findCell._nDir;
+                    //plane.offset = -1f * Vector3.Dot(findCell._nDir, findCell._line_center); //원점과 평면사이의 최소거리 , fixme: 미리계산 방식으로 변경하기 
+                    //Contact contact;
+                    //if (true == CollisionDetector.SphereAndHalfSpace(v, plane, out contact))
+                    {
+                        //contact.ResolveVelocity_SphereAndHalfSpace(timeInterval);
+                    }
+                }
+            }
+
+
+        }
+
         public void ResolveContacts(float timeInterval)
         {
-
+        
             int Iterations = _Iterations;
             int iterationsUsed = 0;
             while(iterationsUsed < Iterations )
@@ -370,29 +412,32 @@ namespace Proto_AI_4
                         bool isColl = GridManager.Inst.Collision_StructLine_Test3(v._oldPos, v._pos, v._radius_geo, out calcPos, out findCell);
                         if(isColl)
                         {
+                            v._oldPos = calcPos;
                             v.SetPos(calcPos);
                             collCount++;
 
-                            if(null != findCell)
+
                             {
                                 //충돌후 속도계산 
-                                //Contact contact = new Contact();
-                                //contact.pm_0 = v;
-                                //contact.pm_1 = null;
-                                //contact.plane_1 = new CollisionPlane();
+                                Contact contact = new Contact();
+                                contact.pm_0 = v;
+                                contact.pm_1 = null;
+                                contact.plane_1 = new CollisionPlane();
                                 //contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
-                                //contact.plane_1.mass = 10;
+                                contact.restitution = 0.5f; //fixme : 구조타일에 설정 할 수 있게 하기 
+                                contact.plane_1.mass = 1;
+                                contact.plane_1.damping = 0.1f;
                                 //contact.plane_1.direction = findCell._nDir;
-                                //contact.contactNormal = findCell._nDir;
+                                contact.contactNormal = findCell._nDir;
 
-                                CollisionPlane plane = new CollisionPlane();
-                                plane.mass = 10;
-                                plane.direction = findCell._nDir;
-                                plane.offset = -1f * Vector3.Dot(findCell._nDir, findCell._line_center); //원점과 평면사이의 최소거리 , fixme: 미리계산 방식으로 변경하기 
-                                Contact contact;
-                                if (true == CollisionDetector.SphereAndHalfSpace(v, plane, out contact))
+                                //CollisionPlane plane = new CollisionPlane();
+                                //plane.mass = 10;
+                                //plane.direction = findCell._nDir;
+                                //plane.offset = -1f * Vector3.Dot(findCell._nDir, findCell._line_center); //원점과 평면사이의 최소거리 , fixme: 미리계산 방식으로 변경하기 
+                                //Contact contact;
+                                //if (true == CollisionDetector.SphereAndHalfSpace(v, plane, out contact))
                                 {
-                                    contact.ResolveVelocity_SphereAndHalfSpace(timeInterval);
+                                    contact.ResolveVelocity_SphereAndPlane(timeInterval);
                                 }
 
 
@@ -602,7 +647,7 @@ namespace Proto_AI_4
 
             // Find the distance from the plane
             float ballDistance =
-                Vector3.Dot(plane.direction, position) - sphere._radius_geo + plane.offset; //offset이 기본 음수로 설정되어 있으므로 더한다 
+                Vector3.Dot(plane.body._normal, position) - sphere._radius_geo + plane.body._offset; //offset이 기본 음수로 설정되어 있으므로 더한다 
 
             if (ballDistance >= 0) return false;
 
@@ -611,9 +656,9 @@ namespace Proto_AI_4
             contact.plane_1 = plane;
             contact.restitution = (sphere._elasticity + plane.elasticity) * 0.5f; //평균값
 
-            contact.contactNormal = plane.direction;
+            contact.contactNormal = plane.body._normal;
             contact.penetration = -ballDistance;
-            contact.contactPoint = position - plane.direction * (ballDistance + sphere._radius_geo);
+            contact.contactPoint = position - plane.body._normal * (ballDistance + sphere._radius_geo);
 
             return true;
         }
@@ -622,19 +667,12 @@ namespace Proto_AI_4
     public struct CollisionPlane
     {
         //public BaseEntity body;
+        public UtilGS9.Plane body;
 
         public float mass;
         public float elasticity;
+        public float damping; //마찰력 
 
-        /**
-         * The plane normal
-         */
-        public Vector3 direction;
-
-        /**
-         * The distance of the plane from the origin.
-         */
-        public float offset;
     }
 
     public struct Contact
@@ -669,16 +707,16 @@ namespace Proto_AI_4
         }
 
 
-        public void ResolveVelocity_SphereAndHalfSpace(float duration)
+        public void ResolveVelocity_SphereAndPlane(float duration)
         {
             //----------------------------------------------
             //ResolveVelocity
             //----------------------------------------------
-            //contactNormal = contactNormal.normalized;
-            if (0 == pm_0._id)
-            {
-                DebugWide.LogBlue(" ---------- " + pm_0._velocity);
-            }
+
+            //if (0 == pm_0._id)
+            //{
+            //    DebugWide.LogBlue(" ---------- " + pm_0._velocity);
+            //}
 
             float dotVelocity0 = Vector3.Dot(pm_0._velocity, contactNormal);
             float dotVelocity1 = -dotVelocity0; //반작용 속도 설정 
@@ -704,12 +742,14 @@ namespace Proto_AI_4
             //float len_bt_src = penetration * 1;
             //pm_0.SetPos(pm_0._pos + contactNormal * len_bt_src);
 
-            if(0 == pm_0._id)
-            {
-                DebugWide.LogBlue(contactNormal + "  " + pm_0._velocity); 
-            }
+            pm_0._velocity *= (float)Math.Pow(plane_1.damping, duration); //초당 damping 비율 만큼 감소시킨다.
+
+            //if (0 == pm_0._id)
+            //{
+            //    DebugWide.LogBlue(contactNormal + "  " + pm_0._velocity); 
+            //}
             //DebugWide.AddDrawQ_Line(pm_0._pos, pm_0._pos + contactNormal, Color.blue); //test
-            DebugWide.AddDrawQ_Line(pm_0._pos, pm_0._pos + pm_0._velocity, Color.red); //test
+            //DebugWide.AddDrawQ_Line(pm_0._pos, pm_0._pos + pm_0._velocity, Color.red); //test
 
         }
 
