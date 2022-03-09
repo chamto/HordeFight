@@ -49,7 +49,7 @@ namespace Proto_AI_4
         public float _minRange = 0;
         public float _maxRange = 0.5f;
 
-        public int _Iterations = 20;
+        public int _Iterations = 5;
         public bool _Squard_0_Solo_Activity = false;
         public bool _Squard_1_Solo_Activity = false;
         public bool _Squard_2_Solo_Activity = false;
@@ -150,7 +150,7 @@ namespace Proto_AI_4
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
 
-                if(0 == u._id)
+                //if(0 == u._id)
                 {
                     u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 }
@@ -223,11 +223,7 @@ namespace Proto_AI_4
             }
 
             //==============================================
-
-
-
             KeyInput();
-
             //==============================================
 
             foreach (Unit v in EntityMgr.list)
@@ -425,7 +421,7 @@ namespace Proto_AI_4
                                 contact.plane_1 = new CollisionPlane();
                                 //contact.restitution = (v._elasticity + 1) * 0.5f; //평균값
                                 contact.restitution = 0.5f; //fixme : 구조타일에 설정 할 수 있게 하기 
-                                contact.plane_1.mass = 1;
+                                contact.plane_1.mass = 1f;
                                 contact.plane_1.damping = 0.1f;
                                 //contact.plane_1.direction = findCell._nDir;
                                 contact.contactNormal = findCell._nDir;
@@ -463,9 +459,13 @@ namespace Proto_AI_4
         public void KeyInput()
         {
             const float MOVE_LENGTH = 1f;
+            Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+            if (Misc.IsZero(n))
+                n = Vector3.forward;
+
             if (Input.GetKey(KeyCode.W))
             {
-                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+
                 n = VOp.Normalize(n);
                 _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
@@ -474,25 +474,41 @@ namespace Proto_AI_4
             }
             if (Input.GetKey(KeyCode.S))
             {
-                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+
                 n = -VOp.Normalize(n);
                 _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
                 _tr_platoon_0.position = _Platoon_0._targetPos;
+
+                //------
+                //_Squard_0._targetPos += n * MOVE_LENGTH;
+                //_Squard_0._pos += n * MOVE_LENGTH;
+                //_tr_squard_0.position = _Squard_0._targetPos;
+
+                //_Squard_3._targetPos += n * MOVE_LENGTH;
+                //_Squard_3._pos += n * MOVE_LENGTH;
+                //_tr_squard_3.position = _Squard_3._targetPos;
+                //------
             }
             if (Input.GetKey(KeyCode.A))
             {
-                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+
                 n = -VOp.PerpN(n, Vector3.up);
                 _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;
 
                 _tr_platoon_0.position = _Platoon_0._targetPos;
+
+                //------
+                //_Squard_3._targetPos += n * MOVE_LENGTH;
+                //_Squard_3._pos += n * MOVE_LENGTH;
+                //_tr_squard_3.position = _Squard_3._targetPos;
+                //------
             }
             if (Input.GetKey(KeyCode.D))
             {
-                Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+
                 n = VOp.PerpN(n, Vector3.up);
                 _Platoon_0._targetPos += n * MOVE_LENGTH;
                 _Platoon_0._pos += n * MOVE_LENGTH;

@@ -98,7 +98,7 @@ namespace Proto_AI_4
         public Vector3 _before_targetPos = Vector3.zero;
         public bool _changeTarget = false;
 
-        public void Update(float deltaTime)
+        virtual public void Update(float deltaTime)
         {
             _changeTarget = false;
             if (false == Misc.IsZero(_before_targetPos - _targetPos))
@@ -699,7 +699,7 @@ namespace Proto_AI_4
             DebugWide.DrawLine(_pos, _pos + _heading, Color.white);
 
             //지구력 출력 
-            DebugWide.PrintText(_pos, Color.white, _endurance.ToString(".0")); 
+            //DebugWide.PrintText(_pos, Color.white, _endurance.ToString(".0")); 
 
             //if (SteeringBehavior.eType.wander == _mode)
             //{

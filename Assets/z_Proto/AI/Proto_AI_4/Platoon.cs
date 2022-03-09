@@ -215,6 +215,8 @@ namespace Proto_AI_4
         public bool _isFollow = false;
         public float _follow_gap = 3;
 
+        public bool _isDirMatch = true; //분대방향을 소대방향과 일치
+
         public List<Unit> _units = new List<Unit>();
         public List<Squard> _squards = new List<Squard>();
 
@@ -310,10 +312,11 @@ namespace Proto_AI_4
             _squards[3].ApplyFormationOffset();
         }
 
-        public void Update(float deltaTime)
+        override public void Update(float deltaTime)
         {
             base.Update(deltaTime);
 
+            Vector3 toDir = _pos - _targetPos;
             Vector3 beforePos = _pos;
             for (int i=0;i< _squards.Count;i++)
             {
@@ -331,6 +334,11 @@ namespace Proto_AI_4
                         beforePos = _squards[i]._pos; 
                     }
 
+                    if(_isDirMatch)
+                    {
+                        //분대방향을 소대방향과 일치시킨다 
+                        _squards[i]._pos = _squards[i]._targetPos + toDir;
+                    }
 
                 }
                 _squards[i].Update(deltaTime);
