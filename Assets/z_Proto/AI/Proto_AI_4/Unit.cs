@@ -23,7 +23,7 @@ namespace Proto_AI_4
 
         public float _endurance_max = 100; //최대 지구력
         public float _endurance = 30; //현재 지구력 
-        public float _endurance_recovery = 1; //지구력 회복량
+        public float _endurance_recovery = 100; //지구력 회복량
         public float _rest_start; //휴식시작 지구력 , 휴식상태가 활성
         public float _rest_end; //휴식끝 지구력 , 범위를 넘으면 휴식상태 비활성 
 
@@ -495,18 +495,28 @@ namespace Proto_AI_4
             }
         }
 
-        public void Intergrate(float deltaTime, Vector3 addForce)
+        public void Intergrate(float deltaTime)
         {
             _endurance += _endurance_recovery * deltaTime; //지구력 초당 회복
             _endurance = (_endurance_max > _endurance) ? _endurance : _endurance_max;
 
-            //if(0 == id)
+            //if(0 == _id)
             //{
             //    DebugWide.LogBlue("1 >> "+endurance + " recps: " + (endurance_recovery * changeInTime)); 
             //}
 
+            Vector3 steeringForce = _steeringBehavior.Calculate(); //조종힘 계산 
+            Vector3 allForce = _forces + steeringForce;
+            allForce = VOp.Truncate(allForce, _maxForce);
+
+            //if(0 == _id)
+            //{
+            //    DebugWide.LogBlue("1 >> "+ _forces + " sf: " + steeringForce + "  " + allForce.magnitude + "  " + _forces.magnitude); 
+            //}
+
             //-------------------------------------
-            float force_scala = _forces.magnitude;
+            float force_scala = allForce.magnitude;
+            //float force_scala = _forces.magnitude;
             float force_perSecond = force_scala * deltaTime;
             //-------------------------------------
 
@@ -538,7 +548,7 @@ namespace Proto_AI_4
                 _endurance = (0 < _endurance) ? _endurance : 0;
 
                 // a = F/m
-                _linearAcceleration = (_forces + addForce) / _mass;
+                _linearAcceleration = allForce / _mass;
 
                 //maxSpeed < maxForce 일 경우 *기본계산 처럼 작동 
                 //maxSpeed > maxForce 일 경우 회전효과가 생긴다 
@@ -569,9 +579,9 @@ namespace Proto_AI_4
         public void Update_NormalMovement(float deltaTime)
         {
 
-            Vector3 steeringForce = _steeringBehavior.Calculate(); //조종힘 계산 
+            //Vector3 steeringForce = _steeringBehavior.Calculate(); //조종힘 계산 
 
-            Intergrate(deltaTime, steeringForce);
+            Intergrate(deltaTime);
 
             //=============================================================
 
@@ -624,7 +634,7 @@ namespace Proto_AI_4
 
             Vector3 acceleration = SteeringForce / _mass;
 
-            //Intergrate(deltaTime, steeringForce); //todo - 완성하기 
+            //Intergrate(deltaTime); //todo - 완성하기 
             //----------------------------------------------------
 
             Vector3 ToOffset = _worldOffsetPos - _pos;
