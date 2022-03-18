@@ -575,6 +575,7 @@ namespace UtilGS9
     ///////////////////////////////////////////////////////////////////////
     public static class VOp
     {
+        //제거대상
         //Vector3 사칙연산 함수보다 약간 더 빠르다 - 20210816 가독성이 안좋으니 사용하지 말기 
         static public Vector3 Plus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
         {
@@ -584,7 +585,7 @@ namespace UtilGS9
             return result;
         }
 
-
+        //제거대상
         static public Vector3 Minus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
         {
             result.x = va.x - vb.x;
@@ -593,6 +594,7 @@ namespace UtilGS9
             return result;
         }
 
+        //제거대상
         static public Vector3 Multiply(Vector3 va, float b, Vector3 result = default(Vector3))
         {
             result.x = va.x * b;
@@ -601,6 +603,7 @@ namespace UtilGS9
             return result;
         }
 
+        //제거대상
         static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
         {
             b = 1f / b;
@@ -1730,11 +1733,11 @@ namespace UtilGS9
         //.Next(int minValue, int maxValue) 와 비슷한 함수이다.
         // maxValue 값이 포함된다는 차이점이 있다. maxValue 에 int.MaxValue 를 넣을시 오버플로우가 발생한다. 최대값 예외처리 없음 
         //returns a random integer between x and y
-        static public int RandInt(int x, int y)
+        static public int RandInt(int min, int max)
         {
             //Assert.IsTrue((y >= x), "<RandInt>: y is less than x");
 
-            return rand.Next() % (y - x + 1) + x;
+            return rand.Next() % (max - min + 1) + min;
         }
 
 
@@ -1754,9 +1757,10 @@ namespace UtilGS9
             return ((float)rand.Next() / (float)(int.MaxValue));
         }
 
-        static public float RandFloat(float x, float y)
+        //min ~ max 값 사이의 실수값을 얻는다. y값에 가까워만지고 도달 할 수 없다.  
+        static public float RandFloat(float min, float max)
         {
-            return x + RandFloat() * (y - x);
+            return min + RandFloat() * (max - min);
         }
 
         //RandFloat를 사용하기 때문에 최대값은 포함 되지 않는다. 
