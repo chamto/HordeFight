@@ -686,9 +686,9 @@ namespace Proto_AI_4
                 if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
                   (neighbors[a] != _pTargetAgent))
                 {
-                    AverageHeading += neighbors[a]._heading; //heading 은 길이가 1인 벡터
+                    AverageHeading += neighbors[a]._heading; //heading 은 길이가 1인 벡터 , 벡터의 합은 평균방향을 가리킨다 
 
-                    ++NeighborCount; //1인 몇번 더해졌는지 센다
+                    ++NeighborCount; 
                 }
             }
 
@@ -696,7 +696,7 @@ namespace Proto_AI_4
             //heading vectors.
             if (NeighborCount > 0)
             {
-                AverageHeading /= (float)NeighborCount; //길이가 1인 노멀벡터로 변환 
+                AverageHeading /= (float)NeighborCount; //무게중심좌표를 구한다. 방향이 균일하다면 0좌표가 나올수도 있다
 
                 AverageHeading -= _vehicle._heading; //seek 방향힘 구하는 방식
                 //DesiredVelocity - _vehicle._heading 
@@ -737,7 +737,7 @@ namespace Proto_AI_4
             if (NeighborCount > 0)
             {
                 //the center of mass is the average of the sum of positions
-                CenterOfMass /= (float)NeighborCount;
+                CenterOfMass /= (float)NeighborCount; //무게중심좌표를 구한다.
 
                 //now seek towards that position
                 SteeringForce = Seek(CenterOfMass);
