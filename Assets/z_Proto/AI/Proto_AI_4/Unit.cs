@@ -204,7 +204,7 @@ namespace Proto_AI_4
             //==============================================
 
             _stateMachine = new StateMachine<Unit>(this);
-            _stateMachine.Init(State_Move_Character.inst, StateGlobal_Charactor.inst);
+            _stateMachine.Init(State_Move_Unit.inst, StateGlobal_Unit.inst);
 
         }
 

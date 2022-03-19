@@ -1,13 +1,13 @@
 ﻿namespace Proto_AI_4
 {
 
-    public class StateGlobal_Charactor : State<Unit>
+    public class StateGlobal_Unit : State<Unit>
     {
-        private StateGlobal_Charactor() { }
+        private StateGlobal_Unit() { }
 
 
         //this is a singleton
-        public static readonly StateGlobal_Charactor inst = new StateGlobal_Charactor();
+        public static readonly StateGlobal_Unit inst = new StateGlobal_Unit();
 
         //public override void Enter(FieldPlayer* player) { }
 
@@ -131,12 +131,12 @@
 
     //------------------------------------------------------------------------
 
-    public class State_Move_Character : State<Unit>
+    public class State_Move_Unit : State<Unit>
     {
-            private State_Move_Character() { }
+            private State_Move_Unit() { }
 
             //this is a singleton
-            public static readonly State_Move_Character inst = new State_Move_Character();
+            public static readonly State_Move_Unit inst = new State_Move_Unit();
 
             public override void Enter(Unit player)
             {
