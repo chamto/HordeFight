@@ -40,7 +40,8 @@ namespace Proto_AI_4
         public int row; //행
         public int column; //열
         public float horn; //width 진형의 뿔 , 양수면 앞으로 나오고 음수면 뒤로 나온다 
-        public float dis_between; //사이거리 
+        public float between_x; //사이거리 
+        public float between_z; //사이거리 
     }
 
     public struct FormCircle
@@ -119,7 +120,7 @@ namespace Proto_AI_4
         {
 
             int len = _unit_count < _form_rect.column ? _unit_count : _form_rect.column;
-            float center = (len - 1) * _form_rect.dis_between * 0.5f; //중앙을 기준점으로 삼는다 
+            float center = (len - 1) * _form_rect.between_x * 0.5f; //중앙을 기준점으로 삼는다 
             _form_standard = new Vector3(center, 0, 0); 
 
             float tan =  0 != center ? (_form_rect.horn / center) : 0;
@@ -130,8 +131,8 @@ namespace Proto_AI_4
                     int idx = col +( row * _form_rect.column);
                     if (idx >= _units.Count) return;
 
-                    float x = col * _form_rect.dis_between;
-                    float z = -row * _form_rect.dis_between;
+                    float x = col * _form_rect.between_x;
+                    float z = -row * _form_rect.between_z;
                     float height = x * tan;
                     if(x > center)
                     {
@@ -281,7 +282,8 @@ namespace Proto_AI_4
         {
             _squards[0]._form_rect.row = 2;
             _squards[0]._form_rect.column = 10;
-            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.between_x = 1.2f;
+            _squards[0]._form_rect.between_z = 1.2f;
             _squards[0]._form_rect.horn = 0;
             _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
@@ -294,7 +296,8 @@ namespace Proto_AI_4
         {
             _squards[0]._form_rect.row = 7;
             _squards[0]._form_rect.column = 3;
-            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.between_x = 1.2f;
+            _squards[0]._form_rect.between_z = 1.8f;
             _squards[0]._form_rect.horn = 0;
             _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
@@ -314,7 +317,8 @@ namespace Proto_AI_4
 
             _squards[0]._form_rect.row = 3;
             _squards[0]._form_rect.column = 5;
-            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.between_x = 1.2f;
+            _squards[0]._form_rect.between_z = 1.2f;
             _squards[0]._form_rect.horn = 0;
             _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
@@ -356,7 +360,8 @@ namespace Proto_AI_4
 
             _squards[0]._form_rect.row = 3;
             _squards[0]._form_rect.column = 5;
-            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.between_x = 1.2f;
+            _squards[0]._form_rect.between_z = 1.2f;
             _squards[0]._form_rect.horn = 0;
             _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[0]._formation._initPos = new Vector3(0, 0, 0);
