@@ -37,7 +37,7 @@ namespace Proto_AI_4
 
     public struct FormRectangular
     {
-        public int row; //행
+        //public int row; //행
         public int column; //열
         public float horn; //width 진형의 뿔 , 양수면 앞으로 나오고 음수면 뒤로 나온다 
         public float between_x; //사이거리 
@@ -118,13 +118,13 @@ namespace Proto_AI_4
         //_formation 값을 채운다 
         private void CalcOffset_Rect()
         {
+            int max_row = (_units.Count / _form_rect.column) + 1;
+            int len_x = _unit_count < _form_rect.column ? _unit_count : _form_rect.column;
+            float center_x = (len_x - 1) * _form_rect.between_x * 0.5f; //중앙을 기준점으로 삼는다 
+            _form_standard = new Vector3(center_x, 0, 0); 
 
-            int len = _unit_count < _form_rect.column ? _unit_count : _form_rect.column;
-            float center = (len - 1) * _form_rect.between_x * 0.5f; //중앙을 기준점으로 삼는다 
-            _form_standard = new Vector3(center, 0, 0); 
-
-            float tan =  0 != center ? (_form_rect.horn / center) : 0;
-            for (int row = 0; row < _form_rect.row; row++)
+            float tan =  0 != center_x ? (_form_rect.horn / center_x) : 0;
+            for (int row = 0; row < max_row; row++)
             {
                 for (int col = 0; col < _form_rect.column; col++)
                 {
@@ -133,10 +133,12 @@ namespace Proto_AI_4
 
                     float x = col * _form_rect.between_x;
                     float z = -row * _form_rect.between_z;
-                    float height = x * tan;
-                    if(x > center)
+
+                    // z/x = tan , z = x * tan
+                    float height = x * tan; //왼쪽 빗면
+                    if(center_x < x ) //오른쪽 빗면
                     {
-                        height = (center * 2 - x) * tan; 
+                        height = (center_x * 2 - x) * tan; 
                     }
 
                     _units[idx]._formation._initPos = new Vector3(x, 0, z + height);
@@ -280,7 +282,7 @@ namespace Proto_AI_4
 
         public void ApplyFormation_SQD1_Width()
         {
-            _squards[0]._form_rect.row = 2;
+            //_squards[0]._form_rect.row = 2;
             _squards[0]._form_rect.column = 10;
             _squards[0]._form_rect.between_x = 1.2f;
             _squards[0]._form_rect.between_z = 1.2f;
@@ -294,7 +296,7 @@ namespace Proto_AI_4
 
         public void ApplyFormation_SQD1_Height()
         {
-            _squards[0]._form_rect.row = 7;
+            //_squards[0]._form_rect.row = 7;
             _squards[0]._form_rect.column = 3;
             _squards[0]._form_rect.between_x = 1.2f;
             _squards[0]._form_rect.between_z = 1.8f;
@@ -315,7 +317,7 @@ namespace Proto_AI_4
             _isDirMatch = true;
 
 
-            _squards[0]._form_rect.row = 3;
+            //_squards[0]._form_rect.row = 3;
             _squards[0]._form_rect.column = 5;
             _squards[0]._form_rect.between_x = 1.2f;
             _squards[0]._form_rect.between_z = 1.2f;
@@ -358,7 +360,7 @@ namespace Proto_AI_4
             _follow_gap = 5;
 
 
-            _squards[0]._form_rect.row = 3;
+            //_squards[0]._form_rect.row = 3;
             _squards[0]._form_rect.column = 5;
             _squards[0]._form_rect.between_x = 1.2f;
             _squards[0]._form_rect.between_z = 1.2f;
