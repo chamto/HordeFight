@@ -158,7 +158,7 @@ namespace Proto_AI_4
             }
         }
 
-        public void ApplyFormationOffset()
+        public void ApplyFormation()
         {
 
             if (_eFormKind == eFormKind.Rectangular)
@@ -277,6 +277,32 @@ namespace Proto_AI_4
             return platoon;
         }
 
+        public void ApplyFormation_SQD1_Width()
+        {
+            _squards[0]._form_rect.row = 2;
+            _squards[0]._form_rect.column = 10;
+            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.horn = 0;
+            _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
+            _squards[0]._formation._initPos = new Vector3(0, 0, 3);
+            _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
+            _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[0].ApplyFormation();
+        }
+
+        public void ApplyFormation_SQD1_Height()
+        {
+            _squards[0]._form_rect.row = 7;
+            _squards[0]._form_rect.column = 3;
+            _squards[0]._form_rect.dis_between = 1.2f;
+            _squards[0]._form_rect.horn = 0;
+            _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
+            _squards[0]._formation._initPos = new Vector3(0, 0, 3);
+            _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
+            _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
+            _squards[0].ApplyFormation();
+        }
+
         //십자가형 배치
         public void ApplyFormation_SQD4_Cross()
         {
@@ -294,28 +320,28 @@ namespace Proto_AI_4
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
             _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[0].ApplyFormationOffset();
+            _squards[0].ApplyFormation();
 
             _squards[1]._form_rect = _squards[0]._form_rect;
             _squards[1]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[1]._formation._initPos = new Vector3(-5, 0, -3);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
             _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[1].ApplyFormationOffset();
+            _squards[1].ApplyFormation();
 
             _squards[2]._form_rect = _squards[0]._form_rect;
             _squards[2]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[2]._formation._initPos = new Vector3(5, 0, -3);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[2].ApplyFormationOffset();
+            _squards[2].ApplyFormation();
 
             _squards[3]._form_circle.radius = 3;
             _squards[3]._eFormKind = Squard.eFormKind.Circle;
             _squards[3]._formation._initPos = new Vector3(0, 0, -6);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
             _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[3].ApplyFormationOffset();
+            _squards[3].ApplyFormation();
         }
 
         //길게 배치
@@ -336,28 +362,28 @@ namespace Proto_AI_4
             _squards[0]._formation._initPos = new Vector3(0, 0, 0);
             _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
             _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[0].ApplyFormationOffset();
+            _squards[0].ApplyFormation();
 
             _squards[1]._form_rect = _squards[0]._form_rect;
             _squards[1]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[1]._formation._initPos = new Vector3(0, 0, -3);
             _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
             _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[1].ApplyFormationOffset();
+            _squards[1].ApplyFormation();
 
             _squards[2]._form_rect = _squards[0]._form_rect;
             _squards[2]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[2]._formation._initPos = new Vector3(0, 0, -6);
             _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
             _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[2].ApplyFormationOffset();
+            _squards[2].ApplyFormation();
 
             _squards[3]._form_rect = _squards[0]._form_rect;
             _squards[3]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[3]._formation._initPos = new Vector3(0, 0, -9);
             _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
             _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
-            _squards[3].ApplyFormationOffset();
+            _squards[3].ApplyFormation();
         }
 
         override public void Update(float deltaTime)

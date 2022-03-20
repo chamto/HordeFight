@@ -55,11 +55,11 @@ namespace Proto_AI_4
         public bool _Squard_2_Solo_Activity = false;
         public bool _Squard_3_Solo_Activity = false;
 
-        public Platoon _Platoon_0 = null;
-        public Squard _Squard_0 = null;
-        public Squard _Squard_1 = null;
-        public Squard _Squard_2 = null;
-        public Squard _Squard_3 = null;
+        public Platoon[] _Platoon = new Platoon[2];
+        //public Squard _Squard_0 = null;
+        //public Squard _Squard_1 = null;
+        //public Squard _Squard_2 = null;
+        //public Squard _Squard_3 = null;
 
         public bool _init = false;
 
@@ -80,10 +80,65 @@ namespace Proto_AI_4
 
             ObjectManager.Inst.Init();
 
-            //------
+            //----------------------------------------------
 
             EntityMgr.list.Clear();
 
+            InitPlatton_SQD1(0);
+            //InitPlatton_SQD4_Cross(0);
+            //----------------------------------------------
+
+            //충돌검출기 초기화 
+            List<SweepPrune.CollisionObject> collObj = new List<SweepPrune.CollisionObject>();
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                collObj.Add(EntityMgr.list[i]._collision);
+            }
+            _sweepPrune.Initialize(collObj);
+
+            //----------------------------------------------
+
+        }
+
+        public void InitPlatton_SQD1(int platId)
+        {
+            Unit unit = null;
+            for (int i = 0; i < 20; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리 
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                unit._disposition._platoon_num = 0;
+                unit._disposition._squard_num = 0;
+                unit._disposition._squard_pos = i;
+                //unit._steeringBehavior.ArriveOn();
+            }
+
+            _Platoon[platId] = Platoon.Create_Platoon(EntityMgr.list);
+            _Platoon[platId]._targetPos = _tr_platoon_0.position;
+            _Platoon[platId]._pos = _tr_platoon_0.position;
+            //_Platoon[platId].ApplyFormation_SQD1_Width();
+            _Platoon[platId].ApplyFormation_SQD1_Height();
+
+
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                Unit u = EntityMgr.list[i];
+                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                //u._steeringBehavior.ObstacleAvoidanceOn();
+                //u._steeringBehavior.FlockingOn();
+                //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
+
+                //if(0 == u._id)
+                {
+                    u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                }
+            }
+        }
+
+        public void InitPlatton_SQD4_Cross(int platId)
+        {
             Unit unit = null;
             for (int i = 0; i < 10; i++)
             {
@@ -131,18 +186,14 @@ namespace Proto_AI_4
                 //unit._steeringBehavior.ArriveOn();
             }
 
-            _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
-            _Platoon_0._targetPos = _tr_platoon_0.position;
-            _Platoon_0._pos = _tr_platoon_0.position;
-            _Platoon_0.ApplyFormation_SQD4_Cross();
-            //_Platoon_0.ApplyFormation_SQD4_String();
+            _Platoon[platId] = Platoon.Create_Platoon(EntityMgr.list);
+            _Platoon[platId]._targetPos = _tr_platoon_0.position;
+            _Platoon[platId]._pos = _tr_platoon_0.position;
+            _Platoon[platId].ApplyFormation_SQD4_Cross();
+            //_Platoon[platId].ApplyFormation_SQD4_String();
 
-            _Squard_0 = _Platoon_0._squards[0];
-            _Squard_1 = _Platoon_0._squards[1];
-            _Squard_2 = _Platoon_0._squards[2];
-            _Squard_3 = _Platoon_0._squards[3];
 
-            for(int i=0;i< EntityMgr.list.Count;i++)
+            for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
                 //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
@@ -155,75 +206,61 @@ namespace Proto_AI_4
                     u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
                 }
             }
-
-            //==============================
-
-            //충돌검출기 초기화 
-            List<SweepPrune.CollisionObject> collObj = new List<SweepPrune.CollisionObject>();
-            for (int i = 0; i < EntityMgr.list.Count; i++)
-            {
-                collObj.Add(EntityMgr.list[i]._collision);
-            }
-            _sweepPrune.Initialize(collObj);
-
-            //==============================
-
         }
 
 
         public void Update(float deltaTime)
         {
 
-            _Platoon_0._speed = _formation_platoon_speed;
-            _Platoon_0._targetPos = _tr_platoon_0.position;
-            _Platoon_0.Update(deltaTime);
+            _Platoon[0]._speed = _formation_platoon_speed;
+            _Platoon[0]._targetPos = _tr_platoon_0.position;
+            _Platoon[0].Update(deltaTime);
 
-            _Squard_0._speed = _formation_squard_speed;
-            _Squard_1._speed = _formation_squard_speed;
-            _Squard_2._speed = _formation_squard_speed;
-            _Squard_3._speed = _formation_squard_speed;
+            for(int i=0;i< _Platoon[0]._squard_count;i++)
+            {
+                _Platoon[0]._squards[i]._speed = _formation_squard_speed;
 
-            _Squard_0._Solo_Activity = _Squard_0_Solo_Activity;
-            _Squard_1._Solo_Activity = _Squard_1_Solo_Activity;
-            _Squard_2._Solo_Activity = _Squard_2_Solo_Activity;
-            _Squard_3._Solo_Activity = _Squard_3_Solo_Activity;
+                Squard squard = _Platoon[0]._squards[i];
 
+                //------------------------------
+                bool activity = false;
+                Transform tr_squard = null;
+                if (0 == i)
+                {
+                    activity = _Squard_0_Solo_Activity;
+                    tr_squard = _tr_squard_0;
+                }
+                if (1 == i)
+                {
+                    activity = _Squard_1_Solo_Activity;
+                    tr_squard = _tr_squard_1;
+                }
+                if (2 == i)
+                {
+                    activity = _Squard_2_Solo_Activity;
+                    tr_squard = _tr_squard_2;
+                }
+                if (3 == i)
+                {
+                    activity = _Squard_3_Solo_Activity;
+                    tr_squard = _tr_squard_3;
+                }
+                //------------------------------
 
-            if (true == _Squard_0._Solo_Activity)
-            {
-                _Squard_0._targetPos = _tr_squard_0.position;
+                if (true == activity)
+                {
+                    squard._Solo_Activity = activity;
+                    squard._targetPos = tr_squard.position;
+                }
+                else
+                {
+                    tr_squard.position = squard._targetPos;
+                }
             }
-            else
-            {
-                _tr_squard_0.position = _Squard_0._targetPos;
-            }
-            if (true == _Squard_1._Solo_Activity)
-            {
-                _Squard_1._targetPos = _tr_squard_1.position;
-            }
-            else
-            {
-                _tr_squard_1.position = _Squard_1._targetPos;
-            }
-            if (true == _Squard_2._Solo_Activity)
-            {
-                _Squard_2._targetPos = _tr_squard_2.position;
-            }
-            else
-            {
-                _tr_squard_2.position = _Squard_2._targetPos;
-            }
-            if (true == _Squard_3._Solo_Activity)
-            {
-                _Squard_3._targetPos = _tr_squard_3.position;
-            }
-            else
-            {
-                _tr_squard_3.position = _Squard_3._targetPos;
-            }
+
 
             //==============================================
-            KeyInput();
+            KeyInput_Platoon(0);
             //==============================================
 
             foreach (Unit v in EntityMgr.list)
@@ -456,10 +493,10 @@ namespace Proto_AI_4
 
         }
 
-        public void KeyInput()
+        public void KeyInput_Platoon(int platID)
         {
             const float MOVE_LENGTH = 1f;
-            Vector3 n = _Platoon_0._targetPos - _Platoon_0._pos;
+            Vector3 n = _Platoon[platID]._targetPos - _Platoon[platID]._pos;
             if (Misc.IsZero(n))
                 n = Vector3.forward;
 
@@ -467,19 +504,19 @@ namespace Proto_AI_4
             {
 
                 n = VOp.Normalize(n);
-                _Platoon_0._targetPos += n * MOVE_LENGTH;
-                _Platoon_0._pos += n * MOVE_LENGTH;
+                _Platoon[platID]._targetPos += n * MOVE_LENGTH;
+                _Platoon[platID]._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._targetPos;
+                _tr_platoon_0.position = _Platoon[platID]._targetPos;
             }
             if (Input.GetKey(KeyCode.S))
             {
 
                 n = -VOp.Normalize(n);
-                _Platoon_0._targetPos += n * MOVE_LENGTH;
-                _Platoon_0._pos += n * MOVE_LENGTH;
+                _Platoon[platID]._targetPos += n * MOVE_LENGTH;
+                _Platoon[platID]._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._targetPos;
+                _tr_platoon_0.position = _Platoon[platID]._targetPos;
 
                 //------
                 //_Squard_0._targetPos += n * MOVE_LENGTH;
@@ -495,10 +532,10 @@ namespace Proto_AI_4
             {
 
                 n = -VOp.PerpN(n, Vector3.up);
-                _Platoon_0._targetPos += n * MOVE_LENGTH;
-                _Platoon_0._pos += n * MOVE_LENGTH;
+                _Platoon[platID]._targetPos += n * MOVE_LENGTH;
+                _Platoon[platID]._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._targetPos;
+                _tr_platoon_0.position = _Platoon[platID]._targetPos;
 
                 //------
                 //_Squard_3._targetPos += n * MOVE_LENGTH;
@@ -510,10 +547,10 @@ namespace Proto_AI_4
             {
 
                 n = VOp.PerpN(n, Vector3.up);
-                _Platoon_0._targetPos += n * MOVE_LENGTH;
-                _Platoon_0._pos += n * MOVE_LENGTH;
+                _Platoon[platID]._targetPos += n * MOVE_LENGTH;
+                _Platoon[platID]._pos += n * MOVE_LENGTH;
 
-                _tr_platoon_0.position = _Platoon_0._targetPos;
+                _tr_platoon_0.position = _Platoon[platID]._targetPos;
             }
 
         }
@@ -579,7 +616,7 @@ namespace Proto_AI_4
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
 
 
-            _Platoon_0.Draw(Color.green); //소대 출력
+            _Platoon[0].Draw(Color.green); //소대 출력
 
             Color color = Color.black;
             foreach (Unit v in EntityMgr.list)
