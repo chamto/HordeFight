@@ -327,6 +327,10 @@ namespace Proto_AI_4
         public void Update(float deltaTime)
         {
 
+            _stateMachine.Update();
+
+            //----------------------------------------------
+
             _oldPos = _pos;
             _worldOffsetPos = _steeringBehavior._targetPos;
             if (null != _squard)
