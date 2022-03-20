@@ -122,7 +122,7 @@ GameObject:
   m_Component:
   - component: {fileID: 124964469}
   m_Layer: 0
-  m_Name: tr_squard_2
+  m_Name: __tr_squard_0_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -140,6 +140,34 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &487921699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 487921700}
+  m_Layer: 0
+  m_Name: __tr_squard_1_0
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &487921700
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 487921699}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 28.65, y: 0, z: 16.33}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &567907275
 GameObject:
@@ -183,13 +211,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _stage:
-    _tr_target: {fileID: 0}
     _tr_test: {fileID: 0}
     _tr_line_a: {fileID: 0}
     _tr_line_b: {fileID: 0}
-    _tr_test2_s: {fileID: 0}
-    _tr_test2_e: {fileID: 0}
-    _formation_speed: 10
+    _tr_platoon_0: {fileID: 0}
+    _tr_squard_0: {fileID: 0}
+    _tr_squard_1: {fileID: 0}
+    _tr_squard_2: {fileID: 0}
+    _tr_squard_3: {fileID: 0}
+    _formation_platoon_speed: 10
+    _formation_squard_speed: 10
     _radius_geo: 0.5
     _radius_body: 1
     _mass: 1
@@ -199,10 +230,21 @@ MonoBehaviour:
     _Friction: 0.85
     _anglePerSecond: 180
     _weightArrive: 20
-    _isObjNonpenetration: 1
-    _isStrNonpenetration: 1
+    _weightOffsetPursuit: 20
+    _weightObstacleAvoidance: 20
+    _weightSeparation: 20
+    _weightAlignment: 20
+    _weightCohesion: 20
+    _viewDistance: 10
+    _ObjNonpenetration: 1
+    _StrNonpenetration: 1
     _minRange: 0
     _maxRange: 0.5
+    _Iterations: 20
+    _Squard_0_Solo_Activity: 0
+    _Squard_1_Solo_Activity: 0
+    _Squard_2_Solo_Activity: 0
+    _Squard_3_Solo_Activity: 0
     _init: 0
   _Draw_EntityTile: 0
   _Draw_UpTile: 0
@@ -253,7 +295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 734087593}
   m_Layer: 0
-  m_Name: tr_squard_0
+  m_Name: __tr_squard_0_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -362,7 +404,7 @@ GameObject:
   m_Component:
   - component: {fileID: 787752419}
   m_Layer: 0
-  m_Name: tr_squard_1
+  m_Name: __tr_squard_0_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -39262,6 +39304,34 @@ Transform:
   m_Father: {fileID: 991038233}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1245049270
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 1245049271}
+  m_Layer: 0
+  m_Name: tr_platoon_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1245049271
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1245049270}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 28.24, y: 0, z: 17.98}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1294313508
 GameObject:
   m_ObjectHideFlags: 0
@@ -39343,7 +39413,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1560445913
 Transform:
   m_ObjectHideFlags: 0
@@ -48720,7 +48790,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1585501079
 Transform:
   m_ObjectHideFlags: 0
@@ -87136,7 +87206,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2033657044}
   m_Layer: 0
-  m_Name: tr_squard_3
+  m_Name: __tr_squard_0_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -100,6 +100,7 @@ namespace Proto_AI_4
             return squard;
         }
 
+        //_formation 값을 채운다 
         private void CalcOffset_Width()
         {
 
@@ -249,11 +250,12 @@ namespace Proto_AI_4
         }
 
         //십자가형 배치
-        public void ApplyFormationOffset_Fixed()
+        public void ApplyFormation_SQD4_Cross()
         {
             if (_squard_count != 4) return;
 
             _isFollow = false;
+            _isDirMatch = true;
 
             _squards[0]._eFormKind = Squard.eFormKind.Circle;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
@@ -281,11 +283,13 @@ namespace Proto_AI_4
         }
 
         //길게 배치
-        public void ApplyFormationOffset_Follow()
+        public void ApplyFormation_SQD4_String()
         {
             if (_squard_count != 4) return;
 
             _isFollow = true;
+            _isDirMatch = false;
+            _follow_gap = 5;
 
             _squards[0]._eFormKind = Squard.eFormKind.Width;
             _squards[0]._formation._initPos = new Vector3(0, 0, 0);
@@ -324,7 +328,7 @@ namespace Proto_AI_4
                 {
                     if(false == _isFollow)
                     {
-                        //1* 오프셋위치르 고정위치를 계산함 
+                        //1* 오프셋위치로 고정위치를 계산함 
                         _squards[i]._targetPos = (_rotation * _squards[i]._formation._offset) + _pos; //PointToWorldSpace  
                     }
                     else

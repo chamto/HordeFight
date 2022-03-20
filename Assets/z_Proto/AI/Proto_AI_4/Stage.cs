@@ -72,10 +72,10 @@ namespace Proto_AI_4
             _tr_line_b = GameObject.Find("line_b").transform;
 
             _tr_platoon_0 = GameObject.Find("tr_platoon_0").transform;
-            _tr_squard_0 = GameObject.Find("tr_squard_0").transform;
-            _tr_squard_1 = GameObject.Find("tr_squard_1").transform;
-            _tr_squard_2 = GameObject.Find("tr_squard_2").transform;
-            _tr_squard_3 = GameObject.Find("tr_squard_3").transform;
+            _tr_squard_0 = GameObject.Find("__tr_squard_0_0").transform;
+            _tr_squard_1 = GameObject.Find("__tr_squard_0_1").transform;
+            _tr_squard_2 = GameObject.Find("__tr_squard_0_2").transform;
+            _tr_squard_3 = GameObject.Find("__tr_squard_0_3").transform;
 
 
             ObjectManager.Inst.Init();
@@ -134,8 +134,8 @@ namespace Proto_AI_4
             _Platoon_0 = Platoon.Create_Platoon(EntityMgr.list);
             _Platoon_0._targetPos = _tr_platoon_0.position;
             _Platoon_0._pos = _tr_platoon_0.position;
-            _Platoon_0.ApplyFormationOffset_Fixed();
-            //_Platoon_0.ApplyFormationOffset_Follow();
+            //_Platoon_0.ApplyFormation_SQD4_Cross();
+            _Platoon_0.ApplyFormation_SQD4_String();
 
             _Squard_0 = _Platoon_0._squards[0];
             _Squard_1 = _Platoon_0._squards[1];
@@ -588,6 +588,10 @@ namespace Proto_AI_4
 
                 if (null != v._squard && v == v._squard._units[0])
                     color = Color.yellow;
+
+                if(3 == v._disposition._squard_num || 2 == v._disposition._squard_num)
+                    color = Color.white;
+
                 if (0 == v._id)
                     color = Color.red;
 
