@@ -120,8 +120,8 @@ namespace Proto_AI_4
         {
             int max_row = (_units.Count / _form_rect.column) + 1;
             int len_x = _unit_count < _form_rect.column ? _unit_count : _form_rect.column;
-            float center_x = (len_x - 1) * _form_rect.between_x * 0.5f; //중앙을 기준점으로 삼는다 
-            _form_standard = new Vector3(center_x, 0, 0); 
+            float center_x = (len_x - 1) * _form_rect.between_x * 0.5f; //중앙 길이를 구한다
+            //_form_standard = new Vector3(center_x, 0, 0); 
 
             float tan =  0 != center_x ? (_form_rect.horn / center_x) : 0;
             for (int row = 0; row < max_row; row++)
@@ -131,7 +131,7 @@ namespace Proto_AI_4
                     int idx = col +( row * _form_rect.column);
                     if (idx >= _units.Count) return;
 
-                    float x = col * _form_rect.between_x;
+                    float x = col * _form_rect.between_x; 
                     float z = -row * _form_rect.between_z;
 
                     // z/x = tan , z = x * tan
@@ -140,6 +140,8 @@ namespace Proto_AI_4
                     {
                         height = (center_x * 2 - x) * tan; 
                     }
+
+                    x -= center_x; //중앙에 배치되도록 한다
 
                     _units[idx]._formation._initPos = new Vector3(x, 0, z + height);
                     _units[idx]._formation._offset = _units[idx]._formation._initPos - _form_standard;

@@ -84,8 +84,8 @@ namespace Proto_AI_4
 
             EntityMgr.list.Clear();
 
-            InitPlatton_SQD1(0);
-            //InitPlatton_SQD4_Cross(0);
+            //InitPlatton_SQD1(0);
+            InitPlatton_SQD4_Cross(0);
             //----------------------------------------------
 
             //충돌검출기 초기화 
