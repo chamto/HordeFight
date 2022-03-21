@@ -332,9 +332,10 @@ namespace Proto_AI_4
             //----------------------------------------------
 
             _oldPos = _pos;
-            _worldOffsetPos = _steeringBehavior._targetPos;
+            _worldOffsetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
             if (null != _squard)
             {
+                //OffsetPursuit 에서의 목표위치 
                 _worldOffsetPos = (_squard._rotation * _formation._offset) + _squard._pos; //PointToWorldSpace 
 
                 //---------

@@ -272,7 +272,7 @@ namespace Proto_AI_4
                 //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
                 //}
 
-                v._steeringBehavior._targetPos = v._squard._pos;
+                v._steeringBehavior._targetPos = v._squard._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);

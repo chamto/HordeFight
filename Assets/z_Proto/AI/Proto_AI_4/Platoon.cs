@@ -197,6 +197,32 @@ namespace Proto_AI_4
             }
         }
 
+        //bool _isFollow = true;
+        //float _follow_gap = 2;
+        //override public void Update(float deltaTime)
+        //{
+        //    base.Update(deltaTime);
+
+        //    //Vector3 toDir = _pos - _targetPos;
+        //    Vector3 beforePos = _pos;
+        //    for (int i = 0; i < _units.Count; i++)
+        //    {
+        //        if (false == _isFollow)
+        //        {
+        //            //1* 오프셋위치로 고정위치를 계산함 
+        //            _units[i]._steeringBehavior._targetPos = (_rotation * _units[i]._formation._offset) + _pos; //PointToWorldSpace  
+        //        }
+        //        else
+        //        {
+        //            //1* 일정거리를 두며 앞에 분대를 따라가게 계산함 
+        //            _units[i]._steeringBehavior._targetPos = beforePos + (_units[i]._pos - beforePos).normalized * _follow_gap;
+        //            beforePos = _units[i]._pos;
+
+        //        }
+
+        //    }
+        //}
+
         //유닛을 분대에서 뺀다 
         public bool UnitDismiss(Unit unit)
         {
@@ -299,7 +325,7 @@ namespace Proto_AI_4
             //_squards[0]._form_rect.row = 7;
             _squards[0]._form_rect.column = 3;
             _squards[0]._form_rect.between_x = 1.2f;
-            _squards[0]._form_rect.between_z = 1.8f;
+            _squards[0]._form_rect.between_z = 2.5f;
             _squards[0]._form_rect.horn = 0;
             _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
             _squards[0]._formation._initPos = new Vector3(0, 0, 3);
