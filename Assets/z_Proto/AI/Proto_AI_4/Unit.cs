@@ -159,10 +159,7 @@ namespace Proto_AI_4
 
         //--------------------------------------------------
 
-        public Formation _formation = new Formation();
-        public Disposition _disposition = new Disposition();
-        public Platoon _platoon = null; //소속소대정보 
-        public Squard _squard = null; //소속분대정보  
+        public Disposition _disposition = new Disposition(); //배치정보 
 
         public StateMachine<Unit> _stateMachine = null;
 
@@ -333,13 +330,13 @@ namespace Proto_AI_4
 
             _oldPos = _pos;
             _worldOffsetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
-            if (null != _squard)
+            if (null != _disposition._belong_formation)
             {
                 //OffsetPursuit 에서의 목표위치 
-                _worldOffsetPos = (_squard._rotation * _formation._offset) + _squard._pos; //PointToWorldSpace 
+                _worldOffsetPos = (_disposition._belong_formation._rotation * _disposition._offset) + _disposition._belong_formation._pos; //PointToWorldSpace 
 
                 //---------
-                if (_squard._changeTarget)
+                if (_disposition._belong_formation._changeTarget)
                 {
                     _before_worldOffsetPos = _pos;
                 }
