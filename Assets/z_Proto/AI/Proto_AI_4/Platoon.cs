@@ -379,7 +379,7 @@ namespace Proto_AI_4
 
             FormInfo info = new FormInfo();
             info.eKind = eFormKind.Rectangular;
-            info.column = 2;
+            info.column = 3;
             info.row = 2;
             info.between_x = 1.2f;
             info.between_z = 1.5f;
@@ -407,7 +407,7 @@ namespace Proto_AI_4
                 form._info = info;
                 form._initPos = new Vector3(0, 0, -rowLen*i);
                 form._offset = form._initPos + _standard;
-                form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace 
+                form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace , 위치적용
                 form._isFollow = true;
                 form._follow_gap = rowLen;
                 //form._isDirMatch = true;
@@ -484,8 +484,8 @@ namespace Proto_AI_4
                         }
                         else
                         {
-                            _forms[i]._targetPos = beforePos + (_forms[i]._targetPos - beforePos).normalized * _forms[i]._follow_gap;
-                            //_forms[i]._targetPos = beforePos + (_forms[i]._pos - beforePos).normalized * _forms[i]._follow_gap;
+                            //_forms[i]._targetPos = beforePos + (_forms[i]._targetPos - beforePos).normalized * _forms[i]._follow_gap;
+                            _forms[i]._targetPos = beforePos + (_forms[i]._pos - beforePos).normalized * _forms[i]._follow_gap; //초기위치가 설정된 pos를 사용해야 한다 
                         }
                         beforePos = _forms[i]._targetPos;
                         //beforePos = _forms[i]._pos;
