@@ -116,8 +116,9 @@ namespace Proto_AI_4
             _Squads[0] = Squad.Create(0,EntityMgr.list);
             _Squads[0]._targetPos = _tr_platoon_0.position;
             _Squads[0]._pos = _tr_platoon_0.position;
-            _Squads[0].ApplyFormation_SQD1_Width();
-
+            //_Squads[0].ApplyFormation_SQD1_Width();
+            //_Squads[0].ApplyFormation_SQD1_Height();
+            _Squads[0].ApplyFormation_String();
 
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
@@ -657,6 +658,7 @@ namespace Proto_AI_4
 
 
             //_Platoons[0].Draw(Color.green); //소대 출력
+            _Squads[0].Draw(Color.green);
 
             Color color = Color.black;
             foreach (Unit v in EntityMgr.list)
