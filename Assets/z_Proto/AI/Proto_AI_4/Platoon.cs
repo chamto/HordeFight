@@ -17,9 +17,9 @@ namespace Proto_AI_4
         public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
         public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
 
-        public Platoon _belong_platoon; //소속소대정보 
+        public Squad _belong_platoon; //소속소대정보 
         public Squad _belong_squad; //소속분대정보  
-        public Formation _belong_formation; //속한진형 
+        public Squad _belong_formation; //속한진형 
 
         public bool _solo_activity; //단독활동 ??
 
@@ -70,78 +70,216 @@ namespace Proto_AI_4
     }
 
     //진형
-    public class Formation : OrderPoint
+    //public class Formation : OrderPoint
+    //{
+    //    public Vector3 _standard; //[기준점] 기본으로 원점의 위치에 있다. 하위 자식들을 한꺼번에 위치변경하기 위해 사용된다 
+
+    //    public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
+    //    public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
+
+    //    public FormInfo _info;
+
+    //    public Squad _belong_squard = null; //속한 분대 
+    //    public List<Unit> _units = new List<Unit>(); //포함유닛
+
+    //    public bool _solo_activity = false; //단독활동
+    //    public bool _isFollow = false;
+    //    public float _follow_gap = 3;
+    //    public bool _isDirMatch = false; //분대방향을 소대방향과 일치
+
+    //    public void Init()
+    //    {
+    //        _standard = Vector3.zero;
+    //        _initPos = Vector3.zero;
+    //        _offset = Vector3.zero;
+
+    //        _info.Init();
+    //        _belong_squard = null; //todo : 연결관계 수정필요
+    //        _units.Clear();
+
+    //        _solo_activity = false;
+    //        _isFollow = false;
+    //        _follow_gap = 3;
+    //        _isDirMatch = false;
+    //    }
+
+
+
+    //    //fixme : 메모리풀로 변경 필요 
+    //    static public Formation Create()
+    //    {
+    //        Formation form = new Formation();
+    //        form.Init();
+
+
+    //        return form;
+    //    }
+
+    //    //_formation 값을 채운다 
+    //    private void CalcOffset_Rect()
+    //    {
+    //        int max_row = (_units.Count / _info.column) + 1;
+    //        int len_x = _units.Count < _info.column ? _units.Count : _info.column;
+    //        float center_x = (len_x - 1) * _info.between_x * 0.5f; //중앙 길이를 구한다
+
+
+    //        float tan = 0 != center_x ? (_info.horn / center_x) : 0;
+    //        for (int row = 0; row < max_row; row++)
+    //        {
+    //            for (int col = 0; col < _info.column; col++)
+    //            {
+    //                int idx = col + (row * _info.column);
+    //                if (idx >= _units.Count) return;
+
+    //                float x = col * _info.between_x;
+    //                float z = -row * _info.between_z;
+
+    //                // z/x = tan , z = x * tan
+    //                float height = x * tan; //왼쪽 빗면
+    //                if (center_x < x) //오른쪽 빗면
+    //                {
+    //                    height = (center_x * 2 - x) * tan;
+    //                }
+
+    //                x -= center_x; //중앙에 배치되도록 한다
+
+    //                _units[idx]._disposition._initPos = new Vector3(x, 0, z + height);
+    //                _units[idx]._disposition._offset = _units[idx]._disposition._initPos + _standard;
+
+    //            }
+
+    //        }
+    //    }
+
+    //    private void CalcOffset_Circle()
+    //    {
+    //        //_standard = new Vector3(0, 0, _set.radius);
+    //        float angle = 360 / _units.Count;
+    //        for (int i = 0; i < _units.Count; i++)
+    //        {
+    //            Quaternion rot = Quaternion.AngleAxis(angle * i, Vector3.up);
+    //            _units[i]._disposition._initPos = rot * new Vector3(0, 0, _info.radius);
+    //            _units[i]._disposition._offset = _units[i]._disposition._initPos + _standard;
+    //        }
+    //    }
+
+    //    public void ApplyFormation()
+    //    {
+
+    //        if (_info.eKind == eFormKind.Rectangular)
+    //        {
+    //            CalcOffset_Rect();
+    //        }
+    //        else if (_info.eKind == eFormKind.Circle)
+    //        {
+    //            CalcOffset_Circle();
+    //        }
+    //    }
+
+    //}
+
+    //분대 , 역할의 단위 
+    public class Squad : OrderPoint
     {
         public Vector3 _standard; //[기준점] 기본으로 원점의 위치에 있다. 하위 자식들을 한꺼번에 위치변경하기 위해 사용된다 
 
         public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
         public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
 
+        public Squad _parent = null; //부모 분대 
+        public List<Unit> _units = new List<Unit>(); //포함유닛
+        public List<Squad> _children = new List<Squad>(); //포함진형
+
         public FormInfo _info;
 
-        public Squad _belong_squard = null; //속한 분대 
-        public List<Unit> _units = new List<Unit>(); //포함유닛
+        //----------------------------------------------------
 
-        public bool _solo_activity = false; //단독활동
+        public int _squard_id = -1;
+
+        public bool _solo_activity = false; //단독활동 
         public bool _isFollow = false;
         public float _follow_gap = 3;
-        public bool _isDirMatch = false; //분대방향을 소대방향과 일치
+        public bool _isDirMatch = true; //분대방향을 소대방향과 일치
 
         public void Init()
         {
+            //OrderPoint 멤버변수 임시로 초기화 
+            _pos = Vector3.zero;
+            _targetPos = Vector3.zero;
+            _before_targetPos = Vector3.zero;
+
+            //--------------------------
+
             _standard = Vector3.zero;
             _initPos = Vector3.zero;
             _offset = Vector3.zero;
 
-            _info.Init();
-            _belong_squard = null; //todo : 연결관계 수정필요
-            _units.Clear();
+            _parent = null; //todo : 소대에서도 연결 끊는 처리 필요
 
+            _units.Clear();
+            _children.Clear(); //todo : 나중에 메모리풀로 변경하여 재할당 문제 피하기 
+
+            _info.Init();
+            _squard_id = -1;
             _solo_activity = false;
             _isFollow = false;
             _follow_gap = 3;
             _isDirMatch = false;
+
         }
 
-        //public void UnitList_Update(int squard_id, List<Unit> units)
-        //{
+        public void UnitList_Update(int squard_id, List<Unit> units)
+        {
 
-        //    if (0 == units.Count) return;
+            if (0 == units.Count) return;
 
-        //    _squard_id = squard_id;
+            _squard_id = squard_id;
 
-        //    //지정 분대id를 가지는 수만큼 공간을 늘린다 
-        //    _units.Clear();
-        //    for (int i = 0; i < units.Count; i++)
-        //    {
-        //        if (_squard_id == units[i]._disposition._squard_id)
-        //        {
-        //            _units.Add(null);
-        //        }
-        //    }
+            //지정 분대id를 가지는 수만큼 공간을 늘린다 
+            _units.Clear();
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (_squard_id == units[i]._disposition._squad_id)
+                {
+                    _units.Add(null);
+                }
+            }
 
-        //    //_units 의 unit_pos 위치에 unit 을 넣는다 
-        //    for (int i = 0; i < units.Count; i++)
-        //    {
-        //        if (_squard_id == units[i]._disposition._squard_id)
-        //        {
-        //            int upos = units[i]._disposition._unit_pos;
-        //            _units[upos] = units[i];
+            //_units 의 unit_pos 위치에 unit 을 넣는다 
+            for (int i = 0; i < units.Count; i++)
+            {
+                if (_squard_id == units[i]._disposition._squad_id)
+                {
+                    int upos = units[i]._disposition._unit_pos;
+                    _units[upos] = units[i];
+                    units[i]._disposition._belong_squad = this;
 
-        //        }
-        //    }
+                }
+            }
 
-
-        //}
+        }
 
         //fixme : 메모리풀로 변경 필요 
-        static public Formation Create()
+        static public Squad Create(int squard_id, List<Unit> units)
         {
-            Formation form = new Formation();
-            form.Init();
+            Squad squard = new Squad(); 
+            squard.Init();
+            squard.UnitList_Update(squard_id, units);
 
+            return squard; 
+        }
 
-            return form;
+        static public Squad Create()
+        {
+            Squad squard = new Squad();
+            squard.Init();
+
+            return squard;
+        }
+
+        static public void Release()
+        {
+            //todo : 메모리풀로 되돌리는 해제처리 넣기  
         }
 
         //_formation 값을 채운다 
@@ -192,7 +330,7 @@ namespace Proto_AI_4
             }
         }
 
-        public void ApplyFormation()
+        public void CalcOffset()
         {
 
             if (_info.eKind == eFormKind.Rectangular)
@@ -205,113 +343,16 @@ namespace Proto_AI_4
             }
         }
 
-
-    }
-
-    //분대 , 역할의 단위 
-    public class Squad : OrderPoint
-    {
-        public Vector3 _standard; //[기준점] 기본으로 원점의 위치에 있다. 하위 자식들을 한꺼번에 위치변경하기 위해 사용된다 
-
-        public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
-        public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
-
-        public Platoon _belong_platoon = null; //속한 소대
-        public List<Unit> _units = new List<Unit>(); //포함유닛
-        public List<Formation> _forms = new List<Formation>(); //포함진형
-
-        public bool _solo_activity = false; //단독활동 
-
-        //----------------------------------------------------
-
-        public int _squard_id = -1;
-
-        public bool _isFollow = false;
-        public float _follow_gap = 3;
-        public bool _isDirMatch = true; //분대방향을 소대방향과 일치
-
-        public void Init()
-        {
-            //OrderPoint 멤버변수 임시로 초기화 
-            _pos = Vector3.zero;
-            _targetPos = Vector3.zero;
-            _before_targetPos = Vector3.zero;
-
-            //--------------------------
-
-            _standard = Vector3.zero;
-            _initPos = Vector3.zero;
-            _offset = Vector3.zero;
-
-            _belong_platoon = null; //todo : 소대에서도 연결 끊는 처리 필요
-
-            _units.Clear();
-            _forms.Clear(); //todo : 나중에 메모리풀로 변경하여 재할당 문제 피하기 
-
-            _solo_activity = false;
-            _squard_id = -1;
-            _isFollow = false;
-            _follow_gap = 3;
-            _isDirMatch = false;
-
-        }
-
-        public void UnitList_Update(int squard_id, List<Unit> units)
-        {
-
-            if (0 == units.Count) return;
-
-            _squard_id = squard_id;
-
-            //지정 분대id를 가지는 수만큼 공간을 늘린다 
-            _units.Clear();
-            for (int i = 0; i < units.Count; i++)
-            {
-                if (_squard_id == units[i]._disposition._squad_id)
-                {
-                    _units.Add(null);
-                }
-            }
-
-            //_units 의 unit_pos 위치에 unit 을 넣는다 
-            for (int i = 0; i < units.Count; i++)
-            {
-                if (_squard_id == units[i]._disposition._squad_id)
-                {
-                    int upos = units[i]._disposition._unit_pos;
-                    _units[upos] = units[i];
-                    units[i]._disposition._belong_squad = this;
-
-                }
-            }
-
-        }
-
-        //fixme : 메모리풀로 변경 필요 
-        static public Squad Create(int squard_id, List<Unit> units)
-        {
-            Squad squard = new Squad(); 
-            squard.Init();
-            squard.UnitList_Update(squard_id, units);
-
-            return squard; 
-        }
-
-        static public void Release()
-        {
-            //todo : 메모리풀로 되돌리는 해제처리 넣기  
-        }
-
         public void ApplyFormation_SQD1_Width()
         {
-            _forms.Clear();
-            Formation form = Formation.Create();
-            _forms.Add(form);
+            _children.Clear();
+            Squad form = Squad.Create();
+            _children.Add(form);
 
             //--------------------------------------------
             //진형에 유닛등록
-            _forms[0]._units.Clear();
-            _forms[0]._units.AddRange(_units);
+            _children[0]._units.Clear();
+            _children[0]._units.AddRange(_units);
             //_forms[0]._units = _units; //이렇게 주소를 넣어주면 안된다. 복사본을 만들어야 한다 
 
             //유닛이 속한 진형 갱신 
@@ -324,29 +365,29 @@ namespace Proto_AI_4
             _isDirMatch = true;
             //_standard = new Vector3(0, 0, 2);
 
-            _forms[0]._info.column = 10;
-            _forms[0]._info.between_x = 1.2f;
-            _forms[0]._info.between_z = 1.2f;
-            _forms[0]._info.horn = 0;
-            _forms[0]._info.eKind = eFormKind.Rectangular;
+            _children[0]._info.column = 10;
+            _children[0]._info.between_x = 1.2f;
+            _children[0]._info.between_z = 1.2f;
+            _children[0]._info.horn = 0;
+            _children[0]._info.eKind = eFormKind.Rectangular;
             //_forms[0]._info.eKind = eFormKind.Circle;
             //_forms[0]._info.radius = 4f;
-            _forms[0]._initPos = new Vector3(0, 0, 4);
-            _forms[0]._offset = _forms[0]._initPos + _standard;
-            _forms[0]._pos = (_rotation * _forms[0]._offset) + _pos; //PointToWorldSpace 
-            _forms[0].ApplyFormation();
+            _children[0]._initPos = new Vector3(0, 0, 4);
+            _children[0]._offset = _children[0]._initPos + _standard;
+            _children[0]._pos = (_rotation * _children[0]._offset) + _pos; //PointToWorldSpace 
+            _children[0].CalcOffset();
         }
 
         public void ApplyFormation_SQD1_Height()
         {
-            _forms.Clear();
-            Formation form = Formation.Create();
-            _forms.Add(form);
+            _children.Clear();
+            Squad form = Squad.Create();
+            _children.Add(form);
 
             //--------------------------------------------
             //진형에 유닛등록
-            _forms[0]._units.Clear();
-            _forms[0]._units.AddRange(_units);
+            _children[0]._units.Clear();
+            _children[0]._units.AddRange(_units);
             //_forms[0]._units = _units; //이렇게 주소를 넣어주면 안된다. 복사본을 만들어야 한다 
 
             //유닛이 속한 진형 갱신 
@@ -358,24 +399,24 @@ namespace Proto_AI_4
 
             _isDirMatch = true;
 
-            _forms[0]._info.column = 3;
-            _forms[0]._info.between_x = 1.2f;
-            _forms[0]._info.between_z = 2.5f;
-            _forms[0]._info.horn = 0;
-            _forms[0]._info.eKind = eFormKind.Rectangular;
+            _children[0]._info.column = 3;
+            _children[0]._info.between_x = 1.2f;
+            _children[0]._info.between_z = 2.5f;
+            _children[0]._info.horn = 0;
+            _children[0]._info.eKind = eFormKind.Rectangular;
             //_forms[0]._info.eKind = eFormKind.Circle;
             //_forms[0]._info.radius = 4f;
-            _forms[0]._initPos = new Vector3(0, 0, 4);
-            _forms[0]._offset = _forms[0]._initPos + _standard;
-            _forms[0]._pos = (_rotation * _forms[0]._offset) + _pos; //PointToWorldSpace 
-            _forms[0].ApplyFormation();
+            _children[0]._initPos = new Vector3(0, 0, 4);
+            _children[0]._offset = _children[0]._initPos + _standard;
+            _children[0]._pos = (_rotation * _children[0]._offset) + _pos; //PointToWorldSpace 
+            _children[0].CalcOffset();
         }
 
         public void ApplyFormation_String()
         {
 
             //등록된 form 해제 처리 필요 
-            _forms.Clear();
+            _children.Clear();
 
             FormInfo info = new FormInfo();
             info.eKind = eFormKind.Rectangular;
@@ -385,7 +426,7 @@ namespace Proto_AI_4
             info.between_z = 1.5f;
             info.horn = 0;
 
-            Formation form = null;
+            Squad form = null;
             int rowNum = (_units.Count / (info.column * info.row))+1; //나머지가 나올수 있으므로 1을 더한다 
             int unitCount = 0;
             float rowLen = info.between_z * info.row;
@@ -393,7 +434,7 @@ namespace Proto_AI_4
             {
                 if (_units.Count <= unitCount) break;
 
-                form = Formation.Create();
+                form = Squad.Create();
                 form._units.Clear();
                 for(int j=0;j< info.column*info.row ;j++)
                 {
@@ -411,8 +452,8 @@ namespace Proto_AI_4
                 form._isFollow = true;
                 form._follow_gap = rowLen;
                 //form._isDirMatch = true;
-                form.ApplyFormation();
-                _forms.Add(form);
+                form.CalcOffset();
+                _children.Add(form);
             }
         }
 
@@ -465,14 +506,14 @@ namespace Proto_AI_4
 
             Vector3 toDir = _pos - _targetPos;
             Vector3 beforePos = _targetPos;
-            for (int i = 0; i < _forms.Count; i++)
+            for (int i = 0; i < _children.Count; i++)
             {
-                if (false == _forms[i]._solo_activity)
+                if (false == _children[i]._solo_activity)
                 {
-                    if (false == _forms[i]._isFollow)
+                    if (false == _children[i]._isFollow)
                     {
                         //1* 오프셋위치로 고정위치를 계산함 
-                        _forms[i]._targetPos = (_rotation * _forms[i]._offset) + _pos; //PointToWorldSpace  
+                        _children[i]._targetPos = (_rotation * _children[i]._offset) + _pos; //PointToWorldSpace  
                     }
                     else
                     {
@@ -480,25 +521,25 @@ namespace Proto_AI_4
                         if(0 == i)
                         {
                             //첫번째 진형은 오프셋에 따른 설정된 위치로 목표가 설정되어야 한다 
-                            _forms[i]._targetPos = (_rotation * _forms[i]._offset) + _pos;
+                            _children[i]._targetPos = (_rotation * _children[i]._offset) + _pos;
                         }
                         else
                         {
                             //_forms[i]._targetPos = beforePos + (_forms[i]._targetPos - beforePos).normalized * _forms[i]._follow_gap;
-                            _forms[i]._targetPos = beforePos + (_forms[i]._pos - beforePos).normalized * _forms[i]._follow_gap; //초기위치가 설정된 pos를 사용해야 한다 
+                            _children[i]._targetPos = beforePos + (_children[i]._pos - beforePos).normalized * _children[i]._follow_gap; //초기위치가 설정된 pos를 사용해야 한다 
                         }
-                        beforePos = _forms[i]._targetPos;
+                        beforePos = _children[i]._targetPos;
                         //beforePos = _forms[i]._pos;
                     }
 
-                    if (_forms[i]._isDirMatch)
+                    if (_children[i]._isDirMatch)
                     {
                         //분대방향을 소대방향과 일치시킨다 
-                        _forms[i]._pos = _forms[i]._targetPos + toDir;
+                        _children[i]._pos = _children[i]._targetPos + toDir;
                     }
 
                 }
-                _forms[i].Update(deltaTime); //임시로 여기서 갱신 , 스쿼드관리객체에서 따로 모아 갱신시키는 것으로 변경하기 
+                _children[i].Update(deltaTime); //임시로 여기서 갱신 , 스쿼드관리객체에서 따로 모아 갱신시키는 것으로 변경하기 
             }
         }
 
@@ -506,9 +547,9 @@ namespace Proto_AI_4
         {
             base.Draw(Color.red);
 
-            for (int i = 0; i < _forms.Count; i++)
+            for (int i = 0; i < _children.Count; i++)
             {
-                _forms[i].Draw(color);
+                _children[i].Draw(color);
             }
         }
     }
