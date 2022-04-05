@@ -40,7 +40,8 @@ namespace Proto_AI_4
         None = 0,
         Rectangular = 1,
         Circle = 2,
-        Data = 3,
+        Spike = 3,
+        Data,
     }
 
     public struct FormInfo
@@ -57,6 +58,10 @@ namespace Proto_AI_4
         //Circle
         public float radius; //원형진형 반지름
 
+        //Spike
+        public int spike_num;
+        public float spike_between;
+
         public void Init()
         {
             eKind = eFormKind.None;
@@ -65,7 +70,11 @@ namespace Proto_AI_4
             horn = 0;
             between_x = 0;
             between_z = 0;
+
             radius = 0;
+
+            spike_num = 4; //기본 십자가형태
+            spike_between = 0;
         }
     }
 
@@ -186,9 +195,9 @@ namespace Proto_AI_4
         public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
         public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
 
-        public Squad _parent = null; //부모 분대 
+        public Squad _squad_parent = null; //부모 분대 
         public List<Unit> _units = new List<Unit>(); //포함유닛
-        public List<Squad> _children = new List<Squad>(); //포함진형
+        public List<Squad> _squad_children = new List<Squad>(); //포함진형
 
         public FormInfo _info;
 
@@ -214,10 +223,10 @@ namespace Proto_AI_4
             _initPos = Vector3.zero;
             _offset = Vector3.zero;
 
-            _parent = null; //todo : 소대에서도 연결 끊는 처리 필요
+            _squad_parent = null; //todo : 소대에서도 연결 끊는 처리 필요
 
             _units.Clear();
-            _children.Clear(); //todo : 나중에 메모리풀로 변경하여 재할당 문제 피하기 
+            _squad_children.Clear(); //todo : 나중에 메모리풀로 변경하여 재할당 문제 피하기 
 
             _info.Init();
             _squard_id = -1;
@@ -330,6 +339,23 @@ namespace Proto_AI_4
             }
         }
 
+        private void CalcOffset_Spike()
+        {
+
+            _units[0]._disposition._initPos = Vector3.zero;
+            _units[0]._disposition._offset = _units[0]._disposition._initPos + _standard;
+
+            float angle = 360f / _info.spike_num;
+            for (int i = 1; i < _units.Count; i++)
+            {
+                int len = ((i-1) / _info.spike_num)+1;
+                //DebugWide.LogBlue(i + "  " + len);
+                Quaternion rot = Quaternion.AngleAxis(angle * (i-1), Vector3.up);
+                _units[i]._disposition._initPos = rot * new Vector3(0, 0, _info.spike_between * len);
+                _units[i]._disposition._offset = _units[i]._disposition._initPos + _standard;
+            }
+        }
+
         public void CalcOffset()
         {
 
@@ -341,18 +367,22 @@ namespace Proto_AI_4
             {
                 CalcOffset_Circle();
             }
+            else if (_info.eKind == eFormKind.Spike)
+            {
+                CalcOffset_Spike();
+            }
         }
 
         public void ApplyFormation_SQD1_Width()
         {
-            _children.Clear();
+            _squad_children.Clear();
             Squad form = Squad.Create();
-            _children.Add(form);
+            _squad_children.Add(form);
 
             //--------------------------------------------
             //진형에 유닛등록
-            _children[0]._units.Clear();
-            _children[0]._units.AddRange(_units);
+            _squad_children[0]._units.Clear();
+            _squad_children[0]._units.AddRange(_units);
             //_forms[0]._units = _units; //이렇게 주소를 넣어주면 안된다. 복사본을 만들어야 한다 
 
             //유닛이 속한 진형 갱신 
@@ -365,29 +395,32 @@ namespace Proto_AI_4
             _isDirMatch = true;
             //_standard = new Vector3(0, 0, 2);
 
-            _children[0]._info.column = 10;
-            _children[0]._info.between_x = 1.2f;
-            _children[0]._info.between_z = 1.2f;
-            _children[0]._info.horn = 0;
-            _children[0]._info.eKind = eFormKind.Rectangular;
-            //_forms[0]._info.eKind = eFormKind.Circle;
-            //_forms[0]._info.radius = 4f;
-            _children[0]._initPos = new Vector3(0, 0, 4);
-            _children[0]._offset = _children[0]._initPos + _standard;
-            _children[0]._pos = (_rotation * _children[0]._offset) + _pos; //PointToWorldSpace 
-            _children[0].CalcOffset();
+            _squad_children[0]._info.column = 10;
+            _squad_children[0]._info.between_x = 1.2f;
+            _squad_children[0]._info.between_z = 1.2f;
+            _squad_children[0]._info.horn = 0;
+            _squad_children[0]._info.eKind = eFormKind.Rectangular;
+            //_squad_children[0]._info.eKind = eFormKind.Circle;
+            //_squad_children[0]._info.radius = 4f;
+            //_squad_children[0]._info.eKind = eFormKind.Spike;
+            //_squad_children[0]._info.spike_num = 9;
+            //_squad_children[0]._info.spike_between = 2;
+            _squad_children[0]._initPos = new Vector3(0, 0, 4);
+            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
+            _squad_children[0].CalcOffset();
         }
 
         public void ApplyFormation_SQD1_Height()
         {
-            _children.Clear();
+            _squad_children.Clear();
             Squad form = Squad.Create();
-            _children.Add(form);
+            _squad_children.Add(form);
 
             //--------------------------------------------
             //진형에 유닛등록
-            _children[0]._units.Clear();
-            _children[0]._units.AddRange(_units);
+            _squad_children[0]._units.Clear();
+            _squad_children[0]._units.AddRange(_units);
             //_forms[0]._units = _units; //이렇게 주소를 넣어주면 안된다. 복사본을 만들어야 한다 
 
             //유닛이 속한 진형 갱신 
@@ -399,24 +432,53 @@ namespace Proto_AI_4
 
             _isDirMatch = true;
 
-            _children[0]._info.column = 3;
-            _children[0]._info.between_x = 1.2f;
-            _children[0]._info.between_z = 2.5f;
-            _children[0]._info.horn = 0;
-            _children[0]._info.eKind = eFormKind.Rectangular;
+            _squad_children[0]._info.column = 3;
+            _squad_children[0]._info.between_x = 1.2f;
+            _squad_children[0]._info.between_z = 2.5f;
+            _squad_children[0]._info.horn = 0;
+            _squad_children[0]._info.eKind = eFormKind.Rectangular;
             //_forms[0]._info.eKind = eFormKind.Circle;
             //_forms[0]._info.radius = 4f;
-            _children[0]._initPos = new Vector3(0, 0, 4);
-            _children[0]._offset = _children[0]._initPos + _standard;
-            _children[0]._pos = (_rotation * _children[0]._offset) + _pos; //PointToWorldSpace 
-            _children[0].CalcOffset();
+            _squad_children[0]._initPos = new Vector3(0, 0, 4);
+            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
+            _squad_children[0].CalcOffset();
+        }
+
+        public void ApplyFormation_SQD1_Spike()
+        {
+            _squad_children.Clear();
+            Squad form = Squad.Create();
+            _squad_children.Add(form);
+
+            //--------------------------------------------
+            //진형에 유닛등록
+            _squad_children[0]._units.Clear();
+            _squad_children[0]._units.AddRange(_units);
+
+            //유닛이 속한 진형 갱신 
+            for (int i = 0; i < _units.Count; i++)
+            {
+                _units[i]._disposition._belong_formation = form;
+            }
+            //--------------------------------------------
+
+            //_isDirMatch = true;
+            _squad_children[0]._standard = new Vector3(0, 0, -8); //머리기준으로 회전하게 해준다 
+            _squad_children[0]._info.eKind = eFormKind.Spike;
+            _squad_children[0]._info.spike_num = 9;
+            _squad_children[0]._info.spike_between = 2;
+            _squad_children[0]._initPos = new Vector3(0, 0, 0);
+            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
+            _squad_children[0].CalcOffset();
         }
 
         public void ApplyFormation_String()
         {
 
             //등록된 form 해제 처리 필요 
-            _children.Clear();
+            _squad_children.Clear();
 
             FormInfo info = new FormInfo();
             info.eKind = eFormKind.Rectangular;
@@ -453,7 +515,7 @@ namespace Proto_AI_4
                 form._follow_gap = rowLen;
                 //form._isDirMatch = true;
                 form.CalcOffset();
-                _children.Add(form);
+                _squad_children.Add(form);
             }
         }
 
@@ -506,14 +568,14 @@ namespace Proto_AI_4
 
             Vector3 toDir = _pos - _targetPos;
             Vector3 beforePos = _targetPos;
-            for (int i = 0; i < _children.Count; i++)
+            for (int i = 0; i < _squad_children.Count; i++)
             {
-                if (false == _children[i]._solo_activity)
+                if (false == _squad_children[i]._solo_activity)
                 {
-                    if (false == _children[i]._isFollow)
+                    if (false == _squad_children[i]._isFollow)
                     {
                         //1* 오프셋위치로 고정위치를 계산함 
-                        _children[i]._targetPos = (_rotation * _children[i]._offset) + _pos; //PointToWorldSpace  
+                        _squad_children[i]._targetPos = (_rotation * _squad_children[i]._offset) + _pos; //PointToWorldSpace  
                     }
                     else
                     {
@@ -521,25 +583,25 @@ namespace Proto_AI_4
                         if(0 == i)
                         {
                             //첫번째 진형은 오프셋에 따른 설정된 위치로 목표가 설정되어야 한다 
-                            _children[i]._targetPos = (_rotation * _children[i]._offset) + _pos;
+                            _squad_children[i]._targetPos = (_rotation * _squad_children[i]._offset) + _pos;
                         }
                         else
                         {
                             //_forms[i]._targetPos = beforePos + (_forms[i]._targetPos - beforePos).normalized * _forms[i]._follow_gap;
-                            _children[i]._targetPos = beforePos + (_children[i]._pos - beforePos).normalized * _children[i]._follow_gap; //초기위치가 설정된 pos를 사용해야 한다 
+                            _squad_children[i]._targetPos = beforePos + (_squad_children[i]._pos - beforePos).normalized * _squad_children[i]._follow_gap; //초기위치가 설정된 pos를 사용해야 한다 
                         }
-                        beforePos = _children[i]._targetPos;
+                        beforePos = _squad_children[i]._targetPos;
                         //beforePos = _forms[i]._pos;
                     }
 
-                    if (_children[i]._isDirMatch)
+                    if (_squad_children[i]._isDirMatch)
                     {
                         //분대방향을 소대방향과 일치시킨다 
-                        _children[i]._pos = _children[i]._targetPos + toDir;
+                        _squad_children[i]._pos = _squad_children[i]._targetPos + toDir;
                     }
 
                 }
-                _children[i].Update(deltaTime); //임시로 여기서 갱신 , 스쿼드관리객체에서 따로 모아 갱신시키는 것으로 변경하기 
+                _squad_children[i].Update(deltaTime); //임시로 여기서 갱신 , 스쿼드관리객체에서 따로 모아 갱신시키는 것으로 변경하기 
             }
         }
 
@@ -547,9 +609,9 @@ namespace Proto_AI_4
         {
             base.Draw(Color.red);
 
-            for (int i = 0; i < _children.Count; i++)
+            for (int i = 0; i < _squad_children.Count; i++)
             {
-                _children[i].Draw(color);
+                _squad_children[i].Draw(color);
             }
         }
     }
