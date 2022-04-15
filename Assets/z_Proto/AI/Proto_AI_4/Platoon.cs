@@ -519,6 +519,57 @@ namespace Proto_AI_4
             }
         }
 
+        public void ApplyFormation_String2()
+        {
+
+            //등록된 form 해제 처리 필요 
+            _squad_children.Clear();
+
+            const int SQUAD_NUM = 5;
+
+            FormInfo info = new FormInfo();
+            info.eKind = eFormKind.Spike;
+            info.spike_num = 4;
+            info.spike_between = 2;
+
+
+            Squad form = null;
+            int squad_count = (_units.Count / SQUAD_NUM) + 1; //나머지가 나올수 있으므로 1을 더한다 
+            int unitCount = 0;
+
+            int spike_skin_num = (int)((SQUAD_NUM-1) / info.spike_num); //중앙 유닛은 분대개수에서 제외한다 
+            spike_skin_num += ((SQUAD_NUM - 1) % info.spike_num) > 0 ? 1 : 0; //나머지가 있으면 껍질 +1 한다 
+            float rowLen = info.spike_between * (spike_skin_num * 2 + 1); //하위 모임과의 거리 구하기
+            for (int i = 0; i < squad_count; i++)
+            {
+                if (_units.Count <= unitCount) break;
+
+                form = Squad.Create();
+                form._units.Clear();
+                for (int j = 0; j < SQUAD_NUM; j++)
+                {
+                    if (_units.Count <= unitCount) break;
+
+                    form._units.Add(_units[unitCount]);
+                    _units[unitCount]._disposition._belong_formation = form;
+                    unitCount++;
+                }
+
+                //DebugWide.LogBlue(i + "  " + spike_skin_num + "  " + rowLen); //test
+
+                form._standard = new Vector3(0, 0, -(info.spike_between * spike_skin_num)); //머리기준으로 회전하게 해준다 
+                form._info = info;
+                form._initPos = new Vector3(0, 0, -rowLen * i);
+                form._offset = form._initPos + _standard;
+                form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace , 위치적용
+                form._isFollow = true;
+                form._follow_gap = rowLen ;
+                //form._isDirMatch = true;
+                form.CalcOffset();
+                _squad_children.Add(form);
+            }
+        }
+
         //십자가형 배치
         //public void ApplyFormation_SQD4_Cross()
         //{

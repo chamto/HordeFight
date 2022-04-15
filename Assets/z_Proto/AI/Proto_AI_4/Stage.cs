@@ -118,8 +118,9 @@ namespace Proto_AI_4
             _Squads[0]._pos = _tr_platoon_0.position;
             //_Squads[0].ApplyFormation_SQD1_Width();
             //_Squads[0].ApplyFormation_SQD1_Height();
-            _Squads[0].ApplyFormation_SQD1_Spike();
+            //_Squads[0].ApplyFormation_SQD1_Spike();
             //_Squads[0].ApplyFormation_String();
+            _Squads[0].ApplyFormation_String2();
 
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
