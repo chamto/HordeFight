@@ -320,7 +320,7 @@ namespace Proto_AI_4
                     x -= center_x; //중앙에 배치되도록 한다
 
                     _units[idx]._disposition._initPos = new Vector3(x, 0, z + height);
-                    _units[idx]._disposition._offset = _units[idx]._disposition._initPos + _standard;
+                    _units[idx]._disposition._offset = _units[idx]._disposition._initPos - _standard;
 
                 }
 
@@ -335,7 +335,7 @@ namespace Proto_AI_4
             {
                 Quaternion rot = Quaternion.AngleAxis(angle * i, Vector3.up);
                 _units[i]._disposition._initPos = rot * new Vector3(0, 0, _info.radius);
-                _units[i]._disposition._offset = _units[i]._disposition._initPos + _standard;
+                _units[i]._disposition._offset = _units[i]._disposition._initPos - _standard;
             }
         }
 
@@ -343,7 +343,7 @@ namespace Proto_AI_4
         {
 
             _units[0]._disposition._initPos = Vector3.zero;
-            _units[0]._disposition._offset = _units[0]._disposition._initPos + _standard;
+            _units[0]._disposition._offset = _units[0]._disposition._initPos - _standard;
 
             float angle = 360f / _info.spike_num;
             for (int i = 1; i < _units.Count; i++)
@@ -352,7 +352,7 @@ namespace Proto_AI_4
                 //DebugWide.LogBlue(i + "  " + len);
                 Quaternion rot = Quaternion.AngleAxis(angle * (i-1), Vector3.up);
                 _units[i]._disposition._initPos = rot * new Vector3(0, 0, _info.spike_between * len);
-                _units[i]._disposition._offset = _units[i]._disposition._initPos + _standard;
+                _units[i]._disposition._offset = _units[i]._disposition._initPos - _standard;
             }
         }
 
@@ -406,7 +406,7 @@ namespace Proto_AI_4
             //_squad_children[0]._info.spike_num = 9;
             //_squad_children[0]._info.spike_between = 2;
             _squad_children[0]._initPos = new Vector3(0, 0, 4);
-            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._offset = _squad_children[0]._initPos - _standard;
             _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
             _squad_children[0].CalcOffset();
         }
@@ -440,7 +440,7 @@ namespace Proto_AI_4
             //_forms[0]._info.eKind = eFormKind.Circle;
             //_forms[0]._info.radius = 4f;
             _squad_children[0]._initPos = new Vector3(0, 0, 4);
-            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._offset = _squad_children[0]._initPos - _standard;
             _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
             _squad_children[0].CalcOffset();
         }
@@ -464,12 +464,12 @@ namespace Proto_AI_4
             //--------------------------------------------
 
             //_isDirMatch = true;
-            _squad_children[0]._standard = new Vector3(0, 0, -8); //머리기준으로 회전하게 해준다 
+            _squad_children[0]._standard = new Vector3(0, 0, 8); //머리기준으로 회전하게 해준다 
             _squad_children[0]._info.eKind = eFormKind.Spike;
             _squad_children[0]._info.spike_num = 9;
             _squad_children[0]._info.spike_between = 2;
             _squad_children[0]._initPos = new Vector3(0, 0, 0);
-            _squad_children[0]._offset = _squad_children[0]._initPos + _standard;
+            _squad_children[0]._offset = _squad_children[0]._initPos - _standard;
             _squad_children[0]._pos = (_rotation * _squad_children[0]._offset) + _pos; //PointToWorldSpace 
             _squad_children[0].CalcOffset();
         }
@@ -509,7 +509,7 @@ namespace Proto_AI_4
 
                 form._info = info;
                 form._initPos = new Vector3(0, 0, -rowLen*i);
-                form._offset = form._initPos + _standard;
+                form._offset = form._initPos - _standard;
                 form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace , 위치적용
                 form._isFollow = true;
                 form._follow_gap = rowLen;
@@ -557,10 +557,10 @@ namespace Proto_AI_4
 
                 //DebugWide.LogBlue(i + "  " + spike_skin_num + "  " + rowLen); //test
 
-                form._standard = new Vector3(0, 0, -(info.spike_between * spike_skin_num)); //머리기준으로 회전하게 해준다 
+                form._standard = new Vector3(0, 0, (info.spike_between * spike_skin_num)); //머리기준으로 회전하게 해준다 
                 form._info = info;
                 form._initPos = new Vector3(0, 0, -rowLen * i);
-                form._offset = form._initPos + _standard;
+                form._offset = form._initPos - _standard;
                 form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace , 위치적용
                 form._isFollow = true;
                 form._follow_gap = rowLen ;
