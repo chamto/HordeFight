@@ -243,7 +243,7 @@ namespace UtilGS9
     public class FileToStream
     {
 
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
         static public StreamReader FileLoading(string strFilePath)
         {
 
@@ -264,7 +264,7 @@ namespace UtilGS9
 
             return reader;
         }
-#endif
+//#endif
 
         static public IEnumerator FileLoading(string strFilePath, System.Action<MemoryStream> result = null)
         {
