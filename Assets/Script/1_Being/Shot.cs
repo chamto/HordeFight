@@ -74,10 +74,10 @@ namespace HordeFight
             _sprParent.localPosition = ConstV.v3_zero;
 
             //캐릭터 아래에 깔리도록 설정
-            base.Update_SortingOrder(-500);
+            base.Update_SortingOrder(-800);
             //_sortingGroup.sortingOrder = base.GetSortingOrder(0);
 
-
+            _gameObject.SetActive(false);
         }
 
         //____________________________________________

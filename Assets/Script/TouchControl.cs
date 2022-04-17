@@ -104,7 +104,7 @@ namespace HordeFight
                     champ = _selected as ChampUnit;
                     if (null != champ)
                     {
-                        //champ.GetComponent<AI>()._ai_running = true; //주석 
+                        champ.GetComponent<AI>()._ai_running = true; //주석 
 
                         //SingleO.lineControl.SetActive(champ._UIID_circle_collider, false);
                         //champ._ui_circle.gameObject.SetActive(false);

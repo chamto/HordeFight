@@ -136,7 +136,7 @@ namespace HordeFight
                 case eState.Chase:
                     {
                         //DebugWide.LogBlue("Chase");
-                        int result = Situation_Is_InRange(0, 6f);
+                        int result = Situation_Is_InRange(0, 20f);
                         if (_IN_RANGE != result)
                         {
                             //거리가 멀리 떨어져 있으면 다시 배회한다.

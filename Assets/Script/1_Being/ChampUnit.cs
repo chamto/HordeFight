@@ -122,7 +122,7 @@ namespace HordeFight
 
             //=====================================================
 
-            //_effect.SetActive(Effect.eKind.Bar_Red, false);
+            _effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 활성 
 
             _limbs.SetActive_Sight(false);
             _limbs.SetActive_Waist(false);
