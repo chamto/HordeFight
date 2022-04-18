@@ -410,7 +410,7 @@ namespace UtilGS9
         static public void CalcViewportRect(Canvas root, Camera mainCamera)
         {
             //DebugWide.LogBlue ("CalcResolution");
-            ResolutionController.InitViewportRect(root, mainCamera);
+            ResolutionController.InitViewportRect(root, mainCamera); //test 필요
 
             //==================================
             int iHeight = (int)(Screen.width * REVERSE_ASPECT_RATIO);

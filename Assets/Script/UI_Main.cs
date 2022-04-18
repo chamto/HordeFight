@@ -15,8 +15,10 @@ namespace HordeFight
         public Text _fpsText = null;
         public Image _img_leader = null;
 
+        public Text _gameText = null;
+        public Button _reset = null;
 
-        private void Start()
+        public void Init()
         {
             GameObject o = null;
             o = GameObject.Find("FPS");
@@ -31,7 +33,16 @@ namespace HordeFight
                 _img_leader = o.GetComponentInChildren<Image>();
             }
 
-
+            o = GameObject.Find("GameText");
+            if (null != o)
+            {
+                _gameText = o.GetComponentInChildren<Text>();
+            }
+            o = GameObject.Find("Reset");
+            if (null != o)
+            {
+                _reset = o.GetComponentInChildren<Button>();
+            }
 
         }
 

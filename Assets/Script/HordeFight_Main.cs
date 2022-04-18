@@ -15,11 +15,9 @@ namespace HordeFight
         {
             Misc.Init();
 
-            SingleO.Init(gameObject); //싱글톤 객체 생성 , 초기화 
+            //SingleO.Init(gameObject); //싱글톤 객체 생성 , 초기화 
+            StartCoroutine(SingleO.InitCoroutine(gameObject));
 
-
-            SingleO.debugViewer._origin = SingleO.hierarchy.GetTransformA("z_debug/origin");
-            SingleO.debugViewer._target = SingleO.hierarchy.GetTransformA("z_debug/target");
             //===================
 
             //SingleO.objectManager.Create_Characters(); //여러 캐릭터들 테스트용
