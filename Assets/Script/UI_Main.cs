@@ -42,6 +42,7 @@ namespace HordeFight
             if (null != o)
             {
                 _reset = o.GetComponentInChildren<Button>();
+                _reset.onClick.AddListener(Reset_AllUnit_OnClick);
             }
 
         }
@@ -116,6 +117,12 @@ namespace HordeFight
                 }
 
             }
+        }
+
+        public void Reset_AllUnit_OnClick()
+        {
+            SingleO.objectManager.Reset_AllUnit();
+            DebugWide.LogRed("Reset_AllUnit!!"); 
         }
 
     }

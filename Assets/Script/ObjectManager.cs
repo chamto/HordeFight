@@ -1200,6 +1200,7 @@ namespace HordeFight
             cha._kind = eKind;
             cha._belongCamp = belongCamp;
             cha.transform.position = pos;
+            cha._regenPos = pos;
             cha._collider = obj.GetComponent<SphereCollider>();
             cha._collider_radius = cha._collider.radius;
             cha._collider_sqrRadius = cha._collider_radius * cha._collider_radius;
@@ -1303,7 +1304,15 @@ namespace HordeFight
             return obst;
         }
 
+        public void Reset_AllUnit()
+        {
+            foreach(Being be in _linearSearch_list)
+            {
+                be._hp_cur = be._hp_max;
+                be.SetPos(be._regenPos);
 
+            }
+        }
 
         public void Create_ChampCamp()
         {
@@ -1341,8 +1350,8 @@ namespace HordeFight
             int numMax_create = 0;
             // -- 블루 진형 --
             champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(0));
-            champ._hp_max = 10000;
-            champ._hp_cur = 10000;
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
             champ._force = 20;
 
             //camp_position++;
@@ -1358,20 +1367,20 @@ namespace HordeFight
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_HERO, camp_Obstacle.RandPosition());
-            champ._hp_max = 10000;
-            champ._hp_cur = 10000;
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, camp_HERO, camp_Obstacle.RandPosition());
-            champ._hp_max = 10000;
-            champ._hp_cur = 10000;
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
             champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_HERO, camp_Obstacle.RandPosition());
-            champ._hp_max = 10000;
-            champ._hp_cur = 10000;
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
-            champ = Create_Character(SingleO.unitRoot, Being.eKind.spider, camp_HERO, camp_Obstacle.RandPosition());
-            champ._hp_max = 10000;
-            champ._hp_cur = 10000;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
 
             _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";

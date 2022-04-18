@@ -175,7 +175,7 @@ namespace HordeFight
         //진영정보
         public Camp _belongCamp = null; //소속 캠프
         public Camp.eKind _campKind = Camp.eKind.None;
-
+        public Vector3 _regenPos;
         //==================================================
 
 
