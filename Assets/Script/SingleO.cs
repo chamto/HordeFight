@@ -236,6 +236,7 @@ public static class SingleO
 
         uiMain._gameText.text = tempStr;
         yield return 0;
+
         //==============================================
 
         cameraWalk = parent.AddComponent<CameraWalk>();
@@ -265,7 +266,8 @@ public static class SingleO
 
         _startDateTime = DateTime.Now;
         objectManager = parent.AddComponent<ObjectManager>();
-        objectManager.Init();
+        //objectManager.Init();
+        yield return objectManager.StartCoroutine(objectManager.Init());
         tempStr = "  ObjectManager.Init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
         _timeAll += tempStr;
 
@@ -283,8 +285,8 @@ public static class SingleO
         //==============================================
 
         uiMain._gameText.text = tempStr;
+        uiMain._loading = false;
         yield break;
-        //yield return new WaitForSeconds(0.001f);
     }
 
     //유니티 객체 

@@ -374,9 +374,10 @@ namespace UtilGS9
     ///////////////////////////////////////////////////////////////////////
     public static class ResolutionController
     {
+        //에디터 게임창 해상도 1280x720 landscape 모드로 맞춘후 UI를 배치해야 한다
 
-        public const float WIDTH_STANDARD = 1024;
-        public const float HEIGHT_STANDARD = 600;
+        public const float WIDTH_STANDARD = 1280;//1024;
+        public const float HEIGHT_STANDARD = 720;//600;
         public const float ASPECT_RATIO = WIDTH_STANDARD / HEIGHT_STANDARD;
         public const float REVERSE_ASPECT_RATIO = HEIGHT_STANDARD / WIDTH_STANDARD;
 

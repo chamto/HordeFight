@@ -77,6 +77,9 @@ namespace HordeFight
             //}
         }
 
+        int __count = 0;
+        public bool _loading = true;
+
         //ref : https://forum.unity.com/threads/fps-counter.505495/
         private float _hudRefreshRate = 1f;
         private float _timer;
@@ -88,6 +91,19 @@ namespace HordeFight
                 _fpsText.text = "FPS: " + fps;
                 _timer = Time.unscaledTime + _hudRefreshRate;
             }
+
+            if(true == _loading)
+            {
+                if (10 < __count)
+                {
+                    __count = 0;
+                    _gameText.text = "loading ";
+                }
+                _gameText.text += ".";
+                __count++;
+            }
+
+
         }
 
         public void SelectLeader(string name)

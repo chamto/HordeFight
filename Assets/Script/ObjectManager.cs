@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 //using UnityEngine.Assertions;
@@ -14,7 +15,7 @@ namespace HordeFight
 {
     public class ObjectManager : MonoBehaviour
     {
-
+        private bool _init = false;
         private uint _id_sequence = 0;
         private uint _id_shot_sequence = 0; //발사체 아이디 생성기
 
@@ -30,7 +31,7 @@ namespace HordeFight
 
 
         //private void Start()
-        public void Init()
+        public IEnumerator Init()
         {
             DateTime _startDateTime;
             string _timeTemp = "";
@@ -51,7 +52,8 @@ namespace HordeFight
             _timeTemp += "  ObjectManager.hashMap.Add  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
             //==============================================
             _startDateTime = DateTime.Now;
-            this.Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            //this.Create_ChampCamp(); //임시로 여기서 호출한다. 추후 스테이지 생성기로 옮겨야 한다 
+            yield return StartCoroutine(Create_ChampCamp_Coroutine());
             _timeTemp += "  ObjectManager.Create_ChampCamp  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
             //==============================================
             _startDateTime = DateTime.Now;
@@ -73,6 +75,7 @@ namespace HordeFight
             _timeTemp += "  ObjectManager.sphereTree.init  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
             DebugWide.LogBlue(_timeTemp);
+            _init = true;
             //==============================================
 
         }
@@ -115,7 +118,7 @@ namespace HordeFight
         private void Update()
         //private void LateUpdate()
         {
-
+            if (false == _init) return;
             //UpdateCollision();
 
             //UpdateCollision_UseDictElementAt(); //obj100 : fps10
@@ -1453,6 +1456,157 @@ namespace HordeFight
             //===================================================
 
             DebugWide.LogBlue(_timeTemp);
+        }
+
+
+        public IEnumerator Create_ChampCamp_Coroutine()
+        {
+
+            DateTime _startDateTime;
+            string _timeTemp = "";
+
+            if (null == SingleO.unitRoot) yield break;
+
+            //==============================================
+            _startDateTime = DateTime.Now;
+            string Blue_CampName = "Champ_Sky";
+            string White_CampName = "Skel_Gray";
+            string Obstacle_CampName = "ExitGoGe";
+            //int camp_position = 0;
+
+            SingleO.campManager.Load_CampPlacement(Camp.eKind.Blue);
+            SingleO.campManager.Load_CampPlacement(Camp.eKind.White);
+            SingleO.campManager.Load_CampPlacement(Camp.eKind.Obstacle);
+
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Blue, Camp.eKind.White);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.Blue);
+            SingleO.campManager.SetRelation(Camp.eRelation.Enemy, Camp.eKind.Hero, Camp.eKind.White);
+
+            Camp camp_HERO = SingleO.campManager.GetDefaultCamp(Camp.eKind.Hero);
+            Camp camp_BLUE = SingleO.campManager.GetCamp(Camp.eKind.Blue, Blue_CampName.GetHashCode());
+            Camp camp_WHITE = SingleO.campManager.GetCamp(Camp.eKind.White, White_CampName.GetHashCode());
+            Camp camp_Obstacle = SingleO.campManager.GetCamp(Camp.eKind.Obstacle, Obstacle_CampName.GetHashCode());
+            _timeTemp += "  ObjectManager.Create_ChampCamp.CampInfo  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            //==============================================
+            _startDateTime = DateTime.Now;
+
+            Being being = null;
+            ChampUnit champ = null;
+            int numMax_create = 0;
+            // -- 블루 진형 --
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.lothar, camp_HERO, camp_Obstacle.GetPosition(0));
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ._force = 20;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.spearman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ._mt_range_min = 1f;
+            //champ._mt_range_max = 8f;
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_BLUE, camp_BLUE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+
+            _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+            numMax_create = 100;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_BLUE, camp_BLUE.RandPosition());
+                //champ._hp_max = 30;
+                //champ._hp_cur = 30;
+                //champ._mt_range_min = 0.3f;
+                //champ._mt_range_max = 0.5f;
+                champ.GetComponent<AI>()._ai_running = true;
+                //camp_position++;
+
+            }
+            yield return new WaitForSeconds(0.001f);
+
+            //===================================================
+
+            // -- 휜색 진형 --
+            //camp_position = 0;
+            //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
+            //champ.GetComponent<AI>()._ai_running = true;
+            //camp_position++;
+            numMax_create = 30;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_WHITE, camp_WHITE.RandPosition());
+                champ._mt_range_min = 3f;
+                champ._mt_range_max = 7f;
+                champ.GetComponent<AI>()._ai_running = true;
+                //camp_position++;
+                //champ.SetColor(Color.black);
+
+            }
+            yield return new WaitForSeconds(0.001f);
+
+            numMax_create = 40;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
+                champ.GetComponent<AI>()._ai_running = true;
+                //camp_position++;
+
+            }
+            yield return new WaitForSeconds(0.001f);
+            //===================================================
+
+            // -- 장애물 진형 --
+            numMax_create = 0;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                Obstacle ob = Create_Obstacle(SingleO.unitRoot, Being.eKind.barrel, camp_Obstacle.RandPosition());
+                ob._force = 1000f;
+            }
+
+            //===================================================
+
+            _startDateTime = DateTime.Now;
+
+            // -- 발사체 미리 생성 --
+            numMax_create = 300;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                //being = Create_Shot(SingleO.shotRoot, Being.eKind.spear, ConstV.v3_zero);
+                being = Create_Shot(SingleO.shotRoot, Being.eKind.waterBolt, ConstV.v3_zero);
+            }
+            yield return new WaitForSeconds(0.001f);
+            _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Shot  : " + numMax_create + " :  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+            //===================================================
+
+            DebugWide.LogBlue(_timeTemp);
+
+            yield break;
         }
 
     }
