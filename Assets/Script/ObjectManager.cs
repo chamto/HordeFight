@@ -1353,6 +1353,7 @@ namespace HordeFight
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ._force = 20;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
 
             //camp_position++;
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.GetPosition(camp_position));
@@ -1370,18 +1371,22 @@ namespace HordeFight
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
             champ = Create_Character(SingleO.unitRoot, Being.eKind.fireElemental, camp_HERO, camp_Obstacle.RandPosition());
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
             champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_HERO, camp_Obstacle.RandPosition());
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
             champ = Create_Character(SingleO.unitRoot, Being.eKind.ogre, camp_HERO, camp_Obstacle.RandPosition());
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
 
             _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
@@ -1404,12 +1409,12 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            numMax_create = 10;
+            numMax_create = 30;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_WHITE, camp_WHITE.RandPosition());
-                champ._mt_range_min = 2f;
-                champ._mt_range_max = 5f;
+                champ._mt_range_min = 3f;
+                champ._mt_range_max = 7f;
                 champ.GetComponent<AI>()._ai_running = true;
                 //camp_position++;
                 //champ.SetColor(Color.black);

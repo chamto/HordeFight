@@ -136,7 +136,7 @@ namespace HordeFight
                 case eState.Chase:
                     {
                         //DebugWide.LogBlue("Chase");
-                        int result = Situation_Is_InRange(0, 20f);
+                        int result = Situation_Is_InRange(0, 15f);
                         if (_IN_RANGE != result)
                         {
                             //거리가 멀리 떨어져 있으면 다시 배회한다.
@@ -253,7 +253,7 @@ namespace HordeFight
                 case eState.Roaming:
                     {
                         //일정 거리 안에 적이 있으면 추격한다
-                        _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, 5f);
+                        _me._looking = SingleO.objectManager.GetNearCharacter(_me, Camp.eRelation.Enemy, 0, 15f);
                         _me._target = null; //공격할 대상 없음 
                         //DebugWide.LogBlue("Roaming: " + _target);
 

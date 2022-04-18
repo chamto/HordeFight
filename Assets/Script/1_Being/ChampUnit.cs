@@ -32,7 +32,7 @@ namespace HordeFight
         //능력치1 
         public ushort _power = 1;
         public float _mt_range_min = 0.2f; //충돌원 바깥부터 시작되는 길이값
-        public float _mt_range_max = 0.5f; //충돌원 바깥부터 시작되는 길이값
+        public float _mt_range_max = 0.8f; //충돌원 바깥부터 시작되는 길이값
 
         //보조정보 
         //private Geo.Sphere _collider;
@@ -122,7 +122,7 @@ namespace HordeFight
 
             //=====================================================
 
-            _effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 활성 
+            _effect.SetActive(Effect.eKind.Bar_Red, false); //hp바 
 
             _limbs.SetActive_Sight(false);
             _limbs.SetActive_Waist(false);
@@ -313,6 +313,11 @@ namespace HordeFight
 
         public bool Throw(Vector3 targetPos)
         {
+            if (!(eKind.spearman == _kind || eKind.archer == _kind || eKind.catapult == _kind || eKind.cleric == _kind || eKind.conjurer == _kind))
+            {
+                return false; 
+            }
+
             if (null == (object)_shot || false == _shot._on_theWay)
             {
                 _shot = SingleO.objectManager.GetNextShot();
