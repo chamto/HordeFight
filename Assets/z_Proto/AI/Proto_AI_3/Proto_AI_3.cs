@@ -599,10 +599,11 @@ namespace Proto_AI_3
             //ObjectManager.Inst._sphereTree_struct.Debug_RangeTest(_tr_test.position, _maxRange);
             //ObjectManager.Inst._sphereTree.Debug_RangeTest(_tr_test.position, _maxRange);
 
-            //if(GridManager.Inst.IsVisibleTile(_tr_test.position, _tr_line_a.position, 10))
-            //{
-            //    DebugWide.AddDrawQ_Line(_tr_test.position, _tr_line_a.position, Color.red); 
-            //}
+            GridManager.Inst.Draw_Find_FirstStructTile(_tr_test.position, _tr_line_a.position, 10);
+            if (GridManager.Inst.IsVisibleTile(_tr_test.position, _tr_line_a.position, 10))
+            {
+                DebugWide.AddDrawQ_Line(_tr_test.position, _tr_line_a.position, Color.red); 
+            }
 
 
             _formationPoint.Draw(Color.white);
