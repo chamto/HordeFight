@@ -151,7 +151,7 @@ namespace HordeFight
             //챔프를 선택한 경우, 추가 처리 하지 않는다
             if ((object)getBeing == (object)_selected) return;
 
-            //_selected.MoveToTarget(hit.point, 1f);
+            _selected.MoveToTarget(hit.point, 1f); //길찾기 테스트 
 
 
         }

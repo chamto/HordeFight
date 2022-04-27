@@ -25,6 +25,10 @@ namespace HordeFight
 
         }
 
+        private void OnDrawGizmos()
+        {
+            DebugWide.DrawQ_All();
+        }
 
         //float _frame_count = 0;
         //float _elapsedTime = 0;
@@ -40,15 +44,15 @@ namespace HordeFight
         //    _elapsedTime += Time.deltaTime;
         //}
 
-            //void OnGUI()
-            //{
-            //    //if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
-            //    //{
-            //    //    //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
-            //    //    SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
-            //    //    //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
-            //    //}
-            //}
+        //void OnGUI()
+        //{
+        //    //if (GUI.Button(new Rect(10, 10, 200, 100), new GUIContent("Refresh Timemap Fog of War")))
+        //    //{
+        //    //    //RuleExtraTile ruleTile =  SingleO.gridManager.GetTileMap_Struct().GetTile<RuleExtraTile>(new Vector3Int(0, 0, 0));
+        //    //    SingleO.gridManager.GetTileMap_FogOfWar().RefreshAllTiles();
+        //    //    //DebugWide.LogBlue("TileMap_Struct RefreshAllTiles");
+        //    //}
+        //}
 
 
     }

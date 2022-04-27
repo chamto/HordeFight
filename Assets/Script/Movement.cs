@@ -48,10 +48,11 @@ namespace HordeFight
             _direction = Misc.GetDir8_Normal3D_AxisY(_eDir8);
         }
 
-        //private void Update()
-        //{
-        //    //UpdateNextPath();
-        //}
+        //길찾기 테스트 위해 활성 
+        private void Update()
+        {
+            UpdateNextPath();
+        }
 
 
         public void UpdateNextPath()
@@ -227,6 +228,7 @@ namespace HordeFight
                 _interTime_prev = 0;
             }
 
+
             //bug : 시간값 변경시 보간값 문제가 있는것 같음. 튀는 현상이 발생함 
             //float interTime = Interpolation.Calc(__interKind, 0, 1f, _elapsedTime / perSecond);
             //if (0 > interTime) interTime = 0;
@@ -339,7 +341,8 @@ namespace HordeFight
 
             foreach (Vector3 pos3d in _targetPath)
             {
-                DebugWide.DrawLine(prev, pos3d, Color.green);
+                DebugWide.AddDrawQ_Line(prev, pos3d, Color.green);
+                //DebugWide.DrawLine(prev, pos3d, Color.green);
                 prev = pos3d;
             }
         }
