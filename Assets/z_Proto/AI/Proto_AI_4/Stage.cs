@@ -110,7 +110,7 @@ namespace Proto_AI_4
                 unit._disposition._platoon_id = -1;
                 unit._disposition._squad_id = 0;
                 unit._disposition._unit_pos = i;
-                //unit._steeringBehavior.ArriveOn();
+                //unit._steeringBehavior.ArriveOn(); //도착 활성 
             }
 
             _Squads[0] = Squad.Create(0,EntityMgr.list);
@@ -314,7 +314,7 @@ namespace Proto_AI_4
                 //    v._mass = 10;
                 //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
                 //}
-
+                //v._steeringBehavior._targetPos = _tr_platoon_0.position;
                 v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
 
                 v._radius_geo = _radius_geo;

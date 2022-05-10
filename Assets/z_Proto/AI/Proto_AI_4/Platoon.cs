@@ -78,115 +78,6 @@ namespace Proto_AI_4
         }
     }
 
-    //진형
-    //public class Formation : OrderPoint
-    //{
-    //    public Vector3 _standard; //[기준점] 기본으로 원점의 위치에 있다. 하위 자식들을 한꺼번에 위치변경하기 위해 사용된다 
-
-    //    public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
-    //    public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
-
-    //    public FormInfo _info;
-
-    //    public Squad _belong_squard = null; //속한 분대 
-    //    public List<Unit> _units = new List<Unit>(); //포함유닛
-
-    //    public bool _solo_activity = false; //단독활동
-    //    public bool _isFollow = false;
-    //    public float _follow_gap = 3;
-    //    public bool _isDirMatch = false; //분대방향을 소대방향과 일치
-
-    //    public void Init()
-    //    {
-    //        _standard = Vector3.zero;
-    //        _initPos = Vector3.zero;
-    //        _offset = Vector3.zero;
-
-    //        _info.Init();
-    //        _belong_squard = null; //todo : 연결관계 수정필요
-    //        _units.Clear();
-
-    //        _solo_activity = false;
-    //        _isFollow = false;
-    //        _follow_gap = 3;
-    //        _isDirMatch = false;
-    //    }
-
-
-
-    //    //fixme : 메모리풀로 변경 필요 
-    //    static public Formation Create()
-    //    {
-    //        Formation form = new Formation();
-    //        form.Init();
-
-
-    //        return form;
-    //    }
-
-    //    //_formation 값을 채운다 
-    //    private void CalcOffset_Rect()
-    //    {
-    //        int max_row = (_units.Count / _info.column) + 1;
-    //        int len_x = _units.Count < _info.column ? _units.Count : _info.column;
-    //        float center_x = (len_x - 1) * _info.between_x * 0.5f; //중앙 길이를 구한다
-
-
-    //        float tan = 0 != center_x ? (_info.horn / center_x) : 0;
-    //        for (int row = 0; row < max_row; row++)
-    //        {
-    //            for (int col = 0; col < _info.column; col++)
-    //            {
-    //                int idx = col + (row * _info.column);
-    //                if (idx >= _units.Count) return;
-
-    //                float x = col * _info.between_x;
-    //                float z = -row * _info.between_z;
-
-    //                // z/x = tan , z = x * tan
-    //                float height = x * tan; //왼쪽 빗면
-    //                if (center_x < x) //오른쪽 빗면
-    //                {
-    //                    height = (center_x * 2 - x) * tan;
-    //                }
-
-    //                x -= center_x; //중앙에 배치되도록 한다
-
-    //                _units[idx]._disposition._initPos = new Vector3(x, 0, z + height);
-    //                _units[idx]._disposition._offset = _units[idx]._disposition._initPos + _standard;
-
-    //            }
-
-    //        }
-    //    }
-
-    //    private void CalcOffset_Circle()
-    //    {
-    //        //_standard = new Vector3(0, 0, _set.radius);
-    //        float angle = 360 / _units.Count;
-    //        for (int i = 0; i < _units.Count; i++)
-    //        {
-    //            Quaternion rot = Quaternion.AngleAxis(angle * i, Vector3.up);
-    //            _units[i]._disposition._initPos = rot * new Vector3(0, 0, _info.radius);
-    //            _units[i]._disposition._offset = _units[i]._disposition._initPos + _standard;
-    //        }
-    //    }
-
-    //    public void ApplyFormation()
-    //    {
-
-    //        if (_info.eKind == eFormKind.Rectangular)
-    //        {
-    //            CalcOffset_Rect();
-    //        }
-    //        else if (_info.eKind == eFormKind.Circle)
-    //        {
-    //            CalcOffset_Circle();
-    //        }
-    //    }
-
-    //}
-
     //분대 , 역할의 단위 
     public class Squad : OrderPoint
     {
@@ -398,7 +289,7 @@ namespace Proto_AI_4
             _squad_children[0]._info.column = 10;
             _squad_children[0]._info.between_x = 1.2f;
             _squad_children[0]._info.between_z = 1.2f;
-            _squad_children[0]._info.horn = 0;
+            _squad_children[0]._info.horn = 0f;
             _squad_children[0]._info.eKind = eFormKind.Rectangular;
             //_squad_children[0]._info.eKind = eFormKind.Circle;
             //_squad_children[0]._info.radius = 4f;
