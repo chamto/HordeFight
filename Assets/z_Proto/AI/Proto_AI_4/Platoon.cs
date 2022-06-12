@@ -10,28 +10,28 @@ namespace Proto_AI_4
     public struct Disposition
     {
         //소대 , 분대 정보가 없을 수 있다  
-        public int _platoon_id; //소대 고유번호
-        public int _squad_id;  //분대 고유번호 
-        public int _unit_pos;  //분대 개별위치 - 분대 유닛리스트와 일치되어야 함
+        //public int _platoon_id; //소대 고유번호
+        //public int _squad_id;  //분대 고유번호 
+        //public int _unit_pos;  //분대 개별위치 - 분대 유닛리스트와 일치되어야 함
 
         public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
         public Vector3 _offset; //부모의 기준점으로 부터 초기위치가 떨어진 거리량
 
-        public Squad _belong_platoon; //소속소대정보 
-        public Squad _belong_squad; //소속분대정보  
+        //public Squad _belong_platoon; //소속소대정보 
+        //public Squad _belong_squad; //소속분대정보  
         public Squad _belong_formation; //속한진형 
 
-        public bool _solo_activity; //단독활동 ??
+        //public bool _solo_activity; //단독활동 ??
 
 
-        public void Init()
-        {
-            _platoon_id = -1;
-            _squad_id = -1;
-            _unit_pos = -1;
+        //public void Init()
+        //{
+        //    //_platoon_id = -1;
+        //    //_squad_id = -1;
+        //    //_unit_pos = -1;
 
-            _solo_activity = false;
-        }
+        //    //_solo_activity = false;
+        //}
     }
 
 
@@ -42,6 +42,13 @@ namespace Proto_AI_4
         Circle = 2,
         Spike = 3,
         Data,
+    }
+
+    public enum eFormDepth
+    {
+        Platoon = 20,
+        Squad = 10,
+        None = 0,
     }
 
     public struct FormInfo
@@ -81,6 +88,8 @@ namespace Proto_AI_4
     //분대 , 역할의 단위 
     public class Squad : OrderPoint
     {
+        public int _depth; //진형의 깊이 : 예) ...상위21 - 소대20 - 분대10 - 하위9 ...
+
         public Vector3 _standard; //[기준점] 기본으로 원점의 위치에 있다. 하위 자식들을 한꺼번에 위치변경하기 위해 사용된다 
 
         public Vector3 _initPos; //[초기위치] 원점에서 부터의 떨어진 위치 , 부모 기준점이 0 이면 <initPos == offset> 이다 
@@ -110,6 +119,8 @@ namespace Proto_AI_4
 
             //--------------------------
 
+            _depth = 0;
+
             _standard = Vector3.zero;
             _initPos = Vector3.zero;
             _offset = Vector3.zero;
@@ -128,33 +139,59 @@ namespace Proto_AI_4
 
         }
 
-        public void UnitList_Update(int squard_id, List<Unit> units)
+        //현재기준에서 상위만 검색
+        public Squad FindUpDepth(eFormDepth findDepth)
+        {
+            if ((int)findDepth == _depth)
+                return this;
+
+            const int FIND_COUNT = 20;
+
+            Squad parent = _squad_parent;
+            for (int i = 0; i < FIND_COUNT; i++)
+            {
+                if (null == parent) break;
+
+                if ((int)findDepth == parent._depth)
+                    return parent;
+                parent = parent._squad_parent;
+            }
+
+            return null;
+        }
+
+
+
+        //처음부터 스쿼드 목록을 제공 한다 
+        public void UnitList_Update(int squard_id, List<Unit> lists)
         {
 
-            if (0 == units.Count) return;
+            if (0 == lists.Count) return;
 
             _squard_id = squard_id;
 
             //지정 분대id를 가지는 수만큼 공간을 늘린다 
             _units.Clear();
-            for (int i = 0; i < units.Count; i++)
+            for (int i = 0; i < lists.Count; i++)
             {
-                if (_squard_id == units[i]._disposition._squad_id)
+                //if (_squard_id == units[i]._disposition._squad_id)
                 {
                     _units.Add(null);
                 }
             }
 
             //_units 의 unit_pos 위치에 unit 을 넣는다 
-            for (int i = 0; i < units.Count; i++)
+            for (int i = 0; i < lists.Count; i++)
             {
-                if (_squard_id == units[i]._disposition._squad_id)
-                {
-                    int upos = units[i]._disposition._unit_pos;
-                    _units[upos] = units[i];
-                    units[i]._disposition._belong_squad = this;
+                //if (_squard_id == lists[i]._disposition._squad_id)
+                //{
+                //    int upos = lists[i]._disposition._unit_pos;
+                //    _units[upos] = lists[i];
+                //    lists[i]._disposition._belong_squad = this;
+                //}
 
-                }
+                _units[i] = lists[i];
+                lists[i]._disposition._belong_formation = this;
             }
 
         }
@@ -270,6 +307,8 @@ namespace Proto_AI_4
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
+            _depth = (int)eFormDepth.Squad;
+            form._depth = (int)eFormDepth.Squad - 1;
             //--------------------------------------------
             //진형에 유닛등록
             _squad_children[0]._units.Clear();
@@ -286,6 +325,7 @@ namespace Proto_AI_4
             _isDirMatch = true;
             //_standard = new Vector3(0, 0, 2);
 
+            _squad_children[0]._squad_parent = this;
             _squad_children[0]._info.column = 10;
             _squad_children[0]._info.between_x = 1.2f;
             _squad_children[0]._info.between_z = 1.2f;
@@ -308,6 +348,8 @@ namespace Proto_AI_4
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
+            _depth = (int)eFormDepth.Squad;
+            form._depth = (int)eFormDepth.Squad - 1;
             //--------------------------------------------
             //진형에 유닛등록
             _squad_children[0]._units.Clear();
@@ -323,6 +365,7 @@ namespace Proto_AI_4
 
             _isDirMatch = true;
 
+            _squad_children[0]._squad_parent = this;
             _squad_children[0]._info.column = 3;
             _squad_children[0]._info.between_x = 1.2f;
             _squad_children[0]._info.between_z = 2.5f;
@@ -342,6 +385,8 @@ namespace Proto_AI_4
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
+            _depth = (int)eFormDepth.Squad;
+            form._depth = (int)eFormDepth.Squad - 1;
             //--------------------------------------------
             //진형에 유닛등록
             _squad_children[0]._units.Clear();
@@ -355,6 +400,7 @@ namespace Proto_AI_4
             //--------------------------------------------
 
             //_isDirMatch = true;
+            _squad_children[0]._squad_parent = this;
             _squad_children[0]._standard = new Vector3(0, 0, 8); //머리기준으로 회전하게 해준다 
             _squad_children[0]._info.eKind = eFormKind.Spike;
             _squad_children[0]._info.spike_num = 9;
@@ -370,6 +416,9 @@ namespace Proto_AI_4
 
             //등록된 form 해제 처리 필요 
             _squad_children.Clear();
+
+            _depth = (int)eFormDepth.Squad;
+
 
             FormInfo info = new FormInfo();
             info.eKind = eFormKind.Rectangular;
@@ -398,6 +447,8 @@ namespace Proto_AI_4
                     unitCount++;
                 }
 
+                form._squad_parent = this;
+                form._depth = (int)eFormDepth.Squad - 1;
                 form._info = info;
                 form._initPos = new Vector3(0, 0, -rowLen*i);
                 form._offset = form._initPos - _standard;
@@ -415,6 +466,8 @@ namespace Proto_AI_4
 
             //등록된 form 해제 처리 필요 
             _squad_children.Clear();
+
+            _depth = (int)eFormDepth.Squad;
 
             const int SQUAD_NUM = 5;
 
@@ -448,6 +501,8 @@ namespace Proto_AI_4
 
                 //DebugWide.LogBlue(i + "  " + spike_skin_num + "  " + rowLen); //test
 
+                form._squad_parent = this;
+                form._depth = (int)eFormDepth.Squad - 1;
                 form._standard = new Vector3(0, 0, (info.spike_between * spike_skin_num)); //머리기준으로 회전하게 해준다 
                 form._info = info;
                 form._initPos = new Vector3(0, 0, -rowLen * i);

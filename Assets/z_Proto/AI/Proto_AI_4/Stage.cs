@@ -107,13 +107,13 @@ namespace Proto_AI_4
                 int id = EntityMgr.Add(unit);
                 unit._collision._list_idx = id; //임시처리 
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-                unit._disposition._platoon_id = -1;
-                unit._disposition._squad_id = 0;
-                unit._disposition._unit_pos = i;
+                //unit._disposition._platoon_id = -1;
+                //unit._disposition._squad_id = 0;
+                //unit._disposition._unit_pos = i;
                 //unit._steeringBehavior.ArriveOn(); //도착 활성 
             }
 
-            _Squads[0] = Squad.Create(0,EntityMgr.list);
+            _Squads[0] = Squad.Create(0,EntityMgr.list); //fixme : 스쿼드대상 리스트를 만들어 제공해야 한다 
             _Squads[0]._targetPos = _tr_platoon_0.position;
             _Squads[0]._pos = _tr_platoon_0.position;
             //_Squads[0].ApplyFormation_SQD1_Width();
@@ -315,7 +315,8 @@ namespace Proto_AI_4
                 //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
                 //}
                 //v._steeringBehavior._targetPos = _tr_platoon_0.position;
-                v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
+                //v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
+                v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);
@@ -667,11 +668,13 @@ namespace Proto_AI_4
             {
                 color = Color.black;
 
-                if (null != v._disposition._belong_squad && v == v._disposition._belong_squad._units[0])
+                Squad belong_Squad = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad);
+
+                if (null != belong_Squad && v == belong_Squad._units[0])
                     color = Color.yellow;
 
-                if(3 == v._disposition._squad_id || 2 == v._disposition._squad_id)
-                    color = Color.white;
+                //if(3 == v._disposition._squad_id || 2 == v._disposition._squad_id)
+                    //color = Color.white;
 
                 if (0 == v._id)
                     color = Color.red;
