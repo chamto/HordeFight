@@ -516,47 +516,65 @@ namespace Proto_AI_4
             }
         }
 
-        //십자가형 배치
-        //public void ApplyFormation_SQD4_Cross()
-        //{
-        //    if (_squard_count != 4) return;
+        public void AddSquad(Squad squad)
+        {
+            _squad_children.Add(squad);
+        }
 
-        //    _isFollow = false;
-        //    _isDirMatch = true;
+        public void ApplyPlatoon_Cross(Squad squad_0, Squad squad_1, Squad squad_2 , Squad squad_3 )
+        {
+            _depth = (int)eFormDepth.Platoon;
+
+            //등록된 form 해제 처리 필요 
+            _squad_children.Clear();
+
+            AddSquad(squad_0);
+            AddSquad(squad_1);
+            AddSquad(squad_2);
+            AddSquad(squad_3);
+
+            _isFollow = false;
+            _isDirMatch = true;
 
 
-        //    //_squards[0]._form_rect.row = 3;
-        //    _squards[0]._form_rect.column = 5;
-        //    _squards[0]._form_rect.between_x = 1.2f;
-        //    _squards[0]._form_rect.between_z = 1.2f;
-        //    _squards[0]._form_rect.horn = 0;
-        //    _squards[0]._eFormKind = Squard.eFormKind.Rectangular;
-        //    _squards[0]._formation._initPos = new Vector3(0, 0, 3);
-        //    _squards[0]._formation._offset = _squards[0]._formation._initPos - _form_standard;
-        //    _squards[0]._pos = (_rotation * _squards[0]._formation._offset) + _pos; //PointToWorldSpace 
-        //    _squards[0].ApplyFormation();
+            squad_0._depth = (int)eFormDepth.Squad;
+            //squad_0._info.row = 3;
+            squad_0._info.column = 5;
+            squad_0._info.between_x = 1.2f;
+            squad_0._info.between_z = 1.2f;
+            squad_0._info.horn = 0;
+            squad_0._info.eKind = eFormKind.Rectangular;
+            squad_0._initPos = new Vector3(0, 0, 3);
+            squad_0._offset = squad_0._initPos - _standard;
+            squad_0._pos = (_rotation * squad_0._offset) + _pos; //PointToWorldSpace 
+            squad_0.CalcOffset();
 
-        //    _squards[1]._form_rect = _squards[0]._form_rect;
-        //    _squards[1]._eFormKind = Squard.eFormKind.Rectangular;
-        //    _squards[1]._formation._initPos = new Vector3(-5, 0, -3);
-        //    _squards[1]._formation._offset = _squards[1]._formation._initPos - _form_standard;
-        //    _squards[1]._pos = (_rotation * _squards[1]._formation._offset) + _pos; //PointToWorldSpace 
-        //    _squards[1].ApplyFormation();
+            squad_1._depth = (int)eFormDepth.Squad;
+            squad_1._info = squad_0._info;
+            squad_1._info.eKind = eFormKind.Rectangular;
+            squad_1._initPos = new Vector3(-5, 0, -3);
+            squad_1._offset = squad_1._initPos - _standard;
+            squad_1._pos = (_rotation * squad_1._offset) + _pos; //PointToWorldSpace 
+            squad_1.CalcOffset();
 
-        //    _squards[2]._form_rect = _squards[0]._form_rect;
-        //    _squards[2]._eFormKind = Squard.eFormKind.Rectangular;
-        //    _squards[2]._formation._initPos = new Vector3(5, 0, -3);
-        //    _squards[2]._formation._offset = _squards[2]._formation._initPos - _form_standard;
-        //    _squards[2]._pos = (_rotation * _squards[2]._formation._offset) + _pos; //PointToWorldSpace 
-        //    _squards[2].ApplyFormation();
+            squad_2._depth = (int)eFormDepth.Squad;
+            squad_2._info = squad_0._info;
+            squad_2._info.eKind = eFormKind.Rectangular;
+            squad_2._initPos = new Vector3(5, 0, -3);
+            squad_2._offset = squad_2._initPos - _standard;
+            squad_2._pos = (_rotation * squad_2._offset) + _pos; //PointToWorldSpace 
+            squad_2.CalcOffset();
 
-        //    _squards[3]._form_circle.radius = 3;
-        //    _squards[3]._eFormKind = Squard.eFormKind.Circle;
-        //    _squards[3]._formation._initPos = new Vector3(0, 0, -6);
-        //    _squards[3]._formation._offset = _squards[3]._formation._initPos - _form_standard;
-        //    _squards[3]._pos = (_rotation * _squards[3]._formation._offset) + _pos; //PointToWorldSpace 
-        //    _squards[3].ApplyFormation();
-        //}
+            squad_3._depth = (int)eFormDepth.Squad;
+            squad_3._info.radius = 3;
+            squad_3._info.eKind = eFormKind.Circle;
+            squad_3._initPos = new Vector3(0, 0, -6);
+            squad_3._offset = squad_3._initPos - _standard;
+            squad_3._pos = (_rotation * squad_3._offset) + _pos; //PointToWorldSpace 
+            squad_3.CalcOffset();
+            //squad_3.ApplyFormation_String();
+
+        }
 
 
         override public void Update(float deltaTime)
@@ -613,9 +631,9 @@ namespace Proto_AI_4
         }
     }
 
-    public class Platoon : OrderPoint
-    { 
-    }
+    //public class Platoon : OrderPoint
+    //{ 
+    //}
 
     //전달모임 , Transmission , 최소한의 배치 , 역할의 단위 
     //public class Squard_old : OrderPoint

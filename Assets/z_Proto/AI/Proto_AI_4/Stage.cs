@@ -55,8 +55,8 @@ namespace Proto_AI_4
         public bool _Squard_2_Solo_Activity = false;
         public bool _Squard_3_Solo_Activity = false;
 
-        public Platoon[] _Platoons = new Platoon[2];
-        public Squad[] _Squads = new Squad[2];
+        public Squad[] _Platoons = new Squad[2];
+        public Squad[] _Squads = new Squad[4];
 
         public bool _init = false;
 
@@ -82,8 +82,8 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             //InitPlatton_SQD1(0);
-            //InitPlatton_SQD4_Cross(0);
-            InitSquadTest();
+            InitPlatton_SQD4_Cross(0);
+            //InitSquadTest();
             //----------------------------------------------
 
             //충돌검출기 초기화 
@@ -174,90 +174,97 @@ namespace Proto_AI_4
         //    }
         //}
 
-        //public void InitPlatton_SQD4_Cross(int platId)
-        //{
-        //    Unit unit = null;
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        unit = new Unit();
-        //        int id = EntityMgr.Add(unit);
-        //        unit._collision._list_idx = id; //임시처리 
-        //        unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-        //        unit._disposition._platoon_num = 0;
-        //        unit._disposition._squard_num = 0;
-        //        unit._disposition._squard_pos = i;
-        //        //unit._steeringBehavior.ArriveOn();
-        //    }
+        public void InitPlatton_SQD4_Cross(int platId)
+        {
+            List<Unit> unitList = new List<Unit>();
 
-        //    for (int i = 0; i < 4; i++)
-        //    {
-        //        unit = new Unit();
-        //        int id = EntityMgr.Add(unit);
-        //        unit._collision._list_idx = id; //임시처리
-        //        unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-        //        unit._disposition._platoon_num = 0;
-        //        unit._disposition._squard_num = 1;
-        //        unit._disposition._squard_pos = i;
-        //        //unit._steeringBehavior.ArriveOn();
-        //    }
-        //    for (int i = 0; i < 4; i++)
-        //    {
-        //        unit = new Unit();
-        //        int id = EntityMgr.Add(unit);
-        //        unit._collision._list_idx = id; //임시처리
-        //        unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-        //        unit._disposition._platoon_num = 0;
-        //        unit._disposition._squard_num = 2;
-        //        unit._disposition._squard_pos = i;
-        //        //unit._steeringBehavior.ArriveOn();
-        //    }
-        //    for (int i = 0; i < 15; i++)
-        //    {
-        //        unit = new Unit();
-        //        int id = EntityMgr.Add(unit);
-        //        unit._collision._list_idx = id; //임시처리
-        //        unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-        //        unit._disposition._platoon_num = 0;
-        //        unit._disposition._squard_num = 3;
-        //        unit._disposition._squard_pos = i;
-        //        //unit._steeringBehavior.ArriveOn();
-        //    }
+            Unit unit = null;
+            for (int i = 0; i < 10; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리 
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                //unit._steeringBehavior.ArriveOn();
 
-        //    _Platoon[platId] = Platoon.Create_Platoon(EntityMgr.list);
-        //    _Platoon[platId]._targetPos = _tr_platoon_0.position;
-        //    _Platoon[platId]._pos = _tr_platoon_0.position;
-        //    _Platoon[platId].ApplyFormation_SQD4_Cross();
-        //    //_Platoon[platId].ApplyFormation_SQD4_String();
+                unitList.Add(unit);
+            }
+            _Squads[0] = Squad.Create(0, unitList);
+
+            unitList.Clear();
+            for (int i = 0; i < 4; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                //unit._steeringBehavior.ArriveOn();
+
+                unitList.Add(unit);
+            }
+            _Squads[1] = Squad.Create(1, unitList);
+
+            unitList.Clear();
+            for (int i = 0; i < 4; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                //unit._steeringBehavior.ArriveOn();
+
+                unitList.Add(unit);
+            }
+            _Squads[2] = Squad.Create(2, unitList);
+
+            unitList.Clear();
+            for (int i = 0; i < 15; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+                //unit._steeringBehavior.ArriveOn();
+
+                unitList.Add(unit);
+            }
+            _Squads[3] = Squad.Create(3, unitList);
+
+            _Platoons[platId] = Squad.Create();
+            _Platoons[platId]._targetPos = _tr_platoon_0.position;
+            _Platoons[platId]._pos = _tr_platoon_0.position;
+            _Platoons[platId].ApplyPlatoon_Cross(_Squads[0], _Squads[1], _Squads[2], _Squads[3] );
 
 
-        //    for (int i = 0; i < EntityMgr.list.Count; i++)
-        //    {
-        //        Unit u = EntityMgr.list[i];
-        //        //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
-        //        //u._steeringBehavior.ObstacleAvoidanceOn();
-        //        //u._steeringBehavior.FlockingOn();
-        //        //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
 
-        //        //if(0 == u._id)
-        //        {
-        //            u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
-        //        }
-        //    }
-        //}
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                Unit u = EntityMgr.list[i];
+                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                //u._steeringBehavior.ObstacleAvoidanceOn();
+                //u._steeringBehavior.FlockingOn();
+                //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
+
+                //if(0 == u._id)
+                {
+                    u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
+                }
+            }
+        }
 
 
         public void Update(float deltaTime)
         {
 
-            _Squads[0]._speed = _formation_squard_speed;
-            _Squads[0]._targetPos = _tr_platoon_0.position;
-            _Squads[0].Update(deltaTime);
+            //_Squads[0]._speed = _formation_squard_speed;
+            //_Squads[0]._targetPos = _tr_platoon_0.position;
+            //_Squads[0].Update(deltaTime);
 
             //----------------------------------------------
 
-            //_Platoons[0]._speed = _formation_platoon_speed;
-            //_Platoons[0]._targetPos = _tr_platoon_0.position;
-            //_Platoons[0].Update(deltaTime);
+            _Platoons[0]._speed = _formation_platoon_speed;
+            _Platoons[0]._targetPos = _tr_platoon_0.position;
+            _Platoons[0].Update(deltaTime);
 
             //for(int i=0;i< _Platoons[0]._squad_count;i++)
             //{
