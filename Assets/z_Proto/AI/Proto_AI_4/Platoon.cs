@@ -422,8 +422,8 @@ namespace Proto_AI_4
 
             FormInfo info = new FormInfo();
             info.eKind = eFormKind.Rectangular;
-            info.column = 3;
-            info.row = 2;
+            info.column = 2;
+            info.row = 1;
             info.between_x = 1.2f;
             info.between_z = 1.5f;
             info.horn = 0;
@@ -571,8 +571,8 @@ namespace Proto_AI_4
             squad_3._initPos = new Vector3(0, 0, -6);
             squad_3._offset = squad_3._initPos - _standard;
             squad_3._pos = (_rotation * squad_3._offset) + _pos; //PointToWorldSpace 
-            squad_3.CalcOffset();
-            //squad_3.ApplyFormation_String();
+            //squad_3.CalcOffset();
+            squad_3.ApplyFormation_String();
 
         }
 

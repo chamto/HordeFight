@@ -310,7 +310,7 @@ namespace Proto_AI_4
 
 
             //==============================================
-            //KeyInput_Platoon(0);
+            KeyInput_Platoon(0);
             //==============================================
 
             foreach (Unit v in EntityMgr.list)
