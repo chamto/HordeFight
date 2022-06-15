@@ -453,7 +453,7 @@ namespace Proto_AI_4
                 form._initPos = new Vector3(0, 0, -rowLen*i);
                 form._offset = form._initPos - _standard;
                 form._pos = (_rotation * form._offset) + _pos; //PointToWorldSpace , 위치적용
-                form._isFollow = true;
+                form._isFollow = true; //따라가기 설정
                 form._follow_gap = rowLen;
                 //form._isDirMatch = true;
                 form.CalcOffset();
@@ -533,8 +533,8 @@ namespace Proto_AI_4
             AddSquad(squad_2);
             AddSquad(squad_3);
 
-            _isFollow = false;
-            _isDirMatch = true;
+            //_isFollow = false;
+            //_isDirMatch = true;
 
 
             squad_0._depth = (int)eFormDepth.Squad;
@@ -547,6 +547,7 @@ namespace Proto_AI_4
             squad_0._initPos = new Vector3(0, 0, 3);
             squad_0._offset = squad_0._initPos - _standard;
             squad_0._pos = (_rotation * squad_0._offset) + _pos; //PointToWorldSpace 
+            squad_0._isDirMatch = true;
             squad_0.CalcOffset();
 
             squad_1._depth = (int)eFormDepth.Squad;
@@ -555,6 +556,7 @@ namespace Proto_AI_4
             squad_1._initPos = new Vector3(-5, 0, -3);
             squad_1._offset = squad_1._initPos - _standard;
             squad_1._pos = (_rotation * squad_1._offset) + _pos; //PointToWorldSpace 
+            squad_1._isDirMatch = true;
             squad_1.CalcOffset();
 
             squad_2._depth = (int)eFormDepth.Squad;
@@ -563,6 +565,7 @@ namespace Proto_AI_4
             squad_2._initPos = new Vector3(5, 0, -3);
             squad_2._offset = squad_2._initPos - _standard;
             squad_2._pos = (_rotation * squad_2._offset) + _pos; //PointToWorldSpace 
+            squad_2._isDirMatch = true;
             squad_2.CalcOffset();
 
             squad_3._depth = (int)eFormDepth.Squad;
@@ -571,6 +574,7 @@ namespace Proto_AI_4
             squad_3._initPos = new Vector3(0, 0, -6);
             squad_3._offset = squad_3._initPos - _standard;
             squad_3._pos = (_rotation * squad_3._offset) + _pos; //PointToWorldSpace 
+            squad_3._isDirMatch = true;
             //squad_3.CalcOffset();
             squad_3.ApplyFormation_String();
 
