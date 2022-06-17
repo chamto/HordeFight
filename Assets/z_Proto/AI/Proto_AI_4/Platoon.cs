@@ -196,10 +196,11 @@ namespace Proto_AI_4
 
         }
 
-        //fixme : 메모리풀로 변경 필요 
+
         static public Squad Create(int squard_id, List<Unit> units)
         {
-            Squad squard = new Squad(); 
+
+            Squad squard = ObjectManager.Inst._squadPool.Alloc();
             squard.Init();
             squard.UnitList_Update(squard_id, units);
 
@@ -208,15 +209,17 @@ namespace Proto_AI_4
 
         static public Squad Create()
         {
-            Squad squard = new Squad();
+            Squad squard = ObjectManager.Inst._squadPool.Alloc();
             squard.Init();
 
             return squard;
         }
 
-        static public void Release()
+        static public void Free(Squad squad)
         {
-            //todo : 메모리풀로 되돌리는 해제처리 넣기  
+
+            squad.Init(); //초기화 
+            ObjectManager.Inst._squadPool.Free(squad);
         }
 
         //_formation 값을 채운다 

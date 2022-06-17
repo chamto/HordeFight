@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using UtilGS9;
 
 namespace Proto_AI_4
 {
@@ -11,11 +11,22 @@ namespace Proto_AI_4
         public SphereTree _sphereTree = new SphereTree(500, new float[] { 32, 16, 8, 5, 2 }, 0.5f);
         public SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 32, 16, 8, 2 }, 0.5f);
 
+        //--------------------------------------------------
+        //메모리풀
+        public MemoryPool<Squad> _squadPool = new MemoryPool<Squad>();
+            
+        //--------------------------------------------------
+
         private ObjectManager()
         { }
 
         public void Init()
         {
+
+            _squadPool.Init(200, 50, "SQUAD_POOL");
+
+            //----------------------------------------------
+
             foreach (KeyValuePair<Vector3Int, CellSpace> t in GridManager.Inst._structTileList)
             {
                 //if (true == t.Value._isUpTile)
