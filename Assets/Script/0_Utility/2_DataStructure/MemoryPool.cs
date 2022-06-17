@@ -6,26 +6,18 @@ using UnityEngine;
 namespace UtilGS9
 {
 
-    // 2008년 루나 이웅주 제작
+
     public class MemoryPool<Data>  where Data : new()
     {
 
-        struct Setting
-        {
-            public uint BaseSize;
-            public uint IncreaseSize;
-            public string Name;
-
-            //public Setting()
-            //{
-            //    memset(this, 0, sizeof( *this) );
-            //}
-        }
+        uint _BaseSize;
+        uint _IncreaseSize;
+        string _Name;
 
         HashSet<Data> _AllocatedDataSet = new HashSet<Data>();
         HashSet<Data> _ReservedDataSet = new HashSet<Data>();
         LinkedList<Data> _MemoryList = new LinkedList<Data>();
-        Setting _Setting = new Setting();
+
 
         public MemoryPool() { }
 
@@ -39,9 +31,9 @@ namespace UtilGS9
 
         public void Init(uint baseSize, uint increaseSize, string name )
         {
-            _Setting.BaseSize        = baseSize;
-            _Setting.IncreaseSize    = increaseSize;
-            _Setting.Name = name;
+            _BaseSize        = baseSize;
+            _IncreaseSize    = increaseSize;
+            _Name = name;
 
 
             Increase(baseSize );
@@ -73,7 +65,7 @@ namespace UtilGS9
         {
             if(0 == _ReservedDataSet.Count )
             {
-                Increase(_Setting.IncreaseSize );
+                Increase(_IncreaseSize );
 
                 // 081117 LUJ, 용량을 늘렸는데도 할당가능 공간이 없으면 진행불가 
                 if(0 == _ReservedDataSet.Count )
@@ -102,16 +94,20 @@ namespace UtilGS9
             }
         }
 
-        private bool IsAllocated(Data data)
+        public bool IsAllocated(Data data)
         {
             return _AllocatedDataSet.Contains(data);
         }
 
-        private bool IsReserved(Data data)
+        public bool IsReserved(Data data)
         {
             return _ReservedDataSet.Contains(data);
         }
 
+        override public string ToString()
+        {
+            return _Name + "  m_ct:" + _MemoryList.Count + "  a_ct:" + _AllocatedDataSet.Count + "  r_ct:" + _ReservedDataSet.Count; 
+        }
 
     }
 
