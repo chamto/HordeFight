@@ -108,7 +108,7 @@ namespace Proto_AI_4
         public bool _solo_activity = false; //단독활동 
         public bool _isFollow = false;
         public float _follow_gap = 3;
-        public bool _isDirMatch = true; //분대방향을 소대방향과 일치
+        public bool _isDirMatch = false; //분대방향을 소대방향과 일치
 
         public void Init()
         {
@@ -125,10 +125,10 @@ namespace Proto_AI_4
             _initPos = Vector3.zero;
             _offset = Vector3.zero;
 
-            _squad_parent = null; //todo : 소대에서도 연결 끊는 처리 필요
+            _squad_parent = null; 
 
             _units.Clear();
-            _squad_children.Clear(); //todo : 나중에 메모리풀로 변경하여 재할당 문제 피하기 
+            _squad_children.Clear(); 
 
             _info.Init();
             _squard_id = -1;
@@ -218,8 +218,20 @@ namespace Proto_AI_4
         static public void Free(Squad squad)
         {
 
+            squad.Free_Children();
+
             squad.Init(); //초기화 
             ObjectManager.Inst._squadPool.Free(squad);
+        }
+
+        public void Free_Children()
+        {
+            //자식들 모두 해제 
+            for (int i = 0; i < _squad_children.Count; i++)
+            {
+                Squad.Free(_squad_children[i]);
+            }
+            _squad_children.Clear();
         }
 
         //_formation 값을 채운다 
@@ -306,7 +318,7 @@ namespace Proto_AI_4
 
         public void ApplyFormation_SQD1_Width()
         {
-            _squad_children.Clear();
+            Free_Children();
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
@@ -347,7 +359,7 @@ namespace Proto_AI_4
 
         public void ApplyFormation_SQD1_Height()
         {
-            _squad_children.Clear();
+            Free_Children();
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
@@ -384,7 +396,7 @@ namespace Proto_AI_4
 
         public void ApplyFormation_SQD1_Spike()
         {
-            _squad_children.Clear();
+            Free_Children();
             Squad form = Squad.Create();
             _squad_children.Add(form);
 
@@ -418,7 +430,7 @@ namespace Proto_AI_4
         {
 
             //등록된 form 해제 처리 필요 
-            _squad_children.Clear();
+            Free_Children();
 
             _depth = (int)eFormDepth.Squad;
 
@@ -440,7 +452,7 @@ namespace Proto_AI_4
                 if (_units.Count <= unitCount) break;
 
                 form = Squad.Create();
-                form._units.Clear();
+                //form._units.Clear();
                 for(int j=0;j< info.column*info.row ;j++)
                 {
                     if (_units.Count <= unitCount) break;
@@ -468,7 +480,7 @@ namespace Proto_AI_4
         {
 
             //등록된 form 해제 처리 필요 
-            _squad_children.Clear();
+            Free_Children();
 
             _depth = (int)eFormDepth.Squad;
 
@@ -492,7 +504,7 @@ namespace Proto_AI_4
                 if (_units.Count <= unitCount) break;
 
                 form = Squad.Create();
-                form._units.Clear();
+                //form._units.Clear();
                 for (int j = 0; j < SQUAD_NUM; j++)
                 {
                     if (_units.Count <= unitCount) break;
