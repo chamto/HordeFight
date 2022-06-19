@@ -170,6 +170,7 @@ namespace Proto_AI_4
 
             _squard_id = squard_id;
 
+
             //지정 분대id를 가지는 수만큼 공간을 늘린다 
             _units.Clear();
             for (int i = 0; i < lists.Count; i++)
@@ -192,6 +193,7 @@ namespace Proto_AI_4
 
                 _units[i] = lists[i];
                 lists[i]._disposition._belong_formation = this;
+
             }
 
         }
@@ -533,7 +535,8 @@ namespace Proto_AI_4
 
         public void AddSquad(Squad squad)
         {
-            _squad_children.Add(squad);
+            squad._squad_parent = this;
+            _squad_children.Add(squad); //fixme: 중복된 스쿼드가 들어갈수 있다. 해쉬셋으로 변경하기 
         }
 
         public void ApplyPlatoon_Cross(Squad squad_0, Squad squad_1, Squad squad_2 , Squad squad_3 )

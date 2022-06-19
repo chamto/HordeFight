@@ -82,8 +82,10 @@ namespace Proto_AI_4
             EntityMgr.list.Clear();
 
             //InitPlatton_SQD1(0);
-            InitPlatton_SQD4_Cross(0);
+            //InitPlatton_SQD4_Cross(0);
             //InitSquadTest();
+
+            InitFlockingTest();
             //----------------------------------------------
 
             //충돌검출기 초기화 
@@ -96,6 +98,51 @@ namespace Proto_AI_4
 
             //----------------------------------------------
 
+        }
+
+        public void InitFlockingTest()
+        {
+            int platId = 0; //임시
+
+            _Platoons[platId] = Squad.Create();
+            _Platoons[platId]._targetPos = _tr_platoon_0.position;
+            _Platoons[platId]._pos = _tr_platoon_0.position;
+
+            Unit unit = null;
+            for (int i = 0; i < 30; i++)
+            {
+                unit = new Unit();
+                int id = EntityMgr.Add(unit);
+                unit._collision._list_idx = id; //임시처리 
+                unit.Init(id, 0.5f, new Vector3(17, 0, 12));
+
+                //unit._steeringBehavior.ArriveOn(); //도착 활성 
+            }
+
+            _Squads[0] = Squad.Create(0, EntityMgr.list); //fixme : 스쿼드대상 리스트를 만들어 제공해야 한다 
+            _Squads[0]._targetPos = _tr_platoon_0.position;
+            _Squads[0]._pos = _tr_platoon_0.position;
+            _Squads[0]._depth = (int)eFormDepth.Squad;
+
+            _Platoons[platId] = Squad.Create();
+            _Platoons[platId]._targetPos = _tr_platoon_0.position;
+            _Platoons[platId]._pos = _tr_platoon_0.position;
+
+            _Platoons[platId].AddSquad(_Squads[0]);
+
+            for (int i = 0; i < EntityMgr.list.Count; i++)
+            {
+                Unit u = EntityMgr.list[i];
+                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                //u._steeringBehavior.ObstacleAvoidanceOn();
+                //u._steeringBehavior.FlockingOn();
+                //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
+
+                //if(0 == u._id)
+                {
+                    u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
+                }
+            }
         }
 
         public void InitSquadTest()
@@ -668,7 +715,7 @@ namespace Proto_AI_4
 
 
             //_Platoons[0].Draw(Color.green); //소대 출력
-            _Squads[0].Draw(Color.green);
+            //_Squads[0].Draw(Color.green);
 
             Color color = Color.black;
             foreach (Unit v in EntityMgr.list)
