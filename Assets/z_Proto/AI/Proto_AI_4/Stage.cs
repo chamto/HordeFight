@@ -132,7 +132,7 @@ namespace Proto_AI_4
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
-                u._steeringBehavior.ArriveOn(); //도착 활성
+                u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 

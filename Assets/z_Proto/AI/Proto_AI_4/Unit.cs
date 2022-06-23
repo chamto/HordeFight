@@ -150,7 +150,7 @@ namespace Proto_AI_4
 
         public bool _tag = false; //*** 제거대상 
 
-        public Vector3 _worldOffsetPos = ConstV.v3_zero;
+        public Vector3 _targetPos = ConstV.v3_zero;
 
         Vector3[] _array_VB = new Vector3[3];
 
@@ -320,7 +320,7 @@ namespace Proto_AI_4
 
         //}
 
-        Vector3 _before_worldOffsetPos = Vector3.zero;
+        Vector3 _before_targetPos = Vector3.zero;
         public void Update(float deltaTime)
         {
 
@@ -329,22 +329,22 @@ namespace Proto_AI_4
             //----------------------------------------------
 
             _oldPos = _pos;
-            _worldOffsetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
+            _targetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
             if (null != _disposition._belong_formation)
             {
                 //OffsetPursuit 에서의 목표위치 
-                _worldOffsetPos = (_disposition._belong_formation._rotation * _disposition._offset) + _disposition._belong_formation._pos; //PointToWorldSpace 
+                _targetPos = (_disposition._belong_formation._rotation * _disposition._offset) + _disposition._belong_formation._pos; //PointToWorldSpace 
 
                 //---------
                 if (_disposition._belong_formation._changeTarget)
                 {
-                    _before_worldOffsetPos = _pos;
+                    _before_targetPos = _pos;
                 }
-                //DebugWide.AddDrawQ_Circle(_before_worldOffsetPos, 0.5f, Color.green);
+                //DebugWide.AddDrawQ_Circle(_before_targetPos, 0.5f, Color.green);
                 //---------
             }
 
-            //DebugWide.LogGreen(_worldOffsetPos + "  " + _squard._pos + "  " + _steeringBehavior._targetPos);
+            //DebugWide.LogGreen(_targetPos + "  " + _squard._pos + "  " + _steeringBehavior._targetPos);
 
             Update_NormalMovement(deltaTime);
             //Update_RotateMovement(deltaTime);
@@ -591,7 +591,7 @@ namespace Proto_AI_4
             //=============================================================
 
 
-            Vector3 ToOffset = _worldOffsetPos - _pos;
+            Vector3 ToOffset = _targetPos - _pos;
             //if (ToOffset.sqrMagnitude > 0.001f) //잘못된처리 제거 : 속도값이 있음에도 목표위치에 가까우면 처리안하는 것은 잘못이다. - 도착관련 예전처리 제거 
             
             //최적화를 위해서는 목표와의 거리가 아닌 현재 속도값이 작은지 검사 한다  
@@ -645,7 +645,7 @@ namespace Proto_AI_4
             //Intergrate(deltaTime); //todo - 완성하기 
             //----------------------------------------------------
 
-            Vector3 ToOffset = _worldOffsetPos - _pos;
+            Vector3 ToOffset = _targetPos - _pos;
             if (ToOffset.sqrMagnitude > 0.001f)
             {
                 float def = VOp.Sign_ZX(_heading, ToOffset);
