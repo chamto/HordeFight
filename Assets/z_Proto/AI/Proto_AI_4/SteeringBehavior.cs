@@ -159,6 +159,23 @@ namespace Proto_AI_4
         public void OffsetPursuitOff() { if (On(eType.offset_pursuit)) _flags ^= (int)eType.offset_pursuit; }
         public void FlockingOff() { CohesionOff(); AlignmentOff(); SeparationOff(); WanderOff(); }
 
+        public bool IsFleeOn() { return On(eType.flee); }
+        public bool IsSeekOn() { return On(eType.seek); }
+        public bool IsArriveOn() { return On(eType.arrive); }
+        public bool IsWanderOn() { return On(eType.wander); }
+        public bool IsPursuitOn() { return On(eType.pursuit); }
+        public bool IsEvadeOn() { return On(eType.evade); }
+        public bool IsCohesionOn() { return On(eType.cohesion); }
+        public bool IsSeparationOn() { return On(eType.separation); }
+        public bool IsAlignmentOn() { return On(eType.allignment); }
+        public bool IsObstacleAvoidanceOn() { return On(eType.obstacle_avoidance); }
+        public bool IsWallAvoidanceOn() { return On(eType.wall_avoidance); }
+        public bool IsFollowPathOn() { return On(eType.follow_path); }
+        public bool IsInterposeOn() { return On(eType.interpose); }
+        public bool IsHideOn() { return On(eType.hide); }
+        public bool IsOffsetPursuitOn() { return On(eType.offset_pursuit); }
+        public bool IsFlockingOn() { return On(eType.cohesion | eType.separation | eType.allignment | eType.wander); }
+
         bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
 
         bool AccumulateForce(ref Vector3 RunningTot, Vector3 ForceToAdd)
@@ -292,9 +309,9 @@ namespace Proto_AI_4
         //  is reached, at which time the function returns the steering force 
         //  accumulated to that  point
         //------------------------------------------------------------------------
-        Vector2 CalculatePrioritized()
+        Vector3 CalculatePrioritized()
         {
-            Vector2 force;
+            Vector3 force;
 
             if (On(eType.wall_avoidance))
             {
@@ -676,16 +693,21 @@ namespace Proto_AI_4
                     //toAgent 가 0이 되면 Nan 값이 되어 , Nan과 연산한 다른 변수도 Nan이 되어버리는 문제가 있다 
                     if (false == Misc.IsZero(ToAgent))
                     {
+                        //if (0 == _vehicle._id)
+                            //DebugWide.LogBlue(a + " - " + SteeringForce);
                         SteeringForce += ToAgent.normalized / ToAgent.magnitude;
+                        // toAgent 의 길이가 1 일때 기준 조종힘 1이 된다 
+                        // 길이 < 1 : 조종힘이 커진다 
+                        // 1 < 길이 : 조종힘이 작아진다. 거리가 멀수록 힘이 작아진다  
                     }
 
                 }
             }
 
-            //if (0 == _vehicle._id)
+            if (0 == _vehicle._id)
             {
-                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
-                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
+                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + SteeringForce, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + SteeringForce, 0.2f, Color.green);
             }
 
             return SteeringForce;
@@ -729,10 +751,12 @@ namespace Proto_AI_4
                 //DesiredVelocity - _vehicle._heading 
             }
 
-            //if (0 == _vehicle._id)
+            //chamto test
+            if (0 == _vehicle._id)
             {
-                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
-                //DebugWide.DrawCircle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
+
+                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + AverageHeading, Color.blue);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + AverageHeading, 0.2f, Color.blue);
             }
 
 
@@ -770,11 +794,11 @@ namespace Proto_AI_4
                 SteeringForce = Seek(CenterOfMass);
             }
 
-            //if (0 == _vehicle._id)
+            if (0 == _vehicle._id)
             {
-                //DebugWide.DrawLine(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
-                //DebugWide.DrawCircle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
-                //DebugWide.DrawCircle(CenterOfMass, 0.5f, Color.red);
+                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
+                DebugWide.AddDrawQ_Circle(CenterOfMass, 0.5f, Color.red);
             }
 
             //the magnitude of cohesion is usually much larger than separation or

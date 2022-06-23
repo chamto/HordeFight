@@ -508,6 +508,8 @@ namespace Proto_AI_4
             //}
 
             Vector3 steeringForce = _steeringBehavior.Calculate(); //조종힘 계산 
+            //if(0 == _id)
+                    //DebugWide.LogRed("!!!!! - " + steeringForce);
             Vector3 allForce = _forces + steeringForce;
             allForce = VOp.Truncate(allForce, _maxForce);
 
@@ -569,7 +571,8 @@ namespace Proto_AI_4
             }
 
             _velocity = VOp.Truncate(_velocity, _maxSpeed);
-
+            //if (0 == _id)
+                //DebugWide.LogRed("!!_velocity - " + _velocity);
             //-------------------------------------
 
             if (_isImpluse)
@@ -589,7 +592,10 @@ namespace Proto_AI_4
 
 
             Vector3 ToOffset = _worldOffsetPos - _pos;
-            if (ToOffset.sqrMagnitude > 0.001f)
+            //if (ToOffset.sqrMagnitude > 0.001f) //잘못된처리 제거 : 속도값이 있음에도 목표위치에 가까우면 처리안하는 것은 잘못이다. - 도착관련 예전처리 제거 
+            
+            //최적화를 위해서는 목표와의 거리가 아닌 현재 속도값이 작은지 검사 한다  
+            //if (_velocity.sqrMagnitude > 0.0001f) //속도가 없을때도 방향전환 가능해야 하기에 처리제거 
             {
                 float def = VOp.Sign_ZX(_heading, ToOffset);
                 float max_angle = Geo.AngleSigned_AxisY(_heading, ToOffset);

@@ -115,8 +115,7 @@ namespace Proto_AI_4
                 int id = EntityMgr.Add(unit);
                 unit._collision._list_idx = id; //임시처리 
                 unit.Init(id, 0.5f, new Vector3(17, 0, 12));
-
-                //unit._steeringBehavior.ArriveOn(); //도착 활성 
+                 
             }
 
             _Squads[0] = Squad.Create(0, EntityMgr.list); //fixme : 스쿼드대상 리스트를 만들어 제공해야 한다 
@@ -133,14 +132,14 @@ namespace Proto_AI_4
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
-                //u._steeringBehavior.OffsetPursuitOn(u._squard, u._formation._offset);
+                u._steeringBehavior.ArriveOn(); //도착 활성
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
 
                 //if(0 == u._id)
                 {
-                    u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
+                    //u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
                 }
             }
         }
@@ -357,6 +356,7 @@ namespace Proto_AI_4
 
 
             //==============================================
+            KeyInput_Flocking(0);
             KeyInput_Platoon(0);
             //==============================================
 
@@ -588,6 +588,84 @@ namespace Proto_AI_4
                 if (0 == collCount) break; //충돌횟수가 0이라면 더이상 계산 할 것이 없음 
             }
             //DebugWide.LogBlue(calcCount  + "  " );
+
+        }
+
+        public void KeyInput_Flocking(int platID)
+        {
+            Unit u0 = EntityMgr.list[0];
+
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    Unit u = EntityMgr.list[i];
+
+                    if (u._steeringBehavior.IsArriveOn())
+                    {
+                        u._steeringBehavior.ArriveOff();
+                    }
+                    else
+                    {
+                        u._steeringBehavior.ArriveOn(); //도착 활성  
+                    }
+                }
+                DebugWide.LogBlue("Arrive :" + u0._steeringBehavior.IsArriveOn());
+            }
+
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    Unit u = EntityMgr.list[i];
+
+                    if (u._steeringBehavior.IsCohesionOn())
+                    {
+                        u._steeringBehavior.CohesionOff();
+                    }
+                    else
+                    {
+                        u._steeringBehavior.CohesionOn();
+                    }
+                }
+                DebugWide.LogBlue("Cohesion :" + u0._steeringBehavior.IsCohesionOn());
+            }
+
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    Unit u = EntityMgr.list[i];
+
+                    if (u._steeringBehavior.IsAlignmentOn())
+                    {
+                        u._steeringBehavior.AlignmentOff();
+                    }
+                    else
+                    {
+                        u._steeringBehavior.AlignmentOn();
+                    }
+                }
+                DebugWide.LogBlue("Alignment :" + u0._steeringBehavior.IsAlignmentOn());
+            }
+
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    Unit u = EntityMgr.list[i];
+
+                    if (u._steeringBehavior.IsSeparationOn())
+                    {
+                        u._steeringBehavior.SeparationOff();
+                    }
+                    else
+                    {
+                        u._steeringBehavior.SeparationOn();
+                    }
+                }
+                DebugWide.LogBlue("Separation :" + u0._steeringBehavior.IsSeparationOn());
+            }
 
         }
 
