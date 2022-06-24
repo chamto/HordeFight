@@ -612,6 +612,7 @@ namespace Proto_AI_4
                 }
                 DebugWide.LogBlue("Arrive :" + u0._steeringBehavior.IsArriveOn());
             }
+            u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
 
             if (Input.GetKeyDown(KeyCode.X))
             {

@@ -233,7 +233,7 @@ namespace Proto_AI_4
 
             if (On(eType.separation))
             {
-                _steeringForce += Separation(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
+                _steeringForce += Separation2(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
             }
 
             if (On(eType.allignment))
@@ -590,6 +590,11 @@ namespace Proto_AI_4
             return Vector3.zero;
         }
 
+        public Vector3 Stop()
+        {
+            return ( - _vehicle._velocity);
+        }
+
         private Vector3 OffsetPursuit(BaseEntity leader, Vector3 offset)
         {
             //calculate the offset's position in world space
@@ -670,6 +675,58 @@ namespace Proto_AI_4
             return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
         }
 
+
+        //거리지정이 있는 분리알고리즘
+        Vector3 Separation2(List<Unit> neighbors)
+        {
+            const int RADIUS = 3;
+            int testCount = 0;
+            Vector3 steeringForce = Vector3.zero;
+
+            for (int a = 0; a < neighbors.Count; ++a)
+            {
+                //make sure this agent isn't included in the calculations and that
+                //the agent being examined is close enough. ***also make sure it doesn't
+                //include the evade target ***
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
+                  (neighbors[a] != _pTargetAgent))
+                {
+                    Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
+
+                    if (ToAgent.magnitude > RADIUS) continue; //chamto test
+
+                    //scale the force inversely proportional to the agents distance  
+                    //from its neighbor.
+                    //toAgent 가 0이 되면 Nan 값이 되어 , Nan과 연산한 다른 변수도 Nan이 되어버리는 문제가 있다 
+                    if (false == Misc.IsZero(ToAgent))
+                    {
+                        //if (0 == _vehicle._id)
+                        //DebugWide.LogBlue(a + " - " + SteeringForce);
+                        steeringForce += ToAgent.normalized / ToAgent.magnitude;
+                        // toAgent 의 길이가 1 일때 기준 조종힘 1이 된다 
+                        // 길이 < 1 : 조종힘이 커진다 
+                        // 1 < 길이 : 조종힘이 작아진다. 거리가 멀수록 힘이 작아진다  
+
+                        testCount++;
+                    }
+
+                }
+            }
+
+
+            if (0 == _vehicle._id)
+            {
+                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + steeringForce, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos , RADIUS, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + steeringForce.normalized * RADIUS, 0.2f, Color.green);
+            }
+
+            if(0 == testCount)
+                return Stop(); //분리를 멈춘다 
+                
+            return steeringForce;
+        }
+
         //---------------------------- Separation --------------------------------
         //
         // this calculates a force repelling from the other neighbors
@@ -703,6 +760,7 @@ namespace Proto_AI_4
 
                 }
             }
+
 
             if (0 == _vehicle._id)
             {
