@@ -594,6 +594,7 @@ namespace Proto_AI_4
         public void KeyInput_Flocking(int platID)
         {
             Unit u0 = EntityMgr.list[0];
+            Unit u1 = EntityMgr.list[1];
 
             if (Input.GetKeyDown(KeyCode.Z))
             {
@@ -610,7 +611,7 @@ namespace Proto_AI_4
                         u._steeringBehavior.ArriveOn(); //도착 활성  
                     }
                 }
-                DebugWide.LogBlue("Arrive :" + u0._steeringBehavior.IsArriveOn());
+                DebugWide.LogBlue("Arrive :" + u1._steeringBehavior.IsArriveOn());
             }
             u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
 

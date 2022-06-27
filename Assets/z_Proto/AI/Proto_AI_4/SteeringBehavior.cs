@@ -243,7 +243,7 @@ namespace Proto_AI_4
 
             if (On(eType.cohesion))
             {
-                _steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
+                _steeringForce += Cohesion2(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
             }
 
 
@@ -693,7 +693,7 @@ namespace Proto_AI_4
                 {
                     Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
 
-                    if (ToAgent.magnitude > RADIUS) continue; //chamto test
+                    if (ToAgent.sqrMagnitude > RADIUS * RADIUS) continue; 
 
                     //scale the force inversely proportional to the agents distance  
                     //from its neighbor.
@@ -727,6 +727,79 @@ namespace Proto_AI_4
             return steeringForce;
         }
 
+
+        Vector3 Cohesion2(List<Unit> neighbors)
+        {
+            const int RADIUS = 3;
+
+            //first find the center of mass of all the agents
+            Vector3 CenterOfMass = Vector3.zero, SteeringForce = Vector3.zero;
+
+            int NeighborCount = 0;
+
+            //iterate through the neighbors and sum up all the position vectors
+            for (int a = 0; a < neighbors.Count; ++a)
+            {
+                //make sure *this* agent isn't included in the calculations and that
+                //the agent being examined is close enough ***also make sure it doesn't
+                //include the evade target ***
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
+                  (neighbors[a] != _pTargetAgent))
+                {
+
+                    CenterOfMass += neighbors[a]._pos;
+
+                    ++NeighborCount;
+                }
+            }
+
+
+
+            if (NeighborCount > 0)
+            {
+                //the center of mass is the average of the sum of positions
+                CenterOfMass /= (float)NeighborCount; //무게중심좌표를 구한다.
+
+                Vector3 ToAgent = _vehicle._pos - CenterOfMass;
+                if (ToAgent.sqrMagnitude > RADIUS * RADIUS)
+                {
+                    //now seek towards that position
+                    SteeringForce = Seek(CenterOfMass);
+
+                    //if (0 == _vehicle._id)
+                        //DebugWide.LogBlue(" sf seek: " + SteeringForce);
+                }
+                else
+                {
+                    SteeringForce = Stop();
+
+                    //if (0 == _vehicle._id)
+                        //DebugWide.LogBlue(" sf stop: " + SteeringForce);
+
+                }
+
+            }
+            else 
+            {
+                //if (0 == _vehicle._id)
+                    //DebugWide.Log("ct0 , stop!!: "+SteeringForce);
+
+                SteeringForce = Stop();
+            }
+
+            if (0 == _vehicle._id)
+            {
+                DebugWide.AddDrawQ_Line(_vehicle._pos, CenterOfMass, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos , 0.2f, Color.green);
+                DebugWide.AddDrawQ_Circle(CenterOfMass, RADIUS, Color.red);
+            }
+
+
+            //the magnitude of cohesion is usually much larger than separation or
+            //allignment so it usually helps to normalize it.
+            //return SteeringForce.normalized;
+            return SteeringForce;
+        }
         //---------------------------- Separation --------------------------------
         //
         // this calculates a force repelling from the other neighbors
