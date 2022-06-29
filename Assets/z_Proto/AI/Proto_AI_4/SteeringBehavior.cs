@@ -595,6 +595,12 @@ namespace Proto_AI_4
             return ( - _vehicle._velocity);
         }
 
+        //최소속도보다 작다면 참을 반환 
+        public bool IsItVelo_LessThan(float min_velo)
+        {
+            return _vehicle._velocity.sqrMagnitude < min_velo * min_velo;
+        }
+
         private Vector3 OffsetPursuit(BaseEntity leader, Vector3 offset)
         {
             //calculate the offset's position in world space
@@ -722,7 +728,13 @@ namespace Proto_AI_4
             }
 
             if(0 == testCount)
-                return Stop(); //분리를 멈춘다 
+            {
+                if(false == IsItVelo_LessThan(0.1f))
+                {
+                    return Stop(); //분리를 멈춘다          
+                }
+            }
+
                 
             return steeringForce;
         }
@@ -800,6 +812,12 @@ namespace Proto_AI_4
             //return SteeringForce.normalized;
             return SteeringForce;
         }
+
+        //Vector3 Cohesion3(List<Unit> neighbors)
+        //{
+             
+        //}
+
         //---------------------------- Separation --------------------------------
         //
         // this calculates a force repelling from the other neighbors
