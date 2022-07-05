@@ -41,6 +41,7 @@ namespace Proto_AI_4
 
         public bool _Draw_SphereTree_Struct = false;
         public bool _Draw_SphereTree = false;
+        public bool _SphereTree_NoneRecursive = false;
         public bool _SphereTree_Level_0 = false;
         public bool _SphereTree_Level_1 = false;
         public bool _SphereTree_Level_2 = false;
@@ -101,7 +102,7 @@ namespace Proto_AI_4
 
             if (true == _Draw_SphereTree)
             {
-                ObjectManager.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+                ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
             if (true == _Draw_SphereTree_Struct)
             {

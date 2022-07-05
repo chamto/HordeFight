@@ -8,7 +8,7 @@ namespace Proto_AI_4
     {
         public static readonly ObjectManager Inst = new ObjectManager();
         //public SphereTree _sphereTree = new SphereTree(500, new float[] { 16, 10 }, 0.5f);
-        public SphereTree _sphereTree = new SphereTree(500, new float[] { 32, 16, 8, 5, 2 }, 0.5f);
+        public SphereTree _sphereTree = new SphereTree(500, new float[] { 32, 16, 8, 4 }, 0.5f);
         public SphereTree _sphereTree_struct = new SphereTree(2000, new float[] { 32, 16, 8, 2 }, 0.5f);
 
         //--------------------------------------------------
@@ -54,7 +54,7 @@ namespace Proto_AI_4
 
         }
 
-        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
+        public void Draw(bool none_recursive, bool level_0, bool level_1, bool level_2, bool level_3)
         {
             if (level_3)
             {
@@ -69,10 +69,13 @@ namespace Proto_AI_4
             {
                 _sphereTree.Render_Debug(1, true);
             }
-
             if (level_0)
             {
                 _sphereTree.Render_Debug(0, true);
+            }
+            if (none_recursive)
+            {
+                _sphereTree.Debug_RangeTest_NoneRecursive(new Vector3(0,0,0), 10); //chamto test
             }
         }
 

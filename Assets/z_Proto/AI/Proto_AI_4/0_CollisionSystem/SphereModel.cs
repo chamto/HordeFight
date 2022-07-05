@@ -808,7 +808,7 @@ namespace Proto_AI_4
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                hit = Geo.IntersectRay(_center, _radius, line_origin, line_last - line_origin);
                 if (hit)
                 {
 
@@ -987,11 +987,71 @@ namespace Proto_AI_4
             }
         }
 
+        //--------------------------------------------------
+        Stack<SphereModel> _stack = new Stack<SphereModel>();
+        //비재귀형 
+        public void Debug_Render_NoneRecursive(Vector3 dstCenter, float dstRadius, Frustum.ViewState state)
+        {
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            SphereModel next = null , child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                cc = Color.gray;
+                if (next.HasFlag(Flag.SUPERSPHERE))
+                {
+                    cc = Color.green; 
+                }
+                DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+                //------------------------------------------
+
+                //------------------------------------------
+                //스택에 대상 객체를 넣는다 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+                string temp = " lv: " + next._level + "  ct: " + next._childCount + " fg: " + next._flags + "  :  ";
+                for (int i = 0; i < next._childCount; i++)
+                {
+                    temp += child._id + " , ";
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                DebugWide.LogBlue(temp);
+            
+                //------------------------------------------
+
+            }
+            DebugWide.LogBlue("------------------");
+
+
+
+        }
+        //--------------------------------------------------
+
         public void Debug_RangeTest(Vector3 dstCenter, float dstRadius, Frustum.ViewState state)
         {
             if (state == Frustum.ViewState.PARTIAL)
             {
-                float between_sqr = VOp.Minus(dstCenter, _center).sqrMagnitude;
+                float between_sqr = (dstCenter -  _center).sqrMagnitude;
 
                 //완전비포함 검사
                 float sqrSumRd = (_radius + dstRadius) * (_radius + dstRadius);
@@ -1150,13 +1210,13 @@ namespace Proto_AI_4
 
                     DebugWide.DrawCircle(_center, GetRadius(), color);
 
-                    //if (HasFlag(Flag.TREE_LEVEL_2))
+
                     {
 
                         SphereModel link = GetLink_UpLevel_ChildSphere();
 
                         if (null != link)
-                            link = link.GetSuperSphere(); //level_1 트리의 슈퍼구노드를 의미한다 
+                            link = link.GetSuperSphere(); 
 
                         if (null != link && false == link.HasFlag(Flag.ROOTNODE))
                         {
@@ -1172,7 +1232,7 @@ namespace Proto_AI_4
                     //SphereModel down = GetLink_DownLevelTree();
                     //DebugWide.LogBlue(GetFlag() + " - " + up +" - " + down);
                     temp += "\n";
-                    DebugWide.DrawCircle(_center, GetRadius(), Color.white);
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.white); //chamto test
                 }
 
                 if (true == isText)
