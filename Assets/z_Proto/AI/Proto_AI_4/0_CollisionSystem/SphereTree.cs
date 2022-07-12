@@ -308,6 +308,12 @@ namespace Proto_AI_4
         //src_pack에는 자식구만 들어가야 한다 
         public void Integrate(SphereModel src_pack, SphereModel rootsphere, float maxRadius_supersphere)
         {
+            //BaseEntity bb = src_pack.GetLink_UserData() as BaseEntity;
+            //if (null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+            //{
+            //    if (0 == bb._id)
+            //        DebugWide.LogBlue("bb : " + bb._id + "  ");
+            //}
 
             SphereModel containing_supersphere = null;  //src_pack를 포함하는 슈퍼구 
             float includedSqrDist = 1e9f;     // enclosed within. 10의9승. 1000000000.0
@@ -380,7 +386,7 @@ namespace Proto_AI_4
                             //조건2 전용 처리
                             else //슈퍼구에 걸쳐 있거나 포함되지 않음 
                             {
-                                nearDist = dist;
+                                nearDist = dist; //슈퍼구에서 얼마나 벗어나 있는지 나타내는 값  
                                 nearest_supersphere = search;
                             }
                         }
@@ -390,6 +396,12 @@ namespace Proto_AI_4
             }//end for
 
 
+            //BaseEntity bb = src_pack.GetLink_UserData() as BaseEntity;
+            //if (null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+            //{
+            //    if (0 == bb._id)
+            //    DebugWide.LogBlue("bb : " + bb._id + "  " + containing_supersphere + "  _ " + nearest_supersphere);
+            //}
             //=====================================================================================
 
             //조건1 - src구가 완전 포함 
@@ -409,6 +421,12 @@ namespace Proto_AI_4
                 isCals = containing_supersphere.RecomputeSuperSphere_Center(_gravy_supersphere, maxRadius_supersphere);
 
 
+                //BaseEntity bb = src_pack.GetLink_UserData() as BaseEntity;
+                //if (null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+                //{
+                //    //if (0 == (src_pack.GetLink_UserData() as BaseEntity)._id)
+                //    DebugWide.LogBlue("containing : " + bb._id + "  " + src_pack.GetPos());
+                //}
                 //---------------------------
 
 
@@ -421,6 +439,12 @@ namespace Proto_AI_4
                 //가까운 거리에 슈퍼구가 있다
                 if (null != nearest_supersphere)
                 {
+                    //BaseEntity bb = src_pack.GetLink_UserData() as BaseEntity;
+                    //if(null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+                    //{
+                    //    //if (0 == (src_pack.GetLink_UserData() as BaseEntity)._id)
+                    //        DebugWide.LogBlue("nearest : "+ bb._id+"  " + src_pack.GetPos());
+                    //}
 
                     //float newRadius = nearDist + nearest_supersphere.GetRadius() + _gravy_supersphere ;
 
@@ -432,7 +456,9 @@ namespace Proto_AI_4
                     //    DebugWide.LogGreen(" ch_id: "+ src_pack.GetID() + " s_id: "+ nearest_supersphere.GetID() + " new_r: " + newRadius + "  nearDist: " + nearDist + "  s_r: " + nearest_supersphere.GetRadius() + " max_s_r: " + maxRadius_supersphere);
                     //}
 
-                    if(isInclude) //기존 newRadius 검사는 슈퍼구의 반지름 만큼 늘어나 있어서 검사가 제대로 안되었다 
+                    //if (newRadius <= maxRadius_supersphere) //기존 newRadius는 고정된 슈퍼구의 반지름에서 벗어났는지만 검사하였다. 포함범위가 최대반지름보다 작다
+                    //슈퍼구의 위치를 적절히 조절하면 포함되는 경우가 있다. 
+                    if (isInclude) 
                     {
                         //DebugWide.LogBlue(" " + src_pack.GetSuperSphere().GetID());
 
@@ -462,6 +488,12 @@ namespace Proto_AI_4
                 //조건3 - !포함될 슈퍼구가 하나도 없는 경우 , !!슈퍼구 최대크기 보다 큰 경우
                 if (newsphere)
                 {
+                    //BaseEntity bb = src_pack.GetLink_UserData() as BaseEntity;
+                    //if (null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+                    //{
+                    //    //if (0 == (src_pack.GetLink_UserData() as BaseEntity)._id)
+                    //    DebugWide.LogBlue("newsphere : " + bb._id + "  " + src_pack.GetPos());
+                    //}
 
                     src_pack.Unlink();
                     //DebugWide.LogBlue("Integrate : 새로운 슈퍼구 생성 : p_id: " + src_pack.GetID());

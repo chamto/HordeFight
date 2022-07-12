@@ -229,15 +229,19 @@ namespace Proto_AI_4
 
         //}
 
-        public void SetRadius(float radius_body)
+        public void SetRadius(float new_radius_body)
         {
-            _radius_body = radius_body;
+            _radius_body = new_radius_body;
+
             //==============================================
             //!!!!! 구트리 갱신 
             if (null != _sphereModel)
             {
-                _sphereModel.NewPosRadius(_pos, _radius_body); //반지름도 함께 갱신되도록 한다 
+
+                _sphereModel.NewRadius(new_radius_body);
+                //_sphereModel.NewPosRadius(_pos, new_radius_body);
             }
+
         }
 
 
@@ -718,6 +722,9 @@ namespace Proto_AI_4
 
             //지구력 출력 
             //DebugWide.PrintText(_pos, Color.white, _endurance.ToString(".0")); 
+
+            //id출력
+            //DebugWide.PrintText(_pos, Color.white, _id.ToString());
 
             //if (SteeringBehavior.eType.wander == _mode)
             //{

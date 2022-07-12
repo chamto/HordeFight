@@ -116,15 +116,15 @@ namespace Proto_AI_4
         //=====================================================
         public Vector3 GetPos() { return _center; }
 
-        public void SetPos(Vector3 pos)
-        {
-            _center = pos;
-        }
+        //public void SetPos(Vector3 pos)
+        //{
+        //    _center = pos;
+        //}
 
-        public void SetRadius(float radius)
-        {
-            _radius = radius;
-        }
+        //public void SetRadius(float radius)
+        //{
+        //    _radius = radius;
+        //}
 
         public float GetRadius() { return _radius; }
         //public float GetRadiusSqr() { return _radius_sqr; }
@@ -197,9 +197,9 @@ namespace Proto_AI_4
 
         public void NewPos(Vector3 pos)
         {
-            //_center = pos;
+            //SetPos(pos);
 
-            SetPos(pos);
+            _center = pos;
 
             if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
@@ -219,19 +219,50 @@ namespace Proto_AI_4
 
                     //DebugWide.LogGreen("NewPos interg : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
                     _treeController.AddIntegrateQ(this); //자식구 어디에 통합시킬지 다시 계산
+
+
+                    //BaseEntity bb = this.GetLink_UserData() as BaseEntity;
+                    //if (null != bb) //최하위 노드만 유저데이터를 가지고 있다 
+                    //{
+                    //    //if (0 == bb._id)
+                    //        DebugWide.LogGreen("newpos 2: " + bb._id + "  ");
+                    //}
                 }
 
             }
 
         }
 
-
-        public void NewPosRadius(Vector3 pos, float radius)
+        public void NewRadius(float new_radius)
         {
-            //_center = pos;
 
-            SetPos(pos);
-            SetRadius(radius);
+            //SetRadius(new_radius);
+
+            if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
+            {
+
+                if (false == Misc.IsZero(new_radius - _radius))
+                {
+                    //반지름의 변경사항이 없는데 호출하게 되면 슈퍼구가 계속갱신되어 구트리의 파편화가 발생
+                    //슈퍼구를 자식구에 맞게 실시간으로 리컴퓨트하게 되면 범위가 좁아져 커지지가 않게 된다 
+
+                    _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
+                }
+
+            }
+
+            _radius = new_radius;
+
+        }
+
+        public void NewPosRadius(Vector3 pos, float new_radius)
+        {
+
+            //SetPos(pos);
+            //SetRadius(new_radius);
+
+            _center = pos;
+            _radius = new_radius;
 
             if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
@@ -249,9 +280,17 @@ namespace Proto_AI_4
                 }
                 else
                 {
-                    //DebugWide.LogGreen("b - NewPosRadius");
-                    //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
-                    _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
+                    if (false == Misc.IsZero(new_radius - _radius))
+                    {
+                        //DebugWide.LogGreen("b - NewPosRadius");
+                        //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
+
+                        //반지름의 변경사항이 없는데 호출하게 되면 슈퍼구가 계속갱신되어 구트리의 파편화가 발생
+                        //슈퍼구를 자식구에 맞게 실시간으로 리컴퓨트하게 되면 범위가 좁아져 커지지가 않게 된다 
+
+                        _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산 
+                    }
+
                 }
 
             }
@@ -716,7 +755,9 @@ namespace Proto_AI_4
         {
 
             if (HasFlag(Flag.ROOTNODE)) return true;
+            //if (HasFlag(Flag.RECOMPUTE)) return true; //갱신안되는 문제 때문에 주석 
             if (false == HasFlag(Flag.SUPERSPHERE)) return true;
+
 
 
             Vector3 total = ConstV.v3_zero;
@@ -733,7 +774,7 @@ namespace Proto_AI_4
             if (0 != count)
             {
                 float recip = 1.0f / (float)(count);
-                total *= recip;
+                total *= recip; //무게중심좌표 구함 
 
                 Vector3 oldpos = _center;
 
@@ -751,7 +792,7 @@ namespace Proto_AI_4
                         maxradius = radius;
                         if ((maxradius + gravy) >= maxRadius_supersphere)
                         {
-                            float max_r_g_ = maxradius + gravy;
+                            //float max_r_g_ = maxradius + gravy;
                             //DebugWide.LogBlue("false - ReC - " + "  s_id: " + _id + "  s_lv: " + _level + "  " + max_r_g_ + " >= " + maxRadius_supersphere);
                             _center = oldpos; //새로운 센터기준으로 자식들이 경계를 벗어났으면 기존센터값으로 되돌린다 , 통합에서 처리 
                             ClearFlag(Flag.RECOMPUTE);
@@ -1035,12 +1076,12 @@ namespace Proto_AI_4
                     _stack.Push(child);
                     child = child.GetPrevSibling();
                 }
-                DebugWide.LogBlue(temp);
+                //DebugWide.LogBlue(temp);
             
                 //------------------------------------------
 
             }
-            DebugWide.LogBlue("------------------");
+            //DebugWide.LogBlue("------------------");
 
 
 
