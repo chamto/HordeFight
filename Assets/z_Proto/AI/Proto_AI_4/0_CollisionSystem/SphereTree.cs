@@ -377,7 +377,7 @@ namespace Proto_AI_4
                     {
                         //search 원에 내부에서 spr_pack 원이 접했을때 dist 는 0이 된다 
                         //src_pack 원이 search 원을 벗어난 길이 
-                        float dist = ((float)Math.Sqrt(sqrDist) + src_pack.GetRadius()) - search.GetRadius();
+                        float dist = ((float)Math.Sqrt(sqrDist) + src_pack._radius) - search._radius;
 
                         if (dist < nearDist)
                         {
