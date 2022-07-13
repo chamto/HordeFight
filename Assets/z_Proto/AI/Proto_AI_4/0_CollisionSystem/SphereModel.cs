@@ -95,6 +95,8 @@ namespace Proto_AI_4
 
         private SphereTree _treeController = null;
 
+        private Stack<SphereModel> _stack = new Stack<SphereModel>(); //비재귀호출을 위한 스택 
+
         //______________________________________________________________________________________________________
 
         //=====================================================
@@ -1035,10 +1037,11 @@ namespace Proto_AI_4
             }
         }
 
-        //--------------------------------------------------
-        Stack<SphereModel> _stack = new Stack<SphereModel>();
+
+        //==================================================
         //비재귀형 
-        public void Debug_Render_NoneRecursive(Vector3 dstCenter, float dstRadius, Frustum.ViewState state)
+        //==================================================
+        public void Debug_Render_NoneRecursive()
         {
 
             _stack.Clear();
