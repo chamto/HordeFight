@@ -247,7 +247,8 @@ namespace Proto_AI_4
                 if (false == Misc.IsZero(new_radius - old_radius))
                 {
                     //반지름의 변경사항이 없는데 호출하게 되면 슈퍼구가 계속갱신되어 구트리의 파편화가 발생
-                    //슈퍼구를 자식구에 맞게 실시간으로 리컴퓨트하게 되면 범위가 좁아져 커지지가 않게 된다 
+                    //슈퍼구가 계속 재계산되면 자식구는 슈퍼구를 벗어날 수 없게됨. 
+                    //!! NewPos 의 "자식구가 슈퍼구에서 벗어났는지 검사"를 통과할 수 없게 되기 때문에 통합처리가 안이루어지는 것이다 
 
                     _treeController.AddRecomputeQ(_superSphere); //슈퍼구 다시 계산
                 }
@@ -820,7 +821,7 @@ namespace Proto_AI_4
                 SphereModel link = GetLink_UpLevel_ChildSphere();
                 if (null != link)
                 {
-                    link.NewPosRadius(_center, _radius);
+                    link.NewPosRadius(_center, _radius); //상위레벨 전파 
                 }
                 //==============================================
             }
