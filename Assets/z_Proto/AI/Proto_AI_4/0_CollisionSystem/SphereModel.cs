@@ -40,8 +40,8 @@ namespace Proto_AI_4
 
         }
 
-        private Vector3 _center;
-        private float _radius;
+        public Vector3 _center;
+        public float _radius;
         //public float _radius_sqr;
 
 
@@ -787,12 +787,15 @@ namespace Proto_AI_4
                 pack = _head;
                 for (int i = 0; i < _childCount; i++)
                 {
-                    //float dist = ToDistanceSquared(pack);
-                    float dist = (_center - pack._center).sqrMagnitude;
-                    float radius = (float)Math.Sqrt(dist) + pack.GetRadius();
+
+                    float sqrDis = (_center - pack._center).sqrMagnitude; //ToDistanceSquared(pack)
+                    float radius = (float)Math.Sqrt(sqrDis) + pack.GetRadius(); //합쳐진길이로 검사해야 한다 
+
+
                     if (radius > maxradius)
                     {
                         maxradius = radius;
+
                         if ((maxradius + gravy) >= maxRadius_supersphere)
                         {
                             //float max_r_g_ = maxradius + gravy;
@@ -830,6 +833,7 @@ namespace Proto_AI_4
 
             return true;
         }
+
 
         public void ResetFlag()
         {

@@ -358,10 +358,14 @@ namespace Proto_AI_4
                         if (sqrDist < includedSqrDist)
                         {
 
-                            float dist = (float)Math.Sqrt(sqrDist) + src_pack.GetRadius();
+                            //float dist = (float)Math.Sqrt(sqrDist) + src_pack.GetRadius();
+
+                            float sqr_radDiff = search._radius - src_pack._radius;
+                            sqr_radDiff = sqr_radDiff * sqr_radDiff;
 
                             //조건1 전용 처리
-                            if (dist <= search.GetRadius()) //슈퍼구에 src구가 완전 포함 
+                            //if (dist <= search.GetRadius()) //슈퍼구에 src구가 완전 포함 
+                            if (sqrDist <= sqr_radDiff)
                             {
                                 includedSqrDist = sqrDist;
                                 containing_supersphere = search;
