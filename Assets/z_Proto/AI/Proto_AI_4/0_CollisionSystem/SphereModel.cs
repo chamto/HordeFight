@@ -987,58 +987,6 @@ namespace Proto_AI_4
 
 
         //==================================================
-        // debug용
-        //==================================================
-
-        public void Debug_RayTrace(Vector3 line_origin, Vector3 line_last)
-        {
-            bool hit = false;
-
-            if (HasFlag(Flag.SUPERSPHERE))
-            {
-
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
-                if (hit)
-                {
-
-                    DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
-
-                    SphereModel pack = _head;
-                    while (null != pack)
-                    {
-                        //pack.RayTrace(p1, dir, distance);
-                        pack.Debug_RayTrace(line_origin, line_last);
-                        pack = pack.GetNextSibling();
-                    }
-                }
-
-            }
-            else
-            {
-                SphereModel upLink = this.GetLink_UpLevel_ChildSphere();
-                SphereModel downLink = this.GetLink_DownLevel_SuperSphere();
-
-                hit = Geo.IntersectLineSegment(_center, _radius, line_origin, line_last);
-
-                //DebugWide.LogBlue(GetFlag() + " - " + upLink + " - " + downLink + " - " + hit + "  " + _center + "  " + _radius);
-
-                if (hit)
-                {
-                    
-                    //if (null != downLink) downLink.RayTrace(line_origin, dir, distance);
-                    if (null != downLink) downLink.Debug_RayTrace(line_origin, line_last);
-
-                    Color cc = Color.gray;
-                    //if (HasFlag(Flag.TREE_LEVEL_4))
-                        //DebugWide.LogBlue("L4 : " + upLink + " - " + downLink);
-                    if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
-                    DebugWide.DrawCircle(_center, GetRadius(), cc);
-                }
-            }
-        }
-
-
-        //==================================================
         //비재귀형 
         //==================================================
         public void Debug_Render_NoneRecursive()
@@ -1093,9 +1041,164 @@ namespace Proto_AI_4
             }
             //DebugWide.LogBlue("------------------");
 
+        }
+
+        public enum eState
+        {
+            INSIDE,   
+            PARTIAL,  
+            OUTSIDE   
+        }
+
+        public eState Test_Range(SphereModel src, Vector3 dstCenter, float dstRadius)
+        {
+
+            float between_sqr = (dstCenter - src._center).sqrMagnitude;
+
+            //완전비포함 검사
+            float sqrSumRd = (src._radius + dstRadius) * (src._radius + dstRadius);
+            if (between_sqr > sqrSumRd) return eState.OUTSIDE;
+
+            //완전포함 검사 
+            if (dstRadius >= src._radius)
+            {
+                float sqrSubRd = (dstRadius - src._radius) * (dstRadius - src._radius);
+                if (between_sqr <= sqrSubRd) return eState.INSIDE; //슈퍼구가 포함되면 자식구까지 모두 포함되므로, 계산할 필요가 없어진다     
+            }
+        
+
+            return eState.PARTIAL;
+        }
+
+        public void Debug_RangeTest_NoneRecursive(Vector3 dstCenter, float dstRadius, eState state)
+        {
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            SphereModel next = null, child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                //[조건]
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere)
+                {
+                    switch (state)
+                    {
+                        case eState.INSIDE:
+                            if (eState.INSIDE != Test_Range(next, dstCenter, dstRadius)) continue;
+                            break;
+                        case eState.PARTIAL:
+                            if (eState.OUTSIDE == Test_Range(next, dstCenter, dstRadius)) continue;
+                            break;
+                        default:
+                            return; //처리불가 
+                    }
+                }
+                else 
+                {
+                    if (eState.OUTSIDE == Test_Range(next, dstCenter, dstRadius)) continue;
+                }
+                //------------------------------------------
+                //[처리]
+                cc = Color.gray;
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
+                {
+                    cc = Color.blue;
+                }
+                DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
+                //------------------------------------------
+
+                //------------------------------------------
+                //[스택에 대상 객체를 넣는다] 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+                //string temp = " lv: " + next._level + "  ct: " + next._childCount + " fg: " + next._flags + "  :  ";
+                for (int i = 0; i < next._childCount; i++)
+                {
+                    //temp += child._id + " , ";
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                //DebugWide.LogBlue(temp);
+
+                //------------------------------------------
+
+            }
+            //DebugWide.LogBlue("------------------");
+
 
 
         }
+
+        //==================================================
+        // debug용
+        //==================================================
+
+        public void Debug_RayTrace(Vector3 line_origin, Vector3 line_last)
+        {
+            bool hit = false;
+
+            if (HasFlag(Flag.SUPERSPHERE))
+            {
+
+                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                if (hit)
+                {
+
+                    DebugWide.DrawCircle(_center, GetRadius(), Color.gray);
+
+                    SphereModel pack = _head;
+                    while (null != pack)
+                    {
+                        //pack.RayTrace(p1, dir, distance);
+                        pack.Debug_RayTrace(line_origin, line_last);
+                        pack = pack.GetNextSibling();
+                    }
+                }
+
+            }
+            else
+            {
+                SphereModel upLink = this.GetLink_UpLevel_ChildSphere();
+                SphereModel downLink = this.GetLink_DownLevel_SuperSphere();
+
+                hit = Geo.IntersectLineSegment(_center, _radius, line_origin, line_last);
+
+                //DebugWide.LogBlue(GetFlag() + " - " + upLink + " - " + downLink + " - " + hit + "  " + _center + "  " + _radius);
+
+                if (hit)
+                {
+
+                    //if (null != downLink) downLink.RayTrace(line_origin, dir, distance);
+                    if (null != downLink) downLink.Debug_RayTrace(line_origin, line_last);
+
+                    Color cc = Color.gray;
+                    //if (HasFlag(Flag.TREE_LEVEL_4))
+                    //DebugWide.LogBlue("L4 : " + upLink + " - " + downLink);
+                    if (null == upLink && null == downLink) cc = Color.red; //전체트리의 최하위 자식노드 
+                    DebugWide.DrawCircle(_center, GetRadius(), cc);
+                }
+            }
+        }
+
         //--------------------------------------------------
 
         public void Debug_RangeTest(Vector3 dstCenter, float dstRadius, Frustum.ViewState state)

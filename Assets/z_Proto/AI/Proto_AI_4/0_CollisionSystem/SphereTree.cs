@@ -583,7 +583,9 @@ namespace Proto_AI_4
         public void Debug_RangeTest_NoneRecursive(Vector3 pos, float range)
         {
 
-            _levels[0].Debug_Render_NoneRecursive(); //chamto test
+            //_levels[0].Debug_Render_NoneRecursive(); //chamto test
+            _levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
+
         }
 
         public void Render_Debug(bool isText)

@@ -47,7 +47,11 @@ namespace Proto_AI_4
         public bool _SphereTree_Level_2 = false;
         public bool _SphereTree_Level_3 = false;
         public float _SphereTree_Gravy = 0.5f;
-                
+
+
+        public Transform _tr_test = null;
+        public Transform _tr_line_a = null;
+        public Transform _tr_line_b = null;
 
         private bool _init = false;
 
@@ -62,6 +66,11 @@ namespace Proto_AI_4
 
         void Start()
         {
+            _tr_test = GameObject.Find("Test").transform;
+            _tr_line_a = GameObject.Find("line_a").transform;
+            _tr_line_b = GameObject.Find("line_b").transform;
+
+
             _stage = new Stage();
             _stage.Init(); 
         }
@@ -102,7 +111,8 @@ namespace Proto_AI_4
 
             if (true == _Draw_SphereTree)
             {
-                ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+                ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3,
+                    _tr_test.position, _tr_line_a.position);
             }
             if (true == _Draw_SphereTree_Struct)
             {

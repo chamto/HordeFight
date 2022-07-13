@@ -614,6 +614,7 @@ namespace Proto_AI_4
                 DebugWide.LogBlue("Arrive :" + u1._steeringBehavior.IsArriveOn());
             }
             u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
+            //DebugWide.LogGreen(u0._id + "  " + u1._id);
 
             if (Input.GetKeyDown(KeyCode.X))
             {
@@ -792,7 +793,7 @@ namespace Proto_AI_4
 
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
-
+            DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude, Color.gray);
 
             //_Platoons[0].Draw(Color.green); //소대 출력
             //_Squads[0].Draw(Color.green);
