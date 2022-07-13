@@ -238,10 +238,13 @@ namespace Proto_AI_4
 
             //SetRadius(new_radius);
 
+            float old_radius = _radius;
+            _radius = new_radius;
+
             if (null != _superSphere && false == HasFlag(Flag.INTEGRATE))
             {
 
-                if (false == Misc.IsZero(new_radius - _radius))
+                if (false == Misc.IsZero(new_radius - old_radius))
                 {
                     //반지름의 변경사항이 없는데 호출하게 되면 슈퍼구가 계속갱신되어 구트리의 파편화가 발생
                     //슈퍼구를 자식구에 맞게 실시간으로 리컴퓨트하게 되면 범위가 좁아져 커지지가 않게 된다 
@@ -251,8 +254,6 @@ namespace Proto_AI_4
 
             }
 
-            _radius = new_radius;
-
         }
 
         public void NewPosRadius(Vector3 pos, float new_radius)
@@ -261,6 +262,7 @@ namespace Proto_AI_4
             //SetPos(pos);
             //SetRadius(new_radius);
 
+            float old_radius = _radius;
             _center = pos;
             _radius = new_radius;
 
@@ -280,7 +282,7 @@ namespace Proto_AI_4
                 }
                 else
                 {
-                    if (false == Misc.IsZero(new_radius - _radius))
+                    if (false == Misc.IsZero(new_radius - old_radius))
                     {
                         //DebugWide.LogGreen("b - NewPosRadius");
                         //DebugWide.LogGreen("NewPosRadius : s_id : " + _superSphere._id + "  id : " + _id + "  s_flag: " + _superSphere._flags.ToString());
@@ -755,7 +757,7 @@ namespace Proto_AI_4
         {
 
             if (HasFlag(Flag.ROOTNODE)) return true;
-            //if (HasFlag(Flag.RECOMPUTE)) return true; //갱신안되는 문제 때문에 주석 
+            //if (HasFlag(Flag.RECOMPUTE)) return true; //갱신안되는 문제 때문에 주석 , 통합에서 재계산 플래그 없이 호출한다 
             if (false == HasFlag(Flag.SUPERSPHERE)) return true;
 
 
