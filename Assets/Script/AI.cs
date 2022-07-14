@@ -73,7 +73,7 @@ namespace HordeFight
         {
             if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = VOp.Minus(_me.GetPos3D(), _me._looking.GetPos3D()).sqrMagnitude;
+            float sqrDis = (_me.GetPos3D() -  _me._looking.GetPos3D()).sqrMagnitude;
 
             float sqrRangeMax = (meter_rangeMax * GridManager.ONE_METER) * (meter_rangeMax * GridManager.ONE_METER);
             float sqrRangeMin = (meter_rangeMin * GridManager.ONE_METER) * (meter_rangeMin * GridManager.ONE_METER);
@@ -94,7 +94,7 @@ namespace HordeFight
         {
             if (null == (object)_me._looking) return _FAILURE;
 
-            float sqrDis = VOp.Minus(_me.GetPos3D(), _me._looking.GetPos3D()).sqrMagnitude;
+            float sqrDis = (_me.GetPos3D() - _me._looking.GetPos3D()).sqrMagnitude;
 
             float sqrRangeMax = (_me.attack_range_max + _me._looking._collider_radius) * (_me.attack_range_max + _me._looking._collider_radius);
             float sqrRangeMin = (_me.attack_range_min + _me._looking._collider_radius) * (_me.attack_range_min + _me._looking._collider_radius);

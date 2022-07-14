@@ -83,7 +83,7 @@ namespace HordeFight
                 _nextTargetPos.y = 0f; //목표위치의 y축 값이 있으면, 위치값이 잘못계산됨 
 
                 //회전쿼터니언을 추출해 방향값에 곱한다 => 새로운 방향 
-                _direction = Quaternion.FromToRotation(_direction, VOp.Minus(_nextTargetPos, _transform.position)) * _direction;
+                _direction = Quaternion.FromToRotation(_direction, (_nextTargetPos -  _transform.position)) * _direction;
                 _eDir8 = Misc.GetDir8_AxisY(_direction);
                 //_dir_angleY = Geo.AngleSigned_AxisY(ConstV.v3_forward, _direction);
             }

@@ -123,7 +123,7 @@ namespace HordeFight
                 float shake = (float)Misc.RandFloat(0f, 0.2f); //흔들림 정도
                 _launchPos = launchPos;
                 _targetPos = targetPos + Misc.GetDir8_Random_AxisY() * shake;
-                Vector3 toTarget = VOp.Minus(_targetPos, _launchPos);
+                Vector3 toTarget = (_targetPos - _launchPos);
 
                 //기준값 : 7미터 당 1초
                 _shotMoveTime = toTarget.magnitude / (GridManager.MeterToWorld * 7f);
@@ -165,11 +165,11 @@ namespace HordeFight
                         _perpNormal *= -1f;
                     }
                     posRateVert = _maxHeight_posRate + shake;
-                    posHori = VOp.Multiply(_perpNormal, _maxHeight_length);
+                    posHori = (_perpNormal * _maxHeight_length);
                 }
-                _maxHeight_pos = VOp.Multiply(toTarget, posRateVert);
-                _maxHeight_pos = VOp.Plus(_maxHeight_pos, _launchPos);
-                _maxHeight_pos = VOp.Plus(_maxHeight_pos, posHori);
+                _maxHeight_pos = (toTarget * posRateVert);
+                _maxHeight_pos = (_maxHeight_pos + _launchPos);
+                _maxHeight_pos = (_maxHeight_pos + posHori);
 
 
                 //TweenStart();
@@ -265,10 +265,10 @@ namespace HordeFight
 
         public void Rotate_Towards_FrontGap(Transform tr)
         {
-            Vector3 dir = VOp.Minus(tr.position, _prev_pos);
+            Vector3 dir = (tr.position - _prev_pos);
 
             //목표지점의 반대방향일 경우는 처리하지 않는다 
-            if (0 > Vector3.Dot(VOp.Minus(_targetPos, _launchPos), dir))
+            if (0 > Vector3.Dot((_targetPos - _launchPos), dir))
                 return;
 
             const float TILE_LENGTH_SQR = 0.16f * 0.16f;

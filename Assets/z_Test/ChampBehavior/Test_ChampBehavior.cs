@@ -429,7 +429,7 @@ namespace HordeFight
             if (null == (object)_selected) return;
 
             RaycastHit hit = SingleO.touchEvent.GetHit3D();
-            Vector3 touchDir = VOp.Minus(hit.point, _selected.GetPos3D());
+            Vector3 touchDir = (hit.point - _selected.GetPos3D());
 
 
             ChampUnit champTarget = null;

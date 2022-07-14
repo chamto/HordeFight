@@ -582,7 +582,7 @@ namespace Proto_AI_2
 
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 dir_dstTOsrc = VOp.Minus(src._pos, dst._pos);
+            Vector3 dir_dstTOsrc = (src._pos - dst._pos);
             Vector3 n = ConstV.v3_zero;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
             //float r_sum = (src._collision._radius + dst._collision._radius);

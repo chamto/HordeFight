@@ -678,7 +678,7 @@ namespace ST_Test_005
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                hit = Geo.IntersectRay(_center, _radius, line_origin, (line_last - line_origin));
                 if (hit)
                 {
 
@@ -873,7 +873,7 @@ namespace ST_Test_005
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                hit = Geo.IntersectRay(_center, _radius, line_origin, (line_last - line_origin));
                 if (hit)
                 {
 
@@ -917,7 +917,7 @@ namespace ST_Test_005
         {
             if (state == Frustum.ViewState.PARTIAL)
             {
-                float between_sqr = VOp.Minus(dstCenter, _center).sqrMagnitude;
+                float between_sqr = (dstCenter - _center).sqrMagnitude;
 
                 //완전비포함 검사
                 float sqrSumRd = (_radius + dstRadius) * (_radius + dstRadius);

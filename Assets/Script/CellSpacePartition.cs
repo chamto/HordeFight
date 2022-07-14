@@ -248,14 +248,14 @@ namespace HordeFight
             }
 
 
-            Vector3 line = VOp.Minus(target_3d, origin_3d_center);
+            Vector3 line = (target_3d -  origin_3d_center);
             Vector3 n = VOp.Normalize(line);
-            n = VOp.Multiply(n, length_interval); //미리 곱해 놓는다 
+            n = (n * length_interval); //미리 곱해 놓는다 
 
             //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
             int count = 1;
             //Vector3 next = n * count;
-            Vector3 next = VOp.Multiply(n, count);
+            Vector3 next = (n * count);
             float lineSqr = line.sqrMagnitude;
             while (lineSqr > next.sqrMagnitude)
             {
@@ -266,7 +266,7 @@ namespace HordeFight
                     return null;
                 }
 
-                next = VOp.Plus(origin_3d_center, next);
+                next = (origin_3d_center + next);
                 structTile = GetCellSpace(next);
                 if (null != structTile)
                 {
@@ -298,7 +298,7 @@ namespace HordeFight
                 }
 
                 count++;
-                next = VOp.Multiply(n, count);
+                next = (n * count);
 
             }
 
@@ -367,17 +367,17 @@ namespace HordeFight
             }
 
             //Vector3 line = target_3d - origin_3d_center;
-            Vector3 line = VOp.Minus(target_3d, origin_3d_center);
+            Vector3 line = (target_3d - origin_3d_center);
             Vector3 n = VOp.Normalize(line);
             //Vector3 n = Misc.GetDir360_Normal3D(line); //근사치 노멀값을 사용하면 목표에 도달이 안되는 무한루프에 
             //Vector3 n = line.normalized;
             //n *= length_interval; //미리 곱해 놓는다 
-            n = VOp.Multiply(n, length_interval); //미리 곱해 놓는다 
+            n = (n * length_interval); //미리 곱해 놓는다 
 
             //인덱스를 1부터 시작시켜 모서리값이 구조타일 검사에 걸리는 것을 피하게 한다 
             int count = 1;
             //Vector3 next = n * count;
-            Vector3 next = VOp.Multiply(n, count);
+            Vector3 next = (n * count);
             float lineSqr = line.sqrMagnitude;
             while (lineSqr > next.sqrMagnitude)
             {
@@ -388,7 +388,7 @@ namespace HordeFight
                     return false;
                 }
                 //next = origin_3d_center + next;
-                next = VOp.Plus(origin_3d_center, next);
+                next = (origin_3d_center + next);
                 structTile = GetCellSpace(next);
                 if (null != structTile)
                 {
@@ -405,7 +405,7 @@ namespace HordeFight
 
                 count++;
                 //next = n * count;
-                next = VOp.Multiply(n, count);
+                next = (n * count);
 
             }
 

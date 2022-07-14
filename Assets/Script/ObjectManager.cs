@@ -527,7 +527,7 @@ namespace HordeFight
             //return true; //chamto test
 
             //Vector3 dirToDst = dstPos - src.transform.position;
-            Vector3 dirToDst = VOp.Minus(dstPos, src.transform.position);
+            Vector3 dirToDst = (dstPos - src.transform.position);
             float dirToDstsq = dirToDst.sqrMagnitude;
             float DIS = GridManager.MeterToWorld * 7f;
             if (dirToDstsq < DIS * DIS) //목표와의 거리가 7미터 안
@@ -627,7 +627,7 @@ namespace HordeFight
 
 
             //2. 그리드 안에 포함된 다른 객체와 충돌검사를 한다
-            Vector3 dir_dstTOsrc = VOp.Minus(src.GetPos3D(), dst.GetPos3D());
+            Vector3 dir_dstTOsrc = (src.GetPos3D() - dst.GetPos3D());
             Vector3 n = ConstV.v3_zero;
             float sqr_dstTOsrc = dir_dstTOsrc.sqrMagnitude;
             float r_sum = (src._collider_radius + dst._collider_radius);
@@ -729,7 +729,7 @@ namespace HordeFight
             //Vector3 srcPos = src._transform.position;
             Vector3 srcPos = src.GetPos3D();
             //Vector3 centerToSrc_dir = srcPos - structTile._pos3d_center;
-            Vector3 centerToSrc_dir = VOp.Minus(srcPos, structTile._pos3d_center);
+            Vector3 centerToSrc_dir = (srcPos - structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
             float size = SingleO.gridManager._cellSize_x * 0.5f;
@@ -1051,7 +1051,7 @@ namespace HordeFight
                     //==========================================================
                     sqr_minRadius = (wrd_minRad + dst._collider_radius) * (wrd_minRad + dst._collider_radius);
                     sqr_maxRadius = (wrd_maxRad + dst._collider_radius) * (wrd_maxRad + dst._collider_radius);
-                    sqr_dis = VOp.Minus(src.GetPos3D(), dst.GetPos3D()).sqrMagnitude;
+                    sqr_dis = (src.GetPos3D() - dst.GetPos3D()).sqrMagnitude;
 
                     //최대 반경 이내일 경우
                     if (sqr_minRadius <= sqr_dis && sqr_dis <= sqr_maxRadius)

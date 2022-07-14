@@ -578,42 +578,42 @@ namespace UtilGS9
     {
         //제거대상
         //Vector3 사칙연산 함수보다 약간 더 빠르다 - 20210816 가독성이 안좋으니 사용하지 말기 
-        static public Vector3 Plus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
-        {
-            result.x = va.x + vb.x;
-            result.y = va.y + vb.y;
-            result.z = va.z + vb.z;
-            return result;
-        }
+        //static public Vector3 Plus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
+        //{
+        //    result.x = va.x + vb.x;
+        //    result.y = va.y + vb.y;
+        //    result.z = va.z + vb.z;
+        //    return result;
+        //}
 
-        //제거대상
-        static public Vector3 Minus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
-        {
-            result.x = va.x - vb.x;
-            result.y = va.y - vb.y;
-            result.z = va.z - vb.z;
-            return result;
-        }
+        ////제거대상
+        //static public Vector3 Minus(Vector3 va, Vector3 vb, Vector3 result = default(Vector3))
+        //{
+        //    result.x = va.x - vb.x;
+        //    result.y = va.y - vb.y;
+        //    result.z = va.z - vb.z;
+        //    return result;
+        //}
 
-        //제거대상
-        static public Vector3 Multiply(Vector3 va, float b, Vector3 result = default(Vector3))
-        {
-            result.x = va.x * b;
-            result.y = va.y * b;
-            result.z = va.z * b;
-            return result;
-        }
+        ////제거대상
+        //static public Vector3 Multiply(Vector3 va, float b, Vector3 result = default(Vector3))
+        //{
+        //    result.x = va.x * b;
+        //    result.y = va.y * b;
+        //    result.z = va.z * b;
+        //    return result;
+        //}
 
-        //제거대상
-        static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
-        {
-            b = 1f / b;
+        ////제거대상
+        //static public Vector3 Division(Vector3 va, float b, Vector3 result = default(Vector3))
+        //{
+        //    b = 1f / b;
 
-            result.x = va.x * b;
-            result.y = va.y * b;
-            result.z = va.z * b;
-            return result;
-        }
+        //    result.x = va.x * b;
+        //    result.y = va.y * b;
+        //    result.z = va.z * b;
+        //    return result;
+        //}
 
 
         //Vector3.normalize 보다 빠르다 - 20210816 예외처리 추가로 더이상 속도 이점 없음 , 더이상 사용하지 말기 
@@ -932,7 +932,7 @@ namespace UtilGS9
                     //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
 
                     arc.ratio_nearSphere_included = Geo.Arc.Focus_Included;
-                    Vector3 arc_sph_dir = VOp.Minus(sph.pos , arc.GetPosition_Factor());
+                    Vector3 arc_sph_dir = (sph.pos - arc.GetPosition_Factor());
                     //arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
                     arc_sph_dir = VOp.Normalize(arc_sph_dir);
 
@@ -1038,7 +1038,7 @@ namespace UtilGS9
             sqr_standard_value = (sum_radius * sum_radius) * ratio;
 
             //두원의 중점 사이의 거리를 구한다. 피타고라스의 정리를 이용 , 제곱을 벗기지 않는다.
-            float sqr_dis_between = Vector3.SqrMagnitude(VOp.Minus(src.pos , dst.pos));
+            float sqr_dis_between = Vector3.SqrMagnitude((src.pos - dst.pos));
 
             //DebugWide.LogBlue (" r+r: "+Mathf.Sqrt(sqr_standard_value) + " p-p: " + Mathf.Sqrt(sqr_dis_between));
 
@@ -1284,7 +1284,7 @@ namespace UtilGS9
         static public bool IntersectRay2(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir, out Vector3 intersection_firstPoint)
         {
 
-            Vector3 w = VOp.Minus(sphere_center, ray_origin);
+            Vector3 w = (sphere_center - ray_origin);
             Vector3 v = ray_dir; //rayDirection 이 정규화 되어 있어야 올바르게 계산할 수 있다 
             float rsq = sphere_radius * sphere_radius;
             //float wsq = Vector3.Dot(w, w); //w.x * w.x + w.y * w.y + w.z * w.z;
@@ -1292,7 +1292,7 @@ namespace UtilGS9
 
 
             //if (wsq < rsq) v *= -1; //반직선의 시작점이 원안에 있는 경우 - 방법1 
-            if (wsq < rsq) v = VOp.Multiply(v, -1f); //반직선의 시작점이 원안에 있는 경우 - 방법1 
+            if (wsq < rsq) v = (v * -1f); //반직선의 시작점이 원안에 있는 경우 - 방법1 
 
             float proj = Vector3.Dot(w, v);
             float ssq = (wsq - proj * proj);
@@ -1303,14 +1303,14 @@ namespace UtilGS9
             {
                 //원과 교차하지 않는다면, 원과 가장 가까운 선분위의 점을 반환 
                 //ray_origin + ( v * proj)
-                intersection_firstPoint = VOp.Plus(ray_origin, VOp.Multiply(v, proj)); 
+                intersection_firstPoint = (ray_origin + (v * proj)); 
                 return false;
             }
 
 
             float d = (float)Math.Sqrt(dsq);
             //intersection_firstPoint = ray_origin + v * (proj - d);
-            intersection_firstPoint = VOp.Plus(ray_origin, VOp.Multiply(v, (proj - d)));
+            intersection_firstPoint = (ray_origin + (v * (proj - d)));
 
             return true;
         }
@@ -1403,7 +1403,7 @@ namespace UtilGS9
         static public bool IntersectRay(Vector3 sphere_center, float sphere_radius, Vector3 ray_origin, Vector3 ray_dir)
         {
             // compute intermediate values
-            Vector3 w = VOp.Minus(sphere_center , ray_origin);
+            Vector3 w = sphere_center - ray_origin;
             float wsq = w.sqrMagnitude;
             float proj = Vector3.Dot(w, ray_dir); //proj * ray_length (w를 ray_dir에 투영한 길이 * ray의 길이) 
             float rsq = sphere_radius * sphere_radius;

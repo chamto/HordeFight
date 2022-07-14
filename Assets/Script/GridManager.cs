@@ -619,7 +619,7 @@ namespace HordeFight
         {
             if (null == structTile) return srcPos;
 
-            Vector3 centerToSrc_dir = VOp.Minus(srcPos, structTile._pos3d_center);
+            Vector3 centerToSrc_dir = (srcPos - structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
 
@@ -1024,7 +1024,7 @@ namespace HordeFight
                 v2IntTo3.y = tile_2d.y;
                 v2IntTo3.z = 0;
                 RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(v2IntTo3) as RuleExtraTile;
-                float sqrDis = VOp.Minus(tile_3d_center, standard_3d).sqrMagnitude;
+                float sqrDis = (tile_3d_center -  standard_3d).sqrMagnitude;
                 float sqrStd = GridManager.MeterToWorld * 6.2f; sqrStd *= sqrStd;
                 if (sqrDis <= sqrStd)
                 {
@@ -1035,7 +1035,7 @@ namespace HordeFight
 
                         //대상과 정반대 방향이 아닐때 처리 
                         //Vector3 tileDir = tile_3d_center - standard_3d;
-                        Vector3 tileDir = VOp.Minus(tile_3d_center, standard_3d);
+                        Vector3 tileDir = (tile_3d_center -  standard_3d);
                         //tileDir.Normalize(); lookAt_dir.Normalize();
                         //tileDir = Misc.GetDir64_Normal3D(tileDir); lookAt_dir = Misc.GetDir64_Normal3D(lookAt_dir); //근사치노멀을 사용하면 값이 이상하게 나옴a
                         sqrStd = GridManager.MeterToWorld * 1.2f; sqrStd *= sqrStd;

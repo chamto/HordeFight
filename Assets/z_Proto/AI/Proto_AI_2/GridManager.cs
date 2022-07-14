@@ -1261,7 +1261,7 @@ namespace Proto_AI_2
         {
             if (null == structTile) return srcPos;
 
-            Vector3 centerToSrc_dir = VOp.Minus(srcPos, structTile._pos3d_center);
+            Vector3 centerToSrc_dir = (srcPos - structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
 
@@ -1403,7 +1403,7 @@ namespace Proto_AI_2
         {
             if (null == structTile) return srcPos;
 
-            Vector3 centerToSrc_dir = VOp.Minus(srcPos, structTile._pos3d_center);
+            Vector3 centerToSrc_dir = (srcPos - structTile._pos3d_center);
             Vector3 push_dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
 

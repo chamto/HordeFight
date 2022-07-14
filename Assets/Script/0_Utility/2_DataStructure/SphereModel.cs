@@ -108,7 +108,7 @@ namespace ST_Test_004
 
         public float GetRadius() { return _radius; }
         public float GetRadiusSqr() { return _radius_sqr; }
-        public float ToDistanceSquared(SphereModel pack) { return VOp.Minus(_center, pack._center).sqrMagnitude; }
+        public float ToDistanceSquared(SphereModel pack) { return (_center -  pack._center).sqrMagnitude; }
 
         //=====================================================
         //Flag 열거값 다루는 함수
@@ -429,7 +429,7 @@ namespace ST_Test_004
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                hit = Geo.IntersectRay(_center, _radius, line_origin, (line_last - line_origin));
                 if (hit)
                 {
 
@@ -473,7 +473,7 @@ namespace ST_Test_004
         public void RangeTest_MinDisReturn(Frustum.ViewState state, ref HordeFight.ObjectManager.Param_RangeTest param)
         {
 
-            float between_sqr = VOp.Minus(param.src_pos, _center).sqrMagnitude;
+            float between_sqr = (param.src_pos - _center).sqrMagnitude;
             if (state == Frustum.ViewState.PARTIAL)
             {
                 //float between_sqr = (dstCenter - _center).sqrMagnitude;
@@ -554,7 +554,7 @@ namespace ST_Test_004
             if (HasFlag(Flag.SUPERSPHERE))
             {
 
-                hit = Geo.IntersectRay(_center, _radius, line_origin, VOp.Minus(line_last, line_origin));
+                hit = Geo.IntersectRay(_center, _radius, line_origin, (line_last - line_origin));
                 if (hit)
                 {
 
@@ -598,7 +598,7 @@ namespace ST_Test_004
         {
             if (state == Frustum.ViewState.PARTIAL)
             {
-                float between_sqr = VOp.Minus(dstCenter, _center).sqrMagnitude;
+                float between_sqr = (dstCenter - _center).sqrMagnitude;
 
                 //완전비포함 검사
                 float sqrSumRd = (_radius + dstRadius) * (_radius + dstRadius);
