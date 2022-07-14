@@ -580,11 +580,13 @@ namespace Proto_AI_4
             _levels[0].Debug_VisibilityTest(f, state);
         }
 
-        public void Debug_RangeTest_NoneRecursive(Vector3 pos, float range)
+        public void Debug_NoneRecursive(Vector3 pos1, Vector3 pos2)
         {
 
             //_levels[0].Debug_Render_NoneRecursive(); //chamto test
-            _levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
+            //_levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
+            _levels[0].Debug_RayTrace_NoneRecursive(pos1, pos2); //chamto test
+
 
         }
 
