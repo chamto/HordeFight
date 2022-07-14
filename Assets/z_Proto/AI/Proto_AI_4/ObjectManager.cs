@@ -75,7 +75,7 @@ namespace Proto_AI_4
             }
             if (none_recursive)
             {
-                _sphereTree.Debug_RangeTest_NoneRecursive(pos1, (pos1-pos2).magnitude); //chamto test
+                _sphereTree.Debug_NoneRecursive(pos1, pos2); //chamto test
             }
         }
 
