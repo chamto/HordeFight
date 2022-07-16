@@ -84,6 +84,42 @@ namespace Proto_AI_4
             _stage.Update(deltaTime);
         }
 
+        public void Debug_FuncTest_Include_Sphere_Rate()
+        {
+            float rate = Geo.Include_Sphere_Rate(Vector3.zero, 5, _tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude);
+            DebugWide.DrawCircle(Vector3.zero, 5, Color.white);
+            DebugWide.PrintText(_tr_test.position, Color.red, rate + "");
+
+            Draw_Include_Sphere_Rate(5, 4, Color.yellow);
+            Draw_Include_Sphere_Rate(5, 3, Color.blue);
+            Draw_Include_Sphere_Rate(5, 2, Color.red);
+
+        }
+
+        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius);
+        public void Draw_Include_Sphere_Rate(float src_radius , float in_radius , Color color)
+        {
+            Dele_Include_Sphere_Rate FUNC = Geo.Include_Sphere_Rate;
+
+            for (int i = 0; i < 80; i++)
+            {
+                Vector3 nextPos = new Vector3(0 + i * 0.1f, 0, 0);
+                float rate = FUNC(Vector3.zero, src_radius, nextPos, in_radius);
+
+                Vector3 nextPos2 = nextPos;
+                nextPos2.z += rate;
+                DebugWide.DrawLine(nextPos, nextPos2, color);
+            }
+
+            //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
+            float rt0 = FUNC(Vector3.zero, src_radius, new Vector3(0, 0, 0), in_radius); //0 가운데겹침
+            float rt1 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius - in_radius, 0, 0), in_radius); //1 완전포함
+            float rt2 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius, 0, 0), in_radius); //1.5 중점걸림
+            float rt3 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius + in_radius, 0, 0), in_radius); //2 외곽접함
+            //DebugWide.LogBlue(src_radius+" , " +in_radius + " -- " + rt0 + "  " + rt1 + "  " + rt2 + "  " + rt3);
+
+        }
+
         private void OnDrawGizmos()
         {
             if (null == _stage) return;
@@ -119,6 +155,7 @@ namespace Proto_AI_4
                 ObjectManager.Inst.Draw_Struct(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
 
+            Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
