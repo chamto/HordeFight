@@ -997,6 +997,118 @@ namespace UtilGS9
             return false; 
         }
 
+        //in 원이 src 원에 어느정도 포함되는지 검사 
+        //return [0 완전 포함 , 0.5 중점 포함 ,  1 완전 비포함]
+        static public float Test1_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius)
+        {
+
+            float sqr_between = (in_pos - src_pos).sqrMagnitude;
+
+            float sqr_max = (src_radius + in_radius) * (src_radius + in_radius);
+            float sqr_middle = src_radius * src_radius;
+            float sqr_min = (src_radius - in_radius) * (src_radius - in_radius);
+            //float sqr_max_dis_adj = (max_dis - min_dis) * (max_dis - min_dis);
+
+            //DebugWide.LogBlue(sqr_between + "  " + sqr_max + "  " + sqr_min);
+
+            float rate = 0;
+            if (sqr_between < sqr_middle)
+            {   //0~1 비율 조정
+                float a = sqr_between - sqr_min;
+                float b = sqr_middle - sqr_min;
+                rate = a / b;
+                //rate = (sqr_between - sqr_min) / (sqr_middle - sqr_min);
+            }
+            else
+            {   //1~2 비율 조정 
+                float a = sqr_between - sqr_middle;
+                float b = sqr_max - sqr_middle;
+                rate = (a / b)+1;
+                //rate = ((sqr_between - sqr_middle) / (sqr_max - sqr_middle))+1;
+            }
+            rate *= 0.5f; //전체비율 조정 [0~2] => [0~1]
+
+
+            //DebugWide.LogBlue((sqr_between - sqr_middle) + "  " + (sqr_max - sqr_middle) + " -- " + rate + "  " );
+
+            //완전비포함 검사
+            //if (sqr_between > sqr_max) return 1;
+
+            ////완전포함 검사 
+            //if (in_radius >= src_radius)
+            //{
+            //    if (sqr_between <= sqr_min) return 0; 
+            //}
+
+            return rate;
+        }
+
+        static public float Test2_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius)
+        {
+
+            float sqr_between = (in_pos - src_pos).sqrMagnitude;
+
+            float sqr_max = (src_radius + in_radius) * (src_radius + in_radius);
+            float sqr_middle = src_radius * src_radius;
+            float sqr_min = (src_radius - in_radius) * (src_radius - in_radius);
+
+            float rate = (sqr_between - sqr_min) / (sqr_max - sqr_min);
+
+            return rate;
+        }
+
+        static public float Test3_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius)
+        {
+
+            float between = (in_pos - src_pos).magnitude;
+
+            float max = (src_radius + in_radius);
+            float middle = src_radius;
+            float min = (src_radius - in_radius);
+
+            float rate = (between-min) / (max-min);
+
+            return rate;
+        }
+
+        //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
+        //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
+        //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
+        static public float Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
+        {
+
+            float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+
+            float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
+            float sqr_middle = src_radius * src_radius;
+            float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
+
+            float rate = 0;
+            if (sqr_between < sqr_min)
+            {   //원점 ~ 최소완전포함 : 0~1 비율 
+                float a = sqr_between;
+                float b = sqr_min;
+                rate = a / b;
+            }
+            else if (sqr_between < sqr_middle)
+            {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
+                float a = sqr_between - sqr_min;
+                float b = sqr_middle - sqr_min;
+                rate = (a / b) * 0.5f + 1;
+
+            }
+            else
+            {   //중점포함 ~ 최대근접포함 : 1.5~2 비율 조정 
+                float a = sqr_between - sqr_middle;
+                float b = sqr_max - sqr_middle;
+                rate = (a / b) * 0.5f + 1.5f;
+
+            }
+
+
+            return rate;
+        }
+
         //포함을 구별하지 않는 문제를 가지고 있는 알고리즘임 - fixme : 포함구별하게 수정해야함 
         //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
         static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
