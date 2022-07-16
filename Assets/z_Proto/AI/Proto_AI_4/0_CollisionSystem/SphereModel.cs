@@ -990,6 +990,70 @@ namespace Proto_AI_4
         //비재귀형 
         //==================================================
 
+        
+        public SphereModel RayTrace_FirstReturn_NoneRecursive(Vector3 line_origin, Vector3 line_last, SphereModel exceptModel)
+        {
+
+            //DebugWide.DrawCircle(center, minRadius, Color.white);
+            //DebugWide.DrawCircle(center, maxRadius, Color.white);
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            SphereModel next = null, child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                //[조건]
+                if (false == Geo.IntersectLineSegment(next._center, next._radius, line_origin, line_last)) continue;
+                //------------------------------------------
+                //[처리]
+                //cc = Color.gray;
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
+                {
+                    //cc = Color.blue;
+                    if (next != exceptModel)
+                    {
+                        return next;
+                    }
+                }
+                //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
+                //------------------------------------------
+
+                //------------------------------------------
+                //[스택에 대상 객체를 넣는다] 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+
+                for (int i = 0; i < next._childCount; i++)
+                {
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                //------------------------------------------
+
+            }
+
+            return null;
+
+        }
 
         public SphereModel RangeTest_MinDisReturn_NoneRecursive(Vector3 center, float minRadius, float maxRadius)
         {

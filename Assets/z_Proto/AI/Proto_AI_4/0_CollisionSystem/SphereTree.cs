@@ -586,8 +586,9 @@ namespace Proto_AI_4
             //_levels[0].Debug_Render_NoneRecursive(); //chamto test
             //_levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
             //_levels[0].Debug_RayTrace_NoneRecursive(pos1, pos2); //chamto test
-            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(pos1, (pos1 - pos2).magnitude, (pos1 - pos3).magnitude);
-            if(null != find)
+            //SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(pos1, (pos1 - pos2).magnitude, (pos1 - pos3).magnitude);
+            SphereModel find = _levels[0].RayTrace_FirstReturn_NoneRecursive(pos1, pos2, null);
+            if (null != find)
             {
                 //DebugWide.LogBlue(find.GetID());
                 DebugWide.DrawCircle(find._center, 0.1f, Color.red);
