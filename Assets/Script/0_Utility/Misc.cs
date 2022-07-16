@@ -956,6 +956,7 @@ namespace UtilGS9
             Fully           //작은원이 완전포함 
         }
 
+
         //dst 원이 src 보다 작고 , src의 둘레에 안쪽으로 접했을 때를 기준으로 판단한다 
         //src 에 dst 가 완전포함하는지 검사
         static public bool Include_Sphere_Fully(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
@@ -1071,6 +1072,10 @@ namespace UtilGS9
             return rate;
         }
 
+        public const float INCLUDE_ORIGIN = 0;  //원점일치
+        public const float INCLUDE_FULLY = 1;   //최소완전포함
+        public const float INCLUDE_FOCUS = 1.5f; //중점포함
+        public const float INCLUDE_BOUNDARY = 2; //최대근접포함
         //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
