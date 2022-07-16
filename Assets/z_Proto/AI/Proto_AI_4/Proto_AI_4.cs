@@ -148,14 +148,14 @@ namespace Proto_AI_4
             if (true == _Draw_SphereTree)
             {
                 ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3,
-                    _tr_test.position, _tr_line_a.position);
+                    _tr_test.position, _tr_line_a.position, _tr_line_b.position);
             }
             if (true == _Draw_SphereTree_Struct)
             {
                 ObjectManager.Inst.Draw_Struct(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
 
-            Debug_FuncTest_Include_Sphere_Rate(); //chamto test
+            //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();

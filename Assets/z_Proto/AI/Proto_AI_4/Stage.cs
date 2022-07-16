@@ -794,6 +794,7 @@ namespace Proto_AI_4
             DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
             DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
             DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude, Color.gray);
+            DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_b.position).magnitude, Color.gray);
 
             //_Platoons[0].Draw(Color.green); //소대 출력
             //_Squads[0].Draw(Color.green);
