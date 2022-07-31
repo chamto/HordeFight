@@ -96,7 +96,7 @@ namespace Proto_AI_4
 
         }
 
-        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius);
+        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal=false);
         public void Draw_Include_Sphere_Rate(float src_radius , float in_radius , Color color)
         {
             Dele_Include_Sphere_Rate FUNC = Geo.Include_Sphere_Rate;

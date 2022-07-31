@@ -650,6 +650,15 @@ namespace UtilGS9
 
         }
 
+        //todo : 테스트 필요 - 20220721 chamto 작성
+        //행렬식값 구하는 함수 
+        //내 에버노트 행렬식 검색하여 참고하기
+        //2차원의 행렬식 : 수직내적 :  det(a , b) = |a x b|
+        //3차원의 행렬식 : 스칼라 삼중곱 : det(a , b , c) = a ⋅ (b x c)
+        static public float Determinant(Vector3 n , Vector3 a , Vector3 b)
+        {
+            return Vector3.Dot(n, Vector3.Cross(a, b));
+        }
 
         static public Vector2 Perp(Vector2 v)         {             return new Vector2(-v.y, v.x); //반시계 방향으로 90도 회전 
         }
@@ -711,6 +720,7 @@ namespace UtilGS9
             return (v.z * w.x - v.x * w.z); 
         }
 
+        //수직내적값(2차원 행렬식값)은 sin부호값을 가지고 있음. 이점을 이용하여 회전방향을 알 수 있다  
         //왼손좌표계용
         public static int Sign_ZX(Vector3 v, Vector3 w)
         {
@@ -734,6 +744,21 @@ namespace UtilGS9
             //    return -1;//anticlockwise;
             //}
         } 
+        //todo : 테스트 필요 - 20220721 chamto 작성
+        //행렬식값(스칼라 삼중곱)을 이용한 최소회전 방향을 구한다 
+        static public float Sign_3D(Vector3 n, Vector3 a, Vector3 b)
+        {
+            if (0 < Vector3.Dot(n, Vector3.Cross(a, b)))
+            {
+                return 1;//clockwise;
+            }
+            else
+            {
+                return -1;//anticlockwise;
+            }
+
+        }
+
         public static Vector3 Truncate(Vector3 v3, float max)
         {
             if (v3.sqrMagnitude > max * max)
@@ -864,6 +889,65 @@ namespace UtilGS9
             }
         }
 
+        public struct Arc2
+        {
+            public Vector3 origin;          //호의 시작점 
+            public Vector3 dir_l;
+            public Vector3 dir_m;           //중간 방향 
+            public Vector3 dir_r;
+            public float degree;
+            public float radius_near;       //시작점에서 가까운 원의 반지름 
+            public float radius_far;        //시작점에서 먼 원의 반지름
+
+
+            public void Init()
+            {
+
+            }
+
+            public float GetFactor(float radius, float degree)
+            {
+                return radius / (float)Math.Sin(Mathf.Deg2Rad * degree);
+            }
+
+
+            //todo : 작성중 
+            //0~2
+            public float Include_Rate_Sphere(Vector3 dstPos, float dstRad)
+            {
+                float factor = GetFactor(dstRad, degree);
+                Vector3 ori_factor = origin - dir_m * factor; //Fully_Included
+
+                Vector3 dstDir = ori_factor - dstPos;
+                float pdot_left =  VOp.PerpDot_ZX(dir_l, dstDir);
+                float pdot_right = VOp.PerpDot_ZX(dstDir, dir_r);
+
+
+                //수직내적값이 작은것이 경계에 더 가깝다
+                Vector3 dir_close = dir_l;
+                if (pdot_left > pdot_right)
+                {
+                    dir_close = dir_r;
+                }
+
+                float sqrDis_max = (dstRad * 2) * (dstRad * 2); //비율로 변환할 최대거리 
+                float rate = 0;
+                //조정된 호안에 dstPos가 벗어났는지 검사 
+                if (0 > pdot_left || 0 > pdot_right)
+                {
+                    rate += sqrDis_max;
+                }
+
+                Vector3 close_pos = Line3.ClosestPoint(ori_factor, dir_close, dstPos);
+                rate = (close_pos - dstPos).sqrMagnitude / sqrDis_max;
+                //1~0 => 0~1 변환 
+
+                return rate;
+
+            }
+
+
+        }
 
         /// <summary>
         /// Sphere.
@@ -1072,14 +1156,15 @@ namespace UtilGS9
             return rate;
         }
 
-        public const float INCLUDE_ORIGIN = 0;  //원점일치
-        public const float INCLUDE_FULLY = 1;   //최소완전포함
-        public const float INCLUDE_FOCUS = 1.5f; //중점포함
-        public const float INCLUDE_BOUNDARY = 2; //최대근접포함
+        public const float INCLUDE_ORIGIN_REVERSAL = 3; //원밖포함 : 원점일치  
+        public const float INCLUDE_ORIGIN = 0;  //원안포함 : 원점일치 
+        public const float INCLUDE_MIN = 1;   //최소완전포함
+        public const float INCLUDE_MIDDLE = 1.5f; //중점포함
+        public const float INCLUDE_MAX = 2; //최대근접포함
         //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
-        static public float Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius)
+        static public float Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
         {
 
             float sqr_between = (dst_pos - src_pos).sqrMagnitude;
@@ -1103,13 +1188,21 @@ namespace UtilGS9
 
             }
             else
-            {   //중점포함 ~ 최대근접포함 : 1.5~2 비율 조정 
+            {   //중점포함 ~ 최대근접포함 : 1.5~2~ 비율 조정 
                 float a = sqr_between - sqr_middle;
                 float b = sqr_max - sqr_middle;
                 rate = (a / b) * 0.5f + 1.5f;
 
             }
 
+            //20220731 실험노트 참고 
+            // a: [o min middle max] [0 1 1.5 2] 원안포함값
+            // 위 값을 반전 (a - 3)x(-1) = b 
+            // b: [x max middle min] [3 2 1.5 1] 원밖포함값
+            if(reversal)
+            {
+                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+            }
 
             return rate;
         }

@@ -329,6 +329,7 @@ namespace UtilGS9
                 // else somewhere else in segment
                 else
                 {
+                    //선분 위에 최근접 발생생
                     inRange = true;
                     return origin + (proj / vsq) * dir;
                 }

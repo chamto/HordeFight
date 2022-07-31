@@ -1146,14 +1146,14 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                if (Geo.INCLUDE_BOUNDARY < Geo.Include_Sphere_Rate(center, maxRadius, next._center, next._radius)) continue;
+                if (Geo.INCLUDE_MAX < Geo.Include_Sphere_Rate(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
                 //cc = Color.gray;
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (Geo.INCLUDE_FOCUS < Geo.Include_Sphere_Rate(center, minRadius, next._center, next._radius))
+                    if (Geo.INCLUDE_MIDDLE < Geo.Include_Sphere_Rate(center, minRadius, next._center, next._radius))
                     {
                         return next; 
                     }
@@ -1188,6 +1188,73 @@ namespace Proto_AI_4
             }
 
             return null;
+
+        }
+
+        //RangeTest 조건에 충족되는 모든 객체들을 리스트로 반환 
+        public void GetList_RangeTest_NoneRecursive(Vector3 center, float minRadius, float maxRadius, 
+            ref List<SphereModel> list, float minRate = Geo.INCLUDE_MIDDLE, float maxRate = Geo.INCLUDE_MAX)
+        {
+
+            if (null == list) return;
+            list.Clear();
+
+            //DebugWide.DrawCircle(center, minRadius, Color.white);
+            //DebugWide.DrawCircle(center, maxRadius, Color.white);
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            SphereModel next = null, child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                //[조건]
+                if (maxRate < Geo.Include_Sphere_Rate(center, maxRadius, next._center, next._radius)) continue;
+                //------------------------------------------
+                //[처리]
+                //cc = Color.gray;
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
+                {
+                    //cc = Color.blue;
+                    if (minRate < Geo.Include_Sphere_Rate(center, minRadius, next._center, next._radius))
+                    {
+                        list.Add(next);
+                    }
+                }
+                //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
+                //------------------------------------------
+
+                //------------------------------------------
+                //[스택에 대상 객체를 넣는다] 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+
+                for (int i = 0; i < next._childCount; i++)
+                {
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                //------------------------------------------
+
+            }
 
         }
 
