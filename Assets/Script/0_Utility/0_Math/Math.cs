@@ -311,6 +311,7 @@ namespace UtilGS9
             }
         }
 
+        //inRange : 선분 범위 안에서 최근접이 발생했는지 여부를 나타낸다  
         public Vector3 ClosestPoint(Vector3 point , out bool inRange)
         {
             inRange = false;
@@ -329,11 +330,32 @@ namespace UtilGS9
                 // else somewhere else in segment
                 else
                 {
-                    //선분 위에 최근접 발생생
+                    //선분 위에 최근접 발생
                     inRange = true;
                     return origin + (proj / vsq) * dir;
                 }
 
+            }
+        }
+
+        static public Vector3 ClosestPoint(Vector3 origin, Vector3 last, Vector3 point)
+        {
+            Vector3 direction = last - origin;
+
+            Vector3 w = point - origin;
+            float proj = Vector3.Dot(w, direction);
+            // endpoint 0 is closest point
+            if (proj <= 0.0f)
+                return origin;
+            else
+            {
+                float vsq = Vector3.Dot(direction, direction);
+                // endpoint 1 is closest point
+                if (proj >= vsq)
+                    return origin + direction;
+                // else somewhere else in segment
+                else
+                    return origin + (proj / vsq) * direction;
             }
         }
 

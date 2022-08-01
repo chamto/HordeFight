@@ -793,7 +793,7 @@ namespace UtilGS9
         //========================================================
         //==================       기 하        ==================
         //========================================================
-
+        //제거하기 
         /// <summary>
         /// Arc.
         /// </summary>
@@ -892,17 +892,22 @@ namespace UtilGS9
         public struct Arc2
         {
             public Vector3 origin;          //호의 시작점 
-            public Vector3 dir_l;
-            public Vector3 dir_m;           //중간 방향 
-            public Vector3 dir_r;
+            public Vector3 ndir_left;
+            public Vector3 ndir_middle;           //중간 방향 , 정규화된 값이어야 한다 
+            public Vector3 ndir_right;
+            public Vector3 center;          //호 중앙 
             public float degree;
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
 
-            public void Init()
+            public void SetDir(Vector3 nDir)
             {
+                ndir_middle = nDir; //노멀벡터가 들어와야 한다 
+                ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
+                ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
 
+                center = (radius_far - radius_near) * 0.5f * nDir;
             }
 
             public float GetFactor(float radius, float degree)
@@ -910,45 +915,127 @@ namespace UtilGS9
                 return radius / (float)Math.Sin(Mathf.Deg2Rad * degree);
             }
 
-
-            //todo : 작성중 
-            //0~2
-            public float Include_Rate_Sphere(Vector3 dstPos, float dstRad)
+            public bool Include_Max_Arc_Sphere(Vector3 dstPos, float dstRad, int includeRate)
             {
-                float factor = GetFactor(dstRad, degree);
-                Vector3 ori_factor = origin - dir_m * factor; //Fully_Included
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
-                Vector3 dstDir = ori_factor - dstPos;
-                float pdot_left =  VOp.PerpDot_ZX(dir_l, dstDir);
-                float pdot_right = VOp.PerpDot_ZX(dstDir, dir_r);
+                //INCLUDE_MIN = 1;   //최소완전포함
+                //INCLUDE_MIDDLE = 1.5f; //중점포함
+                //INCLUDE_MAX = 2; //최대근접포함
+                //[2 1.5 1] => [-1 0 1]
+                float f_rate = (includeRate * -2) + 3;
+
+                float factor = GetFactor(dstRad, degree * 0.5f);
+                Vector3 ori_factor = origin + ndir_middle * factor * f_rate; 
+
+                Vector3 dstDir = dstPos - ori_factor;
+                float pdot_left = VOp.PerpDot_ZX(ndir_left, dstDir);
+                float pdot_right = VOp.PerpDot_ZX(dstDir, ndir_right);
+
+                if (0 > pdot_left || 0 > pdot_right)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            //public const float INCLUDE_MIN = 1;   //최소완전포함
+            //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
+            //public const float INCLUDE_MAX = 2; //최대근접포함
+            private float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                Vector3 dstDir = dstPos - origin;
+                float pdot_left =  VOp.PerpDot_ZX(ndir_left, dstDir);
+                float pdot_right = VOp.PerpDot_ZX(dstDir, ndir_right);
 
 
                 //수직내적값이 작은것이 경계에 더 가깝다
-                Vector3 dir_close = dir_l;
+                Vector3 dir_close = ndir_left;
                 if (pdot_left > pdot_right)
                 {
-                    dir_close = dir_r;
+                    dir_close = ndir_right;
                 }
 
-                float sqrDis_max = (dstRad * 2) * (dstRad * 2); //비율로 변환할 최대거리 
-                float rate = 0;
+
+                Vector3 close_pos = LineSegment3.ClosestPoint(dir_close * radius_near, dir_close * radius_far, dstPos);
+                float rate = (close_pos - dstPos).sqrMagnitude / (dstRad* dstRad);
+
                 //조정된 호안에 dstPos가 벗어났는지 검사 
                 if (0 > pdot_left || 0 > pdot_right)
                 {
-                    rate += sqrDis_max;
+                    //dstPos는 호 밖에 있음 : 1.5 ~ 2 ~
+                    rate = rate * 0.5f + 1.5f;
+                }
+                else
+                {
+                    //dstPos는 호 안에 있음 : 1 ~ 1.5
+                    rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
+                    rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
+
+                    //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
+                    //목표물에 초점을 맞추는데 사용될 수 있다 
+                    if (INCLUDE_MIN > rate)
+                    {
+
+                        Vector3 interPos;
+                        Line3.ClosestPoints(out interPos, out interPos,
+                            new Line3(origin, ndir_middle), new Line3(close_pos, (dstPos - close_pos)));
+
+                        float sqr_between = (dstPos - close_pos).sqrMagnitude - (dstRad * dstRad); //0을 만들기 위해 제곱반지름을 뺀다
+                        float sqr_max = (interPos - close_pos).sqrMagnitude - (dstRad * dstRad); //1을 만들기 위해 제곱반지름을 뺀다
+                        rate = sqr_max / sqr_between;
+                        rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전 
+
+
+                    }
                 }
 
-                Vector3 close_pos = Line3.ClosestPoint(ori_factor, dir_close, dstPos);
-                rate = (close_pos - dstPos).sqrMagnitude / sqrDis_max;
-                //1~0 => 0~1 변환 
-
                 return rate;
+            }
 
+            public float Include_Rate_Arc_Sphere_NearFar(Vector3 dstPos, float dstRad)
+            {
+
+                float rate_arc = Include_Rate_Arc_Sphere(dstPos, dstRad);
+                if(INCLUDE_MAX < rate_arc)
+                {
+                    return rate_arc; 
+                }
+
+                float rate_far = Geo.Include_Sphere_Rate(origin, radius_far, dstPos, dstRad, false);
+                if (INCLUDE_MAX < rate_far)
+                {
+                    return rate_far;
+                }
+
+                float rate_near = Geo.Include_Sphere_Rate(origin, radius_near, dstPos, dstRad, true);
+                if (INCLUDE_MAX < rate_near)
+                {
+                    return rate_near;
+                }
+
+                //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
+                if (INCLUDE_MIN > rate_arc)
+                {
+                    return rate_arc;
+                }
+
+
+                float rate_max = rate_arc;
+                if (rate_max < rate_far) rate_max = rate_far;
+                if (rate_max < rate_near) rate_max = rate_near;
+
+
+                return rate_max;
             }
 
 
         }
 
+        //제거하기 
         /// <summary>
         /// Sphere.
         /// </summary>
@@ -1001,6 +1088,7 @@ namespace UtilGS9
         }
 
 
+        //Arc 와 통합하기 
         //호와 원의 충돌 검사 (2D 한정)
         static public bool Collision_Arc_VS_Sphere(Geo.Arc arc, Geo.Sphere sph)
         {
@@ -1033,6 +1121,7 @@ namespace UtilGS9
         }
 
 
+        //제거하기
         public enum eSphere_Include_Status
         {
             Boundary = 1,   //두원의 닿는 경계까지 포함 
@@ -1182,8 +1271,8 @@ namespace UtilGS9
             }
             else if (sqr_between < sqr_middle)
             {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
-                float a = sqr_between - sqr_min;
-                float b = sqr_middle - sqr_min;
+                float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
+                float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
                 rate = (a / b) * 0.5f + 1;
 
             }
@@ -1207,6 +1296,7 @@ namespace UtilGS9
             return rate;
         }
 
+        //제거하기
         //포함을 구별하지 않는 문제를 가지고 있는 알고리즘임 - fixme : 포함구별하게 수정해야함 
         //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
         static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
@@ -1276,6 +1366,7 @@ namespace UtilGS9
             return false;
         }
 
+        //제거하기
         static public bool Collision_Sphere(Vector3 src_pos, float src_radius, Vector3 des_pos, float des_radius, eSphere_Include_Status eInclude)
         {
             Geo.Sphere src, dst;
