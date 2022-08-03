@@ -1018,6 +1018,7 @@ namespace UtilGS9
                 }
 
                 return rate;
+
             }
 
             public float Include_Rate_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad)
@@ -1056,6 +1057,30 @@ namespace UtilGS9
                 return rate_max;
             }
 
+
+            public void Draw()
+            {
+                Vector3 upDir = Vector3.up;
+                Vector3 interPos;
+
+                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, ndir_left, out interPos);
+                DebugWide.DrawLine(origin, interPos, Color.green);
+
+
+                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, ndir_right, out interPos);
+                DebugWide.DrawLine(origin, interPos, Color.green);
+
+                DebugWide.DrawLine(origin, origin + ndir_middle * radius_far, Color.green);
+                DebugWide.DrawCircle(origin, radius_far, Color.green);
+                DebugWide.DrawCircle(origin, radius_near, Color.green);
+            }
+
+            public override string ToString()
+            {
+
+                return "origin: " + origin + "  ndir_middle: " + ndir_middle + "  degree: " + degree
+                    + "  radius_near: " + radius_near + "  radius_far: " + radius_far ;
+            }
 
         }
 
