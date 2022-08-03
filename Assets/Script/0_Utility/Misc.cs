@@ -889,7 +889,7 @@ namespace UtilGS9
         //    }
         //}
 
-        public struct Arc2
+        public struct Arc
         {
             public Vector3 origin;          //호의 시작점 
             public Vector3 ndir_left;
