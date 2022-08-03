@@ -915,7 +915,7 @@ namespace UtilGS9
                 return radius / (float)Math.Sin(Mathf.Deg2Rad * degree);
             }
 
-            public bool Include_Max_Arc_Sphere(Vector3 dstPos, float dstRad, int includeRate)
+            public bool Include_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -939,6 +939,30 @@ namespace UtilGS9
 
                 return true;
             }
+
+            public bool Include_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
+            {
+            
+                if (includeRate < Geo.Include_Sphere_Rate(origin, radius_far, dstPos, dstRad, false))
+                {
+                    return false;
+                }
+
+
+                if (includeRate < Geo.Include_Sphere_Rate(origin, radius_near, dstPos, dstRad, true))
+                {
+                    return false;
+                }
+
+
+                if (false == Include_Arc_Sphere(dstPos, dstRad, includeRate))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
 
             //public const float INCLUDE_MIN = 1;   //최소완전포함
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
@@ -996,7 +1020,7 @@ namespace UtilGS9
                 return rate;
             }
 
-            public float Include_Rate_Arc_Sphere_NearFar(Vector3 dstPos, float dstRad)
+            public float Include_Rate_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
 
                 float rate_arc = Include_Rate_Arc_Sphere(dstPos, dstRad);
@@ -1294,6 +1318,24 @@ namespace UtilGS9
             }
 
             return rate;
+        }
+
+        static public bool Include_NearFar_Sphere_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
+        {
+
+            if (includeRate < Geo.Include_Sphere_Rate(src_pos, src_radius_far, dst_pos, dst_radius, false))
+            {
+                return false;
+            }
+
+
+            if (includeRate < Geo.Include_Sphere_Rate(src_pos, src_radius_near, dst_pos, dst_radius, true))
+            {
+                return false;
+            }
+
+
+            return true;
         }
 
         //제거하기
