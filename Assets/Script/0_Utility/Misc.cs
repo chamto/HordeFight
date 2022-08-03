@@ -797,97 +797,97 @@ namespace UtilGS9
         /// <summary>
         /// Arc.
         /// </summary>
-        public struct Arc
-        {
-            public Vector3 pos;             //호의 시작점  
-            public Vector3 dir;             //정규화 되어야 한다
-            public float degree;            //각도 
-            public float radius_near;       //시작점에서 가까운 원의 반지름 
-            public float radius_far;        //시작점에서 먼 원의 반지름
+        //public struct Arc
+        //{
+        //    public Vector3 pos;             //호의 시작점  
+        //    public Vector3 dir;             //정규화 되어야 한다
+        //    public float degree;            //각도 
+        //    public float radius_near;       //시작점에서 가까운 원의 반지름 
+        //    public float radius_far;        //시작점에서 먼 원의 반지름
 
-            //ratio : [-1 ~ 1]
-            //호에 원이 완전히 포함 [1]
-            //호에 원의 중점까지 포함 [0]
-            //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
-            public const float Fully_Included = -1f;
-            public const float Focus_Included = 0f;
-            //public const float Boundary_Included = 1f; //경계에 붙이기 위한 값은 가까운원의 반지름값임  
-            public float ratio_nearSphere_included;
+        //    //ratio : [-1 ~ 1]
+        //    //호에 원이 완전히 포함 [1]
+        //    //호에 원의 중점까지 포함 [0]
+        //    //호에 원의 경계까지 포함 [-1 : 포함 범위 가장 넒음] 
+        //    public const float Fully_Included = -1f;
+        //    public const float Focus_Included = 0f;
+        //    //public const float Boundary_Included = 1f; //경계에 붙이기 위한 값은 가까운원의 반지름값임  
+        //    public float ratio_nearSphere_included;
 
-            public float GetFactor()
-            {
-                if (0f == ratio_nearSphere_included)//Focus_Included
-                    return 0f;
-                if (0 < ratio_nearSphere_included)  //Boundary_Included
-                    return radius_near;
-                //if(0 > ratio_nearSphere_included) //Fully_Included  
-                return -radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-            }
+        //    public float GetFactor()
+        //    {
+        //        if (0f == ratio_nearSphere_included)//Focus_Included
+        //            return 0f;
+        //        if (0 < ratio_nearSphere_included)  //Boundary_Included
+        //            return radius_near;
+        //        //if(0 > ratio_nearSphere_included) //Fully_Included  
+        //        return -radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+        //    }
 
-            //public float factor
-            //{
-            //    get
-            //    {   //f = radius / sin
-            //        //return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-            //        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-            //    }
-            //}
+        //    //public float factor
+        //    //{
+        //    //    get
+        //    //    {   //f = radius / sin
+        //    //        //return radius_collider_standard / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+        //    //        return radius_near / (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+        //    //    }
+        //    //}
 
 
-            public Vector3 GetPosition_Factor()
-            {
-                return pos + dir * GetFactor();
-            }
+        //    public Vector3 GetPosition_Factor()
+        //    {
+        //        return pos + dir * GetFactor();
+        //    }
 
-            public Sphere sphere_near
-            {
-                get
-                {
-                    Sphere sph;
-                    sph.pos = this.pos;
-                    sph.radius = this.radius_near;
-                    return sph;
-                }
+        //    public Sphere sphere_near
+        //    {
+        //        get
+        //        {
+        //            Sphere sph;
+        //            sph.pos = this.pos;
+        //            sph.radius = this.radius_near;
+        //            return sph;
+        //        }
 
-            }
+        //    }
 
-            public Sphere sphere_far
-            {
-                get
-                {
-                    Sphere sph;
-                    sph.pos = this.pos;
-                    sph.radius = this.radius_far;
-                    return sph;
-                }
+        //    public Sphere sphere_far
+        //    {
+        //        get
+        //        {
+        //            Sphere sph;
+        //            sph.pos = this.pos;
+        //            sph.radius = this.radius_far;
+        //            return sph;
+        //        }
 
-            }
+        //    }
 
-            public static void DrawArc(Arc arc, Vector3 upDir)
-            {
-                Vector3 factorPos = arc.GetPosition_Factor();
-                Vector3 interPos;
+        //    public static void DrawArc(Arc arc, Vector3 upDir)
+        //    {
+        //        Vector3 factorPos = arc.GetPosition_Factor();
+        //        Vector3 interPos;
 
-                Vector3 far = Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * arc.dir;
-                UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
-                DebugWide.DrawLine(factorPos, interPos, Color.green);
+        //        Vector3 far = Quaternion.AngleAxis(-arc.degree * 0.5f, upDir) * arc.dir;
+        //        UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+        //        DebugWide.DrawLine(factorPos, interPos, Color.green);
 
-                far = Quaternion.AngleAxis(arc.degree * 0.5f, upDir) * arc.dir;
-                UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
-                DebugWide.DrawLine(factorPos, interPos, Color.green);
+        //        far = Quaternion.AngleAxis(arc.degree * 0.5f, upDir) * arc.dir;
+        //        UtilGS9.Geo.IntersectRay2(arc.pos, arc.radius_far, factorPos, far, out interPos);
+        //        DebugWide.DrawLine(factorPos, interPos, Color.green);
 
-                DebugWide.DrawLine(arc.pos, arc.pos + arc.dir * arc.radius_far, Color.green);
-                DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
-                DebugWide.DrawCircle(arc.pos, arc.radius_near, Color.green);
-            }
+        //        DebugWide.DrawLine(arc.pos, arc.pos + arc.dir * arc.radius_far, Color.green);
+        //        DebugWide.DrawCircle(arc.pos, arc.radius_far, Color.green);
+        //        DebugWide.DrawCircle(arc.pos, arc.radius_near, Color.green);
+        //    }
 
-            public override string ToString()
-            {
+        //    public override string ToString()
+        //    {
 
-                return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
-                    + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  factor: " + GetFactor();
-            }
-        }
+        //        return "pos: " + pos + "  dir: " + dir + "  degree: " + degree
+        //            + "  radius_near: " + radius_near + "  radius_far: " + radius_far + "  factor: " + GetFactor();
+        //    }
+        //}
 
         public struct Arc2
         {
@@ -1139,44 +1139,44 @@ namespace UtilGS9
 
         //Arc 와 통합하기 
         //호와 원의 충돌 검사 (2D 한정)
-        static public bool Collision_Arc_VS_Sphere(Geo.Arc arc, Geo.Sphere sph)
-        {
-            //DebugWide.LogBlue ("1  srcPos" + arc.sphere_far.pos + " r:" + arc.sphere_far.radius + " dstPos:" + sph.pos + " r:" + sph.radius); //chamto test
-            if (true == Geo.Collision_Sphere(arc.sphere_far, sph, eSphere_Include_Status.Focus))
-            {
+        //static public bool Collision_Arc_VS_Sphere(Geo.Arc arc, Geo.Sphere sph)
+        //{
+        //    //DebugWide.LogBlue ("1  srcPos" + arc.sphere_far.pos + " r:" + arc.sphere_far.radius + " dstPos:" + sph.pos + " r:" + sph.radius); //chamto test
+        //    if (true == Geo.Collision_Sphere(arc.sphere_far, sph, eSphere_Include_Status.Focus))
+        //    {
 
-                if (false == Geo.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
-                {
-                    //각도를 반으로 줄여 넣는다. 1과 4분면을 구별 못하기 때문에 1사분면에서 검사하면 4사분면도 검사 결과에 포함된다. 즉 실제 검사 범위가 2배가 된다.
-                    float angle_arc = (float)Math.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
+        //        if (false == Geo.Collision_Sphere(arc.sphere_near, sph, eSphere_Include_Status.Focus))
+        //        {
+        //            //각도를 반으로 줄여 넣는다. 1과 4분면을 구별 못하기 때문에 1사분면에서 검사하면 4사분면도 검사 결과에 포함된다. 즉 실제 검사 범위가 2배가 된다.
+        //            float angle_arc = (float)Math.Cos(arc.degree * 0.5f * Mathf.Deg2Rad);
 
-                    //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
+        //            //DebugWide.LogBlue ( Mathf.Acos(angle_arc) * Mathf.Rad2Deg + " [arc] " + arc.ToString() + "   [sph] " + sph.ToString());//chamto test
 
-                    arc.ratio_nearSphere_included = Geo.Arc.Focus_Included;
-                    Vector3 arc_sph_dir = (sph.pos - arc.GetPosition_Factor());
-                    //arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
-                    arc_sph_dir = VOp.Normalize(arc_sph_dir);
+        //            arc.ratio_nearSphere_included = Geo.Arc.Focus_Included;
+        //            Vector3 arc_sph_dir = (sph.pos - arc.GetPosition_Factor());
+        //            //arc_sph_dir.Normalize(); //노멀값 구하지 않는 계산식을 찾지 못했다. 
+        //            arc_sph_dir = VOp.Normalize(arc_sph_dir);
 
-                    float rate_cos = Vector3.Dot(arc.dir, arc_sph_dir);
-                    if (rate_cos > angle_arc)
-                    {
-                        return true;
-                    }
-                }
+        //            float rate_cos = Vector3.Dot(arc.dir, arc_sph_dir);
+        //            if (rate_cos > angle_arc)
+        //            {
+        //                return true;
+        //            }
+        //        }
 
-            }
+        //    }
 
-            return false;
-        }
+        //    return false;
+        //}
 
 
         //제거하기
-        public enum eSphere_Include_Status
-        {
-            Boundary = 1,   //두원의 닿는 경계까지 포함 
-            Focus,          //작은원이 중점까지 포함
-            Fully           //작은원이 완전포함 
-        }
+        //public enum eSphere_Include_Status
+        //{
+        //    Boundary = 1,   //두원의 닿는 경계까지 포함 
+        //    Focus,          //작은원이 중점까지 포함
+        //    Fully           //작은원이 완전포함 
+        //}
 
 
         //dst 원이 src 보다 작고 , src의 둘레에 안쪽으로 접했을 때를 기준으로 판단한다 
@@ -1366,81 +1366,81 @@ namespace UtilGS9
         //제거하기
         //포함을 구별하지 않는 문제를 가지고 있는 알고리즘임 - fixme : 포함구별하게 수정해야함 
         //ratio : 충돌민감도 설정 , 기본 1f , 민감도올리기 1f 보다작은값 , 민감도낮추기 1f 보다큰값  
-        static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
-        {
+        //static public bool Collision_Sphere(Geo.Sphere src, Geo.Sphere dst, eSphere_Include_Status eInclude, float ratio = 1f)
+        //{
 
-            float min_radius, max_radius, sum_radius, sqr_standard_value;
-            if (src.radius > dst.radius)
-            {
-                min_radius = dst.radius;
-                max_radius = src.radius;
-            }
-            else
-            {
-                min_radius = src.radius;
-                max_radius = dst.radius;
-            }
+        //    float min_radius, max_radius, sum_radius, sqr_standard_value;
+        //    if (src.radius > dst.radius)
+        //    {
+        //        min_radius = dst.radius;
+        //        max_radius = src.radius;
+        //    }
+        //    else
+        //    {
+        //        min_radius = src.radius;
+        //        max_radius = dst.radius;
+        //    }
 
-            //(src.r - dst.r) < src.r  < (src.r + dst.r)
-            //완전포함        < 중점포함  < 경계포함
-            //Fully           < Focus   < Boundary
-            const float Minimum_Error_Value = 0.01f; //최소오차값
-            switch (eInclude)
-            {
-                case eSphere_Include_Status.Fully:
-                    sum_radius = max_radius - min_radius;
-                    if (Minimum_Error_Value > sum_radius) //반지름 합값이 너무 작으면 판정을 못하므로 임의의 "최소오차값"을 할당해 준다.
-                        sum_radius = Minimum_Error_Value;
-                    break;
-                case eSphere_Include_Status.Focus:
-                    sum_radius = max_radius;
-                    break;
-                case eSphere_Include_Status.Boundary:
-                default:
-                    //두원의 반지름을 더한후 제곱해 준다. 
-                    sum_radius = max_radius + min_radius;
-                    break;
-            }
+        //    //(src.r - dst.r) < src.r  < (src.r + dst.r)
+        //    //완전포함        < 중점포함  < 경계포함
+        //    //Fully           < Focus   < Boundary
+        //    const float Minimum_Error_Value = 0.01f; //최소오차값
+        //    switch (eInclude)
+        //    {
+        //        case eSphere_Include_Status.Fully:
+        //            sum_radius = max_radius - min_radius;
+        //            if (Minimum_Error_Value > sum_radius) //반지름 합값이 너무 작으면 판정을 못하므로 임의의 "최소오차값"을 할당해 준다.
+        //                sum_radius = Minimum_Error_Value;
+        //            break;
+        //        case eSphere_Include_Status.Focus:
+        //            sum_radius = max_radius;
+        //            break;
+        //        case eSphere_Include_Status.Boundary:
+        //        default:
+        //            //두원의 반지름을 더한후 제곱해 준다. 
+        //            sum_radius = max_radius + min_radius;
+        //            break;
+        //    }
 
-            sqr_standard_value = (sum_radius * sum_radius) * ratio;
+        //    sqr_standard_value = (sum_radius * sum_radius) * ratio;
 
-            //두원의 중점 사이의 거리를 구한다. 피타고라스의 정리를 이용 , 제곱을 벗기지 않는다.
-            float sqr_dis_between = Vector3.SqrMagnitude((src.pos - dst.pos));
+        //    //두원의 중점 사이의 거리를 구한다. 피타고라스의 정리를 이용 , 제곱을 벗기지 않는다.
+        //    float sqr_dis_between = Vector3.SqrMagnitude((src.pos - dst.pos));
 
-            //DebugWide.LogBlue (" r+r: "+Mathf.Sqrt(sqr_standard_value) + " p-p: " + Mathf.Sqrt(sqr_dis_between));
+        //    //DebugWide.LogBlue (" r+r: "+Mathf.Sqrt(sqr_standard_value) + " p-p: " + Mathf.Sqrt(sqr_dis_between));
 
-            if (sqr_standard_value > sqr_dis_between)
-            {
-                //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
-                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
-                return true; //두원이 겹쳐짐 
-            }
-            //if (sqr_standard_value == sqr_dis_between)
-            if(float.Epsilon >= Math.Abs(sqr_standard_value - sqr_dis_between))
-            {
-                //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
-                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
-                return true; //포함조건과 똑같음
-            }
-            if (sqr_standard_value < sqr_dis_between)
-            {
-                //              DebugWide.LogBlue ("F-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
-                //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
-                return false; //두원이 겹쳐 있지 않음
-            }
+        //    if (sqr_standard_value > sqr_dis_between)
+        //    {
+        //        //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+        //        //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+        //        return true; //두원이 겹쳐짐 
+        //    }
+        //    //if (sqr_standard_value == sqr_dis_between)
+        //    if(float.Epsilon >= Math.Abs(sqr_standard_value - sqr_dis_between))
+        //    {
+        //        //              DebugWide.LogGreen ("T-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+        //        //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+        //        return true; //포함조건과 똑같음
+        //    }
+        //    if (sqr_standard_value < sqr_dis_between)
+        //    {
+        //        //              DebugWide.LogBlue ("F-----  include: " + eInclude.ToString() + "  std: "+Mathf.Sqrt(sqr_standard_value) + "   dis: " + Mathf.Sqrt(sqr_dis_between)
+        //        //                  + "  srcPos: "+src.pos + "   dstPos: "+ dst.pos); //chamto test
+        //        return false; //두원이 겹쳐 있지 않음
+        //    }
 
-            //          DebugWide.LogWhite ("***** unreachable !!! ******");
-            return false;
-        }
+        //    //          DebugWide.LogWhite ("***** unreachable !!! ******");
+        //    return false;
+        //}
 
         //제거하기
-        static public bool Collision_Sphere(Vector3 src_pos, float src_radius, Vector3 des_pos, float des_radius, eSphere_Include_Status eInclude)
-        {
-            Geo.Sphere src, dst;
-            src.pos = src_pos; src.radius = src_radius;
-            dst.pos = des_pos; dst.radius = des_radius;
-            return Geo.Collision_Sphere(src, dst, eInclude);
-        }
+        //static public bool Collision_Sphere(Vector3 src_pos, float src_radius, Vector3 des_pos, float des_radius, eSphere_Include_Status eInclude)
+        //{
+        //    Geo.Sphere src, dst;
+        //    src.pos = src_pos; src.radius = src_radius;
+        //    dst.pos = des_pos; dst.radius = des_radius;
+        //    return Geo.Collision_Sphere(src, dst, eInclude);
+        //}
 
         //value 보다 target 값이 작으면 True 를 반환한다.
         static public bool Distance_LessThan(float srcDis, Vector3 dstV3)
