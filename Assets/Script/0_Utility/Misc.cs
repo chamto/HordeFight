@@ -781,6 +781,35 @@ namespace UtilGS9
         {
             return " (" + src.x + ", " + src.y + ", " + src.z + ") ";
         }
+
+
+        static public Quaternion Quaternion_AngleAxisY(float yRotation)
+        {
+            Quaternion q = Quaternion.identity;
+
+            yRotation *= 0.5f;
+            yRotation *= Mathf.Deg2Rad;
+
+            float Cy = (float)Math.Cos(yRotation), Sy = (float)Math.Sign(yRotation);
+
+            q.w = Cy;
+            q.x = 0;
+            q.y = Sy;
+            q.z = 0;
+
+
+            return q;
+        }
+
+        static public Quaternion Quaternion_Multiply(Quaternion q, float scalar)
+        {
+            q.w *= scalar;
+            q.x *= scalar;
+            q.y *= scalar;
+            q.z *= scalar;
+
+            return q;
+        }
     }
 
     ///////////////////////////////////////////////////////////////////////
@@ -889,6 +918,7 @@ namespace UtilGS9
         //    }
         //}
 
+
         public struct Arc
         {
             public Vector3 origin;          //호의 시작점 
@@ -903,9 +933,15 @@ namespace UtilGS9
 
             public void SetDir(Vector3 nDir)
             {
+
                 ndir_middle = nDir; //노멀벡터가 들어와야 한다 
-                ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
-                ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
+                //ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
+                //ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
+
+                Quaternion q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
+                Quaternion q_right = VOp.Quaternion_Multiply(q_left, -1f);
+                ndir_left = q_left * nDir;
+                ndir_right = q_right * nDir;
 
                 center = (radius_far - radius_near) * 0.5f * nDir;
             }
