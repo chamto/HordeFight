@@ -922,28 +922,56 @@ namespace UtilGS9
         public struct Arc
         {
             public Vector3 origin;          //호의 시작점 
-            public Vector3 ndir_left;
-            public Vector3 ndir_middle;           //중간 방향 , 정규화된 값이어야 한다 
-            public Vector3 ndir_right;
+            private Vector3 _ndir_left;
+            public Vector3 ndir;           //중간 방향 , 정규화된 값이어야 한다 
+            private Vector3 _ndir_right;
             public Vector3 center;          //호 중앙 
             public float degree;
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
 
 
+            public void Init(Vector3 ori, float deg , float rad_near, float rad_far)
+            {
+                origin = ori;
+                degree = deg;
+                radius_near = rad_near;
+                radius_far = rad_far;
+
+                SetDir(Vector3.forward); 
+            }
+
             public void SetDir(Vector3 nDir)
             {
 
-                ndir_middle = nDir; //노멀벡터가 들어와야 한다 
+                ndir = nDir; //노멀벡터가 들어와야 한다 
                 //ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
                 //ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
 
                 Quaternion q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
                 Quaternion q_right = VOp.Quaternion_Multiply(q_left, -1f);
-                ndir_left = q_left * nDir;
-                ndir_right = q_right * nDir;
+                _ndir_left = q_left * nDir;
+                _ndir_right = q_right * nDir;
 
-                center = (radius_far - radius_near) * 0.5f * nDir;
+                center = origin + (radius_far - radius_near) * 0.5f * nDir;
+            }
+
+            public void SetAngleRange(float deg , float rad_near, float rad_far)
+            {
+                degree = deg;
+                radius_near = rad_near;
+                radius_far = rad_far;
+
+                SetDir(ndir);
+            }
+
+            public void SetRotateY(Vector3 ori, Quaternion rot)
+            {
+                origin = ori;
+                ndir = rot * ndir;
+                _ndir_left = rot * _ndir_left;
+                _ndir_right = rot * _ndir_right;
+                center = origin + (radius_far - radius_near) * 0.5f * ndir;
             }
 
             public float GetFactor(float radius, float degree)
@@ -962,11 +990,11 @@ namespace UtilGS9
                 float f_rate = (includeRate * -2) + 3;
 
                 float factor = GetFactor(dstRad, degree * 0.5f);
-                Vector3 ori_factor = origin + ndir_middle * factor * f_rate; 
+                Vector3 ori_factor = origin + ndir * factor * f_rate; 
 
                 Vector3 dstDir = dstPos - ori_factor;
-                float pdot_left = VOp.PerpDot_ZX(ndir_left, dstDir);
-                float pdot_right = VOp.PerpDot_ZX(dstDir, ndir_right);
+                float pdot_left = VOp.PerpDot_ZX(_ndir_left, dstDir);
+                float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
 
                 if (0 > pdot_left || 0 > pdot_right)
                 {
@@ -999,7 +1027,7 @@ namespace UtilGS9
                 return true;
             }
 
-
+            //호에 원이 포함되는 비율 반환 
             //public const float INCLUDE_MIN = 1;   //최소완전포함
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
             //public const float INCLUDE_MAX = 2; //최대근접포함
@@ -1008,15 +1036,15 @@ namespace UtilGS9
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
                 Vector3 dstDir = dstPos - origin;
-                float pdot_left =  VOp.PerpDot_ZX(ndir_left, dstDir);
-                float pdot_right = VOp.PerpDot_ZX(dstDir, ndir_right);
+                float pdot_left =  VOp.PerpDot_ZX(_ndir_left, dstDir);
+                float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
 
 
                 //수직내적값이 작은것이 경계에 더 가깝다
-                Vector3 dir_close = ndir_left;
+                Vector3 dir_close = _ndir_left;
                 if (pdot_left > pdot_right)
                 {
-                    dir_close = ndir_right;
+                    dir_close = _ndir_right;
                 }
 
 
@@ -1042,7 +1070,7 @@ namespace UtilGS9
 
                         Vector3 interPos;
                         Line3.ClosestPoints(out interPos, out interPos,
-                            new Line3(origin, ndir_middle), new Line3(close_pos, (dstPos - close_pos)));
+                            new Line3(origin, ndir), new Line3(close_pos, (dstPos - close_pos)));
 
                         float sqr_between = (dstPos - close_pos).sqrMagnitude - (dstRad * dstRad); //0을 만들기 위해 제곱반지름을 뺀다
                         float sqr_max = (interPos - close_pos).sqrMagnitude - (dstRad * dstRad); //1을 만들기 위해 제곱반지름을 뺀다
@@ -1056,6 +1084,7 @@ namespace UtilGS9
                 return rate;
 
             }
+
 
             public float Include_Rate_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
@@ -1099,14 +1128,14 @@ namespace UtilGS9
                 Vector3 upDir = Vector3.up;
                 Vector3 interPos;
 
-                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, ndir_left, out interPos);
+                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_left, out interPos);
                 DebugWide.DrawLine(origin, interPos, Color.green);
 
 
-                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, ndir_right, out interPos);
+                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_right, out interPos);
                 DebugWide.DrawLine(origin, interPos, Color.green);
 
-                DebugWide.DrawLine(origin, origin + ndir_middle * radius_far, Color.green);
+                DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.green);
                 DebugWide.DrawCircle(origin, radius_far, Color.green);
                 DebugWide.DrawCircle(origin, radius_near, Color.green);
             }
@@ -1114,7 +1143,7 @@ namespace UtilGS9
             public override string ToString()
             {
 
-                return "origin: " + origin + "  ndir_middle: " + ndir_middle + "  degree: " + degree
+                return "origin: " + origin + "  ndir_middle: " + ndir + "  degree: " + degree
                     + "  radius_near: " + radius_near + "  radius_far: " + radius_far ;
             }
 
