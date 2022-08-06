@@ -55,6 +55,8 @@ namespace Proto_AI_4
 
         private bool _init = false;
 
+        public Geo.Arc _arc = new Geo.Arc();
+
         void Awake()
         {
             //QualitySettings.vSyncCount = 0; //v싱크 끄기
@@ -72,7 +74,9 @@ namespace Proto_AI_4
 
 
             _stage = new Stage();
-            _stage.Init(); 
+            _stage.Init();
+
+            _arc.Init(Vector3.zero, 90, 1, 5);
         }
 
         private void Update()
@@ -96,8 +100,8 @@ namespace Proto_AI_4
 
         }
 
-        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal=false);
-        public void Draw_Include_Sphere_Rate(float src_radius , float in_radius , Color color)
+        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal = false);
+        public void Draw_Include_Sphere_Rate(float src_radius, float in_radius, Color color)
         {
             Dele_Include_Sphere_Rate FUNC = Geo.Include_Sphere_Rate;
 
@@ -118,6 +122,11 @@ namespace Proto_AI_4
             float rt3 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius + in_radius, 0, 0), in_radius); //2 외곽접함
             //DebugWide.LogBlue(src_radius+" , " +in_radius + " -- " + rt0 + "  " + rt1 + "  " + rt2 + "  " + rt3);
 
+        }
+
+        public void Draw_Arc()
+        {
+            _arc.Draw();
         }
 
         private void OnDrawGizmos()
@@ -156,6 +165,9 @@ namespace Proto_AI_4
             }
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
+
+            Draw_Arc();
+
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();

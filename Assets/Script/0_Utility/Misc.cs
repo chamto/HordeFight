@@ -790,7 +790,7 @@ namespace UtilGS9
             yRotation *= 0.5f;
             yRotation *= Mathf.Deg2Rad;
 
-            float Cy = (float)Math.Cos(yRotation), Sy = (float)Math.Sign(yRotation);
+            float Cy = (float)Math.Cos(yRotation), Sy = (float)Math.Sin(yRotation);
 
             q.w = Cy;
             q.x = 0;
@@ -801,12 +801,77 @@ namespace UtilGS9
             return q;
         }
 
+        static public Quaternion Quaternion_AngleAxis(float zRotation, float yRotation, float xRotation) 
+        {
+            Quaternion q = new Quaternion();
+
+            zRotation *= 0.5f;
+            yRotation *= 0.5f;
+            xRotation *= 0.5f;
+
+            zRotation *= Mathf.Deg2Rad;
+            yRotation *= Mathf.Deg2Rad;
+            xRotation *= Mathf.Deg2Rad;
+
+            float Cx = (float)Math.Cos(xRotation), Sx = (float)Math.Sin(xRotation);
+
+            float Cy = (float)Math.Cos(yRotation), Sy = (float)Math.Sin(yRotation);
+
+            float Cz = (float)Math.Cos(zRotation), Sz = (float)Math.Sin(zRotation);
+
+            // multiply it out
+            q.w = Cx* Cy*Cz - Sx* Sy*Sz;
+            q.x = Sx* Cy*Cz + Cx* Sy*Sz;
+            q.y = Cx* Sy*Cz - Sx* Cy*Sz;
+            q.z = Cx* Cy*Sz + Sx* Sy*Cx;
+
+            return q;
+
+        }
+
+        static public Quaternion Quaternion_AngleAxis(Vector3 axis, float angle )
+        {
+            Quaternion q = Quaternion.identity;
+            // if axis of rotation is zero vector, just set to identity quat
+            float length = axis.sqrMagnitude;
+            if (Misc.IsZero(length))
+            {
+
+                return q;
+            }
+
+            // take half-angle
+            angle *= 0.5f;
+            angle *= Mathf.Deg2Rad;
+
+            float costheta = (float)Math.Cos(angle), sintheta = (float)Math.Sin(angle);
+
+            float scaleFactor = sintheta / (float)Math.Sqrt(length);
+
+            q.w = costheta;
+            q.x = scaleFactor * axis.x;
+            q.y = scaleFactor * axis.y;
+            q.z = scaleFactor * axis.z;
+
+            return q;
+        }
+
         static public Quaternion Quaternion_Multiply(Quaternion q, float scalar)
         {
             q.w *= scalar;
             q.x *= scalar;
             q.y *= scalar;
             q.z *= scalar;
+
+            return q;
+        }
+
+        //켤레 , 반대회전을 구하는데 사용될 수 있다 
+        static public Quaternion Quaternion_Conjugate(Quaternion q)
+        {
+            q.x = -q.x;
+            q.y = -q.y;
+            q.z = -q.z;
 
             return q;
         }
@@ -945,13 +1010,16 @@ namespace UtilGS9
             {
 
                 ndir = nDir; //노멀벡터가 들어와야 한다 
-                //ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
-                //ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
+                //_ndir_left = Quaternion.AngleAxis(-degree * 0.5f, Vector3.up) * nDir;
+                //_ndir_right = Quaternion.AngleAxis(degree * 0.5f, Vector3.up) * nDir;
+
 
                 Quaternion q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
-                Quaternion q_right = VOp.Quaternion_Multiply(q_left, -1f);
+                Quaternion q_right = VOp.Quaternion_Conjugate(q_left);
                 _ndir_left = q_left * nDir;
                 _ndir_right = q_right * nDir;
+
+                //DebugWide.LogRed(q_left + " " + q_right + "  " + _ndir_left + "  " + _ndir_right);
 
                 center = origin + (radius_far - radius_near) * 0.5f * nDir;
             }
@@ -1128,16 +1196,20 @@ namespace UtilGS9
                 Vector3 upDir = Vector3.up;
                 Vector3 interPos;
 
+                DebugWide.DrawCircle(origin, radius_far, Color.gray);
+                DebugWide.DrawCircle(origin, radius_near, Color.gray);
+
                 UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_left, out interPos);
                 DebugWide.DrawLine(origin, interPos, Color.green);
-
 
                 UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_right, out interPos);
                 DebugWide.DrawLine(origin, interPos, Color.green);
 
-                DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.green);
-                DebugWide.DrawCircle(origin, radius_far, Color.green);
-                DebugWide.DrawCircle(origin, radius_near, Color.green);
+                DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
+
+                //DebugWide.DrawLine(origin, origin+_ndir_left*10, Color.magenta); //chamto test
+                //DebugWide.DrawLine(origin, origin + _ndir_right * 10, Color.magenta); //chamto test
+                //DebugWide.LogBlue(_ndir_left + "  " + _ndir_left.magnitude); //chamto test
             }
 
             public override string ToString()
