@@ -49,9 +49,13 @@ namespace Proto_AI_4
         public float _SphereTree_Gravy = 0.5f;
 
 
-        public Transform _tr_test = null;
-        public Transform _tr_line_a = null;
-        public Transform _tr_line_b = null;
+        public Transform _tr0_test = null;
+        public Transform _tr0_line_a = null;
+        public Transform _tr0_line_b = null;
+
+        public Transform _tr1_test = null;
+        public Transform _tr1_line_a = null;
+        public Transform _tr1_line_b = null;
 
         private bool _init = false;
 
@@ -68,10 +72,13 @@ namespace Proto_AI_4
 
         void Start()
         {
-            _tr_test = GameObject.Find("Test").transform;
-            _tr_line_a = GameObject.Find("line_a").transform;
-            _tr_line_b = GameObject.Find("line_b").transform;
+            _tr0_test = GameObject.Find("Test_0").transform;
+            _tr0_line_a = GameObject.Find("line_0_a").transform;
+            _tr0_line_b = GameObject.Find("line_0_b").transform;
 
+            _tr1_test = GameObject.Find("Test_1").transform;
+            _tr1_line_a = GameObject.Find("line_1_a").transform;
+            _tr1_line_b = GameObject.Find("line_1_b").transform;
 
             _stage = new Stage();
             _stage.Init();
@@ -90,9 +97,9 @@ namespace Proto_AI_4
 
         public void Debug_FuncTest_Include_Sphere_Rate()
         {
-            float rate = Geo.Include_Sphere_Rate(Vector3.zero, 5, _tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude);
+            float rate = Geo.Include_Sphere_Rate(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
             DebugWide.DrawCircle(Vector3.zero, 5, Color.white);
-            DebugWide.PrintText(_tr_test.position, Color.red, rate + "");
+            DebugWide.PrintText(_tr0_test.position, Color.red, rate + "");
 
             Draw_Include_Sphere_Rate(5, 4, Color.yellow);
             Draw_Include_Sphere_Rate(5, 3, Color.blue);
@@ -124,9 +131,39 @@ namespace Proto_AI_4
 
         }
 
-        public void Draw_Arc()
+        public void Debug_FuncTest_Arc()
         {
+
+            Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
+
+            Draw_Arc(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+
+            //------------------
+
+            float rad = (_tr1_test.position - _tr1_line_a.position).magnitude;
+            float rate = _arc.Include_Rate_NearFar_Arc_Sphere(_tr1_test.position, rad);
+            DebugWide.LogBlue(rate);
+        }
+
+        public void Draw_Arc(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
+        {
+            Vector3 dir_near = pos_near - ori;
+            Vector3 dir_far = pos_far - ori;
+            float angle = Geo.Angle_AxisY(dir_near, dir_far);
+
+            _arc.origin = ori;
+            _arc.SetDir(dir_far.normalized);
+            _arc.SetAngleRange(angle * 2, dir_near.magnitude, dir_far.magnitude);
             _arc.Draw();
+        }
+
+        public void Draw_Sphere(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
+        {
+            DebugWide.DrawLine(ori, pos_near, Color.white);
+            DebugWide.DrawLine(ori, pos_far, Color.white);
+            DebugWide.DrawCircle(ori, (ori - pos_near).magnitude, Color.gray);
+            DebugWide.DrawCircle(ori, (ori - pos_far).magnitude, Color.gray);
+
         }
 
         private void OnDrawGizmos()
@@ -151,13 +188,13 @@ namespace Proto_AI_4
             if (true == _Draw_ArcTile)
                 GridManager.Inst.Draw_ArcTile();
 
-            GridManager.Inst.Draw_StructTile_ArcInfo(_stage._tr_test.position);
+            GridManager.Inst.Draw_StructTile_ArcInfo(_stage._tr0_test.position);
 
 
             if (true == _Draw_SphereTree)
             {
                 ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3,
-                    _tr_test.position, _tr_line_a.position, _tr_line_b.position);
+                    _tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
             }
             if (true == _Draw_SphereTree_Struct)
             {
@@ -166,7 +203,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            Draw_Arc();
+            Debug_FuncTest_Arc();
 
 
             //DebugWide.DrawQ_All_AfterTime(1);

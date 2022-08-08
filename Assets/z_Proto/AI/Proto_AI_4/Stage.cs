@@ -10,9 +10,9 @@ namespace Proto_AI_4
     [System.Serializable]
     public class Stage
     {
-        public Transform _tr_test = null;
-        public Transform _tr_line_a = null;
-        public Transform _tr_line_b = null;
+        public Transform _tr0_test = null;
+        public Transform _tr0_line_a = null;
+        public Transform _tr0_line_b = null;
 
         public Transform _tr_platoon_0 = null;
         public Transform _tr_squard_0 = null;
@@ -64,9 +64,9 @@ namespace Proto_AI_4
         {
             _init = true;
 
-            _tr_test = GameObject.Find("Test").transform;
-            _tr_line_a = GameObject.Find("line_a").transform;
-            _tr_line_b = GameObject.Find("line_b").transform;
+            _tr0_test = GameObject.Find("Test_0").transform;
+            _tr0_line_a = GameObject.Find("line_0_a").transform;
+            _tr0_line_b = GameObject.Find("line_0_b").transform;
 
             _tr_platoon_0 = GameObject.Find("tr_platoon_0").transform;
             _tr_squard_0 = GameObject.Find("__tr_squard_0_0").transform;
@@ -791,10 +791,10 @@ namespace Proto_AI_4
         {
             if (false == _init) return;
 
-            DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
-            DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
-            DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude, Color.gray);
-            DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_b.position).magnitude, Color.gray);
+            //DebugWide.DrawLine(_tr_test.position, _tr_line_a.position, Color.white);
+            //DebugWide.DrawLine(_tr_test.position, _tr_line_b.position, Color.white);
+            //DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude, Color.gray);
+            //DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_b.position).magnitude, Color.gray);
 
             //_Platoons[0].Draw(Color.green); //소대 출력
             //_Squads[0].Draw(Color.green);
