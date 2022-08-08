@@ -1099,7 +1099,7 @@ namespace UtilGS9
             //public const float INCLUDE_MIN = 1;   //최소완전포함
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
             //public const float INCLUDE_MAX = 2; //최대근접포함
-            private float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
+            public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1116,7 +1116,7 @@ namespace UtilGS9
                 }
 
 
-                Vector3 close_pos = LineSegment3.ClosestPoint(dir_close * radius_near, dir_close * radius_far, dstPos);
+                Vector3 close_pos = LineSegment3.ClosestPoint(origin + dir_close * radius_near, origin + dir_close * radius_far, dstPos);
                 float rate = (close_pos - dstPos).sqrMagnitude / (dstRad* dstRad);
 
                 //조정된 호안에 dstPos가 벗어났는지 검사 
@@ -1142,7 +1142,7 @@ namespace UtilGS9
 
                         float sqr_between = (dstPos - close_pos).sqrMagnitude - (dstRad * dstRad); //0을 만들기 위해 제곱반지름을 뺀다
                         float sqr_max = (interPos - close_pos).sqrMagnitude - (dstRad * dstRad); //1을 만들기 위해 제곱반지름을 뺀다
-                        rate = sqr_max / sqr_between;
+                        rate = sqr_between / sqr_max;
                         rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전 
 
 
@@ -1174,6 +1174,8 @@ namespace UtilGS9
                 {
                     return rate_near;
                 }
+
+                //DebugWide.LogBlue(rate_arc + "  " + rate_far + "   " + rate_near);
 
                 //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
                 if (INCLUDE_MIN > rate_arc)
