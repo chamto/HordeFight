@@ -1099,7 +1099,7 @@ namespace UtilGS9
             //public const float INCLUDE_MIN = 1;   //최소완전포함
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
             //public const float INCLUDE_MAX = 2; //최대근접포함
-            public const float INCLUDE_AREA_0_1 = -1; //비율값이 0~1 사이의 영역
+            //public const float INCLUDE_AREA_0_1 = -1; //비율값이 0~1 사이의 영역
             public const float INCLUDE_NONAREA_MAX = 1000; //포함되지 않는 영역의 최대값
             public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
@@ -1471,19 +1471,26 @@ namespace UtilGS9
         public const float INCLUDE_MIN = 1;   //최소완전포함
         public const float INCLUDE_MIDDLE = 1.5f; //중점포함
         public const float INCLUDE_MAX = 2; //최대근접포함
+        public const float INCLUDE_ERROR = -1; //처리 할 수 없는 경우 
         //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
+        //두원의 반지름이 0이 아니어야 한다 - 처리 못함 
         static public float Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
         {
 
             float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
+            //if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
+
             float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
             float sqr_middle = src_radius * src_radius;
             float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
 
+            //if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 , 최적화를 위해 주석 
+
             float rate = 0;
+            //if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 , 최적화를 위해 주석 
             if (sqr_between < sqr_min)
             {   //원점 ~ 최소완전포함 : 0~1 비율 
                 float a = sqr_between;
@@ -1510,6 +1517,55 @@ namespace UtilGS9
             // 위 값을 반전 (a - 3)x(-1) = b 
             // b: [x max middle min] [3 2 1.5 1] 원밖포함값
             if(reversal)
+            {
+                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+            }
+
+            return rate;
+        }
+
+        //반지름이 0인 경우도 처리 가능 
+        static public float Include_Rate_SphereZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        {
+
+            float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+
+            if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
+
+            float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
+            float sqr_middle = src_radius * src_radius;
+            float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
+
+            if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 
+
+            float rate = 0;
+            if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 
+            //if (sqr_between < sqr_min)
+            {   //원점 ~ 최소완전포함 : 0~1 비율 
+                float a = sqr_between;
+                float b = sqr_min;
+                rate = a / b;
+            }
+            else if (sqr_between < sqr_middle)
+            {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
+                float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
+                float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
+                rate = (a / b) * 0.5f + 1;
+
+            }
+            else
+            {   //중점포함 ~ 최대근접포함 : 1.5~2~ 비율 조정 
+                float a = sqr_between - sqr_middle;
+                float b = sqr_max - sqr_middle;
+                rate = (a / b) * 0.5f + 1.5f;
+
+            }
+
+            //20220731 실험노트 참고 
+            // a: [o min middle max] [0 1 1.5 2] 원안포함값
+            // 위 값을 반전 (a - 3)x(-1) = b 
+            // b: [x max middle min] [3 2 1.5 1] 원밖포함값
+            if (reversal)
             {
                 rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
             }

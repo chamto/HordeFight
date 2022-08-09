@@ -142,7 +142,9 @@ namespace Proto_AI_4
 
             float rad = (_tr1_test.position - _tr1_line_a.position).magnitude;
             //float rate = _arc.Include_Rate_NearFar_Arc_Sphere(_tr1_test.position, rad);
-            float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
+            //float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
+            float rate = Geo.Include_Sphere_Rate(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, 
+                _tr1_test.position, rad, false);
             DebugWide.LogBlue(rate);
         }
 
