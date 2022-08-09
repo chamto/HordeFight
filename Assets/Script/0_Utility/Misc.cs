@@ -1099,6 +1099,8 @@ namespace UtilGS9
             //public const float INCLUDE_MIN = 1;   //최소완전포함
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
             //public const float INCLUDE_MAX = 2; //최대근접포함
+            public const float INCLUDE_AREA_0_1 = -1; //비율값이 0~1 사이의 영역
+            public const float INCLUDE_NONAREA_MAX = 1000; //포함되지 않는 영역의 최대값
             public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
@@ -1115,37 +1117,68 @@ namespace UtilGS9
                     dir_close = _ndir_right;
                 }
 
-
                 Vector3 close_pos = LineSegment3.ClosestPoint(origin + dir_close * radius_near, origin + dir_close * radius_far, dstPos);
-                float rate = (close_pos - dstPos).sqrMagnitude / (dstRad* dstRad);
 
-                //조정된 호안에 dstPos가 벗어났는지 검사 
-                if (0 > pdot_left || 0 > pdot_right)
+                float sqrRad = dstRad * dstRad;
+                float rate = 0;
+                bool rad_zero = false;
+                if (Misc.IsZero(dstRad)) //반지름이 0일 경우 , 0으로 나누는 것을 막기위해 최소값을 넣는다 
                 {
-                    //dstPos는 호 밖에 있음 : 1.5 ~ 2 ~
-                    rate = rate * 0.5f + 1.5f;
+                    rad_zero = true;
                 }
                 else
                 {
+                    rate = (close_pos - dstPos).sqrMagnitude / sqrRad;
+                }
+
+                //DebugWide.LogRed("  " + pdot_left + "  " + pdot_right);
+                //조정된 호안에 dstPos가 벗어났는지 검사 
+                if (0 > pdot_left || 0 > pdot_right)
+                {
+                    //rad_zero 일 경우 아래계산은 무시된다
+                    //dstPos는 호 밖에 있음 : 1.5 ~ 2 ~
+                    rate = rate * 0.5f + 1.5f;
+
+                    if (rad_zero) rate = INCLUDE_NONAREA_MAX; //최대값 고정
+
+                }
+                else
+                {
+                    //DebugWide.LogRed("*before :  " + rate);
+
+                    //rad_zero 일 경우 아래계산은 무시된다 
                     //dstPos는 호 안에 있음 : 1 ~ 1.5
                     rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
                     rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
 
+                    //DebugWide.LogRed("*  "+ rate);
+
                     //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
-                    //목표물에 초점을 맞추는데 사용될 수 있다 
-                    if (INCLUDE_MIN > rate)
+                    //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
+                    //초점 맞추기는 따로 검사하기 
+                    if (INCLUDE_MIN > rate || rad_zero)
                     {
+                        Vector3 dst2close = dstPos - close_pos;
+                        if (Misc.IsZero(dst2close)) return 1; //외곽선분위에 대상이 있는 경우 , 최대값 부여
 
                         Vector3 interPos;
                         Line3.ClosestPoints(out interPos, out interPos,
-                            new Line3(origin, ndir), new Line3(close_pos, (dstPos - close_pos)));
+                            new Line3(origin, ndir), new Line3(close_pos, dst2close));
 
-                        float sqr_between = (dstPos - close_pos).sqrMagnitude - (dstRad * dstRad); //0을 만들기 위해 제곱반지름을 뺀다
-                        float sqr_max = (interPos - close_pos).sqrMagnitude - (dstRad * dstRad); //1을 만들기 위해 제곱반지름을 뺀다
-                        rate = sqr_between / sqr_max;
-                        rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전 
+                        float sqr_between = dst2close.sqrMagnitude - sqrRad; //0을 만들기 위해 제곱반지름을 뺀다
+                        float sqr_max = (interPos - close_pos).sqrMagnitude - sqrRad; //1을 만들기 위해 제곱반지름을 뺀다
 
+                        if (Misc.IsZero(sqr_max))
+                        {
+                            rate = 0; //분모가 0 인 경우 , 최소값 부여 
+                        }
+                        else
+                        {
+                            rate = sqr_between / sqr_max;
+                            rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전  
+                        }
 
+                        //DebugWide.LogRed("**  " + rate);
                     }
                 }
 
