@@ -97,7 +97,7 @@ namespace Proto_AI_4
 
         public void Debug_FuncTest_Include_Sphere_Rate()
         {
-            float rate = Geo.Include_Sphere_Rate(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
+            float rate = Geo.Include_Rate_Sphere(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
             DebugWide.DrawCircle(Vector3.zero, 5, Color.white);
             DebugWide.PrintText(_tr0_test.position, Color.red, rate + "");
 
@@ -110,7 +110,7 @@ namespace Proto_AI_4
         public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal = false);
         public void Draw_Include_Sphere_Rate(float src_radius, float in_radius, Color color)
         {
-            Dele_Include_Sphere_Rate FUNC = Geo.Include_Sphere_Rate;
+            Dele_Include_Sphere_Rate FUNC = Geo.Include_Rate_Sphere;
 
             for (int i = 0; i < 80; i++)
             {
@@ -143,7 +143,7 @@ namespace Proto_AI_4
             float rad = (_tr1_test.position - _tr1_line_a.position).magnitude;
             //float rate = _arc.Include_Rate_NearFar_Arc_Sphere(_tr1_test.position, rad);
             //float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
-            float rate = Geo.Include_Sphere_Rate(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, 
+            float rate = Geo.Include_Rate_Sphere(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, 
                 _tr1_test.position, rad, false);
             DebugWide.LogBlue(rate);
         }

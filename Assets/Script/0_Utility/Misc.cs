@@ -1075,13 +1075,13 @@ namespace UtilGS9
             public bool Include_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
             
-                if (includeRate < Geo.Include_Sphere_Rate(origin, radius_far, dstPos, dstRad, false))
+                if (includeRate < Geo.Include_Rate_Sphere(origin, radius_far, dstPos, dstRad, false))
                 {
                     return false;
                 }
 
 
-                if (includeRate < Geo.Include_Sphere_Rate(origin, radius_near, dstPos, dstRad, true))
+                if (includeRate < Geo.Include_Rate_Sphere(origin, radius_near, dstPos, dstRad, true))
                 {
                     return false;
                 }
@@ -1196,13 +1196,13 @@ namespace UtilGS9
                     return rate_arc; 
                 }
 
-                float rate_far = Geo.Include_Sphere_Rate(origin, radius_far, dstPos, dstRad, false);
+                float rate_far = Geo.Include_Rate_Sphere(origin, radius_far, dstPos, dstRad, false);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.Include_Sphere_Rate(origin, radius_near, dstPos, dstRad, true);
+                float rate_near = Geo.Include_Rate_Sphere(origin, radius_near, dstPos, dstRad, true);
                 if (INCLUDE_MAX < rate_near)
                 {
                     return rate_near;
@@ -1476,7 +1476,7 @@ namespace UtilGS9
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
         //두원의 반지름이 0이 아니어야 한다 - 처리 못함 
-        static public float Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
+        static public float Include_Rate_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
         {
 
             float sqr_between = (dst_pos - src_pos).sqrMagnitude;
@@ -1576,13 +1576,13 @@ namespace UtilGS9
         static public bool Include_NearFar_Sphere_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
         {
 
-            if (includeRate < Geo.Include_Sphere_Rate(src_pos, src_radius_far, dst_pos, dst_radius, false))
+            if (includeRate < Geo.Include_Rate_Sphere(src_pos, src_radius_far, dst_pos, dst_radius, false))
             {
                 return false;
             }
 
 
-            if (includeRate < Geo.Include_Sphere_Rate(src_pos, src_radius_near, dst_pos, dst_radius, true))
+            if (includeRate < Geo.Include_Rate_Sphere(src_pos, src_radius_near, dst_pos, dst_radius, true))
             {
                 return false;
             }
