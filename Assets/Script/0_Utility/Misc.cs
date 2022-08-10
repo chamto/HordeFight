@@ -1191,18 +1191,21 @@ namespace UtilGS9
             {
 
                 float rate_arc = Include_Rate_Arc_Sphere(dstPos, dstRad);
-                if(INCLUDE_MAX < rate_arc)
+                //DebugWide.LogBlue("* arc: " + rate_arc);
+                if (INCLUDE_MAX < rate_arc)
                 {
                     return rate_arc; 
                 }
 
-                float rate_far = Geo.Include_Rate_Sphere(origin, radius_far, dstPos, dstRad, false);
+                float rate_far = Geo.Include_Rate_SphereZero(origin, radius_far, dstPos, dstRad, false);
+                //DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.Include_Rate_Sphere(origin, radius_near, dstPos, dstRad, true);
+                float rate_near = Geo.Include_Rate_SphereZero(origin, radius_near, dstPos, dstRad, true);
+                //DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {
                     return rate_near;
@@ -1210,13 +1213,15 @@ namespace UtilGS9
 
                 //DebugWide.LogBlue(rate_arc + "  " + rate_far + "   " + rate_near);
 
+                //rate 1 이하 영역 
                 //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
-                if (INCLUDE_MIN > rate_arc)
+                if (INCLUDE_MIN > rate_arc && INCLUDE_MIN > rate_far && INCLUDE_MIN > rate_near)
                 {
+                    //DebugWide.LogBlue("**** arc 0~1: " + rate_arc);
                     return rate_arc;
                 }
 
-
+                //rate 1 이상 영역에서 최대비율값을 찾는다 
                 float rate_max = rate_arc;
                 if (rate_max < rate_far) rate_max = rate_far;
                 if (rate_max < rate_near) rate_max = rate_near;
