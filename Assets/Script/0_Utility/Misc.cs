@@ -1109,6 +1109,9 @@ namespace UtilGS9
                 float pdot_left =  VOp.PerpDot_ZX(_ndir_left, dstDir);
                 float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
 
+                //2~10 근사치 계산하기 위해서 Include_Rate_SphereZero 함수와 동시 조정되어야 함
+                float sqr_max_after = (dstRad * (COUNT_MAX_AFTER + 1)) * (dstRad * (COUNT_MAX_AFTER + 1)); //rate 1.5 에서 시작하므로 1개 더 더해준다
+                float sqr_max = dstRad * dstRad;
 
                 //수직내적값이 작은것이 경계에 더 가깝다
                 Vector3 dir_close = _ndir_left;
@@ -1118,26 +1121,35 @@ namespace UtilGS9
                 }
 
                 Vector3 close_pos = LineSegment3.ClosestPoint(origin + dir_close * radius_near, origin + dir_close * radius_far, dstPos);
+                float sqr_between = (close_pos - dstPos).sqrMagnitude;
 
-                float sqrRad = dstRad * dstRad;
                 float rate = 0;
                 bool rad_zero = false;
                 if (Misc.IsZero(dstRad)) //반지름이 0일 경우 , 0으로 나누는 것을 막기위해 최소값을 넣는다 
                 {
                     rad_zero = true;
                 }
-                else
-                {
-                    rate = (close_pos - dstPos).sqrMagnitude / sqrRad;
-                }
 
-                //DebugWide.LogRed("  " + pdot_left + "  " + pdot_right);
+
+                DebugWide.LogRed("  " + pdot_left + "  " + pdot_right);
                 //조정된 호안에 dstPos가 벗어났는지 검사 
                 if (0 > pdot_left || 0 > pdot_right)
                 {
+
                     //rad_zero 일 경우 아래계산은 무시된다
-                    //dstPos는 호 밖에 있음 : 1.5 ~ 2 ~
-                    rate = rate * 0.5f + 1.5f;
+                    if (sqr_between <= sqr_max)
+                    {   //dstPos는 호 밖에 있음 : 1.5 ~ 2
+                        rate = sqr_between / sqr_max;
+                        rate = rate * 0.5f + 1.5f;
+                    }
+                    else
+                    {   //2 ~ 10 ~ 
+                        float a = sqr_between - sqr_max;
+                        float b = sqr_max_after - sqr_max;
+                        rate = a / b;
+                        rate = rate * 8f + 2f;
+                    }
+
 
                     if (rad_zero) rate = INCLUDE_NONAREA_MAX; //최대값 고정
 
@@ -1146,12 +1158,17 @@ namespace UtilGS9
                 {
                     //DebugWide.LogRed("*before :  " + rate);
 
+                    if (false == rad_zero)
+                        rate = sqr_between / sqr_max;
+                    else
+                        rate = 0;
+
                     //rad_zero 일 경우 아래계산은 무시된다 
                     //dstPos는 호 안에 있음 : 1 ~ 1.5
                     rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
                     rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
 
-                    //DebugWide.LogRed("*  "+ rate);
+                    DebugWide.LogRed("*  "+ rate);
 
                     //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
                     //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
@@ -1165,16 +1182,16 @@ namespace UtilGS9
                         Line3.ClosestPoints(out interPos, out interPos,
                             new Line3(origin, ndir), new Line3(close_pos, dst2close));
 
-                        float sqr_between = dst2close.sqrMagnitude - sqrRad; //0을 만들기 위해 제곱반지름을 뺀다
-                        float sqr_max = (interPos - close_pos).sqrMagnitude - sqrRad; //1을 만들기 위해 제곱반지름을 뺀다
+                        float sqr_between2 = dst2close.sqrMagnitude - sqr_max; //0을 만들기 위해 제곱반지름을 뺀다
+                        float sqr_max2 = (interPos - close_pos).sqrMagnitude - sqr_max; //1을 만들기 위해 제곱반지름을 뺀다
 
-                        if (Misc.IsZero(sqr_max))
+                        if (Misc.IsZero(sqr_max2))
                         {
                             rate = 0; //분모가 0 인 경우 , 최소값 부여 
                         }
                         else
                         {
-                            rate = sqr_between / sqr_max;
+                            rate = sqr_between2 / sqr_max2;
                             rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전  
                         }
 
@@ -1191,21 +1208,21 @@ namespace UtilGS9
             {
 
                 float rate_arc = Include_Rate_Arc_Sphere(dstPos, dstRad);
-                //DebugWide.LogBlue("* arc: " + rate_arc);
+                DebugWide.LogBlue("* arc: " + rate_arc);
                 if (INCLUDE_MAX < rate_arc)
                 {
                     return rate_arc; 
                 }
 
                 float rate_far = Geo.Include_Rate_SphereZero(origin, radius_far, dstPos, dstRad, false);
-                //DebugWide.LogBlue("** far: " + rate_far);
+                DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
                 float rate_near = Geo.Include_Rate_SphereZero(origin, radius_near, dstPos, dstRad, true);
-                //DebugWide.LogBlue("*** near: " + rate_near);
+                DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {
                     return rate_near;
@@ -1217,7 +1234,7 @@ namespace UtilGS9
                 //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
                 if (INCLUDE_MIN > rate_arc && INCLUDE_MIN > rate_far && INCLUDE_MIN > rate_near)
                 {
-                    //DebugWide.LogBlue("**** arc 0~1: " + rate_arc);
+                    DebugWide.LogBlue("**** arc 0~1: " + rate_arc);
                     return rate_arc;
                 }
 
@@ -1529,7 +1546,8 @@ namespace UtilGS9
             return rate;
         }
 
-        //반지름이 0인 경우도 처리 가능 
+        const int COUNT_MAX_AFTER = 10;
+        //반지름이 0인 경우도 처리 가능 , 2~10 거리에서 비율값 근사치 계산 적용 
         static public float Include_Rate_SphereZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
 
@@ -1537,6 +1555,7 @@ namespace UtilGS9
 
             if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
 
+            float sqr_max_after = (src_radius + dst_radius* COUNT_MAX_AFTER) * (src_radius + dst_radius* COUNT_MAX_AFTER);
             float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
             float sqr_middle = src_radius * src_radius;
             float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
@@ -1558,12 +1577,18 @@ namespace UtilGS9
                 rate = (a / b) * 0.5f + 1;
 
             }
-            else
-            {   //중점포함 ~ 최대근접포함 : 1.5~2~ 비율 조정 
+            else if(sqr_between <= sqr_max)
+            {   //중점포함 ~ 최대근접포함 : 1.5~2 비율 조정 
                 float a = sqr_between - sqr_middle;
                 float b = sqr_max - sqr_middle;
                 rate = (a / b) * 0.5f + 1.5f;
 
+            }
+            else
+            {   //2~10~ 비율 조정 
+                float a = sqr_between - sqr_max;
+                float b = sqr_max_after - sqr_max;
+                rate = (a / b) * 8f + 2f;
             }
 
             //20220731 실험노트 참고 

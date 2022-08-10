@@ -133,18 +133,52 @@ namespace Proto_AI_4
 
         public void Debug_FuncTest_Arc()
         {
+            const int COUNT = 15;
+            float rad0_far = (_tr0_test.position - _tr0_line_b.position).magnitude;
+            float rad1 = (_tr1_test.position - _tr1_line_a.position).magnitude;
+            Vector3 ndir0 = (_tr0_line_b.position - _tr0_test.position).normalized;
 
+            Draw_Ruler(_tr0_test.position + ndir0 * rad0_far, ndir0, rad1, COUNT);
             Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
 
             Draw_Arc(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
 
             //------------------
+            //string temp = "" , temp2= "";
+            //for(int i=0;i< COUNT; i++)
+            //{
+            //    Vector3 next = _tr1_test.position + Vector3.back * rad1 * i;
+            //    Vector3 next2 = _tr1_test.position + Vector3.right * rad1 * i;
+            //    float r = _arc.Include_Rate_Arc_Sphere(next, rad1);
+            //    temp += "  " + r;
+            //    r = Geo.Include_Rate_SphereZero(_tr0_test.position, rad0_far, next2, rad1, false);
+            //    temp2 += "  " + r;
+            //}
+            //DebugWide.LogBlue("arc : "+temp);
+            //DebugWide.LogBlue("sph : "+ temp2);
+            //------------------
 
-            float rad = (_tr1_test.position - _tr1_line_a.position).magnitude;
-            float rate = _arc.Include_Rate_NearFar_Arc_Sphere(_tr1_test.position, rad);
+            float rate = _arc.Include_Rate_NearFar_Arc_Sphere(_tr1_test.position, rad1);
             //float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
             //float rate = Geo.Include_Rate_Sphere(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, _tr1_test.position, rad, false);
             DebugWide.LogBlue(rate);
+        }
+
+        public void Draw_Ruler(Vector3 ori, Vector3 dir, float interval, uint count)
+        {
+            const int MAX_COUNT = 20;
+
+            dir = dir.normalized;
+            Vector3 next = ori;
+            for(int i=0;i<count;i++)
+            {
+                if (i >= MAX_COUNT) break;
+
+                DebugWide.DrawLine(next, next + dir * interval, Color.gray);
+                DebugWide.PrintText(next, Color.white, i + "");
+                next = next + dir * interval;
+            }
+
         }
 
         public void Draw_Arc(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
