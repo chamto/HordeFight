@@ -713,6 +713,7 @@ namespace UtilGS9
         //vㅗ⋅w = |v||w|sin@ = vㅗ(z, -x)⋅w(x, z)
         //왼손좌표계용 
         //수직내적의 값이 양수면 시계방향 , 음수면 반시계방향
+        //2022-8-11 실험노트 참고 , 직각삼각형 sin 을 이용하여 높이값을 얻어낼 수 있다 
         static public float PerpDot_ZX(Vector3 v, Vector3 w)
         {
             //(v.z * w.x) > (v.x * w.z) 시계방향회전
@@ -1106,17 +1107,21 @@ namespace UtilGS9
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
                 Vector3 dstDir = dstPos - origin;
-                float pdot_left =  VOp.PerpDot_ZX(_ndir_left, dstDir);
+                float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
+                float pdot_left =  VOp.PerpDot_ZX(_ndir_left, dstDir); //높이값 반환 
                 float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
 
                 //2~10 근사치 계산하기 위해서 Include_Rate_SphereZero 함수와 동시 조정되어야 함
                 float sqr_max_after = (dstRad * (COUNT_MAX_AFTER + 1)) * (dstRad * (COUNT_MAX_AFTER + 1)); //rate 1.5 에서 시작하므로 1개 더 더해준다
                 float sqr_max = dstRad * dstRad;
 
-                //수직내적값이 작은것이 경계에 더 가깝다
+
+                //pdot_mid 이 양수면 왼쪽편 , 음수면 오른쪽편에 대상원이 가까이 있다
+                float pdot_close = pdot_left; 
                 Vector3 dir_close = _ndir_left;
-                if (pdot_left > pdot_right)
+                if (0 > pdot_mid)
                 {
+                    pdot_close = pdot_right;
                     dir_close = _ndir_right;
                 }
 
@@ -1133,7 +1138,8 @@ namespace UtilGS9
 
                 DebugWide.LogRed("  " + pdot_left + "  " + pdot_right);
                 //조정된 호안에 dstPos가 벗어났는지 검사 
-                if (0 > pdot_left || 0 > pdot_right)
+                //if (0 > pdot_left || 0 > pdot_right)
+                if (0 > pdot_close)
                 {
 
                     //rad_zero 일 경우 아래계산은 무시된다
@@ -1168,7 +1174,7 @@ namespace UtilGS9
                     rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
                     rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
 
-                    DebugWide.LogRed("*  "+ rate);
+                    DebugWide.LogRed("inner : "+ rate);
 
                     //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
                     //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
@@ -1195,7 +1201,7 @@ namespace UtilGS9
                             rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전  
                         }
 
-                        //DebugWide.LogRed("**  " + rate);
+                        DebugWide.LogRed("center : " + rate);
                     }
                 }
 
