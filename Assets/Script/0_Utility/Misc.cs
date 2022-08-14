@@ -1231,11 +1231,26 @@ namespace UtilGS9
                     if (INCLUDE_MIN > rate || rad_zero)
                     {
 
-                        pdot_mid = Math.Abs(pdot_mid); //부호 제거 
+                        float factor = GetFactor(dstRad, degree * 0.5f);
+                        Vector3 ori_factor = origin + ndir * factor;
+                        Vector3 dir0_1 = dstPos - ori_factor;
 
-                        //작성중 .. 
-                        //float factor = GetFactor(dstRad, degree * 0.5f);
-                        //Vector3 ori_factor = origin + ndir * factor * f_rate;
+                        float radius_f = dir0_1.magnitude;
+                        float max_pdot = VOp.PerpDot_ZX(ndir, dir_close) * radius_f;
+                        float dst_pdot = VOp.PerpDot_ZX(ndir, dir0_1);
+
+                        max_pdot = Math.Abs(max_pdot); //부호 제거 
+                        dst_pdot = Math.Abs(dst_pdot); //부호 제거
+
+                        if (Misc.IsZero(max_pdot))
+                        {
+                            rate = 0; //분모가 0 인 경우 , 최소값 부여 
+                        }
+                        else
+                        {
+                            rate = dst_pdot / max_pdot;
+                        }
+
 
                         //-------------------------------------
                         //180도가 넘어갈때 잘못계산된다 
