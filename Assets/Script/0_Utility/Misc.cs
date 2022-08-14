@@ -626,13 +626,41 @@ namespace UtilGS9
             float sqrLen = (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
             if (float.Epsilon >= sqrLen) return ConstV.v3_zero; //NaN 예외처리 추가
             //DebugWide.LogRed(VOp.ToString(vector3));
+            float ivlen = 1f / (float)Math.Sqrt(sqrLen); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
+            vector3.x *= ivlen;
+            vector3.y *= ivlen;
+            vector3.z *= ivlen;
+
+            return vector3;
+
+        }
+
+        //입력값을 변화시킨다 
+        static public Vector3 Normalize(ref Vector3 vector3)
+        {
+            float sqrLen = (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
+            if (float.Epsilon >= sqrLen) return ConstV.v3_zero; //NaN 예외처리 추가
+            //DebugWide.LogRed(VOp.ToString(vector3));
             float len = 1f / (float)Math.Sqrt(sqrLen); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
             vector3.x *= len;
             vector3.y *= len;
             vector3.z *= len;
 
-            return vector3; 
+            return vector3;
 
+        }
+
+
+        static public float MagnitudeSqr(ref Vector3 vector3)
+        {
+            return (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
+        }
+
+        static public float Magnitude(ref Vector3 vector3)
+        {
+            float sqrLen = (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
+
+            return (float)Math.Sqrt(sqrLen);
         }
 
         //값참조를 사용하여 속도를 올린다 , Vector3.Dot 보다 2배 빠르다 
@@ -641,8 +669,22 @@ namespace UtilGS9
             return a.x * b.x + a.y * b.y + a.z * b.z;
         }
 
+        //Vector3.Dot 보다 살짝느리다 
+        static public float Dot(Vector3 a, Vector3 b)
+        {
+            return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+        }
+
         //값참조를 사용해도 속도향상이 크지 않다
         static public Vector3 Cross(ref Vector3 a, ref Vector3 b)
+        {
+            return new Vector3(a.y * b.z - a.z * b.y,
+                              a.z * b.x - a.x * b.z,
+                              a.x * b.y - a.y * b.x);
+
+        }
+
+        static public Vector3 Cross(Vector3 a, Vector3 b)
         {
             return new Vector3(a.y * b.z - a.z * b.y,
                               a.z * b.x - a.x * b.z,
@@ -719,6 +761,13 @@ namespace UtilGS9
             //(v.z * w.x) > (v.x * w.z) 시계방향회전
             //(v.z * w.x) < (v.x * w.z) 반시계방향회전
             return (v.z * w.x - v.x * w.z); 
+        }
+
+        static public float PerpDot_ZX(ref Vector3 v,ref Vector3 w)
+        {
+            //(v.z * w.x) > (v.x * w.z) 시계방향회전
+            //(v.z * w.x) < (v.x * w.z) 반시계방향회전
+            return (v.z * w.x - v.x * w.z);
         }
 
         //수직내적값(2차원 행렬식값)은 sin부호값을 가지고 있음. 이점을 이용하여 회전방향을 알 수 있다  
@@ -1181,25 +1230,34 @@ namespace UtilGS9
                     //초점 맞추기는 따로 검사하기 
                     if (INCLUDE_MIN > rate || rad_zero)
                     {
-                        Vector3 dst2close = dstPos - close_pos;
-                        if (Misc.IsZero(dst2close)) return 1; //외곽선분위에 대상이 있는 경우 , 최대값 부여
 
-                        Vector3 interPos;
-                        Line3.ClosestPoints(out interPos, out interPos,
-                            new Line3(origin, ndir), new Line3(close_pos, dst2close));
+                        pdot_mid = Math.Abs(pdot_mid); //부호 제거 
 
-                        float sqr_between2 = dst2close.sqrMagnitude - sqr_max; //0을 만들기 위해 제곱반지름을 뺀다
-                        float sqr_max2 = (interPos - close_pos).sqrMagnitude - sqr_max; //1을 만들기 위해 제곱반지름을 뺀다
+                        //작성중 .. 
+                        //float factor = GetFactor(dstRad, degree * 0.5f);
+                        //Vector3 ori_factor = origin + ndir * factor * f_rate;
 
-                        if (Misc.IsZero(sqr_max2))
-                        {
-                            rate = 0; //분모가 0 인 경우 , 최소값 부여 
-                        }
-                        else
-                        {
-                            rate = sqr_between2 / sqr_max2;
-                            rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전  
-                        }
+                        //-------------------------------------
+                        //180도가 넘어갈때 잘못계산된다 
+                        //Vector3 dst2close = dstPos - close_pos;
+                        //if (Misc.IsZero(dst2close)) return 1; //외곽선분위에 대상이 있는 경우 , 최대값 부여
+
+                        //Vector3 interPos;
+                        //Line3.ClosestPoints(out interPos, out interPos,
+                        //    new Line3(origin, ndir), new Line3(close_pos, dst2close));
+
+                        //float sqr_between2 = dst2close.sqrMagnitude - sqr_max; //0을 만들기 위해 제곱반지름을 뺀다
+                        //float sqr_max2 = (interPos - close_pos).sqrMagnitude - sqr_max; //1을 만들기 위해 제곱반지름을 뺀다
+
+                        //if (Misc.IsZero(sqr_max2))
+                        //{
+                        //    rate = 0; //분모가 0 인 경우 , 최소값 부여 
+                        //}
+                        //else
+                        //{
+                        //    rate = sqr_between2 / sqr_max2;
+                        //    rate = (rate * -1f) + 1; //0~1 => 1~0 로 반전  
+                        //}
 
                         DebugWide.LogRed("center : " + rate);
                     }
@@ -1790,6 +1848,24 @@ namespace UtilGS9
         //https://spiralmoon.tistory.com/entry/%ED%94%84%EB%A1%9C%EA%B7%B8%EB%9E%98%EB%B0%8D-%EC%9D%B4%EB%A1%A0-%EB%91%90-%EC%A0%90-%EC%82%AC%EC%9D%B4%EC%9D%98-%EC%A0%88%EB%8C%80%EA%B0%81%EB%8F%84%EB%A5%BC-%EC%9E%AC%EB%8A%94-atan2
         //속도가 가장 빠름. 월드축에서만 사용 할 수 있다 
         public static float AngleSigned_AxisY(Vector3 v0, Vector3 v1)
+        {
+            float at0 = (float)Math.Atan2(v0.z, v0.x);
+            float at1 = (float)Math.Atan2(v1.z, v1.x);
+
+            //-180 ~ 180 범위를 넘어서는 값이 나올 경우의 예외처리 추가 
+            float rad = (at0 - at1);
+            if (rad > ConstV.Pi) rad = rad - ConstV.TwoPi;
+            else if (rad < -ConstV.Pi) rad = ConstV.TwoPi + rad;
+
+            //float a = at0 * Mathf.Rad2Deg;
+            //float b = at1 * Mathf.Rad2Deg;
+            //float c = rad * Mathf.Rad2Deg;
+            //DebugWide.LogBlue(a + "  " + b + "  " + c);
+
+            return rad * Mathf.Rad2Deg;
+        }
+
+        public static float AngleSigned_AxisY(ref Vector3 v0, ref Vector3 v1)
         {
             float at0 = (float)Math.Atan2(v0.z, v0.x);
             float at1 = (float)Math.Atan2(v1.z, v1.x);

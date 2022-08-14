@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System;
 using System.Diagnostics;
 
-public class Test_FuncPerformance : MonoBehaviour 
+public class Test_FuncPerformance : MonoBehaviour
 {
 
     public Transform _line_0 = null;
@@ -29,18 +29,18 @@ public class Test_FuncPerformance : MonoBehaviour
         testB += 10;
     }
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
         Misc.Init();
 
         //PrintErrorRate_V2Length();
 
         Create_LookUpTable_TrigonometricFunction();
-	}
+    }
 
-    	
-	// Update is called once per frame
-	void Update () 
+
+    // Update is called once per frame
+    void Update () 
     {
 
         //유니티 프로파일러로 정확한 성능을 측정할 수 없다
@@ -76,7 +76,337 @@ public class Test_FuncPerformance : MonoBehaviour
         Vector2Int v2a = Vector2Int.one;
         Vector2Int v2b = Vector2Int.one;
         Vector2Int v2c;
+        float test = 100;
 
+        //-------------------------------------------------------
+
+        //plus  0.331ms  mul  0.403ms  div  0.587ms  PerpDot_ZX_ref  0.691ms  sqrLen  0.749ms  sqrt  1.567ms  
+        //dot  1.974ms  Len2  2.697ms  cross  2.227ms  atan2  2.894ms  cos  5.35ms  sin  4.465ms  
+        //v_angle2_ref  4.283ms  norm3  9.696ms  
+        //2022-8-15 제곱근 계산을 무조건적으로 피할려고 했는데, 그럴필요가 없는것 같다. 
+        // 벡터제곱길이 2번 한것이 제곱근 1번 계산한 시간과 같다 
+        // 제곱근 구하는것과 내적 구하는 것이 비슷하다 
+        // 삼각함수는 제곱근 보다 계산시간이 더 걸린다 
+        // 놈이 가장 계산시간이 오래 걸린다 
+        // 제곱근 피할려는 것은 더이상 의미가 없다 
+
+
+        test = 100;
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            test = test + (float)i;
+
+        }
+        _timeTemp += "  plus  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        test = 100;
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            test = test * (float)i;
+
+        }
+        _timeTemp += "  mul  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        test = 100;
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            test = test / (float)i;
+
+        }
+        _timeTemp += "  div  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = VOp.PerpDot_ZX(ref va, ref vb);
+
+        }
+        _timeTemp += "  PerpDot_ZX_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = va.sqrMagnitude;
+        }
+        _timeTemp += "  sqrLen  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float c = (float)Math.Sqrt((float)i);  //가장빠름  - 이것쓰!!!!!
+        }
+        _timeTemp += "  sqrt  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = Vector3.Dot(va, vb);
+        }
+        _timeTemp += "  dot  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = va.magnitude;
+        }
+        _timeTemp += "  Len2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = Vector3.Cross(va, vb);
+        }
+        _timeTemp += "  cross  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = (float)Math.Atan2((double)i, 5.0); // !!!!!!!!!!!!!! 가장빠름 
+        }
+        _timeTemp += "  atan2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float b = (float)Math.Cos((float)i); //가장빠름  - 이것쓰!!!!!
+        }
+        _timeTemp += "  cos  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float b = (float)Math.Sin((float)i); //가장빠름  - 이것쓰!!!!!
+        }
+        _timeTemp += "  sin  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = Geo.AngleSigned_AxisY(ref va, ref vb);
+
+        }
+        _timeTemp += "  v_angle2_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+       
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = VOp.Normalize(va);
+        }
+        _timeTemp += "  norm3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        //norm 중 가장 빠르지만 코드를 직접 넣어줘야 한다. 인라인이 안됨, 최적화가 필요한 곳에 넣기  
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            float sqrLen = (va.x * va.x + va.y * va.y + va.z * va.z);
+            float ivlen = 1f / (float)Math.Sqrt(sqrLen);
+            //if (float.Epsilon >= sqrLen) ivlen = 0;
+
+            Vector3 ve = va;
+            ve.x *= ivlen;
+            ve.y *= ivlen;
+            ve.z *= ivlen;
+
+        }
+        _timeTemp += "  norm3.2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        //무명메서드는 인라인 안됨 , 상위 버전이면 될수도 있음 
+        Func<Vector3, Vector3> anony_Norm = delegate (Vector3 vector3)
+        {
+            float sqrLen = (vector3.x * vector3.x + vector3.y * vector3.y + vector3.z * vector3.z);
+            if (float.Epsilon >= sqrLen) return ConstV.v3_zero; //NaN 예외처리 추가
+
+            float len = 1f / (float)Math.Sqrt(sqrLen); //나눗셈 1번으로 줄임 , 벡터길이 함수 대신 직접구함 
+            vector3.x *= len;
+            vector3.y *= len;
+            vector3.z *= len;
+
+            return vector3;
+        };
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            Vector3 ve = anony_Norm(va);
+
+        }
+        _timeTemp += "  norm3.3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        //========================================================
+        _timeTemp += "\n\n\n\n";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = Vector3.Dot(va, vb);
+        }
+        _timeTemp += "  dot  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = VOp.Dot(ref va,ref  vb);
+        }
+        _timeTemp += "  dot2_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = VOp.Dot(_line_0.position, _line_1.position);
+        }
+        _timeTemp += "  dot3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float d = VOp.Dot(va, vb);
+        }
+        _timeTemp += "  dot4  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = Vector3.Cross(va, vb);
+        }
+        _timeTemp += "  cross  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = VOp.Cross(va, vb);
+        }
+        _timeTemp += "  cross2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 d = VOp.Cross(ref va, ref vb);
+        }
+        _timeTemp += "  cross3_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = _line_0.position.normalized; //가장느림 
+        }
+        _timeTemp += "  norm  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = va.normalized;
+        }
+        _timeTemp += "  norm2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = va;
+            ve.Normalize();
+        }
+        _timeTemp += "  norm2.1  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = VOp.Normalize(va);
+        }
+        _timeTemp += "  norm3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 ve = VOp.Normalize(ref va);
+        }
+        _timeTemp += "  norm4_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = va.sqrMagnitude;
+        }
+        _timeTemp += "  sqrLen  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = VOp.Dot(ref va, ref va);
+        }
+        _timeTemp += "  sqrLen2 " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = VOp.MagnitudeSqr(ref va);
+        }
+        _timeTemp += "  sqrLen3_ref " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = _line_0.position.magnitude;
+        }
+        _timeTemp += "  Len  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = va.magnitude;
+        }
+        _timeTemp += "  Len2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float ve = VOp.Magnitude(ref va);
+        }
+        _timeTemp += "  Len3_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = Geo.AngleSigned_AxisY(va, vb);
+
+        }
+        _timeTemp += "  v_angle  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = Geo.AngleSigned_AxisY(ref va,ref vb);
+
+        }
+        _timeTemp += "  v_angle2_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = VOp.PerpDot_ZX(va, vb);
+
+        }
+        _timeTemp += "  PerpDot_ZX  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float a = VOp.PerpDot_ZX(ref va,ref vb);
+
+        }
+        _timeTemp += "  PerpDot_ZX_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _timeTemp += "\n\n\n\n";
+        //-------------------------------------------------------
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -94,7 +424,6 @@ public class Test_FuncPerformance : MonoBehaviour
 
         }
         _timeTemp += "  b+=20  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
-
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -819,7 +1148,7 @@ public class Test_FuncPerformance : MonoBehaviour
     {
         return (float)System.Math.Atan2(x, y);
     };
-    //무명 메소드와 마찮가지로 인라인화 되는지 모르겠고, 성능도 안좋다
+    //무명 메소드와 마찬가지로 인라인화 되는지 모르겠고, 성능도 안좋다
     Func<float, float, float> lamda_ATan2 = (float x, float y) => (float)System.Math.Atan2(x, y);
 
 
@@ -929,7 +1258,7 @@ public class Test_FuncPerformance : MonoBehaviour
 
     Vector3 My_Normalize_C(Vector3 vector3)
     {
-        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
+        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가 , 잘못된 처리
         float len = vector3.magnitude;
         vector3.x /= len;
         vector3.y /= len;
@@ -949,7 +1278,7 @@ public class Test_FuncPerformance : MonoBehaviour
 
     Vector3 My_Normalize_E(Vector3 vector3)
     {
-        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가
+        if (0 == (vector3.x + vector3.y + vector3.z)) return vector3; //NaN 예외처리 추가 , 잘못된 처리
         float len = 1f / (float)Math.Sqrt(vector3.sqrMagnitude);
         vector3.x *= len;
         vector3.y *= len;
