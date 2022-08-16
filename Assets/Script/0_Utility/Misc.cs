@@ -1111,10 +1111,20 @@ namespace UtilGS9
                 Vector3 ori_factor = origin + ndir * factor * f_rate; 
 
                 Vector3 dstDir = dstPos - ori_factor;
-                float pdot_left = VOp.PerpDot_ZX(_ndir_left, dstDir);
-                float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
+                float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
+                float pdot_left = VOp.PerpDot_ZX(ref _ndir_left, ref dstDir);
+                float pdot_right = VOp.PerpDot_ZX(ref dstDir, ref _ndir_right);
 
-                if (0 > pdot_left || 0 > pdot_right)
+                float pdot_close = pdot_left;
+                //Vector3 dir_close = _ndir_left;
+                if (0 > pdot_mid)
+                {
+                    pdot_close = pdot_right;
+                    //dir_close = _ndir_right;
+                }
+
+                //if (0 > pdot_left || 0 > pdot_right)
+                if (0 > pdot_close)
                 {
                     return false;
                 }
