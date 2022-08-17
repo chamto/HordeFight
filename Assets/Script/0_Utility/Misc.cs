@@ -1161,7 +1161,7 @@ namespace UtilGS9
             //public const float INCLUDE_MAX = 2; //최대근접포함
             //public const float INCLUDE_AREA_0_1 = -1; //비율값이 0~1 사이의 영역
             public const float INCLUDE_NONAREA_MAX = 1000; //포함되지 않는 영역의 최대값
-            public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
+            public float old_Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1292,6 +1292,80 @@ namespace UtilGS9
 
             }
 
+            public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                if (Misc.IsZero(dstRad)) //반지름이 0일 경우 , 0으로 나누는 것을 막는다 
+                {
+                    return INCLUDE_NONAREA_MAX; //최대값 고정
+                }
+
+                Vector3 dstDir = dstPos - origin;
+                float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
+                float pdot_left = VOp.PerpDot_ZX(_ndir_left, dstDir); //높이값 반환 
+                float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
+
+
+                //pdot_mid 이 양수면 왼쪽편 , 음수면 오른쪽편에 대상원이 가까이 있다
+                float pdot_close = pdot_left;
+                Vector3 dir_close = _ndir_left;
+                if (0 > pdot_mid)
+                {
+                    pdot_close = pdot_right;
+                    dir_close = _ndir_right;
+                }
+
+                float rate = 0;
+                //조정된 호안에 dstPos가 벗어났는지 검사 
+                if (0 > pdot_close)
+                {   //호 밖에 있음
+
+                    rate = (pdot_close * -1f) / dstRad;
+                    rate = rate * 0.5f + 1.5f;
+
+                }
+                else
+                {   //호 안에 있음
+                
+                    //dstPos는 호 안에 있음 : 1 ~ 1.5
+                    rate = (pdot_close) / dstRad;
+                    rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
+                    rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
+
+
+                    //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
+                    //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
+                    //초점 맞추기는 따로 검사하기 
+                    if (INCLUDE_MIN > rate )
+                    {
+
+                        float factor = GetFactor(dstRad, degree * 0.5f);
+                        Vector3 ori_factor = origin + ndir * factor;
+                        Vector3 dir0_1 = dstPos - ori_factor;
+
+                        float radius_f = dir0_1.magnitude;
+                        float max_pdot = VOp.PerpDot_ZX(ndir, dir_close) * radius_f;
+                        float dst_pdot = VOp.PerpDot_ZX(ndir, dir0_1);
+
+
+                        if (Misc.IsZero(max_pdot))
+                        {
+                            rate = 0; //분모가 0 인 경우 , 최소값 부여 
+                        }
+                        else
+                        {
+                            rate = dst_pdot / max_pdot;
+                        }
+
+                        rate = Math.Abs(rate); //부호 제거
+
+                    }
+                }
+
+                return rate;
+
+            }
 
             public float Include_Rate_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad)
             {
@@ -1582,7 +1656,7 @@ namespace UtilGS9
         public const float INCLUDE_MIN = 1;   //최소완전포함
         public const float INCLUDE_MIDDLE = 1.5f; //중점포함
         public const float INCLUDE_MAX = 2; //최대근접포함
-        public const float INCLUDE_ERROR = -1; //처리 할 수 없는 경우 
+        public const float INCLUDE_ERROR = -1000f; //처리 할 수 없는 경우 
         //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
@@ -1623,6 +1697,7 @@ namespace UtilGS9
 
             }
 
+            //리버설시 2이상 값의 분포에 문제가 있다 
             //20220731 실험노트 참고 
             // a: [o min middle max] [0 1 1.5 2] 원안포함값
             // 위 값을 반전 (a - 3)x(-1) = b 
@@ -1679,6 +1754,33 @@ namespace UtilGS9
                 float b = sqr_max_after - sqr_max;
                 rate = (a / b) * 8f + 2f;
             }
+
+            //20220731 실험노트 참고 
+            // a: [o min middle max] [0 1 1.5 2] 원안포함값
+            // 위 값을 반전 (a - 3)x(-1) = b 
+            // b: [x max middle min] [3 2 1.5 1] 원밖포함값
+            if (reversal)
+            {
+                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+            }
+
+            return rate;
+        }
+
+        static public float Include_Rate_Sphere_VS_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        {
+            if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
+            if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
+
+            float between = (dst_pos - src_pos).magnitude;
+            //float max = (src_radius + dst_radius);
+            //float middle = src_radius;
+            float min = (src_radius - dst_radius);
+
+            //~0~2~ => ~1~2~
+            float a = between - min;
+            float b = dst_radius;
+            float rate = (a / b) * 0.5f + 1;
 
             //20220731 실험노트 참고 
             // a: [o min middle max] [0 1 1.5 2] 원안포함값
