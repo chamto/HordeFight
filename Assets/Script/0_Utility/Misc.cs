@@ -1104,6 +1104,7 @@ namespace UtilGS9
                 radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree);
             }
 
+
             public bool Include_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
@@ -1115,26 +1116,20 @@ namespace UtilGS9
                 float f_rate = (includeRate * -2) + 3;
 
                 float factor = dstRad / radToFactor;
-                Vector3 ori_factor = origin + ndir * factor * f_rate; 
+                Vector3 ori_factor = origin + ndir * factor * f_rate;
 
                 Vector3 dstDir = dstPos - ori_factor;
                 float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
-                float pdot_left = VOp.PerpDot_ZX(ref _ndir_left, ref dstDir);
-                float pdot_right = VOp.PerpDot_ZX(ref dstDir, ref _ndir_right);
 
-                float pdot_close = pdot_left;
-                //Vector3 dir_close = _ndir_left;
-                if (0 > pdot_mid)
+                if(pdot_mid > 0)
                 {
-                    pdot_close = pdot_right;
-                    //dir_close = _ndir_right;
+                    if (VOp.PerpDot_ZX(ref _ndir_left, ref dstDir) < 0) return false;
+                }
+                else
+                {
+                    if(VOp.PerpDot_ZX(ref dstDir, ref _ndir_right) < 0) return false;
                 }
 
-                //if (0 > pdot_left || 0 > pdot_right)
-                if (0 > pdot_close)
-                {
-                    return false;
-                }
 
                 return true;
             }
@@ -1142,13 +1137,12 @@ namespace UtilGS9
             public bool Include_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
             
-                if (includeRate < Geo.Include_Rate_Sphere(origin, radius_far, dstPos, dstRad, false))
+                if (false == Geo.Include_Sphere_VS_Sphere(origin, radius_far, dstPos, dstRad, includeRate))
                 {
                     return false;
                 }
 
-
-                if (includeRate < Geo.Include_Rate_Sphere(origin, radius_near, dstPos, dstRad, true))
+                if (false == Geo.Include_Sphere_VS_Sphere(origin, radius_near, dstPos, dstRad, includeRate, true))
                 {
                     return false;
                 }
@@ -1483,7 +1477,7 @@ namespace UtilGS9
 
 
 
-
+        //제거대상 
         //코사인의 각도값을 비교 한다.
         //0 ~ 180도 사이만 비교 할수있다. (1,4사분면과 2,3사분면의 cos값이 같기 때문임)  
         //cosA > cosB : 1
@@ -1670,8 +1664,9 @@ namespace UtilGS9
         //두원의 반지름이 0이 아니어야 한다 - 처리 못함 
         static public float Include_Rate_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
         {
-
-            float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+            Vector3 dir = dst_pos - src_pos;
+            float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+            //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
             //if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
 
@@ -1774,12 +1769,47 @@ namespace UtilGS9
             return rate;
         }
 
+
+        static public bool Include_Sphere_VS_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
+        {
+
+            Vector3 dir = dst_pos - src_pos;
+            float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+            //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+
+            if(false == reversal)
+            {
+                //[1 1.5 2]  =>  [-1 0 1] 비율변화 
+                includeRate = (includeRate - 1.5f) * 2f;
+            }
+            else
+            {
+                //[1 1.5 2]  =>  [1 0 -1] 비율변화 
+                includeRate = (includeRate - 1.5f) * -2f;
+            }
+
+
+            float dis_max = src_radius + dst_radius * includeRate;
+            //float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius); //1
+            //float sqr_middle = src_radius * src_radius; //0
+            //float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius); //-1
+
+            if(sqr_between <= dis_max*dis_max)
+            {
+                return true; 
+            }
+
+            return false;
+        }
+
         static public float Include_Rate_Sphere_VS_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
             if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
             if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
 
-            float between = (dst_pos - src_pos).magnitude;
+            Vector3 dir = dst_pos - src_pos;
+            float between = (float)Math.Sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+            //float between = (dst_pos - src_pos).magnitude;
             //float max = (src_radius + dst_radius);
             //float middle = src_radius;
             float min = (src_radius - dst_radius);

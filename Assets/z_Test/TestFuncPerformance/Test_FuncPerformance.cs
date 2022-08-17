@@ -11,12 +11,12 @@ public class Test_FuncPerformance : MonoBehaviour
 
     public Transform _line_0 = null;
     public Transform _line_1 = null;
-
-
+    public Geo.Arc _arc = new Geo.Arc();
 
     public class TestA
     {
         public int a = 10;
+        public Vector3 _v3_nonpro = Vector3.down;
         public void CallPerf()
         {
             a += 10;
@@ -29,8 +29,17 @@ public class Test_FuncPerformance : MonoBehaviour
         testB += 10;
     }
 
+    public void Test_FuncCall(int val , int v2 , int v3)
+    {
+        testB = val; 
+    }
+
     // Use this for initialization
-    void Start() {
+    void Start() 
+    {
+        _line_0 = GameObject.Find("line_0").transform;
+        _line_1 = GameObject.Find("line_1").transform;
+
         Misc.Init();
 
         //PrintErrorRate_V2Length();
@@ -244,6 +253,110 @@ public class Test_FuncPerformance : MonoBehaviour
 
         //========================================================
         _timeTemp += "\n\n\n\n";
+
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            Test_FuncCall(i,i,i);
+
+        }
+        _timeTemp += "  funcCall  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            Vector3 tt = _line_0.position; //프로퍼티 호출은 부하가 크다. 프로퍼티 사용하거나 호출하지 말기. 호출한번이 제곱근 4번 호출한것과 같다  
+
+        }
+        _timeTemp += "  m.property  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            float tt = testA.a;
+
+        }
+        _timeTemp += "  m.val  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            Vector3 tt = testA._v3_nonpro;
+
+        }
+        _timeTemp += "  m.val2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+
+            test = i;
+
+        }
+        _timeTemp += "  assign  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            if (i > 0)
+                test = i;
+
+        }
+        _timeTemp += "  if  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float r = Geo.Include_Rate_Sphere(va, 10, vb, 5);
+
+        }
+        _timeTemp += "  incRate  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float r = Geo.Include_Rate_Sphere_VS_Sphere(va, 10, vb, 5);
+
+        }
+        _timeTemp += "  incRate2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            float r = Geo.Include_Rate_SphereZero(va, 10, vb, 5);
+
+        }
+        _timeTemp += "  incRate3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            bool r = Geo.Include_Sphere_VS_Sphere(va, 10, vb, 5, Geo.INCLUDE_MAX);
+
+        }
+        _timeTemp += "  incRate4  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            bool r = _arc.Include_Arc_Sphere(va, 5, Geo.INCLUDE_MAX);
+
+        }
+        _timeTemp += "  incArc  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            bool r = _arc.Include_NearFar_Arc_Sphere(va, 5, Geo.INCLUDE_MAX);
+
+        }
+        _timeTemp += "  incArc2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
