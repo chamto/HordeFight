@@ -1044,7 +1044,7 @@ namespace UtilGS9
             public float degree;
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
-
+            public float radToFactor;
 
             public void Init(Vector3 ori, float deg , float rad_near, float rad_far)
             {
@@ -1053,6 +1053,7 @@ namespace UtilGS9
                 radius_near = rad_near;
                 radius_far = rad_far;
 
+                Calc_RadToFactor();
                 SetDir(Vector3.forward); 
             }
 
@@ -1080,6 +1081,7 @@ namespace UtilGS9
                 radius_near = rad_near;
                 radius_far = rad_far;
 
+                Calc_RadToFactor();
                 SetDir(ndir);
             }
 
@@ -1092,9 +1094,14 @@ namespace UtilGS9
                 center = origin + (radius_far - radius_near) * 0.5f * ndir;
             }
 
-            public float GetFactor(float radius, float degree)
+            //public float GetFactor(float radius, float degree)
+            //{
+            //    return radius / (float)Math.Sin(Mathf.Deg2Rad * degree);
+            //}
+
+            private void Calc_RadToFactor()
             {
-                return radius / (float)Math.Sin(Mathf.Deg2Rad * degree);
+                radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree);
             }
 
             public bool Include_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
@@ -1107,7 +1114,7 @@ namespace UtilGS9
                 //[2 1.5 1] => [-1 0 1]
                 float f_rate = (includeRate * -2) + 3;
 
-                float factor = GetFactor(dstRad, degree * 0.5f);
+                float factor = dstRad / radToFactor;
                 Vector3 ori_factor = origin + ndir * factor * f_rate; 
 
                 Vector3 dstDir = dstPos - ori_factor;
@@ -1241,7 +1248,7 @@ namespace UtilGS9
                     if (INCLUDE_MIN > rate || rad_zero)
                     {
 
-                        float factor = GetFactor(dstRad, degree * 0.5f);
+                        float factor = dstRad / radToFactor;
                         Vector3 ori_factor = origin + ndir * factor;
                         Vector3 dir0_1 = dstPos - ori_factor;
 
@@ -1340,7 +1347,7 @@ namespace UtilGS9
                     if (INCLUDE_MIN > rate )
                     {
 
-                        float factor = GetFactor(dstRad, degree * 0.5f);
+                        float factor = dstRad / radToFactor;
                         Vector3 ori_factor = origin + ndir * factor;
                         Vector3 dir0_1 = dstPos - ori_factor;
 
