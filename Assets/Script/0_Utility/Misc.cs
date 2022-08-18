@@ -1105,7 +1105,7 @@ namespace UtilGS9
             }
 
 
-            public bool Include_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
+            public bool Include_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1134,21 +1134,21 @@ namespace UtilGS9
                 return true;
             }
 
-            public bool Include_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad, float includeRate)
+            public bool Include_NearFar_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
             
-                if (false == Geo.Include_Sphere_VS_Sphere(origin, radius_far, dstPos, dstRad, includeRate))
+                if (false == Geo.Include_Sphere_SqrDistance(origin, radius_far, dstPos, dstRad, includeRate))
                 {
                     return false;
                 }
 
-                if (false == Geo.Include_Sphere_VS_Sphere(origin, radius_near, dstPos, dstRad, includeRate, true))
+                if (false == Geo.Include_Sphere_SqrDistance(origin, radius_near, dstPos, dstRad, includeRate, true))
                 {
                     return false;
                 }
 
 
-                if (false == Include_Arc_Sphere(dstPos, dstRad, includeRate))
+                if (false == Include_Arc_vs_Sphere(dstPos, dstRad, includeRate))
                 {
                     return false;
                 }
@@ -1269,7 +1269,7 @@ namespace UtilGS9
             //    return rate;
             //}
 
-            public float Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
+            public float GetRate_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1344,10 +1344,10 @@ namespace UtilGS9
 
             }
 
-            public float Include_Rate_NearFar_Arc_Sphere(Vector3 dstPos, float dstRad)
+            public float GetRate_NearFar_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
             {
 
-                float rate_arc = Include_Rate_Arc_Sphere(dstPos, dstRad);
+                float rate_arc = GetRate_Arc_vs_Sphere(dstPos, dstRad);
                 //DebugWide.LogBlue("* arc: " + rate_arc);
                 if (INCLUDE_MAX < rate_arc)
                 {
@@ -1355,14 +1355,14 @@ namespace UtilGS9
                 }
 
 
-                float rate_far = Geo.Include_Rate_Sphere_VS_Sphere(origin, radius_far, dstPos, dstRad, false);
+                float rate_far = Geo.GetRate_Sphere_Distance(origin, radius_far, dstPos, dstRad, false);
                 //DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.Include_Rate_Sphere_VS_Sphere(origin, radius_near, dstPos, dstRad, true);
+                float rate_near = Geo.GetRate_Sphere_Distance(origin, radius_near, dstPos, dstRad, true);
                 //DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {
@@ -1639,7 +1639,7 @@ namespace UtilGS9
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
         //두원의 반지름이 0이 아니어야 한다 - 처리 못함 
-        static public float Include_Rate_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
+        static public float GetRate_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
         {
             Vector3 dir = dst_pos - src_pos;
             float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
@@ -1691,7 +1691,7 @@ namespace UtilGS9
 
         const int COUNT_MAX_AFTER = 10;
         //반지름이 0인 경우도 처리 가능 , 2~10 거리에서 비율값 근사치 계산 적용 
-        static public float Include_Rate_SphereZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        static public float GetRate_Sphere_SqrDistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
 
             float sqr_between = (dst_pos - src_pos).sqrMagnitude;
@@ -1747,7 +1747,7 @@ namespace UtilGS9
         }
 
 
-        static public bool Include_Sphere_VS_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
+        static public bool Include_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
         {
 
             Vector3 dir = dst_pos - src_pos;
@@ -1779,7 +1779,7 @@ namespace UtilGS9
             return false;
         }
 
-        static public float Include_Rate_Sphere_VS_Sphere(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        static public float GetRate_Sphere_Distance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
             if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
             if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
@@ -1808,16 +1808,16 @@ namespace UtilGS9
             return rate;
         }
 
-        static public bool Include_NearFar_Sphere_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
+        static public bool Include_NearFar_Sphere_vs_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
         {
 
-            if (includeRate < Geo.Include_Rate_Sphere(src_pos, src_radius_far, dst_pos, dst_radius, false))
+            if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, false))
             {
                 return false;
             }
 
 
-            if (includeRate < Geo.Include_Rate_Sphere(src_pos, src_radius_near, dst_pos, dst_radius, true))
+            if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_near, dst_pos, dst_radius, true))
             {
                 return false;
             }
