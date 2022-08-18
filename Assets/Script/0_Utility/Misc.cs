@@ -1355,14 +1355,14 @@ namespace UtilGS9
                 }
 
 
-                float rate_far = Geo.GetRate_Sphere_Distance(origin, radius_far, dstPos, dstRad, false);
+                float rate_far = Geo.GetRate_Sphere_DistanceZero(origin, radius_far, dstPos, dstRad, false);
                 //DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.GetRate_Sphere_Distance(origin, radius_near, dstPos, dstRad, true);
+                float rate_near = Geo.GetRate_Sphere_DistanceZero(origin, radius_near, dstPos, dstRad, true);
                 //DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {
@@ -1779,7 +1779,7 @@ namespace UtilGS9
             return false;
         }
 
-        static public float GetRate_Sphere_Distance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        static public float GetRate_Sphere_DistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
             if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
             if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
