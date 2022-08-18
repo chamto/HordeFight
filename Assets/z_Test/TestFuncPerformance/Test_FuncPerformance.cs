@@ -312,39 +312,39 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            float r = Geo.Include_Rate_Sphere(va, 10, vb, 5);
+            float r = Geo.GetRate_Sphere_SqrDistance(va, 10, vb, 5);
 
         }
-        _timeTemp += "  incRate  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  RateSph  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            float r = Geo.Include_Rate_Sphere_VS_Sphere(va, 10, vb, 5);
+            float r = Geo.GetRate_Sphere_DistanceZero(va, 10, vb, 5);
 
         }
-        _timeTemp += "  incRate2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  RateSph2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            float r = Geo.Include_Rate_SphereZero(va, 10, vb, 5);
+            float r = Geo.GetRate_Sphere_SqrDistanceZero(va, 10, vb, 5);
 
         }
-        _timeTemp += "  incRate3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  RateSph3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = Geo.Include_Sphere_VS_Sphere(va, 10, vb, 5, Geo.INCLUDE_MAX);
+            bool r = Geo.Include_Sphere_SqrDistance(va, 10, vb, 5, Geo.INCLUDE_MAX);
 
         }
-        _timeTemp += "  incRate4  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  IncSph  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = _arc.Include_Arc_Sphere(va, 5, Geo.INCLUDE_MAX);
+            bool r = _arc.Include_Arc_vs_Sphere(va, 5, Geo.INCLUDE_MAX);
 
         }
         _timeTemp += "  incArc  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
@@ -352,7 +352,7 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = _arc.Include_NearFar_Arc_Sphere(va, 5, Geo.INCLUDE_MAX);
+            bool r = _arc.Include_NearFar_Arc_vs_Sphere(va, 5, Geo.INCLUDE_MAX);
 
         }
         _timeTemp += "  incArc2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
