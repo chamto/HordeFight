@@ -30,7 +30,8 @@ namespace Proto_AI_4
 
     public class Proto_AI_4 : MonoBehaviour
     {
-
+        public float _includeRate = Geo.INCLUDE_MAX;
+        //====================================================
         public Stage _stage = null;
 
         public bool _Draw_EntityTile = false;
@@ -83,7 +84,7 @@ namespace Proto_AI_4
             _stage = new Stage();
             _stage.Init();
 
-            _arc.Init(Vector3.zero, 90, 1, 5);
+            _arc.Init(Vector3.zero, 90, 1, 5 , Vector3.forward);
         }
 
         private void Update()
@@ -131,17 +132,22 @@ namespace Proto_AI_4
 
         }
 
+
         public void Debug_FuncTest_Arc()
         {
             const int COUNT = 15;
             float rad0_far = (_tr0_test.position - _tr0_line_b.position).magnitude;
+            float rad0_near = (_tr0_test.position - _tr0_line_a.position).magnitude;
             float rad1 = (_tr1_test.position - _tr1_line_a.position).magnitude;
             Vector3 ndir0 = (_tr0_line_b.position - _tr0_test.position).normalized;
 
             Draw_Ruler(_tr0_test.position + ndir0 * rad0_far, ndir0, rad1, COUNT);
             Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
 
-            Draw_Arc(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+            Draw_Arc_SetAngle(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+
+            //------------------
+            //_arc.Init(_tr0_test.position, angle, rad0_near, rad0_far, ndir0);
 
             //------------------
             //string temp = "" , temp2= "";
@@ -159,9 +165,10 @@ namespace Proto_AI_4
             //------------------
 
             float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
+            bool isIn = _arc.Include_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
             //float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
             //float rate = Geo.Include_Rate_Sphere(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, _tr1_test.position, rad, false);
-            DebugWide.LogBlue(rate);
+            DebugWide.LogBlue(rate + "  " + isIn);
         }
 
         public void Draw_Ruler(Vector3 ori, Vector3 dir, float interval, uint count)
@@ -181,7 +188,7 @@ namespace Proto_AI_4
 
         }
 
-        public void Draw_Arc(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
+        public void Draw_Arc_SetAngle(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
         {
             Vector3 dir_near = pos_near - ori;
             Vector3 dir_far = pos_far - ori;

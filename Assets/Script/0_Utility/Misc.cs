@@ -1046,15 +1046,15 @@ namespace UtilGS9
             public float radius_far;        //시작점에서 먼 원의 반지름
             public float radToFactor;
 
-            public void Init(Vector3 ori, float deg , float rad_near, float rad_far)
+            public void Init(Vector3 ori, float deg , float rad_near, float rad_far, Vector3 nDir)
             {
                 origin = ori;
                 degree = deg;
                 radius_near = rad_near;
                 radius_far = rad_far;
 
+                SetDir(nDir);
                 Calc_RadToFactor();
-                SetDir(Vector3.forward); 
             }
 
             public void SetDir(Vector3 nDir)
@@ -1081,8 +1081,8 @@ namespace UtilGS9
                 radius_near = rad_near;
                 radius_far = rad_far;
 
-                Calc_RadToFactor();
                 SetDir(ndir);
+                Calc_RadToFactor();
             }
 
             public void SetRotateY(Vector3 ori, Quaternion rot)
@@ -1101,7 +1101,8 @@ namespace UtilGS9
 
             private void Calc_RadToFactor()
             {
-                radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree);
+                //radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+                radToFactor = VOp.PerpDot_ZX(ndir, _ndir_right); //성능비교 필요 
             }
 
 
