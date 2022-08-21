@@ -240,6 +240,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 230fbfb1ea9d24cf3a1e5da50e15320d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _includeRate: 0
   _stage:
     _tr0_test: {fileID: 0}
     _tr0_line_a: {fileID: 0}
@@ -292,6 +293,9 @@ MonoBehaviour:
   _tr0_test: {fileID: 0}
   _tr0_line_a: {fileID: 0}
   _tr0_line_b: {fileID: 0}
+  _tr1_test: {fileID: 0}
+  _tr1_line_a: {fileID: 0}
+  _tr1_line_b: {fileID: 0}
 --- !u!1 &725853801
 GameObject:
   m_ObjectHideFlags: 0

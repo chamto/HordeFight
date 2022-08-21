@@ -98,7 +98,7 @@ namespace Proto_AI_4
 
         public void Debug_FuncTest_Include_Sphere_Rate()
         {
-            float rate = Geo.GetRate_Sphere_SqrDistance(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
+            float rate = Geo.GetRate_Sphere_DistanceZero(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
             DebugWide.DrawCircle(Vector3.zero, 5, Color.white);
             DebugWide.PrintText(_tr0_test.position, Color.red, rate + "");
 
@@ -111,7 +111,7 @@ namespace Proto_AI_4
         public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal = false);
         public void Draw_Include_Sphere_Rate(float src_radius, float in_radius, Color color)
         {
-            Dele_Include_Sphere_Rate FUNC = Geo.GetRate_Sphere_SqrDistance;
+            Dele_Include_Sphere_Rate FUNC = Geo.GetRate_Sphere_DistanceZero;
 
             for (int i = 0; i < 80; i++)
             {
@@ -256,7 +256,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            //Debug_FuncTest_Arc();
+            Debug_FuncTest_Arc();
 
 
             //DebugWide.DrawQ_All_AfterTime(1);

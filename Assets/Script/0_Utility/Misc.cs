@@ -941,6 +941,12 @@ namespace UtilGS9
         /// <summary>
         /// Arc.
         /// </summary>
+        public const float INCLUDE_MIN = -1;   //최소완전포함
+        public const float INCLUDE_MIDDLE = 0; //중점포함
+        public const float INCLUDE_MAX = 1; //최대근접포함
+        public const float INCLUDE_ERROR = -100000f; //처리 할 수 없는 경우 
+
+
         //public struct Arc
         //{
         //    public Vector3 pos;             //호의 시작점  
@@ -1106,34 +1112,34 @@ namespace UtilGS9
             }
 
 
-            public bool old_Include_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
-            {
-                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+            //public bool old_Include_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
+            //{
+            //    //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
-                //INCLUDE_MIN = 1;   //최소완전포함
-                //INCLUDE_MIDDLE = 1.5f; //중점포함
-                //INCLUDE_MAX = 2; //최대근접포함
-                //[2 1.5 1] => [-1 0 1]
-                float f_rate = (includeRate * -2) + 3;
+            //    //INCLUDE_MIN = 1;   //최소완전포함
+            //    //INCLUDE_MIDDLE = 1.5f; //중점포함
+            //    //INCLUDE_MAX = 2; //최대근접포함
+            //    //[2 1.5 1] => [-1 0 1]
+            //    float f_rate = (includeRate * -2) + 3;
 
-                float factor = dstRad / radToFactor;
-                Vector3 ori_factor = origin + ndir * factor * f_rate;
+            //    float factor = dstRad / radToFactor;
+            //    Vector3 ori_factor = origin + ndir * factor * f_rate;
 
-                Vector3 dstDir = dstPos - ori_factor;
-                float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
+            //    Vector3 dstDir = dstPos - ori_factor;
+            //    float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
 
-                if(pdot_mid > 0)
-                {
-                    if (VOp.PerpDot_ZX(ref _ndir_left, ref dstDir) < 0) return false;
-                }
-                else
-                {
-                    if(VOp.PerpDot_ZX(ref dstDir, ref _ndir_right) < 0) return false;
-                }
+            //    if(pdot_mid > 0)
+            //    {
+            //        if (VOp.PerpDot_ZX(ref _ndir_left, ref dstDir) < 0) return false;
+            //    }
+            //    else
+            //    {
+            //        if(VOp.PerpDot_ZX(ref dstDir, ref _ndir_right) < 0) return false;
+            //    }
 
 
-                return true;
-            }
+            //    return true;
+            //}
 
             public bool Include_Arc_vs_Sphere(ref Vector3 dstPos, float dstRad, float includeRate)
             {
@@ -1184,7 +1190,7 @@ namespace UtilGS9
             //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
             //public const float INCLUDE_MAX = 2; //최대근접포함
             //public const float INCLUDE_AREA_0_1 = -1; //비율값이 0~1 사이의 영역
-            public const float INCLUDE_NONAREA_MAX = 1000; //포함되지 않는 영역의 최대값
+            //public const float INCLUDE_NONAREA_MAX = 1000; //포함되지 않는 영역의 최대값
             //public float old_Include_Rate_Arc_Sphere(Vector3 dstPos, float dstRad)
             //{
             //    //SetDir 함수로 방향값이 미리 설정되어야 한다 
@@ -1298,13 +1304,13 @@ namespace UtilGS9
 
                 if (Misc.IsZero(dstRad)) //반지름이 0일 경우 , 0으로 나누는 것을 막는다 
                 {
-                    return INCLUDE_NONAREA_MAX; //최대값 고정
+                    return INCLUDE_ERROR;
                 }
 
                 Vector3 dstDir = dstPos - origin;
                 float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
-                float pdot_left = VOp.PerpDot_ZX(_ndir_left, dstDir); //높이값 반환 
-                float pdot_right = VOp.PerpDot_ZX(dstDir, _ndir_right);
+                float pdot_left = VOp.PerpDot_ZX(dstDir, _ndir_left); //높이값 반환 
+                float pdot_right = VOp.PerpDot_ZX(_ndir_right, dstDir);
 
 
                 //pdot_mid 이 양수면 왼쪽편 , 음수면 오른쪽편에 대상원이 가까이 있다
@@ -1316,54 +1322,53 @@ namespace UtilGS9
                     dir_close = _ndir_right;
                 }
 
-                float rate = 0;
+                float rate = (pdot_close) / dstRad;
+
                 //조정된 호안에 dstPos가 벗어났는지 검사 
-                if (0 > pdot_close)
-                {   //호 밖에 있음
+                //if (0 < pdot_close)
+                //{   //호 밖에 있음
+                //    //rate = (pdot_close ) / dstRad;
+                //    //rate = rate * 0.5f + 1.5f;
+                //}
+                //else
+                //{   //호 안에 있음
+                //    //dstPos는 호 안에 있음 : 1 ~ 1.5
+                //    //rate = (pdot_close) / dstRad;
+                //    //rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
+                //    //rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
+                //}
 
-                    rate = (pdot_close * -1f) / dstRad;
-                    rate = rate * 0.5f + 1.5f;
+                //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
+                //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
+                //초점 맞추기는 따로 검사하기 
+                if (INCLUDE_MIN > rate)
+                {
 
-                }
-                else
-                {   //호 안에 있음
-                
-                    //dstPos는 호 안에 있음 : 1 ~ 1.5
-                    rate = (pdot_close) / dstRad;
-                    rate = rate * -1f + 1f; //1~0 => 0~1 로 반전   
-                    rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
+                    float factor = dstRad / radToFactor;
+                    Vector3 ori_factor = origin + ndir * factor;
+                    Vector3 dir0_1 = dstPos - ori_factor;
+                    //DebugWide.DrawCircle(ori_factor, dstRad, Color.blue); //chamto test
+
+                    //sin(수직내적) 은 -90~90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
+                    float max_dot = Vector3.Dot(ndir, dir_close);
+                    float dst_dot = Vector3.Dot(ndir, dir0_1) / dir0_1.magnitude;
+
+                    //[1 0 -1 => 0 1 2]
+                    max_dot = max_dot * -1f + 1f;
+                    dst_dot = dst_dot * -1f + 1f;
 
 
-                    //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
-                    //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
-                    //초점 맞추기는 따로 검사하기 
-                    if (INCLUDE_MIN > rate )
+                    if (Misc.IsZero(max_dot))
                     {
-
-                        float factor = dstRad / radToFactor;
-                        Vector3 ori_factor = origin + ndir * factor;
-                        Vector3 dir0_1 = dstPos - ori_factor;
-                        //DebugWide.DrawCircle(ori_factor, dstRad, Color.blue); //chamto test
-
-                        //sin(수직내적) 은 90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
-                        float max_dot = Vector3.Dot(ndir, dir_close);
-                        float dst_dot = Vector3.Dot(ndir, dir0_1)/ dir0_1.magnitude;
-
-                        //[1 0 -1 => 0 1 2]
-                        max_dot = max_dot * -1f + 1f;
-                        dst_dot = dst_dot * -1f + 1f;
-
-
-                        if (Misc.IsZero(max_dot))
-                        {
-                            rate = 0; //분모가 0 인 경우 , 최소값 부여 
-                        }
-                        else
-                        {
-                            rate = dst_dot / max_dot;
-                        }
-
+                        rate = 0; //분모가 0 인 경우 , 최소값 부여 
                     }
+                    else
+                    {
+                        rate = dst_dot / max_dot;
+                        //[0 1 2 => -1 -2 -3]
+                        rate = (rate + 1) * -1;
+                    }
+
                 }
 
                 return rate;
@@ -1397,15 +1402,15 @@ namespace UtilGS9
 
                 //DebugWide.LogBlue(rate_arc + "  " + rate_far + "   " + rate_near);
 
-                //rate 1 이하 영역 
+                //rate -1 이하 영역 
                 //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
                 if (INCLUDE_MIN > rate_arc && INCLUDE_MIN > rate_far && INCLUDE_MIN > rate_near)
                 {
-                    //DebugWide.LogBlue("**** arc 0~1: " + rate_arc);
+                    //DebugWide.LogBlue("**** arc ~ -1: " + rate_arc);
                     return rate_arc;
                 }
 
-                //rate 1 이상 영역에서 최대비율값을 찾는다 
+                //rate -1 이상 영역에서 최대비율값을 찾는다 
                 float rate_max = rate_arc;
                 if (rate_max < rate_far) rate_max = rate_far;
                 if (rate_max < rate_near) rate_max = rate_near;
@@ -1655,161 +1660,162 @@ namespace UtilGS9
         //    return rate;
         //}
 
-        public const float INCLUDE_ORIGIN_REVERSAL = 3; //원밖포함 : 원점일치  
-        public const float INCLUDE_ORIGIN = 0;  //원안포함 : 원점일치 
-        public const float INCLUDE_MIN = 1;   //최소완전포함
-        public const float INCLUDE_MIDDLE = 1.5f; //중점포함
-        public const float INCLUDE_MAX = 2; //최대근접포함
-        public const float INCLUDE_ERROR = -1000f; //처리 할 수 없는 경우 
+
+        //public const float INCLUDE_ORIGIN_REVERSAL = 3; //원밖포함 : 원점일치  
+        //public const float INCLUDE_ORIGIN = 0;  //원안포함 : 원점일치 
+        //public const float INCLUDE_MIN = 1;   //최소완전포함
+        //public const float INCLUDE_MIDDLE = 1.5f; //중점포함
+        //public const float INCLUDE_MAX = 2; //최대근접포함
+        //public const float INCLUDE_ERROR = -1000f; //처리 할 수 없는 경우 
         //src 와 dst 의 누가 누구에게 포함되었는지 상관없이 값을 계산한다. 
         //특정 포함정도를 적용하기 위해서는 반지름 비교를 통해 완전포함이 가능한지 검사해야 한다 
         //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
         //두원의 반지름이 0이 아니어야 한다 - 처리 못함 
-        static public float GetRate_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
-        {
-            Vector3 dir = dst_pos - src_pos;
-            float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-            //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+        //static public float GetRate_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius , bool reversal = false)
+        //{
+        //    Vector3 dir = dst_pos - src_pos;
+        //    float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+        //    //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
-            //if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
+        //    //if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
 
-            float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
-            float sqr_middle = src_radius * src_radius;
-            float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
+        //    float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
+        //    float sqr_middle = src_radius * src_radius;
+        //    float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
 
-            //if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 , 최적화를 위해 주석 
+        //    //if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 , 최적화를 위해 주석 
 
-            float rate = 0;
-            //if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 , 최적화를 위해 주석 
-            if (sqr_between < sqr_min)
-            {   //원점 ~ 최소완전포함 : 0~1 비율 
-                float a = sqr_between;
-                float b = sqr_min;
-                rate = a / b;
-            }
-            else if (sqr_between < sqr_middle)
-            {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
-                float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
-                float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
-                rate = (a / b) * 0.5f + 1;
+        //    float rate = 0;
+        //    //if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 , 최적화를 위해 주석 
+        //    if (sqr_between < sqr_min)
+        //    {   //원점 ~ 최소완전포함 : 0~1 비율 
+        //        float a = sqr_between;
+        //        float b = sqr_min;
+        //        rate = a / b;
+        //    }
+        //    else if (sqr_between < sqr_middle)
+        //    {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
+        //        float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
+        //        float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
+        //        rate = (a / b) * 0.5f + 1;
 
-            }
-            else
-            {   //중점포함 ~ 최대근접포함 : 1.5~2~ 비율 조정 
-                float a = sqr_between - sqr_middle;
-                float b = sqr_max - sqr_middle;
-                rate = (a / b) * 0.5f + 1.5f;
+        //    }
+        //    else
+        //    {   //중점포함 ~ 최대근접포함 : 1.5~2~ 비율 조정 
+        //        float a = sqr_between - sqr_middle;
+        //        float b = sqr_max - sqr_middle;
+        //        rate = (a / b) * 0.5f + 1.5f;
 
-            }
+        //    }
 
-            //리버설시 2이상 값의 분포에 문제가 있다 
-            //20220731 실험노트 참고 
-            // a: [o min middle max] [0 1 1.5 2] 원안포함값
-            // 위 값을 반전 (a - 3)x(-1) = b 
-            // b: [x max middle min] [3 2 1.5 1] 원밖포함값
-            if(reversal)
-            {
-                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
-            }
+        //    //리버설시 2이상 값의 분포에 문제가 있다 
+        //    //20220731 실험노트 참고 
+        //    // a: [o min middle max] [0 1 1.5 2] 원안포함값
+        //    // 위 값을 반전 (a - 3)x(-1) = b 
+        //    // b: [x max middle min] [3 2 1.5 1] 원밖포함값
+        //    if(reversal)
+        //    {
+        //        rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+        //    }
 
-            return rate;
-        }
+        //    return rate;
+        //}
 
         //제곱길이를 이용하므로 비율값이 정확도가 떨어진다 
-        const int COUNT_MAX_AFTER = 10;
-        //반지름이 0인 경우도 처리 가능 , 2~10 거리에서 비율값 근사치 계산 적용 
-        static public float GetRate_Sphere_SqrDistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
-        {
+        //const int COUNT_MAX_AFTER = 10;
+        ////반지름이 0인 경우도 처리 가능 , 2~10 거리에서 비율값 근사치 계산 적용 
+        //static public float GetRate_Sphere_SqrDistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+        //{
 
-            float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+        //    float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
-            if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
+        //    if (Misc.IsZero(sqr_between)) return 0; //완전겹친 경우 
 
-            float sqr_max_after = (src_radius + dst_radius* COUNT_MAX_AFTER) * (src_radius + dst_radius* COUNT_MAX_AFTER);
-            float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
-            float sqr_middle = src_radius * src_radius;
-            float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
+        //    float sqr_max_after = (src_radius + dst_radius* COUNT_MAX_AFTER) * (src_radius + dst_radius* COUNT_MAX_AFTER);
+        //    float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius);
+        //    float sqr_middle = src_radius * src_radius;
+        //    float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius);
 
-            if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 
+        //    if (Misc.IsZero(sqr_max)) return INCLUDE_ERROR; //두 반지름이 0 인 경우 
 
-            float rate = 0;
-            if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 
-            //if (sqr_between < sqr_min)
-            {   //원점 ~ 최소완전포함 : 0~1 비율 
-                float a = sqr_between;
-                float b = sqr_min;
-                rate = a / b;
-            }
-            else if (sqr_between < sqr_middle)
-            {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
-                float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
-                float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
-                rate = (a / b) * 0.5f + 1;
+        //    float rate = 0;
+        //    if (sqr_between < sqr_min || Misc.IsZero(dst_radius)) //dst 반지름이 0 인 경우  0~1 비율계산으로 처리한다 
+        //    //if (sqr_between < sqr_min)
+        //    {   //원점 ~ 최소완전포함 : 0~1 비율 
+        //        float a = sqr_between;
+        //        float b = sqr_min;
+        //        rate = a / b;
+        //    }
+        //    else if (sqr_between < sqr_middle)
+        //    {   //최소완전포함 ~ 중점포함 : 1~1.5 비율 조정
+        //        float a = sqr_between - sqr_min; //b의 최대값을 맞춰주기 위해 빼기함. 1을 만들기 위함 
+        //        float b = sqr_middle - sqr_min; //제곱한 값에 빼기하는 것은 제곱전에 빼기한것과 분명 다르다. 0을 만들기 위해 빼기하는것임
+        //        rate = (a / b) * 0.5f + 1;
 
-            }
-            else if(sqr_between <= sqr_max)
-            {   //중점포함 ~ 최대근접포함 : 1.5~2 비율 조정 
-                float a = sqr_between - sqr_middle;
-                float b = sqr_max - sqr_middle;
-                rate = (a / b) * 0.5f + 1.5f;
+        //    }
+        //    else if(sqr_between <= sqr_max)
+        //    {   //중점포함 ~ 최대근접포함 : 1.5~2 비율 조정 
+        //        float a = sqr_between - sqr_middle;
+        //        float b = sqr_max - sqr_middle;
+        //        rate = (a / b) * 0.5f + 1.5f;
 
-            }
-            else
-            {   //2~10~ 비율 조정 
-                float a = sqr_between - sqr_max;
-                float b = sqr_max_after - sqr_max;
-                rate = (a / b) * 8f + 2f;
-            }
+        //    }
+        //    else
+        //    {   //2~10~ 비율 조정 
+        //        float a = sqr_between - sqr_max;
+        //        float b = sqr_max_after - sqr_max;
+        //        rate = (a / b) * 8f + 2f;
+        //    }
 
-            //20220731 실험노트 참고 
-            // a: [o min middle max] [0 1 1.5 2] 원안포함값
-            // 위 값을 반전 (a - 3)x(-1) = b 
-            // b: [x max middle min] [3 2 1.5 1] 원밖포함값
-            if (reversal)
-            {
-                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
-            }
+        //    //20220731 실험노트 참고 
+        //    // a: [o min middle max] [0 1 1.5 2] 원안포함값
+        //    // 위 값을 반전 (a - 3)x(-1) = b 
+        //    // b: [x max middle min] [3 2 1.5 1] 원밖포함값
+        //    if (reversal)
+        //    {
+        //        rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+        //    }
 
-            return rate;
-        }
+        //    return rate;
+        //}
 
         //includeRate : [1 1.5 2]
-        static public bool old_Include_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
-        {
+        //static public bool old_Include_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
+        //{
 
-            Vector3 dir = dst_pos - src_pos;
-            float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-            //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
+        //    Vector3 dir = dst_pos - src_pos;
+        //    float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+        //    //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
-            //float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius); //1
-            //float sqr_middle = src_radius * src_radius; //0
-            //float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius); //-1
-
-
-            if (false == reversal)
-            {
-                //[1 1.5 2]  =>  [-1 0 1] 비율변화 
-                includeRate = (includeRate - 1.5f) * 2f;
-                float dis_max = src_radius + dst_radius * includeRate;
-                if (sqr_between <= dis_max * dis_max)
-                {
-                    return true;
-                }
-            }
-            else
-            {
-                //[1 1.5 2]  =>  [1 0 -1] 비율변화 
-                includeRate = (includeRate - 1.5f) * -2f;
-                float dis_max = src_radius + dst_radius * includeRate;
-                if (sqr_between >= dis_max * dis_max)
-                {
-                    return true;
-                }
-            }
+        //    //float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius); //1
+        //    //float sqr_middle = src_radius * src_radius; //0
+        //    //float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius); //-1
 
 
-            return false;
-        }
+        //    if (false == reversal)
+        //    {
+        //        //[1 1.5 2]  =>  [-1 0 1] 비율변화 
+        //        includeRate = (includeRate - 1.5f) * 2f;
+        //        float dis_max = src_radius + dst_radius * includeRate;
+        //        if (sqr_between <= dis_max * dis_max)
+        //        {
+        //            return true;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        //[1 1.5 2]  =>  [1 0 -1] 비율변화 
+        //        includeRate = (includeRate - 1.5f) * -2f;
+        //        float dis_max = src_radius + dst_radius * includeRate;
+        //        if (sqr_between >= dis_max * dis_max)
+        //        {
+        //            return true;
+        //        }
+        //    }
+
+
+        //    return false;
+        //}
 
         //includeRate : [-1 0 1]
         static public bool Include_Sphere_SqrDistance(ref Vector3 src_pos, float src_radius, ref Vector3 dst_pos, float dst_radius, float includeRate, bool reversal = false)
@@ -1838,10 +1844,10 @@ namespace UtilGS9
             return false;
         }
 
-        //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [0~1 , 2~]구간은 정확한 비율계산으로 음수가 나올 수 있다 
+        //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
         static public float GetRate_Sphere_DistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
-            if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
+            //if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
             if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
 
             Vector3 dir = dst_pos - src_pos;
@@ -1849,12 +1855,13 @@ namespace UtilGS9
             //float between = (dst_pos - src_pos).magnitude;
             //float max = (src_radius + dst_radius);
             //float middle = src_radius;
-            float min = (src_radius - dst_radius);
+            //float min = (src_radius - dst_radius);
 
-            //~0~2~ => ~1~2~
-            float a = between - min;
+            //[-1 ~ 0 ~ 1] 
+            float a = between - src_radius;
             float b = dst_radius;
-            float rate = (a / b) * 0.5f + 1;
+            //float rate = (a / b) * 0.5f + 1;
+            float rate = (a / b);
 
             //20220731 실험노트 참고 
             // a: [o min middle max] [0 1 1.5 2] 원안포함값
@@ -1862,7 +1869,8 @@ namespace UtilGS9
             // b: [x max middle min] [3 2 1.5 1] 원밖포함값
             if (reversal)
             {
-                rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+                //rate = (rate - 3) * -1f; //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+                rate = rate * -1f; //[-1 ~ 0 ~ 1] => [1 ~ 0 ~ -1]  로 반전   
             }
 
             return rate;

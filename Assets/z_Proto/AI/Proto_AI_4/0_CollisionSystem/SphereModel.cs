@@ -1146,14 +1146,14 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_SqrDistance(center, maxRadius, next._center, next._radius)) continue;
+                if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
                 //cc = Color.gray;
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (Geo.INCLUDE_MIDDLE < Geo.GetRate_Sphere_SqrDistance(center, minRadius, next._center, next._radius))
+                    if (Geo.INCLUDE_MIDDLE < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         return next; 
                     }
@@ -1215,14 +1215,14 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                if (maxRate < Geo.GetRate_Sphere_SqrDistance(center, maxRadius, next._center, next._radius)) continue;
+                if (maxRate < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
                 //cc = Color.gray;
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (minRate < Geo.GetRate_Sphere_SqrDistance(center, minRadius, next._center, next._radius))
+                    if (minRate < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         list.Add(next);
                     }
