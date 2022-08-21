@@ -1321,22 +1321,25 @@ namespace UtilGS9
                         float factor = dstRad / radToFactor;
                         Vector3 ori_factor = origin + ndir * factor;
                         Vector3 dir0_1 = dstPos - ori_factor;
+                        //DebugWide.DrawCircle(ori_factor, dstRad, Color.blue); //chamto test
 
-                        float radius_f = dir0_1.magnitude;
-                        float max_pdot = VOp.PerpDot_ZX(ndir, dir_close) * radius_f;
-                        float dst_pdot = VOp.PerpDot_ZX(ndir, dir0_1);
+                        //sin(수직내적) 은 90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
+                        float max_dot = Vector3.Dot(ndir, dir_close);
+                        float dst_dot = Vector3.Dot(ndir, dir0_1)/ dir0_1.magnitude;
+
+                        //[1 0 -1 => 0 1 2]
+                        max_dot = max_dot * -1f + 1f;
+                        dst_dot = dst_dot * -1f + 1f;
 
 
-                        if (Misc.IsZero(max_pdot))
+                        if (Misc.IsZero(max_dot))
                         {
                             rate = 0; //분모가 0 인 경우 , 최소값 부여 
                         }
                         else
                         {
-                            rate = dst_pdot / max_pdot;
+                            rate = dst_dot / max_dot;
                         }
-
-                        rate = Math.Abs(rate); //부호 제거
 
                     }
                 }
