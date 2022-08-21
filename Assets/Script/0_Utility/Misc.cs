@@ -1693,6 +1693,7 @@ namespace UtilGS9
             return rate;
         }
 
+        //제곱길이를 이용하므로 비율값이 정확도가 떨어진다 
         const int COUNT_MAX_AFTER = 10;
         //반지름이 0인 경우도 처리 가능 , 2~10 거리에서 비율값 근사치 계산 적용 
         static public float GetRate_Sphere_SqrDistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
@@ -1788,6 +1789,7 @@ namespace UtilGS9
             return false;
         }
 
+        //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [0~1 , 2~]구간은 정확한 비율계산으로 음수가 나올 수 있다 
         static public float GetRate_Sphere_DistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
         {
             if (Misc.IsZero(src_radius)) return INCLUDE_ERROR;
@@ -1820,16 +1822,24 @@ namespace UtilGS9
         static public bool Include_NearFar_Sphere_vs_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
         {
 
-            if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, false))
+            if(false == Geo.Include_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, includeRate, false))
+            {
+                return false; 
+            }
+            if (false == Geo.Include_Sphere_SqrDistance(src_pos, src_radius_near, dst_pos, dst_radius, includeRate, true))
             {
                 return false;
             }
 
 
-            if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_near, dst_pos, dst_radius, true))
-            {
-                return false;
-            }
+            //if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, false))
+            //{
+            //    return false;
+            //}
+            //if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_near, dst_pos, dst_radius, true))
+            //{
+            //    return false;
+            //}
 
 
             return true;
