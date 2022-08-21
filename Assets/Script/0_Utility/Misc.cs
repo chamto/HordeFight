@@ -1755,27 +1755,32 @@ namespace UtilGS9
             float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
             //float sqr_between = (dst_pos - src_pos).sqrMagnitude;
 
-            if(false == reversal)
+            //float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius); //1
+            //float sqr_middle = src_radius * src_radius; //0
+            //float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius); //-1
+
+
+            if (false == reversal)
             {
                 //[1 1.5 2]  =>  [-1 0 1] 비율변화 
                 includeRate = (includeRate - 1.5f) * 2f;
+                float dis_max = src_radius + dst_radius * includeRate;
+                if (sqr_between <= dis_max * dis_max)
+                {
+                    return true;
+                }
             }
             else
             {
                 //[1 1.5 2]  =>  [1 0 -1] 비율변화 
                 includeRate = (includeRate - 1.5f) * -2f;
+                float dis_max = src_radius + dst_radius * includeRate;
+                if (sqr_between >= dis_max * dis_max)
+                {
+                    return true;
+                }
             }
 
-
-            float dis_max = src_radius + dst_radius * includeRate;
-            //float sqr_max = (src_radius + dst_radius) * (src_radius + dst_radius); //1
-            //float sqr_middle = src_radius * src_radius; //0
-            //float sqr_min = (src_radius - dst_radius) * (src_radius - dst_radius); //-1
-
-            if(sqr_between <= dis_max*dis_max)
-            {
-                return true; 
-            }
 
             return false;
         }

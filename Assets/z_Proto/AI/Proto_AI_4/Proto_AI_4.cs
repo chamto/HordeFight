@@ -165,7 +165,10 @@ namespace Proto_AI_4
             //------------------
 
             float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
-            bool isIn = _arc.Include_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            //bool isIn = _arc.Include_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            //bool isIn = Geo.Include_Sphere_SqrDistance(_tr0_test.position, rad0_far, _tr1_test.position, rad1, _includeRate, true);
+
             //float rate = _arc.Include_Rate_Arc_Sphere(_tr1_test.position, rad);
             //float rate = Geo.Include_Rate_Sphere(_tr0_test.position, (_tr0_test.position - _tr0_line_b.position).magnitude, _tr1_test.position, rad, false);
             DebugWide.LogBlue(rate + "  " + isIn);
