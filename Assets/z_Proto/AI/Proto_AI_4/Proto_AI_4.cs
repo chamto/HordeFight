@@ -140,6 +140,8 @@ namespace Proto_AI_4
             float rad0_near = (_tr0_test.position - _tr0_line_a.position).magnitude;
             float rad1 = (_tr1_test.position - _tr1_line_a.position).magnitude;
             Vector3 ndir0 = (_tr0_line_b.position - _tr0_test.position).normalized;
+            Vector3 pos_tr0 = _tr0_test.position;
+            Vector3 pos_tr1 = _tr1_test.position;
 
             Draw_Ruler(_tr0_test.position + ndir0 * rad0_far, ndir0, rad1, COUNT);
             Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
@@ -172,7 +174,7 @@ namespace Proto_AI_4
             //float rate = Geo.GetRate_Sphere_SqrDistance(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
             //float rate = Geo.GetRate_Sphere_SqrDistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
             float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
-            bool isIn = Geo.Include_Sphere_SqrDistance(_tr0_test.position, rad0_far, _tr1_test.position, rad1, _includeRate);
+            bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate);
             //bool isIn = Geo.Include_NearFar_Sphere_vs_Sphere(_tr0_test.position, rad0_far, rad0_near, _tr1_test.position, rad1, _includeRate);
 
 
@@ -254,7 +256,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            Debug_FuncTest_Arc();
+            //Debug_FuncTest_Arc();
 
 
             //DebugWide.DrawQ_All_AfterTime(1);

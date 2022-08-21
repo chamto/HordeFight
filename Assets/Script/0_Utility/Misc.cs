@@ -1106,7 +1106,7 @@ namespace UtilGS9
             }
 
 
-            public bool Include_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
+            public bool old_Include_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1135,21 +1135,43 @@ namespace UtilGS9
                 return true;
             }
 
+            public bool Include_Arc_vs_Sphere(ref Vector3 dstPos, float dstRad, float includeRate)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                Vector3 dstDir = dstPos - origin;
+
+                //float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
+                if (dstDir.z * ndir.x > dstDir.x * ndir.z)
+                {
+                    //if (VOp.PerpDot_ZX(ref dstDir, ref _ndir_left) > dstRad * includeRate) return false;
+                    if ((dstDir.z * _ndir_left.x - dstDir.x * _ndir_left.z) > dstRad * includeRate) return false;
+                }
+                else
+                {
+                    //if (VOp.PerpDot_ZX(ref _ndir_right, ref dstDir) > dstRad * includeRate) return false;
+                    if ((_ndir_right.z * dstDir.x - _ndir_right.x * dstDir.z) > dstRad * includeRate) return false;
+                }
+
+
+                return true;
+            }
+
             public bool Include_NearFar_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
             {
             
-                if (false == Geo.Include_Sphere_SqrDistance(origin, radius_far, dstPos, dstRad, includeRate))
+                if (false == Geo.Include_Sphere_SqrDistance(ref origin, radius_far,ref dstPos, dstRad, includeRate))
                 {
                     return false;
                 }
 
-                if (false == Geo.Include_Sphere_SqrDistance(origin, radius_near, dstPos, dstRad, includeRate, true))
+                if (false == Geo.Include_Sphere_SqrDistance(ref origin, radius_near,ref dstPos, dstRad, includeRate, true))
                 {
                     return false;
                 }
 
 
-                if (false == Include_Arc_vs_Sphere(dstPos, dstRad, includeRate))
+                if (false == Include_Arc_vs_Sphere(ref dstPos, dstRad, includeRate))
                 {
                     return false;
                 }
@@ -1751,8 +1773,8 @@ namespace UtilGS9
             return rate;
         }
 
-
-        static public bool Include_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
+        //includeRate : [1 1.5 2]
+        static public bool old_Include_Sphere_SqrDistance(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, float includeRate , bool reversal = false)
         {
 
             Vector3 dir = dst_pos - src_pos;
@@ -1779,6 +1801,33 @@ namespace UtilGS9
                 //[1 1.5 2]  =>  [1 0 -1] 비율변화 
                 includeRate = (includeRate - 1.5f) * -2f;
                 float dis_max = src_radius + dst_radius * includeRate;
+                if (sqr_between >= dis_max * dis_max)
+                {
+                    return true;
+                }
+            }
+
+
+            return false;
+        }
+
+        //includeRate : [-1 0 1]
+        static public bool Include_Sphere_SqrDistance(ref Vector3 src_pos, float src_radius, ref Vector3 dst_pos, float dst_radius, float includeRate, bool reversal = false)
+        {
+
+            Vector3 dir = dst_pos - src_pos;
+            float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+            float dis_max = src_radius + dst_radius * includeRate;
+
+            if (false == reversal)
+            {
+                if (sqr_between <= dis_max * dis_max)
+                {
+                    return true;
+                }
+            }
+            else
+            {
                 if (sqr_between >= dis_max * dis_max)
                 {
                     return true;
@@ -1822,11 +1871,11 @@ namespace UtilGS9
         static public bool Include_NearFar_Sphere_vs_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
         {
 
-            if(false == Geo.Include_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, includeRate, false))
+            if(false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_far, ref dst_pos, dst_radius, includeRate, false))
             {
                 return false; 
             }
-            if (false == Geo.Include_Sphere_SqrDistance(src_pos, src_radius_near, dst_pos, dst_radius, includeRate, true))
+            if (false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_near, ref dst_pos, dst_radius, includeRate, true))
             {
                 return false;
             }
