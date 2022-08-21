@@ -99,6 +99,21 @@ public class Test_FuncPerformance : MonoBehaviour
         // 놈이 가장 계산시간이 오래 걸린다 
         // 제곱근 피할려는 것은 더이상 의미가 없다 
 
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 tt = Vector3.forward; //제곱근 계산만큼의 부하가 있다. 프로퍼티는 성능이 몹시 안좋으므로 사용하면 안된다
+
+        }
+        _timeTemp += "  V3.=  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            Vector3 tt = ConstV.v3_forward; //더하기랑 비슷한 부하 , 이것 사용하기 
+
+        }
+        _timeTemp += "  V3.=2 " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
         test = 100;
         _startDateTime = DateTime.Now;
