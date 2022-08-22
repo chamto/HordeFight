@@ -166,14 +166,13 @@ namespace Proto_AI_4
             //DebugWide.LogBlue("sph : "+ temp2);
             //------------------
 
-            //float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
-            //bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
+            bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
             //bool isIn = _arc.Include_Arc_vs_Sphere(ref pos_tr1, rad1, _includeRate);
             //float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
 
-
-            float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1,false);
-            bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate, false);
+            //float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1,false);
+            //bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate, false);
             //bool isIn = Geo.Include_NearFar_Sphere_vs_Sphere(_tr0_test.position, rad0_far, rad0_near, _tr1_test.position, rad1, _includeRate);
 
 
@@ -255,7 +254,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            Debug_FuncTest_Arc();
+            //Debug_FuncTest_Arc();
 
 
             //DebugWide.DrawQ_All_AfterTime(1);
