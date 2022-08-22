@@ -1825,10 +1825,10 @@ namespace UtilGS9
 
             Vector3 dir = dst_pos - src_pos;
             float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
-            float dis_max = src_radius + dst_radius * includeRate;
 
             if (false == reversal)
             {
+                float dis_max = src_radius + dst_radius * includeRate;
                 if (sqr_between <= dis_max * dis_max)
                 {
                     return true;
@@ -1836,6 +1836,7 @@ namespace UtilGS9
             }
             else
             {
+                float dis_max = src_radius + dst_radius * includeRate * -1f;
                 if (sqr_between >= dis_max * dis_max)
                 {
                     return true;
