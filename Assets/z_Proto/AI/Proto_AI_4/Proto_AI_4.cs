@@ -170,10 +170,10 @@ namespace Proto_AI_4
             //bool isIn = _arc.Include_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
             //bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
             //bool isIn = Geo.Include_Sphere_SqrDistance(_tr0_test.position, rad0_far, _tr1_test.position, rad1, _includeRate, true);
-            //float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
-            //float rate = Geo.GetRate_Sphere_SqrDistance(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
-            //float rate = Geo.GetRate_Sphere_SqrDistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
-            float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
+            float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
+
+
+            //float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1);
             bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate);
             //bool isIn = Geo.Include_NearFar_Sphere_vs_Sphere(_tr0_test.position, rad0_far, rad0_near, _tr1_test.position, rad1, _includeRate);
 

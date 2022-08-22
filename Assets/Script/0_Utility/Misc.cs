@@ -944,6 +944,7 @@ namespace UtilGS9
         public const float INCLUDE_MIN = -1;   //최소완전포함
         public const float INCLUDE_MIDDLE = 0; //중점포함
         public const float INCLUDE_MAX = 1; //최대근접포함
+        public const float INCLUDE_ARC_CENTER = -10f; //호의 중선
         public const float INCLUDE_ERROR = -100000f; //처리 할 수 없는 경우 
 
 
@@ -1365,8 +1366,9 @@ namespace UtilGS9
                     else
                     {
                         rate = dst_dot / max_dot;
-                        //[0 1 2 => -1 -2 -3]
-                        rate = (rate + 1) * -1;
+                        //[0 1  => -10 -1 ]
+                        float ARC_CENTER = (INCLUDE_ARC_CENTER * -1)- 1;
+                        rate = (rate - 1) * ARC_CENTER - 1;
                     }
 
                 }
