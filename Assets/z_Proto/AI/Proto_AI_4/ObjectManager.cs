@@ -54,7 +54,7 @@ namespace Proto_AI_4
 
         }
 
-        public void Draw(bool none_recursive, bool level_0, bool level_1, bool level_2, bool level_3 , Vector3 pos1, Vector3 pos2 , Vector3 pos3)
+        public void Draw(bool level_0, bool level_1, bool level_2, bool level_3)
         {
             if (level_3)
             {
@@ -73,9 +73,14 @@ namespace Proto_AI_4
             {
                 _sphereTree.Render_Debug(0, true);
             }
-            if (none_recursive)
+
+        }
+
+        public void Draw_Sight(bool view_0, Vector3 a_pos, Vector3 a_near, Vector3 a_far, Vector3 b_pos, Vector3 b_near, Vector3 b_far)
+        {
+            if(view_0)
             {
-                _sphereTree.Debug_NoneRecursive(pos1, pos2, pos3); //chamto test
+                _sphereTree.Debug_NoneRecursive(a_pos, a_near, a_far); 
             }
         }
 

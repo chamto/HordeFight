@@ -244,8 +244,10 @@ namespace Proto_AI_4
 
             if (true == _Draw_SphereTree)
             {
-                ObjectManager.Inst.Draw(_SphereTree_NoneRecursive, _SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3,
-                    _tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+                ObjectManager.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
+
+                ObjectManager.Inst.Draw_Sight(_SphereTree_NoneRecursive, _tr0_test.position, _tr0_line_a.position, _tr0_line_b.position,
+                    _tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
             }
             if (true == _Draw_SphereTree_Struct)
             {
