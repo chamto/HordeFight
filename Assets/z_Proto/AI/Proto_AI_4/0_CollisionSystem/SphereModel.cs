@@ -1720,9 +1720,9 @@ namespace Proto_AI_4
                     if (level > _level || HasFlag(Flag.SUPERSPHERE))
                     {
                     
-                        temp += _radius.ToString("F2") + " (" + _id + ") ";
+                        temp += _radius.ToString("F2") + " (" + _id + ")  ct:" + _childCount;
                     }                    
-                    DebugWide.PrintText(_center + Vector3.left * _radius, Color.black, "  "+temp);
+                    DebugWide.PrintText(_center + ConstV.v3_back * _radius, Color.black, "  "+temp);
                 }
 
             }
