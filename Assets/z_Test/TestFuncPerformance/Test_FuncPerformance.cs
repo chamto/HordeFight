@@ -105,7 +105,7 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 tt = Vector3.forward; //제곱근 계산만큼의 부하가 있다. 프로퍼티는 성능이 몹시 안좋으므로 사용하면 안된다
 
         }
-        _timeTemp += "  V3.=  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  Vector3.forward  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -113,7 +113,7 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 tt = ConstV.v3_forward; //더하기랑 비슷한 부하 , 이것 사용하기 
 
         }
-        _timeTemp += "  V3.=2 " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  ConstV.v3_forward " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         test = 100;
         _startDateTime = DateTime.Now;
@@ -122,7 +122,7 @@ public class Test_FuncPerformance : MonoBehaviour
             test = test + (float)i;
 
         }
-        _timeTemp += "  plus  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  plus  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         test = 100;
         _startDateTime = DateTime.Now;
@@ -131,7 +131,7 @@ public class Test_FuncPerformance : MonoBehaviour
             test = test * (float)i;
 
         }
-        _timeTemp += "  mul  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  mul  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         test = 100;
         _startDateTime = DateTime.Now;
@@ -140,7 +140,7 @@ public class Test_FuncPerformance : MonoBehaviour
             test = test / (float)i;
 
         }
-        _timeTemp += "  div  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  div  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -148,14 +148,14 @@ public class Test_FuncPerformance : MonoBehaviour
             float a = VOp.PerpDot_ZX(ref va, ref vb);
 
         }
-        _timeTemp += "  PerpDot_ZX_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  PerpDot_ZX_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
             float ve = va.sqrMagnitude;
         }
-        _timeTemp += "  sqrLen  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  v3.sqrMagnitude  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
 
         _startDateTime = DateTime.Now;
@@ -163,7 +163,7 @@ public class Test_FuncPerformance : MonoBehaviour
         {
             float c = (float)Math.Sqrt((float)i);  //가장빠름  - 이것쓰!!!!!
         }
-        _timeTemp += "  sqrt  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  sqrt  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
 
         _startDateTime = DateTime.Now;
@@ -171,28 +171,28 @@ public class Test_FuncPerformance : MonoBehaviour
         {
             float d = Vector3.Dot(va, vb);
         }
-        _timeTemp += "  dot  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  Vector3.Dot  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
             float ve = va.magnitude;
         }
-        _timeTemp += "  Len2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  v3.magnitude  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
             Vector3 d = Vector3.Cross(va, vb);
         }
-        _timeTemp += "  cross  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  Vector3.Cross  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
             float a = (float)Math.Atan2((double)i, 5.0); // !!!!!!!!!!!!!! 가장빠름 
         }
-        _timeTemp += "  atan2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  atan2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
 
         _startDateTime = DateTime.Now;
@@ -200,14 +200,14 @@ public class Test_FuncPerformance : MonoBehaviour
         {
             float b = (float)Math.Cos((float)i); //가장빠름  - 이것쓰!!!!!
         }
-        _timeTemp += "  cos  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  cos  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
             float b = (float)Math.Sin((float)i); //가장빠름  - 이것쓰!!!!!
         }
-        _timeTemp += "  sin  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  sin  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -215,7 +215,7 @@ public class Test_FuncPerformance : MonoBehaviour
             float a = Geo.AngleSigned_AxisY(ref va, ref vb);
 
         }
-        _timeTemp += "  v_angle2_ref  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  AngleSigned_AxisY  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
        
         _startDateTime = DateTime.Now;
@@ -223,7 +223,7 @@ public class Test_FuncPerformance : MonoBehaviour
         {
             Vector3 ve = VOp.Normalize(va);
         }
-        _timeTemp += "  norm3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  VOp.Normalize  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
 
         //norm 중 가장 빠르지만 코드를 직접 넣어줘야 한다. 인라인이 안됨, 최적화가 필요한 곳에 넣기  
@@ -241,7 +241,7 @@ public class Test_FuncPerformance : MonoBehaviour
             ve.z *= ivlen;
 
         }
-        _timeTemp += "  norm3.2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  norm3.2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         //무명메서드는 인라인 안됨 , 상위 버전이면 될수도 있음 
         Func<Vector3, Vector3> anony_Norm = delegate (Vector3 vector3)
@@ -264,20 +264,16 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 ve = anony_Norm(va);
 
         }
-        _timeTemp += "  norm3.3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
-
-        //========================================================
-        _timeTemp += "\n\n\n\n";
-
+        _timeTemp += "  anony_Norm  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
 
-            Test_FuncCall(i,i,i);
+            Test_FuncCall(i, i, i);
 
         }
-        _timeTemp += "  funcCall  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  funcCall  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -286,7 +282,7 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 tt = _line_0.position; //프로퍼티 호출은 부하가 크다. 프로퍼티 사용하거나 호출하지 말기. 호출한번이 제곱근 4번 호출한것과 같다  
 
         }
-        _timeTemp += "  m.property  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  m.property  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -295,7 +291,7 @@ public class Test_FuncPerformance : MonoBehaviour
             float tt = testA.a;
 
         }
-        _timeTemp += "  m.val  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  m.float  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -304,7 +300,7 @@ public class Test_FuncPerformance : MonoBehaviour
             Vector3 tt = testA._v3_nonpro;
 
         }
-        _timeTemp += "  m.val2  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  m.v3  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -313,7 +309,7 @@ public class Test_FuncPerformance : MonoBehaviour
             test = i;
 
         }
-        _timeTemp += "  assign  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  test = i  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -322,8 +318,16 @@ public class Test_FuncPerformance : MonoBehaviour
                 test = i;
 
         }
-        _timeTemp += "  if  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  if  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
+
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            bool r = Geo.Include_Sphere_SqrDistance(ref va, 10, ref vb, 5, Geo.INCLUDE_MAX);
+
+        }
+        _timeTemp += "  Include_Sphere_SqrDistance  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
@@ -331,16 +335,7 @@ public class Test_FuncPerformance : MonoBehaviour
             float r = Geo.GetRate_Sphere_DistanceZero(va, 10, vb, 5);
 
         }
-        _timeTemp += "  RateSph  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
-
-
-        _startDateTime = DateTime.Now;
-        for (int i = 0; i < 50000; i++)
-        {
-            bool r = Geo.Include_Sphere_SqrDistance(ref va, 10,ref vb, 5, Geo.INCLUDE_MAX);
-
-        }
-        _timeTemp += "  IncSph  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  GetRate_Sphere_DistanceZero  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
 
         _startDateTime = DateTime.Now;
@@ -349,15 +344,18 @@ public class Test_FuncPerformance : MonoBehaviour
             bool r = _arc.Include_Arc_vs_Sphere(ref va, 5, Geo.INCLUDE_MAX);
 
         }
-        _timeTemp += "  IncArc  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  Include_Arc_vs_Sphere  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = _arc.Include_NearFar_Arc_vs_Sphere(va, 5, Geo.INCLUDE_MAX);
+            float r = _arc.GetRate_Arc_vs_Sphere(va, 5);
 
         }
-        _timeTemp += "  IncArcSph  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
+        _timeTemp += "  GetRate_Arc_vs_Sphere  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
+
+        //========================================================
+        _timeTemp += "\n\n\n\n";
 
 
         _startDateTime = DateTime.Now;
