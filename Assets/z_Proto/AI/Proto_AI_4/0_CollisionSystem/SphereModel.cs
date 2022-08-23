@@ -1146,7 +1146,7 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                //슈퍼구에 조금이라도 겹치는 원은 통과 
+                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다
                 if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
                 //if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
@@ -1218,7 +1218,7 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                //슈퍼구에 조금이라도 겹치는 원은 통과 
+                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
                 if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
                 //if (maxRate < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
