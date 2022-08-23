@@ -1146,14 +1146,17 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
+                //슈퍼구에 조금이라도 겹치는 원은 통과 
+                if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
                 //cc = Color.gray;
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (Geo.INCLUDE_MIDDLE < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
+                    if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, Geo.INCLUDE_MIN))
+                    //if (Geo.INCLUDE_MIDDLE < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         return next; 
                     }
@@ -1193,7 +1196,7 @@ namespace Proto_AI_4
 
         //RangeTest 조건에 충족되는 모든 객체들을 리스트로 반환 
         public void GetList_RangeTest_NoneRecursive(Vector3 center, float minRadius, float maxRadius, 
-            ref List<SphereModel> list, float minRate = Geo.INCLUDE_MIDDLE, float maxRate = Geo.INCLUDE_MAX)
+            ref List<SphereModel> list, float includeRate = Geo.INCLUDE_MIDDLE)
         {
 
             if (null == list) return;
@@ -1215,14 +1218,17 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                if (maxRate < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
+                //슈퍼구에 조금이라도 겹치는 원은 통과 
+                if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (maxRate < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
                 //cc = Color.gray;
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (minRate < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
+                    if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, includeRate))
+                    //if (minRate < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         list.Add(next);
                     }

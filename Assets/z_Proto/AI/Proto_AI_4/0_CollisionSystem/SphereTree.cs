@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UtilGS9;
 
@@ -580,18 +581,27 @@ namespace Proto_AI_4
             _levels[0].Debug_VisibilityTest(f, state);
         }
 
-        public void Debug_NoneRecursive(Vector3 pos1, Vector3 pos2, Vector3 pos3)
+        public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_near, Vector3 a_far)
         {
+            float a_rad_near = (a_pos - a_near).magnitude;
+            float a_rad_far = (a_pos - a_far).magnitude;
 
             //_levels[0].Debug_Render_NoneRecursive(); //chamto test
             //_levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
             //_levels[0].Debug_RayTrace_NoneRecursive(pos1, pos2); //chamto test
-            //SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(pos1, (pos1 - pos2).magnitude, (pos1 - pos3).magnitude);
-            SphereModel find = _levels[0].RayTrace_FirstReturn_NoneRecursive(pos1, pos2, null);
+            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(a_pos, a_rad_near, a_rad_far);
+            //SphereModel find = _levels[0].RayTrace_FirstReturn_NoneRecursive(a_pos, a_far, null);
             if (null != find)
             {
                 //DebugWide.LogBlue(find.GetID());
                 DebugWide.DrawCircle(find._center, 0.1f, Color.red);
+            }
+
+            List<SphereModel> list = new List<SphereModel>();
+            _levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
+            foreach(SphereModel m in list)
+            {
+                DebugWide.DrawCircle(m._center, 0.1f, Color.blue);
             }
 
         }

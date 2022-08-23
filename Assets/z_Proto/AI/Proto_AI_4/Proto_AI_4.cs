@@ -257,7 +257,8 @@ namespace Proto_AI_4
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
             //Debug_FuncTest_Arc();
-
+            Draw_Sphere(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+            Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
