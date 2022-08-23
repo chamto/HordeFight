@@ -1820,10 +1820,11 @@ namespace UtilGS9
         //    return false;
         //}
 
+        //src_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
         //includeRate : [-1 0 1]
         static public bool Include_Sphere_SqrDistance(ref Vector3 src_pos, float src_radius, ref Vector3 dst_pos, float dst_radius, float includeRate, bool reversal = false)
         {
-
+            
             Vector3 dir = dst_pos - src_pos;
             float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
 
@@ -1887,6 +1888,9 @@ namespace UtilGS9
             {
                 return false; 
             }
+
+            if (Misc.IsZero(src_radius_near)) return true; //가까운원의 반지름이 0인 경우 포함검사를 하지 않고 통과시킨다 
+
             if (false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_near, ref dst_pos, dst_radius, includeRate, true))
             {
                 return false;
