@@ -1880,7 +1880,7 @@ namespace UtilGS9
             return rate;
         }
 
-        static public bool Include_NearFar_Sphere_vs_Sphere(Vector3 src_pos, float src_radius_far, float src_radius_near,  Vector3 dst_pos, float dst_radius, float includeRate)
+        static public bool Include_NearFar_Sphere_vs_Sphere(Vector3 src_pos, float src_radius_near, float src_radius_far,  Vector3 dst_pos, float dst_radius, float includeRate)
         {
 
             if(false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_far, ref dst_pos, dst_radius, includeRate, false))
