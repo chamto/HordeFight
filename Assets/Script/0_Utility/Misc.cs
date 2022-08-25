@@ -1349,7 +1349,9 @@ namespace UtilGS9
                     float factor = dstRad / radToFactor;
                     Vector3 ori_factor = origin + ndir * factor;
                     Vector3 dir0_1 = dstPos - ori_factor;
-                    //DebugWide.DrawCircle(ori_factor, dstRad, Color.blue); //chamto test
+
+                    DebugWide.DrawCircle(ori_factor, dstRad, Color.cyan); //chamto test
+                    DebugWide.DrawArc(ori_factor, _ndir_left, _ndir_right, radius_far, Color.cyan); //chamto test
 
                     //sin(수직내적) 은 -90~90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
                     float max_dot = Vector3.Dot(ndir, dir_close);
@@ -1360,13 +1362,15 @@ namespace UtilGS9
                     dst_dot = dst_dot * -1f + 1f;
 
 
-                    if (Misc.IsZero(max_dot))
-                    {
-                        rate = 0; //분모가 0 인 경우 , 최소값 부여 
-                    }
-                    else
+                    //if (Misc.IsZero(max_dot))
+                    //{   //ndir 과 dir_close 이 방향이 같은 경우 , 호의 형태가 선분인 경우 : (INCLUDE_MIN > rate) 조건때문에 들어올 수 없다
+                    //    rate = 0; //분모가 0 인 경우 , 최소값 부여 
+                    //}
+                    //else
                     {
                         rate = dst_dot / max_dot;
+
+                        DebugWide.LogBlue(rate + "  " + dst_dot + "   " + max_dot + "  " + dir0_1);
                         //[0 1  => -10 -1 ]
                         float ARC_CENTER = (INCLUDE_ARC_CENTER * -1)- 1;
                         rate = (rate - 1) * ARC_CENTER - 1;
@@ -1425,23 +1429,21 @@ namespace UtilGS9
 
             public void Draw()
             {
-                Vector3 upDir = Vector3.up;
-                Vector3 interPos;
+                //Vector3 upDir = Vector3.up;
+                //Vector3 interPos;
 
-                DebugWide.DrawCircle(origin, radius_far, Color.gray);
-                DebugWide.DrawCircle(origin, radius_near, Color.gray);
+                //DebugWide.DrawCircle(origin, radius_far, Color.gray);
+                //DebugWide.DrawCircle(origin, radius_near, Color.gray);
 
-                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_left, out interPos);
-                DebugWide.DrawLine(origin, interPos, Color.green);
+                //UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_left, out interPos);
+                //DebugWide.DrawLine(origin, interPos, Color.green);
 
-                UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_right, out interPos);
-                DebugWide.DrawLine(origin, interPos, Color.green);
+                //UtilGS9.Geo.IntersectRay2(origin, radius_far, origin, _ndir_right, out interPos);
+                //DebugWide.DrawLine(origin, interPos, Color.green);
 
-                DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
+                //DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
 
-                //DebugWide.DrawLine(origin, origin+_ndir_left*10, Color.magenta); //chamto test
-                //DebugWide.DrawLine(origin, origin + _ndir_right * 10, Color.magenta); //chamto test
-                //DebugWide.LogBlue(_ndir_left + "  " + _ndir_left.magnitude); //chamto test
+                DebugWide.DrawArc(origin, _ndir_left, _ndir_right, radius_far, Color.green);
             }
 
             public override string ToString()

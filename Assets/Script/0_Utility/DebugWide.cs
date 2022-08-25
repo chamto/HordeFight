@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Globalization;
+using UtilGS9;
 
 public class DebugWide 
 {
@@ -437,6 +438,44 @@ public class DebugWide
 #endif
     }
 
+    static public void DrawArc(Vector3 origin, Vector3 nLeft, Vector3 nRight, float length, Color cc)
+    {
+#if UNITY_EDITOR
+        Vector3 prev = ConstV.v3_zero;
+        Vector3 cur = ConstV.v3_zero;
+        Vector3 startO = nLeft;
+        Vector3 upDir = Vector3.Cross(nLeft, nRight);
+        
+        float angle = UtilGS9.Geo.Angle360_AxisRotate(nLeft, nRight, upDir);
+
+        int COUNT = 20;
+        float angleDiv = angle / COUNT;
+        for (int i = 0; i <= COUNT; i++)
+        {
+            Vector3 tdDir = Quaternion.AngleAxis(angleDiv * i, upDir) * startO;
+
+            cur = origin + tdDir * length;
+
+            if (0 != i)
+                DebugWide.DrawLine(prev, cur, cc);
+
+            if (0 == i)
+            {
+                DebugWide.DrawLine(origin, cur, cc);
+                //DebugWide.PrintText(cur, cc, text);
+            }
+
+            if (COUNT == i)
+                DebugWide.DrawLine(origin, cur, cc);
+            //if (0 == i%5)
+            //DebugWide.DrawLine(pos, cur, cc);
+
+            prev = cur;
+        }
+        DebugWide.DrawLine(origin, origin + upDir, cc);
+
+#endif
+    }
 
     //==================================================================
     //==================================================================
