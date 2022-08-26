@@ -1351,11 +1351,14 @@ namespace UtilGS9
                     Vector3 dir0_1 = dstPos - ori_factor;
 
                     DebugWide.DrawCircle(ori_factor, dstRad, Color.cyan); //chamto test
-                    DebugWide.DrawArc(ori_factor, _ndir_left, _ndir_right, radius_far, Color.cyan); //chamto test
+                    DebugWide.DrawArc(ori_factor,ndir, _ndir_left, _ndir_right,ConstV.v3_up, radius_far, Color.cyan); //chamto test
 
                     //sin(수직내적) 은 -90~90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
                     float max_dot = Vector3.Dot(ndir, dir_close);
                     float dst_dot = Vector3.Dot(ndir, dir0_1) / dir0_1.magnitude;
+                    DebugWide.LogBlue(dst_dot + " ---  " + factor);
+
+
 
                     //[1 0 -1 => 0 1 2]
                     max_dot = max_dot * -1f + 1f;
@@ -1443,7 +1446,7 @@ namespace UtilGS9
 
                 //DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
 
-                DebugWide.DrawArc(origin, _ndir_left, _ndir_right, radius_far, Color.green);
+                DebugWide.DrawArc(origin,ndir ,_ndir_left, _ndir_right, ConstV.v3_up, radius_far, Color.green);
             }
 
             public override string ToString()

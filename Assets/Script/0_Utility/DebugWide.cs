@@ -363,7 +363,7 @@ public class DebugWide
 #endif
     }
 
-
+    //360도 표현안됨
     static public void DrawArc(Vector3 origin, Vector3 pos1, Vector3 pos2, Vector3 upDir ,Color cc)
     {
 #if UNITY_EDITOR
@@ -399,6 +399,7 @@ public class DebugWide
 #endif
     }
 
+    //360도 표현안됨 
     static public void DrawArc(Vector3 origin, Vector3 pos1, Vector3 pos2, Vector3 upDir, float length, Color cc , string text)
     {
 #if UNITY_EDITOR
@@ -438,15 +439,20 @@ public class DebugWide
 #endif
     }
 
-    static public void DrawArc(Vector3 origin, Vector3 nLeft, Vector3 nRight, float length, Color cc)
+    //360도 표현가능
+    static public void DrawArc(Vector3 origin, Vector3 nDir, Vector3 nLeft, Vector3 nRight,Vector3 upDir, float length, Color cc)
     {
 #if UNITY_EDITOR
         Vector3 prev = ConstV.v3_zero;
         Vector3 cur = ConstV.v3_zero;
         Vector3 startO = nLeft;
-        Vector3 upDir = Vector3.Cross(nLeft, nRight);
+        //Vector3 upDir = Vector3.Cross(nLeft, nDir); //180도 일떄 upDir 이 0이 된다 
         
-        float angle = UtilGS9.Geo.Angle360_AxisRotate(nLeft, nRight, upDir);
+        float angle = UtilGS9.Geo.Angle360_AxisRotate(nLeft, nDir, upDir);
+        //DebugWide.LogRed(angle + "  " + upDir);
+        if (angle > 180) angle = 180; //최대 180도 이상은 잘라낸다 
+        angle *= 2; //최대 360 표현 
+
 
         int COUNT = 20;
         float angleDiv = angle / COUNT;
