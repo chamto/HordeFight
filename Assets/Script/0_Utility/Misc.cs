@@ -1109,8 +1109,12 @@ namespace UtilGS9
 
             private void Calc_RadToFactor()
             {
-                //radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
-                radToFactor = VOp.PerpDot_ZX(ndir, _ndir_right); //성능비교 필요 
+                //sin(180) = 0 
+                radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f); //두선분이 180도 일때 0이 나와야 하는데 아주작은양수값이 나옴 
+                //radToFactor = VOp.PerpDot_ZX(ndir, _ndir_right); //두선분이 180도 일때 0이 나와야 하는데 아주작은음수값이 나오는 문제가 있다. 
+
+                //0근접값은 0으로 반환해준다 => 사용하는 쪽에서 검사해야 한다 
+                //if (Misc.IsZero(radToFactor)) radToFactor = 0;
             }
 
 
@@ -1148,18 +1152,28 @@ namespace UtilGS9
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
                 Vector3 dstDir = dstPos - origin;
+                float pdot_close = 0;
 
                 //float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
-                if (dstDir.z * ndir.x > dstDir.x * ndir.z)
+                float pdot_mid = dstDir.z * ndir.x - dstDir.x * ndir.z;
+                if (pdot_mid > 0)
                 {
                     //if (VOp.PerpDot_ZX(ref dstDir, ref _ndir_left) > dstRad * includeRate) return false;
-                    if ((dstDir.z * _ndir_left.x - dstDir.x * _ndir_left.z) > dstRad * includeRate) return false;
+                    pdot_close = (dstDir.z * _ndir_left.x - dstDir.x * _ndir_left.z);
                 }
                 else
                 {
                     //if (VOp.PerpDot_ZX(ref _ndir_right, ref dstDir) > dstRad * includeRate) return false;
-                    if ((_ndir_right.z * dstDir.x - _ndir_right.x * dstDir.z) > dstRad * includeRate) return false;
+                    pdot_close = (_ndir_right.z * dstDir.x - _ndir_right.x * dstDir.z);
                 }
+
+                if (pdot_close > dstRad * includeRate) return false;
+
+                //180도 아래 , 예각시 예외처리
+                //각도와 대칭되는 영역에 포함판정이 나오는 문제가 있음
+                //호의방향과 목표방향이 반대일때 내적값은 음수가 나옴. 음수인 경우 포함에서 제외시킴 
+                float dot = dstDir.x * ndir.x + dstDir.z * ndir.z;
+                if (degree < 180 && dot < dstRad * -includeRate) return false;
 
 
                 return true;
@@ -1326,6 +1340,8 @@ namespace UtilGS9
 
                 float rate = (pdot_close) / dstRad;
 
+                //DebugWide.LogBlue("-a- " + pdot_mid + "  " +  pdot_close + "  " + dstRad + "  " + rate + "  " + degree);
+
                 //조정된 호안에 dstPos가 벗어났는지 검사 
                 //if (0 < pdot_close)
                 //{   //호 밖에 있음
@@ -1340,13 +1356,24 @@ namespace UtilGS9
                 //    //rate = rate * 0.5f + 1f; //0~1 => 1~1.5 로 변경
                 //}
 
+                //chamto test
+                //float radToFactor2 = (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f);
+                //DebugWide.LogBlue("factor :  "+ radToFactor.ToString("F3") + "   " + radToFactor2.ToString("F3"));
+                //DebugWide.LogBlue("factor :  " + radToFactor + "   " + radToFactor2);
+                //if (Misc.IsZero(radToFactor))
+                    //DebugWide.LogRed("!!!!");
+
                 //dstPos가 ndir_middle 에 얼마나 가까운지 나타낸다 : 0~1 , 0이라면 ndir_middle 위에 있는 것임 
                 //목표물에 초점을 맞추는데 사용될 수 있다 - 호보다 원이 클경우 값의미가 없어짐
                 //초점 맞추기는 따로 검사하기 
                 if (INCLUDE_MIN > rate)
                 {
+                    float factor = 0;
+                    if (false == Misc.IsZero(radToFactor))
+                    {
+                        factor = dstRad / radToFactor;
+                    }
 
-                    float factor = dstRad / radToFactor;
                     Vector3 ori_factor = origin + ndir * factor;
                     Vector3 dir0_1 = dstPos - ori_factor;
 
@@ -1356,7 +1383,8 @@ namespace UtilGS9
                     //sin(수직내적) 은 -90~90 밖에 계산이 안됨 , cos(내적) 으로 변경하여 180도 까지 계산할 수 있게함
                     float max_dot = Vector3.Dot(ndir, dir_close);
                     float dst_dot = Vector3.Dot(ndir, dir0_1) / dir0_1.magnitude;
-                    DebugWide.LogBlue(dst_dot + " ---  " + factor);
+
+                    //DebugWide.LogBlue(dst_dot + " ---  " + factor + "  " + radToFactor);
 
 
 
@@ -1373,7 +1401,7 @@ namespace UtilGS9
                     {
                         rate = dst_dot / max_dot;
 
-                        DebugWide.LogBlue(rate + "  " + dst_dot + "   " + max_dot + "  " + dir0_1);
+                        //DebugWide.LogBlue(rate + "  " + dst_dot + "   " + max_dot + "  " + dir0_1);
                         //[0 1  => -10 -1 ]
                         float ARC_CENTER = (INCLUDE_ARC_CENTER * -1)- 1;
                         rate = (rate - 1) * ARC_CENTER - 1;
@@ -1447,6 +1475,7 @@ namespace UtilGS9
                 //DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
 
                 DebugWide.DrawArc(origin,ndir ,_ndir_left, _ndir_right, ConstV.v3_up, radius_far, Color.green);
+                //DebugWide.DrawArc(origin, -ndir, -_ndir_left, -_ndir_right, ConstV.v3_up, radius_far, Color.yellow); //대칭호 출력 
             }
 
             public override string ToString()
@@ -2897,12 +2926,18 @@ namespace UtilGS9
 
         static public bool IsEqual(float a, float b)
         {
-            if (Math.Abs(a - b) < 1E-12)
-            {
-                return true;
-            }
+            //if (Math.Abs(a - b) < 1E-12)
+            //{
+            //    return true;
+            //}
+            //return false;
 
-            return false;
+            float value = a - b;
+            if (0 > value) value *= -1f;
+            if (Vector3.kEpsilon < value)
+                return false;
+
+            return true;
         }
 
         static public bool IsZero(float value)
