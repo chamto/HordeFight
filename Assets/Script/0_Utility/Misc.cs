@@ -1314,7 +1314,7 @@ namespace UtilGS9
             //    return rate;
             //}
 
-            public float GetRate_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
+            public float old_GetRate_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
@@ -1413,6 +1413,39 @@ namespace UtilGS9
 
             }
 
+            public float GetRate_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                if (Misc.IsZero(dstRad)) //반지름이 0일 경우 , 0으로 나누는 것을 막는다 
+                {
+                    return INCLUDE_ERROR;
+                }
+
+                Vector3 dstDir = dstPos - origin;
+                float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
+                float pdot_left = VOp.PerpDot_ZX(dstDir, _ndir_left); //높이값 반환 
+                float pdot_right = VOp.PerpDot_ZX(_ndir_right, dstDir);
+
+
+                //pdot_mid 이 양수면 왼쪽편 , 음수면 오른쪽편에 대상원이 가까이 있다
+                float pdot_close = pdot_left;
+                Vector3 dir_close = _ndir_left;
+                if (0 > pdot_mid)
+                {
+                    pdot_close = pdot_right;
+                    dir_close = _ndir_right;
+                }
+
+                float rate = (pdot_close) / dstRad;
+
+                //DebugWide.LogBlue("-a- " + pdot_mid + "  " +  pdot_close + "  " + dstRad + "  " + rate + "  " + degree);
+
+
+                return rate;
+
+            }
+
             public float GetRate_NearFar_Arc_vs_Sphere(Vector3 dstPos, float dstRad)
             {
 
@@ -1442,11 +1475,11 @@ namespace UtilGS9
 
                 //rate -1 이하 영역 
                 //INCLUDE_MIN 보다 작은값에 대한 비율계산을 Include_Rate_Arc_Sphere 함수에서 한다. 
-                if (INCLUDE_MIN > rate_arc && INCLUDE_MIN > rate_far && INCLUDE_MIN > rate_near)
-                {
-                    //DebugWide.LogBlue("**** arc ~ -1: " + rate_arc);
-                    return rate_arc;
-                }
+                //if (INCLUDE_MIN > rate_arc && INCLUDE_MIN > rate_far && INCLUDE_MIN > rate_near)
+                //{
+                //    //DebugWide.LogBlue("**** arc ~ -1: " + rate_arc);
+                //    return rate_arc;
+                //}
 
                 //rate -1 이상 영역에서 최대비율값을 찾는다 
                 float rate_max = rate_arc;
