@@ -479,6 +479,7 @@ public class DebugWide
             prev = cur;
         }
         DebugWide.DrawLine(origin, origin + upDir, cc);
+        //DebugWide.DrawLine(origin, origin + nDir * length, cc); //chamto test
 
 #endif
     }
