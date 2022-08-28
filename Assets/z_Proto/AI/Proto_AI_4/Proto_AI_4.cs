@@ -200,11 +200,13 @@ namespace Proto_AI_4
         {
             Vector3 dir_near = pos_near - ori;
             Vector3 dir_far = pos_far - ori;
-            float angle = Geo.Angle_AxisY(dir_near, dir_far);
+            float angle = Geo.Angle_AxisY(dir_near, dir_far); //180도 까지 구할 수 있음 
+            angle *= 2f;
 
+            //DebugWide.LogGreen(angle);
             _arc.origin = ori;
             _arc.SetDir(dir_far.normalized);
-            _arc.SetAngleRange(angle * 2, dir_near.magnitude, dir_far.magnitude);
+            _arc.SetAngleRange(angle, dir_near.magnitude, dir_far.magnitude);
             _arc.Draw();
         }
 
