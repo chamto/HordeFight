@@ -1151,32 +1151,54 @@ namespace UtilGS9
             {
                 //SetDir 함수로 방향값이 미리 설정되어야 한다 
 
+                Vector3 t_ndir = ndir;
+                Vector3 t_nleft = _ndir_left;
+                Vector3 t_nright = _ndir_right;
+                float t_degree = degree;
+                bool TRUE = true;
+                bool FALSE = false;
+
+                //둔각일때 예각으로 변환해서 계산한다 
+                if(degree > 180)
+                {
+                    t_ndir *= -1;
+                    t_nleft = _ndir_right;
+                    t_nright = _ndir_left;
+                    t_degree = 360 - t_degree;
+                    includeRate *=  -1; //[-1 0 1] => [1 0 -1]
+                    TRUE = false;
+                    FALSE = true;
+                }
+
+
                 Vector3 dstDir = dstPos - origin;
                 float pdot_close = 0;
 
                 //float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
-                float pdot_mid = dstDir.z * ndir.x - dstDir.x * ndir.z;
+                float pdot_mid = dstDir.z * t_ndir.x - dstDir.x * t_ndir.z;
                 if (pdot_mid > 0)
                 {
                     //if (VOp.PerpDot_ZX(ref dstDir, ref _ndir_left) > dstRad * includeRate) return false;
-                    pdot_close = (dstDir.z * _ndir_left.x - dstDir.x * _ndir_left.z);
+                    pdot_close = (dstDir.z * t_nleft.x - dstDir.x * t_nleft.z);
                 }
                 else
                 {
                     //if (VOp.PerpDot_ZX(ref _ndir_right, ref dstDir) > dstRad * includeRate) return false;
-                    pdot_close = (_ndir_right.z * dstDir.x - _ndir_right.x * dstDir.z);
+                    pdot_close = (t_nright.z * dstDir.x - t_nright.x * dstDir.z);
                 }
+                //DebugWide.LogGreen(pdot_mid + "   " + pdot_close);
 
-                if (pdot_close > dstRad * includeRate) return false;
+                if (pdot_close > dstRad * includeRate) return FALSE;
 
                 //180도 아래 , 예각시 예외처리
                 //각도와 대칭되는 영역에 포함판정이 나오는 문제가 있음
                 //호의방향과 목표방향이 반대일때 내적값은 음수가 나옴. 음수인 경우 포함에서 제외시킴 
-                float dot = dstDir.x * ndir.x + dstDir.z * ndir.z;
-                if (degree < 180 && dot < dstRad * -includeRate) return false;
+                float dot = dstDir.x * t_ndir.x + dstDir.z * t_ndir.z;
+                //if (t_degree < 180 && dot < dstRad * -includeRate) return false;
+                if (dot < dstRad * -includeRate) return FALSE;
 
 
-                return true;
+                return TRUE;
             }
 
             public bool Include_NearFar_Arc_vs_Sphere(Vector3 dstPos, float dstRad, float includeRate)
@@ -1421,6 +1443,11 @@ namespace UtilGS9
                 {
                     return INCLUDE_ERROR;
                 }
+
+                //chamto test
+                //Vector3 ori_factor = origin + ndir * ( dstRad / radToFactor);
+                //DebugWide.DrawCircle(ori_factor, dstRad, Color.cyan); //chamto test
+                //DebugWide.DrawArc(ori_factor, ndir, _ndir_left, _ndir_right, ConstV.v3_up, radius_far, Color.cyan); //chamto test
 
                 Vector3 dstDir = dstPos - origin;
                 float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
