@@ -337,6 +337,13 @@ public class Test_FuncPerformance : MonoBehaviour
         }
         _timeTemp += "  GetRate_Sphere_DistanceZero  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
+        _startDateTime = DateTime.Now;
+        for (int i = 0; i < 50000; i++)
+        {
+            bool r = _arc.Include_Arc_vs_Sphere_Angle180(ref va, 5, Geo.INCLUDE_MAX);
+
+        }
+        _timeTemp += "  Include_Arc_vs_Sphere_Angle180  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
