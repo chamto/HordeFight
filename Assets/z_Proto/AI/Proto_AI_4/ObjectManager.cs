@@ -76,11 +76,11 @@ namespace Proto_AI_4
 
         }
 
-        public void Draw_Sight(bool view_0, Vector3 a_pos, Vector3 a_near, Vector3 a_far, Vector3 b_pos, Vector3 b_near, Vector3 b_far)
+        public void Draw_Sight(bool view_0, Vector3 a_pos, Vector3 a_near, Vector3 a_far, Vector3 b_pos, Vector3 b_near, Vector3 b_far, float includeRate)
         {
             if(view_0)
             {
-                _sphereTree.Debug_NoneRecursive(a_pos, a_near, a_far); 
+                _sphereTree.Debug_NoneRecursive(a_pos, a_near, a_far, includeRate); 
             }
         }
 

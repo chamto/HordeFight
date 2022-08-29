@@ -1194,6 +1194,72 @@ namespace Proto_AI_4
 
         }
 
+
+        public void GetList_SightTest_Arc(ref Geo.Arc arc,
+            ref List<SphereModel> list, float includeRate = Geo.INCLUDE_MIDDLE)
+        {
+            if (null == list) return;
+            list.Clear();
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            SphereModel next = null, child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                //[조건]
+                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
+                if (false == Geo.Include_Sphere_SqrDistance(ref arc.center, arc.radius_far, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+
+                //------------------------------------------
+                //[처리]
+                //cc = Color.gray;
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
+                {
+                    //cc = Color.blue;
+                    if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
+                    {
+                        list.Add(next);
+                    }
+                }
+                //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
+                //------------------------------------------
+
+                //------------------------------------------
+                //[스택에 대상 객체를 넣는다] 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+
+                for (int i = 0; i < next._childCount; i++)
+                {
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                //------------------------------------------
+
+            }
+        }
+
+
+
         //RangeTest 조건에 충족되는 모든 객체들을 리스트로 반환 
         public void GetList_RangeTest_NoneRecursive(Vector3 center, float minRadius, float maxRadius, 
             ref List<SphereModel> list, float includeRate = Geo.INCLUDE_MIDDLE)

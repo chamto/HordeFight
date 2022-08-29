@@ -581,7 +581,21 @@ namespace Proto_AI_4
             _levels[0].Debug_VisibilityTest(f, state);
         }
 
-        public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_near, Vector3 a_far)
+        public void SetArc(ref Geo.Arc arc, Vector3 ori, Vector3 pos_near, Vector3 pos_far)
+        {
+            Vector3 dir_near = pos_near - ori;
+            Vector3 dir_far = pos_far - ori;
+            float angle = Geo.Angle_AxisY(dir_near, dir_far); //180도 까지 구할 수 있음 
+            angle *= 2f;
+
+            //DebugWide.LogGreen(angle);
+            arc.origin = ori;
+            arc.SetDir(dir_far.normalized);
+            arc.SetAngleRange(angle, dir_near.magnitude, dir_far.magnitude);
+            arc.Draw();
+        }
+
+        public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_near, Vector3 a_far, float includeRate)
         {
             float a_rad_near = (a_pos - a_near).magnitude;
             float a_rad_far = (a_pos - a_far).magnitude;
@@ -598,8 +612,11 @@ namespace Proto_AI_4
             }
 
             List<SphereModel> list = new List<SphereModel>();
-            _levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
-            foreach(SphereModel m in list)
+            //_levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
+            Geo.Arc arc = new Geo.Arc();
+            SetArc(ref arc, a_pos, a_near, a_far);
+            _levels[0].GetList_SightTest_Arc(ref arc, ref list, includeRate);
+            foreach (SphereModel m in list)
             {
                 DebugWide.DrawCircle(m._center, 0.1f, Color.blue);
             }

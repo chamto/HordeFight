@@ -166,10 +166,10 @@ namespace Proto_AI_4
             //DebugWide.LogBlue("sph : "+ temp2);
             //------------------
 
-            //float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
-            //bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
-            bool isIn = _arc.Include_Arc_vs_Sphere(ref pos_tr1, rad1, _includeRate);
-            float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
+            float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
+            bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            //bool isIn = _arc.Include_Arc_vs_Sphere(ref pos_tr1, rad1, _includeRate);
+            //float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
 
             //float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1,false);
             //bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate, false);
@@ -249,7 +249,7 @@ namespace Proto_AI_4
                 ObjectManager.Inst.Draw(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
 
                 ObjectManager.Inst.Draw_Sight(_SphereTree_NoneRecursive, _tr0_test.position, _tr0_line_a.position, _tr0_line_b.position,
-                    _tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
+                    _tr1_test.position, _tr1_line_a.position, _tr1_line_b.position, _includeRate);
             }
             if (true == _Draw_SphereTree_Struct)
             {
@@ -261,7 +261,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            Debug_FuncTest_Arc();
+            //Debug_FuncTest_Arc();
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
