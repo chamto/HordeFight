@@ -1253,11 +1253,15 @@ namespace UtilGS9
                     }
                 }
 
-
-                if (false == Include_Arc_vs_Sphere(ref dstPos, dstRad, includeRate))
+                //360도 일떄는 원과 같으므로 호검사를 할 필요가 없다. 360도 호검사는 완전포함(-1)에서 직관적이지 않은 결과가 나온다. (원의 결과와 다르다) 
+                if (false == Misc.IsEqual(degree, 360))
                 {
-                    return false;
+                    if (false == Include_Arc_vs_Sphere(ref dstPos, dstRad, includeRate))
+                    {
+                        return false;
+                    }
                 }
+
 
                 return true;
             }
