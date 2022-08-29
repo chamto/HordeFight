@@ -1244,9 +1244,13 @@ namespace UtilGS9
                     return false;
                 }
 
-                if (false == Geo.Include_Sphere_SqrDistance(ref origin, radius_near,ref dstPos, dstRad, includeRate, true))
+                //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
+                if (false == Misc.IsZero(radius_near))
                 {
-                    return false;
+                    if (false == Geo.Include_Sphere_SqrDistance(ref origin, radius_near, ref dstPos, dstRad, includeRate, true))
+                    {
+                        return false;
+                    }
                 }
 
 
@@ -2024,12 +2028,16 @@ namespace UtilGS9
                 return false; 
             }
 
-            if (Misc.IsZero(src_radius_near)) return true; //가까운원의 반지름이 0인 경우 포함검사를 하지 않고 통과시킨다 
-
-            if (false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_near, ref dst_pos, dst_radius, includeRate, true))
+            //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
+            if (false == Misc.IsZero(src_radius_near))
             {
-                return false;
+                if (false == Geo.Include_Sphere_SqrDistance(ref src_pos, src_radius_near, ref dst_pos, dst_radius, includeRate, true))
+                {
+                    return false;
+                }
             }
+
+
 
 
             //if (includeRate < Geo.GetRate_Sphere_SqrDistance(src_pos, src_radius_far, dst_pos, dst_radius, false))
