@@ -256,8 +256,8 @@ namespace Proto_AI_4
                 ObjectManager.Inst.Draw_Struct(_SphereTree_Level_0, _SphereTree_Level_1, _SphereTree_Level_2, _SphereTree_Level_3);
             }
 
-            Draw_Sphere(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
-            Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
+            //Draw_Sphere(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
+            //Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position);
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 

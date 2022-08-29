@@ -1584,6 +1584,7 @@ namespace UtilGS9
                 //DebugWide.DrawLine(origin, origin + ndir * radius_far, Color.red);
 
                 DebugWide.DrawArc(origin,ndir ,_ndir_left, _ndir_right, ConstV.v3_up, radius_far, Color.green);
+                DebugWide.DrawArc(origin, ndir, _ndir_left, _ndir_right, ConstV.v3_up, radius_near, Color.green);
                 //DebugWide.DrawArc(origin, -ndir, -_ndir_left, -_ndir_right, ConstV.v3_up, radius_far, Color.yellow); //대칭호 출력 
             }
 
