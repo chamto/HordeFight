@@ -1597,6 +1597,16 @@ namespace UtilGS9
 
         }
 
+        //영역 조합 
+        public struct AreaCombi
+        {
+            public Vector3 origin;          //시작점 
+            public Vector3 ndir;           //중간 방향 , 정규화된 값이어야 한다 
+            public float radius;
+
+
+        }
+
         //제거하기 
         /// <summary>
         /// Sphere.
@@ -1612,17 +1622,17 @@ namespace UtilGS9
                 radius = r;
             }
 
-            static public Sphere Zero
-            {
-                get
-                {
-                    Sphere sphere = new Sphere();
-                    sphere.pos = Vector3.zero;
-                    sphere.radius = 0f;
+            //static public Sphere Zero
+            //{
+            //    get
+            //    {
+            //        Sphere sphere = new Sphere();
+            //        sphere.pos = Vector3.zero;
+            //        sphere.radius = 0f;
 
-                    return sphere;
-                }
-            }
+            //        return sphere;
+            //    }
+            //}
 
             public override string ToString()
             {

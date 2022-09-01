@@ -21,7 +21,8 @@ namespace HordeFight
         //public Vector3 _position = ConstV.v3_zero; //전술원의 월드 위치
         public float _min_radius = 0;
         public float _max_radius = 0;
-        public Geo.Sphere _sphere = Geo.Sphere.Zero;
+        //public Geo.Sphere _sphere = Geo.Sphere.Zero;
+        public Geo.Sphere _sphere = new Geo.Sphere();
 
     }
 
