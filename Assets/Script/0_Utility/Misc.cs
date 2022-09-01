@@ -1625,18 +1625,18 @@ namespace UtilGS9
         //영역 검사 
         public struct Area
         {
-            static public bool IsVisible(ref Sphere target, ref Sphere visibleArea , ref Sphere invisibleArea)
+            static public bool Include_Sphere(ref Sphere target, ref Sphere include , ref Sphere not_include)
             {
                 //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
-                if (false == Misc.IsZero(invisibleArea.radius))
+                if (false == Misc.IsZero(not_include.radius))
                 {
-                    if (false == Geo.Include_Sphere_SqrDistance(ref invisibleArea.origin, invisibleArea.radius, ref target.origin, target.radius, invisibleArea.includeRate, true))
+                    if (false == Geo.Include_Sphere_SqrDistance(ref not_include.origin, not_include.radius, ref target.origin, target.radius, not_include.includeRate, true))
                     {
                         return false;
                     }
                 }
 
-                if (false == Geo.Include_Sphere_SqrDistance(ref visibleArea.origin, visibleArea.radius, ref target.origin, target.radius, visibleArea.includeRate, false))
+                if (false == Geo.Include_Sphere_SqrDistance(ref include.origin, include.radius, ref target.origin, target.radius, include.includeRate, false))
                 {
                     return false;
                 }
