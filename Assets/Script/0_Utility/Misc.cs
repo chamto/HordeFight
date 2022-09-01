@@ -1597,15 +1597,6 @@ namespace UtilGS9
 
         }
 
-        //영역 조합 
-        public struct AreaCombi
-        {
-            public Vector3 origin;          //시작점 
-            public Vector3 ndir;           //중간 방향 , 정규화된 값이어야 한다 
-            public float radius;
-
-
-        }
 
         //제거하기 
         /// <summary>
@@ -1613,34 +1604,48 @@ namespace UtilGS9
         /// </summary>
         public struct Sphere
         {
-            public Vector3 pos;
+            public Vector3 origin;
             public float radius;
+            public float includeRate;
 
             public Sphere(Vector3 p, float r)
             {
-                pos = p;
+                origin = p;
                 radius = r;
+                includeRate = 0;
             }
 
-            //static public Sphere Zero
-            //{
-            //    get
-            //    {
-            //        Sphere sphere = new Sphere();
-            //        sphere.pos = Vector3.zero;
-            //        sphere.radius = 0f;
-
-            //        return sphere;
-            //    }
-            //}
 
             public override string ToString()
             {
-                return "pos: " + pos + "  radius: " + radius;
+                return "pos: " + origin + "  radius: " + radius;
             }
         }
 
+        //영역 검사 
+        public struct Area
+        {
+            static public bool IsVisible(ref Sphere target, ref Sphere visibleArea , ref Sphere invisibleArea)
+            {
+                //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
+                if (false == Misc.IsZero(invisibleArea.radius))
+                {
+                    if (false == Geo.Include_Sphere_SqrDistance(ref invisibleArea.origin, invisibleArea.radius, ref target.origin, target.radius, invisibleArea.includeRate, true))
+                    {
+                        return false;
+                    }
+                }
 
+                if (false == Geo.Include_Sphere_SqrDistance(ref visibleArea.origin, visibleArea.radius, ref target.origin, target.radius, visibleArea.includeRate, false))
+                {
+                    return false;
+                }
+
+
+                return true;
+            }
+
+        }
 
         //제거대상 
         //코사인의 각도값을 비교 한다.
