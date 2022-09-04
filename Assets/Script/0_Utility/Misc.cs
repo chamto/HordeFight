@@ -1666,7 +1666,7 @@ namespace UtilGS9
                 //360도 일떄는 원과 같으므로 호검사를 할 필요가 없다. 360도 호검사는 완전포함(-1)에서 직관적이지 않은 결과가 나온다. (원의 결과와 다르다) 
                 if (false == Misc.IsEqual(arc_include.degree, 360))
                 {
-                    if (false == arc_include.Include_Arc_vs_Sphere(ref sph_target.origin, sph_target.radius, includeRate))
+                    if (false == arc_include.Include_Arc_vs_Sphere(ref sph_target.origin, sph_target.radius, arc_include.includeRate))
                     {
                         return false;
                     }
@@ -1674,6 +1674,41 @@ namespace UtilGS9
 
 
                 return true;
+            }
+
+
+            static public float Rate_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude, ref Arc arc_include)
+            {
+
+                float rate_arc = arc_include.GetRate_Arc_vs_Sphere(sph_target.origin, sph_target.radius);
+                //DebugWide.LogBlue("* arc: " + rate_arc);
+                if (INCLUDE_MAX < rate_arc)
+                {
+                    return rate_arc;
+                }
+
+
+                float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                //DebugWide.LogBlue("** far: " + rate_far);
+                if (INCLUDE_MAX < rate_far)
+                {
+                    return rate_far;
+                }
+
+                float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                //DebugWide.LogBlue("*** near: " + rate_near);
+                if (INCLUDE_MAX < rate_near)
+                {
+                    return rate_near;
+                }
+
+                //rate -1 이상 영역에서 최대비율값을 찾는다 
+                float rate_max = rate_arc;
+                if (rate_max < rate_far) rate_max = rate_far;
+                if (rate_max < rate_near) rate_max = rate_near;
+
+
+                return rate_max;
             }
 
         }
