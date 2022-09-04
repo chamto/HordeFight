@@ -591,19 +591,19 @@ namespace Proto_AI_4
             //DebugWide.LogGreen(angle);
             arc.origin = ori;
             arc.SetDir(dir_far.normalized);
-            arc.SetAngleRange(angle, dir_near.magnitude, dir_far.magnitude);
-            arc.Draw();
+            arc.SetAngle(angle);
+            //arc.Draw();
         }
 
         public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_near, Vector3 a_far, float includeRate)
         {
-            float a_rad_near = (a_pos - a_near).magnitude;
-            float a_rad_far = (a_pos - a_far).magnitude;
+            float a_rad_include = (a_pos - a_near).magnitude;
+            float a_rad_notInclude = (a_pos - a_far).magnitude;
 
             //_levels[0].Debug_Render_NoneRecursive(); //chamto test
             //_levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
             //_levels[0].Debug_RayTrace_NoneRecursive(pos1, pos2); //chamto test
-            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(a_pos, a_rad_near, a_rad_far);
+            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(a_pos, a_rad_include, a_rad_notInclude);
             //SphereModel find = _levels[0].RayTrace_FirstReturn_NoneRecursive(a_pos, a_far, null);
             if (null != find)
             {
@@ -613,9 +613,14 @@ namespace Proto_AI_4
 
             List<SphereModel> list = new List<SphereModel>();
             //_levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
-            Geo.Arc arc = new Geo.Arc();
-            SetArc(ref arc, a_pos, a_near, a_far);
-            _levels[0].GetList_SightTest_Arc(ref arc, ref list, includeRate);
+            Geo.Arc arc_include = new Geo.Arc();
+            SetArc(ref arc_include, a_pos, a_near, a_far);
+            arc_include.includeRate = includeRate;
+            Geo.Sphere sph_include = new Geo.Sphere(a_pos, a_rad_notInclude, includeRate);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(a_pos, a_rad_include, includeRate);
+
+
+            _levels[0].GetList_SightTest_Arc(ref arc_include, ref sph_include, ref sph_notInclude, ref list);
             foreach (SphereModel m in list)
             {
                 DebugWide.DrawCircle(m._center, 0.1f, Color.blue);

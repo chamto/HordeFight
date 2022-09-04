@@ -1195,8 +1195,8 @@ namespace Proto_AI_4
         }
 
 
-        public void GetList_SightTest_Arc(ref Geo.Arc arc,
-            ref List<SphereModel> list, float includeRate = Geo.INCLUDE_MIDDLE)
+        public void GetList_SightTest_Arc(ref Geo.Arc arc_include, ref Geo.Sphere sph_include, ref Geo.Sphere sph_notInclude,
+            ref List<SphereModel> list)
         {
             if (null == list) return;
             list.Clear();
@@ -1215,7 +1215,9 @@ namespace Proto_AI_4
                 //------------------------------------------
                 //[조건]
                 //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
-                if (false == Geo.Include_Sphere_SqrDistance(ref arc.center, arc.radius_far, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (false == Geo.Include_Sphere_SqrDistance(ref arc.center, arc.radius_far, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
+                if (false == sph_include.Include_SqrDistance(ref sph_target)) continue;
 
                 //------------------------------------------
                 //[처리]
@@ -1223,7 +1225,8 @@ namespace Proto_AI_4
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
+                    //if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
+                    if (Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref arc_include))
                     {
                         list.Add(next);
                     }

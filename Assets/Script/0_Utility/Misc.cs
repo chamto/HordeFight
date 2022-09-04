@@ -1041,8 +1041,9 @@ namespace UtilGS9
         //    }
         //}
 
+        
 
-        public struct Arc
+        public struct old_Arc
         {
             public Vector3 origin;          //호의 시작점 
             private Vector3 _ndir_left;
@@ -1599,6 +1600,224 @@ namespace UtilGS9
         }
 
 
+        public struct Arc
+        {
+            public Vector3 origin;          //호의 시작점 
+            private Vector3 _ndir_left;
+            public Vector3 ndir;           //중간 방향 , 정규화된 값이어야 한다 
+            private Vector3 _ndir_right;
+
+            public float degree;
+            public float radToFactor;
+            public float includeRate;
+
+            //public Arc()
+            //{
+            //    origin = ConstV.v3_zero;
+            //    _ndir_left = ConstV.v3_zero;
+            //    ndir = ConstV.v3_zero; ;
+            //    _ndir_right = ConstV.v3_zero;
+
+            //    degree = 0;
+            //    radToFactor = 0;
+            //    includeRate = 0;
+            //}
+
+            private void Calc_RadToFactor()
+            {
+                //sin(180) = 0 
+                radToFactor = (float)Math.Sin(Mathf.Deg2Rad * degree * 0.5f); //두선분이 180도 일때 0이 나와야 하는데 아주작은양수값이 나옴 
+                //radToFactor = VOp.PerpDot_ZX(ndir, _ndir_right); //두선분이 180도 일때 0이 나와야 하는데 아주작은음수값이 나오는 문제가 있다. 
+
+                //0근접값은 0으로 반환해준다 => 사용하는 쪽에서 검사해야 한다 
+                //if (Misc.IsZero(radToFactor)) radToFactor = 0;
+            }
+
+            public void Init(Vector3 ori, float deg, Vector3 nDir, float rate = INCLUDE_MIDDLE)
+            {
+                origin = ori;
+                degree = deg;
+
+                SetDir(nDir);
+                Calc_RadToFactor();
+
+                includeRate = rate;
+            }
+
+            public void SetDir(Vector3 nDir)
+            {
+
+                ndir = nDir; //노멀벡터가 들어와야 한다 
+
+
+                Quaternion q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
+                Quaternion q_right = VOp.Quaternion_Conjugate(q_left);
+                _ndir_left = q_left * nDir;
+                _ndir_right = q_right * nDir;
+
+                //DebugWide.LogRed(q_left + " " + q_right + "  " + _ndir_left + "  " + _ndir_right);
+
+            }
+
+            public void SetAngle(float deg)
+            {
+                degree = deg;
+
+                SetDir(ndir);
+                Calc_RadToFactor();
+            }
+
+            public void SetRotateY(Vector3 ori, Quaternion rot)
+            {
+                origin = ori;
+                ndir = rot * ndir;
+                _ndir_left = rot * _ndir_left;
+                _ndir_right = rot * _ndir_right;
+            }
+
+            //0~180도 까지만 처리가능 
+            public bool Include_Deg180(ref Sphere target)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                Vector3 dstDir = target.origin - origin;
+                float pdot_close = 0;
+
+                //float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
+                float pdot_mid = dstDir.z * ndir.x - dstDir.x * ndir.z;
+                if (pdot_mid > 0)
+                {
+                    //if (VOp.PerpDot_ZX(ref dstDir, ref _ndir_left) > dstRad * includeRate) return false;
+                    pdot_close = (dstDir.z * _ndir_left.x - dstDir.x * _ndir_left.z);
+                }
+                else
+                {
+                    //if (VOp.PerpDot_ZX(ref _ndir_right, ref dstDir) > dstRad * includeRate) return false;
+                    pdot_close = (_ndir_right.z * dstDir.x - _ndir_right.x * dstDir.z);
+                }
+                //DebugWide.LogGreen(pdot_mid + "   " + pdot_close);
+
+                if (pdot_close > target.radius * includeRate) return false;
+
+                //180도 아래 , 예각시 예외처리
+                //각도와 대칭되는 영역에 포함판정이 나오는 문제가 있음
+                //호의방향과 목표방향이 반대일때 내적값은 음수가 나옴. 음수인 경우 포함에서 제외시킴 
+                float dot = dstDir.x * ndir.x + dstDir.z * ndir.z;
+                //if (t_degree < 180 && dot < dstRad * -includeRate) return false;
+                if (dot < target.radius * -includeRate) return false;
+
+
+                return true;
+            }
+
+            //0 ~ 360도 까지 처리가능 
+            public bool Include_Deg360(ref Sphere target)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                Vector3 t_ndir = ndir;
+                Vector3 t_nleft = _ndir_left;
+                Vector3 t_nright = _ndir_right;
+                float t_degree = degree;
+                bool TRUE = true;
+                bool FALSE = false;
+
+                //둔각일때 예각으로 변환해서 계산한다 
+                if (degree > 180)
+                {
+                    t_ndir *= -1;
+                    t_nleft = _ndir_right;
+                    t_nright = _ndir_left;
+                    t_degree = 360 - t_degree;
+                    includeRate *= -1; //[-1 0 1] => [1 0 -1]
+                    TRUE = false;
+                    FALSE = true;
+                }
+
+
+                Vector3 dstDir = target.origin - origin;
+                float pdot_close = 0;
+
+                //float pdot_mid = VOp.PerpDot_ZX(ref dstDir, ref ndir);
+                float pdot_mid = dstDir.z * t_ndir.x - dstDir.x * t_ndir.z;
+                if (pdot_mid > 0)
+                {
+                    //if (VOp.PerpDot_ZX(ref dstDir, ref _ndir_left) > dstRad * includeRate) return false;
+                    pdot_close = (dstDir.z * t_nleft.x - dstDir.x * t_nleft.z);
+                }
+                else
+                {
+                    //if (VOp.PerpDot_ZX(ref _ndir_right, ref dstDir) > dstRad * includeRate) return false;
+                    pdot_close = (t_nright.z * dstDir.x - t_nright.x * dstDir.z);
+                }
+                //DebugWide.LogGreen(pdot_mid + "   " + pdot_close);
+
+                if (pdot_close > target.radius * includeRate) return FALSE;
+
+                //180도 아래일때 예외처리
+                //각도와 대칭되는 영역에 포함판정이 나오는 문제가 있음
+                //호의방향과 목표방향이 반대일때 내적값은 음수가 나옴. 음수인 경우 포함에서 제외시킴 
+                float dot = dstDir.x * t_ndir.x + dstDir.z * t_ndir.z;
+                //if (t_degree < 180 && dot < dstRad * -includeRate) return false;
+                if (dot < target.radius * -includeRate) return FALSE;
+
+
+                return TRUE;
+            }
+
+            public float Rate_Sphere(ref Sphere target)
+            {
+                //SetDir 함수로 방향값이 미리 설정되어야 한다 
+
+                if (Misc.IsZero(target.radius)) //반지름이 0일 경우 , 0으로 나누는 것을 막는다 
+                {
+                    return INCLUDE_ERROR;
+                }
+
+                //chamto test
+                //Vector3 ori_factor = origin + ndir * ( dstRad / radToFactor);
+                //DebugWide.DrawCircle(ori_factor, dstRad, Color.cyan); //chamto test
+                //DebugWide.DrawArc(ori_factor, ndir, _ndir_left, _ndir_right, ConstV.v3_up, radius_far, Color.cyan); //chamto test
+
+                Vector3 dstDir = target.origin - origin;
+                float pdot_mid = VOp.PerpDot_ZX(dstDir, ndir);
+                float pdot_left = VOp.PerpDot_ZX(dstDir, _ndir_left); //높이값 반환 
+                float pdot_right = VOp.PerpDot_ZX(_ndir_right, dstDir);
+
+
+                //pdot_mid 이 양수면 왼쪽편 , 음수면 오른쪽편에 대상원이 가까이 있다
+                float pdot_close = pdot_left;
+                Vector3 dir_close = _ndir_left;
+                if (0 > pdot_mid)
+                {
+                    pdot_close = pdot_right;
+                    dir_close = _ndir_right;
+                }
+
+                //수직내적으로 길이를 구할 수 없는 영역에 대한 예외처리 
+                if (0 > Vector3.Dot(dir_close, dstDir))
+                {
+                    pdot_close = -dstDir.magnitude;
+                }
+
+                float rate = (pdot_close) / target.radius;
+
+                //DebugWide.LogBlue("-a- " + pdot_mid + "  " +  pdot_close + "  " + dstRad + "  " + rate + "  " + degree);
+
+
+                return rate;
+
+            }
+
+
+            public override string ToString()
+            {
+
+                return "origin: " + origin + "  ndir_middle: " + ndir + "  degree: " + degree;
+            }
+
+        }
+
         //제거하기 
         /// <summary>
         /// Sphere.
@@ -1609,13 +1828,19 @@ namespace UtilGS9
             public float radius;
             public float includeRate;
 
-            public Sphere(Vector3 p, float r)
+            public Sphere(Vector3 ori, float rad)
             {
-                origin = p;
-                radius = r;
+                origin = ori;
+                radius = rad;
                 includeRate = INCLUDE_MIDDLE;
             }
 
+            public Sphere(Vector3 ori, float rad, float rate)
+            {
+                origin = ori;
+                radius = rad;
+                includeRate = rate;
+            }
 
             //src_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
             //includeRate : [-1 0 1]
@@ -1722,7 +1947,7 @@ namespace UtilGS9
                 //360도 일떄는 원과 같으므로 호검사를 할 필요가 없다. 360도 호검사는 완전포함(-1)에서 직관적이지 않은 결과가 나온다. (원의 결과와 다르다) 
                 if (false == Misc.IsEqual(arc_include.degree, 360))
                 {
-                    if (false == arc_include.Include_Arc_vs_Sphere(ref sph_target.origin, sph_target.radius, arc_include.includeRate))
+                    if (false == arc_include.Include_Deg360(ref sph_target))
                     {
                         return false;
                     }
@@ -1733,10 +1958,35 @@ namespace UtilGS9
             }
 
 
+            static public float Rate_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude)
+            {
+
+                float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                //DebugWide.LogBlue("** far: " + rate_far);
+                if (INCLUDE_MAX < rate_far)
+                {
+                    return rate_far;
+                }
+
+                float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                //DebugWide.LogBlue("*** near: " + rate_near);
+                if (INCLUDE_MAX < rate_near)
+                {
+                    return rate_near;
+                }
+
+                //rate -1 이상 영역에서 최대비율값을 찾는다 
+                float rate_max = rate_far;
+                if (rate_max < rate_near) rate_max = rate_near;
+
+
+                return rate_max;
+            }
+
             static public float Rate_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude, ref Arc arc_include)
             {
 
-                float rate_arc = arc_include.GetRate_Arc_vs_Sphere(sph_target.origin, sph_target.radius);
+                float rate_arc = arc_include.Rate_Sphere(ref sph_target);
                 //DebugWide.LogBlue("* arc: " + rate_arc);
                 if (INCLUDE_MAX < rate_arc)
                 {

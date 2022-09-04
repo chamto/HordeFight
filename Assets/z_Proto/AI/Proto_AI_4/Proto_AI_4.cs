@@ -84,7 +84,7 @@ namespace Proto_AI_4
             _stage = new Stage();
             _stage.Init();
 
-            _arc.Init(Vector3.zero, 90, 1, 5 , Vector3.forward);
+            _arc.Init(Vector3.zero, 90 , Vector3.forward);
         }
 
         private void Update()
@@ -166,8 +166,15 @@ namespace Proto_AI_4
             //DebugWide.LogBlue("sph : "+ temp2);
             //------------------
 
-            float rate = _arc.GetRate_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1);
-            bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
+            Geo.Sphere sph_target = new Geo.Sphere(_tr1_test.position, rad1, _includeRate);
+            Geo.Sphere sph_include = new Geo.Sphere(_tr0_test.position, rad0_far, _includeRate);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(_tr0_test.position, rad0_near, _includeRate);
+
+
+            float rate = Geo.Area.Rate_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
+            bool isIn = Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
+            //float rate = _arc.Rate_Sphere(ref sph_target);
+            //bool isIn = _arc.Include_NearFar_Arc_vs_Sphere(_tr1_test.position, rad1, _includeRate);
             //bool isIn = _arc.Include_Arc_vs_Sphere(ref pos_tr1, rad1, _includeRate);
             //float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
 
@@ -206,8 +213,8 @@ namespace Proto_AI_4
             //DebugWide.LogGreen(angle);
             _arc.origin = ori;
             _arc.SetDir(dir_far.normalized);
-            _arc.SetAngleRange(angle, dir_near.magnitude, dir_far.magnitude);
-            _arc.Draw();
+            _arc.SetAngle(angle);
+            //_arc.Draw();
         }
 
         public void Draw_Sphere(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
