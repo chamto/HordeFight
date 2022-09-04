@@ -581,29 +581,31 @@ namespace Proto_AI_4
             _levels[0].Debug_VisibilityTest(f, state);
         }
 
-        public void SetArc(ref Geo.Arc arc, Vector3 ori, Vector3 pos_near, Vector3 pos_far)
+        public void SetArc(ref Geo.Arc arc, Vector3 ori, Vector3 pos_notInclude, Vector3 pos_include , float includeRate)
         {
-            Vector3 dir_near = pos_near - ori;
-            Vector3 dir_far = pos_far - ori;
-            float angle = Geo.Angle_AxisY(dir_near, dir_far); //180도 까지 구할 수 있음 
+            Vector3 dir_notInclude = pos_notInclude - ori;
+            Vector3 dir_include = pos_include - ori;
+            float angle = Geo.Angle_AxisY(dir_notInclude, dir_include); //180도 까지 구할 수 있음 
             angle *= 2f;
 
             //DebugWide.LogGreen(angle);
             arc.origin = ori;
-            arc.SetDir(dir_far.normalized);
+            arc.includeRate = includeRate;
+            arc.SetDir(dir_include.normalized);
             arc.SetAngle(angle);
-            //arc.Draw();
+
+            Geo.Area.Draw(Color.blue, dir_include.magnitude, dir_notInclude.magnitude, ref arc);
         }
 
-        public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_near, Vector3 a_far, float includeRate)
+        public void Debug_NoneRecursive(Vector3 a_pos, Vector3 a_notInclude, Vector3 a_include, float includeRate)
         {
-            float a_rad_include = (a_pos - a_near).magnitude;
-            float a_rad_notInclude = (a_pos - a_far).magnitude;
+            float a_rad_notInclude = (a_pos - a_notInclude).magnitude;
+            float a_rad_include = (a_pos - a_include).magnitude;
 
             //_levels[0].Debug_Render_NoneRecursive(); //chamto test
             //_levels[0].Debug_RangeTest_NoneRecursive(pos, range, SphereModel.eState.INSIDE); //chamto test
             //_levels[0].Debug_RayTrace_NoneRecursive(pos1, pos2); //chamto test
-            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(a_pos, a_rad_include, a_rad_notInclude);
+            SphereModel find =  _levels[0].RangeTest_MinDisReturn_NoneRecursive(a_pos, a_rad_notInclude, a_rad_include);
             //SphereModel find = _levels[0].RayTrace_FirstReturn_NoneRecursive(a_pos, a_far, null);
             if (null != find)
             {
@@ -614,10 +616,10 @@ namespace Proto_AI_4
             List<SphereModel> list = new List<SphereModel>();
             //_levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
             Geo.Arc arc_include = new Geo.Arc();
-            SetArc(ref arc_include, a_pos, a_near, a_far);
-            arc_include.includeRate = includeRate;
-            Geo.Sphere sph_include = new Geo.Sphere(a_pos, a_rad_notInclude, includeRate);
-            Geo.Sphere sph_notInclude = new Geo.Sphere(a_pos, a_rad_include, includeRate);
+            SetArc(ref arc_include, a_pos, a_notInclude, a_include, includeRate);
+
+            Geo.Sphere sph_include = new Geo.Sphere(a_pos, a_rad_include, includeRate);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(a_pos, a_rad_notInclude, includeRate);
 
 
             _levels[0].GetList_SightTest_Arc(ref arc_include, ref sph_include, ref sph_notInclude, ref list);

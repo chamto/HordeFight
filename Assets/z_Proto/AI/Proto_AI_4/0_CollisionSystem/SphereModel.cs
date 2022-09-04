@@ -1215,9 +1215,9 @@ namespace Proto_AI_4
                 //------------------------------------------
                 //[조건]
                 //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
-                //if (false == Geo.Include_Sphere_SqrDistance(ref arc.center, arc.radius_far, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
                 Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
-                if (false == sph_include.Include_SqrDistance(ref sph_target)) continue;
+                //if (false == sph_include.Include_SqrDistance(ref sph_target)) continue;
 
                 //------------------------------------------
                 //[처리]
@@ -1232,6 +1232,7 @@ namespace Proto_AI_4
                     }
                 }
                 //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
 
                 //------------------------------------------
 
