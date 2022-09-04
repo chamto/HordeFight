@@ -205,16 +205,16 @@ namespace Proto_AI_4
 
         public void Draw_Arc_SetAngle(Vector3 ori, Vector3 pos_near, Vector3 pos_far)
         {
-            Vector3 dir_near = pos_near - ori;
-            Vector3 dir_far = pos_far - ori;
-            float angle = Geo.Angle_AxisY(dir_near, dir_far); //180도 까지 구할 수 있음 
+            Vector3 dir_notInclude = pos_near - ori;
+            Vector3 dir_include = pos_far - ori;
+            float angle = Geo.Angle_AxisY(dir_notInclude, dir_include); //180도 까지 구할 수 있음 
             angle *= 2f;
 
             //DebugWide.LogGreen(angle);
             _arc.origin = ori;
-            _arc.SetDir(dir_far.normalized);
+            _arc.SetDir(dir_include.normalized);
             _arc.SetAngle(angle);
-            //_arc.Draw();
+            Geo.Area.Draw(Color.blue, dir_include.magnitude, dir_notInclude.magnitude, ref _arc);
         }
 
         public void Draw_Sphere(Vector3 ori, Vector3 pos_near, Vector3 pos_far)

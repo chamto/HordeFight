@@ -1809,6 +1809,10 @@ namespace UtilGS9
 
             }
 
+            public void Draw(Color color, float length)
+            {
+                DebugWide.DrawArc(origin, ndir, _ndir_left, _ndir_right, ConstV.v3_up, length, color);
+            }
 
             public override string ToString()
             {
@@ -1896,6 +1900,11 @@ namespace UtilGS9
                 }
 
                 return rate;
+            }
+
+            public void Draw(Color color)
+            {
+                DebugWide.DrawCircle(origin, radius, color); 
             }
 
             public override string ToString()
@@ -2015,6 +2024,13 @@ namespace UtilGS9
 
 
                 return rate_max;
+            }
+
+
+            static public void Draw(Color color, float sph_include_rad, float sph_notInclude_rad, ref Arc arc_include)
+            {
+                arc_include.Draw(color, sph_include_rad);
+                arc_include.Draw(color, sph_notInclude_rad);
             }
 
         }
