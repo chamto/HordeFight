@@ -1053,6 +1053,7 @@ namespace UtilGS9
             public float radius_near;       //시작점에서 가까운 원의 반지름 
             public float radius_far;        //시작점에서 먼 원의 반지름
             public float radToFactor;
+            public float includeRate;
 
             public void Init(Vector3 ori, float deg , float rad_near, float rad_far, Vector3 nDir)
             {
@@ -1625,20 +1626,50 @@ namespace UtilGS9
         //영역 검사 
         public struct Area
         {
-            static public bool Include_Sphere(ref Sphere target, ref Sphere include , ref Sphere not_include)
+            static public bool Include_Sphere(ref Sphere sph_target, ref Sphere sph_include , ref Sphere sph_notInclude)
             {
-                //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
-                if (false == Misc.IsZero(not_include.radius))
+
+                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
                 {
-                    if (false == Geo.Include_Sphere_SqrDistance(ref not_include.origin, not_include.radius, ref target.origin, target.radius, not_include.includeRate, true))
+                    return false;
+                }
+
+                //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
+                if (false == Misc.IsZero(sph_notInclude.radius))
+                {
+                    if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
                     {
                         return false;
                     }
                 }
 
-                if (false == Geo.Include_Sphere_SqrDistance(ref include.origin, include.radius, ref target.origin, target.radius, include.includeRate, false))
+                return true;
+            }
+
+            static public bool Include_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude, ref Arc arc_include)
+            {
+
+                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
                 {
                     return false;
+                }
+
+                //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
+                if (false == Misc.IsZero(sph_notInclude.radius))
+                {
+                    if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
+                    {
+                        return false;
+                    }
+                }
+
+                //360도 일떄는 원과 같으므로 호검사를 할 필요가 없다. 360도 호검사는 완전포함(-1)에서 직관적이지 않은 결과가 나온다. (원의 결과와 다르다) 
+                if (false == Misc.IsEqual(arc_include.degree, 360))
+                {
+                    if (false == arc_include.Include_Arc_vs_Sphere(ref sph_target.origin, sph_target.radius, includeRate))
+                    {
+                        return false;
+                    }
                 }
 
 
