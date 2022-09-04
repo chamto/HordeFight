@@ -1875,6 +1875,7 @@ namespace UtilGS9
                 return false;
             }
 
+
             //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
             public float Rate_DistanceZero(ref Sphere target, bool reversal = false)
             {
@@ -1890,6 +1891,64 @@ namespace UtilGS9
                 //[-1 ~ 0 ~ 1] 
                 float a = between - radius;
                 float b = target.radius;
+                float rate = (a / b);
+
+                //20220731 실험노트 참고 
+                if (reversal)
+                {
+                    //포함값을 반전시킨다 , 원안 포함에서 원밖 포함으로 바꾼다 
+                    rate = rate * -1f; //[-1 ~ 0 ~ 1] => [1 ~ 0 ~ -1]  로 반전   
+                }
+
+                return rate;
+            }
+
+            //src_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
+            //includeRate : [-1 0 1]
+            static public bool Include_SqrDistance(ref Vector3 src_pos, float src_radius, ref Vector3 dst_pos, float dst_radius, float includeRate, bool reversal = false)
+            {
+
+                Vector3 dir = dst_pos - src_pos;
+                float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+
+                if (false == reversal)
+                {
+                    float dis_max = src_radius + dst_radius * includeRate;
+                    if (sqr_between <= dis_max * dis_max)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    float dis_max = src_radius + dst_radius * includeRate * -1f;
+                    if (sqr_between >= dis_max * dis_max)
+                    {
+                        return true;
+                    }
+                }
+
+
+                return false;
+            }
+
+
+            //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
+            static public float Rate_DistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+            {
+
+                if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
+
+                Vector3 dir = dst_pos - src_pos;
+                float between = (float)Math.Sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+                //float between = (dst_pos - src_pos).magnitude;
+                //float max = (src_radius + dst_radius);
+                //float middle = src_radius;
+                //float min = (src_radius - dst_radius);
+
+                //[-1 ~ 0 ~ 1] 
+                float a = between - src_radius;
+                float b = dst_radius;
                 float rate = (a / b);
 
                 //20220731 실험노트 참고 
