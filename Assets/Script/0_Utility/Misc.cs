@@ -1846,7 +1846,7 @@ namespace UtilGS9
                 includeRate = rate;
             }
 
-            //src_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
+            //include_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
             //includeRate : [-1 0 1]
             public bool Include_SqrDistance(ref Sphere target, bool reversal = false)
             {
@@ -1875,6 +1875,33 @@ namespace UtilGS9
                 return false;
             }
 
+            //포함원이 가지고 있는 포함비율을 사용하지 않고 입력된 인수비율을 사용한다 
+            public bool Include_SqrDistance(ref Sphere target, float include_rate, bool reversal = false)
+            {
+
+                Vector3 dir = target.origin - origin;
+                float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+
+                if (false == reversal)
+                {
+                    float dis_max = radius + target.radius * include_rate;
+                    if (sqr_between <= dis_max * dis_max)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    float dis_max = radius + target.radius * include_rate * -1f;
+                    if (sqr_between >= dis_max * dis_max)
+                    {
+                        return true;
+                    }
+                }
+
+
+                return false;
+            }
 
             //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
             public float Rate_DistanceZero(ref Sphere target, bool reversal = false)

@@ -1215,9 +1215,14 @@ namespace Proto_AI_4
                 //------------------------------------------
                 //[조건]
                 //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
-                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (false == Geo.Sphere.Include_SqrDistance(ref sph_include.origin, sph_include.radius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+
+                //루트구(엄청큰원)와 포함검사시 INCLUDE_MIDDLE 인 경우, 포함이 실패하게 된다. 루트구의 중심점이 포함원 안에 있을때만 참이 되기 때문이다 
+                //INCLUDE_MIN 인 경우, 정상적으로 포함검사가 진행된다
+                //루트구에 대한 예외처리를 넣는것 대신 INCLUDE_MAX 를 항상사용하는 것으로 문제를 해결한다  
                 Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
-                //if (false == sph_include.Include_SqrDistance(ref sph_target)) continue;
+                if (false == sph_include.Include_SqrDistance(ref sph_target, Geo.INCLUDE_MAX)) continue;
 
                 //------------------------------------------
                 //[처리]
