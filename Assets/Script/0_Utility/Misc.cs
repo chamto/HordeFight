@@ -1903,17 +1903,17 @@ namespace UtilGS9
                 return rate;
             }
 
-            //src_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
+            //include_radius 가 0 인 경우 처리 할 수 없다. 사전에 반지름이 0 인 값이 안들어오게 해야함  
             //includeRate : [-1 0 1]
-            static public bool Include_SqrDistance(ref Vector3 src_pos, float src_radius, ref Vector3 dst_pos, float dst_radius, float includeRate, bool reversal = false)
+            static public bool Include_SqrDistance(ref Vector3 include_pos, float include_radius, ref Vector3 target_pos, float target_radius, float include_rate, bool reversal = false)
             {
 
-                Vector3 dir = dst_pos - src_pos;
+                Vector3 dir = target_pos - include_pos;
                 float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
 
                 if (false == reversal)
                 {
-                    float dis_max = src_radius + dst_radius * includeRate;
+                    float dis_max = include_radius + target_radius * include_rate;
                     if (sqr_between <= dis_max * dis_max)
                     {
                         return true;
@@ -1921,7 +1921,7 @@ namespace UtilGS9
                 }
                 else
                 {
-                    float dis_max = src_radius + dst_radius * includeRate * -1f;
+                    float dis_max = include_radius + target_radius * include_rate * -1f;
                     if (sqr_between >= dis_max * dis_max)
                     {
                         return true;
@@ -1934,12 +1934,12 @@ namespace UtilGS9
 
 
             //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
-            static public float Rate_DistanceZero(Vector3 src_pos, float src_radius, Vector3 dst_pos, float dst_radius, bool reversal = false)
+            static public float Rate_DistanceZero(ref Vector3 include_pos, float include_radius, ref Vector3 target_pos, float target_radius, bool reversal = false)
             {
 
-                if (Misc.IsZero(dst_radius)) return INCLUDE_ERROR;
+                if (Misc.IsZero(target_radius)) return INCLUDE_ERROR;
 
-                Vector3 dir = dst_pos - src_pos;
+                Vector3 dir = target_pos - include_pos;
                 float between = (float)Math.Sqrt(dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
                 //float between = (dst_pos - src_pos).magnitude;
                 //float max = (src_radius + dst_radius);
@@ -1947,8 +1947,8 @@ namespace UtilGS9
                 //float min = (src_radius - dst_radius);
 
                 //[-1 ~ 0 ~ 1] 
-                float a = between - src_radius;
-                float b = dst_radius;
+                float a = between - include_radius;
+                float b = target_radius;
                 float rate = (a / b);
 
                 //20220731 실험노트 참고 
@@ -1978,7 +1978,8 @@ namespace UtilGS9
             static public bool Include_Sphere(ref Sphere sph_target, ref Sphere sph_include , ref Sphere sph_notInclude)
             {
 
-                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
+                //if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
+                if (false == sph_include.Include_SqrDistance(ref sph_target))
                 {
                     return false;
                 }
@@ -1986,7 +1987,8 @@ namespace UtilGS9
                 //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
                 if (false == Misc.IsZero(sph_notInclude.radius))
                 {
-                    if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
+                    //if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
+                    if(false == sph_notInclude.Include_SqrDistance(ref sph_target, true))
                     {
                         return false;
                     }
@@ -1998,7 +2000,8 @@ namespace UtilGS9
             static public bool Include_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude, ref Arc arc_include)
             {
 
-                if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
+                //if (false == Geo.Include_Sphere_SqrDistance(ref sph_include.origin, sph_include.radius, ref sph_target.origin, sph_target.radius, sph_include.includeRate, false))
+                if (false == sph_include.Include_SqrDistance(ref sph_target))
                 {
                     return false;
                 }
@@ -2006,7 +2009,8 @@ namespace UtilGS9
                 //가까운원의 반지름이 0인 아닌 경우만 포함검사를 한다 
                 if (false == Misc.IsZero(sph_notInclude.radius))
                 {
-                    if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
+                    //if (false == Geo.Include_Sphere_SqrDistance(ref sph_notInclude.origin, sph_notInclude.radius, ref sph_target.origin, sph_target.radius, sph_notInclude.includeRate, true))
+                    if (false == sph_notInclude.Include_SqrDistance(ref sph_target, true))
                     {
                         return false;
                     }
@@ -2029,14 +2033,16 @@ namespace UtilGS9
             static public float Rate_Sphere(ref Sphere sph_target, ref Sphere sph_include, ref Sphere sph_notInclude)
             {
 
-                float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                //float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                float rate_far = sph_include.Rate_DistanceZero(ref sph_target);
                 //DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                //float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                float rate_near = sph_notInclude.Rate_DistanceZero(ref sph_target, true);
                 //DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {
@@ -2062,14 +2068,16 @@ namespace UtilGS9
                 }
 
 
-                float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                //float rate_far = Geo.GetRate_Sphere_DistanceZero(sph_include.origin, sph_include.radius, sph_target.origin, sph_target.radius, false);
+                float rate_far = sph_include.Rate_DistanceZero(ref sph_target);
                 //DebugWide.LogBlue("** far: " + rate_far);
                 if (INCLUDE_MAX < rate_far)
                 {
                     return rate_far;
                 }
 
-                float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                //float rate_near = Geo.GetRate_Sphere_DistanceZero(sph_notInclude.origin, sph_notInclude.radius, sph_target.origin, sph_target.radius, true);
+                float rate_near = sph_notInclude.Rate_DistanceZero(ref sph_target, true);
                 //DebugWide.LogBlue("*** near: " + rate_near);
                 if (INCLUDE_MAX < rate_near)
                 {

@@ -136,14 +136,14 @@ namespace Proto_AI_4
         public void Debug_FuncTest_Arc()
         {
             const int COUNT = 15;
-            float rad0_far = (_tr0_test.position - _tr0_line_b.position).magnitude;
-            float rad0_near = (_tr0_test.position - _tr0_line_a.position).magnitude;
+            float rad0_include = (_tr0_test.position - _tr0_line_b.position).magnitude;
+            float rad0_notInclude = (_tr0_test.position - _tr0_line_a.position).magnitude;
             float rad1 = (_tr1_test.position - _tr1_line_a.position).magnitude;
             Vector3 ndir0 = (_tr0_line_b.position - _tr0_test.position).normalized;
-            Vector3 pos_tr0 = _tr0_test.position;
-            Vector3 pos_tr1 = _tr1_test.position;
+            Vector3 pos_tr0_include = _tr0_test.position;
+            Vector3 pos_tr1_target = _tr1_test.position;
 
-            Draw_Ruler(_tr0_test.position + ndir0 * rad0_far, ndir0, rad1, COUNT);
+            Draw_Ruler(_tr0_test.position + ndir0 * rad0_include, ndir0, rad1, COUNT);
             Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position,"", Color.gray);
 
             Draw_Arc_SetAngle(_tr0_test.position, _tr0_line_a.position, _tr0_line_b.position);
@@ -167,22 +167,29 @@ namespace Proto_AI_4
             //------------------
 
             Geo.Sphere sph_target = new Geo.Sphere(_tr1_test.position, rad1, _includeRate);
-            Geo.Sphere sph_include = new Geo.Sphere(_tr0_test.position, rad0_far, _includeRate);
-            Geo.Sphere sph_notInclude = new Geo.Sphere(_tr0_test.position, rad0_near, _includeRate);
+            Geo.Sphere sph_include = new Geo.Sphere(_tr0_test.position, rad0_include, _includeRate);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(_tr0_test.position, rad0_notInclude, _includeRate);
+
+            float rate = 0;
+            bool isIn = false;
+
+            //rate = Geo.Area.Rate_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
+            //isIn = Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
+            //rate = Geo.Area.Rate_Sphere(ref sph_target, ref sph_include, ref sph_notInclude);
+            //isIn = Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude);
+
+            //float rate = _arc.Rate_Sphere(ref sph_target);
+            //bool isIn = _arc.Include_Deg360(ref sph_target);
+            //bool isIn = _arc.Include_Deg180(ref sph_target);
+
+            //float rate = sph_include.Rate_DistanceZero(ref sph_target);
+            //bool isIn = sph_include.Include_SqrDistance(ref sph_target);
+
+            rate = Geo.Sphere.Rate_DistanceZero(ref pos_tr0_include, rad0_include, ref pos_tr1_target, rad1);
+            isIn = Geo.Sphere.Include_SqrDistance(ref pos_tr0_include, rad0_include, ref pos_tr1_target, rad1, _includeRate);
 
 
-            //float rate = Geo.Area.Rate_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
-            //bool isIn = Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref _arc);
-            float rate = _arc.Rate_Sphere(ref sph_target);
-            bool isIn = _arc.Include_Deg360(ref sph_target);
-            //bool isIn = _arc.Include_Arc_vs_Sphere(ref pos_tr1, rad1, _includeRate);
-            //float rate = _arc.GetRate_Arc_vs_Sphere(_tr1_test.position, rad1);
-
-            //float rate = Geo.GetRate_Sphere_DistanceZero(_tr0_test.position, rad0_far, _tr1_test.position, rad1,false);
-            //bool isIn = Geo.Include_Sphere_SqrDistance(ref pos_tr0, rad0_far, ref pos_tr1, rad1, _includeRate, false);
-            //bool isIn = Geo.Include_NearFar_Sphere_vs_Sphere(_tr0_test.position, rad0_far, rad0_near, _tr1_test.position, rad1, _includeRate);
-
-            if(isIn) Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position,rate.ToString("F3"), Color.yellow);
+            if (isIn) Draw_Sphere(_tr1_test.position, _tr1_line_a.position, _tr1_line_b.position,rate.ToString("F3"), Color.yellow);
             DebugWide.LogBlue(rate + "  " + isIn);
         }
 
