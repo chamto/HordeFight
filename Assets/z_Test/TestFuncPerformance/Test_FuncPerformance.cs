@@ -324,24 +324,24 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = Geo.Include_Sphere_SqrDistance(ref va, 10, ref vb, 5, Geo.INCLUDE_MAX);
+            bool r = Geo.Sphere.Include_SqrDistance(ref va, 10, ref vb, 5, Geo.INCLUDE_MAX);
 
         }
-        _timeTemp += "  Include_Sphere_SqrDistance  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
+        _timeTemp += "  Sphere.Include_SqrDistance  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            float r = Geo.GetRate_Sphere_DistanceZero(va, 10, vb, 5);
+            float r = Geo.Sphere.Rate_DistanceZero(ref va, 10, ref vb, 5);
 
         }
-        _timeTemp += "  GetRate_Sphere_DistanceZero  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
+        _timeTemp += "  Sphere.Rate_DistanceZero  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
 
         Geo.Sphere sph_target = new Geo.Sphere(va, 5, Geo.INCLUDE_MAX);
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = _arc.Include_Deg180(ref sph_target);
+            bool r = _arc.Include_Deg180(ref sph_target , Geo.INCLUDE_MAX);
 
         }
         _timeTemp += "  Arc.Include_Deg180  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";
@@ -349,7 +349,7 @@ public class Test_FuncPerformance : MonoBehaviour
         _startDateTime = DateTime.Now;
         for (int i = 0; i < 50000; i++)
         {
-            bool r = _arc.Include_Deg360(ref sph_target);
+            bool r = _arc.Include_Deg360(ref sph_target, Geo.INCLUDE_MAX);
 
         }
         _timeTemp += "  Arc.Include_Deg360  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms \n";

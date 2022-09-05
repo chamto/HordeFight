@@ -1133,6 +1133,9 @@ namespace Proto_AI_4
             //DebugWide.DrawCircle(center, minRadius, Color.white);
             //DebugWide.DrawCircle(center, maxRadius, Color.white);
 
+            Geo.Sphere sph_include = new Geo.Sphere(center, maxRadius);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(center, minRadius);
+
             _stack.Clear();
             _stack.Push(this);
 
@@ -1147,7 +1150,9 @@ namespace Proto_AI_4
                 //------------------------------------------
                 //[조건]
                 //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다
-                if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
+                if (false == Geo.Sphere.Include_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
                 //if (Geo.INCLUDE_MAX < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
@@ -1155,7 +1160,8 @@ namespace Proto_AI_4
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, Geo.INCLUDE_MIN))
+                    if(Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, Geo.INCLUDE_MIN))
+                    //if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, Geo.INCLUDE_MIN))
                     //if (Geo.INCLUDE_MIDDLE < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         return next; 
@@ -1280,6 +1286,9 @@ namespace Proto_AI_4
             //DebugWide.DrawCircle(center, minRadius, Color.white);
             //DebugWide.DrawCircle(center, maxRadius, Color.white);
 
+            Geo.Sphere sph_include = new Geo.Sphere(center, maxRadius);
+            Geo.Sphere sph_notInclude = new Geo.Sphere(center, minRadius);
+
             _stack.Clear();
             _stack.Push(this);
 
@@ -1293,8 +1302,10 @@ namespace Proto_AI_4
 
                 //------------------------------------------
                 //[조건]
-                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
-                if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다 
+                Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
+                if (false == Geo.Sphere.Include_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
+                //if (false == Geo.Include_Sphere_SqrDistance(ref center, maxRadius, ref next._center, next._radius, Geo.INCLUDE_MAX)) continue;
                 //if (maxRate < Geo.GetRate_Sphere_DistanceZero(center, maxRadius, next._center, next._radius)) continue;
                 //------------------------------------------
                 //[처리]
@@ -1302,7 +1313,8 @@ namespace Proto_AI_4
                 if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
                 {
                     //cc = Color.blue;
-                    if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, includeRate))
+                    if (Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, includeRate))
+                    //if (Geo.Include_NearFar_Sphere_vs_Sphere(center, minRadius, maxRadius, next._center, next._radius, includeRate))
                     //if (minRate < Geo.GetRate_Sphere_DistanceZero(center, minRadius, next._center, next._radius))
                     {
                         list.Add(next);

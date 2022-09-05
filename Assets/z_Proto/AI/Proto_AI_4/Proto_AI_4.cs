@@ -98,7 +98,9 @@ namespace Proto_AI_4
 
         public void Debug_FuncTest_Include_Sphere_Rate()
         {
-            float rate = Geo.GetRate_Sphere_DistanceZero(Vector3.zero, 5, _tr0_test.position, (_tr0_test.position - _tr0_line_a.position).magnitude);
+            Vector3 pos = ConstV.v3_zero;
+            Vector3 tr0_pos = _tr0_test.position;
+            float rate = Geo.Sphere.Rate_DistanceZero(ref pos, 5, ref tr0_pos, (_tr0_test.position - _tr0_line_a.position).magnitude);
             DebugWide.DrawCircle(Vector3.zero, 5, Color.white);
             DebugWide.PrintText(_tr0_test.position, Color.red, rate + "");
 
@@ -108,26 +110,31 @@ namespace Proto_AI_4
 
         }
 
-        public delegate float Dele_Include_Sphere_Rate(Vector3 src_pos, float src_radius, Vector3 in_pos, float in_radius, bool reversal = false);
+        public delegate float Dele_Include_Sphere_Rate(ref Vector3 src_pos, float src_radius, ref Vector3 in_pos, float in_radius, bool reversal = false);
         public void Draw_Include_Sphere_Rate(float src_radius, float in_radius, Color color)
         {
-            Dele_Include_Sphere_Rate FUNC = Geo.GetRate_Sphere_DistanceZero;
-
+            Dele_Include_Sphere_Rate FUNC = Geo.Sphere.Rate_DistanceZero;
+            Vector3 zero = ConstV.v3_zero;
             for (int i = 0; i < 80; i++)
             {
                 Vector3 nextPos = new Vector3(0 + i * 0.1f, 0, 0);
-                float rate = FUNC(Vector3.zero, src_radius, nextPos, in_radius);
+                float rate = FUNC(ref zero, src_radius, ref nextPos, in_radius);
 
                 Vector3 nextPos2 = nextPos;
                 nextPos2.z += rate;
                 DebugWide.DrawLine(nextPos, nextPos2, color);
             }
 
+            Vector3 cen = new Vector3(0, 0, 0);
+            Vector3 min = new Vector3(src_radius - in_radius, 0, 0);
+            Vector3 mid = new Vector3(src_radius, 0, 0);
+            Vector3 max = new Vector3(src_radius + in_radius, 0, 0);
+
             //0~2 접촉 , 0 가운데겹침 , 0~1 완전포함 , 1.5 중점걸림 , 2 외곽접함
-            float rt0 = FUNC(Vector3.zero, src_radius, new Vector3(0, 0, 0), in_radius); //0 가운데겹침
-            float rt1 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius - in_radius, 0, 0), in_radius); //1 완전포함
-            float rt2 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius, 0, 0), in_radius); //1.5 중점걸림
-            float rt3 = FUNC(Vector3.zero, src_radius, new Vector3(src_radius + in_radius, 0, 0), in_radius); //2 외곽접함
+            float rt0 = FUNC(ref zero, src_radius, ref cen, in_radius); //0 가운데겹침
+            float rt1 = FUNC(ref zero, src_radius, ref min, in_radius); //1 완전포함
+            float rt2 = FUNC(ref zero, src_radius, ref mid, in_radius); //1.5 중점걸림
+            float rt3 = FUNC(ref zero, src_radius, ref max, in_radius); //2 외곽접함
             //DebugWide.LogBlue(src_radius+" , " +in_radius + " -- " + rt0 + "  " + rt1 + "  " + rt2 + "  " + rt3);
 
         }
@@ -276,7 +283,7 @@ namespace Proto_AI_4
 
             //Debug_FuncTest_Include_Sphere_Rate(); //chamto test
 
-            Debug_FuncTest_Arc();
+            //Debug_FuncTest_Arc();
 
             //DebugWide.DrawQ_All_AfterTime(1);
             DebugWide.DrawQ_All_AfterClear();
