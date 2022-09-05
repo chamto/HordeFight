@@ -794,22 +794,22 @@ public class DeformationCircle : MonoBehaviour
 //==========================================================
 //==========================================================
 
-public struct Sphere
+public struct Sphere_Proto
 {
     public Vector3 pos;
     public float radius;
 
-    public Sphere(Vector3 p, float r)
+    public Sphere_Proto(Vector3 p, float r)
     {
         pos = p;
         radius = r;
     }
 
-    static public Sphere Zero
+    static public Sphere_Proto Zero
     {
         get
         {
-            Sphere sphere = new Sphere();
+            Sphere_Proto sphere = new Sphere_Proto();
             sphere.pos = Vector3.zero;
             sphere.radius = 0f;
 
@@ -865,11 +865,11 @@ public struct Arc_Proto
         return pos + dir * GetFactor();
     }
 
-    public Sphere sphere_near
+    public Sphere_Proto sphere_near
     {
         get
         {
-            Sphere sph;
+            Sphere_Proto sph;
             sph.pos = this.pos;
             sph.radius = this.radius_near;
             return sph;
@@ -877,11 +877,11 @@ public struct Arc_Proto
 
     }
 
-    public Sphere sphere_far
+    public Sphere_Proto sphere_far
     {
         get
         {
-            Sphere sph;
+            Sphere_Proto sph;
             sph.pos = this.pos;
             sph.radius = this.radius_far;
             return sph;
