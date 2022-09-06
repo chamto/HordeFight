@@ -137,20 +137,44 @@ namespace Proto_AI_4
     //시야 
     public struct Sight
     {
-        public Geo.Arc arc;
-        public Geo.Sphere far;
-        public Geo.Sphere near;
+        public Vector3 localPos_arc_in;
+        public Vector3 localPos_sph_in;
+        public Vector3 localPos_sph_notIn;
+
+        public Geo.Arc arc_in;
+        public Geo.Sphere sph_in;
+        public Geo.Sphere sph_notIn;
 
         public List<Unit> list; //시야목록 
 
+        public void Init(float arc_angle, float sph_rad_in, float sph_rad_notIn)
+        {
+            localPos_arc_in = ConstV.v3_zero;
+            localPos_sph_in = ConstV.v3_zero;
+            localPos_sph_notIn = ConstV.v3_zero;
+
+            arc_in = new Geo.Arc();
+            arc_in.Init(ConstV.v3_zero, arc_angle, ConstV.v3_forward);
+            sph_notIn = new Geo.Sphere(ConstV.v3_zero, sph_rad_notIn);
+            sph_in = new Geo.Sphere(ConstV.v3_zero, sph_rad_in);
+            list = new List<Unit>();
+        }
+
+        public void Calc_LocalToWorldPos(Vector3 pos_parent, Quaternion rot)
+        {
+            arc_in.origin = (rot * localPos_arc_in) + pos_parent;
+            sph_in.origin = (rot * localPos_sph_in) + pos_parent;
+            sph_notIn.origin = (rot * localPos_sph_notIn) + pos_parent;
+        }
+
         public void Draw(Color color)
         {
-            arc.Draw(color, far.radius);
-            arc.Draw(color, near.radius);
+            arc_in.Draw(color, sph_in.radius);
+            arc_in.Draw(color, sph_notIn.radius);
 
             foreach (Unit u in list )
             {
-                DebugWide.DrawCircle(u._pos, 0.1f, color);
+                DebugWide.DrawCircle(u._pos, 0.1f, Color.green);
             }
         }
     }
@@ -231,11 +255,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            _sight.arc = new Geo.Arc();
-            _sight.arc.Init(ConstV.v3_zero, 90, ConstV.v3_forward);
-            _sight.near = new Geo.Sphere(ConstV.v3_zero, 0);
-            _sight.far = new Geo.Sphere(ConstV.v3_zero, 10);
-            _sight.list = new List<Unit>();
+            _sight.Init(90, 5, 0);
         }
 
         //public void SetPos(Vector3 newPos)
@@ -396,11 +416,12 @@ namespace Proto_AI_4
 
             //시야 임시적용 , 유닛방향을 시야방향으로 삼는다 
             //_sight.arc.SetRotateY(_rotation);  
-            _sight.arc.SetDir(_heading);
+            _sight.arc_in.SetDir(_heading);
 
             //새로운 시야정보로 갱신한다. 
             //fixme 0.3초 간격으로 갱신하도록 변경하기 
-            _sight.list = ObjectManager.Inst._sphereTree.SightTest(ref _sight);
+            _sight.Calc_LocalToWorldPos(_pos, _rotation);
+            ObjectManager.Inst._sphereTree.SightTest(ref _sight);
 
         }
 

@@ -560,16 +560,13 @@ namespace Proto_AI_4
             _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
         }
 
-        public List<Unit> SightTest(ref Sight sight)
+        public void SightTest(ref Sight sight)
         {
-            List<Unit> list = new List<Unit>();
-            _levels[0].GetList_SightTest_Arc(ref sight.arc, ref sight.far, ref sight.near, ref list);
-            foreach (Unit m in list)
-            {
-                DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
-            }
-
-            return list;
+            _levels[0].GetList_SightTest_Arc(ref sight.arc_in, ref sight.sph_in, ref sight.sph_notIn, ref sight.list);
+            //foreach (Unit m in list)
+            //{
+            //    DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
+            //}
         }
 
         //==================================================

@@ -818,8 +818,8 @@ namespace Proto_AI_4
                 if (0 == v._id)
                 {
                     v._sight.Draw(Color.blue); //임시  
-                    DebugWide.DrawCircle(v._pos, 10, Color.blue);
-                    DebugWide.LogBlue(v._sight.list.Count);
+                    //DebugWide.DrawCircle(v._pos, 10, Color.blue);
+                    //DebugWide.LogBlue(v._sight.list.Count);
                 }
 
                 v.Draw(color);

@@ -834,8 +834,8 @@ namespace Proto_AI_4
                 //make sure this agent isn't included in the calculations and that
                 //the agent being examined is close enough. ***also make sure it doesn't
                 //include the evade target ***
-                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
 
@@ -884,8 +884,8 @@ namespace Proto_AI_4
                 //make sure *this* agent isn't included in the calculations and that
                 //the agent being examined  is close enough ***also make sure it doesn't
                 //include any evade target ***
-                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     AverageHeading += neighbors[a]._heading; //heading 은 길이가 1인 벡터 , 벡터의 합은 평균방향을 가리킨다 
 
@@ -928,8 +928,8 @@ namespace Proto_AI_4
                 //make sure *this* agent isn't included in the calculations and that
                 //the agent being examined is close enough ***also make sure it doesn't
                 //include the evade target ***
-                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     CenterOfMass += neighbors[a]._pos;
 
