@@ -1202,7 +1202,7 @@ namespace Proto_AI_4
 
 
         public void GetList_SightTest_Arc(ref Geo.Arc arc_include, ref Geo.Sphere sph_include, ref Geo.Sphere sph_notInclude,
-            ref List<SphereModel> list)
+            ref List<Unit> list)
         {
             if (null == list) return;
             list.Clear();
@@ -1239,7 +1239,9 @@ namespace Proto_AI_4
                     //if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
                     if (Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref arc_include))
                     {
-                        list.Add(next);
+                        //Unit aa = next.GetLink_UserData() as Unit;
+                        //DebugWide.LogRed(aa);
+                        list.Add(next.GetLink_UserData() as Unit);
                     }
                 }
                 //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);

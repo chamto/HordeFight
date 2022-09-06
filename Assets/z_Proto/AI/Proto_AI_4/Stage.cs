@@ -386,7 +386,7 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightSeparation = _weightSeparation;
                 v._steeringBehavior._weightAlignment = _weightAlignment;
                 v._steeringBehavior._weightCohesion = _weightCohesion;
-                v._steeringBehavior._viewDistance = _viewDistance;
+                //v._steeringBehavior._viewDistance = _viewDistance;
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
@@ -814,6 +814,13 @@ namespace Proto_AI_4
 
                 if (0 == v._id)
                     color = Color.red;
+
+                if (0 == v._id)
+                {
+                    v._sight.Draw(Color.blue); //임시  
+                    DebugWide.DrawCircle(v._pos, 10, Color.blue);
+                    DebugWide.LogBlue(v._sight.list.Count);
+                }
 
                 v.Draw(color);
             }

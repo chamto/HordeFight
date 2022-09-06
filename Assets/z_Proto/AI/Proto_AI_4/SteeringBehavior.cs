@@ -101,7 +101,7 @@ namespace Proto_AI_4
         public float _weightFollowPath;
 
         //how far the agent can 'see'
-        public float _viewDistance;
+        //public float _viewDistance;
 
         //pointer to any current path
         //Path m_pPath;
@@ -233,17 +233,20 @@ namespace Proto_AI_4
 
             if (On(eType.separation))
             {
-                _steeringForce += Separation2(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
+                //_steeringForce += Separation(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
+                _steeringForce += Separation(_vehicle._sight.list) * _weightSeparation * _steeringForceTweaker;
             }
 
             if (On(eType.allignment))
             {
-                _steeringForce += Alignment(EntityMgr.list) * _weightAlignment * _steeringForceTweaker;
+                //_steeringForce += Alignment(EntityMgr.list) * _weightAlignment * _steeringForceTweaker;
+                _steeringForce += Alignment(_vehicle._sight.list) * _weightAlignment * _steeringForceTweaker;
             }
 
             if (On(eType.cohesion))
             {
-                _steeringForce += Cohesion2(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
+                //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
+                _steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
             }
 
 
@@ -417,10 +420,10 @@ namespace Proto_AI_4
             //reset the steering force
             _steeringForce = Vector3.zero;
 
-            if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
-            {
-                TagNeighbors(_vehicle,EntityMgr.list , _viewDistance);
-            }
+            //if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
+            //{
+            //    TagNeighbors(_vehicle,EntityMgr.list , _viewDistance);
+            //}
 
             //DebugWide.LogBlue(m_SummingMethod + "  " + m_pVehicle.Speed());
             switch (_summingMethod)

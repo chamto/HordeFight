@@ -133,6 +133,28 @@ namespace Proto_AI_4
 
     }
 
+
+    //시야 
+    public struct Sight
+    {
+        public Geo.Arc arc;
+        public Geo.Sphere far;
+        public Geo.Sphere near;
+
+        public List<Unit> list; //시야목록 
+
+        public void Draw(Color color)
+        {
+            arc.Draw(color, far.radius);
+            arc.Draw(color, near.radius);
+
+            foreach (Unit u in list )
+            {
+                DebugWide.DrawCircle(u._pos, 0.1f, color);
+            }
+        }
+    }
+
     public class Unit : BaseEntity
     {
 
@@ -162,6 +184,10 @@ namespace Proto_AI_4
         public Disposition _disposition = new Disposition(); //배치정보 
 
         public StateMachine<Unit> _stateMachine = null;
+
+        //--------------------------------------------------
+
+        public Sight _sight = new Sight(); //시야 
 
         //--------------------------------------------------
 
@@ -203,6 +229,13 @@ namespace Proto_AI_4
             _stateMachine = new StateMachine<Unit>(this);
             _stateMachine.Init(State_Move_Unit.inst, StateGlobal_Unit.inst);
 
+            //==============================================
+
+            _sight.arc = new Geo.Arc();
+            _sight.arc.Init(ConstV.v3_zero, 90, ConstV.v3_forward);
+            _sight.near = new Geo.Sphere(ConstV.v3_zero, 0);
+            _sight.far = new Geo.Sphere(ConstV.v3_zero, 10);
+            _sight.list = new List<Unit>();
         }
 
         //public void SetPos(Vector3 newPos)
@@ -361,6 +394,11 @@ namespace Proto_AI_4
             //bool a;
             //SetPos(GridManager.Inst.Collision_StructLine_Test3(_oldPos, _pos, _radius, out a));
 
+            _sight.arc.SetRotateY(_rotation); //시야 임시적용 , 유닛방향을 시야방향으로 삼는다 
+
+            //새로운 시야정보로 갱신한다. 
+            //fixme 0.3초 간격으로 갱신하도록 변경하기 
+            _sight.list = ObjectManager.Inst._sphereTree.SightTest(ref _sight);
 
         }
 

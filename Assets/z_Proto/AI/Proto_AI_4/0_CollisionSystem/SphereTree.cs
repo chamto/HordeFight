@@ -560,6 +560,18 @@ namespace Proto_AI_4
             _levels[0].RangeTest_MinDisReturn(Frustum.ViewState.PARTIAL, ref param);
         }
 
+        public List<Unit> SightTest(ref Sight sight)
+        {
+            List<Unit> list = new List<Unit>();
+            _levels[0].GetList_SightTest_Arc(ref sight.arc, ref sight.far, ref sight.near, ref list);
+            foreach (Unit m in list)
+            {
+                DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
+            }
+
+            return list;
+        }
+
         //==================================================
         // debug 용 
         //==================================================
@@ -613,7 +625,7 @@ namespace Proto_AI_4
                 DebugWide.DrawCircle(find._center, 0.1f, Color.red);
             }
 
-            List<SphereModel> list = new List<SphereModel>();
+            List<Unit> list = new List<Unit>();
             //_levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
             Geo.Arc arc_include = new Geo.Arc();
             SetArc(ref arc_include, a_pos, a_notInclude, a_include, includeRate);
@@ -623,9 +635,9 @@ namespace Proto_AI_4
 
 
             _levels[0].GetList_SightTest_Arc(ref arc_include, ref sph_include, ref sph_notInclude, ref list);
-            foreach (SphereModel m in list)
+            foreach (Unit m in list)
             {
-                DebugWide.DrawCircle(m._center, 0.1f, Color.blue);
+                DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
             }
 
         }

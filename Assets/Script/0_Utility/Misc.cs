@@ -1016,9 +1016,8 @@ namespace UtilGS9
                 Calc_RadToFactor();
             }
 
-            public void SetRotateY(Vector3 ori, Quaternion rot)
+            public void SetRotateY(Quaternion rot)
             {
-                origin = ori;
                 ndir = rot * ndir;
                 _ndir_left = rot * _ndir_left;
                 _ndir_right = rot * _ndir_right;
