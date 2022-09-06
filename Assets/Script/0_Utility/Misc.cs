@@ -3024,6 +3024,7 @@ namespace UtilGS9
         //==================       수   학       ==================
         //========================================================
 
+        //ref : https://www.dogdrip.net/430069083
         //ref : https://ko.wikipedia.org/wiki/%EA%B3%A0%EC%86%8D_%EC%97%AD_%EC%A0%9C%EA%B3%B1%EA%B7%BC
         //함수해석 : https://zariski.wordpress.com/2014/10/29/%EC%A0%9C%EA%B3%B1%EA%B7%BC-%EC%97%AD%EC%88%98%EC%99%80-%EB%A7%88%EB%B2%95%EC%9D%98-%EC%88%98-0x5f3759df/
         //함수해석 : http://eastroot1590.tistory.com/entry/%EC%A0%9C%EA%B3%B1%EA%B7%BC%EC%9D%98-%EC%97%AD%EC%88%98-%EA%B3%84%EC%82%B0%EB%B2%95
@@ -3048,6 +3049,7 @@ namespace UtilGS9
 
             return ux;
         }
+
 
 
         //Algorithm: The Magic Number (Quake 3) - 유니티엔진에서 쓰는 방식 추정 
