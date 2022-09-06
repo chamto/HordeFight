@@ -394,7 +394,9 @@ namespace Proto_AI_4
             //bool a;
             //SetPos(GridManager.Inst.Collision_StructLine_Test3(_oldPos, _pos, _radius, out a));
 
-            _sight.arc.SetRotateY(_rotation); //시야 임시적용 , 유닛방향을 시야방향으로 삼는다 
+            //시야 임시적용 , 유닛방향을 시야방향으로 삼는다 
+            //_sight.arc.SetRotateY(_rotation);  
+            _sight.arc.SetDir(_heading);
 
             //새로운 시야정보로 갱신한다. 
             //fixme 0.3초 간격으로 갱신하도록 변경하기 

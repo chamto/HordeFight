@@ -960,6 +960,10 @@ namespace UtilGS9
             public float radToFactor;
             public float includeRate;
 
+            private Quaternion q_left;
+            private Quaternion q_right;
+
+
             //public Arc()
             //{
             //    origin = ConstV.v3_zero;
@@ -985,10 +989,8 @@ namespace UtilGS9
             public void Init(Vector3 ori, float deg, Vector3 nDir, float rate = INCLUDE_MIDDLE)
             {
                 origin = ori;
-                degree = deg;
 
-                SetDir(nDir);
-                Calc_RadToFactor();
+                SetAngle(deg);
 
                 includeRate = rate;
             }
@@ -998,9 +1000,6 @@ namespace UtilGS9
 
                 ndir = nDir; //노멀벡터가 들어와야 한다 
 
-
-                Quaternion q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
-                Quaternion q_right = VOp.Quaternion_Conjugate(q_left);
                 _ndir_left = q_left * nDir;
                 _ndir_right = q_right * nDir;
 
@@ -1012,15 +1011,22 @@ namespace UtilGS9
             {
                 degree = deg;
 
+                q_left = VOp.Quaternion_AngleAxisY(-degree * 0.5f);
+                q_right = VOp.Quaternion_Conjugate(q_left);
+
                 SetDir(ndir);
                 Calc_RadToFactor();
             }
 
             public void SetRotateY(Quaternion rot)
             {
-                ndir = rot * ndir;
-                _ndir_left = rot * _ndir_left;
-                _ndir_right = rot * _ndir_right;
+
+                ndir = rot * ConstV.v3_forward;
+
+                _ndir_left = q_left * ndir;
+                _ndir_right = q_right * ndir;
+                //_ndir_left = q_left * rot * ConstV.v3_forward;
+                //_ndir_right = q_right * rot * ConstV.v3_forward;
             }
 
             //0~180도 까지만 처리가능 
