@@ -122,7 +122,11 @@ namespace Proto_AI_4
                  
             }
 
-            _Squads[0] = Squad.Create(0, EntityMgr.list); //fixme : 스쿼드대상 리스트를 만들어 제공해야 한다 
+            List<Unit> list_squad = new List<Unit>();
+            list_squad.Add(EntityMgr.list[0]); //분대목록에 첫번째 객체 하나만 넣는다 
+            _Squads[0] = Squad.Create(0, list_squad); 
+
+            //_Squads[0] = Squad.Create(0, EntityMgr.list); //fixme : 스쿼드대상 리스트를 만들어 제공해야 한다 
             _Squads[0]._targetPos = _tr_platoon_0.position;
             _Squads[0]._pos = _tr_platoon_0.position;
             _Squads[0]._depth = (int)eFormDepth.Squad;
@@ -374,7 +378,11 @@ namespace Proto_AI_4
                 //}
                 //v._steeringBehavior._targetPos = _tr_platoon_0.position;
                 //v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
-                v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
+                if(null != v._disposition._belong_formation)
+                {
+                    v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함 
+                }
+
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);
@@ -823,7 +831,11 @@ namespace Proto_AI_4
             {
                 color = Color.black;
 
-                Squad belong_Squad = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad);
+                Squad belong_Squad = null;
+                if (null != v._disposition._belong_formation)
+                {
+                    belong_Squad = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad);
+                }
 
                 if (null != belong_Squad && v == belong_Squad._units[0])
                     color = Color.yellow;
