@@ -101,7 +101,7 @@ namespace Proto_AI_4
         public float _weightFollowPath;
 
         //how far the agent can 'see'
-        //public float _viewDistance;
+        public float _viewDistance;
 
         //pointer to any current path
         //Path m_pPath;
@@ -420,10 +420,10 @@ namespace Proto_AI_4
             //reset the steering force
             _steeringForce = Vector3.zero;
 
-            //if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
-            //{
-            //    TagNeighbors(_vehicle,EntityMgr.list , _viewDistance);
-            //}
+            if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
+            {
+                TagNeighbors(_vehicle,EntityMgr.list , _viewDistance);
+            }
 
             //DebugWide.LogBlue(m_SummingMethod + "  " + m_pVehicle.Speed());
             switch (_summingMethod)
@@ -834,8 +834,8 @@ namespace Proto_AI_4
                 //make sure this agent isn't included in the calculations and that
                 //the agent being examined is close enough. ***also make sure it doesn't
                 //include the evade target ***
-                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
-                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
 
@@ -884,8 +884,8 @@ namespace Proto_AI_4
                 //make sure *this* agent isn't included in the calculations and that
                 //the agent being examined  is close enough ***also make sure it doesn't
                 //include any evade target ***
-                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
-                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     AverageHeading += neighbors[a]._heading; //heading 은 길이가 1인 벡터 , 벡터의 합은 평균방향을 가리킨다 
 
@@ -928,8 +928,8 @@ namespace Proto_AI_4
                 //make sure *this* agent isn't included in the calculations and that
                 //the agent being examined is close enough ***also make sure it doesn't
                 //include the evade target ***
-                //if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
-                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
+                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag && (neighbors[a] != _pTargetAgent))
+                //if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     CenterOfMass += neighbors[a]._pos;
 
@@ -946,10 +946,10 @@ namespace Proto_AI_4
                 SteeringForce = Seek(CenterOfMass);
             }
 
-            if (0 == _vehicle._id)
+            if (0 == _vehicle._id && NeighborCount > 0)
             {
-                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.red);
-                DebugWide.AddDrawQ_Circle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.red);
+                DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + SteeringForce.normalized, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + SteeringForce.normalized, 0.2f, Color.green);
                 DebugWide.AddDrawQ_Circle(CenterOfMass, 0.5f, Color.red);
             }
 

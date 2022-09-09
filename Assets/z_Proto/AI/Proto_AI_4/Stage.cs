@@ -58,6 +58,10 @@ namespace Proto_AI_4
         public Squad[] _Platoons = new Squad[2];
         public Squad[] _Squads = new Squad[4];
 
+        public float _sight_angle = 90;
+        public float _sight_rad_in = 5;
+        public float _sight_rad_notIn = 0;
+
         public bool _init = false;
 
         public void Init()
@@ -386,7 +390,11 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightSeparation = _weightSeparation;
                 v._steeringBehavior._weightAlignment = _weightAlignment;
                 v._steeringBehavior._weightCohesion = _weightCohesion;
-                //v._steeringBehavior._viewDistance = _viewDistance;
+                v._steeringBehavior._viewDistance = _viewDistance;
+
+                v._sight.arc_in.SetAngle(_sight_angle);
+                v._sight.sph_in.radius = _sight_rad_in;
+                v._sight.sph_notIn.radius = _sight_rad_notIn;
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
@@ -668,6 +676,17 @@ namespace Proto_AI_4
                     }
                 }
                 DebugWide.LogBlue("Separation :" + u0._steeringBehavior.IsSeparationOn());
+            }
+
+            if (Input.GetKeyDown(KeyCode.B))
+            {
+                for (int i = 0; i < EntityMgr.list.Count; i++)
+                {
+                    Unit u = EntityMgr.list[i];
+
+                    u._steeringBehavior.Stop();
+                }
+
             }
 
         }
