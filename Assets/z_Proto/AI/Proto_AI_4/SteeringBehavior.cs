@@ -953,6 +953,12 @@ namespace Proto_AI_4
                 DebugWide.AddDrawQ_Circle(CenterOfMass, 0.5f, Color.red);
             }
 
+            //chamt test
+            //if (0 == _vehicle._id)
+            //{
+            //    return ConstV.v3_zero; 
+            //}
+
             //the magnitude of cohesion is usually much larger than separation or
             //allignment so it usually helps to normalize it.
             return SteeringForce.normalized;

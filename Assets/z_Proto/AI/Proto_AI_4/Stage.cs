@@ -634,7 +634,7 @@ namespace Proto_AI_4
                 }
                 DebugWide.LogBlue("Arrive :" + u1._steeringBehavior.IsArriveOn());
             }
-            u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
+
             //DebugWide.LogGreen(u0._id + "  " + u1._id);
 
             if (Input.GetKeyDown(KeyCode.X))
@@ -693,14 +693,23 @@ namespace Proto_AI_4
 
             if (Input.GetKeyDown(KeyCode.B))
             {
-                for (int i = 0; i < EntityMgr.list.Count; i++)
+                if (u0._steeringBehavior.IsArriveOn())
                 {
-                    Unit u = EntityMgr.list[i];
-
-                    u._steeringBehavior.Stop();
+                    u0._steeringBehavior.ArriveOff();
+                }
+                else
+                {
+                    u0._steeringBehavior.ArriveOn(); //도착 활성  
                 }
 
+                DebugWide.LogBlue("Arrive U0 :" + u0._steeringBehavior.IsArriveOn());
             }
+
+            u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
+            //chamto test
+            //u0._steeringBehavior.CohesionOff();
+            //u0._steeringBehavior.SeparationOff();
+            //u0._steeringBehavior.AlignmentOff();
 
         }
 
