@@ -33,6 +33,8 @@ namespace Proto_AI_4
         public float _withstand = 1f;
         public float _Friction = 0.85f; //마찰력 
         public float _anglePerSecond = 180;
+        public float _entireUnit_elasticity = 1;
+        public bool _isStatic = false;
 
         public float _weightArrive = 20;
         public float _weightOffsetPursuit = 20;
@@ -391,6 +393,8 @@ namespace Proto_AI_4
                 v._maxForce = _maxForce;
                 v._damping = _Friction;
                 v._anglePerSecond = _anglePerSecond;
+                //v._elasticity = _entireUnit_elasticity; //유닛별 설정으로 변경하기 
+                v._isStatic = _isStatic;
 
                 v._steeringBehavior._weightArrive = _weightArrive;
                 v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
@@ -530,6 +534,7 @@ namespace Proto_AI_4
                         Contact contact;
                         if(true == CollisionDetector.SphereAndSphere(src, dst, out contact)) //객체가 원이므로 원과원 검사를 해야함 
                         {
+                            contact.restitution = _entireUnit_elasticity; //전체유닛 반발력 설정  
                             contact.Resolve_SphereAndSphere(timeInterval);
                             collCount++;
                         }
