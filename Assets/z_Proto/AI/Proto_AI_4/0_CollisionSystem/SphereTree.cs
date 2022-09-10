@@ -562,7 +562,7 @@ namespace Proto_AI_4
 
         public void SightTest(ref Sight sight)
         {
-            _levels[0].GetList_SightTest_Arc(ref sight.arc_in, ref sight.sph_in, ref sight.sph_notIn, ref sight.list);
+            _levels[0].GetList_SightTest_Arc(ref sight);
             //foreach (Unit m in list)
             //{
             //    DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
@@ -622,21 +622,15 @@ namespace Proto_AI_4
                 DebugWide.DrawCircle(find._center, 0.1f, Color.red);
             }
 
-            List<Unit> list = new List<Unit>();
-            //_levels[0].GetList_RangeTest_NoneRecursive(a_pos, a_rad_near, a_rad_far, ref list, Geo.INCLUDE_MIN);
-            Geo.Arc arc_include = new Geo.Arc();
-            SetArc(ref arc_include, a_pos, a_notInclude, a_include, includeRate);
-
-            Geo.Sphere sph_include = new Geo.Sphere(a_pos, a_rad_include, includeRate);
-            Geo.Sphere sph_notInclude = new Geo.Sphere(a_pos, a_rad_notInclude, includeRate);
+            Sight sight = new Sight();
+            sight.Init(null, 0, a_rad_include, a_rad_notInclude);
+            SetArc(ref sight.arc_in, a_pos, a_notInclude, a_include, includeRate);
+            sight.sph_in.origin = a_pos;
+            sight.sph_notIn.origin = a_pos;
 
 
-            _levels[0].GetList_SightTest_Arc(ref arc_include, ref sph_include, ref sph_notInclude, ref list);
-            foreach (Unit m in list)
-            {
-                DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
-            }
-
+            _levels[0].GetList_SightTest_Arc(ref sight);
+            sight.Draw(Color.gray);
         }
 
         public void Render_Debug(bool isText)

@@ -137,6 +137,7 @@ namespace Proto_AI_4
     //시야 
     public struct Sight
     {
+        public Unit eye;
         public Vector3 localPos_arc_in;
         public Vector3 localPos_sph_in;
         public Vector3 localPos_sph_notIn;
@@ -146,9 +147,11 @@ namespace Proto_AI_4
         public Geo.Sphere sph_notIn;
 
         public List<Unit> list; //시야목록 
+        public Unit closest; //시야목록중 worldPos_parent 와 가장가까운 객체
 
-        public void Init(float arc_angle, float sph_rad_in, float sph_rad_notIn)
+        public void Init(Unit eyeUnit, float arc_angle, float sph_rad_in, float sph_rad_notIn)
         {
+            eye = eyeUnit;
             localPos_arc_in = ConstV.v3_zero;
             localPos_sph_in = ConstV.v3_zero;
             localPos_sph_notIn = ConstV.v3_zero;
@@ -158,13 +161,18 @@ namespace Proto_AI_4
             sph_notIn = new Geo.Sphere(ConstV.v3_zero, sph_rad_notIn);
             sph_in = new Geo.Sphere(ConstV.v3_zero, sph_rad_in);
             list = new List<Unit>();
+            closest = null;
         }
 
-        public void Calc_LocalToWorldPos(Vector3 pos_parent, Quaternion rot)
+        public void Calc_LocalToWorldPos()
         {
-            arc_in.origin = (rot * localPos_arc_in) + pos_parent;
-            sph_in.origin = (rot * localPos_sph_in) + pos_parent;
-            sph_notIn.origin = (rot * localPos_sph_notIn) + pos_parent;
+            //arc_in.origin = (rot * localPos_arc_in) + pos_parent;
+            //sph_in.origin = (rot * localPos_sph_in) + pos_parent;
+            //sph_notIn.origin = (rot * localPos_sph_notIn) + pos_parent;
+
+            arc_in.origin = (eye._rotation * localPos_arc_in) + eye._pos;
+            sph_in.origin = (eye._rotation * localPos_sph_in) + eye._pos;
+            sph_notIn.origin = (eye._rotation * localPos_sph_notIn) + eye._pos;
         }
 
         public void Draw(Color color)
@@ -176,6 +184,13 @@ namespace Proto_AI_4
             {
                 DebugWide.DrawCircle(u._pos, 0.1f, Color.green);
             }
+
+            if (null != closest && null != eye)
+            {
+                DebugWide.DrawLine(closest._pos, eye._pos, Color.green);
+                DebugWide.DrawCircle(closest._pos, 0.3f, Color.green);
+            }
+
         }
     }
 
@@ -255,7 +270,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            _sight.Init(90, 5, 0);
+            _sight.Init(this, 90, 5, 0);
         }
 
         //public void SetPos(Vector3 newPos)
@@ -420,7 +435,7 @@ namespace Proto_AI_4
 
             //새로운 시야정보로 갱신한다. 
             //fixme 0.3초 간격으로 갱신하도록 변경하기 
-            _sight.Calc_LocalToWorldPos(_pos, _rotation);
+            _sight.Calc_LocalToWorldPos();
             ObjectManager.Inst._sphereTree.SightTest(ref _sight);
 
         }

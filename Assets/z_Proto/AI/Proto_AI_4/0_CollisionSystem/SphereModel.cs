@@ -1201,15 +1201,17 @@ namespace Proto_AI_4
         }
 
 
-        public void GetList_SightTest_Arc(ref Geo.Arc arc_include, ref Geo.Sphere sph_include, ref Geo.Sphere sph_notInclude,
-            ref List<Unit> list)
+        //public void GetList_SightTest_Arc(ref Geo.Arc arc_include, ref Geo.Sphere sph_include, ref Geo.Sphere sph_notInclude,
+        public void GetList_SightTest_Arc(ref Sight sight)
         {
-            if (null == list) return;
-            list.Clear();
+            if (null == sight.list) return;
+            sight.list.Clear();
+            sight.closest = null;
 
             _stack.Clear();
             _stack.Push(this);
 
+            float min = float.MaxValue;
             SphereModel next = null, child = null;
             Color cc = Color.gray;
             while (0 != _stack.Count)
@@ -1228,7 +1230,7 @@ namespace Proto_AI_4
                 //INCLUDE_MIN 인 경우, 정상적으로 포함검사가 진행된다
                 //루트구에 대한 예외처리를 넣는것 대신 INCLUDE_MAX 를 항상사용하는 것으로 문제를 해결한다  
                 Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
-                if (false == sph_include.Include_SqrDistance(ref sph_target, Geo.INCLUDE_MAX)) continue;
+                if (false == sight.sph_in.Include_SqrDistance(ref sph_target, Geo.INCLUDE_MAX)) continue;
 
                 //------------------------------------------
                 //[처리]
@@ -1237,11 +1239,20 @@ namespace Proto_AI_4
                 {
                     //cc = Color.blue;
                     //if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
-                    if (Geo.Area.Include_Sphere(ref sph_target, ref sph_include, ref sph_notInclude, ref arc_include))
+                    if (Geo.Area.Include_Sphere(ref sph_target, ref sight.sph_in, ref sight.sph_notIn, ref sight.arc_in))
                     {
-                        //Unit aa = next.GetLink_UserData() as Unit;
-                        //DebugWide.LogRed(aa);
-                        list.Add(next.GetLink_UserData() as Unit);
+                        if(sight.eye._sphereModel != next)
+                        {
+                            float dis = (sight.eye._pos - next._center).sqrMagnitude;
+                            if (min > dis)
+                            {
+                                sight.closest = next.GetLink_UserData() as Unit;
+                                min = dis;
+                            }
+                            sight.list.Add(next.GetLink_UserData() as Unit);
+                            //list.Add(next); 
+                        }
+
                     }
                 }
                 //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
