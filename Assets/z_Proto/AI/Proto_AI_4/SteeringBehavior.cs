@@ -35,6 +35,7 @@ namespace Proto_AI_4
             hide = 0x04000,
             flock = 0x08000,
             offset_pursuit = 0x10000,
+            follow = 0x20000,
         }
 
         public enum Deceleration { slow = 3, normal = 2, fast = 1 };
@@ -688,11 +689,13 @@ namespace Proto_AI_4
             return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
         }
 
-        //작성중 
+
         private Vector3 Follow(Vector3 targetPos, float dis)
         {
 
-            return Arrive2(targetPos);
+            Vector3 ndir = VOp.Normalize(_vehicle._pos - targetPos);
+
+            return Arrive2(targetPos + ndir*dis);
         }
 
 
