@@ -619,7 +619,7 @@ namespace Proto_AI_4
 
             //DebugWide.AddDrawQ_Circle(WorldOffsetPos, 0.1f, Color.red);
 
-
+            //* 두 객체가 만날때의 시간 구하기  
             //속도공식 : v = s / t
             //A------> <------B 두 점이 직선상 한점에서 만나는 시간구하기 : t = s / v
             //1차원 직선상에 A와 B 두 점이 있다고 할시, A와 B의 두 사이거리는 S 가 된다 
@@ -639,38 +639,42 @@ namespace Proto_AI_4
             //DebugWide.LogBlue(LookAheadTime);
             //------------------------
 
+            //WorldOffsetPos : 현재시간에서의 오프셋리더위치
+            //목표가 움직이는 경우 , WorldOffsetPos 만으로는 목표위치에 도달 할 수 없는 문제가 있음 
+            //두 객체가 움직일때 동시에 만나는 시점의 리더위치 : 현재시간에서의 오프셋리더위치 + 동시에 만나는 시점의 거리  
             //now Arrive at the predicted future position of the offset
             //return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast); //s = v * t 
             return Arrive2(WorldOffsetPos + leader._velocity * LookAheadTime); //s = v * t 
 
         }
 
-        private Vector3 OffsetPursuit2(BaseEntity leader, Vector3 offset)
-        {
-            //calculate the offset's position in world space
-            //Vector3 WorldOffsetPos = (leader._rotation * offset) + leader._pos; //PointToWorldSpace
-            Vector3 WorldOffsetPos = _targetPos;
+        //제거대상 , 월드오프셋위치를 타겟포스로 사용함 
+        //private Vector3 OffsetPursuit2(BaseEntity leader, Vector3 offset)
+        //{
+        //    //calculate the offset's position in world space
+        //    //Vector3 WorldOffsetPos = (leader._rotation * offset) + leader._pos; //PointToWorldSpace
+        //    Vector3 WorldOffsetPos = _targetPos;
 
-            Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
-
-
-            //속도공식 : v = s / t
-            //A------> <------B 두 점이 직선상 한점에서 만나는 시간구하기 : t = s / v
-            //1차원 직선상에 A와 B 두 점이 있다고 할시, A와 B의 두 사이거리는 S 가 된다 
-            //A의 속도 1 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (1+1) = 4.5 
-            //A의 속도 2 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (2+1) = 3
-            // * 검산 : s = v * t
-            //(1 * 4.5) + (1 * 4.5) = 4.5 + 4.5 = 9 : A가 4.5거리 만큼 이동후 B와 만나게 된다 
-            //(2 * 3) + (1 * 3) = 6 + 3 = 9 : A가 6거리 만큼 이동후 B와 만나게 된다 
-            float LookAheadTime = ToOffset.magnitude /
-                                  (_vehicle._maxSpeed + leader._speed);
+        //    Vector3 ToOffset = WorldOffsetPos - _vehicle._pos;
 
 
-            //now Arrive at the predicted future position of the offset
-            //return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast); //s = v * t 
-            return Arrive2(WorldOffsetPos + leader._velocity * LookAheadTime); //s = v * t 
+        //    //속도공식 : v = s / t
+        //    //A------> <------B 두 점이 직선상 한점에서 만나는 시간구하기 : t = s / v
+        //    //1차원 직선상에 A와 B 두 점이 있다고 할시, A와 B의 두 사이거리는 S 가 된다 
+        //    //A의 속도 1 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (1+1) = 4.5 
+        //    //A의 속도 2 , B의 속도 1  , S 가 9 일 경우 , t = 9 / (2+1) = 3
+        //    // * 검산 : s = v * t
+        //    //(1 * 4.5) + (1 * 4.5) = 4.5 + 4.5 = 9 : A가 4.5거리 만큼 이동후 B와 만나게 된다 
+        //    //(2 * 3) + (1 * 3) = 6 + 3 = 9 : A가 6거리 만큼 이동후 B와 만나게 된다 
+        //    float LookAheadTime = ToOffset.magnitude /
+        //                          (_vehicle._maxSpeed + leader._speed);
 
-        }
+
+        //    //now Arrive at the predicted future position of the offset
+        //    //return Arrive(WorldOffsetPos + leader._velocity * LookAheadTime, Deceleration.fast); //s = v * t 
+        //    return Arrive2(WorldOffsetPos + leader._velocity * LookAheadTime); //s = v * t 
+
+        //}
 
         public float TurnAroundTime(Unit agent, Vector3 targetPos, float turnSecond)
         {
@@ -682,6 +686,13 @@ namespace Proto_AI_4
             //const float coefficient = 0.5f * 5; //운반기가 목표지점과 정반대로 향하고 있다면 방향을 바꾸는데 5초
 
             return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
+        }
+
+        //작성중 
+        private Vector3 Follow(Vector3 targetPos, float dis)
+        {
+
+            return Arrive2(targetPos);
         }
 
 
