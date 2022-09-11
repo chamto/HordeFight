@@ -133,6 +133,10 @@ namespace Proto_AI_4
 
     }
 
+    public struct Flocking
+    {
+        public float follow_distance; //따라가기 거리 
+    }
 
     //시야 
     public struct Sight
@@ -227,6 +231,7 @@ namespace Proto_AI_4
         //--------------------------------------------------
 
         public Sight _sight = new Sight(); //시야 
+        public Flocking _flocking = new Flocking(); //무리짓기 정보 
 
         //--------------------------------------------------
 

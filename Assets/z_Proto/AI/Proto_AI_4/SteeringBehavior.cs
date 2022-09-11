@@ -247,7 +247,14 @@ namespace Proto_AI_4
             if (On(eType.cohesion))
             {
                 //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
-                _steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
+                //_steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
+
+                //chamto test - follow 를 따로 분리하기 , 임시로 응집에서 테스트 
+                if(null != _vehicle._sight.closest)
+                {
+                    _steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightCohesion * _steeringForceTweaker;
+                }
+
             }
 
 

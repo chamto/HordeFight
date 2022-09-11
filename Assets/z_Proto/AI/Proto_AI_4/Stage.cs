@@ -63,6 +63,7 @@ namespace Proto_AI_4
         public float _sight_angle = 90;
         public float _sight_rad_in = 5;
         public float _sight_rad_notIn = 0;
+        public float _follow_distance = 3;
 
         public bool _init = false;
 
@@ -407,6 +408,8 @@ namespace Proto_AI_4
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;
                 v._sight.sph_notIn.radius = _sight_rad_notIn;
+
+                v._flocking.follow_distance = _follow_distance;
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
