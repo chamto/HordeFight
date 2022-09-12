@@ -17,6 +17,7 @@ namespace Proto_AI_4
         public Vector3 _velocity;
         public Vector3 _linearAcceleration;
         public Vector3 _forces;
+        //public Vector3 _steeringForce; //_steeringBehavior._steeringForce 이용하기 
 
         public float _elasticity = 1; //탄성력  
         public float _damping = 1; //제동
@@ -684,8 +685,13 @@ namespace Proto_AI_4
             //}
 
             Vector3 ToOffset = _targetPos - _pos;
+            //if(null != _sight.closest)
+            //{
+            //    ToOffset = _sight.closest._pos - _pos;
+            //}
+
             //if (ToOffset.sqrMagnitude > 0.001f) //잘못된처리 제거 : 속도값이 있음에도 목표위치에 가까우면 처리안하는 것은 잘못이다. - 도착관련 예전처리 제거 
-            
+
             //최적화를 위해서는 목표와의 거리가 아닌 현재 속도값이 작은지 검사 한다  
             //if (_velocity.sqrMagnitude > 0.0001f) //속도가 없을때도 방향전환 가능해야 하기에 처리제거 
             {

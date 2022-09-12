@@ -43,7 +43,7 @@ namespace Proto_AI_4
         public float _weightSeparation = 20;
         public float _weightAlignment = 20;
         public float _weightCohesion = 20;
-        public float _viewDistance = 10; //시야거리 
+        //public float _viewDistance = 10; 
 
         //public bool _Nonpenetration = true;
         public bool _ObjNonpenetration = true;
@@ -62,9 +62,9 @@ namespace Proto_AI_4
         public Squad[] _Squads = new Squad[4];
 
         public float _sight_angle = 90;
-        public float _sight_rad_in = 5;
+        public float _sight_rad_in = 5; //시야거리 
         public float _sight_rad_notIn = 0;
-        public float _follow_distance = 3;
+        public Vector3 _follow_offset = new Vector3(0,0,-3);
 
         public bool _init = false;
 
@@ -144,7 +144,7 @@ namespace Proto_AI_4
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
-                //u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
+                u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
@@ -152,7 +152,7 @@ namespace Proto_AI_4
                 if(0 == u._id)
                 {
                     //u._steeringBehavior.ArriveOn();
-                    u._steeringBehavior.SeekOn();
+                    //u._steeringBehavior.SeekOn();
                     //u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
                 }
             }
@@ -369,7 +369,7 @@ namespace Proto_AI_4
             KeyInput_Flocking(0);
             KeyInput_Platoon(0);
             //==============================================
-
+            float flag = -1;
             foreach (Unit v in EntityMgr.list)
             {
 
@@ -405,13 +405,17 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightSeparation = _weightSeparation;
                 v._steeringBehavior._weightAlignment = _weightAlignment;
                 v._steeringBehavior._weightCohesion = _weightCohesion;
-                v._steeringBehavior._viewDistance = _viewDistance;
+                //v._steeringBehavior._viewDistance = _viewDistance;
+
+                flag *= -1;
+                _follow_offset.x *= flag;
+                v._steeringBehavior._offset = _follow_offset;
 
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;
                 v._sight.sph_notIn.radius = _sight_rad_notIn;
 
-                v._flocking.follow_distance = _follow_distance;
+                //v._flocking.follow_distance = _follow_distance; //제거대상
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);
@@ -711,11 +715,10 @@ namespace Proto_AI_4
                 DebugWide.LogBlue("Arrive U0 :" + u0._steeringBehavior.IsArriveOn());
             }
 
-            //u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
-            //chamto test
-            //u0._steeringBehavior.CohesionOff();
-            //u0._steeringBehavior.SeparationOff();
-            //u0._steeringBehavior.AlignmentOff();
+            u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
+            u0._steeringBehavior.CohesionOff();
+            u0._steeringBehavior.SeparationOff();
+            u0._steeringBehavior.AlignmentOff();
 
         }
 
