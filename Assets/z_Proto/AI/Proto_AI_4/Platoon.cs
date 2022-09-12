@@ -644,7 +644,17 @@ namespace Proto_AI_4
 
         public void Draw(Color color)
         {
-            base.Draw(Color.red);
+            Color cc = color;
+            if((int)eFormDepth.Platoon  == _depth)
+            {
+                cc = Color.red; 
+            }
+            if ((int)eFormDepth.Squad == _depth)
+            {
+                cc = Color.green;
+            }
+
+            base.Draw(cc);
 
             for (int i = 0; i < _squad_children.Count; i++)
             {

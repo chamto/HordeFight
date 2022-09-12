@@ -266,7 +266,7 @@ namespace Proto_AI_4
 
             if (On(eType.seek))
             {
-                //_steeringForce += Seek(m_pVehicle.World().Crosshair()) * m_dWeightSeek;
+                _steeringForce += Seek(_targetPos) * _weightSeek * _steeringForceTweaker;
             }
 
             if (On(eType.flee))

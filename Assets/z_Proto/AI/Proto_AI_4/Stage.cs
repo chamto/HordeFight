@@ -36,6 +36,7 @@ namespace Proto_AI_4
         public float _entireUnit_elasticity = 1;
         public bool _isStatic = false;
 
+        public float _weightSeek = 20;
         public float _weightArrive = 20;
         public float _weightOffsetPursuit = 20;
         public float _weightObstacleAvoidance = 20;
@@ -111,9 +112,9 @@ namespace Proto_AI_4
         {
             int platId = 0; //임시
 
-            _Platoons[platId] = Squad.Create();
-            _Platoons[platId]._targetPos = _tr_platoon_0.position;
-            _Platoons[platId]._pos = _tr_platoon_0.position;
+            //_Platoons[platId] = Squad.Create();
+            //_Platoons[platId]._targetPos = _tr_platoon_0.position;
+            //_Platoons[platId]._pos = _tr_platoon_0.position;
 
             Unit unit = null;
             for (int i = 0; i < 30; i++)
@@ -137,19 +138,21 @@ namespace Proto_AI_4
             _Platoons[platId] = Squad.Create();
             _Platoons[platId]._targetPos = _tr_platoon_0.position;
             _Platoons[platId]._pos = _tr_platoon_0.position;
-
+            _Platoons[platId]._depth = (int)eFormDepth.Platoon;
             _Platoons[platId].AddSquad(_Squads[0]);
 
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
-                u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
+                //u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
 
-                //if(0 == u._id)
+                if(0 == u._id)
                 {
+                    //u._steeringBehavior.ArriveOn();
+                    u._steeringBehavior.SeekOn();
                     //u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
                 }
             }
@@ -313,12 +316,8 @@ namespace Proto_AI_4
         public void Update(float deltaTime)
         {
 
-            //_Squads[0]._speed = _formation_squard_speed;
-            //_Squads[0]._targetPos = _tr_platoon_0.position;
-            //_Squads[0].Update(deltaTime);
-
             //----------------------------------------------
-
+            _Squads[0]._speed = _formation_squard_speed;
             _Platoons[0]._speed = _formation_platoon_speed;
             _Platoons[0]._targetPos = _tr_platoon_0.position;
             _Platoons[0].Update(deltaTime);
@@ -379,13 +378,14 @@ namespace Proto_AI_4
                 //    v._mass = 10;
                 //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
                 //}
-                //v._steeringBehavior._targetPos = _tr_platoon_0.position;
+
                 //v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
                 if(null != v._disposition._belong_formation)
                 {
                     v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함 
                 }
-
+                //v._steeringBehavior._targetPos = _tr_platoon_0.position;
+                //v._targetPos = _tr_platoon_0.position;
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);
@@ -397,6 +397,7 @@ namespace Proto_AI_4
                 //v._elasticity = _entireUnit_elasticity; //유닛별 설정으로 변경하기 
                 v._isStatic = _isStatic;
 
+                v._steeringBehavior._weightSeek = _weightSeek;
                 v._steeringBehavior._weightArrive = _weightArrive;
                 v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
                 v._steeringBehavior._weightObstacleAvoidance = _weightObstacleAvoidance;
@@ -634,6 +635,7 @@ namespace Proto_AI_4
                     {
                         u._steeringBehavior.ArriveOn(); //도착 활성  
                     }
+
                 }
                 DebugWide.LogBlue("Arrive :" + u1._steeringBehavior.IsArriveOn());
             }
@@ -708,7 +710,7 @@ namespace Proto_AI_4
                 DebugWide.LogBlue("Arrive U0 :" + u0._steeringBehavior.IsArriveOn());
             }
 
-            u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
+            //u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
             //chamto test
             //u0._steeringBehavior.CohesionOff();
             //u0._steeringBehavior.SeparationOff();
@@ -840,7 +842,7 @@ namespace Proto_AI_4
             //DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_a.position).magnitude, Color.gray);
             //DebugWide.DrawCircle(_tr_test.position, (_tr_test.position - _tr_line_b.position).magnitude, Color.gray);
 
-            //_Platoons[0].Draw(Color.green); //소대 출력
+            _Platoons[0].Draw(Color.green); //소대 출력
             //_Squads[0].Draw(Color.green);
 
             Color color = Color.black;
