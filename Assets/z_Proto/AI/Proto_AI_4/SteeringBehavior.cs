@@ -16,26 +16,26 @@ namespace Proto_AI_4
         }
 
 
-        public enum eType
+        public enum eType 
         {
             none = 0x00000,
-            seek = 0x00002,
-            flee = 0x00004,
-            arrive = 0x00008,
-            wander = 0x00010,
-            cohesion = 0x00020,
-            separation = 0x00040,
-            allignment = 0x00080,
-            obstacle_avoidance = 0x00100,
-            wall_avoidance = 0x00200,
-            follow_path = 0x00400,
-            pursuit = 0x00800,
-            evade = 0x01000,
-            interpose = 0x02000,
-            hide = 0x04000,
-            flock = 0x08000,
-            offset_pursuit = 0x10000,
-            follow = 0x20000,
+            seek = 1 << 0,
+            flee = 1 << 1,
+            arrive = 1 << 2,
+            wander = 1 << 3,
+            cohesion = 1 << 4,
+            separation = 1 << 5,
+            allignment = 1 << 6,
+            obstacle_avoidance = 1 << 7,
+            wall_avoidance = 1 << 8,
+            follow_path = 1 << 9,
+            pursuit = 1 << 10,
+            evade = 1 << 11,
+            interpose = 1 << 12,
+            hide = 1 << 13,
+            flock = 1 << 14,
+            offset_pursuit = 1 << 15,
+            follow = 1 << 16,
         }
 
         public enum Deceleration { slow = 3, normal = 2, fast = 1 };
@@ -177,7 +177,7 @@ namespace Proto_AI_4
         public bool IsOffsetPursuitOn() { return On(eType.offset_pursuit); }
         public bool IsFlockingOn() { return On(eType.cohesion | eType.separation | eType.allignment | eType.wander); }
 
-        bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
+        public bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
 
         bool AccumulateForce(ref Vector3 RunningTot, Vector3 ForceToAdd)
         {
