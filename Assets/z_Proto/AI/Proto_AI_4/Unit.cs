@@ -410,7 +410,11 @@ namespace Proto_AI_4
             if (null != _disposition._belong_formation)
             {
                 //OffsetPursuit 에서의 목표위치 
-                _targetPos = (_disposition._belong_formation._rotation * _disposition._offset) + _disposition._belong_formation._pos; //PointToWorldSpace 
+                //_targetPos = (_disposition._belong_formation._rotation * _disposition._offset) + _disposition._belong_formation._pos; //PointToWorldSpace 
+                if (_steeringBehavior.IsOffsetPursuitOn())
+                {
+                    _targetPos = _disposition._belong_formation._targetPos;
+                }
 
                 //---------
                 if (_disposition._belong_formation._changeTarget)

@@ -320,7 +320,7 @@ namespace Proto_AI_4
             _Squads[0]._speed = _formation_squard_speed;
             _Platoons[0]._speed = _formation_platoon_speed;
             _Platoons[0]._targetPos = _tr_platoon_0.position;
-            //_Platoons[0].Update(deltaTime);
+            _Platoons[0].Update(deltaTime);
 
             //for(int i=0;i< _Platoons[0]._squad_count;i++)
             //{
@@ -373,20 +373,20 @@ namespace Proto_AI_4
             foreach (Unit v in EntityMgr.list)
             {
 
-                if(0 == v._id)
-                {
-                    //DebugWide.LogGreen(v._targetPos);
-                    //v._mass = 10;
-                    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
-                }
+                //if(0 == v._id)
+                //{
+                //    //DebugWide.LogGreen(v._targetPos);
+                //    //v._mass = 10;
+                //    //v._forces = (_tr_line_a.position - _tr_test.position) * 5; 
+                //}
 
                 //v._steeringBehavior._targetPos = v._disposition._belong_squad._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함
                 //if(null != v._disposition._belong_formation)
                 //{
                 //    v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함 
                 //}
-                //v._steeringBehavior._targetPos = _tr_platoon_0.position;
-                v._targetPos = _tr_platoon_0.position;
+
+                v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);
