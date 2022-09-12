@@ -55,7 +55,7 @@ namespace Proto_AI_4
         public Unit _pTargetInterpose2;
 
         //the current target
-        public Vector3 _targetPos;
+        //public Vector3 _targetPos;
 
         //length of the 'detection box' utilized in obstacle avoidance
         public float _detectBoxLength;
@@ -266,7 +266,8 @@ namespace Proto_AI_4
 
             if (On(eType.seek))
             {
-                _steeringForce += Seek(_targetPos) * _weightSeek * _steeringForceTweaker;
+                _steeringForce += Seek(_vehicle._targetPos) * _weightSeek * _steeringForceTweaker;
+                //DebugWide.LogBlue(_steeringForce.magnitude + "  " + _vehicle._targetPos);
             }
 
             if (On(eType.flee))
@@ -280,7 +281,7 @@ namespace Proto_AI_4
                 //_decelerationTime = 0.09f; //0.09초동안 감속 - 감속되는 것을 보여주지 않기 위해 짧게 설정 
                 //_weight = 50;
                 //_maxForce = 100;
-                _steeringForce += Arrive2(_targetPos) * _weightArrive * _steeringForceTweaker;
+                _steeringForce += Arrive2(_vehicle._targetPos) * _weightArrive * _steeringForceTweaker;
             }
 
             if (On(eType.pursuit))

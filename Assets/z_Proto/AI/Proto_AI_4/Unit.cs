@@ -406,7 +406,7 @@ namespace Proto_AI_4
             //----------------------------------------------
 
             _oldPos = _pos;
-            _targetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
+            //_targetPos = _steeringBehavior._targetPos; //Arrive2 에서의 목표위치 
             if (null != _disposition._belong_formation)
             {
                 //OffsetPursuit 에서의 목표위치 
@@ -674,7 +674,10 @@ namespace Proto_AI_4
             Intergrate(deltaTime);
 
             //=============================================================
-
+            //if(0 == _id)
+            //{
+            //    DebugWide.LogRed(_targetPos);
+            //}
 
             Vector3 ToOffset = _targetPos - _pos;
             //if (ToOffset.sqrMagnitude > 0.001f) //잘못된처리 제거 : 속도값이 있음에도 목표위치에 가까우면 처리안하는 것은 잘못이다. - 도착관련 예전처리 제거 
