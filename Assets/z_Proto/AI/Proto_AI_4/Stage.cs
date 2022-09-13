@@ -661,7 +661,7 @@ namespace Proto_AI_4
                         u._steeringBehavior.CohesionOn();
                     }
                 }
-                DebugWide.LogBlue("Cohesion :" + u0._steeringBehavior.IsCohesionOn());
+                DebugWide.LogBlue("Cohesion :" + u1._steeringBehavior.IsCohesionOn());
             }
 
             if (Input.GetKeyDown(KeyCode.C))
@@ -679,7 +679,7 @@ namespace Proto_AI_4
                         u._steeringBehavior.AlignmentOn();
                     }
                 }
-                DebugWide.LogBlue("Alignment :" + u0._steeringBehavior.IsAlignmentOn());
+                DebugWide.LogBlue("Alignment :" + u1._steeringBehavior.IsAlignmentOn());
             }
 
             if (Input.GetKeyDown(KeyCode.V))
@@ -697,23 +697,24 @@ namespace Proto_AI_4
                         u._steeringBehavior.SeparationOn();
                     }
                 }
-                DebugWide.LogBlue("Separation :" + u0._steeringBehavior.IsSeparationOn());
+                DebugWide.LogBlue("Separation :" + u1._steeringBehavior.IsSeparationOn());
             }
 
             if (Input.GetKeyDown(KeyCode.B))
             {
-                if (u0._steeringBehavior.IsArriveOn())
+                if (u0._steeringBehavior.IsFollowOn())
                 {
-                    u0._steeringBehavior.ArriveOff();
+                    u0._steeringBehavior.FollowOff();
                 }
                 else
                 {
-                    u0._steeringBehavior.ArriveOn(); //도착 활성  
+                    u0._steeringBehavior.FollowOn(); //도착 활성  
                 }
 
-                DebugWide.LogBlue("Arrive U0 :" + u0._steeringBehavior.IsArriveOn());
+                DebugWide.LogBlue("Follow :" + u1._steeringBehavior.IsFollowOn());
             }
 
+            u0._isStatic = true;
             u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
             u0._steeringBehavior.CohesionOff();
             u0._steeringBehavior.SeparationOff();

@@ -141,6 +141,7 @@ namespace Proto_AI_4
         public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent = v; }
         public void OffsetPursuitOn(BaseEntity orderPoint, Vector3 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pOrderPoint = orderPoint; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
+        public void FollowOn() { _flags |= (int)eType.follow; }
 
         public void AllOff() { _flags = (int)eType.none; }
         public void FleeOff() { if (On(eType.flee)) _flags ^= (int)eType.flee; }
@@ -159,6 +160,7 @@ namespace Proto_AI_4
         public void HideOff() { if (On(eType.hide)) _flags ^= (int)eType.hide; }
         public void OffsetPursuitOff() { if (On(eType.offset_pursuit)) _flags ^= (int)eType.offset_pursuit; }
         public void FlockingOff() { CohesionOff(); AlignmentOff(); SeparationOff(); WanderOff(); }
+        public void FollowOff() { if (On(eType.follow)) _flags ^= (int)eType.follow; }
 
         public bool IsFleeOn() { return On(eType.flee); }
         public bool IsSeekOn() { return On(eType.seek); }
@@ -176,8 +178,9 @@ namespace Proto_AI_4
         public bool IsHideOn() { return On(eType.hide); }
         public bool IsOffsetPursuitOn() { return On(eType.offset_pursuit); }
         public bool IsFlockingOn() { return On(eType.cohesion | eType.separation | eType.allignment | eType.wander); }
+        public bool IsFollowOn() { return On(eType.follow); }
 
-        public bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
+        private bool On(eType bt) { return (_flags & (int)bt) == (int)bt; }
 
         bool AccumulateForce(ref Vector3 RunningTot, Vector3 ForceToAdd)
         {
@@ -247,19 +250,18 @@ namespace Proto_AI_4
             if (On(eType.cohesion))
             {
                 //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
-                //_steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
+                _steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
+            }
 
-                //chamto test - follow 를 따로 분리하기 , 임시로 응집에서 테스트 
-                if(null != _vehicle._sight.closest)
+            if (On(eType.follow))
+            {
+                if (null != _vehicle._sight.closest)
                 {
                     //_steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightCohesion * _steeringForceTweaker;
 
                     _steeringForce += OffsetPursuit(_vehicle._sight.closest, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
                 }
-
             }
-
-
 
             if (On(eType.wander))
             {
