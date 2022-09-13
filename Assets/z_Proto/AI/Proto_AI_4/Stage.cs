@@ -192,7 +192,7 @@ namespace Proto_AI_4
 
                 //if(0 == u._id)
                 {
-                    u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
+                    u._steeringBehavior.OffsetPursuitOn();
                 }
             }
         }
@@ -307,7 +307,7 @@ namespace Proto_AI_4
 
                 //if(0 == u._id)
                 {
-                    u._steeringBehavior.OffsetPursuitOn(u._disposition._belong_formation, u._disposition._offset);
+                    u._steeringBehavior.OffsetPursuitOn();
                 }
             }
         }
@@ -412,7 +412,7 @@ namespace Proto_AI_4
                 //v._steeringBehavior._viewDistance = _viewDistance;
 
                 _follow_offset.x *= -1;
-                v._steeringBehavior._offset = _follow_offset;
+                v._disposition._offset = _follow_offset; //임시 테스트 , 스쿼드설정 정보를 덮는 문제가 있음 
 
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;

@@ -48,7 +48,7 @@ namespace Proto_AI_4
         //these can be used to keep track of friends, pursuers, or prey
         public Unit _pTargetAgent;
 
-        public BaseEntity _pOrderPoint;
+        //public BaseEntity _pOrderPoint;
 
         //인터포즈(둘 사이에 끼기)에서 사용 
         public Unit _pTargetInterpose1;
@@ -113,7 +113,7 @@ namespace Proto_AI_4
 
 
         //any offset used for formations or offset pursuit
-        public Vector3 _offset;
+        //public Vector3 _offset;
 
         //binary flags to indicate whether or not a behavior should be active
         private int _flags;
@@ -139,7 +139,8 @@ namespace Proto_AI_4
         public void FollowPathOn() { _flags |= (int)eType.follow_path; }
         public void InterposeOn(Unit v1, Unit v2) { _flags |= (int)eType.interpose; _pTargetInterpose1 = v1; _pTargetInterpose2 = v2; }
         public void HideOn(Unit v) { _flags |= (int)eType.hide; _pTargetAgent = v; }
-        public void OffsetPursuitOn(BaseEntity orderPoint, Vector3 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pOrderPoint = orderPoint; }
+        //public void OffsetPursuitOn(BaseEntity orderPoint, Vector3 offset) { _flags |= (int)eType.offset_pursuit; _offset = offset; _pOrderPoint = orderPoint; }
+        public void OffsetPursuitOn() { _flags |= (int)eType.offset_pursuit; }
         public void FlockingOn() { CohesionOn(); AlignmentOn(); SeparationOn(); WanderOn(); }
         public void FollowOn() { _flags |= (int)eType.follow; }
 
@@ -259,7 +260,7 @@ namespace Proto_AI_4
                 {
                     //_steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightCohesion * _steeringForceTweaker;
 
-                    _steeringForce += OffsetPursuit(_vehicle._sight.closest, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
+                    _steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightOffsetPursuit * _steeringForceTweaker;
                 }
             }
 
@@ -295,7 +296,7 @@ namespace Proto_AI_4
 
             if (On(eType.offset_pursuit))
             {
-                _steeringForce += OffsetPursuit(_pOrderPoint, _offset) * _weightOffsetPursuit * _steeringForceTweaker;
+                _steeringForce += OffsetPursuit(_vehicle._disposition._belong_formation, _vehicle._disposition._offset) * _weightOffsetPursuit * _steeringForceTweaker;
             }
 
             if (On(eType.interpose))
