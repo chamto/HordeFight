@@ -369,7 +369,7 @@ namespace Proto_AI_4
             KeyInput_Flocking(0);
             KeyInput_Platoon(0);
             //==============================================
-            float flag = -1;
+
             foreach (Unit v in EntityMgr.list)
             {
 
@@ -407,8 +407,7 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightCohesion = _weightCohesion;
                 //v._steeringBehavior._viewDistance = _viewDistance;
 
-                flag *= -1;
-                _follow_offset.x *= flag;
+                _follow_offset.x *= -1;
                 v._steeringBehavior._offset = _follow_offset;
 
                 v._sight.arc_in.SetAngle(_sight_angle);
