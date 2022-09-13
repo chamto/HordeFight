@@ -397,6 +397,10 @@ namespace Proto_AI_4
                 v._anglePerSecond = _anglePerSecond;
                 //v._elasticity = _entireUnit_elasticity; //유닛별 설정으로 변경하기 
                 v._isStatic = _isStatic;
+                if (0 == v._id)
+                {
+                    v._isStatic = true;
+                }
 
                 v._steeringBehavior._weightSeek = _weightSeek;
                 v._steeringBehavior._weightArrive = _weightArrive;
@@ -702,23 +706,27 @@ namespace Proto_AI_4
 
             if (Input.GetKeyDown(KeyCode.B))
             {
-                if (u0._steeringBehavior.IsFollowOn())
+                for (int i = 0; i < EntityMgr.list.Count; i++)
                 {
-                    u0._steeringBehavior.FollowOff();
-                }
-                else
-                {
-                    u0._steeringBehavior.FollowOn(); //도착 활성  
-                }
+                    Unit u = EntityMgr.list[i];
 
+                    if (u._steeringBehavior.IsFollowOn())
+                    {
+                        u._steeringBehavior.FollowOff();
+                    }
+                    else
+                    {
+                        u._steeringBehavior.FollowOn(); //도착 활성  
+                    }
+                }
                 DebugWide.LogBlue("Follow :" + u1._steeringBehavior.IsFollowOn());
             }
 
-            u0._isStatic = true;
             u0._steeringBehavior.ArriveOn(); //0번 객체는 도착모드가 항상 활성되게 한다 
             u0._steeringBehavior.CohesionOff();
             u0._steeringBehavior.SeparationOff();
             u0._steeringBehavior.AlignmentOff();
+            u0._steeringBehavior.FollowOff();
 
         }
 
