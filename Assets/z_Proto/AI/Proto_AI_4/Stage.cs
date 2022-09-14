@@ -43,6 +43,7 @@ namespace Proto_AI_4
         public float _weightSeparation = 20;
         public float _weightAlignment = 20;
         public float _weightCohesion = 20;
+        public float _weightFollow = 20;
         //public float _viewDistance = 10; 
 
         //public bool _Nonpenetration = true;
@@ -409,6 +410,7 @@ namespace Proto_AI_4
                 v._steeringBehavior._weightSeparation = _weightSeparation;
                 v._steeringBehavior._weightAlignment = _weightAlignment;
                 v._steeringBehavior._weightCohesion = _weightCohesion;
+                v._steeringBehavior._weightFollow = _weightFollow;
                 //v._steeringBehavior._viewDistance = _viewDistance;
 
                 _follow_offset.x *= -1;

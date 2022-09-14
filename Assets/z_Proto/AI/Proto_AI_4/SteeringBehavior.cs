@@ -100,6 +100,7 @@ namespace Proto_AI_4
         public float _weightHide;
         public float _weightEvade;
         public float _weightFollowPath;
+        public float _weightFollow;
 
         //how far the agent can 'see'
         //public float _viewDistance;
@@ -260,7 +261,7 @@ namespace Proto_AI_4
                 {
                     //_steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightCohesion * _steeringForceTweaker;
 
-                    _steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightOffsetPursuit * _steeringForceTweaker;
+                    _steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightFollow * _steeringForceTweaker;
                 }
             }
 
