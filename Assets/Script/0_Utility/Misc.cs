@@ -1230,6 +1230,21 @@ namespace UtilGS9
                 return false;
             }
 
+            public bool Include_SqrDistance(ref Sphere target)
+            {
+
+                Vector3 dir = target.origin - origin;
+                float sqr_between = (dir.x * dir.x + dir.y * dir.y + dir.z * dir.z);
+
+                float dis_max = radius + target.radius * includeRate;
+                if (sqr_between <= dis_max * dis_max)
+                {
+                    return true;
+                }
+
+                return false;
+            }
+
             //길이를 제대로 구해서 계산하여 정확한 비율을 반환한다. [-1 ~ 0 ~ 1] 
             public float Rate_DistanceZero(ref Sphere target, bool reversal = false)
             {
