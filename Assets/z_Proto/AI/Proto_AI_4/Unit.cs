@@ -268,6 +268,7 @@ namespace Proto_AI_4
 
             SetPos(pos);
             _oldPos = pos;
+            _targetPos = pos;
 
             //==============================================
 
@@ -671,6 +672,7 @@ namespace Proto_AI_4
             }
         }
 
+        //자유이동 , 방향에만 제한을 두는 방식 
         public void Update_NormalMovement(float deltaTime)
         {
 
@@ -683,6 +685,7 @@ namespace Proto_AI_4
             //{
             //    DebugWide.LogRed(_targetPos);
             //}
+
 
             Vector3 ToOffset = _targetPos - _pos;
             //if(null != _sight.closest)

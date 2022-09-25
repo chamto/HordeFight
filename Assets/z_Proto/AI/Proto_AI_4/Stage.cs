@@ -145,7 +145,7 @@ namespace Proto_AI_4
             for (int i = 0; i < EntityMgr.list.Count; i++)
             {
                 Unit u = EntityMgr.list[i];
-                u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
+                //u._steeringBehavior.ArriveOn(); //도착 활성 , 무리짓기 알고리즘의 응집과 비슷한 효과를 보여준다 
                 //u._steeringBehavior.ObstacleAvoidanceOn();
                 //u._steeringBehavior.FlockingOn();
                 //u._steeringBehavior.SeparationOn(); //비침투 알고리즘 문제점을 어느정도 해결해 준다 
@@ -371,6 +371,8 @@ namespace Proto_AI_4
             KeyInput_Platoon(0);
             //==============================================
 
+            Unit u0 = EntityMgr.list[0];
+            Unit u1 = EntityMgr.list[1];
             foreach (Unit v in EntityMgr.list)
             {
 
@@ -387,7 +389,6 @@ namespace Proto_AI_4
                 //    v._steeringBehavior._targetPos = v._disposition._belong_formation.FindUpDepth(eFormDepth.Squad)._pos; //Arrive2 에서 사용 , OffsetPursuit 에서는 사용안함 
                 //}
 
-                v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
 
                 v._radius_geo = _radius_geo;
                 v.SetRadius(_radius_body);
@@ -398,10 +399,28 @@ namespace Proto_AI_4
                 v._anglePerSecond = _anglePerSecond;
                 //v._elasticity = _entireUnit_elasticity; //유닛별 설정으로 변경하기 
                 v._isStatic = _isStatic;
+
+                //-----------------------
+                Vector3 dir_u0toT = _tr_platoon_0.position - u0._pos;
                 if (0 == v._id)
                 {
                     v._isStatic = true;
+                    v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
                 }
+                else
+                {
+                    if (null != v._sight.closest)
+                    {
+                        //v._targetPos = v._sight.closest._pos;
+                    }
+
+                    //v._targetPos = v._pos + dir_u0toT;
+
+                    v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
+                }
+
+
+                //-----------------------
 
                 v._steeringBehavior._weightSeek = _weightSeek;
                 v._steeringBehavior._weightArrive = _weightArrive;
@@ -415,12 +434,11 @@ namespace Proto_AI_4
 
                 _follow_offset.x *= -1;
                 v._disposition._offset = _follow_offset; //임시 테스트 , 스쿼드설정 정보를 덮는 문제가 있음 
+                v._flocking.follow_distance = -_follow_offset.z; //제거대상
 
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;
                 v._sight.sph_notIn.radius = _sight_rad_notIn;
-
-                //v._flocking.follow_distance = _follow_distance; //제거대상
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);

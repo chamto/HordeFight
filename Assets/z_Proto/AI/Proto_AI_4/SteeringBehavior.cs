@@ -259,9 +259,9 @@ namespace Proto_AI_4
             {
                 if (null != _vehicle._sight.closest)
                 {
-                    //_steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightCohesion * _steeringForceTweaker;
+                    _steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
 
-                    _steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightFollow * _steeringForceTweaker;
+                    //_steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightFollow * _steeringForceTweaker;
                 }
             }
 
@@ -709,7 +709,15 @@ namespace Proto_AI_4
 
             Vector3 ndir = VOp.Normalize(_vehicle._pos - targetPos);
 
-            return Arrive2(targetPos + ndir*dis);
+            Vector3 offsetPos = targetPos + ndir * dis;
+
+            //계산된 오프셋위치가 운반기의 뒤에 있는 경우 
+            if(0 > Vector3.Dot(_vehicle._heading, (offsetPos - _vehicle._pos)))
+            {
+                return Stop(); // ConstV.v3_zero; 
+            }
+
+            return Arrive2(offsetPos);
         }
 
 
@@ -883,6 +891,11 @@ namespace Proto_AI_4
                 }
             }
 
+
+            //if (0 > Vector3.Dot(_vehicle._heading, SteeringForce))
+            //{
+            //    SteeringForce = Stop(); //chamto test , 반향이 반대인 경우 정지힘을 준다 
+            //}
 
             if (0 == _vehicle._id)
             {
