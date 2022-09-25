@@ -563,6 +563,9 @@ namespace Proto_AI_4
         public void SightTest(ref Sight sight)
         {
             _levels[0].GetList_SightTest_Arc(ref sight);
+
+            _levels[0].GetList_SphereIn(ref sight.sph_in_around, sight.eye._sphereModel, ref sight.list_around);
+
             //foreach (Unit m in list)
             //{
             //    DebugWide.DrawCircle(m._pos, 0.1f, Color.blue);
@@ -623,7 +626,7 @@ namespace Proto_AI_4
             }
 
             Sight sight = new Sight();
-            sight.Init(null, 0, a_rad_include, a_rad_notInclude);
+            sight.Init(null, 0, a_rad_include, a_rad_notInclude, a_rad_include);
             SetArc(ref sight.arc_in, a_pos, a_notInclude, a_include, includeRate);
             sight.sph_in.origin = a_pos;
             sight.sph_notIn.origin = a_pos;

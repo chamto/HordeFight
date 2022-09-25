@@ -1204,8 +1204,8 @@ namespace Proto_AI_4
         //public void GetList_SightTest_Arc(ref Geo.Arc arc_include, ref Geo.Sphere sph_include, ref Geo.Sphere sph_notInclude,
         public void GetList_SightTest_Arc(ref Sight sight)
         {
-            if (null == sight.list) return;
-            sight.list.Clear();
+            if (null == sight.list_view) return;
+            sight.list_view.Clear();
             sight.closest = null;
 
             _stack.Clear();
@@ -1249,7 +1249,7 @@ namespace Proto_AI_4
                                 sight.closest = next.GetLink_UserData() as Unit;
                                 min = dis;
                             }
-                            sight.list.Add(next.GetLink_UserData() as Unit);
+                            sight.list_view.Add(next.GetLink_UserData() as Unit);
                             //list.Add(next); 
                         }
 
@@ -1287,6 +1287,77 @@ namespace Proto_AI_4
         }
 
 
+        public void GetList_SphereIn(ref Geo.Sphere sph_in, SphereModel exceptModel, ref List<Unit> list)
+        {
+            if (null == list) return;
+            list.Clear();
+
+            _stack.Clear();
+            _stack.Push(this);
+
+            float min = float.MaxValue;
+            SphereModel next = null, child = null;
+            Color cc = Color.gray;
+            while (0 != _stack.Count)
+            {
+                next = _stack.Pop();
+
+                if (null == next) break;
+
+                //------------------------------------------
+                //[조건]
+                //슈퍼구와 대상구가 조금이라도 안겹치면 검사에서 제외한다   
+
+                Geo.Sphere sph_target = new Geo.Sphere(next._center, next._radius);
+                if (false == sph_in.Include_SqrDistance(ref sph_target, Geo.INCLUDE_MAX)) continue;
+
+                //------------------------------------------
+                //[처리]
+                //cc = Color.gray;
+                if (false == next.HasFlag(Flag.SUPERSPHERE) && null == next._link_downLevel_supherSphere) //최하위 자식구 
+                {
+                    //cc = Color.blue;
+                    if(next != exceptModel)
+                    {
+                        if (true == sph_in.Include_SqrDistance(ref sph_target))
+                        {
+
+                            list.Add(next.GetLink_UserData() as Unit);
+
+                        }
+                    }
+
+                }
+                //DebugWide.DrawCircle(next._center, next.GetRadius(), cc);
+
+
+                //------------------------------------------
+
+                //------------------------------------------
+                //[스택에 대상 객체를 넣는다] 
+                if (false == next.HasFlag(Flag.SUPERSPHERE))
+                {   //현재 자식구인 경우
+
+                    //자식구가 슈퍼구인 경우 next를 변경한다 
+                    if (null != next._link_downLevel_supherSphere)
+                    {
+                        next = next._link_downLevel_supherSphere;
+                    }
+                }
+                child = next._tail; //자식이 없으면 null이 들어가게 된다 
+
+
+                for (int i = 0; i < next._childCount; i++)
+                {
+
+                    if (null == child) break;
+                    _stack.Push(child);
+                    child = child.GetPrevSibling();
+                }
+                //------------------------------------------
+
+            }
+        }
 
         //RangeTest 조건에 충족되는 모든 객체들을 리스트로 반환 
         public void GetList_RangeTest_NoneRecursive(Vector3 center, float minRadius, float maxRadius, 

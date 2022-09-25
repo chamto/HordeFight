@@ -240,19 +240,19 @@ namespace Proto_AI_4
             if (On(eType.separation))
             {
                 //_steeringForce += Separation(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
-                _steeringForce += Separation(_vehicle._sight.list) * _weightSeparation * _steeringForceTweaker;
+                _steeringForce += Separation(_vehicle._sight.list_around) * _weightSeparation * _steeringForceTweaker;
             }
 
             if (On(eType.allignment))
             {
                 //_steeringForce += Alignment(EntityMgr.list) * _weightAlignment * _steeringForceTweaker;
-                _steeringForce += Alignment(_vehicle._sight.list) * _weightAlignment * _steeringForceTweaker;
+                _steeringForce += Alignment(_vehicle._sight.list_around) * _weightAlignment * _steeringForceTweaker;
             }
 
             if (On(eType.cohesion))
             {
                 //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
-                _steeringForce += Cohesion(_vehicle._sight.list) * _weightCohesion * _steeringForceTweaker;
+                _steeringForce += Cohesion(_vehicle._sight.list_around) * _weightCohesion * _steeringForceTweaker;
             }
 
             if (On(eType.follow))

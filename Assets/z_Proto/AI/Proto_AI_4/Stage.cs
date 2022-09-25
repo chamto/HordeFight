@@ -65,6 +65,7 @@ namespace Proto_AI_4
         public float _sight_angle = 90;
         public float _sight_rad_in = 5; //시야거리 
         public float _sight_rad_notIn = 0;
+        public float _sight_rad_in_around = 4; //주변객체
         public Vector3 _follow_offset = new Vector3(0,0,-3);
 
         public bool _init = false;
@@ -439,6 +440,7 @@ namespace Proto_AI_4
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;
                 v._sight.sph_notIn.radius = _sight_rad_notIn;
+                v._sight.sph_in_around.radius = _sight_rad_in_around;
 
                 //v._isNonpenetration = _Nonpenetration;
                 v.Update(deltaTime);

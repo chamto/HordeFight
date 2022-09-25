@@ -146,26 +146,35 @@ namespace Proto_AI_4
         public Vector3 localPos_arc_in;
         public Vector3 localPos_sph_in;
         public Vector3 localPos_sph_notIn;
+        public Vector3 localPos_sph_in_around;
 
+        //view
         public Geo.Arc arc_in;
         public Geo.Sphere sph_in;
         public Geo.Sphere sph_notIn;
 
-        public List<Unit> list; //시야목록 
+        public List<Unit> list_view; //시야목록 
         public Unit closest; //시야목록중 worldPos_parent 와 가장가까운 객체
 
-        public void Init(Unit eyeUnit, float arc_angle, float sph_rad_in, float sph_rad_notIn)
+        //around
+        public Geo.Sphere sph_in_around;
+        public List<Unit> list_around; //주변객체목룍 
+
+        public void Init(Unit eyeUnit, float arc_angle, float sph_rad_in, float sph_rad_notIn, float sph_around)
         {
             eye = eyeUnit;
             localPos_arc_in = ConstV.v3_zero;
             localPos_sph_in = ConstV.v3_zero;
             localPos_sph_notIn = ConstV.v3_zero;
+            localPos_sph_in_around = ConstV.v3_zero;
 
             arc_in = new Geo.Arc();
             arc_in.Init(ConstV.v3_zero, arc_angle, ConstV.v3_forward);
             sph_notIn = new Geo.Sphere(ConstV.v3_zero, sph_rad_notIn);
             sph_in = new Geo.Sphere(ConstV.v3_zero, sph_rad_in);
-            list = new List<Unit>();
+            sph_in_around = new Geo.Sphere(ConstV.v3_zero, sph_around);
+            list_view = new List<Unit>();
+            list_around = new List<Unit>();
             closest = null;
         }
 
@@ -178,6 +187,8 @@ namespace Proto_AI_4
             arc_in.origin = (eye._rotation * localPos_arc_in) + eye._pos;
             sph_in.origin = (eye._rotation * localPos_sph_in) + eye._pos;
             sph_notIn.origin = (eye._rotation * localPos_sph_notIn) + eye._pos;
+
+            sph_in_around.origin = (eye._rotation * localPos_sph_in_around) + eye._pos;
         }
 
         public void Draw(Color color)
@@ -185,7 +196,9 @@ namespace Proto_AI_4
             arc_in.Draw(color, sph_in.radius);
             arc_in.Draw(color, sph_notIn.radius);
 
-            foreach (Unit u in list )
+            sph_in_around.Draw(Color.gray);
+
+            foreach (Unit u in list_view )
             {
                 DebugWide.DrawCircle(u._pos, 0.1f, Color.green);
             }
@@ -277,7 +290,7 @@ namespace Proto_AI_4
 
             //==============================================
 
-            _sight.Init(this, 90, 5, 0);
+            _sight.Init(this, 90, 5, 0, 4);
         }
 
         //public void SetPos(Vector3 newPos)
