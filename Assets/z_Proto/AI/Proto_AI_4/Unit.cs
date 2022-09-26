@@ -137,6 +137,7 @@ namespace Proto_AI_4
     public struct Flocking
     {
         public float follow_distance; //따라가기 거리 
+        public float separation_distance; //분리 거리 
     }
 
     //시야 

@@ -67,6 +67,8 @@ namespace Proto_AI_4
         public float _sight_rad_notIn = 0;
         public float _sight_rad_in_around = 4; //주변객체
         public Vector3 _follow_offset = new Vector3(0,0,-3);
+        public float _follow_distance = 3; //따라가기 거리 
+        public float _separation_distance = 3; //분리 거리 
 
         public bool _init = false;
 
@@ -435,7 +437,8 @@ namespace Proto_AI_4
 
                 _follow_offset.x *= -1;
                 v._disposition._offset = _follow_offset; //임시 테스트 , 스쿼드설정 정보를 덮는 문제가 있음 
-                v._flocking.follow_distance = -_follow_offset.z; //제거대상
+                v._flocking.follow_distance = _follow_distance;
+                v._flocking.separation_distance = _separation_distance;
 
                 v._sight.arc_in.SetAngle(_sight_angle);
                 v._sight.sph_in.radius = _sight_rad_in;

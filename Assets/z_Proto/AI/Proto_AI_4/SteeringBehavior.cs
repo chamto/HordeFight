@@ -239,8 +239,8 @@ namespace Proto_AI_4
 
             if (On(eType.separation))
             {
-                //_steeringForce += Separation(EntityMgr.list) * _weightSeparation * _steeringForceTweaker;
-                _steeringForce += Separation(_vehicle._sight.list_around) * _weightSeparation * _steeringForceTweaker;
+                _steeringForce += Separation2(_vehicle._sight.list_around, _vehicle._flocking.separation_distance) * _weightSeparation * _steeringForceTweaker;
+                //_steeringForce += Separation(_vehicle._sight.list_around) * _weightSeparation * _steeringForceTweaker;
             }
 
             if (On(eType.allignment))
@@ -722,26 +722,22 @@ namespace Proto_AI_4
 
 
         //거리지정이 있는 분리알고리즘
-        Vector3 Separation2(List<Unit> neighbors)
+        Vector3 Separation2(List<Unit> neighbors , float max_dis)
         {
-            const int RADIUS = 3;
+
             int testCount = 0;
-            Vector3 steeringForce = Vector3.zero;
+            Vector3 steeringForce = ConstV.v3_zero;
 
             for (int a = 0; a < neighbors.Count; ++a)
             {
-                //make sure this agent isn't included in the calculations and that
-                //the agent being examined is close enough. ***also make sure it doesn't
-                //include the evade target ***
-                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent))
+
+                if ((neighbors[a] != _vehicle) && (neighbors[a] != _pTargetAgent))
                 {
                     Vector3 ToAgent = _vehicle._pos - neighbors[a]._pos; //주변객체로 부터 떨어지는 방향 
 
-                    if (ToAgent.sqrMagnitude > RADIUS * RADIUS) continue; 
+                    if (ToAgent.sqrMagnitude > max_dis * max_dis) continue; 
 
-                    //scale the force inversely proportional to the agents distance  
-                    //from its neighbor.
+
                     //toAgent 가 0이 되면 Nan 값이 되어 , Nan과 연산한 다른 변수도 Nan이 되어버리는 문제가 있다 
                     if (false == Misc.IsZero(ToAgent))
                     {
@@ -762,100 +758,22 @@ namespace Proto_AI_4
             if (0 == _vehicle._id)
             {
                 DebugWide.AddDrawQ_Line(_vehicle._pos, _vehicle._pos + steeringForce, Color.green);
-                DebugWide.AddDrawQ_Circle(_vehicle._pos , RADIUS, Color.green);
-                DebugWide.AddDrawQ_Circle(_vehicle._pos + steeringForce.normalized * RADIUS, 0.2f, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos , max_dis, Color.green);
+                DebugWide.AddDrawQ_Circle(_vehicle._pos + steeringForce.normalized * max_dis, 0.2f, Color.green);
             }
 
-            if(0 == testCount)
-            {
-                if(false == IsItVelo_LessThan(0.1f))
-                {
-                    return Stop(); //분리를 멈춘다          
-                }
-            }
+            //if(0 == testCount)
+            //{
+            //    if(false == IsItVelo_LessThan(0.1f))
+            //    {
+            //        return Stop(); //분리를 멈춘다          
+            //    }
+            //}
 
                 
             return steeringForce;
         }
 
-
-        Vector3 Cohesion2(List<Unit> neighbors)
-        {
-            const int RADIUS = 3;
-
-            //first find the center of mass of all the agents
-            Vector3 CenterOfMass = Vector3.zero, SteeringForce = Vector3.zero;
-
-            int NeighborCount = 0;
-
-            //iterate through the neighbors and sum up all the position vectors
-            for (int a = 0; a < neighbors.Count; ++a)
-            {
-                //make sure *this* agent isn't included in the calculations and that
-                //the agent being examined is close enough ***also make sure it doesn't
-                //include the evade target ***
-                if ((neighbors[a] != _vehicle) && true == neighbors[a]._tag &&
-                  (neighbors[a] != _pTargetAgent))
-                {
-
-                    CenterOfMass += neighbors[a]._pos;
-
-                    ++NeighborCount;
-                }
-            }
-
-
-
-            if (NeighborCount > 0)
-            {
-                //the center of mass is the average of the sum of positions
-                CenterOfMass /= (float)NeighborCount; //무게중심좌표를 구한다.
-
-                Vector3 ToAgent = _vehicle._pos - CenterOfMass;
-                if (ToAgent.sqrMagnitude > RADIUS * RADIUS)
-                {
-                    //now seek towards that position
-                    SteeringForce = Seek(CenterOfMass);
-
-                    //if (0 == _vehicle._id)
-                        //DebugWide.LogBlue(" sf seek: " + SteeringForce);
-                }
-                else
-                {
-                    SteeringForce = Stop();
-
-                    //if (0 == _vehicle._id)
-                        //DebugWide.LogBlue(" sf stop: " + SteeringForce);
-
-                }
-
-            }
-            else 
-            {
-                //if (0 == _vehicle._id)
-                    //DebugWide.Log("ct0 , stop!!: "+SteeringForce);
-
-                SteeringForce = Stop();
-            }
-
-            if (0 == _vehicle._id)
-            {
-                DebugWide.AddDrawQ_Line(_vehicle._pos, CenterOfMass, Color.green);
-                DebugWide.AddDrawQ_Circle(_vehicle._pos , 0.2f, Color.green);
-                DebugWide.AddDrawQ_Circle(CenterOfMass, RADIUS, Color.red);
-            }
-
-
-            //the magnitude of cohesion is usually much larger than separation or
-            //allignment so it usually helps to normalize it.
-            //return SteeringForce.normalized;
-            return SteeringForce;
-        }
-
-        //Vector3 Cohesion3(List<Unit> neighbors)
-        //{
-             
-        //}
 
         //---------------------------- Separation --------------------------------
         //
