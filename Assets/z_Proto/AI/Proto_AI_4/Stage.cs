@@ -36,6 +36,7 @@ namespace Proto_AI_4
         public float _entireUnit_elasticity = 1;
         public bool _isStatic = false;
 
+        public float _steeringForceTweaker = 1;
         public float _weightSeek = 20;
         public float _weightArrive = 20;
         public float _weightOffsetPursuit = 20;
@@ -44,20 +45,18 @@ namespace Proto_AI_4
         public float _weightAlignment = 20;
         public float _weightCohesion = 20;
         public float _weightFollow = 20;
-        //public float _viewDistance = 10; 
 
-        //public bool _Nonpenetration = true;
         public bool _ObjNonpenetration = true;
         public bool _StrNonpenetration = true;
 
-        public float _minRange = 0;
-        public float _maxRange = 0.5f;
+        //public float _minRange = 0;
+        //public float _maxRange = 0.5f;
 
         public int _Iterations = 5;
-        public bool _Squard_0_Solo_Activity = false;
-        public bool _Squard_1_Solo_Activity = false;
-        public bool _Squard_2_Solo_Activity = false;
-        public bool _Squard_3_Solo_Activity = false;
+        //public bool _Squard_0_Solo_Activity = false;
+        //public bool _Squard_1_Solo_Activity = false;
+        //public bool _Squard_2_Solo_Activity = false;
+        //public bool _Squard_3_Solo_Activity = false;
 
         public Squad[] _Platoons = new Squad[2];
         public Squad[] _Squads = new Squad[4];
@@ -425,6 +424,7 @@ namespace Proto_AI_4
 
                 //-----------------------
 
+                v._steeringBehavior._steeringForceTweaker = _steeringForceTweaker;
                 v._steeringBehavior._weightSeek = _weightSeek;
                 v._steeringBehavior._weightArrive = _weightArrive;
                 v._steeringBehavior._weightOffsetPursuit = _weightOffsetPursuit;
