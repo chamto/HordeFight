@@ -1206,12 +1206,14 @@ namespace Proto_AI_4
         {
             if (null == sight.list_view) return;
             sight.list_view.Clear();
-            sight.closest = null;
+            sight.near_unit = null;
+            sight.far_unit = null;
 
             _stack.Clear();
             _stack.Push(this);
 
             float min = float.MaxValue;
+            float max = 0;
             SphereModel next = null, child = null;
             Color cc = Color.gray;
             while (0 != _stack.Count)
@@ -1246,8 +1248,13 @@ namespace Proto_AI_4
                             float dis = (sight.eye._pos - next._center).sqrMagnitude;
                             if (min > dis)
                             {
-                                sight.closest = next.GetLink_UserData() as Unit;
+                                sight.near_unit = next.GetLink_UserData() as Unit;
                                 min = dis;
+                            }
+                            if(max < dis)
+                            {
+                                sight.far_unit = next.GetLink_UserData() as Unit;
+                                max = dis;
                             }
                             sight.list_view.Add(next.GetLink_UserData() as Unit);
                             //list.Add(next); 

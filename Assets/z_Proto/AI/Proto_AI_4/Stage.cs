@@ -412,7 +412,7 @@ namespace Proto_AI_4
                 }
                 else
                 {
-                    if (null != v._sight.closest)
+                    if (null != v._sight.near_unit)
                     {
                         //v._targetPos = v._sight.closest._pos;
                     }

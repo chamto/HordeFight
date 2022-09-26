@@ -257,9 +257,10 @@ namespace Proto_AI_4
 
             if (On(eType.follow))
             {
-                if (null != _vehicle._sight.closest)
+                if (null != _vehicle._sight.near_unit)
                 {
-                    _steeringForce += Follow(_vehicle._sight.closest._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
+                    _steeringForce += Follow(_vehicle._sight.near_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
+                    //_steeringForce += Follow(_vehicle._sight.far_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
 
                     //_steeringForce += OffsetPursuit(_vehicle._sight.closest, _vehicle._disposition._offset) * _weightFollow * _steeringForceTweaker;
                 }

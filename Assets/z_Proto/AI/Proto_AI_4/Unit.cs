@@ -155,7 +155,8 @@ namespace Proto_AI_4
         public Geo.Sphere sph_notIn;
 
         public List<Unit> list_view; //시야목록 
-        public Unit closest; //시야목록중 worldPos_parent 와 가장가까운 객체
+        public Unit near_unit; //시야목록중 worldPos_parent 와 가장가까운 객체
+        public Unit far_unit;
 
         //around
         public Geo.Sphere sph_in_around;
@@ -176,7 +177,8 @@ namespace Proto_AI_4
             sph_in_around = new Geo.Sphere(ConstV.v3_zero, sph_around);
             list_view = new List<Unit>();
             list_around = new List<Unit>();
-            closest = null;
+            near_unit = null;
+            far_unit = null;
         }
 
         public void Calc_LocalToWorldPos()
@@ -204,10 +206,10 @@ namespace Proto_AI_4
                 DebugWide.DrawCircle(u._pos, 0.1f, Color.green);
             }
 
-            if (null != closest && null != eye)
+            if (null != near_unit && null != eye)
             {
-                DebugWide.DrawLine(closest._pos, eye._pos, Color.green);
-                DebugWide.DrawCircle(closest._pos, 0.3f, Color.green);
+                DebugWide.DrawLine(near_unit._pos, eye._pos, Color.green);
+                DebugWide.DrawCircle(near_unit._pos, 0.3f, Color.green);
             }
 
         }
