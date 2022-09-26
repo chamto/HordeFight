@@ -228,7 +228,7 @@ namespace Proto_AI_4
 
             if (On(eType.obstacle_avoidance))
             {
-                _steeringForce += ObstacleAvoidance(EntityMgr.list) * _weightObstacleAvoidance * _steeringForceTweaker;
+                _steeringForce += ObstacleAvoidance(EntityMgr.list) * _weightObstacleAvoidance;
             }
 
             if (On(eType.evade))
@@ -239,20 +239,20 @@ namespace Proto_AI_4
 
             if (On(eType.separation))
             {
-                _steeringForce += Separation2(_vehicle._sight.list_around, _vehicle._flocking.separation_distance) * _weightSeparation * _steeringForceTweaker;
-                //_steeringForce += Separation(_vehicle._sight.list_around) * _weightSeparation * _steeringForceTweaker;
+                _steeringForce += Separation2(_vehicle._sight.list_around, _vehicle._flocking.separation_distance) * _weightSeparation;
+                //_steeringForce += Separation(_vehicle._sight.list_around) * _weightSeparation;
             }
 
             if (On(eType.allignment))
             {
-                //_steeringForce += Alignment(EntityMgr.list) * _weightAlignment * _steeringForceTweaker;
-                _steeringForce += Alignment(_vehicle._sight.list_around) * _weightAlignment * _steeringForceTweaker;
+                //_steeringForce += Alignment(EntityMgr.list) * _weightAlignment;
+                _steeringForce += Alignment(_vehicle._sight.list_around) * _weightAlignment;
             }
 
             if (On(eType.cohesion))
             {
-                //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion * _steeringForceTweaker;
-                _steeringForce += Cohesion(_vehicle._sight.list_around) * _weightCohesion * _steeringForceTweaker;
+                //_steeringForce += Cohesion(EntityMgr.list) * _weightCohesion ;
+                _steeringForce += Cohesion(_vehicle._sight.list_around) * _weightCohesion;
             }
 
             if (On(eType.follow))
@@ -260,10 +260,10 @@ namespace Proto_AI_4
                 if (null != _vehicle._sight.near_unit)
                 //if (null != _vehicle._sight.far_unit)
                 {
-                    _steeringForce += Follow(_vehicle._sight.near_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
-                    //_steeringForce += Follow(_vehicle._sight.far_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow * _steeringForceTweaker;
+                    _steeringForce += Follow(_vehicle._sight.near_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow;
+                    //_steeringForce += Follow(_vehicle._sight.far_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow;
 
-                    //_steeringForce += OffsetPursuit(_vehicle._sight.near_unit, _vehicle._disposition._offset) * _weightFollow * _steeringForceTweaker;
+                    //_steeringForce += OffsetPursuit(_vehicle._sight.near_unit, _vehicle._disposition._offset) * _weightFollow;
                 }
 
                 //chamto test
@@ -283,7 +283,7 @@ namespace Proto_AI_4
 
             if (On(eType.seek))
             {
-                _steeringForce += Seek(_vehicle._targetPos) * _weightSeek * _steeringForceTweaker;
+                _steeringForce += Seek(_vehicle._targetPos) * _weightSeek;
                 //DebugWide.LogBlue(_steeringForce.magnitude + "  " + _vehicle._targetPos);
             }
 
@@ -298,7 +298,7 @@ namespace Proto_AI_4
                 //_decelerationTime = 0.09f; //0.09초동안 감속 - 감속되는 것을 보여주지 않기 위해 짧게 설정 
                 //_weight = 50;
                 //_maxForce = 100;
-                _steeringForce += Arrive2(_vehicle._targetPos) * _weightArrive * _steeringForceTweaker;
+                _steeringForce += Arrive2(_vehicle._targetPos) * _weightArrive;
             }
 
             if (On(eType.pursuit))
@@ -308,7 +308,7 @@ namespace Proto_AI_4
 
             if (On(eType.offset_pursuit))
             {
-                _steeringForce += OffsetPursuit(_vehicle._disposition._belong_formation, _vehicle._disposition._offset) * _weightOffsetPursuit * _steeringForceTweaker;
+                _steeringForce += OffsetPursuit(_vehicle._disposition._belong_formation, _vehicle._disposition._offset) * _weightOffsetPursuit;
             }
 
             if (On(eType.interpose))
@@ -325,8 +325,6 @@ namespace Proto_AI_4
             {
                 //_steeringForce += FollowPath() * m_dWeightFollowPath;
             }
-
-            _steeringForce = VOp.Truncate(_steeringForce, _vehicle._maxForce * _steeringForceTweaker);
 
             return _steeringForce;
         }
@@ -444,7 +442,7 @@ namespace Proto_AI_4
         public Vector3 Calculate()
         {
             //reset the steering force
-            _steeringForce = Vector3.zero;
+            _steeringForce = ConstV.v3_zero;
 
             //if (On(eType.separation) || On(eType.allignment) || On(eType.cohesion))
             //{
@@ -466,11 +464,11 @@ namespace Proto_AI_4
 
                     //_steeringForce = CalculateDithered(); break;
 
-                default: _steeringForce = Vector3.zero; break;
+                default: break;
 
             }//end switch
 
-            return _steeringForce;
+            return _steeringForce * _steeringForceTweaker;
         }
 
         //calculates the component of the steering force that is parallel
