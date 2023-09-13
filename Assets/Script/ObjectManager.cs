@@ -1499,6 +1499,7 @@ namespace HordeFight
             champ._hp_max = 500;
             champ._hp_cur = 500;
             champ._force = 20;
+            champ.GetComponent<AI>()._ai_running = true;
             champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
 
             //camp_position++;
@@ -1533,17 +1534,37 @@ namespace HordeFight
             champ._hp_cur = 500;
             champ.GetComponent<AI>()._ai_running = true;
             champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+            champ = Create_Character(SingleO.unitRoot, Being.eKind.slime, camp_HERO, camp_Obstacle.RandPosition());
+            champ._hp_max = 500;
+            champ._hp_cur = 500;
+            champ.GetComponent<AI>()._ai_running = true;
+            champ._effect.SetActive(Effect.eKind.Bar_Red, true); //hp바 
+
 
             _timeTemp += "  ObjectManager.Create_ChampCamp.Create_Character  " + (DateTime.Now.Ticks - _startDateTime.Ticks) / 10000f + "ms";
 
             numMax_create = 100;
             for (int i = 0; i < numMax_create; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.skeleton, camp_BLUE, camp_BLUE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_BLUE, camp_BLUE.RandPosition());
                 //champ._hp_max = 30;
                 //champ._hp_cur = 30;
                 //champ._mt_range_min = 0.3f;
-                //champ._mt_range_max = 0.5f;
+                champ._mt_range_max = 1.0f;
+                champ.GetComponent<AI>()._ai_running = true;
+                //camp_position++;
+
+            }
+            yield return new WaitForSeconds(0.001f);
+
+            numMax_create = 100;
+            for (int i = 0; i < numMax_create; i++)
+            {
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.knight, camp_BLUE, camp_BLUE.RandPosition());
+                //champ._hp_max = 30;
+                //champ._hp_cur = 30;
+                //champ._mt_range_min = 0.3f;
+                champ._mt_range_max = 1.5f;
                 champ.GetComponent<AI>()._ai_running = true;
                 //camp_position++;
 
@@ -1557,7 +1578,7 @@ namespace HordeFight
             //champ = Create_Character(SingleO.unitRoot, Being.eKind.raider, camp_WHITE, camp_WHITE.GetPosition(camp_position));
             //champ.GetComponent<AI>()._ai_running = true;
             //camp_position++;
-            numMax_create = 30;
+            numMax_create = 100;
             for (int i = 0; i < numMax_create; i++)
             {
                 champ = Create_Character(SingleO.unitRoot, Being.eKind.conjurer, camp_WHITE, camp_WHITE.RandPosition());
@@ -1570,10 +1591,10 @@ namespace HordeFight
             }
             yield return new WaitForSeconds(0.001f);
 
-            numMax_create = 40;
+            numMax_create = 100;
             for (int i = 0; i < numMax_create; i++)
             {
-                champ = Create_Character(SingleO.unitRoot, Being.eKind.footman, camp_WHITE, camp_WHITE.RandPosition());
+                champ = Create_Character(SingleO.unitRoot, Being.eKind.cleric, camp_WHITE, camp_WHITE.RandPosition());
                 champ.GetComponent<AI>()._ai_running = true;
                 //camp_position++;
 
