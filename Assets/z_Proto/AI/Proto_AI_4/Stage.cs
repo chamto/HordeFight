@@ -411,14 +411,22 @@ namespace Proto_AI_4
                 }
                 else
                 {
-                    if (null != v._sight.near_unit)
+                    if (null != v._sight.near_unit )//&& v._sight.near_unit.IsMoving(5))
                     {
-                        //v._targetPos = v._sight.closest._pos;
+                        if(null != v._sight.far_moving_unit)
+                        {
+                            v._targetPos = v._sight.far_moving_unit._pos;
+                        }
+                        else
+                        {
+                            v._targetPos = v._sight.near_unit._pos;
+                        }
+
                     }
 
                     //v._targetPos = v._pos + dir_u0toT;
 
-                    v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
+                    //v._targetPos = _tr_platoon_0.position; //목표위치 직접 지정 , Unit.Update 에서 오프셋추적 모드시 스쿼드 목표위치로 지정함 
                 }
 
 

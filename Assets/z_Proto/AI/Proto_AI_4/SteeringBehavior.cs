@@ -260,7 +260,7 @@ namespace Proto_AI_4
                 if (null != _vehicle._sight.near_unit)
                 //if (null != _vehicle._sight.far_unit)
                 {
-                    _steeringForce += Follow(_vehicle._sight.near_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow;
+                    _steeringForce += Follow2(_vehicle._sight.near_unit._pos, _vehicle._disposition._offset) * _weightFollow;
                     //_steeringForce += Follow(_vehicle._sight.far_unit._pos, _vehicle._flocking.follow_distance) * _weightFollow;
 
                     //_steeringForce += OffsetPursuit(_vehicle._sight.near_unit, _vehicle._disposition._offset) * _weightFollow;
@@ -663,6 +663,14 @@ namespace Proto_AI_4
             //DebugWide.LogBlue(LookAheadTime);
             //------------------------
 
+            //Vector3 offsetPos = WorldOffsetPos + leader._velocity * LookAheadTime;
+            ////계산된 오프셋위치가 운반기의 뒤에 있는 경우 
+            //if (0 > Vector3.Dot(_vehicle._heading, (offsetPos - _vehicle._pos)))
+            //{
+            //    //return Stop(); 
+            //    return ConstV.v3_zero;
+            //}
+
             //WorldOffsetPos : 현재시간에서의 오프셋리더위치
             //목표가 움직이는 경우 , WorldOffsetPos 만으로는 목표위치에 도달 할 수 없는 문제가 있음 
             //두 객체가 움직일때 동시에 만나는 시점의 리더위치 : 현재시간에서의 오프셋리더위치 + 동시에 만나는 시점의 거리  
@@ -712,6 +720,26 @@ namespace Proto_AI_4
             return (dot - 1f) * -coefficient; //[-2 ~ 0] * -coefficient
         }
 
+        //offset.x 값을 지정하면 고정된 위치지정이 안된다. 기준위치에서 x이동하여 기준위치가 계속 이동된다
+        //정지상태에서는 고정된 위치지정 안됨 , 이동상태에서는 어느정도 고정된 위치가 잡힌다   
+        private Vector3 Follow2(Vector3 targetPos, Vector3 offset)
+        {
+
+            Vector3 ndir_z = VOp.Normalize(targetPos - _vehicle._pos);
+            Vector3 ndir_x = Quaternion.AngleAxis(90, ConstV.v3_up) * ndir_z;
+
+            Vector3 offsetPos = targetPos + ndir_z * offset.z;
+            offsetPos += ndir_x * offset.x;
+
+            //계산된 오프셋위치가 운반기의 뒤에 있는 경우 
+            if (0 > Vector3.Dot(_vehicle._heading, (offsetPos - _vehicle._pos)))
+            {
+                //return Stop(); 
+                return ConstV.v3_zero; 
+            }
+
+            return Arrive2(offsetPos);
+        }
 
         private Vector3 Follow(Vector3 targetPos, float dis)
         {
@@ -721,15 +749,14 @@ namespace Proto_AI_4
             Vector3 offsetPos = targetPos + ndir * dis;
 
             //계산된 오프셋위치가 운반기의 뒤에 있는 경우 
-            if(0 > Vector3.Dot(_vehicle._heading, (offsetPos - _vehicle._pos)))
+            if (0 > Vector3.Dot(_vehicle._heading, (offsetPos - _vehicle._pos)))
             {
                 //return Stop(); 
-                return ConstV.v3_zero; 
+                return ConstV.v3_zero;
             }
 
             return Arrive2(offsetPos);
         }
-
 
         //거리지정이 있는 분리알고리즘
         Vector3 Separation2(List<Unit> neighbors , float max_dis)

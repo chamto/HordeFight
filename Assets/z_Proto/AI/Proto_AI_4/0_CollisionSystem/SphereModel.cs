@@ -1208,12 +1208,17 @@ namespace Proto_AI_4
             sight.list_view.Clear();
             sight.near_unit = null;
             sight.far_unit = null;
+            sight.near_moving_unit = null;
+            sight.far_moving_unit = null;
 
             _stack.Clear();
             _stack.Push(this);
 
             float min = float.MaxValue;
             float max = 0;
+            float min_moving = float.MaxValue;
+            float max_moving = 0;
+
             SphereModel next = null, child = null;
             Color cc = Color.gray;
             while (0 != _stack.Count)
@@ -1243,20 +1248,40 @@ namespace Proto_AI_4
                     //if(arc.Include_NearFar_Arc_vs_Sphere(next._center, next._radius, includeRate))
                     if (Geo.Area.Include_Sphere(ref sph_target, ref sight.sph_in, ref sight.sph_notIn, ref sight.arc_in))
                     {
-                        if(sight.eye._sphereModel != next)
+
+                        Unit unit = next.GetLink_UserData() as Unit;
+
+                        if (sight.eye._sphereModel != next)
                         {
+                            //가장 가까운 객체 찾기 (이동 , 정지 상관없음)
                             float dis = (sight.eye._pos - next._center).sqrMagnitude;
                             if (min > dis)
                             {
-                                sight.near_unit = next.GetLink_UserData() as Unit;
+                                sight.near_unit = unit;
                                 min = dis;
                             }
-                            if(max < dis)
+                            if (max < dis)
                             {
-                                sight.far_unit = next.GetLink_UserData() as Unit;
+                                sight.far_unit = unit;
                                 max = dis;
                             }
-                            sight.list_view.Add(next.GetLink_UserData() as Unit);
+
+                            //이동중 객체들중 가장 가까운 객체 찾기 
+                            if(null != unit && unit.IsMoving(1))
+                            {
+                                if (min_moving > dis)
+                                {
+                                    sight.near_moving_unit = unit;
+                                    min_moving = dis;
+                                }
+                                if (max_moving < dis)
+                                {
+                                    sight.far_moving_unit = unit;
+                                    max_moving = dis;
+                                }
+                            }
+
+                            sight.list_view.Add(unit);
                             //list.Add(next); 
                         }
 

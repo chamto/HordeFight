@@ -157,6 +157,8 @@ namespace Proto_AI_4
         public List<Unit> list_view; //시야목록 
         public Unit near_unit; //시야목록중 worldPos_parent 와 가장가까운 객체
         public Unit far_unit;
+        public Unit near_moving_unit; //시야목록의 움직이는 객체 중 가장가까운 객체  
+        public Unit far_moving_unit;
 
         //around
         public Geo.Sphere sph_in_around;
@@ -179,6 +181,8 @@ namespace Proto_AI_4
             list_around = new List<Unit>();
             near_unit = null;
             far_unit = null;
+            near_moving_unit = null;
+            far_moving_unit = null;
         }
 
         public void Calc_LocalToWorldPos()
@@ -335,6 +339,15 @@ namespace Proto_AI_4
 
         }
 
+        //최소속도 보다 커야 이동중이다 
+        public bool IsMoving(float minVelo)
+        {
+
+            if (_velocity.sqrMagnitude > minVelo * minVelo)
+                return true;
+
+            return false;
+        }
 
         //public List<Vector3> _feelers = new List<Vector3>();
         //public void CreateFeelers()
@@ -389,7 +402,7 @@ namespace Proto_AI_4
         //            float len_bt_dst = len_bitween * rate_dst;
 
         //            //DebugWide.LogBlue(len_dstTOsrc + "  " + n + "  " + _id + "  " );
-                    
+
 
         //            //2.완전겹친상태 
         //            if (float.Epsilon >= len_dstTOsrc)
