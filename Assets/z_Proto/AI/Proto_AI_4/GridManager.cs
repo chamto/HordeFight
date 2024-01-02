@@ -496,10 +496,10 @@ namespace Proto_AI_4
 
             _tilemap_struct.RefreshAllTiles();
 
-            TileBase fow_tiles = Resources.Load<TileBase>("Warcraft/Palette/ScriptTile/fow_RuleExtraTile");
+            //TileBase fow_tiles = Resources.Load<TileBase>("Warcraft/Palette/ScriptTile/fow_RuleExtraTile");
 
             CellSpace tile = null;
-            RuleExtraTile.TilingRule ruleInfo = null;
+            //RuleTile_Custom.TilingRule ruleInfo = null;
             int specifier = 0;
             for(int i=0;i<MAP_WIDTH*MAP_HEIGHT;i++)
             {
@@ -514,22 +514,23 @@ namespace Proto_AI_4
 
                 //-------------
 
-                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile_Custom ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile_Custom; //룰타일 종류와 상관없이 다 가져온다. 
 
                 if(null != ruleTile)
                 {
-                    ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
-                    if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
-                        specifier = 0;
+                    //ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                    //if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                    //    specifier = 0;
 
                     tile._specifier = specifier;
-                    tile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                    tile._eDir = (eDirection8)ruleTile.GetBorderDirection8(XY_2d);
                     tile._nDir = Misc.GetDir8_Normal3D_AxisY(tile._eDir);
 
                     //방향이 없는 덮개타일은 걸러낸다 
                     //if (eDirection8.none == structTile._eDir) continue;
 
-                    tile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                    //tile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                    tile._isUpTile = false;
                     tile._isStructTile = true;
 
                     LineSegment3 line;
@@ -544,10 +545,10 @@ namespace Proto_AI_4
 
                 //---------------------------
                 //덮개 타일 생성 
-                if (true == tile._isUpTile)
-                {
-                    _tilemap_structUp.SetTile(XY_2d, fow_tiles);
-                }
+                //if (true == tile._isUpTile)
+                //{
+                //    _tilemap_structUp.SetTile(XY_2d, fow_tiles);
+                //}
                 //---------------------------
 
             }
@@ -571,16 +572,16 @@ namespace Proto_AI_4
 
             _tilemap_structUp.RefreshAllTiles();
             CellSpace tile = null;
-            RuleExtraTile.TilingRule ruleInfo = null;
+            //RuleExtraTile.TilingRule ruleInfo = null;
             int specifier = 0;
             foreach (Vector3Int XY_2d in _tilemap_structUp.cellBounds.allPositionsWithin)
             {
-                RuleExtraTile ruleTile = _tilemap_structUp.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile_Custom ruleTile = _tilemap_structUp.GetTile(XY_2d) as RuleTile_Custom; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
-                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
-                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
-                    specifier = 0;
+                //ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                //if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                //    specifier = 0;
 
 
                 tile = new CellSpace();
@@ -588,7 +589,7 @@ namespace Proto_AI_4
                 tile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 tile._pos2d = new Vector3Int(XY_2d.x, XY_2d.y, 0);
                 tile._pos1d = this.ToPosition1D(XY_2d);
-                tile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                tile._eDir = (eDirection8)ruleTile.GetBorderDirection8(XY_2d);
                 tile._nDir = Misc.GetDir8_Normal3D_AxisY(tile._eDir);
 
 
@@ -615,16 +616,16 @@ namespace Proto_AI_4
 
             _tilemap_struct.RefreshAllTiles();
             CellSpace tile = null;
-            RuleExtraTile.TilingRule ruleInfo = null;
+            //RuleExtraTile.TilingRule ruleInfo = null;
             int specifier = 0;
             foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
             {
-                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile_Custom ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile_Custom; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
-                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
-                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
-                    specifier = 0;
+                //ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                //if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                //    specifier = 0;
 
 
                 tile = new CellSpace();
@@ -632,13 +633,14 @@ namespace Proto_AI_4
                 tile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 tile._pos2d = new Vector3Int(XY_2d.x, XY_2d.y , 0);
                 tile._pos1d = this.ToPosition1D(XY_2d); 
-                tile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                tile._eDir = (eDirection8)ruleTile.GetBorderDirection8(XY_2d);
                 tile._nDir = Misc.GetDir8_Normal3D_AxisY(tile._eDir);
 
                 //방향이 없는 덮개타일은 걸러낸다 
                 if (eDirection8.none == tile._eDir) continue;
 
-                tile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                //tile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                tile._isUpTile = false;
                 tile._isStructTile = true;
 
                 LineSegment3 line;

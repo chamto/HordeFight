@@ -151,21 +151,22 @@ using UtilGS9;
         {
 #if UNITY_EDITOR
             BoundsInt bounds = SingleO.gridManager.GetTileMap_FogOfWar().cellBounds;
-            RuleExtraTile rule = null;
+            RuleTile_Custom rule = null;
             byte divisionNum = 0;
             Vector3 pos3d = ConstV.v3_zero;
             //DebugWide.LogBlue(bounds);
             foreach (Vector3Int xy in bounds.allPositionsWithin)
             {
                 //rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile<RuleExtraTile>(xy);
-                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile(xy) as RuleExtraTile;
+                rule = SingleO.gridManager.GetTileMap_FogOfWar().GetTile(xy) as RuleTile_Custom;
                 if (null != rule)
                 {
                     DebugWide.LogBlue(xy + " " + rule);   
                     pos3d = SingleO.gridManager.ToPosition3D(xy);
                     pos3d.x += 0.08f;
                     pos3d.z += 0.16f;
-                    divisionNum = rule._tileDataMap.Get_DivisionNum(xy);
+                    //divisionNum = rule._tileDataMap.Get_DivisionNum(xy); //chamto : Ver 2018.2.14f1 <RuleTile> => Ver 2022.3.9f1 업그레이드 작업
+                    divisionNum = 0; //위 함수가 제거됨에 따라 임시로 0으로 설
                     if (0 < divisionNum)
                         UnityEditor.Handles.color = Color.red;
                     else

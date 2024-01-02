@@ -392,30 +392,31 @@ namespace Proto_AI_1
 
             _tilemap_struct.RefreshAllTiles();
             CellSpace structTile = null;
-            RuleExtraTile.TilingRule ruleInfo = null;
+            //RuleTile_Custom.TilingRule ruleInfo = null;
             int specifier = 0;
             foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
             {
-                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile_Custom ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile_Custom; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
-                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
-                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
-                    specifier = 0;
+                //ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                //if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                //    specifier = 0;
 
-
+                
                 structTile = new CellSpace();
                 structTile._specifier = specifier;
                 structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 structTile._pos2d = new Vector3Int(XY_2d.x, XY_2d.y , 0);
-                structTile._pos1d = this.ToPosition1D(XY_2d, _tileBlock_width_size); 
-                structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                structTile._pos1d = this.ToPosition1D(XY_2d, _tileBlock_width_size);
+                structTile._eDir = (eDirection8)ruleTile.GetBorderDirection8(XY_2d); //chamto : Ver 2018.2.14f1 <RuleTile> => Ver 2022.3.9f1 업그레이드 작업
                 structTile._nDir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir);
 
                 //방향이 없는 덮개타일은 걸러낸다 
                 if (eDirection8.none == structTile._eDir) continue;
 
-                structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                //structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                structTile._isUpTile = false; //chamto : Ver 2018.2.14f1 <RuleTile> => Ver 2022.3.9f1 업그레이드 작업
                 structTile._isStructTile = true;
 
                 LineSegment3 line;

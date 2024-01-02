@@ -120,16 +120,16 @@ namespace HordeFight
 
             SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
             CellSpace structTile = null;
-            RuleExtraTile.TilingRule ruleInfo = null;
+            //RuleExtraTile.TilingRule ruleInfo = null;
             int specifier = 0;
             foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
             {
-                RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+                RuleTile_Custom ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleTile_Custom; //룰타일 종류와 상관없이 다 가져온다. 
                 if (null == ruleTile) continue;
 
-                ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
-                if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
-                    specifier = 0;
+                //ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+                //if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+                //    specifier = 0;
 
 
                 structTile = new CellSpace();
@@ -137,10 +137,11 @@ namespace HordeFight
                 structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
                 structTile._pos2d = new Index2(XY_2d.x, XY_2d.y);
                 structTile._pos1d = this.ToPosition1D(XY_2d, 64); //임시코드
-                structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+                structTile._eDir = (eDirection8)ruleTile.GetBorderDirection8(XY_2d);
                 //structTile._v3Dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir); //방향값을 미리 구해 놓는다 
                 //structTile._i2Dir = Misc.GetDir8_Normal2D(structTile._eDir);
-                structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                //structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+                structTile._isUpTile = false;
                 structTile._isStructTile = true;
                 _structTileList.Add(XY_2d, structTile);
 
@@ -164,6 +165,57 @@ namespace HordeFight
             //확장영역에 구조물 경계선 추가 
             Load_StructLine();
         }
+
+        //public void LoadTilemap_Struct()
+        //{
+        //    if (null == _tilemap_struct) return;
+
+        //    SingleO.gridManager.GetTileMap_Struct().RefreshAllTiles();
+        //    CellSpace structTile = null;
+        //    RuleExtraTile.TilingRule ruleInfo = null;
+        //    int specifier = 0;
+        //    foreach (Vector3Int XY_2d in _tilemap_struct.cellBounds.allPositionsWithin)
+        //    {
+        //        RuleExtraTile ruleTile = _tilemap_struct.GetTile(XY_2d) as RuleExtraTile; //룰타일 종류와 상관없이 다 가져온다. 
+        //        if (null == ruleTile) continue;
+
+        //        ruleInfo = ruleTile._tileDataMap.GetTilingRule(XY_2d);
+        //        if (null == ruleInfo || false == int.TryParse(ruleInfo.m_specifier, out specifier))
+        //            specifier = 0;
+
+
+        //        structTile = new CellSpace();
+        //        structTile._specifier = specifier;
+        //        structTile._pos3d_center = this.ToPosition3D_Center(XY_2d);
+        //        structTile._pos2d = new Index2(XY_2d.x, XY_2d.y);
+        //        structTile._pos1d = this.ToPosition1D(XY_2d, 64); //임시코드
+        //        structTile._eDir = ruleTile._tileDataMap.GetDirection8(XY_2d);
+        //        //structTile._v3Dir = Misc.GetDir8_Normal3D_AxisY(structTile._eDir); //방향값을 미리 구해 놓는다 
+        //        //structTile._i2Dir = Misc.GetDir8_Normal2D(structTile._eDir);
+        //        structTile._isUpTile = ruleTile._tileDataMap.Get_IsUpTile(XY_2d);
+        //        structTile._isStructTile = true;
+        //        _structTileList.Add(XY_2d, structTile);
+
+        //    }
+
+        //    DebugWide.LogBlue("LoadTile : " + _structTileList.Count + "  -  TileMap_Struct RefreshAllTiles");
+
+        //    //덮개 타일 생성
+        //    TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_RuleTile".GetHashCode());
+        //    //TileBase tileScript = SingleO.resourceManager.GetTileScript("fow_TerrainTile".GetHashCode());
+        //    foreach (KeyValuePair<Vector3Int, CellSpace> t in _structTileList)
+        //    {
+        //        if (true == t.Value._isUpTile)
+        //        {
+        //            _tilemap_structUp.SetTile(t.Key, tileScript);
+        //        }
+        //    }
+
+        //    DebugWide.LogBlue("덮개타일 생성 완료 : " + tileScript.name);
+
+        //    //확장영역에 구조물 경계선 추가 
+        //    Load_StructLine();
+        //}
 
 
         public struct BoundaryTile
@@ -942,7 +994,7 @@ namespace HordeFight
                 //_tilemap_fogOfWar.SetTileFlags(xy, TileFlags.None);
                 tile_3d_center = this.ToPosition3D_Center(tile_2d);
 
-                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleExtraTile;
+                RuleTile_Custom ruleTile = _tilemap_fogOfWar.GetTile(tile_2d) as RuleTile_Custom;
                 float sqrDis = (tile_3d_center - standard_3d).sqrMagnitude;
                 if (sqrDis <= Mathf.Pow(GridManager.MeterToWorld * 6.2f, 2))
                 {
@@ -1023,7 +1075,7 @@ namespace HordeFight
                 v2IntTo3.x = tile_2d.x;
                 v2IntTo3.y = tile_2d.y;
                 v2IntTo3.z = 0;
-                RuleExtraTile ruleTile = _tilemap_fogOfWar.GetTile(v2IntTo3) as RuleExtraTile;
+                RuleTile_Custom ruleTile = _tilemap_fogOfWar.GetTile(v2IntTo3) as RuleTile_Custom;
                 float sqrDis = (tile_3d_center -  standard_3d).sqrMagnitude;
                 float sqrStd = GridManager.MeterToWorld * 6.2f; sqrStd *= sqrStd;
                 if (sqrDis <= sqrStd)
