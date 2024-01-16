@@ -169,7 +169,7 @@ namespace HordeFight
             //_max_tileMapSize = MAP_WIDTH * MAP_HEIGHT;
             _cellInfo2Map = new CellSpace[MAP_WIDTH * MAP_HEIGHT];
 
-            CreateCellIfoMap_FromStructUpTile();
+            CreateCellIfoMap_FromStructUpTile(); 
         }
 
 
@@ -181,7 +181,8 @@ namespace HordeFight
                 for (int x = 0; x < MAP_WIDTH; x++)
                 {
                     CellSpace structTile = null;
-                    if (false == SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile))
+                    //chamto - 구조타일 구별하지 않고 전체타일에 대하여 cellspace 추가로 변경  
+                    //if (false == SingleO.gridManager.HasStructTile_InPostion2D(new Vector3Int(x, y, 0), out structTile))
                     {
                         //구조타일이 없는 공간설정 
                         structTile = new CellSpace();
@@ -802,6 +803,14 @@ namespace HordeFight
         public void AttachCellSpace(int pos1d, Being dst)
         {
             CellSpace tile = GetCellSpace(pos1d);
+
+            if (null == tile)
+            {
+                Index2 pos2d = ToPosition2D(pos1d);
+                DebugWide.LogRed("null cellspace!!! --- h_id: " + dst._id + " 1d_p: " + pos1d + "  2d_p: " + pos2d.x + " " + pos2d.y);
+                return;
+            }
+
             //if (false == HasStructTile(pos1d, out tile))
             {
                 //뗀후 새로운 곳에 붙인다 
